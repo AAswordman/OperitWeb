@@ -1,0 +1,8 @@
+{
+  "rewrites": [
+    {
+      "source": "/OperitWeb/*",
+      "destination": "/:splat"
+    }
+  ]
+}
