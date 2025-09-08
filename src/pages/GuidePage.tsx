@@ -93,7 +93,7 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
-        breakpoint="md"
+        breakpoint="lg"
         collapsedWidth="0"
         onBreakpoint={setBroken}
         trigger={null}
@@ -104,6 +104,9 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           backdropFilter: 'blur(10px)',
           borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
           zIndex: 1001, // 设置比Header更高的z-index
+          position: broken ? 'fixed' : 'relative', // 移动端时使用固定定位
+          top: broken ? '64px' : 'auto',
+          left: broken ? 0 : 'auto',
         }}
       >
         <Menu
@@ -116,6 +119,22 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
             />
       </Sider>
       <Layout style={{ background: 'transparent' }}>
+        {/* 移动端遮罩层 */}
+        {broken && !collapsed && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 64,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 1000,
+            }}
+            onClick={() => setCollapsed(true)}
+          />
+        )}
+        
         {broken && (
           <Button
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -124,13 +143,21 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
               position: 'fixed',
               top: 74,
               left: 16,
-              zIndex: 100,
+              zIndex: 1002, // 确保按钮在遮罩层之上
             }}
             type="primary"
             shape="circle"
           />
         )}
-        <Content style={{ padding: isToolPage ? '0' : '24px', margin: 0, minHeight: 280 }}>
+        <Content 
+          style={{ 
+            padding: isToolPage ? '0' : '24px', 
+            margin: 0, 
+            minHeight: 280,
+            height: 'calc(100vh - 64px)', // 固定高度
+            overflow: 'auto', // 独立滚动
+          }}
+        >
           {isToolPage ? (
             <Outlet />
           ) : (
@@ -139,7 +166,8 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
               backdropFilter: 'blur(10px)',
               border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
               borderRadius: '12px',
-              padding: '24px'
+              padding: '24px',
+              minHeight: 'calc(100vh - 112px)', // 确保内容有足够高度
             }}>
               <Outlet />
             </div>
