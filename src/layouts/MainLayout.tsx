@@ -59,7 +59,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
   // 响应式处理
   React.useEffect(() => {
     const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
+      setIsMobile(window.innerWidth < 992); // 从768px增加到992px，让平板也使用简化布局
     };
 
     handleResize();
@@ -135,7 +135,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
             </Space>
           </Col>
 
-          <Col xs={0} md={12}>
+          <Col xs={0} lg={12}>
             <Space size="large" style={{ width: '100%', justifyContent: 'center' }}>
               {isHomePage ? (
                 <Anchor

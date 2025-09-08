@@ -103,6 +103,7 @@ const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
           background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
           backdropFilter: 'blur(10px)',
           borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
+          zIndex: 1001, // 设置比Header更高的z-index
         }}
       >
         <Menu
