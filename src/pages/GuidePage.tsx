@@ -26,6 +26,7 @@ const menuItems = [
       { key: 'character-cards', label: <Link to="/guide/character-system/character-cards">角色卡</Link> },
       { key: 'tags', label: <Link to="/guide/character-system/tags">标签</Link> },
       { key: 'voice-chat', label: <Link to="/guide/character-system/voice-chat">语音对话</Link> },
+      { key: 'tts-reading', label: <Link to="/guide/character-system/tts-reading">TTS 语音朗读</Link> },
       { key: 'desktop-pet', label: <Link to="/guide/character-system/desktop-pet">桌宠</Link> },
     ],
   },

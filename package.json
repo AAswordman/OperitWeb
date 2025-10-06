@@ -22,6 +22,7 @@
     "antd": "^5.27.2",
     "framer-motion": "^12.23.12",
     "mdast-util-to-string": "^4.0.0",
+    "pdf-lib": "^1.17.1",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-intersection-observer": "^9.16.0",

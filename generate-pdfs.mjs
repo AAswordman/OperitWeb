@@ -3,6 +3,7 @@ import { exec, spawn } from 'child_process';
 import path from 'path';
 import fs from 'fs/promises';
 import { fileURLToPath } from 'url';
+import { PDFDocument } from 'pdf-lib';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -28,11 +29,29 @@ async function findMarkdownFiles(dir) {
 async function generatePdf(browser, url, outputPath) {
   const page = await browser.newPage();
   try {
-    await page.goto(url, { waitUntil: 'networkidle0' });
+    await page.goto(url, { waitUntil: 'domcontentloaded' });
     await page.waitForSelector('.markdown-body', { visible: true });
     
-    // 强制等待页面动画和内容加载
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    // 自动滚动页面以触发懒加载内容
+    await page.evaluate(async () => {
+      await new Promise((resolve) => {
+        let totalHeight = 0;
+        const distance = 100;
+        const timer = setInterval(() => {
+          const scrollHeight = document.body.scrollHeight;
+          window.scrollBy(0, distance);
+          totalHeight += distance;
+
+          if (totalHeight >= scrollHeight) {
+            clearInterval(timer);
+            resolve();
+          }
+        }, 100);
+      });
+    });
+
+    // 等待一小段时间让内容渲染
+    await new Promise(resolve => setTimeout(resolve, 3000));
     
     // 注入CSS以展开所有可滚动内容
     await page.evaluate(() => {
@@ -52,6 +71,10 @@ async function generatePdf(browser, url, outputPath) {
             height: auto !important;
             overflow: visible !important;
         }
+        /* 移除页脚，防止遮挡 */
+        .ant-layout-footer {
+          display: none !important;
+        }
       `;
       document.head.appendChild(style);
     });
@@ -61,6 +84,7 @@ async function generatePdf(browser, url, outputPath) {
       path: outputPath,
       format: 'A4',
       printBackground: true,
+      scale: 0.9, // 缩小页面内容
       margin: {
         top: '20px',
         right: '20px',
@@ -74,6 +98,20 @@ async function generatePdf(browser, url, outputPath) {
   } finally {
     await page.close();
   }
+}
+
+async function mergePdfs(pdfPaths, outputPath) {
+  const mergedPdf = await PDFDocument.create();
+  for (const pdfPath of pdfPaths) {
+    const pdfBytes = await fs.readFile(pdfPath);
+    const pdf = await PDFDocument.load(pdfBytes);
+    const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+    copiedPages.forEach((page) => {
+      mergedPdf.addPage(page);
+    });
+  }
+  const mergedPdfBytes = await mergedPdf.save();
+  await fs.writeFile(outputPath, mergedPdfBytes);
 }
 
 async function main() {
@@ -97,6 +135,8 @@ async function main() {
 
     const markdownFiles = await findMarkdownFiles(DOCS_PATH);
 
+    const pdfPaths = [];
+
     for (const file of markdownFiles) {
       const relativePath = path.relative(DOCS_PATH, file);
       const urlPath = relativePath.replace(/\\/g, '/').replace(/\.md$/, '');
@@ -104,11 +144,20 @@ async function main() {
       const outputPath = path.join(PDF_OUTPUT_PATH, relativePath.replace(/\.md$/, '.pdf'));
 
       await generatePdf(browser, url, outputPath);
+      pdfPaths.push(outputPath);
     }
+
+    await browser.close();
+
+    console.log('所有PDF页面已生成，现在开始合并...');
+    const mergedOutputPath = path.join(PDF_OUTPUT_PATH, 'Operit使用手册.pdf');
+    await mergePdfs(pdfPaths, mergedOutputPath);
+    console.log(`所有PDF已合并到 ${mergedOutputPath}`);
+
+    console.log('PDF导出完成');
   } catch (error) {
     console.error('An error occurred during PDF generation:', error);
   } finally {
-    await browser.close();
     // 结束 Vite 服务器进程
     if (viteServer.pid) {
       exec(`taskkill /PID ${viteServer.pid} /F /T`, (err, stdout, stderr) => {
