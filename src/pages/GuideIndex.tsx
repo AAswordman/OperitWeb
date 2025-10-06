@@ -8,7 +8,6 @@ import {
   QuestionCircleOutlined,
   UserAddOutlined,
   BookOutlined,
-  SoundOutlined,
 } from '@ant-design/icons';
 
 const { Title, Paragraph } = Typography;
