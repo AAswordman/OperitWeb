@@ -1,68 +1,70 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Layout, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import { translations } from '../translations';
 
 const { Sider, Content } = Layout;
 
-const menuItems = [
-  { key: '/guide', label: <Link to="/guide">欢迎</Link> },
-  { key: 'quick-start', label: <Link to="/guide/quick-start">快速使用</Link> },
-  {
-    key: 'basic-config',
-    label: '基础配置',
-    children: [
-      { key: 'model-config', label: <Link to="/guide/basic-config/model-config">模型配置</Link> },
-      { key: 'functional-model-config', label: <Link to="/guide/basic-config/functional-model-config">功能模型配置</Link> },
-      { key: 'user-preferences', label: <Link to="/guide/basic-config/user-preferences">用户偏好配置</Link> },
-      { key: 'ai-permissions', label: <Link to="/guide/basic-config/ai-permissions">AI权限控制</Link> },
-      { key: 'software-authorization', label: <Link to="/guide/basic-config/software-authorization">授权软件</Link> },
-    ],
-  },
-  {
-    key: 'character-system',
-    label: '角色与对话',
-    children: [
-      { key: 'character-cards', label: <Link to="/guide/character-system/character-cards">角色卡</Link> },
-      { key: 'tags', label: <Link to="/guide/character-system/tags">标签</Link> },
-      { key: 'voice-chat', label: <Link to="/guide/character-system/voice-chat">语音对话</Link> },
-      { key: 'tts-reading', label: <Link to="/guide/character-system/tts-reading">TTS 语音朗读</Link> },
-      { key: 'desktop-pet', label: <Link to="/guide/character-system/desktop-pet">桌宠</Link> },
-    ],
-  },
-  {
-    key: 'tools-and-features',
-    label: '工具与功能',
-    children: [
-      { key: 'ai-tools', label: <Link to="/guide/tools-and-features/ai-tools">AI工具</Link> },
-      { key: 'toolkits', label: <Link to="/guide/tools-and-features/toolkits">工具包</Link> },
-      { key: 'mcp', label: <Link to="/guide/tools-and-features/mcp">MCP</Link> },
-      { key: 'knowledge-base', label: <Link to="/guide/tools-and-features/knowledge-base">知识库</Link> },
-      { key: 'toolbox', label: <Link to="/guide/tools-and-features/toolbox">工具箱</Link> },
-    ],
-  },
-  {
-    key: 'development',
-    label: '开发与部署',
-    children: [
-      { key: 'web-development', label: <Link to="/guide/development/web-development">制作Web</Link> },
-      { key: 'web-packaging', label: <Link to="/guide/development/web-packaging">打包Web为软件</Link> },
-      { key: 'mobile-development', label: <Link to="/guide/development/mobile-development">移动端开发</Link> },
-    ],
-  },
-  {
-    key: 'interface-guide',
-    label: '界面指南',
-    children: [
-      { key: 'panel-introduction', label: <Link to="/guide/interface-guide/panel-introduction">面板介绍</Link> },
-    ],
-  },
+const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
+  const t = translations[language].guide;
   
-  { key: 'return-code-generator', label: <Link to="/guide/tools-and-features/return-code-generator">返回码生成器</Link> },
-  { key: 'faq', label: <Link to="/guide/faq">常见问题</Link> },
-];
-
-const GuidePage: React.FC<{ darkMode: boolean }> = ({ darkMode }) => {
+  const menuItems = useMemo(() => [
+    { key: '/guide', label: <Link to="/guide">{t.welcome}</Link> },
+    { key: 'quick-start', label: <Link to="/guide/quick-start">{t.quickStart}</Link> },
+    {
+      key: 'basic-config',
+      label: t.basicConfig,
+      children: [
+        { key: 'model-config', label: <Link to="/guide/basic-config/model-config">{t.modelConfig}</Link> },
+        { key: 'functional-model-config', label: <Link to="/guide/basic-config/functional-model-config">{t.functionalModelConfig}</Link> },
+        { key: 'user-preferences', label: <Link to="/guide/basic-config/user-preferences">{t.userPreferences}</Link> },
+        { key: 'ai-permissions', label: <Link to="/guide/basic-config/ai-permissions">{t.aiPermissions}</Link> },
+        { key: 'software-authorization', label: <Link to="/guide/basic-config/software-authorization">{t.softwareAuthorization}</Link> },
+      ],
+    },
+    {
+      key: 'character-system',
+      label: t.characterSystem,
+      children: [
+        { key: 'character-cards', label: <Link to="/guide/character-system/character-cards">{t.characterCards}</Link> },
+        { key: 'tags', label: <Link to="/guide/character-system/tags">{t.tags}</Link> },
+        { key: 'voice-chat', label: <Link to="/guide/character-system/voice-chat">{t.voiceChat}</Link> },
+        { key: 'tts-reading', label: <Link to="/guide/character-system/tts-reading">{t.ttsReading}</Link> },
+        { key: 'desktop-pet', label: <Link to="/guide/character-system/desktop-pet">{t.desktopPet}</Link> },
+      ],
+    },
+    {
+      key: 'tools-and-features',
+      label: t.toolsAndFeatures,
+      children: [
+        { key: 'ai-tools', label: <Link to="/guide/tools-and-features/ai-tools">{t.aiTools}</Link> },
+        { key: 'toolkits', label: <Link to="/guide/tools-and-features/toolkits">{t.toolkits}</Link> },
+        { key: 'mcp', label: <Link to="/guide/tools-and-features/mcp">{t.mcp}</Link> },
+        { key: 'knowledge-base', label: <Link to="/guide/tools-and-features/knowledge-base">{t.knowledgeBase}</Link> },
+        { key: 'toolbox', label: <Link to="/guide/tools-and-features/toolbox">{t.toolbox}</Link> },
+      ],
+    },
+    {
+      key: 'development',
+      label: t.development,
+      children: [
+        { key: 'web-development', label: <Link to="/guide/development/web-development">{t.webDevelopment}</Link> },
+        { key: 'web-packaging', label: <Link to="/guide/development/web-packaging">{t.webPackaging}</Link> },
+        { key: 'mobile-development', label: <Link to="/guide/development/mobile-development">{t.mobileDevelopment}</Link> },
+      ],
+    },
+    {
+      key: 'interface-guide',
+      label: t.interfaceGuide,
+      children: [
+        { key: 'panel-introduction', label: <Link to="/guide/interface-guide/panel-introduction">{t.panelIntroduction}</Link> },
+      ],
+    },
+    
+    { key: 'return-code-generator', label: <Link to="/guide/tools-and-features/return-code-generator">{t.returnCodeGenerator}</Link> },
+    { key: 'faq', label: <Link to="/guide/faq">{t.faq}</Link> },
+  ], [t]);
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
   const location = useLocation();

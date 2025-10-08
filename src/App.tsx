@@ -45,12 +45,12 @@ const App: React.FC = () => {
             }
           >
             <Route index element={<HomePage darkMode={darkMode} language={language} />} />
-            <Route path="guide" element={<GuidePage darkMode={darkMode} />}>
-              <Route index element={<GuideIndex />} />
-              <Route path="quick-start" element={<MarkdownRenderer file="quick-start" />} />
-              <Route path="faq" element={<MarkdownRenderer file="faq" />} />
+            <Route path="guide" element={<GuidePage darkMode={darkMode} language={language} />}>
+              <Route index element={<GuideIndex language={language} />} />
+              <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
+              <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
               <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
-              <Route path=":category/:slug" element={<GuideContent />} />
+              <Route path=":category/:slug" element={<GuideContent language={language} />} />
             </Route>
             <Route path="*" element={<Navigate to="/" />} />
           </Route>

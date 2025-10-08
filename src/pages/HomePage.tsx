@@ -34,13 +34,15 @@ import useGitHubStats from '../hooks/useGitHubStats';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 
 // 导入所有服务商的logo
-import openAILogo from '/images/OTHER_LOGO/openAI.png';
-import geminiLogo from '/images/OTHER_LOGO/gemini.png';
+import openAILogo from '/images/OTHER_LOGO/openai_new.png';
+import geminiLogo from '/images/OTHER_LOGO/gemini_new.svg';
 import zhipuLogo from '/images/OTHER_LOGO/zhipu.png';
 import openRouterLogo from '/images/OTHER_LOGO/OpenRouter.png';
 import siliconFlowLogo from '/images/OTHER_LOGO/SiliconFlow.png';
 import deepseekLogo from '/images/OTHER_LOGO/DEEPSEEK.png';
 import moonshotLogo from '/images/OTHER_LOGO/yuezhianmian.png';
+import anthropicLogo from '/images/OTHER_LOGO/anthropic.png';
+import tongyiLogo from '/images/OTHER_LOGO/tongyi_new.png';
 
 
 const { Title, Paragraph, Text } = Typography;
@@ -52,7 +54,7 @@ interface HomePageProps {
 
 const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
   const t = (key: string) => {
-    const translation = translations[language] as Record<string, string>;
+    const translation = translations[language] as any;
     return translation[key] || key;
   };
 
@@ -63,13 +65,14 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
 
   const providers = [
     { name: 'OpenAI', logo: openAILogo },
-    { name: 'Google', logo: geminiLogo },
-    { name: 'Anthropic', logo: '🔬' },
+    { name: 'Google Gemini', logo: geminiLogo },
+    { name: 'Anthropic', logo: anthropicLogo },
     { name: 'Zhipu AI', logo: zhipuLogo },
     { name: 'OpenRouter', logo: openRouterLogo },
     { name: 'SiliconFlow', logo: siliconFlowLogo },
     { name: 'DeepSeek', logo: deepseekLogo },
-    { name: 'Moonshot AI', logo: moonshotLogo }
+    { name: 'Moonshot AI', logo: moonshotLogo },
+    { name: 'Tongyi Qianwen', logo: tongyiLogo }
   ];
 
   const features = [
@@ -112,12 +115,12 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
   ];
 
   const exampleCards = [
-    { title: '智能文档处理', description: '自动分析和处理各种文档格式', rarity: 'SSR' },
-    { title: '语音转文字', description: '高精度的语音识别和转换', rarity: 'SR' },
-    { title: '图像识别', description: '强大的图像分析和识别能力', rarity: 'SR' },
-    { title: '代码生成', description: '智能代码生成和调试助手', rarity: 'SSR' },
-    { title: '日程管理', description: '智能的日程安排和提醒', rarity: 'R' },
-    { title: '网页抓取', description: '自动化的网页内容抓取', rarity: 'R' }
+    { title: t('smartDocProcessing'), description: t('smartDocProcessingDesc'), rarity: 'SSR' },
+    { title: t('voiceToText'), description: t('voiceToTextDesc'), rarity: 'SR' },
+    { title: t('imageRecognition'), description: t('imageRecognitionDesc'), rarity: 'SR' },
+    { title: t('codeGeneration'), description: t('codeGenerationDesc'), rarity: 'SSR' },
+    { title: t('scheduleManagement'), description: t('scheduleManagementDesc'), rarity: 'R' },
+    { title: t('webScraping'), description: t('webScrapingDesc'), rarity: 'R' }
   ];
 
   return (
@@ -198,7 +201,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                       borderRadius: '8px',
                     }}
                   >
-                    查看文档
+                    {t('viewDocs')}
                   </Button>
                 </Link>
               </motion.div>
@@ -226,7 +229,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                     }
                   }}
                 >
-                  前往抽卡
+                  {t('goToGacha')}
               </Button>
             </motion.div>
             </Space>
@@ -282,7 +285,7 @@ nt;
           <Row justify="center">
             <Col xs={24} lg={20}>
               <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 40 }}>
-                功能展示
+                {t('featureShowcase')}
               </Title>
                 <Carousel
                   autoplay
@@ -361,13 +364,20 @@ nt;
                         }}
                         bodyStyle={{ padding: '16px 8px' }}
                       >
-                        <Space direction="vertical" size={8}>
-                          {provider.logo.startsWith('/') ? (
-                            <img src={provider.logo} alt={provider.name} style={{ height: '32px', objectFit: 'contain', margin: '0 auto' }} />
-                          ) : (
-                            <Text style={{ fontSize: 32 }}>{provider.logo}</Text>
-                          )}
-                          <Text 
+                          <Space direction="vertical" size={8}>
+                           <img 
+                             src={provider.logo} 
+                             alt={provider.name} 
+                             style={{ 
+                               height: '32px', 
+                               width: '100%',
+                               maxWidth: '80px',
+                               objectFit: 'contain', 
+                               margin: '0 auto',
+                               display: 'block'
+                             }} 
+                           />
+                           <Text
                             style={{ 
                               fontSize: 12, 
                               color: darkMode ? '#d1d5db' : '#666' 
@@ -382,7 +392,7 @@ nt;
                 ))}
               </Row>
               <div style={{ textAlign: 'center', marginTop: 32 }}>
-                <Text style={{ color: darkMode ? '#d1d5db' : '#666', fontSize: 16 }}>... and more</Text>
+                <Text style={{ color: darkMode ? '#d1d5db' : '#666', fontSize: 16 }}>{t('andMore')}</Text>
               </div>
             </Col>
           </Row>
@@ -454,7 +464,7 @@ nt;
                   <Col xs={24} sm={8}>
                     <div className={darkMode ? 'dark-mode-statistic' : ''}>
                       <Statistic
-                        title="项目星标"
+                        title={t('projectStars')}
                         value={loading ? 0 : stargazersCount}
                         prefix={<StarOutlined />}
                         valueStyle={{ color: '#fadb14' }}
@@ -465,7 +475,7 @@ nt;
                   <Col xs={24} sm={8}>
                     <div className={darkMode ? 'dark-mode-statistic' : ''}>
                       <Statistic
-                        title="Fork数量"
+                        title={t('forkCount')}
                         value={loading ? 0 : forksCount}
                         prefix={<ForkOutlined />}
                         valueStyle={{ color: '#52c41a' }}
@@ -476,7 +486,7 @@ nt;
                   <Col xs={24} sm={8}>
                     <div className={darkMode ? 'dark-mode-statistic' : ''}>
                       <Statistic
-                        title="贡献者"
+                        title={t('contributorsTitle')}
                         value={loading ? 0 : contributorsCount}
                         prefix={<TeamOutlined />}
                         valueStyle={{ color: '#1890ff' }}
@@ -488,7 +498,7 @@ nt;
                 {error && (
                   <div style={{ marginTop: 16, textAlign: 'center' }}>
                     <Text type="secondary" style={{ fontSize: 14 }}>
-                      获取GitHub数据失败，显示的可能不是最新数据
+                      {t('githubDataError')}
                     </Text>
                   </div>
                 )}
@@ -500,7 +510,7 @@ nt;
                     href="https://github.com/AAswordman/Operit"
                     target="_blank"
                   >
-                    Star us on GitHub
+                    {t('starOnGitHub')}
                   </Button>
                 </div>
               </Card>
