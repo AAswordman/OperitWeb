@@ -20,8 +20,8 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({ downloadTex
         if (!response.ok) {
           throw new Error(`GitHub API request failed with status ${response.status}`);
         }
-        const data = await response.json();
-        const apkAsset = data.assets?.find((asset: any) => asset.name.endsWith('.apk'));
+        const data = await response.json() as { assets?: Array<{ name: string; browser_download_url: string }> };
+        const apkAsset = data.assets?.find((asset) => asset.name.endsWith('.apk'));
         if (apkAsset) {
           setDownloadUrl(apkAsset.browser_download_url);
         }

@@ -87,11 +87,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
           rehypePlugins={[rehypeRaw]}
           urlTransform={urlTransform}
           components={{
-            code({ node, inline, className, children, ...props }: CodeComponentProps & { inline?: boolean; node?: any; }) {
+            code({ inline, className, children, ...props }: CodeComponentProps & { inline?: boolean }) {
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={vscDarkPlus as any}
+                  style={vscDarkPlus}
                   language={match[1]}
                   PreTag="div"
                   {...props}
@@ -104,10 +104,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
                 </code>
               );
             },
-            img: ({ node: _node, onClick: _onClick, ...props }) => <Image {...props} />,
+            img: ({ ...props }) => <Image {...props} />,
             p: ({ node, children, ...props }) => {
               const hasImage = node?.children.some(
-                (child: any) => child.type === 'element' && child.tagName === 'img'
+                (child) => (child as { type?: string; tagName?: string }).type === 'element' && (child as { tagName?: string }).tagName === 'img'
               );
 
               if (hasImage) {

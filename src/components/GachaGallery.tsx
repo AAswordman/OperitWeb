@@ -18,7 +18,15 @@ const allCards = [
     { id: 10, image: '/manuals/assets/user_step/step_for_frist_3.jpg', title: 'User Preference', description: 'Customize the AI to understand you', rarity: 'R' }
 ];
 
-let lastDrawnCards: any[] = [];
+interface Card {
+  id: number;
+  image: string;
+  title: string;
+  description: string;
+  rarity: 'SSR' | 'SR' | 'R';
+}
+
+let lastDrawnCards: Card[] = [];
 
 export interface GachaGalleryRef {
   draw: () => void;
@@ -26,7 +34,7 @@ export interface GachaGalleryRef {
 
 const GachaGallery: React.ForwardRefRenderFunction<GachaGalleryRef, { darkMode: boolean }> = ({ darkMode }, ref) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [drawnCards, setDrawnCards] = useState<any[]>([]);
+    const [drawnCards, setDrawnCards] = useState<Card[]>([]);
 
     const drawRandomCards = () => {
         let newDrawnCards;

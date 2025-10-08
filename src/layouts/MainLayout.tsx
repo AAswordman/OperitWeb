@@ -67,9 +67,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const t = (key: string) => {
-    const translation = translations[language] as Record<string, string>;
-    return translation[key] || key;
+  const t = (key: string): string => {
+    const translation = translations[language];
+    const value = translation[key as keyof typeof translation];
+    return typeof value === 'string' ? value : key;
   };
 
   const handleAnchorClick = (e: React.MouseEvent<HTMLElement>, link: { href: string }) => {

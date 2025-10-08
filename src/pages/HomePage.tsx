@@ -53,9 +53,10 @@ interface HomePageProps {
 }
 
 const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
-  const t = (key: string) => {
-    const translation = translations[language] as any;
-    return translation[key] || key;
+  const t = (key: string): string => {
+    const translation = translations[language];
+    const value = translation[key as keyof typeof translation];
+    return typeof value === 'string' ? value : key;
   };
 
   const gachaRef = useRef<GachaGalleryRef>(null);

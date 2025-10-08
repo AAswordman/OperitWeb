@@ -103,7 +103,7 @@ const ReturnCodeGenerator: React.FC = () => {
     try {
       await navigator.clipboard.writeText(generatedCode);
       message.success('复制成功！');
-    } catch (err) {
+    } catch {
       message.error('复制失败，请手动复制');
     }
   };
