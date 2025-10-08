@@ -91,7 +91,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={vscDarkPlus}
+                  style={vscDarkPlus as any}
                   language={match[1]}
                   PreTag="div"
                   {...props}
@@ -104,7 +104,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
                 </code>
               );
             },
-            img: ({ ...props }) => <Image {...props} />,
+            img: ({ node: _node, onClick: _onClick, ...props }) => <Image {...props} />,
             p: ({ node, children, ...props }) => {
               const hasImage = node?.children.some(
                 (child) => (child as { type?: string; tagName?: string }).type === 'element' && (child as { tagName?: string }).tagName === 'img'

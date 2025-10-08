@@ -2,7 +2,8 @@ import React, { useState, forwardRef, useImperativeHandle } from 'react';
 import { Modal } from 'antd';
 import { motion } from 'framer-motion';
 
-const allCards = [
+
+const allCards: Card[] = [
     // SSR (10%)
     { id: 5, image: '/manuals/assets/3d_game.jpg', title: '3D Game Creation', description: 'Create 3D worlds and games', rarity: 'SSR' },
     // SR (60%)
