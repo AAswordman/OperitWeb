@@ -51,6 +51,9 @@ export const translations = {
     contributorsTitle: '贡献者',
     starOnGitHub: 'Star us on GitHub',
     githubDataError: '获取GitHub数据失败，显示的可能不是最新数据',
+    qqGroup: 'QQ交流群',
+    qqGroupNumber: '458862019',
+    joinQQGroup: '加入QQ群',
     
     // Guide page translations
     guide: {
@@ -150,6 +153,9 @@ export const translations = {
     contributorsTitle: 'Contributors',
     starOnGitHub: 'Star us on GitHub',
     githubDataError: 'Failed to fetch GitHub data, the displayed data may not be the latest',
+    qqGroup: 'QQ Group',
+    qqGroupNumber: '458862019',
+    joinQQGroup: 'Join QQ Group',
     
     // Guide page translations
     guide: {

@@ -301,7 +301,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
               </Space>
               
               <Paragraph style={{ color: token.colorTextSecondary, margin: 0 }}>
-                {t('contact')}: <a href="https://github.com/AAswordman/Operit" target="_blank" rel="noopener noreferrer">GitHub</a>
+                {t('contact')}: <a href="https://github.com/AAswordman/Operit" target="_blank" rel="noopener noreferrer">GitHub</a> | {t('qqGroup')}: <a href="https://qm.qq.com/q/NzqCoP6LOE" target="_blank" rel="noopener noreferrer">{t('qqGroupNumber')}</a>
               </Paragraph>
               
               <Text style={{ color: token.colorTextTertiary, fontSize: 12 }}>
