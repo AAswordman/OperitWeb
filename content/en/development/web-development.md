@@ -23,6 +23,10 @@ All operations within the workspace are logged and backed up to ensure your proj
 
 #### File Rollback
 
+> **⚠️ Important Warning (Version 1.5.0 / 1.5.1 / 1.5.2)**
+> 
+> If you are using **version 1.5.0, 1.5.1, or 1.5.2**, **it is strongly recommended NOT to use the file rollback feature in custom folder workspaces**! These versions contain a critical bug that will accidentally delete non-text files (such as images, videos, binary files, etc.) when performing file rollback. This issue has been fixed in subsequent versions. Please upgrade to the latest version before using this feature.
+
 Workspace provides a powerful file version rollback feature. When you need to undo a certain operation by AI, simply **long-press the message you sent**, and select **"Edit and Resend"** from the popup menu. At this point, all text files in the workspace will be rolled back to the state before you sent that message.
 
 #### File Filtering
