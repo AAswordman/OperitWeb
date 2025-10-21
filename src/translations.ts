@@ -52,8 +52,11 @@ export const translations = {
     starOnGitHub: 'Star us on GitHub',
     githubDataError: '获取GitHub数据失败，显示的可能不是最新数据',
     qqGroup: 'QQ交流群',
-    qqGroupNumber: '458862019',
+    qqGroupNumber: 'Operit AI交流群',
     joinQQGroup: '加入QQ群',
+    email: '邮箱',
+    discord: 'Discord',
+    githubDiscussions: 'GitHub讨论区',
     
     // Guide page translations
     guide: {
@@ -154,8 +157,11 @@ export const translations = {
     starOnGitHub: 'Star us on GitHub',
     githubDataError: 'Failed to fetch GitHub data, the displayed data may not be the latest',
     qqGroup: 'QQ Group',
-    qqGroupNumber: '458862019',
+    qqGroupNumber: 'Operit AI Group',
     joinQQGroup: 'Join QQ Group',
+    email: 'Email',
+    discord: 'Discord',
+    githubDiscussions: 'GitHub Discussions',
     
     // Guide page translations
     guide: {

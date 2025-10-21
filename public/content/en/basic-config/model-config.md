@@ -81,6 +81,9 @@ We have built-in presets for multiple mainstream API providers, including:
 *   Google (Gemini series)
 *   Baidu (ERNIE Bot series)
 *   Alibaba Cloud (Tongyi Qianwen series)
+*   MNN (Local models) - You can select the MNN provider to download and run local models on your device
+
+![MNN Configuration](/manuals/assets/model/mnn.png)
 
 **2. Model Parameter Settings**
 

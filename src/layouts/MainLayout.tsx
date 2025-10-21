@@ -23,13 +23,17 @@ import {
   MenuOutlined,
   SunOutlined,
   MoonOutlined,
+  GithubOutlined,
+  MailOutlined,
+  MessageOutlined,
+  WechatOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
 import { translations } from '../translations';
 import logo from '/logo.png';
 
 const { Header, Footer } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Text } = Typography;
 
 interface Language {
   key: string;
@@ -300,9 +304,38 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 </Title>
               </Space>
               
-              <Paragraph style={{ color: token.colorTextSecondary, margin: 0 }}>
-                {t('contact')}: <a href="https://github.com/AAswordman/Operit" target="_blank" rel="noopener noreferrer">GitHub</a> | {t('qqGroup')}: <a href="https://qm.qq.com/q/NzqCoP6LOE" target="_blank" rel="noopener noreferrer">{t('qqGroupNumber')}</a>
-              </Paragraph>
+              <div style={{ color: token.colorTextSecondary }}>
+                <Title level={5} style={{ color: token.colorText, marginBottom: 12 }}>{t('contact')}</Title>
+                <Space wrap size="middle" style={{ justifyContent: 'center' }}>
+                  <a href="https://github.com/AAswordman/Operit/discussions" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
+                    <Space size={4}>
+                      <GithubOutlined />
+                      <span>{t('githubDiscussions')}</span>
+                    </Space>
+                  </a>
+                  <span>•</span>
+                  <a href="mailto:aaswordsman@foxmail.com" style={{ color: token.colorTextSecondary }}>
+                    <Space size={4}>
+                      <MailOutlined />
+                      <span>{t('email')}</span>
+                    </Space>
+                  </a>
+                  <span>•</span>
+                  <a href="https://qm.qq.com/q/Sa4fKEH7sO" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
+                    <Space size={4}>
+                      <WechatOutlined />
+                      <span>{t('qqGroup')}</span>
+                    </Space>
+                  </a>
+                  <span>•</span>
+                  <a href="https://discord.gg/VMYmyF9p" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
+                    <Space size={4}>
+                      <MessageOutlined />
+                      <span>{t('discord')}</span>
+                    </Space>
+                  </a>
+                </Space>
+              </div>
               
               <Text style={{ color: token.colorTextTertiary, fontSize: 12 }}>
                 © 2024 Operit AI. All rights reserved.
