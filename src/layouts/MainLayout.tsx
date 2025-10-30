@@ -328,7 +328,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     </Space>
                   </a>
                   <span>•</span>
-                  <a href="https://discord.gg/VMYmyF9p" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
+                  <a href="https://discord.gg/YnV9MWurRF" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
                     <Space size={4}>
                       <MessageOutlined />
                       <span>{t('discord')}</span>
