@@ -54,7 +54,7 @@ export default function remarkImageGallery() {
                   img =>
                     `<div class="image-container"><img src="${img.url}" alt="${
                       img.alt || ''
-                    }" title="${img.title || ''}"></div>`,
+                    }" title="${img.title || ''}" loading="lazy"></div>`,
                 )
                 .join('')}</div>`,
             };

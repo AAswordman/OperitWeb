@@ -1,4 +1,4 @@
-import React, { useState, useEffect, type ComponentProps } from 'react';
+import React, { useState, useEffect, useRef, type ComponentProps } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
@@ -11,6 +11,52 @@ import { translations } from '../translations';
 
 // Omit 'ref' from the standard 'code' component props to avoid type conflicts with SyntaxHighlighter
 type CodeComponentProps = Omit<ComponentProps<'code'>, 'ref'>;
+
+// Lazy-loaded image component using Intersection Observer
+const LazyImage: React.FC<React.ComponentProps<typeof Image>> = (props) => {
+  const [isInView, setIsInView] = useState(false);
+  const imgRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setIsInView(true);
+            observer.disconnect();
+          }
+        });
+      },
+      {
+        rootMargin: '100px', // Start loading 100px before the image enters viewport
+      }
+    );
+
+    const currentRef = imgRef.current;
+    if (currentRef) {
+      observer.observe(currentRef);
+    }
+
+    return () => {
+      if (currentRef) {
+        observer.unobserve(currentRef);
+      }
+      observer.disconnect();
+    };
+  }, []);
+
+  return (
+    <div ref={imgRef} className="lazy-image-wrapper">
+      {isInView ? (
+        <Image {...props} />
+      ) : (
+        <div className="lazy-image-placeholder">
+          <Spin size="small" />
+        </div>
+      )}
+    </div>
+  );
+};
 
 interface MarkdownRendererProps {
   file: string;
@@ -104,7 +150,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
                 </code>
               );
             },
-            img: ({ node: _node, onClick: _onClick, ...props }) => <Image {...props} />,
+            img: ({ node: _node, onClick: _onClick, ...props }) => <LazyImage {...props} />,
             p: ({ node, children, ...props }) => {
               const hasImage = node?.children.some(
                 (child) => (child as { type?: string; tagName?: string }).type === 'element' && (child as { tagName?: string }).tagName === 'img'

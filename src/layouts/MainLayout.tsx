@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Layout,
@@ -27,6 +27,7 @@ import {
   MailOutlined,
   MessageOutlined,
   WechatOutlined,
+  ZoomInOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
 import { translations } from '../translations';
@@ -51,14 +52,17 @@ interface MainLayoutProps {
   setDarkMode: (mode: boolean) => void;
   language: 'zh' | 'en';
   setLanguage: (lang: 'zh' | 'en') => void;
+  dpi: number;
+  setDpi: (dpi: number) => void;
 }
 
-const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language, setLanguage }) => {
+const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language, setLanguage, dpi, setDpi }) => {
   const { token } = theme.useToken();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const prevPathRef = useRef<string>(location.pathname);
 
   // 响应式处理
   React.useEffect(() => {
@@ -70,6 +74,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
+
+  // 回到主页时重置DPI（仅当从其他页面导航到主页时）
+  React.useEffect(() => {
+    const prevPath = prevPathRef.current;
+    const currentPath = location.pathname;
+    
+    // 如果从其他页面导航到主页，则重置DPI
+    if (currentPath === '/' && prevPath !== '/') {
+      setDpi(100);
+    }
+    
+    // 更新之前的路径
+    prevPathRef.current = currentPath;
+  }, [location.pathname, setDpi]);
 
   const t = (key: string): string => {
     const translation = translations[language];
@@ -95,6 +113,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
       </Space>
     ),
     onClick: () => setLanguage(lang.key as 'zh' | 'en'),
+  }));
+
+  const dpiOptions = [
+    { value: 75, label: t('dpi75') },
+    { value: 90, label: t('dpi90') },
+    { value: 100, label: t('dpiNormal') },
+    { value: 110, label: t('dpi110') },
+    { value: 125, label: t('dpi125') },
+  ];
+
+  const dpiMenuItems: MenuProps['items'] = dpiOptions.map(option => ({
+    key: option.value.toString(),
+    label: option.label,
+    onClick: () => setDpi(option.value),
   }));
 
   const isHomePage = location.pathname === '/';
@@ -191,6 +223,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     onChange={setDarkMode}
                   />
                   
+                  <Dropdown menu={{ items: dpiMenuItems }} placement="bottomRight">
+                    <Button type="text" icon={<ZoomInOutlined />} title={t('adjustDPI')}>
+                      {dpi}%
+                    </Button>
+                  </Dropdown>
+                  
                   <Dropdown menu={{ items: languageMenuItems }} placement="bottomRight">
                     <Button type="text" icon={<GlobalOutlined />}>
                       {languages.find(l => l.key === language)?.icon}
@@ -246,6 +284,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                   checked={darkMode}
                   onChange={setDarkMode}
                 />
+              </Space>
+            </div>
+            
+            <div>
+              <Space>
+                <span style={{ color: token.colorText }}>DPI:</span>
+                <Dropdown menu={{ items: dpiMenuItems }} placement="bottomLeft">
+                  <Button type="text" icon={<ZoomInOutlined />}>
+                    {dpi}%
+                  </Button>
+                </Dropdown>
               </Space>
             </div>
             

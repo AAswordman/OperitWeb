@@ -209,4 +209,24 @@
 
 [data-theme='dark'] .markdown-body th {
   background-color: #161b22;
+}
+
+.lazy-image-wrapper {
+  width: 100%;
+  min-height: 200px;
+}
+
+.lazy-image-placeholder {
+  width: 100%;
+  min-height: 200px;
+  background-color: rgba(0, 0, 0, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 1rem auto;
+}
+
+[data-theme='dark'] .lazy-image-placeholder {
+  background-color: rgba(255, 255, 255, 0.05);
 } 

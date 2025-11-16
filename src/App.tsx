@@ -23,6 +23,13 @@ const App: React.FC = () => {
     const browserLang = navigator.language.toLowerCase();
     return browserLang.startsWith('zh') ? 'zh' : 'en';
   });
+  const [dpi, setDpi] = useState<number>(() => {
+    const savedDpi = localStorage.getItem('dpi');
+    const initialDpi = savedDpi ? parseFloat(savedDpi) : 100;
+    // 立即应用DPI设置
+    document.documentElement.style.zoom = `${initialDpi / 100}`;
+    return initialDpi;
+  });
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
@@ -36,6 +43,11 @@ const App: React.FC = () => {
   useEffect(() => {
     localStorage.setItem('language', language);
   }, [language]);
+
+  useEffect(() => {
+    localStorage.setItem('dpi', dpi.toString());
+    document.documentElement.style.zoom = `${dpi / 100}`;
+  }, [dpi]);
 
   return (
     <ConfigProvider
@@ -52,7 +64,9 @@ const App: React.FC = () => {
                 darkMode={darkMode} 
                 setDarkMode={setDarkMode} 
                 language={language} 
-                setLanguage={setLanguage} 
+                setLanguage={setLanguage}
+                dpi={dpi}
+                setDpi={setDpi}
               />
             }
           >

@@ -57,6 +57,13 @@ export const translations = {
     email: '邮箱',
     discord: 'Discord',
     githubDiscussions: 'GitHub讨论区',
+    adjustDPI: '调整DPI',
+    dpiSettings: 'DPI设置',
+    dpiNormal: '标准 (100%)',
+    dpi75: '75%',
+    dpi90: '90%',
+    dpi110: '110%',
+    dpi125: '125%',
     
     // Guide page translations
     guide: {
@@ -166,6 +173,13 @@ export const translations = {
     email: 'Email',
     discord: 'Discord',
     githubDiscussions: 'GitHub Discussions',
+    adjustDPI: 'Adjust DPI',
+    dpiSettings: 'DPI Settings',
+    dpiNormal: 'Normal (100%)',
+    dpi75: '75%',
+    dpi90: '90%',
+    dpi110: '110%',
+    dpi125: '125%',
     
     // Guide page translations
     guide: {
