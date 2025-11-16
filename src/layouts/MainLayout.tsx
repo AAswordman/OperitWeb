@@ -98,13 +98,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
   }));
 
   const isHomePage = location.pathname === '/';
+  const isGuidePage = location.pathname.startsWith('/guide');
   
   return (
     <Layout style={{ 
       minHeight: '100vh',
       background: 'transparent'
     }}>
-      <ParticleBackground darkMode={darkMode} />
+      {!isGuidePage && <ParticleBackground darkMode={darkMode} />}
       <Header style={{ 
         background: 'rgba(0,0,0,0)', // Let parent container control color
         backdropFilter: 'blur(10px)',

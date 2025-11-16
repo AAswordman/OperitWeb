@@ -41,6 +41,26 @@ The memory bank provides a visual interface to manage AI's memory nodes:
 
 -   **Import File:** Supports batch importing content from `.txt` files, or you can send other types of files to AI and let it automatically extract information and store it in the memory bank.
 
+#### Send Memory Function
+
+During conversations, you can actively send memory folders to AI, allowing AI to retrieve relevant memories from specified memory folders, thereby better understanding context and providing more accurate responses.
+
+**Usage Instructions:**
+
+1.  **Open Attachment Menu:** In the chat interface, click the "+" button to the right of the input field to open the attachment menu.
+2.  **Select Memory Option:** In the attachment menu, find and click the "Memory" option (icon shows a circuit board/chip).
+3.  **Select Memory Folders:** In the "Select Memory Folder" dialog that appears, select one or more folders. AI will be able to retrieve relevant memories from these folders.
+4.  **Confirm Send:** Click the "Confirm" button, and the selected memory folders will be sent to AI.
+
+![Memory Attachment Menu](/manuals/assets/knowledge/40e91c0371f6e4fad3cdbb5573a0518e.jpg)
+![Select Memory Folder](/manuals/assets/knowledge/bd1ce3211eb017a0e04c27611fed0778.jpg)
+
+**Function Effect:**
+
+After sending memories, AI will automatically retrieve relevant memory content when answering questions and reference these memories when needed, thereby providing responses that better match your personal preferences and conversation history.
+
+![Memory Retrieval Effect](/manuals/assets/knowledge/c127c03567023f8aa10014f33be50fe5.jpg)
+
 #### Effect Display
 
 By building a memory network, AI can better understand context, perform complex tool calls and concurrent processing, thereby providing more intelligent responses.

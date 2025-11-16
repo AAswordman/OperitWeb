@@ -87,7 +87,11 @@ export const translations = {
       interfaceGuide: '界面指南',
       panelIntroduction: '面板介绍',
       returnCodeGenerator: '返回码生成器',
-      faq: '常见问题',
+            faq: '常见问题',
+            contextSummary: '上下文总结',
+            deepSearch: '深度搜索',
+            maxMode: 'Max模式',
+            shareConversation: '分享对话',
       
       // Guide index page
       welcomeTitle: '欢迎来到 Operit AI 文档中心',
@@ -192,7 +196,11 @@ export const translations = {
       interfaceGuide: 'Interface Guide',
       panelIntroduction: 'Panel Introduction',
       returnCodeGenerator: 'Return Code Generator',
-      faq: 'FAQ',
+            faq: 'FAQ',
+            contextSummary: 'Context Summary',
+            deepSearch: 'Deep Search',
+            maxMode: 'Max Mode',
+            shareConversation: 'Share Conversation',
       
       // Guide index page
       welcomeTitle: 'Welcome to Operit AI Documentation',
