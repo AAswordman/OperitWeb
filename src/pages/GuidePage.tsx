@@ -17,6 +17,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       label: t.basicConfig,
       children: [
         { key: 'model-config', label: <Link to="/guide/basic-config/model-config">{t.modelConfig}</Link> },
+        { key: 'mnn-local-model', label: <Link to="/guide/basic-config/mnn-local-model">{t.mnnLocalModel}</Link> },
         { key: 'functional-model-config', label: <Link to="/guide/basic-config/functional-model-config">{t.functionalModelConfig}</Link> },
         { key: 'user-preferences', label: <Link to="/guide/basic-config/user-preferences">{t.userPreferences}</Link> },
         { key: 'ai-permissions', label: <Link to="/guide/basic-config/ai-permissions">{t.aiPermissions}</Link> },
