@@ -82,7 +82,7 @@ For detailed configuration, go to "Settings" > "Data & Permissions" > "Tool Perm
 
 The new management interface, shown below, lets you set a global rule and add exceptions for specific tools.
 
-![Tool Permission Management Interface](</manuals/assets/permission/60a4d8ccc51c010cedd98dbdf5fd842d.jpg>)
+![Tool Permission Management Interface](</manuals/assets/permission/a3d6dceea288c5ba84b6b4c78c446caa.jpg>)
 
 #### Global Permission Mode
 
@@ -125,7 +125,7 @@ We acknowledge that this design may be counter-intuitive, and we hope this expla
 
 When the AI needs your approval for an action, a dialog like this will appear:
 
-![Permission Request Dialog](</manuals/assets/permission/a3d6dceea288c5ba84b6b4c78c446caa.jpg>)
+![Permission Request Dialog](</manuals/assets/permission/60a4d8ccc51c010cedd98dbdf5fd842d.jpg>)
 
 The dialog clearly lists the **tool**, **action**, and **parameters** the AI wants to use. You can choose to:
 

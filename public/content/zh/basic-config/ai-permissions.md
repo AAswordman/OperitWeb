@@ -82,7 +82,7 @@ Operit AI 能够使用工具与您的设备和软件进行交互。为了确保 
 
 新的管理界面如下，您可以设置一个全局规则，并为特定工具添加例外。
 
-![工具权限管理界面](</manuals/assets/permission/60a4d8ccc51c010cedd98dbdf5fd842d.jpg>)
+![工具权限管理界面](</manuals/assets/permission/a3d6dceea288c5ba84b6b4c78c446caa.jpg>)
 
 #### 全局权限模式
 
@@ -125,7 +125,7 @@ Operit AI 能够使用工具与您的设备和软件进行交互。为了确保 
 
 当 AI 需要执行一个需要您批准的操作时，会弹出如下对话框：
 
-![权限请求对话框](</manuals/assets/permission/a3d6dceea288c5ba84b6b4c78c446caa.jpg>)
+![权限请求对话框](</manuals/assets/permission/60a4d8ccc51c010cedd98dbdf5fd842d.jpg>)
 
 对话框会清晰地列出 AI 想要使用的**工具**、**操作**以及**参数**。您可以选择：
 
