@@ -59,3 +59,7 @@ You can try going to "Model & Parameter Settings," find and enable an option lik
 
 **Please note:** This is not for changing the context window size, but for adjusting the maximum length of a single generation from the model.
 
+### ❓ Q: Why does the AI output "cannot create task" or always plan a large, slow task flow?
+
+This is likely because the "Deep Search" feature is enabled. Deep Search is a powerful analysis tool, but it consumes more resources and plans complex task flows. If your current task does not require deep analysis, we recommend disabling this feature in the settings to improve response speed. For more details, see the [Deep Search Guide](/#/guide/tools-and-features/deep-search).
+
