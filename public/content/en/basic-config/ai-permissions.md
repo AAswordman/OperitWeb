@@ -1,172 +1,136 @@
 # AI Permission Control
 
-Operit AI empowers AI with powerful tool usage capabilities, enabling it to interact with your device and various software. To ensure you have complete control over AI behavior, we have designed a flexible permission management system. You can finely adjust whether AI needs your permission before executing operations according to your needs.
+Operit AI can use tools to interact with your device and software. To ensure you have complete control over the AI's actions, we've designed a flexible permission system. You can fine-tune whether the AI needs to ask for your approval before performing different operations.
 
 ## Version Information
 
-The permission system underwent a major update in version 1.6.1. This document will introduce the permission systems before and after version 1.6.1 separately.
+The permission system received a major update in version 1.6.1. This document will explain the permission systems **before** and **after** version 1.6.1.
 
 ---
 
-## Permission System Before 1.6.1 (Category Permissions)
+## Permission System Before v1.6.1 (Category-based Control)
 
-### Quick Access: Global Auto-Approval
+In the old system, permissions were controlled by "Global" and "System Operation" categories.
 
-In the conversation interface, we provide a convenient quick switch to control global tool permissions.
+### Quick Toggle: Global Auto-Approve
 
-![Global Auto-Approval Switch](</manuals/assets/permission/image.png>)
+In the chat window's settings, there is a quick toggle for "Auto-Approve".
 
-As shown in the image above, you can directly find the "Auto Approve" switch in the conversation settings.
+![Global Auto-Approve Switch](</manuals/assets/permission/image.png>)
 
--   **Enabled**: AI will automatically execute tools according to the permission level you configured in settings, without asking every time.
--   **Disabled**: AI will request your permission before executing any tool operation.
+-   **On**: The AI will automatically perform operations based on the permission levels you've configured in the main settings.
+-   **Off**: The AI will pop up a dialog to ask for your permission before performing any operation.
 
-This switch provides you with a quick way to toggle global permission mode, very suitable for adjusting in different usage scenarios.
+This is a master switch for quick changes between different scenarios.
 
 ### Detailed Permission Settings
 
-If you need more fine-grained permission management, you can enter the app's "Settings" page for detailed configuration.
-
-1.  **Enter Settings**: Find and click "Settings" in the main menu.
-2.  **Find Permission Settings**: In the settings page, find the "Data and Permissions" section, then click "Tool Permission Settings".
+For more fine-grained configuration, go to "Settings" > "Data & Permissions" > "Tool Permission Settings".
 
 ![Tool Permission Settings Entry](</manuals/assets/permission/image2.png>)
 
-### Configure Permission Levels
-
-On the "Tool Permissions" page, you can configure "Global Permissions" and "System Operation Permissions" separately.
+Here, you can set "Global Permissions" and "System Operation Permissions" separately.
 
 ![Permission Level Configuration](</manuals/assets/permission/image3.png>)
 
-#### Global Permission Switch
+#### Permission Level Descriptions
 
-This setting controls all non-system-level AI tool permissions.
+You will see four permission levels:
 
--   **Allow (Auto-execute, no asking)**: AI will automatically execute all tool operations without seeking your consent. This is the highest permission level; please use it when you completely trust the current AI configuration.
--   **Cautious (Only ask for dangerous operations)**: AI will automatically execute most operations, but will pop up a confirmation request for dangerous operations that may modify or delete files, execute high-risk commands, etc.
--   **Ask (Always ask)**: AI will request your authorization before using any tool. This is the safest mode.
--   **Forbid (Not allowed to execute)**: Completely prohibit AI from using any tools.
+-   **Allow (Auto-execute)**: The highest level. The AI will automatically perform all operations without asking. Use this only when you fully trust the AI.
+-   **Cautious (Ask for dangerous operations)**: The AI will auto-execute most safe operations but will ask for your confirmation for risky actions like modifying files or running high-risk commands.
+-   **Ask (Always ask)**: The safest mode. The AI will request your authorization before performing any operation.
+-   **Forbid (Do not allow execution)**: Completely prohibits the AI from using any tools.
 
-#### System Operation Permissions
+#### How Do Permissions Work?
 
-This setting is specifically for more sensitive system-level operations, such as modifying system settings, installing/uninstalling apps, etc. You can set an independent permission level for it to achieve stricter control.
+The system's logic is: **Check the master switch first, then the specific category.**
 
-#### Permission Priority Logic
+1.  **"Global Permissions" is the master switch.** If you set it to "Ask" or "Forbid", all operations will be forced into "Ask" or "Forbid" mode, regardless of other settings.
 
-To give you more flexible control over AI, the permission system adopts a layered logic. **Global permission settings have the highest priority and can be seen as the master switch.**
-
-1.  **When global permission is set to "Ask (Always ask)" or "Forbid (Not allowed to execute)"**:
-    *   This will become a mandatory global rule. All tools, regardless of their specific category permissions, will be uniformly required to "ask" or be "forbidden".
-
-2.  **When global permission is set to "Allow (Auto-execute)" or "Cautious (Only ask for dangerous operations)"**:
-    *   The master switch is considered "on", and the system will further check the permission settings of the specific operation category (e.g., "System Operation Permissions").
-    *   Whether to execute, ask, or forbid will ultimately be determined by this **more specific subcategory permission setting**.
+2.  If "Global Permissions" is set to "Allow" or "Cautious", the system will then check the specific category of the operation (e.g., "System Operation Permissions") to determine the final action.
 
 **For example:**
 
-Suppose you make the following configuration:
+If you configure it like this:
+-   **Global Permissions** -> `Allow (Auto-execute)`
+-   **System Operation Permissions** -> `Ask (Always ask)`
 
-*   **Global Permission Switch** -> `Allow (Auto-execute, no asking)`
-*   **System Operation Permissions** -> `Ask (Always ask)`
-
-When AI needs to execute a **normal operation** (not a system operation), it will automatically execute because it meets the global "Allow" rule.
-However, when AI needs to **modify system settings**, it will match the more specific rule "System Operation Permissions", so it will **pop up a dialog to ask you** instead of auto-executing.
+Then:
+-   When the AI performs a **normal operation**, it will follow the `Allow` rule from "Global Permissions" and execute automatically.
+-   When the AI needs to **modify system settings**, it will follow the `Ask` rule from "System Operation Permissions" and pop up a dialog to request your approval.
 
 ---
 
-## Permission System in 1.6.1 and Later (Global Permissions + Individual Tool Permissions)
+## Permission System in v1.6.1 and Later (Individual Tool Control)
 
-Starting from version 1.6.1, the permission system underwent a major improvement, changing from "Global Permissions + Category Permissions" to "Global Permissions + Individual Tool Permissions", allowing you to have more fine-grained control over the execution permissions of each tool.
+Starting from version 1.6.1, the permission system was upgraded to a "Global Permission + Individual Tool Exception" model, allowing for more granular control.
 
-### Quick Access: Global Auto-Approval
+### Quick Toggle: Global Auto-Approve
 
-In the conversation interface, we provide a convenient quick switch to control global tool permissions.
+Just like the old version, the "Auto-Approve" quick toggle remains in the chat window to quickly enable or disable auto-execution for all tools.
 
-![Global Auto-Approval Switch](</manuals/assets/permission/image.png>)
-
-As shown in the image above, you can directly find the "Auto Approve" switch in the conversation settings.
-
--   **Enabled**: AI will automatically execute tools according to the permission level you configured in settings, without asking every time.
--   **Disabled**: AI will request your permission before executing any tool operation.
-
-This switch provides you with a quick way to toggle global permission mode, very suitable for adjusting in different usage scenarios.
+![Global Auto-Approve Switch](</manuals/assets/permission/image.png>)
 
 ### Detailed Permission Settings
 
-If you need more fine-grained permission management, you can enter the app's "Settings" page for detailed configuration.
-
-1.  **Enter Settings**: Find and click "Settings" in the main menu.
-2.  **Find Permission Settings**: In the settings page, find the "Data and Permissions" section, then click "Tool Permission Settings".
+For detailed configuration, go to "Settings" > "Data & Permissions" > "Tool Permission Settings".
 
 ![Tool Permission Settings Entry](</manuals/assets/permission/image2.png>)
 
-### Tool Permission Management Interface
+### Tool Permission Management
 
-On the "Tool Permissions" page, you can configure the global permission switch and set exception rules for individual tools.
+The new management interface, shown below, lets you set a global rule and add exceptions for specific tools.
 
 ![Tool Permission Management Interface](</manuals/assets/permission/60a4d8ccc51c010cedd98dbdf5fd842d.jpg>)
 
-#### Global Permission Switch
+#### Global Permission Mode
 
-The global permission switch acts as the main control and can override individual tool permissions. You can choose from the following four modes:
+This is the default rule that applies to all tools:
 
--   **Allow**: AI will automatically execute all tool operations without seeking your consent. This is the highest permission level; please use it when you completely trust the current AI configuration.
--   **Cautious**: AI will automatically execute most operations, but will pop up a confirmation request for dangerous operations that may modify or delete files, execute high-risk commands, etc.
--   **Ask**: AI will request your authorization before using any tool. This is the safest mode and the default mode.
--   **Forbid**: Completely prohibit AI from using any tools.
+-   **Allow**: Automatically executes all tool operations without asking.
+-   **Cautious**: Automatically executes safe operations but will ask for confirmation before performing high-risk actions like modifying or deleting files.
+-   **Ask**: **(Default)** Requests your authorization before using any tool.
+-   **Forbid**: Completely prohibits the AI from using any tools.
 
-**By default, all tools require you to ask. You can add exceptions below.**
+#### How to Configure Individual Tool Permissions
 
-#### Individual Tool Permission Settings
+To understand this system, the most crucial point is: **Every tool's initial default state is "needs to be asked," and the Global Permission Mode determines how to handle this state.**
 
-Below the global permission switch, you can set exception rules for specific tools. The system provides multiple permission categories, and you can add tools to the allowed list for automatic execution:
+**The Core Logic:**
 
--   **Allow List**: These tools will run automatically without asking. You can click the "+" button on the right to add tools to this list, or click the "X" button to the right of each tool to remove it.
+-   **Global `Ask`, `Cautious`, or `Forbid` Modes**: These are mandatory rules. When set, the system **ignores** the individual permission status of each tool and strictly follows the global rule (either asks, acts cautiously, or forbids).
 
-Through this method, you can achieve more fine-grained permission control:
--   If the global permission is set to "Ask", but you want certain commonly used tools (such as `read_file`, `list_files`) to execute automatically, you can add them to the "Allow" list.
--   If the global permission is set to "Allow", but you want certain sensitive tools (such as `delete_file`) to always ask, you can keep them out of the "Allow" list.
+-   **Global `Allow` Mode**: This mode is unique. It does **not** mean "allow all tools." Instead, it **"enables the system to check the permission status of each individual tool."**
+
+**What is the user's authorization workflow?**
+
+If your goal is to have the AI eventually auto-execute most operations, you need to do the following:
+
+1.  Set the **Global Permission Mode** to `Allow`.
+2.  Next, when the AI uses a tool for the **first time** (e.g., `read_file`), it will still **pop up a permission request dialog**, because the tool's default state is "needs to be asked."
+3.  In this dialog, click **"Always Allow"**.
+4.  After this step, the `read_file` tool is now permanently authorized by you. In the future, as long as the global mode is `Allow`, it will **execute automatically** without asking again.
+
+You need to repeat steps 2 and 3 for every tool you want to run automatically. This way, you can gradually build a set of trusted tools that can be auto-executed.
+
+**In Summary:**
+
+-   To make it **possible** for a tool to be auto-executed, you **must** first set the global mode to `Allow`.
+-   In `Allow` mode, whether a tool **actually** auto-executes depends on if you have already clicked "Always Allow" in its first-use permission request.
+
+We acknowledge that this design may be counter-intuitive, and we hope this explanation helps you configure the settings accurately.
 
 ### Permission Request Dialog
 
-When AI needs to execute a tool that is not in the allow list, the system will pop up a permission request dialog.
+When the AI needs your approval for an action, a dialog like this will appear:
 
 ![Permission Request Dialog](</manuals/assets/permission/a3d6dceea288c5ba84b6b4c78c446caa.jpg>)
 
-The permission request dialog will display the following information:
+The dialog clearly lists the **tool**, **action**, and **parameters** the AI wants to use. You can choose to:
 
--   **Requested Operation**: The specific operation AI wants to perform (such as using a toolkit, executing file operations, etc.)
--   **Tool Used**: The specific tool name being used
--   **Parameter Details**: Parameter information required for tool execution
+-   **Reject**: Block this single action.
+-   **Allow**: Approve only this single action.
+-   **Always Allow**: Approve this action and grant permanent permission for this tool. It will be auto-executed in the future (in `Allow` mode).
 
-You can choose:
-
--   **Reject**: Reject this operation request
--   **Allow**: Allow this operation to execute
--   **Always Allow**: Allow this operation and add the tool to the "Allow" list, so it will execute automatically in the future without asking
-
-**Note:** You can change permission settings at any time in settings.
-
-### Permission Priority Logic
-
-The new permission system adopts the following priority logic:
-
-1.  **Global Permission Switch**: As the main control, it has the highest priority
-    -   When the global permission is set to "Ask" or "Forbid", all tools will follow this rule (unless tools in the allow list will still be asked in "Ask" mode)
-    -   When the global permission is set to "Allow" or "Cautious", the system will check individual tool permission settings
-
-2.  **Individual Tool Permissions**: When the global permission allows, individual tool permission settings will take effect
-    -   Tools in the "Allow" list will execute automatically
-    -   Tools not in the "Allow" list will pop up a permission request dialog
-
-**For example:**
-
-Suppose you make the following configuration:
-
-*   **Global Permission Switch** -> `Ask`
-*   **Allow List** -> `read_file`, `list_files`, `query_memory`
-
-When AI needs to execute `read_file`, since it's in the allow list, it will execute automatically.
-When AI needs to execute `delete_file`, since it's not in the allow list, it will pop up a permission request dialog to ask for your permission.
-
-Through this permission system, you can find the best balance between convenience and security for yourself.
+With this permission system, you can find the perfect balance between convenience and security.
