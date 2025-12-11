@@ -34,7 +34,9 @@ Go to the "Package Management" screen in the app, find the **Automatic** categor
 
 To give the AI vision capabilities, you need to assign it a dedicated multimodal model.
 
-Go to the "Functional Model Configuration" screen, find the **UI Controller** option, and select or create a new configuration with a vision-enabled model, such as the `autoglm` model.
+Go to the "Functional Model Configuration" screen, find the **UI Controller** option, and select or create a new configuration with a vision-enabled model, such as the `autoglm` model, and make sure to enable the **Direct Image Processing** switch in this model configuration.
+
+Note that AutoGLM Mode only changes the model used by the **UI Controller** to a vision-capable model like `autoglm`. For normal conversations, you can continue using your usual chat model; the two configurations do not interfere with each other.
 
 ![](/manuals/assets/automatic/1.png)
 
