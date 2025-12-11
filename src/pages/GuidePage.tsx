@@ -51,6 +51,14 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           ],
         },
         {
+          key: 'automation',
+          label: t.automation,
+          children: [
+            { key: 'ui-automation', label: <Link to="/guide/automation/ui-automation">{t.uiAutomation}</Link> },
+            { key: 'autoglm-mode', label: <Link to="/guide/automation/autoglm-mode">{t.autoglmMode}</Link> },
+          ],
+        },
+        {
           key: 'development',
           label: t.development,
           children: [
