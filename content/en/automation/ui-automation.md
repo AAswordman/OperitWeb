@@ -10,6 +10,8 @@ A powerful and correctly configured language model is the foundation for underst
 
 For detailed instructions on how to configure a model, please refer to our guide: [Model & Parameter Configuration](/#/guide/basic-config/model-config).
 
+> **Note:** If you are using the official DeepSeek API, we recommend enabling [Max Mode](/#/guide/tools-and-features/context-summary) in the conversation settings. Due to the API's caching mechanism, this can reduce unnecessary context summarization and improve performance.
+
 ### 2. Grant Software Operation Permissions
 
 To allow the AI to observe the screen and simulate actions like tapping, swiping, and typing, you need to grant the app the appropriate system permissions. UI Automation requires at least **Accessibility Permissions**. Depending on the complexity of your tasks, you may need to grant higher-level permissions, such as **Debug Permissions (Shizuku)** or **Root Permissions**.
