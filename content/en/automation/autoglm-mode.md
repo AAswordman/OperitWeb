@@ -2,6 +2,10 @@
 
 AutoGLM Mode is an advanced UI automation feature that gives the AI "vision" by leveraging multimodal large models. This allows it to understand on-screen content for smarter and more precise operations.
 
+> **Important Note**:
+> - When using the subagent to operate the screen, the execution speed is entirely dependent on factors such as the model's inference speed and the deployment platform.
+> - The AutoGLM logic in this software is equivalent to the official open-source logic, ensuring reliability and consistency.
+
 To enable and use AutoGLM Mode, follow these configuration steps.
 
 ### 1. Configure Your AI Brain: Model Configuration
