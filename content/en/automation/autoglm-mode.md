@@ -32,7 +32,18 @@ Configure this in the permission settings based on your level of trust and usage
 
 > **Special Note**: If you want to minimize confirmation pop-ups and let tools run more automatically in the current session, enable **"Auto-Approve"** from the menu in the bottom-right corner of the chat window. If you keep it off, the AI will ask for confirmation more often, even for tools that are already authorized.
 
-### 4. Enable the AutoGLM Tool Package
+### 4. Enable AutoGLM (Choose by Version)
+
+Starting from step 4, the setup flow differs depending on your app version:
+
+- **v1.6.4 and earlier**: Follow the **manual setup flow** below to enable the tool packages and configure the UI Controller model.
+- **v1.6.5 and later (recommended)**: Use the built-in **AutoGLM Auto-Configuration** entry in the **Toolbox** page. The system will automatically complete the required setup for you (including tool packages and UI Controller model).
+
+In versions **v1.6.5 and later**, open the **Toolbox** page in the app, scroll down, find the **AutoGLM Auto-Configuration** item, and tap it. Then follow the on-screen wizard to finish the setup:
+
+![](/manuals/assets/automatic/8.jpg)
+
+#### Manual Setup Flow (for v1.6.4 and earlier, or advanced users)
 
 Unlike basic UI automation, AutoGLM Mode requires a dedicated tool package.
 
@@ -42,7 +53,9 @@ Go to the "Package Management" screen in the app, find the **Automatic** categor
 
 > **Special Note**: Double-check that `Automatic_ui_base` is turned **off** and `Automatic_ui_subagent` is turned **on**. Enabling the wrong or multiple conflicting packages can cause abnormal UI automation behavior or interfere with AutoGLM Mode.
 
-### 5. Configure the UI Controller Model
+### 5. Configure the UI Controller Model (Required for Manual Setup Only)
+
+If you are on v1.6.5 or later and have already completed the setup via **AutoGLM Auto-Configuration**, you can skip this step. You only need to continue with this section when following the **manual setup flow**.
 
 To give the AI vision capabilities, you need to assign it a dedicated multimodal model.
 
