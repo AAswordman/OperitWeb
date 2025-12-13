@@ -4,7 +4,11 @@ Operit AI can use tools to interact with your device and software. To ensure you
 
 ## Version Information
 
-The permission system received a major update in version 1.6.1. This document will explain the permission systems **before** and **after** version 1.6.1.
+The permission system was significantly updated in versions 1.6.1 and 1.6.5. For easier reference, this document describes three situations:
+
+-   **Before 1.6.1**: Permissions are controlled by the "Global" and "System Operation" categories.
+-   **1.6.1 - 1.6.4**: The first generation of the per-tool permission system.
+-   **1.6.5 and later**: The new "Global default + per-tool exceptions" permission system.
 
 ---
 
@@ -62,7 +66,9 @@ Then:
 
 ---
 
-## Permission System in v1.6.1 and Later (Individual Tool Control)
+## Permission System in v1.6.1 - v1.6.4 (Individual Tool Control)
+
+This section only applies to versions 1.6.1 - 1.6.4. If you're using version 1.6.5 or later, please refer to the next section, "Permission System in v1.6.5 and Later".
 
 Starting from version 1.6.1, the permission system was upgraded to a "Global Permission + Individual Tool Exception" model, allowing for more granular control.
 
@@ -121,7 +127,72 @@ You need to repeat steps 2 and 3 for every tool you want to run automatically. T
 
 We acknowledge that this design may be counter-intuitive, and we hope this explanation helps you configure the settings accurately.
 
-### Permission Request Dialog
+## Permission System in v1.6.5 and Later (Global Default + Per-Tool Exceptions)
+
+Starting from version 1.6.5, the permission system follows a "Global default + per-tool exceptions" model. You can think of it as having two layers:
+
+-   **Global default permission**: A base strategy that applies to all tools.
+-   **Per-tool exception rules**: Special rules for specific tools that override the global default.
+
+When the system decides how to run a tool, it follows a simple rule:
+
+> **First check whether the tool has its own exception rule. If yes, use that. If not, fall back to the global default.**
+
+### Permission Levels
+
+The new system still uses the same four permission levels (both for the global default and for individual tools):
+
+-   **Allow (ALLOW)**: Run the tool directly without asking each time.
+-   **Cautious (CAUTION)**: Auto-execute by default, but show a confirmation dialog for operations that look risky.
+-   **Ask (ASK)**: Always show a confirmation dialog before each call.
+-   **Forbid (FORBID)**: Completely block this tool from being executed.
+
+### Global Default Permission
+
+In the "Tool Permission Settings" page, you can first choose a **global default permission**. It applies to **all tools that do not have a custom exception rule**:
+
+-   If you set the global default to **Ask (ASK)**, then any tool **without its own rule** will always ask before running.
+-   If you set the global default to **Cautious (CAUTION)**, these tools will run automatically most of the time, but a dialog will appear for high-risk actions.
+-   If you set the global default to **Forbid (FORBID)**, all tools without a custom rule will be blocked.
+
+### Per-Tool Exception Rules
+
+On the same page, you will see four groups: **Allow / Cautious / Ask / Forbid**. You can add tools into these groups (for example, by selecting or dragging them) to give them **exception rules**:
+
+-   Putting a tool into the **Allow** group means: this tool will always auto-execute, regardless of the global default.
+-   Putting a tool into the **Cautious** group means: this tool always follows the cautious behavior and only asks for high-risk actions.
+-   Putting a tool into the **Ask** group means: this tool will ask for confirmation every time you call it.
+-   Putting a tool into the **Forbid** group means: this tool is always blocked.
+
+As long as a tool appears in any of these groups, it is treated as having a **per-tool exception rule**, which **overrides** the global default.
+
+If you want a tool to go back to simply "following the global default," you can:
+
+-   Click the tool again in its group to remove it, or
+-   Uncheck the tool from the selection dialog.
+
+After you remove the exception rule, the tool's behavior will once again be determined only by the global default.
+
+### Recommended Setups
+
+Here are some common and easy-to-understand combinations you can use:
+
+-   **More conservative overall, only trust a few tools**  
+    - Global default: **Ask (ASK)**.  
+    - Put only fully trusted read-only or side-effect-free tools (such as code search or calculator) into the **Allow (ALLOW)** group.  
+    Result: Most tools will always ask first; only the tools you explicitly put into "Allow" will run silently.
+
+-   **More automatic overall, only confirm high-risk actions**  
+    - Global default: **Cautious (CAUTION)**.  
+    - Put tools you consider more dangerous (such as file modification or command execution) into the **Ask (ASK)** or **Forbid (FORBID)** group.  
+    Result: Normal tools behave more automatically; truly sensitive tools are still strictly controlled.
+
+-   **Extreme safety mode, only allow a small whitelist of tools**  
+    - Global default: **Forbid (FORBID)**.  
+    - Only add the tools you trust into the appropriate groups (Allow / Cautious / Ask).  
+    Result: By default, all tools are disabled; only tools you explicitly whitelist can be used, and they follow the permission level you assign.
+
+### Common for v1.6.1 and Later: Permission Request Dialog
 
 When the AI needs your approval for an action, a dialog like this will appear:
 
