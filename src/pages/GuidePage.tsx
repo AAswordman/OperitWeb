@@ -3,6 +3,7 @@ import { Layout, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { translations } from '../translations';
+import FooterComponent from '../components/Footer';
 
 const { Sider, Content } = Layout;
 
@@ -188,6 +189,8 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
               <Outlet />
             </div>
           )}
+
+          <FooterComponent language={language} />
         </Content>
       </Layout>
     </Layout>
