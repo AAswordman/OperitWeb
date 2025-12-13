@@ -174,7 +174,14 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
               {isHomePage ? (
                 <Anchor
                   direction="horizontal"
-                  onClick={handleAnchorClick}
+                  onClick={(e, link) => {
+                    if (link.href === '#guide') {
+                      e.preventDefault();
+                      navigate('/guide');
+                    } else {
+                      handleAnchorClick(e, link);
+                    }
+                  }}
                   items={[
                     { key: 'home', href: '#home', title: t('home') },
                     { key: 'features', href: '#features', title: t('features') },
