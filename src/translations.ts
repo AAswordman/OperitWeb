@@ -108,7 +108,7 @@ export const translations = {
       
       // Guide index page
       welcomeTitle: '欢迎来到 Operit AI 文档中心',
-      welcomeDesc: '在这里你可以找到所有关于 Operit AI 的使用指南和常见问题解答。',
+      welcomeDesc: 'Operit AI 是一款定位为移动端 Agent 的智能助手：它可以帮你查询资料、浏览网页和论文，并配备深度搜索模式；在聊天场景中支持丰富的角色扮演；在生产力场景中可以进行代码编写、文件管理，并通过上下文压缩和知识库导入来处理复杂项目；内置 Linux 环境，可完成文档转换、代码运行、服务搭建和远程运维等任务；你还可以从插件市场下载并添加 MCP 插件，用于处理 Excel、制图、Word 文档撰写、音视频处理等；同时还支持系统管理、自动化操作、语音对话、图像识别、OCR 等原生能力。',
       interfaceGuideDesc: '探索Operit AI的各项功能与界面。',
       quickStartDesc: '一步步教你完成Operit AI的初始设置，开启智能之旅。',
       modelConfigDesc: '学习如何配置AI模型API，解锁Operit AI的全部潜能。',
@@ -230,7 +230,7 @@ export const translations = {
       
       // Guide index page
       welcomeTitle: 'Welcome to Operit AI Documentation',
-      welcomeDesc: 'Find all the guides and FAQ about Operit AI here.',
+      welcomeDesc: 'Operit AI is positioned as a mobile Agent: it can help you look up information, browse web pages and papers, and it comes with a Deep Search mode for in-depth retrieval; in chat scenarios it supports rich role-play; for productivity it can write code, manage files, and handle complex projects with context compression and knowledge base import; it ships with a built-in Linux environment for tasks like document conversion, code execution, service deployment, and remote operations; you can also download and add MCP plugins from the marketplace to work with Excel, drawing/diagrams, Word documents, audio and video, and more; in addition, Operit supports native capabilities such as system management, automation, voice conversations, image recognition, and OCR.',
       interfaceGuideDesc: 'Explore features and interface of Operit AI.',
       quickStartDesc: 'Step-by-step guide to set up Operit AI and start your intelligent journey.',
       modelConfigDesc: 'Learn how to configure AI model APIs and unlock the full potential of Operit AI.',
