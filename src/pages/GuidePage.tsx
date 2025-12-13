@@ -17,6 +17,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       label: t.basicConfig,
       children: [
         { key: 'model-config', label: <Link to="/guide/basic-config/model-config">{t.modelConfig}</Link> },
+        { key: 'terminal-config', label: <Link to="/guide/basic-config/terminal-config">{t.terminalConfig}</Link> },
         { key: 'mnn-local-model', label: <Link to="/guide/basic-config/mnn-local-model">{t.mnnLocalModel}</Link> },
         { key: 'image-recognition', label: <Link to="/guide/basic-config/image-recognition">{t.imageRecognition}</Link> },
         { key: 'functional-model-config', label: <Link to="/guide/basic-config/functional-model-config">{t.functionalModelConfig}</Link> },
