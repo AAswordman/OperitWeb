@@ -169,7 +169,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
             </Space>
           </Col>
 
-          <Col xs={0} lg={12}>
+          <Col xs={0} lg={8}>
             <Space size="large" style={{ width: '100%', justifyContent: 'center' }}>
               {isHomePage ? (
                 <Anchor

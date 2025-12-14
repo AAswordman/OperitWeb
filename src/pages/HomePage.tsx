@@ -315,6 +315,7 @@ nt;
                         <Card
                           hoverable
                           style={{
+                            margin: '0 10px',
                             textAlign: 'center',
                             background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
                             backdropFilter: 'blur(10px)',
