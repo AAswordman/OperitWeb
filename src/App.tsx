@@ -12,7 +12,10 @@ import ReturnCodeGeneratorPage from './pages/ReturnCodeGeneratorPage';
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
     const savedMode = localStorage.getItem('darkMode');
-    return savedMode ? JSON.parse(savedMode) : false;
+    if (savedMode) {
+      return JSON.parse(savedMode);
+    }
+    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
   });
   const [language, setLanguage] = useState<'zh' | 'en'>(() => {
     const savedLanguage = localStorage.getItem('language');
@@ -57,13 +60,13 @@ const App: React.FC = () => {
     >
       <Router>
         <Routes>
-          <Route 
-            path="/" 
+          <Route
+            path="/"
             element={
-              <MainLayout 
-                darkMode={darkMode} 
-                setDarkMode={setDarkMode} 
-                language={language} 
+              <MainLayout
+                darkMode={darkMode}
+                setDarkMode={setDarkMode}
+                language={language}
                 setLanguage={setLanguage}
                 dpi={dpi}
                 setDpi={setDpi}
