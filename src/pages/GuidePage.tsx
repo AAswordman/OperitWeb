@@ -3,6 +3,7 @@ import { Layout, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import { translations } from '../translations';
+import FooterComponent from '../components/Footer';
 
 const { Sider, Content } = Layout;
 
@@ -168,7 +169,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
         )}
         <Content 
           style={{ 
-            padding: isToolPage ? '0' : '24px', 
+            padding: isToolPage ? '0' : (broken ? '8px' : '24px'), 
             margin: 0, 
             minHeight: 280,
             height: 'calc(100vh - 64px)', // 固定高度
@@ -183,12 +184,14 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
               backdropFilter: 'blur(10px)',
               border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
               borderRadius: '12px',
-              padding: '24px',
+              padding: '6px 24px',
               minHeight: 'calc(100vh - 112px)', // 确保内容有足够高度
             }}>
               <Outlet />
             </div>
           )}
+
+          <FooterComponent language={language} />
         </Content>
       </Layout>
     </Layout>

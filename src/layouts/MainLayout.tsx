@@ -23,18 +23,14 @@ import {
   MenuOutlined,
   SunOutlined,
   MoonOutlined,
-  GithubOutlined,
-  MailOutlined,
-  MessageOutlined,
-  WechatOutlined,
   ZoomInOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
 import { translations } from '../translations';
 import logo from '/logo.png';
 
-const { Header, Footer } = Layout;
-const { Title, Text } = Typography;
+const { Header } = Layout;
+const { Title } = Typography;
 
 interface Language {
   key: string;
@@ -173,12 +169,19 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
             </Space>
           </Col>
 
-          <Col xs={0} lg={12}>
+          <Col xs={0} lg={8}>
             <Space size="large" style={{ width: '100%', justifyContent: 'center' }}>
               {isHomePage ? (
                 <Anchor
                   direction="horizontal"
-                  onClick={handleAnchorClick}
+                  onClick={(e, link) => {
+                    if (link.href === '#guide') {
+                      e.preventDefault();
+                      navigate('/guide');
+                    } else {
+                      handleAnchorClick(e, link);
+                    }
+                  }}
                   items={[
                     { key: 'home', href: '#home', title: t('home') },
                     { key: 'features', href: '#features', title: t('features') },
@@ -334,66 +337,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
       </Drawer>
 
       <Outlet />
-
-      <Footer style={{ 
-        background: 'transparent',
-        textAlign: 'center',
-        padding: '40px 24px'
-      }}>
-        <Row justify="center">
-          <Col xs={24} lg={16}>
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Space>
-                <Avatar 
-                  size={32} 
-                  src={logo}
-                  style={{ backgroundColor: 'transparent' }}
-                />
-                <Title level={4} style={{ margin: 0, color: token.colorText }}>
-                  Operit AI
-                </Title>
-              </Space>
-              
-              <div style={{ color: token.colorTextSecondary }}>
-                <Title level={5} style={{ color: token.colorText, marginBottom: 12 }}>{t('contact')}</Title>
-                <Space wrap size="middle" style={{ justifyContent: 'center' }}>
-                  <a href="https://github.com/AAswordman/Operit/discussions" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
-                    <Space size={4}>
-                      <GithubOutlined />
-                      <span>{t('githubDiscussions')}</span>
-                    </Space>
-                  </a>
-                  <span>•</span>
-                  <a href="mailto:aaswordsman@foxmail.com" style={{ color: token.colorTextSecondary }}>
-                    <Space size={4}>
-                      <MailOutlined />
-                      <span>{t('email')}</span>
-                    </Space>
-                  </a>
-                  <span>•</span>
-                  <a href="https://qm.qq.com/q/Sa4fKEH7sO" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
-                    <Space size={4}>
-                      <WechatOutlined />
-                      <span>{t('qqGroup')}</span>
-                    </Space>
-                  </a>
-                  <span>•</span>
-                  <a href="https://discord.gg/YnV9MWurRF" target="_blank" rel="noopener noreferrer" style={{ color: token.colorTextSecondary }}>
-                    <Space size={4}>
-                      <MessageOutlined />
-                      <span>{t('discord')}</span>
-                    </Space>
-                  </a>
-                </Space>
-              </div>
-              
-              <Text style={{ color: token.colorTextTertiary, fontSize: 12 }}>
-                © 2024 Operit AI. All rights reserved.
-              </Text>
-            </Space>
-          </Col>
-        </Row>
-      </Footer>
 
       <FloatButton.Group>
         <FloatButton 

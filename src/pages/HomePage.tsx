@@ -32,6 +32,7 @@ import GachaGallery from '../components/GachaGallery';
 import type { GachaGalleryRef } from '../components/GachaGallery';
 import useGitHubStats from '../hooks/useGitHubStats';
 import DownloadLatestButton from '../components/DownloadLatestButton';
+import FooterComponent from '../components/Footer.tsx';
 
 // 导入所有服务商的logo
 import openAILogo from '/images/OTHER_LOGO/openai_new.png';
@@ -314,6 +315,7 @@ nt;
                         <Card
                           hoverable
                           style={{
+                            margin: '0 10px',
                             textAlign: 'center',
                             background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
                             backdropFilter: 'blur(10px)',
@@ -519,6 +521,8 @@ nt;
           </Row>
         </div>
       </AnimatedSection>
+
+      <FooterComponent language={language} />
     </main>
   );
 };
