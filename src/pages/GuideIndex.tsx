@@ -57,7 +57,7 @@ const GuideIndex: React.FC<{ language: 'zh' | 'en' }> = ({ language }) => {
 
   return (
     <div>
-      <Title level={2} style={{ textAlign: 'center', marginBottom: '16px' }}>
+      <Title level={2} style={{ textAlign: 'center', margin: '20px 0' }}>
         {t.welcomeTitle}
       </Title>
       <Paragraph style={{ textAlign: 'center', marginBottom: '48px', fontSize: '16px' }}>
