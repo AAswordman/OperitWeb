@@ -1,68 +1,185 @@
-# MCP (Model Context Protocol)
+# MCP: Model Context Protocol
 
-### Importing and Configuring MCP
+## What MCP Means in Operit: User Perspective
 
-Now, you can import MCP plugins in three ways: from Git repository, ZIP file, or remote URL.
+Think of MCP as a plugin system that connects external capabilities into Operit. Each MCP service (a server) shows up as a plugin item. On that item you can see:
+
+ - whether it is enabled
+ - whether it is running (usually shown as `active`)
+ - the tools it provides (they show up after it starts)
+
+## Quick Start: Just These 3 Steps
+
+Open Operit’s MCP management page. This is the page with the plugin list, the enable toggle, deploy, edit, and import/connect.
+
+### Step 1: Add an MCP
+
+Tap “Import/Connect”, then choose one method: Config Import, Repository Import, ZIP Import, or Connect Remote.
 
 ![Import MCP Plugin](/manuals/assets/package_or_MCP/7.png)
 
-#### Import Methods
+### Step 2: Enable it
 
-1.  **Repository (Git):** Enter the Git repository link to import directly from source code. This is the most common method.
-2.  **ZIP:** Upload a ZIP archive containing MCP plugin files.
-3.  **Remote:** Provide a remote URL that points directly to the plugin service or file.
+Turn on the toggle on the right side of the plugin.
 
-#### Service Metadata
+### Step 3: Make it actually run
 
-Regardless of which method you use, you need to provide the following metadata:
+ - Local plugin: you usually need to tap “Deploy / Re-deploy” once so Operit can install dependencies and prepare it.
+ - Remote plugin: no deployment needed. Save it and make sure the connection succeeds.
 
-*   **Plugin Name:** Set an easily recognizable name for your plugin.
-*   **Plugin Description:** Clearly describe the plugin's function in one sentence. **This is crucial** because AI will use this description to determine in which scenarios to call this plugin. A good description enables AI to use the tool more intelligently.
+Normally, you’ll see the status turn into running and show `active`. Then the tool list will start to appear.
 
-### Post-Addition Operations
+## How to Add MCP: Choose One of These 4 Ways
 
-After adding an MCP plugin, you need to load it according to its type (local or remote):
+### Option 1: Config Import
 
-*   **Local MCP:**
-    1.  Deploy the plugin.
-    2.  Enable the plugin.
-    3.  Click the load button in the lower right corner (or restart the software) to make the plugin take effect.
+Best for MCP servers that can start with a single command, such as `npx` / `uvx` / `uv`. You don’t need to download a repo or move files around.
 
-*   **Remote MCP:**
-    1.  Simply click the load button in the lower right corner.
+How: open “Import/Connect”, switch to “Config Import”, paste the JSON, then tap “Merge Config”. If it succeeds, the plugin will show up in the list.
 
-### MCP Working Mechanism
+A minimal working example (only `mcpServers` is required):
 
-|| |
-|| :--- | :---: |
-|| Our MCP server runs locally through a built-in Linux environment (Ubuntu 24 based on proot) and interacts with the software. MCP will attempt to start when the software opens, with the startup command determined by the `arg` parameters and `env` environment variables in each plugin's configuration. | ![MCP Configuration Example](/manuals/assets/41ebc2ec5278bd28e8361e3eb72128d.jpg) |
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": {},
+      "autoApprove": []
+    }
+  }
+}
+```
 
-### MCP Download and Deployment Mechanism
+Here `playwright` is the plugin ID in Operit. It also affects the tool prefix in chat. It’s recommended to use only letters/numbers/underscore, and keep it lowercase.
 
-Due to the special environment and the fact that the MCP ecosystem itself is chaotic with README documentation quality varying widely, we have added an automatic package structure matching mechanism. Currently, it supports recognizing packages written in Node.js and Python.
+### Option 2: Import from Repository
 
-When downloading MCP, the app will directly obtain the repository's ZIP archive, download it to the `Download/Operit/` directory, and modify a JSON file to add an ID. If needed, you can also import custom MCPs within the software or manually place files in that directory.
+Best when you have a GitHub project (Python/Node/TypeScript, etc.) and want to import the project files into the device.
 
-#### Deployment Mechanism
+Note: importing is not the same as ready to use. Local plugins usually still require you to tap “Deploy / Re-deploy” once.
 
-We will automatically generate execution commands for both project structures during deployment.
+### Option 3: Import from ZIP
 
-|| Python Package | Node.js Package |
-|| :--- | :--- |
-|| For Python packages, we will first try to install dependencies using `pip`, then automatically generate a startup command configuration. You can view and modify it through "Custom Deployment Command" during deployment. | For Node.js packages, we will first try to switch sources, then use `npm` or `pnpm` to download dependencies. If the project is written in TypeScript, we will try to compile the project; if it's JavaScript, we will try to directly obtain the entry file. Finally, the system will generate a configuration code, and the startup command will point to the entry file or compiled file. |
+Best when you already have a ZIP file locally (for example, you copied a plugin ZIP from your computer to your phone).
 
-> The two recognition modes above are universal for many packages. Of course, there will always be some exceptions.
-> **Note:** Before deployment and startup, package files will be copied to the built-in Linux environment for operations. In other words, only the downloaded original compressed package will be stored in the external `Download` path.
+Same note: after importing, you usually still need to “Deploy / Re-deploy”.
 
-### MCP Common Issues
+### Option 4: Connect to a Remote Service
 
-|| | |
-|| :--- | :--- |
-|| Some plugins require keys, but this part needs to be added manually. As shown in the figure, please write the key in the startup environment variables according to the readme, otherwise it will cause errors. | ![Configure Key](/manuals/assets/package_or_MCP/7b8ec8ba567c3c670d6a063121614fe.jpg) |
-|| The deployment status of plugins can be manually checked by entering the built-in terminal as follows. Here, the build folder is the result of automatic compilation during deployment, containing the file paths we need for startup. | ![View Deployment](/manuals/assets/package_or_MCP/401cda27abf79b9d0311816947b1bdd.jpg) |
-|| You can try running it to correct your startup command (in the image, startup failed due to missing key) | ![Correct Startup Command](/manuals/assets/package_or_MCP/0946d845d9adad20bbd039a93d1196f.jpg) |
+Best when you already run the MCP server on your PC/server, and the phone only connects to it.
 
-> **Note:** Some packages come with Docker files, but we do not support Docker, please ignore it.
+Fill in the service URL, for example `http://127.0.0.1:8752`. Then choose a transport: `httpStream` or `sse`.
 
-> **Note:** Our environment is Ubuntu 24 based on proot, which is a Linux environment. Some packages that can only be used on Windows need to run .exe files, such as playwright, which of course are not supported.
+If the remote requires authentication, you can set a Bearer Token. After saving, it will appear as a remote plugin.
+
+## Using MCP in Chat: Auto Activate and Call
+
+Just tell the AI what you want to do. If it matches an MCP plugin’s capability, Operit will automatically activate the right plugin and call its tools in the background.
+
+In most cases, you don’t need to care about formats like `pluginId:toolName`. You also don’t need to activate anything manually.
+
+If the chat still says an MCP service is not active or unavailable, the plugin is usually not in a runnable state. Go back to the MCP management page and check:
+
+ - the plugin is enabled
+ - the plugin status is running (active)
+ - for local plugins, it has been deployed
+
+## `mcp_config.json` Format: What You Actually Need to Remember
+
+For most users, you only need to remember one thing: `mcpServers` is the server list, and each key is the plugin ID.
+
+One more thing that matters a lot (and is easy to miss) is `env`.
+
+Many MCP plugins require an API key or token to run. In most cases, you should follow the plugin README and put your key/token into `env`.
+
+UI details like name/description are handled automatically by the app. You don’t need to configure them manually.
+
+```json
+{
+  "mcpServers": {
+    "your_plugin_id": {
+      "command": "npx",
+      "args": ["some-package@latest"],
+      "disabled": false,
+      "autoApprove": [],
+      "env": {
+        "YOUR_API_KEY": "YOUR_KEY_HERE",
+        "YOUR_TOKEN": "YOUR_TOKEN_HERE"
+      }
+    }
+  }
+}
+```
+
+Field notes:
+
+ - `command`: required.
+ - `args` / `env` / `autoApprove`: optional.
+ - `env`: pay attention to this. Missing keys/tokens are a very common cause of “plugin starts but tools fail”, or “plugin cannot start at all”.
+ - `disabled: true`: disabled. In the UI, this is the same as toggling it off.
+
+Try not to change the `mcpServers` keys (plugin IDs) too often. This is the most common reason for “the plugin is in the list, but tools don’t match / tool calls fail”.
+
+## Troubleshooting and Advanced: Only Read When Something Breaks
+
+### Where the config lives
+
+By default, MCP configuration files are stored under `Download/Operit/mcp_plugins/` on your phone.
+
+`server_status.json` is an internal file used by Operit to record runtime status and tool cache; it’s generally not recommended to edit it manually.
+
+### What “Deploy” actually does
+
+When you tap “Deploy / Re-deploy”, Operit copies the plugin directory from the phone into the terminal environment (Ubuntu/Linux):
+
+`~/mcp_plugins/<pluginShortName>`
+
+`<pluginShortName>` is typically the last segment of the plugin ID. For example, `owner/repo` becomes `repo`.
+
+After copying, the deploy process `cd`s into this directory and runs automated install/build steps.
+
+Deploy only handles “install/build”. It skips the actual start command.
+
+### Auto-deploy commands
+
+Python projects typically run:
+
+```bash
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+pip install -e .
+```
+
+JavaScript/TypeScript projects typically run:
+
+```bash
+pnpm config set registry https://registry.npmmirror.com
+pnpm install
+pnpm install --ignore-scripts
+pnpm exec tsc -p ./tsconfig.json
+```
+
+### What the start command is
+
+After deployment, the actual MCP service is started using the `command + args` from `mcp_config.json`, with working directory:
+
+`cwd = ~/mcp_plugins/<pluginShortName>`
+
+Common cases:
+
+ - Python (auto-deployed): usually uses the `venv` Python, e.g. `.../venv/bin/python -m <moduleName>`.
+ - Node/TS: usually `node <some js entry>` (e.g. `dist/index.js` or `index.js`, depending on build output).
+
+### Symptom checklist
+
+ - Tool count stays 0: check plugin toggle, then check running status; for local plugins, also confirm it has been deployed.
+ - Bridge/terminal environment errors: usually means the terminal environment for running MCP is not ready (for example terminal service not connected, or Node/pnpm missing). Prepare the terminal environment first, then come back and refresh. See [Terminal Configuration](/#/guide/basic-config/terminal-config).
+ - Remote plugin cannot connect: verify the URL is reachable in your current network, and the transport (`httpStream` / `sse`) matches the remote server.
+
+> Note: some MCP repos include Docker files, but Operit doesn’t support Docker, so you can ignore them.
+>
+> Note: Operit runs MCP in a Linux environment (Ubuntu 24 / proot). Plugins that require running Windows `.exe` are not supported.
 
