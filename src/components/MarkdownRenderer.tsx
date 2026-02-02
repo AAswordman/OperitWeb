@@ -7,6 +7,7 @@ import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Spin, Alert, Image } from 'antd';
 import './MarkdownRenderer.css';
 import remarkImageGallery from '../remark/remarkImageGallery';
+import remarkDetails from '../remark/remarkDetails';
 import { translations } from '../translations';
 
 // Omit 'ref' from the standard 'code' component props to avoid type conflicts with SyntaxHighlighter
@@ -129,7 +130,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
     <div className="markdown-body">
       <Image.PreviewGroup>
         <ReactMarkdown
-          remarkPlugins={[remarkGfm, remarkImageGallery]}
+          remarkPlugins={[remarkDetails, remarkGfm, remarkImageGallery]}
           rehypePlugins={[rehypeRaw]}
           urlTransform={urlTransform}
           components={{
