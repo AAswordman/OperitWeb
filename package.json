@@ -21,6 +21,7 @@
     "@types/unist": "^3.0.3",
     "antd": "^5.27.2",
     "framer-motion": "^12.23.12",
+    "jieba-js": "^1.0.2",
     "mdast-util-to-string": "^4.0.0",
     "pdf-lib": "^1.17.1",
     "react": "^19.1.1",

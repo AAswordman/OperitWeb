@@ -5,6 +5,9 @@ import react from '@vitejs/plugin-react'
 export default defineConfig(() => ({
   plugins: [react()],
   base: '',
+  optimizeDeps: {
+    exclude: ['jieba-js']
+  },
   build: {
     outDir: 'dist',
     assetsDir: 'assets',

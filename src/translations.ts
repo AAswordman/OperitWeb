@@ -85,6 +85,7 @@ export const translations = {
       ttsReading: 'TTS 语音朗读',
       desktopPet: '桌宠',
       toolsAndFeatures: '工具与功能',
+      workflow: '工作流',
       automation: '自动化操作',
       uiAutomation: 'UI 自动化',
       autoglmMode: 'autoglm 模式',
@@ -105,6 +106,10 @@ export const translations = {
       deepSearch: '深度搜索',
       maxMode: 'Max模式',
       shareConversation: '分享对话',
+      searchPlaceholder: '搜索文档...',
+      searchResults: '搜索结果',
+      noResults: '未找到相关内容',
+      searching: '搜索中...',
       // Guide index page
       welcomeTitle: '欢迎来到 Operit AI 文档中心',
       welcomeDesc: 'Operit AI 是一款定位为移动端 Agent 的智能助手：它可以帮你查询资料、浏览网页和论文，并配备深度搜索模式；在聊天场景中支持丰富的角色扮演；在生产力场景中可以进行代码编写、文件管理，并通过上下文压缩和知识库导入来处理复杂项目；内置 Linux 环境，可完成文档转换、代码运行、服务搭建和远程运维等任务；你还可以从插件市场下载并添加 MCP 插件，用于处理 Excel、制图、Word 文档撰写、音视频处理等；同时还支持系统管理、自动化操作、语音对话、图像识别、OCR 等原生能力。',
@@ -206,6 +211,7 @@ export const translations = {
       ttsReading: 'TTS Reading',
       desktopPet: 'Desktop Pet',
       toolsAndFeatures: 'Tools & Features',
+      workflow: 'Workflow',
       automation: 'Automation',
       uiAutomation: 'UI Automation',
       autoglmMode: 'AutoGLM Mode',
@@ -226,6 +232,10 @@ export const translations = {
             deepSearch: 'Deep Search',
             maxMode: 'Max Mode',
             shareConversation: 'Share Conversation',
+            searchPlaceholder: 'Search docs...',
+            searchResults: 'Search Results',
+            noResults: 'No results found',
+            searching: 'Searching...',
       
       // Guide index page
       welcomeTitle: 'Welcome to Operit AI Documentation',
