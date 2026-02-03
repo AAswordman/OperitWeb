@@ -236,16 +236,23 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
     const queryLower = query.trim().toLowerCase();
 
     let score = 0;
+    let hasTextMatch = false;
 
     if (queryLower && labelLower.includes(queryLower)) {
       score += 100;
+      hasTextMatch = true;
     }
 
     for (const k of keywords) {
       const kl = String(k).toLowerCase();
       if (kl && labelLower.includes(kl)) {
         score += 25;
+        hasTextMatch = true;
       }
+    }
+
+    if (!hasTextMatch) {
+      return 0;
     }
 
     if (intent === 'cloud') {
@@ -282,9 +289,11 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
     const baseKeywords = keywords.length > 0 ? keywords : [query.toLowerCase()];
     const searchKeywords = expandKeywordsByIntent(query, baseKeywords);
 
+    const labelKeywords = baseKeywords;
+
     const labelResults: (SearchResult & { score: number; matchedKeywords: string[] })[] = [];
     for (const doc of docs) {
-      const score = calculateLabelScore(doc, query, searchKeywords, intent);
+      const score = calculateLabelScore(doc, query, labelKeywords, intent);
       if (score > 0) {
         labelResults.push({
           ...doc,
