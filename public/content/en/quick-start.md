@@ -11,7 +11,7 @@
 
 Welcome to **Operit AI**! This guide is designed to help you get started quickly and make full use of Operit AI's powerful features to transform your phone into a true intelligent assistant.
 
-> *Last updated: 2025/9/3*
+> *Last updated: 2026/2/6*
 
 ## 🗺️ Basic Process
 
@@ -48,4 +48,3 @@ After completing the configuration, you can return to Operit AI and start your i
 > AI's API and model can be changed in `Settings > AI Model Configuration > Model & Parameter Configuration/Functional Model Configuration`
 > Model prompts can be changed at `Settings > Personalization > Model Prompt Settings`, along with some model parameter settings
 ![Start Using After API Configuration](/manuals/assets/user_step/step_for_frist_4.jpg)
-
