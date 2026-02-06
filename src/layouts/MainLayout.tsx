@@ -133,7 +133,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
       minHeight: '100vh',
       background: 'transparent'
     }}>
-      {!isGuidePage && <ParticleBackground darkMode={darkMode} />}
+      {isHomePage && <ParticleBackground darkMode={darkMode} />}
       <Header style={{ 
         background: 'rgba(0,0,0,0)', // Let parent container control color
         backdropFilter: 'blur(10px)',

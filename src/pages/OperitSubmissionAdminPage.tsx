@@ -5,6 +5,7 @@ import {
   Card,
   Col,
   Descriptions,
+  Divider,
   Drawer,
   Input,
   InputNumber,
@@ -35,6 +36,8 @@ const { Title, Text, Paragraph, Link } = Typography;
 
 type SubmissionStatus = 'pending' | 'approved' | 'rejected';
 type StatusFilter = SubmissionStatus | 'all';
+
+type DiffRowType = 'equal' | 'insert' | 'delete';
 
 interface SubmissionItem {
   id: string;
@@ -82,10 +85,18 @@ interface OperitSubmissionAdminPageProps {
 
 const STORAGE = {
   apiBase: 'operit_submission_admin_api_base',
+  docsBase: 'operit_submission_admin_docs_base',
   adminToken: 'operit_submission_admin_token',
   rememberToken: 'operit_submission_admin_remember',
   reviewer: 'operit_submission_admin_reviewer',
 };
+
+const DEFAULT_DOCS_BASE = 'https://operit.aaswordsman.org';
+const DEFAULT_REPO_OWNER = 'AAswordman';
+const DEFAULT_REPO_NAME = 'OperitWeb';
+const DEFAULT_REPO_BRANCH = 'main';
+const DEFAULT_REPO_PREFIX = 'public';
+const DIFF_MAX_LINES = 2000;
 
 const statusColor: Record<SubmissionStatus, string> = {
   pending: 'gold',
@@ -105,6 +116,94 @@ const formatDateTime = (value?: string | null): string => {
   return date.toLocaleString();
 };
 
+const normalizePath = (value?: string | null): string => {
+  if (!value) return '';
+  return String(value).trim().replace(/^\/+/, '');
+};
+
+const splitLines = (value: string): string[] => {
+  return value.replace(/\r\n/g, '\n').split('\n');
+};
+
+const buildDocUrl = (base: string, targetPath: string): string => {
+  const normalizedBase = base.replace(/\/+$/, '');
+  const normalizedPath = normalizePath(targetPath);
+  return `${normalizedBase}/${normalizedPath}`;
+};
+
+const buildGithubRawUrl = (targetPath: string): string => {
+  const normalizedPath = normalizePath(targetPath);
+  return `https://raw.githubusercontent.com/${DEFAULT_REPO_OWNER}/${DEFAULT_REPO_NAME}/${DEFAULT_REPO_BRANCH}/${DEFAULT_REPO_PREFIX}/${normalizedPath}`;
+};
+
+const buildLineDiff = (oldLines: string[], newLines: string[]) => {
+  const max = oldLines.length + newLines.length;
+  const trace: Map<number, number>[] = [];
+  let v = new Map<number, number>();
+  v.set(1, 0);
+
+  for (let d = 0; d <= max; d += 1) {
+    const next = new Map<number, number>();
+    for (let k = -d; k <= d; k += 2) {
+      const down = v.get(k + 1) ?? 0;
+      const right = v.get(k - 1) ?? 0;
+      let x = 0;
+      if (k === -d || (k !== d && right < down)) {
+        x = down;
+      } else {
+        x = right + 1;
+      }
+      let y = x - k;
+      while (x < oldLines.length && y < newLines.length && oldLines[x] === newLines[y]) {
+        x += 1;
+        y += 1;
+      }
+      next.set(k, x);
+      if (x >= oldLines.length && y >= newLines.length) {
+        trace.push(next);
+        return trace;
+      }
+    }
+    trace.push(next);
+    v = next;
+  }
+  return trace;
+};
+
+const backtrackDiff = (trace: Map<number, number>[], oldLines: string[], newLines: string[]) => {
+  const rows: { type: DiffRowType; left: string; right: string }[] = [];
+  let x = oldLines.length;
+  let y = newLines.length;
+
+  for (let d = trace.length - 1; d >= 0; d -= 1) {
+    const v = trace[d];
+    const k = x - y;
+    const down = v.get(k + 1) ?? 0;
+    const right = v.get(k - 1) ?? 0;
+    const prevK = k === -d || (k !== d && right < down) ? k + 1 : k - 1;
+    const prevX = v.get(prevK) ?? 0;
+    const prevY = prevX - prevK;
+
+    while (x > prevX && y > prevY) {
+      rows.unshift({ type: 'equal', left: oldLines[x - 1], right: newLines[y - 1] });
+      x -= 1;
+      y -= 1;
+    }
+
+    if (d === 0) break;
+
+    if (x === prevX) {
+      rows.unshift({ type: 'insert', left: '', right: newLines[y - 1] });
+      y -= 1;
+    } else {
+      rows.unshift({ type: 'delete', left: oldLines[x - 1], right: '' });
+      x -= 1;
+    }
+  }
+
+  return rows;
+};
+
 const buildAdminHeaders = (token: string): HeadersInit => ({
   'X-Operit-Admin-Token': token.trim(),
 });
@@ -114,6 +213,9 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   const t = translations[languageKey].admin;
   const [apiBase, setApiBase] = useState(() => {
     return localStorage.getItem(STORAGE.apiBase) || 'https://api.aaswordsman.org';
+  });
+  const [docsBase, setDocsBase] = useState(() => {
+    return localStorage.getItem(STORAGE.docsBase) || DEFAULT_DOCS_BASE;
   });
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(STORAGE.adminToken) || '');
   const [rememberToken, setRememberToken] = useState(() => {
@@ -132,10 +234,15 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
   const [selectedItem, setSelectedItem] = useState<SubmissionItem | null>(null);
+  const [originalContent, setOriginalContent] = useState<string | null>(null);
+  const [diffLoading, setDiffLoading] = useState(false);
+  const [diffError, setDiffError] = useState<string | null>(null);
+  const [diffSource, setDiffSource] = useState<string | null>(null);
 
   const [actionOpen, setActionOpen] = useState(false);
   const [actionType, setActionType] = useState<'approve' | 'reject'>('approve');
   const [actionNotes, setActionNotes] = useState('');
+  const [actionSubmitting, setActionSubmitting] = useState(false);
 
   const [ipBanModalOpen, setIpBanModalOpen] = useState(false);
   const [ipBanForm, setIpBanForm] = useState({
@@ -153,6 +260,10 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   useEffect(() => {
     localStorage.setItem(STORAGE.apiBase, apiBase);
   }, [apiBase]);
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE.docsBase, docsBase);
+  }, [docsBase]);
 
   useEffect(() => {
     localStorage.setItem(STORAGE.reviewer, reviewer);
@@ -178,6 +289,55 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     }
     return { response, data, text };
   }, []);
+
+  const loadOriginalContent = useCallback(
+    async (targetPath?: string, type?: 'add' | 'edit') => {
+      if (!targetPath) {
+        setOriginalContent(null);
+        setDiffError(null);
+        setDiffSource(null);
+        return;
+      }
+      const urls = [];
+      if (docsBase.trim()) {
+        urls.push(buildDocUrl(docsBase, targetPath));
+      }
+      urls.push(buildGithubRawUrl(targetPath));
+
+      setDiffLoading(true);
+      setDiffError(null);
+      setDiffSource(null);
+
+      let notFound = false;
+      for (const url of urls) {
+        try {
+          const response = await fetch(url, { cache: 'no-store' });
+          if (response.ok) {
+            const text = await response.text();
+            setOriginalContent(text);
+            setDiffSource(url);
+            setDiffLoading(false);
+            return;
+          }
+          if (response.status === 404) {
+            notFound = true;
+          }
+        } catch {
+          // ignore and try next source
+        }
+      }
+
+      if (type === 'add' && notFound) {
+        setOriginalContent('');
+        setDiffError(null);
+      } else {
+        setOriginalContent(null);
+        setDiffError(t.diffFetchFailed);
+      }
+      setDiffLoading(false);
+    },
+    [docsBase, t.diffFetchFailed],
+  );
 
   const openIpBanModal = (submissionId?: string) => {
     setIpBanForm(prev => ({
@@ -355,6 +515,16 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     [adminToken, apiBase, fetchJson, t],
   );
 
+  useEffect(() => {
+    if (!selectedItem?.target_path) {
+      setOriginalContent(null);
+      setDiffError(null);
+      setDiffSource(null);
+      return;
+    }
+    loadOriginalContent(selectedItem.target_path, selectedItem.type);
+  }, [loadOriginalContent, selectedItem?.target_path, selectedItem?.type]);
+
   const triggerAction = (item: SubmissionItem, type: 'approve' | 'reject') => {
     setActionType(type);
     setActionNotes('');
@@ -364,6 +534,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
 
   const executeAction = useCallback(async () => {
     if (!selectedItem) return;
+    if (actionSubmitting) return;
     if (!adminToken.trim()) {
       setError(t.errorTokenRequired);
       return;
@@ -375,6 +546,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
       review_notes: actionNotes.trim() || undefined,
     };
 
+    setActionSubmitting(true);
     try {
       const url = `${apiBase.replace(/\/+$/, '')}/api/admin/submissions/${selectedItem.id}/${actionType}`;
       const { response, data } = await fetchJson(url, {
@@ -438,10 +610,27 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
         message.warning(t.messagePrFailed);
       }
       setActionOpen(false);
+      if (statusFilter !== 'all') {
+        await loadSubmissions();
+      }
     } catch (err) {
       message.error((err as Error).message || t.messageActionFailed);
+    } finally {
+      setActionSubmitting(false);
     }
-  }, [actionNotes, actionType, adminToken, apiBase, fetchJson, reviewer, selectedItem, statusFilter, t]);
+  }, [
+    actionNotes,
+    actionSubmitting,
+    actionType,
+    adminToken,
+    apiBase,
+    fetchJson,
+    reviewer,
+    selectedItem,
+    statusFilter,
+    t,
+    loadSubmissions,
+  ]);
 
   const statusOptions = useMemo(
     () => [
@@ -463,6 +652,17 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     add: t.typeAdd,
     edit: t.typeEdit,
   };
+
+  const diffRows = useMemo(() => {
+    if (originalContent === null || !selectedItem?.content) return null;
+    const oldLines = splitLines(originalContent);
+    const newLines = splitLines(selectedItem.content);
+    if (oldLines.length + newLines.length > DIFF_MAX_LINES) {
+      return { tooLarge: true, rows: [] as { type: DiffRowType; left: string; right: string }[] };
+    }
+    const trace = buildLineDiff(oldLines, newLines);
+    return { tooLarge: false, rows: backtrackDiff(trace, oldLines, newLines) };
+  }, [originalContent, selectedItem?.content]);
 
   const columns: ColumnsType<SubmissionItem> = [
     {
@@ -488,6 +688,8 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     {
       title: t.titleLabel,
       dataIndex: 'title',
+      width: 260,
+      ellipsis: true,
       render: (_, record) => (
         <Button type="link" onClick={() => openDetail(record)}>
           {record.title}
@@ -497,6 +699,8 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     {
       title: t.pathLabel,
       dataIndex: 'target_path',
+      width: 260,
+      ellipsis: true,
       render: value => (
         <Text code style={{ whiteSpace: 'nowrap' }}>
           {value}
@@ -512,10 +716,11 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     {
       title: t.authorLabel,
       dataIndex: 'author_name',
+      width: 200,
       render: (_, record) => (
         <Space direction="vertical" size={0}>
-          <Text>{record.author_name || '-'}</Text>
-          <Text type="secondary" style={{ fontSize: 12 }}>
+          <Text ellipsis>{record.author_name || '-'}</Text>
+          <Text type="secondary" style={{ fontSize: 12 }} ellipsis>
             {record.author_email || ''}
           </Text>
         </Space>
@@ -541,6 +746,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               size="small"
               type="primary"
               icon={<CheckCircleOutlined />}
+              disabled={actionSubmitting}
               onClick={() => triggerAction(record, 'approve')}
             />
           </Tooltip>
@@ -549,6 +755,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               size="small"
               danger
               icon={<CloseCircleOutlined />}
+              disabled={actionSubmitting}
               onClick={() => triggerAction(record, 'reject')}
             />
           </Tooltip>
@@ -630,13 +837,21 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                 />
               </Col>
               <Col xs={24} lg={12}>
+                <Input
+                  addonBefore={<SettingOutlined />}
+                  value={docsBase}
+                  onChange={event => setDocsBase(event.target.value)}
+                  placeholder={t.docsBasePlaceholder}
+                />
+              </Col>
+              <Col xs={24} lg={12}>
                 <Input.Password
                   value={adminToken}
                   onChange={event => setAdminToken(event.target.value)}
                   placeholder={t.adminTokenPlaceholder}
                 />
               </Col>
-              <Col xs={24} lg={8}>
+              <Col xs={24} lg={12}>
                 <Input
                   value={reviewer}
                   onChange={event => setReviewer(event.target.value)}
@@ -717,6 +932,8 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
             columns={columns}
             dataSource={items}
             pagination={false}
+            scroll={{ x: 'max-content' }}
+            tableLayout="fixed"
             style={{ marginTop: 16 }}
           />
         </Card>
@@ -748,6 +965,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               columns={ipBanColumns}
               dataSource={ipBans}
               pagination={false}
+              scroll={{ x: 'max-content' }}
             />
           </Space>
         </Card>
@@ -847,6 +1065,96 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               </div>
             </div>
 
+            <Divider style={{ margin: '8px 0' }} />
+
+            <div>
+              <Space align="center" style={{ marginBottom: 8 }}>
+                <Title level={5} style={{ margin: 0 }}>
+                  {t.detailDiffTitle}
+                </Title>
+                <Button
+                  size="small"
+                  icon={<ReloadOutlined />}
+                  onClick={() => loadOriginalContent(selectedItem.target_path, selectedItem.type)}
+                >
+                  {t.diffReload}
+                </Button>
+              </Space>
+              {diffSource && (
+                <Paragraph type="secondary" style={{ marginBottom: 8 }}>
+                  {t.diffSourceLabel}: <Text code>{diffSource}</Text>
+                </Paragraph>
+              )}
+              {diffError && (
+                <Alert
+                  type="warning"
+                  showIcon
+                  message={t.diffFetchFailed}
+                  description={diffError}
+                  style={{ marginBottom: 12 }}
+                />
+              )}
+              {diffLoading && <Text type="secondary">{t.diffLoading}</Text>}
+              {!diffLoading && selectedItem.content && originalContent === null && !diffError && (
+                <Text type="secondary">{t.diffMissingOriginal}</Text>
+              )}
+              {!diffLoading && !selectedItem.content && (
+                <Text type="secondary">{t.diffMissingContent}</Text>
+              )}
+              {!diffLoading && diffRows?.tooLarge && (
+                <Text type="secondary">{t.diffTooLarge}</Text>
+              )}
+              {!diffLoading && diffRows && !diffRows.tooLarge && (
+                <div
+                  style={{
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    borderRadius: 8,
+                    overflow: 'hidden',
+                  }}
+                >
+                  <div
+                    style={{
+                      display: 'grid',
+                      gridTemplateColumns: '1fr 1fr',
+                      background: 'rgba(0,0,0,0.2)',
+                      fontWeight: 600,
+                    }}
+                  >
+                    <div style={{ padding: '6px 10px' }}>{t.diffOriginalLabel}</div>
+                    <div style={{ padding: '6px 10px' }}>{t.diffSubmittedLabel}</div>
+                  </div>
+                  <div style={{ maxHeight: 360, overflow: 'auto' }}>
+                    {diffRows.rows.map((row, index) => {
+                      const leftBg =
+                        row.type === 'delete' ? 'rgba(255,77,79,0.15)' : 'transparent';
+                      const rightBg =
+                        row.type === 'insert' ? 'rgba(82,196,26,0.15)' : 'transparent';
+                      return (
+                        <div
+                          key={`${row.type}-${index}`}
+                          style={{
+                            display: 'grid',
+                            gridTemplateColumns: '1fr 1fr',
+                            borderBottom: '1px solid rgba(255,255,255,0.06)',
+                            fontFamily:
+                              'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+                            fontSize: 12,
+                          }}
+                        >
+                          <div style={{ padding: '4px 10px', background: leftBg, whiteSpace: 'pre-wrap' }}>
+                            {row.left || ''}
+                          </div>
+                          <div style={{ padding: '4px 10px', background: rightBg, whiteSpace: 'pre-wrap' }}>
+                            {row.right || ''}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+
             <div>
               <Title level={5}>{t.detailReviewNotes}</Title>
               <Text>{selectedItem.review_notes || '-'}</Text>
@@ -884,7 +1192,9 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
         onCancel={() => setActionOpen(false)}
         onOk={executeAction}
         okText={actionType === 'approve' ? t.approve : t.reject}
-        okButtonProps={{ danger: actionType === 'reject' }}
+        okButtonProps={{ danger: actionType === 'reject', loading: actionSubmitting }}
+        confirmLoading={actionSubmitting}
+        cancelButtonProps={{ disabled: actionSubmitting }}
       >
         <Space direction="vertical" size="middle" style={{ width: '100%' }}>
           <Text>
