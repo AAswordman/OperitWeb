@@ -49,4 +49,4 @@
 *配置API后开始使用即可。*
 > AI的API和模型可在`设置>AI模型配置>模型与参数配置/功能模型配置`中更改
 > 模型提示词可在`设置>个性化>模型提示词设置`处更改，一些模型参数的设置也在这
-![配置API后开始使用](/manuals/assets/user_step/step_for_frist_4.jpg) 
+![配置API后开始使用](/manuals/assets/user_step/step_for_frist_4.jpg)
