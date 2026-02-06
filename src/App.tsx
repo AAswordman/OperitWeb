@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
-import GuidePage from './pages/GuidePage';
-import GuideIndex from './pages/GuideIndex';
-import MarkdownRenderer from './components/MarkdownRenderer';
-import GuideContent from './pages/GuideContent';
-import ReturnCodeGeneratorPage from './pages/ReturnCodeGeneratorPage';
-import OperitSubmissionAdminPage from './pages/OperitSubmissionAdminPage';
-import OperitSubmissionEditPage from './pages/OperitSubmissionEditPage';
-import OperitSubmissionCenterPage from './pages/OperitSubmissionCenterPage';
+
+const GuidePage = lazy(() => import('./pages/GuidePage'));
+const GuideIndex = lazy(() => import('./pages/GuideIndex'));
+const MarkdownRenderer = lazy(() => import('./components/MarkdownRenderer'));
+const GuideContent = lazy(() => import('./pages/GuideContent'));
+const ReturnCodeGeneratorPage = lazy(() => import('./pages/ReturnCodeGeneratorPage'));
+const OperitSubmissionAdminPage = lazy(() => import('./pages/OperitSubmissionAdminPage'));
+const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEditPage'));
+const OperitSubmissionCenterPage = lazy(() => import('./pages/OperitSubmissionCenterPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {

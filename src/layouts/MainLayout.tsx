@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, Suspense } from 'react';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import {
   Layout,
@@ -13,6 +13,7 @@ import {
   FloatButton,
   Anchor,
   Drawer,
+  Spin,
   theme,
 } from 'antd';
 import type { MenuProps } from 'antd';
@@ -52,6 +53,18 @@ interface MainLayoutProps {
   dpi: number;
   setDpi: (dpi: number) => void;
 }
+
+const RouteFallback: React.FC = () => (
+  <div style={{
+    minHeight: '60vh',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop: 96,
+  }}>
+    <Spin size="large" />
+  </div>
+);
 
 const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language, setLanguage, dpi, setDpi }) => {
   const { token } = theme.useToken();
@@ -368,7 +381,9 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
         </div>
       </Drawer>
 
-      <Outlet />
+      <Suspense fallback={<RouteFallback />}>
+        <Outlet />
+      </Suspense>
 
       <FloatButton.Group>
         <FloatButton 
