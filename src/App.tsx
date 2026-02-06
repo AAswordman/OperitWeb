@@ -8,6 +8,9 @@ import GuideIndex from './pages/GuideIndex';
 import MarkdownRenderer from './components/MarkdownRenderer';
 import GuideContent from './pages/GuideContent';
 import ReturnCodeGeneratorPage from './pages/ReturnCodeGeneratorPage';
+import OperitSubmissionAdminPage from './pages/OperitSubmissionAdminPage';
+import OperitSubmissionEditPage from './pages/OperitSubmissionEditPage';
+import OperitSubmissionCenterPage from './pages/OperitSubmissionCenterPage';
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -81,6 +84,9 @@ const App: React.FC = () => {
               <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
               <Route path=":category/:slug" element={<GuideContent language={language} />} />
             </Route>
+            <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
+            <Route path="operit-submission-admin" element={<OperitSubmissionAdminPage language={language} />} />
+            <Route path="operit-submission-center/*" element={<OperitSubmissionCenterPage language={language} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
         </Routes>

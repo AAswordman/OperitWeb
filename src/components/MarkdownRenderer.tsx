@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef, type ComponentProps } from 'react';
+import { useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
-import { Spin, Alert, Image } from 'antd';
+import { Spin, Alert, Image, Button, Space, Typography } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
 import './MarkdownRenderer.css';
 import remarkImageGallery from '../remark/remarkImageGallery';
 import remarkDetails from '../remark/remarkDetails';
@@ -68,7 +70,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
   const [markdown, setMarkdown] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [resolvedPath, setResolvedPath] = useState<string | null>(null);
   const t = translations[language].guide;
+  const submissionT = translations[language].submission;
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchMarkdown = async () => {
@@ -81,12 +86,14 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
         if (response.ok) {
           const text = await response.text();
           setMarkdown(text);
+          setResolvedPath(`content/${language}/${file}.md`);
         } else if (language === 'en') {
           // If English file doesn't exist, fallback to Chinese version
           const fallbackResponse = await fetch(`${import.meta.env.BASE_URL}content/zh/${file}.md`);
           if (fallbackResponse.ok) {
             const text = await fallbackResponse.text();
             setMarkdown(text);
+            setResolvedPath(`content/zh/${file}.md`);
           } else {
             throw new Error(`Failed to fetch markdown file: ${file}.md`);
           }
@@ -126,8 +133,27 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
     return <Alert message={t.errorTitle} description={error} type="error" showIcon />;
   }
 
+  const handleEdit = () => {
+    if (!resolvedPath) return;
+    navigate(`/operit-submission-edit?path=${encodeURIComponent(resolvedPath)}`);
+  };
+
   return (
-    <div className="markdown-body">
+    <div>
+      <div className="markdown-edit-bar">
+        <Space wrap>
+          <Button type="primary" icon={<EditOutlined />} onClick={handleEdit} disabled={!resolvedPath}>
+            {submissionT.editButton}
+          </Button>
+          <Typography.Text type="secondary">{submissionT.editHint}</Typography.Text>
+        </Space>
+        {resolvedPath && (
+          <Typography.Text type="secondary" className="markdown-edit-path">
+            {resolvedPath}
+          </Typography.Text>
+        )}
+      </div>
+      <div className="markdown-body">
       <Image.PreviewGroup>
         <ReactMarkdown
           remarkPlugins={[remarkDetails, remarkGfm, remarkImageGallery]}
@@ -171,6 +197,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
           {markdown}
         </ReactMarkdown>
       </Image.PreviewGroup>
+      </div>
     </div>
   );
 };

@@ -172,23 +172,34 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
           <Col xs={0} lg={8}>
             <Space size="large" style={{ width: '100%', justifyContent: 'center' }}>
               {isHomePage ? (
-                <Anchor
-                  direction="horizontal"
-                  onClick={(e, link) => {
-                    if (link.href === '#guide') {
-                      e.preventDefault();
-                      navigate('/guide');
-                    } else {
-                      handleAnchorClick(e, link);
-                    }
-                  }}
-                  items={[
-                    { key: 'home', href: '#home', title: t('home') },
-                    { key: 'features', href: '#features', title: t('features') },
-                    { key: 'guide', href: '#guide', title: t('quickStart') }
-                  ]}
-                  style={{ backgroundColor: 'transparent' }}
-                />
+                <Space size="large">
+                  <Anchor
+                    direction="horizontal"
+                    onClick={(e, link) => {
+                      if (link.href.includes('#guide')) {
+                        e.preventDefault();
+                        navigate('/guide');
+                      } else {
+                        handleAnchorClick(e, link);
+                      }
+                    }}
+                    items={[
+                      { key: 'home', href: '#home', title: t('home') },
+                      { key: 'features', href: '#features', title: t('features') },
+                      { key: 'guide', href: '#guide', title: t('quickStart') },
+                    ]}
+                    style={{ backgroundColor: 'transparent' }}
+                  />
+                  <Link
+                    to="/operit-submission-center"
+                    style={{
+                      color: token.colorText,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    {t('personalCenter')}
+                  </Link>
+                </Space>
               ) : (
                 <Space size="large">
                   <Link 
@@ -209,6 +220,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     }}
                   >
                     {t('userGuide')}
+                  </Link>
+                  <Link
+                    to="/operit-submission-center"
+                    style={{
+                      color: location.pathname === '/operit-submission-center' ? token.colorPrimary : token.colorText,
+                      textDecoration: 'none',
+                      fontWeight: location.pathname === '/operit-submission-center' ? 'bold' : 'normal'
+                    }}
+                  >
+                    {t('personalCenter')}
                   </Link>
                 </Space>
               )}
@@ -330,6 +351,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 onClick={() => setMobileMenuOpen(false)}
               >
                 用户指南
+              </Button>
+            </Link>
+
+            <Link to="/operit-submission-center" style={{ width: '100%' }}>
+              <Button
+                type="default"
+                icon={<Avatar size="small" src={logo} />}
+                style={{ width: '100%' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('personalCenter')}
               </Button>
             </Link>
           </Space>

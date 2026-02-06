@@ -1,0 +1,16 @@
+name = "operit-api"
+main = "src/index.js"
+compatibility_date = "2026-02-06"
+account_id = "c667bf70582c5ceceda8d3d183ad8e3b"
+workers_dev = true
+
+routes = ["api.aaswordsman.org/*"]
+
+[vars]
+OPERIT_ALLOWED_ORIGINS = "https://operit.aaswordsman.org,http://localhost:5173,http://127.0.0.1:5173"
+OPERIT_TURNSTILE_SITE_KEY = "0x4AAAAAACYav8V4Md9nh4Z0"
+
+[[d1_databases]]
+binding = "OPERIT_SUBMISSION_DB"
+database_name = "operit_submission"
+database_id = "094b2ad8-0bd2-478b-be7c-ecbde87c2e2c"

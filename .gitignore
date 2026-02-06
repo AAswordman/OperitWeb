@@ -11,6 +11,9 @@ node_modules
 dist
 dist-ssr
 *.local
+.env
+.env.*
+!.env.example
 
 # Editor directories and files
 .vscode/*
@@ -24,3 +27,5 @@ dist-ssr
 *.sw?
 
 converted_docs
+.npm-cache
+.codex

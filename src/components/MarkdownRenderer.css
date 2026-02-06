@@ -14,6 +14,28 @@
   font-size: 16px;
 }
 
+.markdown-edit-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  border: 1px dashed rgba(24, 144, 255, 0.35);
+  border-radius: 10px;
+  background: rgba(24, 144, 255, 0.06);
+}
+
+[data-theme='dark'] .markdown-edit-bar {
+  border-color: rgba(120, 170, 255, 0.4);
+  background: rgba(120, 170, 255, 0.08);
+}
+
+.markdown-edit-path {
+  font-size: 12px;
+}
+
 .markdown-body h1,
 .markdown-body h2,
 .markdown-body h3,
