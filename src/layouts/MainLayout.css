@@ -1,0 +1,87 @@
+.main-layout {
+  min-height: 100vh;
+  background: transparent;
+}
+
+.main-header {
+  background: rgba(0, 0, 0, 0);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--border-color);
+  position: fixed;
+  width: 100%;
+  z-index: 1000;
+  padding: 0 24px;
+}
+
+.main-header-row {
+  height: 100%;
+}
+
+.main-logo-avatar {
+  background-color: transparent;
+}
+
+.main-logo-title {
+  margin: 0;
+  color: var(--text-color);
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.main-nav-space {
+  width: 100%;
+  justify-content: center;
+}
+
+.main-anchor {
+  background-color: transparent;
+}
+
+.main-link {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.main-link-active {
+  color: var(--primary-color);
+  font-weight: bold;
+}
+
+.main-link-muted {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.main-mobile-drawer .ant-drawer-body {
+  padding: 0;
+}
+
+.main-mobile-drawer .ant-drawer-header {
+  background: var(--background-color-secondary);
+  color: var(--text-color);
+}
+
+.main-mobile-drawer .ant-drawer-content {
+  background-color: var(--background-color-secondary);
+}
+
+.main-mobile-menu {
+  padding: 20px;
+}
+
+.main-mobile-space {
+  width: 100%;
+}
+
+.main-mobile-label {
+  color: var(--text-color);
+}
+
+.main-mobile-full {
+  width: 100%;
+}
+
+.main-anchor-link {
+  color: var(--text-color);
+  text-decoration: none;
+}

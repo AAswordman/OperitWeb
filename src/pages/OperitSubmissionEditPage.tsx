@@ -93,6 +93,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
   const [turnstileToken, setTurnstileToken] = useState('');
   const [siteKey, setSiteKey] = useState('');
   const [submitLoading, setSubmitLoading] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
   const [ipBanInfo, setIpBanInfo] = useState<IpBanInfo | null>(null);
@@ -302,26 +303,37 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
   };
 
   const handleSubmit = async () => {
+    setSubmitError(null);
     if (!title.trim()) {
-      message.error(t.errorTitleRequired);
+      const msg = t.errorTitleRequired;
+      setSubmitError(msg);
+      message.error(msg);
       return;
     }
     if (!content.trim() || content.trim().length < 20) {
-      message.error(t.errorContentTooShort);
+      const msg = t.errorContentTooShort;
+      setSubmitError(msg);
+      message.error(msg);
       return;
     }
     if (!authorName.trim()) {
-      message.error(t.errorAuthorRequired);
+      const msg = t.errorAuthorRequired;
+      setSubmitError(msg);
+      message.error(msg);
       return;
     }
     if (!turnstileToken) {
-      message.error(t.errorTurnstileRequired);
+      const msg = t.errorTurnstileRequired;
+      setSubmitError(msg);
+      message.error(msg);
       return;
     }
 
     setSubmitLoading(true);
     setIpBanInfo(null);
     try {
+      const controller = new AbortController();
+      const timeout = window.setTimeout(() => controller.abort(), 15000);
       const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/submissions`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -335,7 +347,9 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
           author_email: authorEmail.trim() || undefined,
           turnstile_token: turnstileToken,
         }),
+        signal: controller.signal,
       });
+      window.clearTimeout(timeout);
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
         if (data?.error === 'ip_banned') {
@@ -345,10 +359,12 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
             created_at: data?.created_at || null,
             banned_by: data?.banned_by || null,
           });
+          setSubmitError(t.ipBanTitle);
           message.error(t.ipBanTitle);
           return;
         }
         const msg = data?.error ? `${t.errorSubmitFailed}: ${data.error}` : t.errorSubmitFailed;
+        setSubmitError(msg);
         throw new Error(msg);
       }
       const createdAt = data?.created_at || new Date().toISOString();
@@ -388,7 +404,11 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
       setTurnstileToken('');
       setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
-      message.error((err as Error).message || t.errorSubmitFailed);
+      const msg = (err as Error).name === 'AbortError'
+        ? t.errorSubmitTimeout
+        : (err as Error).message || t.errorSubmitFailed;
+      setSubmitError(msg);
+      message.error(msg);
     } finally {
       setSubmitLoading(false);
     }
@@ -648,6 +668,10 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
                       )}
                     </div>
                   </div>
+
+                  {submitError && (
+                    <Alert type="error" showIcon message={t.errorTitle} description={submitError} />
+                  )}
 
                   <Space>
                     <Button onClick={() => navigate(-1)}>{t.back}</Button>

@@ -25,10 +25,11 @@ export interface OperitHistoryEntry {
   title: string;
   target_path: string;
   language: string;
+  reviewed_at?: string;
 }
 
 export interface OperitProgressEntry {
-  status: 'edited' | 'submitted';
+  status: 'edited' | 'submitted' | 'pending' | 'approved' | 'rejected';
   updated_at: string;
   title: string;
 }

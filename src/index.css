@@ -82,7 +82,6 @@ body {
     transition: background-color var(--transition-speed), color var(--transition-speed);
     overflow-x: hidden;
     touch-action: pan-y;
-    -webkit-overflow-scrolling: touch;
     cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1"><path d="M12 2l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5z"/></svg>') 12 12, auto;
 }
 
@@ -152,8 +151,8 @@ body {
 /* Glass morphism effect */
 .glass-effect {
     background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
     -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 

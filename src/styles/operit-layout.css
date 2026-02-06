@@ -1,0 +1,85 @@
+.operit-page {
+  padding-top: 88px;
+  padding-bottom: 48px;
+}
+
+.operit-page-content {
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.operit-page-content--lg {
+  max-width: 1200px;
+}
+
+.operit-page-content--md {
+  max-width: 1100px;
+}
+
+.operit-space-full {
+  width: 100%;
+}
+
+.operit-title-tight {
+  margin-bottom: 8px;
+}
+
+.operit-title-zero {
+  margin: 0;
+}
+
+.operit-paragraph-zero {
+  margin-bottom: 0;
+}
+
+.operit-card {
+  margin-top: 16px;
+}
+
+.operit-margin-top-16 {
+  margin-top: 16px;
+}
+
+.operit-margin-top-8 {
+  margin-top: 8px;
+}
+
+.operit-margin-bottom-8 {
+  margin-bottom: 8px;
+}
+
+.operit-margin-bottom-12 {
+  margin-bottom: 12px;
+}
+
+.operit-text-small {
+  font-size: 12px;
+}
+
+.operit-text-block {
+  display: block;
+}
+
+.operit-code-nowrap {
+  white-space: nowrap;
+}
+
+.operit-prewrap {
+  white-space: pre-wrap;
+}
+
+.operit-center {
+  text-align: center;
+}
+
+.operit-padding-32 {
+  padding: 32px;
+}
+
+.operit-hidden {
+  display: none;
+}
+
+.operit-full-width {
+  width: 100%;
+}

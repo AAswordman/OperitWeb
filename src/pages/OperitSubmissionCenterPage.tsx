@@ -31,6 +31,8 @@ import {
   importOperitLocalData,
   listOperitDrafts,
   saveOperitProfile,
+  saveOperitHistory,
+  saveOperitProgress,
   saveOperitTemplates,
   type OperitDraft,
   type OperitHistoryEntry,
@@ -61,9 +63,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   const [templates, setTemplates] = useState<OperitTemplate[]>(() => getOperitTemplates());
   const [templateTitle, setTemplateTitle] = useState('');
   const [templateContent, setTemplateContent] = useState('');
-  const [lookupIds, setLookupIds] = useState('');
   const [siteKey, setSiteKey] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState<string | null>(null);
@@ -87,6 +87,9 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
     counts: { total: number; pending: number; approved: number; rejected: number };
     last_reviewed_at: string | null;
   } | null>(null);
+  const [clearHistoryOpen, setClearHistoryOpen] = useState(false);
+  const [lookupExpanded, setLookupExpanded] = useState(false);
+  const [lookupVerifyOpen, setLookupVerifyOpen] = useState(false);
 
   const progressItems = useMemo(
     () =>
@@ -135,16 +138,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   };
 
   const handleDeleteHistory = () => {
-    Modal.confirm({
-      title: t.clearHistoryTitle,
-      content: t.clearHistoryHint,
-      okText: t.confirm,
-      cancelText: t.cancel,
-      onOk: () => {
-        importOperitLocalData({ history: [] });
-        setHistory([]);
-      },
-    });
+    setClearHistoryOpen(true);
   };
 
   const handleExport = () => {
@@ -218,33 +212,78 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   };
 
   const statusTag = (status: string) => {
+    if (status === 'pending') return <Tag color="gold">{t.statusPending}</Tag>;
+    if (status === 'approved') return <Tag color="green">{t.statusApproved}</Tag>;
+    if (status === 'rejected') return <Tag color="red">{t.statusRejected}</Tag>;
     if (status === 'submitted') return <Tag color="gold">{t.statusSubmitted}</Tag>;
     if (status === 'edited') return <Tag color="blue">{t.statusEdited}</Tag>;
     return <Tag>{status}</Tag>;
   };
 
-  const handleTurnstileVerify = useCallback((token: string) => {
-    setTurnstileToken(token);
+  const formatStatusText = (status: string) => {
+    if (status === 'pending') return t.statusPending;
+    if (status === 'approved') return t.statusApproved;
+    if (status === 'rejected') return t.statusRejected;
+    if (status === 'submitted') return t.statusSubmitted;
+    if (status === 'edited') return t.statusEdited;
+    return status;
+  };
+
+  const syncLocalWithLookup = useCallback((items: Array<{
+    id: string;
+    title: string;
+    target_path: string;
+    language: string;
+    status: string;
+    created_at: string;
+    reviewed_at: string | null;
+  }>) => {
+    if (!items.length) return;
+
+    const byId = new Map(items.map(item => [item.id, item]));
+
+    const historyNext = getOperitHistory().map(entry => {
+      const match = byId.get(entry.id);
+      if (!match) return entry;
+      return {
+        ...entry,
+        status: match.status || entry.status,
+        created_at: match.created_at || entry.created_at,
+        reviewed_at: match.reviewed_at || entry.reviewed_at,
+      };
+    });
+    saveOperitHistory(historyNext);
+    setHistory(historyNext);
+
+    const progressNext = getOperitProgress();
+    let progressChanged = false;
+    items.forEach(item => {
+      if (!item.target_path) return;
+      const updatedAt = item.reviewed_at || item.created_at || new Date().toISOString();
+      const existing = progressNext[item.target_path];
+      const nextStatus = item.status as OperitProgressEntry['status'];
+      const nextTitle = item.title || existing?.title || item.target_path;
+      if (!existing || existing.status !== nextStatus || existing.updated_at !== updatedAt || existing.title !== nextTitle) {
+        progressNext[item.target_path] = {
+          status: nextStatus,
+          updated_at: updatedAt,
+          title: nextTitle,
+        };
+        progressChanged = true;
+      }
+    });
+    if (progressChanged) {
+      saveOperitProgress(progressNext);
+      setProgress(progressNext);
+    }
   }, []);
 
-  const handleTurnstileExpire = useCallback(() => {
-    setTurnstileToken('');
-  }, []);
-
-  const handleLookup = async () => {
-    const ids = lookupIds
-      .split(/[\s,]+/)
-      .map(item => item.trim())
-      .filter(Boolean);
+  const handleLookup = async (token: string) => {
     const authorName = profile.authorName.trim();
     const authorEmail = profile.authorEmail.trim();
 
-    if (!authorName && !authorEmail && ids.length === 0) {
+    if (!authorName && !authorEmail) {
       message.error(t.lookupRequireIdentity);
-      return;
-    }
-    if (!turnstileToken) {
-      message.error(t.lookupRequireTurnstile);
       return;
     }
 
@@ -258,8 +297,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
         body: JSON.stringify({
           author_name: authorName || undefined,
           author_email: authorEmail || undefined,
-          submission_ids: ids.length ? ids : undefined,
-          turnstile_token: turnstileToken,
+          turnstile_token: token,
         }),
       });
       const data = await response.json().catch(() => ({}));
@@ -271,8 +309,11 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
         counts: data?.counts || { total: 0, pending: 0, approved: 0, rejected: 0 },
         last_reviewed_at: data?.last_reviewed_at || null,
       });
+      setLookupExpanded(false);
       setLookupBan(data?.ip_ban || null);
-      setTurnstileToken('');
+      if (Array.isArray(data?.items)) {
+        syncLocalWithLookup(data.items);
+      }
       setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
       setLookupError((err as Error).message || t.lookupFailed);
@@ -364,48 +405,18 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
               {t.lookupTitle}
             </Title>
             <Text type="secondary">{t.lookupSubtitle}</Text>
-            <Row gutter={[16, 16]}>
-              <Col xs={24} md={12}>
-                <Text type="secondary">{t.lookupName}</Text>
-                <Input
-                  value={profile.authorName}
-                  onChange={event => setProfile({ ...profile, authorName: event.target.value })}
-                />
-              </Col>
-              <Col xs={24} md={12}>
-                <Text type="secondary">{t.lookupEmail}</Text>
-                <Input
-                  value={profile.authorEmail}
-                  onChange={event => setProfile({ ...profile, authorEmail: event.target.value })}
-                />
-              </Col>
-            </Row>
-            <div>
-              <Text type="secondary">{t.lookupIds}</Text>
-              <Input.TextArea
-                rows={2}
-                value={lookupIds}
-                onChange={event => setLookupIds(event.target.value)}
-                placeholder={t.lookupIdsPlaceholder}
-              />
-            </div>
-            <div>
-              <Text type="secondary">{t.lookupTurnstile}</Text>
-              <div style={{ marginTop: 8 }}>
-                {siteKey ? (
-                  <TurnstileWidget
-                    key={turnstileResetKey}
-                    siteKey={siteKey}
-                    onVerify={handleTurnstileVerify}
-                    onExpire={handleTurnstileExpire}
-                  />
-                ) : (
-                  <Alert type="warning" message={t.turnstileMissing} showIcon />
-                )}
-              </div>
-            </div>
             <Space>
-              <Button type="primary" loading={lookupLoading} onClick={handleLookup}>
+              <Button
+                type="primary"
+                loading={lookupLoading}
+                onClick={() => {
+                  if (!profile.authorName.trim() && !profile.authorEmail.trim()) {
+                    message.error(t.lookupRequireIdentity);
+                    return;
+                  }
+                  setLookupVerifyOpen(true);
+                }}
+              >
                 {t.lookupAction}
               </Button>
             </Space>
@@ -464,31 +475,39 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                   <Text type="secondary">{t.lookupLastReviewed}</Text>
                   <div>{lookupResult.last_reviewed_at ? formatDateTime(lookupResult.last_reviewed_at) : t.lookupNoReviewYet}</div>
                 </Card>
-                <List
-                  size="small"
-                  dataSource={lookupResult.items}
-                  renderItem={item => (
-                    <List.Item>
-                      <List.Item.Meta
-                        title={item.title || item.target_path}
-                        description={(
-                          <Space direction="vertical" size={0}>
-                            <Text type="secondary">{item.target_path}</Text>
-                            <Text type="secondary">
-                              {item.status} | {formatDateTime(item.created_at)}
-                            </Text>
-                            {item.reviewed_at && (
+                <Space>
+                  <Button size="small" onClick={() => setLookupExpanded(value => !value)}>
+                    {lookupExpanded ? t.lookupCollapse : t.lookupExpand}
+                  </Button>
+                </Space>
+                {lookupExpanded && (
+                  <List
+                    size="small"
+                    dataSource={lookupResult.items}
+                    style={{ maxHeight: 320, overflow: 'auto' }}
+                    renderItem={item => (
+                      <List.Item>
+                        <List.Item.Meta
+                          title={item.title || item.target_path}
+                          description={(
+                            <Space direction="vertical" size={0}>
+                              <Text type="secondary">{item.target_path}</Text>
                               <Text type="secondary">
-                                {t.lookupReviewedAt.replace('{time}', formatDateTime(item.reviewed_at))}
+                                {formatStatusText(item.status)} | {formatDateTime(item.created_at)}
                               </Text>
-                            )}
-                          </Space>
-                        )}
-                      />
-                      <Tag>{item.language}</Tag>
-                    </List.Item>
-                  )}
-                />
+                              {item.reviewed_at && (
+                                <Text type="secondary">
+                                  {t.lookupReviewedAt.replace('{time}', formatDateTime(item.reviewed_at))}
+                                </Text>
+                              )}
+                            </Space>
+                          )}
+                        />
+                        <Tag>{item.language}</Tag>
+                      </List.Item>
+                    )}
+                  />
+                )}
               </>
             )}
           </Space>
@@ -605,7 +624,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                         <Space direction="vertical" size={0}>
                           <Text type="secondary">{item.target_path}</Text>
                           <Text type="secondary">
-                            {item.status} | {formatDateTime(item.created_at)}
+                            {formatStatusText(item.status)} | {formatDateTime(item.created_at)}
                           </Text>
                         </Space>
                       )}
@@ -705,6 +724,47 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
           </Space>
         </Card>
       </Content>
+
+      <Modal
+        title={t.clearHistoryTitle}
+        open={clearHistoryOpen}
+        onCancel={() => setClearHistoryOpen(false)}
+        onOk={() => {
+          importOperitLocalData({ history: [] });
+          setHistory([]);
+          setClearHistoryOpen(false);
+        }}
+        okText={t.confirm}
+        cancelText={t.cancel}
+      >
+        <Text>{t.clearHistoryHint}</Text>
+      </Modal>
+
+      <Modal
+        title={t.lookupTurnstile}
+        open={lookupVerifyOpen}
+        onCancel={() => setLookupVerifyOpen(false)}
+        footer={null}
+      >
+        <div style={{ marginTop: 8 }}>
+          {siteKey ? (
+            <TurnstileWidget
+              key={turnstileResetKey}
+              siteKey={siteKey}
+              onVerify={token => {
+                if (lookupLoading) return;
+                setLookupVerifyOpen(false);
+                handleLookup(token);
+              }}
+              onExpire={() => {
+                // no-op
+              }}
+            />
+          ) : (
+            <Alert type="warning" message={t.turnstileMissing} showIcon />
+          )}
+        </div>
+      </Modal>
     </main>
   );
 };

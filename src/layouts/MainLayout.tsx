@@ -28,6 +28,7 @@ import {
 import ParticleBackground from '../components/ParticleBackground';
 import { translations } from '../translations';
 import logo from '/logo.png';
+import './MainLayout.css';
 
 const { Header } = Layout;
 const { Title } = Typography;
@@ -126,7 +127,6 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
   }));
 
   const isHomePage = location.pathname === '/';
-  const isGuidePage = location.pathname.startsWith('/guide');
   
   return (
     <Layout style={{ 

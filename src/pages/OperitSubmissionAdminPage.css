@@ -1,0 +1,73 @@
+.operit-admin-content-preview {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  padding: 16px;
+  background: rgba(0, 0, 0, 0.02);
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.operit-admin-divider {
+  margin: 8px 0;
+}
+
+.operit-admin-diff-toolbar {
+  margin-bottom: 8px;
+}
+
+.operit-admin-diff-source {
+  margin-bottom: 8px;
+}
+
+.operit-admin-diff-alert {
+  margin-bottom: 12px;
+}
+
+.operit-admin-diff-container {
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.operit-admin-diff-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  background: rgba(0, 0, 0, 0.2);
+  font-weight: 600;
+}
+
+.operit-admin-diff-header-cell {
+  padding: 6px 10px;
+}
+
+.operit-admin-diff-body {
+  max-height: 360px;
+  overflow: auto;
+}
+
+.operit-admin-diff-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 12px;
+}
+
+.operit-admin-diff-cell {
+  padding: 4px 10px;
+  white-space: pre-wrap;
+}
+
+.operit-admin-diff-cell--delete {
+  background: rgba(255, 77, 79, 0.15);
+}
+
+.operit-admin-diff-cell--insert {
+  background: rgba(82, 196, 26, 0.15);
+}
+
+.operit-admin-descriptions .ant-descriptions-item-label {
+  width: 160px;
+}
