@@ -1,0 +1,20 @@
+name: Cloudflare Pages Daily Refresh
+
+on:
+  schedule:
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+
+jobs:
+  trigger-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Cloudflare Pages deploy hook
+        env:
+          CF_PAGES_DEPLOY_HOOK_URL: ${{ secrets.CF_PAGES_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$CF_PAGES_DEPLOY_HOOK_URL" ]; then
+            echo "Missing CF_PAGES_DEPLOY_HOOK_URL secret."
+            exit 1
+          fi
+          curl -fsS -X POST --retry 3 --retry-delay 5 -d "" "$CF_PAGES_DEPLOY_HOOK_URL"
