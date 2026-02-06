@@ -9,6 +9,11 @@ routes = ["api.aaswordsman.org/*"]
 [vars]
 OPERIT_ALLOWED_ORIGINS = "https://operit.aaswordsman.org,http://localhost:5173,http://127.0.0.1:5173"
 OPERIT_TURNSTILE_SITE_KEY = "0x4AAAAAACYav8V4Md9nh4Z0"
+OPERIT_GITHUB_AUTO_PR = "true"
+OPERIT_GITHUB_OWNER = "AAswordman"
+OPERIT_GITHUB_REPO = "OperitWeb"
+OPERIT_GITHUB_DEFAULT_BRANCH = "main"
+OPERIT_REPO_CONTENT_PREFIX = "public"
 
 [[d1_databases]]
 binding = "OPERIT_SUBMISSION_DB"

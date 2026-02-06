@@ -4,6 +4,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Spin, Alert, Image, Button, Space, Typography } from 'antd';
 import { EditOutlined } from '@ant-design/icons';
@@ -14,6 +15,8 @@ import { translations } from '../translations';
 
 // Omit 'ref' from the standard 'code' component props to avoid type conflicts with SyntaxHighlighter
 type CodeComponentProps = Omit<ComponentProps<'code'>, 'ref'>;
+type SyntaxTheme = NonNullable<SyntaxHighlighterProps['style']>;
+const syntaxTheme = vscDarkPlus as unknown as SyntaxTheme;
 
 // Lazy-loaded image component using Intersection Observer
 const LazyImage: React.FC<React.ComponentProps<typeof Image>> = (props) => {
@@ -160,11 +163,12 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
           rehypePlugins={[rehypeRaw]}
           urlTransform={urlTransform}
           components={{
-            code({ inline, className, children, ...props }: CodeComponentProps & { inline?: boolean }) {
+            code({ inline, className, children, style, ...props }: CodeComponentProps & { inline?: boolean }) {
+              void style;
               const match = /language-(\w+)/.exec(className || '');
               return !inline && match ? (
                 <SyntaxHighlighter
-                  style={vscDarkPlus as any}
+                  style={syntaxTheme}
                   language={match[1]}
                   PreTag="div"
                   {...props}
@@ -177,7 +181,11 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
                 </code>
               );
             },
-            img: ({ node: _node, onClick: _onClick, ...props }) => <LazyImage {...props} />,
+            img: ({ node, onClick, ...props }) => {
+              void node;
+              void onClick;
+              return <LazyImage {...props} />;
+            },
             p: ({ node, children, ...props }) => {
               const hasImage = node?.children.some(
                 (child) => (child as { type?: string; tagName?: string }).type === 'element' && (child as { tagName?: string }).tagName === 'img'

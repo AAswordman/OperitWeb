@@ -62,6 +62,13 @@ interface SubmissionResult {
   created_at: string;
 }
 
+interface IpBanInfo {
+  reason?: string | null;
+  expires_at?: string | null;
+  created_at?: string | null;
+  banned_by?: string | null;
+}
+
 const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ language }) => {
   const t = translations[language].submission;
   const location = useLocation();
@@ -88,6 +95,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
   const [submitLoading, setSubmitLoading] = useState(false);
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submissionResult, setSubmissionResult] = useState<SubmissionResult | null>(null);
+  const [ipBanInfo, setIpBanInfo] = useState<IpBanInfo | null>(null);
   const [draftInfo, setDraftInfo] = useState<OperitDraft | null>(null);
   const [draftPending, setDraftPending] = useState(false);
   const [draftSavedAt, setDraftSavedAt] = useState<string | null>(null);
@@ -312,6 +320,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     }
 
     setSubmitLoading(true);
+    setIpBanInfo(null);
     try {
       const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/submissions`, {
         method: 'POST',
@@ -329,6 +338,16 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
       });
       const data = await response.json().catch(() => ({}));
       if (!response.ok) {
+        if (data?.error === 'ip_banned') {
+          setIpBanInfo({
+            reason: data?.reason || null,
+            expires_at: data?.expires_at || null,
+            created_at: data?.created_at || null,
+            banned_by: data?.banned_by || null,
+          });
+          message.error(t.ipBanTitle);
+          return;
+        }
         const msg = data?.error ? `${t.errorSubmitFailed}: ${data.error}` : t.errorSubmitFailed;
         throw new Error(msg);
       }
@@ -365,6 +384,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
         title: title.trim() || targetPath,
       });
       message.success(t.submitSuccess);
+      setIpBanInfo(null);
       setTurnstileToken('');
       setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
@@ -420,6 +440,30 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
             style={{ marginTop: 16 }}
             message={t.errorTitle}
             description={docError}
+          />
+        )}
+
+        {ipBanInfo && (
+          <Alert
+            type="error"
+            showIcon
+            style={{ marginTop: 16 }}
+            message={t.ipBanTitle}
+            description={(
+              <Space direction="vertical" size={0}>
+                <Text>{t.ipBanSubtitle}</Text>
+                <Text type="secondary">
+                  {t.ipBanReasonLabel}: {ipBanInfo.reason || '-'}
+                </Text>
+                <Text type="secondary">
+                  {t.ipBanExpiresLabel}:{' '}
+                  {ipBanInfo.expires_at ? formatDateTime(ipBanInfo.expires_at) : t.ipBanPermanent}
+                </Text>
+                <Text type="secondary">
+                  {t.ipBanByLabel}: {ipBanInfo.banned_by || '-'}
+                </Text>
+              </Space>
+            )}
           />
         )}
 

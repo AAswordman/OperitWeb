@@ -3,6 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Image } from 'antd';
 import remarkImageGallery from '../remark/remarkImageGallery';
@@ -10,6 +11,8 @@ import remarkDetails from '../remark/remarkDetails';
 import './MarkdownRenderer.css';
 
 type CodeComponentProps = Omit<ComponentProps<'code'>, 'ref'>;
+type SyntaxTheme = NonNullable<SyntaxHighlighterProps['style']>;
+const syntaxTheme = vscDarkPlus as unknown as SyntaxTheme;
 
 const urlTransform = (uri: string) => {
   if (uri.startsWith('/') && !uri.startsWith('//')) {
@@ -32,11 +35,12 @@ const OperitMarkdownPreview: React.FC<OperitMarkdownPreviewProps> = ({ content }
         rehypePlugins={[rehypeRaw]}
         urlTransform={urlTransform}
         components={{
-          code({ inline, className, children, ...props }: CodeComponentProps & { inline?: boolean }) {
+          code({ inline, className, children, style, ...props }: CodeComponentProps & { inline?: boolean }) {
+            void style;
             const match = /language-(\w+)/.exec(className || '');
             return !inline && match ? (
               <SyntaxHighlighter
-                style={vscDarkPlus as any}
+                style={syntaxTheme}
                 language={match[1]}
                 PreTag="div"
                 {...props}
@@ -49,7 +53,11 @@ const OperitMarkdownPreview: React.FC<OperitMarkdownPreviewProps> = ({ content }
               </code>
             );
           },
-          img: ({ node: _node, onClick: _onClick, ...props }) => <Image {...props} />,
+          img: ({ node, onClick, ...props }) => {
+            void node;
+            void onClick;
+            return <Image {...props} />;
+          },
         }}
       >
         {content}

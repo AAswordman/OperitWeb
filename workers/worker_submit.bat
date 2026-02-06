@@ -9,6 +9,7 @@ set "ENV_FILE=%ROOT%\.env.local"
 set "WORKER_DIR=%ROOT%\workers\operit-api"
 set "NPM_CACHE=%ROOT%\.npm-cache"
 set "NPM_REGISTRY=https://registry.npmjs.org/"
+set "WRANGLER_ARGS=deploy --no-bundle"
 
 if not exist "%WORKER_DIR%" (
   echo Missing worker directory: %WORKER_DIR%
@@ -50,10 +51,21 @@ if not "%OPERIT_WRANGLER_CMD%"=="" (
   exit /b %EXITCODE%
 )
 
+REM Try direct CLI from local npx cache to avoid spawn EPERM in wrangler wrapper.
+for /d %%D in ("%NPM_CACHE%\\_npx\\*") do (
+  if exist "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" (
+    echo Using cached wrangler CLI
+    call node "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" %WRANGLER_ARGS%
+    set "EXITCODE=%ERRORLEVEL%"
+    popd >nul
+    exit /b %EXITCODE%
+  )
+)
+
 where npx >nul 2>&1
 if %ERRORLEVEL%==0 (
   echo Using npx wrangler deploy
-  call npx wrangler deploy
+  call npx wrangler %WRANGLER_ARGS%
   set "EXITCODE=%ERRORLEVEL%"
   popd >nul
   exit /b %EXITCODE%
@@ -62,7 +74,7 @@ if %ERRORLEVEL%==0 (
 where pnpm >nul 2>&1
 if %ERRORLEVEL%==0 (
   echo Using pnpm wrangler deploy
-  call pnpm wrangler deploy
+  call pnpm wrangler %WRANGLER_ARGS%
   set "EXITCODE=%ERRORLEVEL%"
   popd >nul
   exit /b %EXITCODE%
@@ -71,7 +83,7 @@ if %ERRORLEVEL%==0 (
 where npm >nul 2>&1
 if %ERRORLEVEL%==0 (
   echo Using npm exec wrangler deploy
-  call npm exec wrangler deploy
+  call npm exec wrangler -- %WRANGLER_ARGS%
   set "EXITCODE=%ERRORLEVEL%"
   popd >nul
   exit /b %EXITCODE%

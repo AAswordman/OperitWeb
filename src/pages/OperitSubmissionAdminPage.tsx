@@ -26,11 +26,12 @@ import {
   EyeOutlined,
   ReloadOutlined,
   SettingOutlined,
+  BlockOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations';
 
 const { Content } = Layout;
-const { Title, Text, Paragraph } = Typography;
+const { Title, Text, Paragraph, Link } = Typography;
 
 type SubmissionStatus = 'pending' | 'approved' | 'rejected';
 type StatusFilter = SubmissionStatus | 'all';
@@ -49,6 +50,30 @@ interface SubmissionItem {
   reviewed_at?: string | null;
   reviewer?: string | null;
   review_notes?: string | null;
+  pr_number?: number | null;
+  pr_url?: string | null;
+  pr_branch?: string | null;
+  pr_state?: string | null;
+  pr_created_at?: string | null;
+  pr_error?: string | null;
+}
+
+interface SubmissionPrInfo {
+  status?: string;
+  number?: number;
+  url?: string;
+  branch?: string;
+  created_at?: string;
+  error?: string;
+}
+
+interface IpBanItem {
+  ip_hash: string;
+  reason?: string | null;
+  notes?: string | null;
+  created_at: string;
+  expires_at?: string | null;
+  banned_by?: string | null;
 }
 
 interface OperitSubmissionAdminPageProps {
@@ -112,6 +137,19 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   const [actionType, setActionType] = useState<'approve' | 'reject'>('approve');
   const [actionNotes, setActionNotes] = useState('');
 
+  const [ipBanModalOpen, setIpBanModalOpen] = useState(false);
+  const [ipBanForm, setIpBanForm] = useState({
+    submissionId: '',
+    ip: '',
+    reason: '',
+    notes: '',
+    days: 0,
+  });
+  const [ipBans, setIpBans] = useState<IpBanItem[]>([]);
+  const [ipBanLoading, setIpBanLoading] = useState(false);
+  const [ipBanListLoading, setIpBanListLoading] = useState(false);
+  const [ipBanError, setIpBanError] = useState<string | null>(null);
+
   useEffect(() => {
     localStorage.setItem(STORAGE.apiBase, apiBase);
   }, [apiBase]);
@@ -140,6 +178,114 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     }
     return { response, data, text };
   }, []);
+
+  const openIpBanModal = (submissionId?: string) => {
+    setIpBanForm(prev => ({
+      ...prev,
+      submissionId: submissionId || prev.submissionId,
+    }));
+    setIpBanModalOpen(true);
+  };
+
+  const loadIpBans = useCallback(async () => {
+    if (!adminToken.trim()) {
+      setIpBanError(t.errorTokenRequired);
+      return;
+    }
+    setIpBanListLoading(true);
+    setIpBanError(null);
+    try {
+      const url = new URL(`${apiBase.replace(/\/+$/, '')}/api/admin/ip-bans`);
+      url.searchParams.set('limit', '100');
+      const { response, data } = await fetchJson(url.toString(), {
+        headers: buildAdminHeaders(adminToken),
+      });
+      if (!response.ok) {
+        const apiError = (data as { error?: string })?.error || response.statusText;
+        throw new Error(apiError || t.ipBanLoadFailed);
+      }
+      const list = (data as { items?: IpBanItem[] })?.items || [];
+      setIpBans(list);
+    } catch (err) {
+      setIpBanError((err as Error).message || t.ipBanLoadFailed);
+    } finally {
+      setIpBanListLoading(false);
+    }
+  }, [adminToken, apiBase, fetchJson, t]);
+
+  const createIpBan = useCallback(async () => {
+    if (!adminToken.trim()) {
+      setIpBanError(t.errorTokenRequired);
+      return;
+    }
+    if (!ipBanForm.submissionId.trim() && !ipBanForm.ip.trim()) {
+      message.error(t.ipBanTargetRequired);
+      return;
+    }
+    const days = Number(ipBanForm.days || 0);
+    const expiresAt = days > 0 ? new Date(Date.now() + days * 86400000).toISOString() : undefined;
+    setIpBanLoading(true);
+    try {
+      const url = `${apiBase.replace(/\/+$/, '')}/api/admin/ip-bans`;
+      const payload = {
+        submission_id: ipBanForm.submissionId.trim() || undefined,
+        ip: ipBanForm.ip.trim() || undefined,
+        reason: ipBanForm.reason.trim() || undefined,
+        notes: ipBanForm.notes.trim() || undefined,
+        banned_by: reviewer.trim() || undefined,
+        expires_at: expiresAt,
+      };
+      const { response, data } = await fetchJson(url, {
+        method: 'POST',
+        headers: {
+          ...buildAdminHeaders(adminToken),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      if (!response.ok) {
+        const apiError = (data as { error?: string })?.error || response.statusText;
+        throw new Error(apiError || t.ipBanFailed);
+      }
+      message.success(t.ipBanSuccess);
+      setIpBanModalOpen(false);
+      setIpBanForm(prev => ({
+        ...prev,
+        submissionId: '',
+        ip: '',
+        reason: '',
+        notes: '',
+        days: 0,
+      }));
+      loadIpBans();
+    } catch (err) {
+      message.error((err as Error).message || t.ipBanFailed);
+    } finally {
+      setIpBanLoading(false);
+    }
+  }, [adminToken, apiBase, fetchJson, ipBanForm, reviewer, t, loadIpBans]);
+
+  const deleteIpBan = useCallback(async (ipHash: string) => {
+    if (!adminToken.trim()) {
+      setIpBanError(t.errorTokenRequired);
+      return;
+    }
+    try {
+      const url = `${apiBase.replace(/\/+$/, '')}/api/admin/ip-bans/${encodeURIComponent(ipHash)}`;
+      const { response, data } = await fetchJson(url, {
+        method: 'POST',
+        headers: buildAdminHeaders(adminToken),
+      });
+      if (!response.ok) {
+        const apiError = (data as { error?: string })?.error || response.statusText;
+        throw new Error(apiError || t.ipUnbanFailed);
+      }
+      message.success(t.ipUnbanSuccess);
+      setIpBans(prev => prev.filter(item => item.ip_hash !== ipHash));
+    } catch (err) {
+      message.error((err as Error).message || t.ipUnbanFailed);
+    }
+  }, [adminToken, apiBase, fetchJson, t]);
 
   const loadSubmissions = useCallback(async () => {
     if (!adminToken.trim()) {
@@ -246,6 +392,17 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
       }
 
       const reviewedAt = (data as { reviewed_at?: string })?.reviewed_at || new Date().toISOString();
+      const pr = (data as { pr?: SubmissionPrInfo })?.pr;
+      const prInfo = pr
+        ? {
+            pr_number: pr.number ?? null,
+            pr_url: pr.url ?? null,
+            pr_branch: pr.branch ?? null,
+            pr_state: pr.status ?? null,
+            pr_created_at: pr.created_at ?? null,
+            pr_error: pr.error ?? null,
+          }
+        : {};
 
       setItems(prev =>
         prev.flatMap(entry => {
@@ -258,6 +415,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               reviewed_at: reviewedAt,
               reviewer: reviewer || entry.reviewer,
               review_notes: actionNotes || entry.review_notes,
+              ...prInfo,
             },
           ];
         }),
@@ -271,10 +429,14 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
           reviewed_at: reviewedAt,
           reviewer: reviewer || prev.reviewer,
           review_notes: actionNotes || prev.review_notes,
+          ...prInfo,
         };
       });
 
       message.success(actionType === 'approve' ? t.messageApproved : t.messageRejected);
+      if (pr?.status === 'failed') {
+        message.warning(t.messagePrFailed);
+      }
       setActionOpen(false);
     } catch (err) {
       message.error((err as Error).message || t.messageActionFailed);
@@ -390,7 +552,56 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               onClick={() => triggerAction(record, 'reject')}
             />
           </Tooltip>
+          <Tooltip title={t.ipBanOpenAction}>
+            <Button
+              size="small"
+              icon={<BlockOutlined />}
+              onClick={() => openIpBanModal(record.id)}
+            />
+          </Tooltip>
         </Space>
+      ),
+    },
+  ];
+
+  const ipBanColumns: ColumnsType<IpBanItem> = [
+    {
+      title: t.ipBanColumnIp,
+      dataIndex: 'ip_hash',
+      render: value => (
+        <Text code style={{ whiteSpace: 'nowrap' }}>
+          {value}
+        </Text>
+      ),
+    },
+    {
+      title: t.ipBanColumnReason,
+      dataIndex: 'reason',
+      render: value => value || '-',
+    },
+    {
+      title: t.ipBanColumnBy,
+      dataIndex: 'banned_by',
+      render: value => value || '-',
+    },
+    {
+      title: t.ipBanColumnCreated,
+      dataIndex: 'created_at',
+      render: value => formatDateTime(value),
+    },
+    {
+      title: t.ipBanColumnExpires,
+      dataIndex: 'expires_at',
+      render: value => (value ? formatDateTime(value) : t.ipBanPermanent),
+    },
+    {
+      title: t.ipBanColumnActions,
+      dataIndex: 'actions',
+      width: 120,
+      render: (_, record) => (
+        <Button size="small" danger onClick={() => deleteIpBan(record.ip_hash)}>
+          {t.ipUnban}
+        </Button>
       ),
     },
   ];
@@ -509,6 +720,37 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
             style={{ marginTop: 16 }}
           />
         </Card>
+
+        <Card style={{ marginTop: 16 }}>
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            <div>
+              <Title level={4} style={{ marginBottom: 4 }}>
+                {t.ipBanTitle}
+              </Title>
+              <Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                {t.ipBanSubtitle}
+              </Paragraph>
+            </div>
+            <Space>
+              <Button icon={<BlockOutlined />} onClick={() => openIpBanModal()}>
+                {t.ipBanAction}
+              </Button>
+              <Button loading={ipBanListLoading} onClick={loadIpBans} icon={<ReloadOutlined />}>
+                {t.ipBanLoad}
+              </Button>
+            </Space>
+            {ipBanError && (
+              <Alert type="error" showIcon message={t.ipBanLoadFailed} description={ipBanError} />
+            )}
+            <Table
+              rowKey="ip_hash"
+              loading={ipBanListLoading}
+              columns={ipBanColumns}
+              dataSource={ipBans}
+              pagination={false}
+            />
+          </Space>
+        </Card>
       </Content>
 
       <Drawer
@@ -558,6 +800,33 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               <Descriptions.Item label={t.detailReviewer}>
                 {selectedItem.reviewer || '-'}
               </Descriptions.Item>
+              <Descriptions.Item label={t.detailPr}>
+                {selectedItem.pr_url ? (
+                  <Link href={selectedItem.pr_url} target="_blank" rel="noreferrer">
+                    #{selectedItem.pr_number || 'PR'}
+                  </Link>
+                ) : selectedItem.pr_state === 'failed' ? (
+                  <Text type="danger">{t.prStatusFailed}</Text>
+                ) : selectedItem.pr_state === 'skipped' ? (
+                  <Text type="secondary">{t.prStatusSkipped}</Text>
+                ) : selectedItem.pr_state === 'created' ? (
+                  <Text type="secondary">{t.prStatusCreated}</Text>
+                ) : (
+                  '-'
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label={t.detailPrBranch}>
+                {selectedItem.pr_branch ? (
+                  <Text code>{selectedItem.pr_branch}</Text>
+                ) : (
+                  '-'
+                )}
+              </Descriptions.Item>
+              {selectedItem.pr_error && (
+                <Descriptions.Item label={t.detailPrError}>
+                  <Text type="danger">{selectedItem.pr_error}</Text>
+                </Descriptions.Item>
+              )}
             </Descriptions>
 
             <div>
@@ -598,6 +867,12 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               >
                 {t.reject}
               </Button>
+              <Button
+                icon={<BlockOutlined />}
+                onClick={() => openIpBanModal(selectedItem.id)}
+              >
+                {t.ipBanOpenAction}
+              </Button>
             </Space>
           </Space>
         )}
@@ -626,6 +901,48 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
             onChange={event => setActionNotes(event.target.value)}
             placeholder={t.modalNotesPlaceholder}
           />
+        </Space>
+      </Modal>
+
+      <Modal
+        title={t.ipBanTitle}
+        open={ipBanModalOpen}
+        onCancel={() => setIpBanModalOpen(false)}
+        onOk={createIpBan}
+        okText={t.ipBanAction}
+        confirmLoading={ipBanLoading}
+      >
+        <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+          <Input
+            value={ipBanForm.submissionId}
+            onChange={event => setIpBanForm(prev => ({ ...prev, submissionId: event.target.value }))}
+            placeholder={t.ipBanTargetLabel}
+          />
+          <Input
+            value={ipBanForm.ip}
+            onChange={event => setIpBanForm(prev => ({ ...prev, ip: event.target.value }))}
+            placeholder={t.ipBanIpLabel}
+          />
+          <Input
+            value={ipBanForm.reason}
+            onChange={event => setIpBanForm(prev => ({ ...prev, reason: event.target.value }))}
+            placeholder={t.ipBanReasonLabel}
+          />
+          <Input.TextArea
+            rows={3}
+            value={ipBanForm.notes}
+            onChange={event => setIpBanForm(prev => ({ ...prev, notes: event.target.value }))}
+            placeholder={t.ipBanNotesLabel}
+          />
+          <InputNumber
+            min={0}
+            max={3650}
+            value={ipBanForm.days}
+            onChange={value => setIpBanForm(prev => ({ ...prev, days: Number(value || 0) }))}
+            style={{ width: '100%' }}
+            placeholder={t.ipBanDaysLabel}
+          />
+          <Text type="secondary">{t.ipBanDaysLabel}</Text>
         </Space>
       </Modal>
     </main>

@@ -67,6 +67,13 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState<string | null>(null);
+  const [lookupBan, setLookupBan] = useState<{
+    reason?: string | null;
+    expires_at?: string | null;
+    created_at?: string | null;
+    banned_by?: string | null;
+    notes?: string | null;
+  } | null>(null);
   const [lookupResult, setLookupResult] = useState<{
     items: Array<{
       id: string;
@@ -243,6 +250,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
 
     setLookupLoading(true);
     setLookupError(null);
+    setLookupBan(null);
     try {
       const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/submissions/lookup`, {
         method: 'POST',
@@ -263,6 +271,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
         counts: data?.counts || { total: 0, pending: 0, approved: 0, rejected: 0 },
         last_reviewed_at: data?.last_reviewed_at || null,
       });
+      setLookupBan(data?.ip_ban || null);
       setTurnstileToken('');
       setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
@@ -401,6 +410,28 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
               </Button>
             </Space>
             {lookupError && <Alert type="error" showIcon message={t.lookupFailed} description={lookupError} />}
+            {lookupBan && (
+              <Alert
+                type="error"
+                showIcon
+                message={t.ipBanTitle}
+                description={(
+                  <Space direction="vertical" size={0}>
+                    <Text>{t.ipBanSubtitle}</Text>
+                    <Text type="secondary">
+                      {t.ipBanReasonLabel}: {lookupBan.reason || '-'}
+                    </Text>
+                    <Text type="secondary">
+                      {t.ipBanExpiresLabel}:{' '}
+                      {lookupBan.expires_at ? formatDateTime(lookupBan.expires_at) : t.ipBanPermanent}
+                    </Text>
+                    <Text type="secondary">
+                      {t.ipBanByLabel}: {lookupBan.banned_by || '-'}
+                    </Text>
+                  </Space>
+                )}
+              />
+            )}
             {lookupResult && (
               <>
                 <Row gutter={[16, 16]}>

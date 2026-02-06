@@ -1,6 +1,6 @@
 import React, { useCallback, useImperativeHandle, useRef } from 'react';
 import { Button, Col, Input, Row, Space, Tooltip, Typography } from 'antd';
-import type { InputRef } from 'antd';
+import type { TextAreaRef } from 'antd/es/input/TextArea';
 import {
   BoldOutlined,
   ItalicOutlined,
@@ -61,30 +61,33 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
   fontSize,
   labels,
 }, ref) => {
-  const textAreaRef = useRef<InputRef>(null);
+  const textAreaRef = useRef<TextAreaRef>(null);
   const previewRef = useRef<HTMLDivElement | null>(null);
   const syncingRef = useRef(false);
 
   const getTextArea = () => textAreaRef.current?.resizableTextArea?.textArea;
 
-  const applyTextChange = (
-    replacement: string,
-    rangeStart: number,
-    rangeEnd: number,
-    selectionStart: number,
-    selectionEnd: number,
-  ) => {
-    const textarea = getTextArea();
-    if (!textarea) {
-      const nextValue = `${value.slice(0, rangeStart)}${replacement}${value.slice(rangeEnd)}`;
-      onChange(nextValue);
-      return;
-    }
-    textarea.focus();
-    textarea.setRangeText(replacement, rangeStart, rangeEnd, 'end');
-    textarea.setSelectionRange(selectionStart, selectionEnd);
-    textarea.dispatchEvent(new Event('input', { bubbles: true }));
-  };
+  const applyTextChange = useCallback(
+    (
+      replacement: string,
+      rangeStart: number,
+      rangeEnd: number,
+      selectionStart: number,
+      selectionEnd: number,
+    ) => {
+      const textarea = getTextArea();
+      if (!textarea) {
+        const nextValue = `${value.slice(0, rangeStart)}${replacement}${value.slice(rangeEnd)}`;
+        onChange(nextValue);
+        return;
+      }
+      textarea.focus();
+      textarea.setRangeText(replacement, rangeStart, rangeEnd, 'end');
+      textarea.setSelectionRange(selectionStart, selectionEnd);
+      textarea.dispatchEvent(new Event('input', { bubbles: true }));
+    },
+    [value, onChange],
+  );
 
   const wrapSelection = useCallback(
     (prefix: string, suffix: string, placeholderText: string) => {
@@ -99,7 +102,7 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
       const replacement = `${prefix}${content}${suffix}`;
       applyTextChange(replacement, start, end, selectionStart, selectionEnd);
     },
-    [value],
+    [value, applyTextChange],
   );
 
   const prefixLines = useCallback(
@@ -125,7 +128,7 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
       const selectionEnd = lineStart + updated.length;
       applyTextChange(updated, lineStart, blockEnd, selectionStart, selectionEnd);
     },
-    [value],
+    [value, applyTextChange],
   );
 
   const insertCodeBlock = useCallback(() => {
@@ -140,7 +143,7 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
       const selectionStart = start + text.length;
       applyTextChange(text, start, end, selectionStart, selectionStart);
     },
-  }), [value, onChange]);
+  }), [value, applyTextChange]);
 
   const panelStyle = {
     height: '70vh',
