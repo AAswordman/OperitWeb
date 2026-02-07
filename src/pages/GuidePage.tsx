@@ -88,12 +88,13 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 23 },
       { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 24 },
       { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 25 },
-      { key: 'web-development', label: t.webDevelopment, path: '/guide/development/web-development', category: 'development', level: 26 },
-      { key: 'web-packaging', label: t.webPackaging, path: '/guide/development/web-packaging', category: 'development', level: 27 },
-      { key: 'mobile-development', label: t.mobileDevelopment, path: '/guide/development/mobile-development', category: 'development', level: 28 },
-      { key: 'panel-introduction', label: t.panelIntroduction, path: '/guide/interface-guide/panel-introduction', category: 'interface-guide', level: 29 },
-      { key: 'return-code-generator', label: t.returnCodeGenerator, path: '/guide/tools-and-features/return-code-generator', category: 'tools-and-features', level: 30 },
-      { key: 'faq', label: t.faq, path: '/guide/faq', category: 'faq', level: 31 },
+      { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 26 },
+      { key: 'web-development', label: t.webDevelopment, path: '/guide/development/web-development', category: 'development', level: 27 },
+      { key: 'web-packaging', label: t.webPackaging, path: '/guide/development/web-packaging', category: 'development', level: 28 },
+      { key: 'mobile-development', label: t.mobileDevelopment, path: '/guide/development/mobile-development', category: 'development', level: 29 },
+      { key: 'panel-introduction', label: t.panelIntroduction, path: '/guide/interface-guide/panel-introduction', category: 'interface-guide', level: 30 },
+      { key: 'return-code-generator', label: t.returnCodeGenerator, path: '/guide/tools-and-features/return-code-generator', category: 'tools-and-features', level: 31 },
+      { key: 'faq', label: t.faq, path: '/guide/faq', category: 'faq', level: 32 },
     ];
     return docs;
   };
@@ -497,6 +498,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           children: [
             { key: 'ui-automation', label: <Link to="/guide/automation/ui-automation">{t.uiAutomation}</Link> },
             { key: 'autoglm-mode', label: <Link to="/guide/automation/autoglm-mode">{t.autoglmMode}</Link> },
+            { key: 'virtual-screen', label: <Link to="/guide/automation/virtual-screen">{t.virtualScreen}</Link> },
           ],
         },
         {
