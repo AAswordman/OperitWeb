@@ -9,9 +9,20 @@ const MAX_TITLE_LENGTH = 120;
 const MAX_NAME_LENGTH = 60;
 const MAX_EMAIL_LENGTH = 120;
 const MAX_LOOKUP_IDS = 50;
+const MAX_LEADERBOARD_LIMIT = 50;
+const MAX_SUBMISSION_ASSET_COUNT = 40;
+const MAX_SUBMISSION_ASSET_SIZE = 10 * 1024 * 1024;
 
 const GITHUB_API_BASE = 'https://api.github.com';
 const DEFAULT_REPO_CONTENT_PREFIX = 'public/';
+const DEFAULT_GITHUB_ASSET_PREFIX = 'public/manuals/assets/submissions';
+const DEFAULT_SUBMISSION_ASSET_TMP_PREFIX = 'tmp/submissions';
+const DEFAULT_SUBMISSION_ASSET_TTL_HOURS = 72;
+const SUBMISSION_ASSET_ID_RE = /^[a-z0-9][a-z0-9_-]{7,63}$/i;
+const ADMIN_USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/;
+const ADMIN_ROLES = new Set(['admin', 'reviewer']);
+const ADMIN_PASSWORD_MIN_LENGTH = 8;
+const DEFAULT_ADMIN_SESSION_HOURS = 24 * 7;
 
 const ALLOWED_LANGUAGES = new Set(['zh', 'en']);
 const ALLOWED_PATH_RE = /^content\/(zh|en)\/[a-z0-9/_-]+\.md$/i;
@@ -35,7 +46,7 @@ function parseAllowedOrigins(env) {
 function buildCorsHeaders(origin, allowedOrigins) {
   const headers = {
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Operit-Admin-Token',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Operit-Admin-Token, X-Operit-Owner-Token',
     'Access-Control-Max-Age': '86400',
   };
 
@@ -50,6 +61,25 @@ function buildCorsHeaders(origin, allowedOrigins) {
 
 function normalizePath(value) {
   return String(value || '').trim().replace(/^\/+/, '');
+}
+
+function normalizePrefix(value) {
+  return normalizePath(value).replace(/\/+$/, '');
+}
+
+function joinPath(...parts) {
+  return parts
+    .map(part => normalizePath(part))
+    .filter(Boolean)
+    .join('/');
+}
+
+function stripMarkdownSuffix(value) {
+  const normalized = normalizePath(value);
+  if (normalized.toLowerCase().endsWith('.md')) {
+    return normalized.slice(0, -3);
+  }
+  return normalized;
 }
 
 function parseCsv(value) {
@@ -277,7 +307,9 @@ function getGitHubConfig(env) {
   const repo = String(env.OPERIT_GITHUB_REPO || '').trim();
   const defaultBranch = String(env.OPERIT_GITHUB_DEFAULT_BRANCH || 'main').trim();
   const contentPrefixRaw = (env.OPERIT_REPO_CONTENT_PREFIX || DEFAULT_REPO_CONTENT_PREFIX).trim();
-  const contentPrefix = normalizePath(contentPrefixRaw).replace(/\/+$/, '');
+  const contentPrefix = normalizePrefix(contentPrefixRaw);
+  const assetPrefixRaw = (env.OPERIT_GITHUB_ASSET_PREFIX || DEFAULT_GITHUB_ASSET_PREFIX).trim();
+  const assetPrefix = normalizePrefix(assetPrefixRaw);
   const labels = parseCsv(env.OPERIT_GITHUB_PR_LABELS);
   const reviewers = parseCsv(env.OPERIT_GITHUB_PR_REVIEWERS);
   const assignees = parseCsv(env.OPERIT_GITHUB_PR_ASSIGNEES);
@@ -289,6 +321,7 @@ function getGitHubConfig(env) {
     repo,
     defaultBranch,
     contentPrefix,
+    assetPrefix,
     labels,
     reviewers,
     assignees,
@@ -303,6 +336,127 @@ function resolveRepoPath(targetPath, env) {
     return normalizedTarget;
   }
   return `${prefix}/${normalizedTarget}`;
+}
+
+function getSubmissionAssetConfig(env) {
+  const bucket = String(env.OPERIT_SUBMISSION_ASSET_BUCKET || '').trim();
+  const publicBase = String(env.OPERIT_SUBMISSION_ASSET_PUBLIC_BASE || '').trim().replace(/\/+$/, '');
+  const tmpPrefix = normalizePrefix(env.OPERIT_SUBMISSION_ASSET_TMP_PREFIX || DEFAULT_SUBMISSION_ASSET_TMP_PREFIX);
+  const ttlHours = clampInt(
+    env.OPERIT_SUBMISSION_ASSET_TTL_HOURS,
+    1,
+    24 * 14,
+    DEFAULT_SUBMISSION_ASSET_TTL_HOURS,
+  );
+  return {
+    bucket,
+    publicBase,
+    tmpPrefix,
+    ttlMs: ttlHours * 60 * 60 * 1000,
+  };
+}
+
+function sanitizeAssetFileName(name, fallback = 'image') {
+  const normalized = String(name || '')
+    .trim()
+    .replace(/[\\/]/g, '_')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-zA-Z0-9._-]/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^[-_.]+|[-_.]+$/g, '');
+  return (normalized || fallback).slice(0, 120);
+}
+
+function normalizeContentType(value) {
+  const source = String(value || '').trim().toLowerCase();
+  if (!source) return 'application/octet-stream';
+  if (source.includes(';')) return source.split(';')[0].trim() || 'application/octet-stream';
+  return source;
+}
+
+function extensionFromContentType(contentType) {
+  const map = {
+    'image/png': 'png',
+    'image/jpeg': 'jpg',
+    'image/jpg': 'jpg',
+    'image/gif': 'gif',
+    'image/webp': 'webp',
+    'image/svg+xml': 'svg',
+    'image/avif': 'avif',
+    'image/heic': 'heic',
+    'image/heif': 'heif',
+  };
+  return map[normalizeContentType(contentType)] || '';
+}
+
+function inferAssetExtension(name, contentType) {
+  const sanitized = sanitizeAssetFileName(name || '');
+  const idx = sanitized.lastIndexOf('.');
+  if (idx > 0 && idx < sanitized.length - 1) {
+    const ext = sanitized.slice(idx + 1).toLowerCase();
+    if (/^[a-z0-9]{2,8}$/.test(ext)) return ext;
+  }
+  return extensionFromContentType(contentType) || 'bin';
+}
+
+async function sha256HexFromArrayBuffer(buffer) {
+  const hash = await crypto.subtle.digest('SHA-256', buffer);
+  return Array.from(new Uint8Array(hash))
+    .map(b => b.toString(16).padStart(2, '0'))
+    .join('');
+}
+
+function buildAssetTmpKey(submissionId, assetId, fileName, contentType, env) {
+  const cfg = getSubmissionAssetConfig(env);
+  const ext = inferAssetExtension(fileName, contentType);
+  const safeName = sanitizeAssetFileName(fileName || `image.${ext || 'bin'}`);
+  return joinPath(cfg.tmpPrefix, submissionId, `${assetId}-${safeName}`);
+}
+
+function extractSubmissionAssetIds(content) {
+  const source = String(content || '');
+  const regex = /operit-temp:\/\/([a-z0-9][a-z0-9_-]{7,63})/gi;
+  const ids = new Set();
+  let match = regex.exec(source);
+  while (match) {
+    const id = String(match[1] || '').trim();
+    if (SUBMISSION_ASSET_ID_RE.test(id)) {
+      ids.add(id);
+    }
+    match = regex.exec(source);
+  }
+  return Array.from(ids);
+}
+
+function ensureSubmissionAssetBucket(env) {
+  const bucket = env.OPERIT_SUBMISSION_ASSET_BUCKET;
+  if (!bucket) {
+    throw new Error('asset_bucket_missing');
+  }
+  return bucket;
+}
+
+async function fetchSubmissionAssetsByIds(env, submissionId, assetIds) {
+  if (!env.OPERIT_SUBMISSION_DB || !assetIds.length) return [];
+  const placeholders = assetIds.map(() => '?').join(',');
+  const query =
+    `SELECT id, submission_id, file_name, content_type, size, sha256, tmp_key, temp_url, repo_path, public_path, status, created_at, uploaded_at, migrated_at, deleted_at ` +
+    `FROM submission_assets WHERE submission_id = ? AND id IN (${placeholders})`;
+  const { results } = await env.OPERIT_SUBMISSION_DB.prepare(query).bind(submissionId, ...assetIds).all();
+  return results || [];
+}
+
+async function markSubmissionAssetsDeleted(env, submissionId, assetIds, deletedAt) {
+  if (!env.OPERIT_SUBMISSION_DB || !assetIds.length) return;
+  const placeholders = assetIds.map(() => '?').join(',');
+  const query = `UPDATE submission_assets SET status = 'deleted', deleted_at = ? WHERE submission_id = ? AND id IN (${placeholders})`;
+  await env.OPERIT_SUBMISSION_DB.prepare(query).bind(deletedAt, submissionId, ...assetIds).run();
+}
+
+function buildSubmissionAssetPublicUrl(key, env) {
+  const cfg = getSubmissionAssetConfig(env);
+  if (!cfg.publicBase) return '';
+  return `${cfg.publicBase}/${normalizePath(key)}`;
 }
 
 async function importPrivateKey(pem) {
@@ -364,7 +518,6 @@ async function getGitHubToken(env) {
       'User-Agent': 'operit-bot',
     },
   });
-
   const data = await response.json().catch(() => null);
   if (!response.ok) {
     const message = data?.message || response.statusText || 'github_app_token_failed';
@@ -471,6 +624,157 @@ async function putFile({ owner, repo, path, branch, message, content, sha, token
     },
     token,
   );
+}
+
+async function putBinaryFile({ owner, repo, path, branch, message, bytes, sha, token, contentType }) {
+  const encodedPath = encodeRepoPath(path);
+  const payloadBytes = bytes instanceof Uint8Array ? bytes : new Uint8Array(bytes);
+  const body = {
+    message,
+    content: base64FromBytes(payloadBytes),
+    branch,
+  };
+  if (sha) body.sha = sha;
+  if (contentType) body['content_type'] = normalizeContentType(contentType);
+  await githubRequest(
+    `/repos/${owner}/${repo}/contents/${encodedPath}`,
+    {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    },
+    token,
+  );
+}
+
+function toPublicAssetPath(repoPath) {
+  const normalized = normalizePath(repoPath);
+  if (!normalized) return '/';
+  if (normalized.startsWith('public/')) {
+    return `/${normalized.slice('public/'.length)}`;
+  }
+  return `/${normalized}`;
+}
+
+async function migrateSubmissionAssetsForPr(submission, env, githubContext) {
+  const assetIds = extractSubmissionAssetIds(submission.content || '');
+  if (!assetIds.length) {
+    return {
+      content: submission.content || '',
+      assetIds: [],
+      cleanupKeys: [],
+      usedPublicPaths: [],
+    };
+  }
+
+  const bucket = ensureSubmissionAssetBucket(env);
+  const rows = await fetchSubmissionAssetsByIds(env, submission.id, assetIds);
+  const byId = new Map(rows.map(row => [row.id, row]));
+
+  const missing = assetIds.filter(id => !byId.has(id));
+  if (missing.length) {
+    throw new Error(`submission_asset_missing:${missing.join(',')}`);
+  }
+
+  const now = new Date().toISOString();
+  let nextContent = String(submission.content || '');
+  const cleanupKeys = [];
+  const usedPublicPaths = [];
+
+  for (const assetId of assetIds) {
+    const row = byId.get(assetId);
+    if (!row) continue;
+    if (row.submission_id && row.submission_id !== submission.id) {
+      throw new Error(`submission_asset_mismatch:${assetId}`);
+    }
+
+    let repoPath = normalizePath(row.repo_path || '');
+    let publicPath = String(row.public_path || '').trim();
+
+    if (row.status !== 'migrated' || !repoPath || !publicPath) {
+      if (!row.tmp_key) {
+        throw new Error(`submission_asset_tmp_missing:${assetId}`);
+      }
+      const object = await bucket.get(row.tmp_key);
+      if (!object) {
+        throw new Error(`submission_asset_object_missing:${assetId}`);
+      }
+
+      const bytes = new Uint8Array(await object.arrayBuffer());
+      const fileName = sanitizeAssetFileName(row.file_name || 'image');
+      const ext = inferAssetExtension(fileName, row.content_type);
+      const hasExt = fileName.toLowerCase().endsWith(`.${ext}`);
+      const outputName = hasExt ? `${assetId}-${fileName}` : `${assetId}-${fileName}.${ext}`;
+      const assetPrefix = getGitHubConfig(env).assetPrefix;
+      if (!assetPrefix) {
+        throw new Error('github_asset_prefix_missing');
+      }
+
+      repoPath = joinPath(assetPrefix, submission.id, outputName);
+      publicPath = toPublicAssetPath(repoPath);
+
+      await putBinaryFile({
+        owner: githubContext.owner,
+        repo: githubContext.repo,
+        path: repoPath,
+        branch: githubContext.branch,
+        message: `docs: add submission asset ${assetId}`,
+        bytes,
+        sha: undefined,
+        token: githubContext.token,
+        contentType: row.content_type,
+      });
+
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        'UPDATE submission_assets SET status = ?, repo_path = ?, public_path = ?, migrated_at = ? WHERE id = ? AND submission_id = ?',
+      ).bind('migrated', repoPath, publicPath, now, assetId, submission.id).run();
+      cleanupKeys.push(row.tmp_key);
+    }
+
+    nextContent = nextContent
+      .split(`operit-temp://${assetId}`)
+      .join(publicPath)
+      .split(String(row.temp_url || ''))
+      .join(publicPath);
+    usedPublicPaths.push(publicPath);
+  }
+
+  return {
+    content: nextContent,
+    assetIds,
+    cleanupKeys,
+    usedPublicPaths,
+  };
+}
+
+async function cleanupSubmissionTempAssets(env, submissionId, assetIds, keys) {
+  if (!assetIds.length && !keys.length) return;
+  let bucket = null;
+  try {
+    bucket = ensureSubmissionAssetBucket(env);
+  } catch {
+    return;
+  }
+  const deletedAt = new Date().toISOString();
+  for (const key of keys) {
+    if (!key) continue;
+    try {
+      await bucket.delete(key);
+    } catch {
+      // ignore single delete errors
+    }
+  }
+  if (assetIds.length) {
+    try {
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        `UPDATE submission_assets SET deleted_at = ? WHERE submission_id = ? AND id IN (${assetIds
+          .map(() => '?')
+          .join(',')})`,
+      ).bind(deletedAt, submissionId, ...assetIds).run();
+    } catch {
+      // ignore cleanup metadata errors
+    }
+  }
 }
 
 function buildPrBody(submission, reviewNotes, repoPath) {
@@ -612,6 +916,17 @@ async function createSubmissionPullRequest(submission, reviewNotes, env) {
     throw new Error('target_exists_for_add');
   }
 
+  const migration = await migrateSubmissionAssetsForPr(
+    submission,
+    env,
+    {
+      owner: config.owner,
+      repo: config.repo,
+      branch,
+      token,
+    },
+  );
+
   const commitMessage = `docs: ${submission.title} (${submission.id})`;
   await putFile({
     owner: config.owner,
@@ -619,10 +934,20 @@ async function createSubmissionPullRequest(submission, reviewNotes, env) {
     path: repoPath,
     branch,
     message: commitMessage,
-    content: submission.content || '',
+    content: migration.content || '',
     sha: submission.type === 'edit' ? fileSha : fileSha || undefined,
     token,
   });
+
+  if (migration.content !== (submission.content || '')) {
+    try {
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        'UPDATE submissions SET content = ? WHERE id = ?',
+      ).bind(migration.content, submission.id).run();
+    } catch {
+      // ignore content sync failures
+    }
+  }
 
   const prTitle = `docs: ${submission.title}`;
   const prBody = buildPrBody(submission, reviewNotes, repoPath);
@@ -655,13 +980,18 @@ async function createSubmissionPullRequest(submission, reviewNotes, env) {
     }
   }
 
-  return {
+  const result = {
     status: 'created',
     number: pr?.number || null,
     url: pr?.html_url || null,
     branch,
     created_at: pr?.created_at || new Date().toISOString(),
+    migrated_assets: migration.assetIds.length,
   };
+
+  await cleanupSubmissionTempAssets(env, submission.id, migration.assetIds, migration.cleanupKeys);
+
+  return result;
 }
 
 async function persistPrInfo(env, id, info) {
@@ -704,22 +1034,676 @@ async function verifyTurnstile(token, ip, env) {
   return data;
 }
 
-function requireAdmin(request, env) {
-  const expected = (env.OPERIT_ADMIN_TOKEN || '').trim();
-  if (!expected) {
-    return { ok: false, status: 501, error: 'admin_token_not_configured' };
+function extractLocalSubmissionAssetIds(content) {
+  const source = String(content || '');
+  const regex = /operit-local:\/\/([a-z0-9][a-z0-9_-]{7,63})/gi;
+  const ids = new Set();
+  let match = regex.exec(source);
+  while (match) {
+    const id = String(match[1] || '').trim();
+    if (SUBMISSION_ASSET_ID_RE.test(id)) {
+      ids.add(id);
+    }
+    match = regex.exec(source);
+  }
+  return Array.from(ids);
+}
+
+function parseSubmissionAssetManifest(rawValue) {
+  if (rawValue === undefined || rawValue === null || rawValue === '') {
+    return [];
+  }
+  let parsed = null;
+  if (typeof rawValue === 'string') {
+    parsed = JSON.parse(rawValue);
+  } else {
+    parsed = rawValue;
+  }
+  if (!Array.isArray(parsed)) {
+    throw new Error('submission_assets_manifest_invalid');
+  }
+  const items = [];
+  for (const item of parsed) {
+    const id = String(item?.id || '').trim();
+    if (!SUBMISSION_ASSET_ID_RE.test(id)) {
+      throw new Error('submission_asset_id_invalid');
+    }
+    const name = sanitizeAssetFileName(item?.name || 'image');
+    const type = normalizeContentType(item?.type || 'application/octet-stream');
+    const size = Number.parseInt(String(item?.size || 0), 10);
+    const sha256 = String(item?.sha256 || '').trim().toLowerCase();
+    items.push({
+      id,
+      name,
+      type,
+      size: Number.isFinite(size) && size > 0 ? size : 0,
+      sha256,
+    });
+  }
+  return items;
+}
+
+async function readSubmissionRequestBody(request) {
+  const contentType = request.headers.get('content-type') || '';
+  if (contentType.toLowerCase().includes('multipart/form-data')) {
+    try {
+      const form = await request.formData();
+      const payloadRaw = form.get('payload');
+      if (typeof payloadRaw !== 'string' || !payloadRaw.trim()) {
+        return { ok: false, error: 'payload_required' };
+      }
+      const payload = JSON.parse(payloadRaw);
+      let assetsManifest = [];
+      const manifestRaw = form.get('assets_manifest');
+      if (manifestRaw !== null) {
+        if (typeof manifestRaw !== 'string') {
+          return { ok: false, error: 'submission_assets_manifest_invalid' };
+        }
+        assetsManifest = parseSubmissionAssetManifest(manifestRaw);
+      }
+      return {
+        ok: true,
+        value: payload,
+        formData: form,
+        assetsManifest,
+      };
+    } catch {
+      return { ok: false, error: 'invalid_multipart_payload' };
+    }
   }
 
-  const authHeader = request.headers.get('authorization') || '';
-  const bearer = authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : '';
-  const alt = request.headers.get('x-operit-admin-token') || '';
-  const token = bearer || alt;
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return { ok: false, error: bodyResult.error || 'invalid_json' };
+  }
+  return {
+    ok: true,
+    value: bodyResult.value,
+    formData: null,
+    assetsManifest: [],
+  };
+}
 
-  if (token !== expected) {
+async function processSubmissionAssets({
+  env,
+  submissionId,
+  content,
+  formData,
+  assetsManifest,
+}) {
+  const assetIds = extractLocalSubmissionAssetIds(content);
+  if (!assetIds.length) {
+    return {
+      content,
+      uploaded: [],
+    };
+  }
+
+  if (!formData) {
+    throw new Error('submission_assets_missing_form_data');
+  }
+  if (assetIds.length > MAX_SUBMISSION_ASSET_COUNT) {
+    throw new Error('submission_assets_too_many');
+  }
+
+  const bucket = ensureSubmissionAssetBucket(env);
+  const manifestById = new Map(assetsManifest.map(item => [item.id, item]));
+  const uploaded = [];
+  let nextContent = content;
+
+  try {
+    for (const assetId of assetIds) {
+      const manifest = manifestById.get(assetId);
+      const fileEntry = formData.get(`asset_${assetId}`);
+      if (!(fileEntry instanceof File)) {
+        throw new Error(`submission_asset_file_missing:${assetId}`);
+      }
+      if (fileEntry.size <= 0 || fileEntry.size > MAX_SUBMISSION_ASSET_SIZE) {
+        throw new Error(`submission_asset_size_invalid:${assetId}`);
+      }
+      if (manifest?.size && manifest.size !== fileEntry.size) {
+        throw new Error(`submission_asset_size_mismatch:${assetId}`);
+      }
+
+      const contentType = normalizeContentType(fileEntry.type || manifest?.type || 'application/octet-stream');
+      if (!contentType.startsWith('image/')) {
+        throw new Error(`submission_asset_content_type_invalid:${assetId}`);
+      }
+
+      const fileName = sanitizeAssetFileName(manifest?.name || fileEntry.name || `image-${assetId}`);
+      const bytes = new Uint8Array(await fileEntry.arrayBuffer());
+      const sha256 = await sha256HexFromArrayBuffer(bytes);
+      if (manifest?.sha256 && manifest.sha256 !== sha256) {
+        throw new Error(`submission_asset_sha256_mismatch:${assetId}`);
+      }
+
+      const tmpKey = buildAssetTmpKey(submissionId, assetId, fileName, contentType, env);
+      await bucket.put(tmpKey, bytes, {
+        httpMetadata: {
+          contentType,
+        },
+        customMetadata: {
+          submission_id: submissionId,
+          asset_id: assetId,
+          sha256,
+        },
+      });
+
+      const now = new Date().toISOString();
+      const tempUrl = buildSubmissionAssetPublicUrl(tmpKey, env) || `operit-temp://${assetId}`;
+
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        'INSERT INTO submission_assets (submission_id, id, file_name, content_type, size, sha256, tmp_key, temp_url, status, created_at, uploaded_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?) ' +
+          'ON CONFLICT(submission_id, id) DO UPDATE SET file_name = excluded.file_name, content_type = excluded.content_type, size = excluded.size, sha256 = excluded.sha256, tmp_key = excluded.tmp_key, temp_url = excluded.temp_url, status = excluded.status, uploaded_at = excluded.uploaded_at, repo_path = NULL, public_path = NULL, migrated_at = NULL, deleted_at = NULL',
+      ).bind(
+        submissionId,
+        assetId,
+        fileName,
+        contentType,
+        bytes.byteLength,
+        sha256,
+        tmpKey,
+        tempUrl,
+        'uploaded',
+        now,
+        now,
+      ).run();
+
+      nextContent = nextContent.split(`operit-local://${assetId}`).join(tempUrl);
+      uploaded.push({ id: assetId, tmpKey, tempUrl });
+    }
+  } catch (err) {
+    const deletedAt = new Date().toISOString();
+    for (const item of uploaded) {
+      try {
+        await bucket.delete(item.tmpKey);
+      } catch {
+        // ignore partial cleanup failure
+      }
+    }
+    if (uploaded.length) {
+      await markSubmissionAssetsDeleted(env, submissionId, uploaded.map(item => item.id), deletedAt);
+    }
+    throw err;
+  }
+
+  return {
+    content: nextContent,
+    uploaded,
+  };
+}
+
+function getOwnerToken(env) {
+  const owner = String(env.OPERIT_OWNER_TOKEN || '').trim();
+  if (owner) return owner;
+  return String(env.OPERIT_ADMIN_TOKEN || '').trim();
+}
+
+function readBearerToken(request) {
+  const authHeader = request.headers.get('authorization') || '';
+  if (authHeader.toLowerCase().startsWith('bearer ')) {
+    return authHeader.slice(7).trim();
+  }
+  return '';
+}
+
+function getHeaderToken(request, headerName) {
+  return String(request.headers.get(headerName) || '').trim();
+}
+
+function getCredentialSalt(env) {
+  const fromEnv = String(env.OPERIT_ADMIN_AUTH_SALT || '').trim();
+  if (fromEnv) return fromEnv;
+  const ipSalt = String(env.OPERIT_IP_SALT || '').trim();
+  if (ipSalt) return ipSalt;
+  return 'operit-admin-default-salt';
+}
+
+async function hashAdminCredential(raw, env) {
+  const value = String(raw || '');
+  const salt = getCredentialSalt(env);
+  return sha256Hex(`operit-admin:${salt}:${value}`);
+}
+
+function normalizeAdminUsername(value) {
+  return String(value || '').trim().toLowerCase();
+}
+
+function normalizeAdminDisplayName(value) {
+  const name = String(value || '').trim();
+  if (!name) return '';
+  return name.slice(0, 60);
+}
+
+function normalizeAdminRole(value) {
+  const role = String(value || '').trim().toLowerCase();
+  if (ADMIN_ROLES.has(role)) return role;
+  return '';
+}
+
+async function ensureAdminAuthSchema(env) {
+  if (!env.OPERIT_SUBMISSION_DB) return;
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE TABLE IF NOT EXISTS admin_users (' +
+      'username TEXT PRIMARY KEY,' +
+      'display_name TEXT,' +
+      'role TEXT NOT NULL,' +
+      'password_hash TEXT NOT NULL,' +
+      'created_at TEXT NOT NULL,' +
+      'created_by TEXT,' +
+      'updated_at TEXT NOT NULL,' +
+      'disabled_at TEXT' +
+      ')',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE TABLE IF NOT EXISTS admin_sessions (' +
+      'token_hash TEXT PRIMARY KEY,' +
+      'username TEXT NOT NULL,' +
+      'role TEXT NOT NULL,' +
+      'created_at TEXT NOT NULL,' +
+      'expires_at TEXT NOT NULL,' +
+      'last_seen_at TEXT' +
+      ')',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_admin_sessions_username ON admin_sessions(username)',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires ON admin_sessions(expires_at)',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_admin_users_disabled ON admin_users(disabled_at)',
+  ).run();
+}
+
+function getAdminSessionTtlMs(env) {
+  const hours = clampInt(
+    env.OPERIT_ADMIN_SESSION_HOURS,
+    1,
+    24 * 30,
+    DEFAULT_ADMIN_SESSION_HOURS,
+  );
+  return hours * 60 * 60 * 1000;
+}
+
+async function createAdminSession(env, user) {
+  const createdAtDate = new Date();
+  const createdAt = createdAtDate.toISOString();
+  const expiresAt = new Date(createdAtDate.getTime() + getAdminSessionTtlMs(env)).toISOString();
+  const plainToken = `${crypto.randomUUID()}${crypto.randomUUID().replace(/-/g, '')}`;
+  const tokenHash = await hashAdminCredential(plainToken, env);
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'INSERT INTO admin_sessions (token_hash, username, role, created_at, expires_at, last_seen_at) VALUES (?, ?, ?, ?, ?, ?)',
+  ).bind(
+    tokenHash,
+    user.username,
+    user.role,
+    createdAt,
+    expiresAt,
+    createdAt,
+  ).run();
+  return {
+    token: plainToken,
+    expires_at: expiresAt,
+  };
+}
+
+async function resolveAdminSession(request, env) {
+  if (!env.OPERIT_SUBMISSION_DB) {
+    return { ok: false, status: 500, error: 'd1_binding_missing' };
+  }
+  await ensureAdminAuthSchema(env);
+
+  const bearer = readBearerToken(request);
+  const adminHeader = getHeaderToken(request, 'x-operit-admin-token');
+  const token = bearer || adminHeader;
+  if (!token) {
     return { ok: false, status: 401, error: 'unauthorized' };
   }
 
-  return { ok: true };
+  const ownerToken = getOwnerToken(env);
+  if (ownerToken && token === ownerToken) {
+    return {
+      ok: true,
+      user: {
+        username: 'owner',
+        display_name: 'Owner',
+        role: 'admin',
+        owner: true,
+      },
+      token,
+      owner: true,
+    };
+  }
+
+  const tokenHash = await hashAdminCredential(token, env);
+  const row = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT s.token_hash, s.username, s.role, s.created_at, s.expires_at, u.display_name, u.role AS user_role, u.disabled_at ' +
+      'FROM admin_sessions s LEFT JOIN admin_users u ON u.username = s.username ' +
+      'WHERE s.token_hash = ? LIMIT 1',
+  ).bind(tokenHash).first();
+
+  if (!row) {
+    return { ok: false, status: 401, error: 'unauthorized' };
+  }
+
+  const now = new Date().toISOString();
+  if (!row.expires_at || row.expires_at <= now) {
+    try {
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        'DELETE FROM admin_sessions WHERE token_hash = ?',
+      ).bind(tokenHash).run();
+    } catch {
+      // ignore cleanup failure
+    }
+    return { ok: false, status: 401, error: 'session_expired' };
+  }
+
+  if (row.disabled_at) {
+    return { ok: false, status: 403, error: 'account_disabled' };
+  }
+
+  const role = normalizeAdminRole(row.user_role || row.role || '');
+  if (!role) {
+    return { ok: false, status: 403, error: 'role_invalid' };
+  }
+
+  try {
+    await env.OPERIT_SUBMISSION_DB.prepare(
+      'UPDATE admin_sessions SET last_seen_at = ? WHERE token_hash = ?',
+    ).bind(now, tokenHash).run();
+  } catch {
+    // ignore session heartbeat failure
+  }
+
+  return {
+    ok: true,
+    token,
+    owner: false,
+    user: {
+      username: String(row.username || '').trim(),
+      display_name: normalizeAdminDisplayName(row.display_name || ''),
+      role,
+      owner: false,
+    },
+  };
+}
+
+async function requireOwner(request, env) {
+  const expected = getOwnerToken(env);
+  if (!expected) {
+    return { ok: false, status: 501, error: 'owner_token_not_configured' };
+  }
+  const bearer = readBearerToken(request);
+  const ownerHeader = getHeaderToken(request, 'x-operit-owner-token');
+  const token = ownerHeader || bearer;
+  if (!token || token !== expected) {
+    return { ok: false, status: 401, error: 'owner_unauthorized' };
+  }
+  return {
+    ok: true,
+    user: {
+      username: 'owner',
+      display_name: 'Owner',
+      role: 'admin',
+      owner: true,
+    },
+  };
+}
+
+async function requireAdmin(request, env) {
+  return resolveAdminSession(request, env);
+}
+
+async function handleAdminLogin(request, env, corsHeaders) {
+  if (!env.OPERIT_SUBMISSION_DB) {
+    return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+  }
+  await ensureAdminAuthSchema(env);
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const body = bodyResult.value || {};
+  const username = normalizeAdminUsername(body.username);
+  const password = String(body.password || '');
+  if (!ADMIN_USERNAME_RE.test(username)) {
+    return json({ error: 'username_invalid' }, 400, corsHeaders);
+  }
+  if (!password) {
+    return json({ error: 'password_required' }, 400, corsHeaders);
+  }
+
+  const row = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username, display_name, role, password_hash, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+  if (!row || row.disabled_at) {
+    return json({ error: 'invalid_credentials' }, 401, corsHeaders);
+  }
+
+  const expectedHash = String(row.password_hash || '');
+  const currentHash = await hashAdminCredential(password, env);
+  if (!expectedHash || expectedHash !== currentHash) {
+    return json({ error: 'invalid_credentials' }, 401, corsHeaders);
+  }
+
+  const role = normalizeAdminRole(row.role || '');
+  if (!role) {
+    return json({ error: 'role_invalid' }, 403, corsHeaders);
+  }
+
+  const session = await createAdminSession(env, { username, role });
+  return json(
+    {
+      ok: true,
+      token: session.token,
+      expires_at: session.expires_at,
+      user: {
+        username,
+        display_name: normalizeAdminDisplayName(row.display_name || ''),
+        role,
+      },
+    },
+    200,
+    corsHeaders,
+  );
+}
+
+async function handleAdminMe(auth, corsHeaders) {
+  return json(
+    {
+      ok: true,
+      user: auth.user,
+    },
+    200,
+    corsHeaders,
+  );
+}
+
+async function handleAdminLogout(request, env, auth, corsHeaders) {
+  if (!auth?.ok) {
+    return json({ error: 'unauthorized' }, 401, corsHeaders);
+  }
+  if (auth.owner) {
+    return json({ ok: true, owner: true }, 200, corsHeaders);
+  }
+
+  const bearer = readBearerToken(request);
+  const adminHeader = getHeaderToken(request, 'x-operit-admin-token');
+  const token = bearer || adminHeader;
+  if (!token) {
+    return json({ ok: true }, 200, corsHeaders);
+  }
+  const tokenHash = await hashAdminCredential(token, env);
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'DELETE FROM admin_sessions WHERE token_hash = ?',
+  ).bind(tokenHash).run();
+  return json({ ok: true }, 200, corsHeaders);
+}
+
+async function cleanupExpiredAdminSessions(env) {
+  if (!env.OPERIT_SUBMISSION_DB) return;
+  try {
+    await env.OPERIT_SUBMISSION_DB.prepare(
+      'DELETE FROM admin_sessions WHERE expires_at <= ?',
+    ).bind(new Date().toISOString()).run();
+  } catch {
+    // ignore cleanup failures
+  }
+}
+
+async function handleOwnerListUsers(env, corsHeaders) {
+  await ensureAdminAuthSchema(env);
+  const { results } = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username, display_name, role, created_at, created_by, updated_at, disabled_at FROM admin_users ORDER BY created_at DESC',
+  ).all();
+  return json({ ok: true, items: results || [] }, 200, corsHeaders);
+}
+
+async function handleOwnerCreateUser(request, env, corsHeaders) {
+  await ensureAdminAuthSchema(env);
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const body = bodyResult.value || {};
+  const username = normalizeAdminUsername(body.username);
+  const displayName = normalizeAdminDisplayName(body.display_name || body.displayName || '');
+  const role = normalizeAdminRole(body.role || 'reviewer');
+  const password = String(body.password || '');
+
+  if (!ADMIN_USERNAME_RE.test(username)) {
+    return json({ error: 'username_invalid' }, 400, corsHeaders);
+  }
+  if (!role) {
+    return json({ error: 'role_invalid' }, 400, corsHeaders);
+  }
+  if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
+    return json({ error: 'password_too_short' }, 400, corsHeaders);
+  }
+
+  const exists = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+  if (exists) {
+    return json({ error: 'user_exists' }, 409, corsHeaders);
+  }
+
+  const passwordHash = await hashAdminCredential(password, env);
+  const now = new Date().toISOString();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'INSERT INTO admin_users (username, display_name, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+  ).bind(
+    username,
+    displayName || null,
+    role,
+    passwordHash,
+    now,
+    'owner',
+    now,
+  ).run();
+
+  return json(
+    {
+      ok: true,
+      item: {
+        username,
+        display_name: displayName || null,
+        role,
+        created_at: now,
+        created_by: 'owner',
+        updated_at: now,
+        disabled_at: null,
+      },
+    },
+    201,
+    corsHeaders,
+  );
+}
+
+async function handleOwnerUpdateUser(usernameRaw, request, env, corsHeaders) {
+  await ensureAdminAuthSchema(env);
+  const username = normalizeAdminUsername(usernameRaw);
+  if (!ADMIN_USERNAME_RE.test(username)) {
+    return json({ error: 'username_invalid' }, 400, corsHeaders);
+  }
+
+  const existing = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username, display_name, role, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+  if (!existing) {
+    return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const body = bodyResult.value || {};
+
+  const updates = [];
+  const bindings = [];
+
+  if (Object.prototype.hasOwnProperty.call(body, 'display_name') || Object.prototype.hasOwnProperty.call(body, 'displayName')) {
+    const displayName = normalizeAdminDisplayName(body.display_name || body.displayName || '');
+    updates.push('display_name = ?');
+    bindings.push(displayName || null);
+  }
+
+  if (Object.prototype.hasOwnProperty.call(body, 'role')) {
+    const role = normalizeAdminRole(body.role || '');
+    if (!role) {
+      return json({ error: 'role_invalid' }, 400, corsHeaders);
+    }
+    updates.push('role = ?');
+    bindings.push(role);
+  }
+
+  let passwordChanged = false;
+  if (Object.prototype.hasOwnProperty.call(body, 'password')) {
+    const password = String(body.password || '');
+    if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
+      return json({ error: 'password_too_short' }, 400, corsHeaders);
+    }
+    const passwordHash = await hashAdminCredential(password, env);
+    updates.push('password_hash = ?');
+    bindings.push(passwordHash);
+    passwordChanged = true;
+  }
+
+  let disabledChanged = false;
+  if (Object.prototype.hasOwnProperty.call(body, 'disabled')) {
+    const disabled = Boolean(body.disabled);
+    updates.push('disabled_at = ?');
+    bindings.push(disabled ? new Date().toISOString() : null);
+    disabledChanged = true;
+  }
+
+  if (!updates.length) {
+    return json({ error: 'no_changes' }, 400, corsHeaders);
+  }
+
+  const now = new Date().toISOString();
+  updates.push('updated_at = ?');
+  bindings.push(now);
+  bindings.push(username);
+
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    `UPDATE admin_users SET ${updates.join(', ')} WHERE username = ?`,
+  ).bind(...bindings).run();
+
+  if (passwordChanged || disabledChanged) {
+    await env.OPERIT_SUBMISSION_DB.prepare(
+      'DELETE FROM admin_sessions WHERE username = ?',
+    ).bind(username).run();
+  }
+
+  const updated = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username, display_name, role, created_at, created_by, updated_at, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+
+  return json({ ok: true, item: updated || null }, 200, corsHeaders);
 }
 
 async function handleSubmit(request, env, corsHeaders) {
@@ -727,17 +1711,17 @@ async function handleSubmit(request, env, corsHeaders) {
     return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
   }
 
-  const bodyResult = await readJson(request);
-  if (!bodyResult.ok) {
-    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  const requestBody = await readSubmissionRequestBody(request);
+  if (!requestBody.ok) {
+    return json({ error: requestBody.error || 'invalid_request' }, 400, corsHeaders);
   }
 
-  const validation = validateSubmission(bodyResult.value || {});
+  const validation = validateSubmission(requestBody.value || {});
   if (!validation.ok) {
     return json({ error: 'validation_failed', details: validation.errors }, 400, corsHeaders);
   }
 
-  const turnstileToken = bodyResult.value.turnstile_token || bodyResult.value.turnstileToken;
+  const turnstileToken = requestBody.value.turnstile_token || requestBody.value.turnstileToken;
   const ip = getClientIp(request);
   const ipHash = await hashIp(ip, env.OPERIT_IP_SALT);
   const ipBan = await getIpBan(ipHash, env);
@@ -759,6 +1743,27 @@ async function handleSubmit(request, env, corsHeaders) {
   const now = new Date().toISOString();
   const userAgent = request.headers.get('user-agent') || '';
 
+  let normalizedContent = validation.value.content;
+  try {
+    const assetResult = await processSubmissionAssets({
+      env,
+      submissionId: id,
+      content: normalizedContent,
+      formData: requestBody.formData,
+      assetsManifest: requestBody.assetsManifest,
+    });
+    normalizedContent = assetResult.content;
+  } catch (err) {
+    return json(
+      {
+        error: 'submission_assets_failed',
+        detail: (err instanceof Error ? err.message : String(err)) || 'submission_assets_failed',
+      },
+      400,
+      corsHeaders,
+    );
+  }
+
   const stmt = env.OPERIT_SUBMISSION_DB.prepare(
     'INSERT INTO submissions (id, type, language, target_path, title, content, status, author_name, author_email, client_ip_hash, user_agent, turnstile_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).bind(
@@ -767,7 +1772,7 @@ async function handleSubmit(request, env, corsHeaders) {
     validation.value.language,
     validation.value.targetPath,
     validation.value.title,
-    validation.value.content,
+    normalizedContent,
     'pending',
     validation.value.authorName || null,
     validation.value.authorEmail || null,
@@ -858,7 +1863,7 @@ async function handleAdminGet(id, env, corsHeaders) {
   return json({ ok: true, item: row }, 200, corsHeaders);
 }
 
-async function handleAdminUpdateStatus(id, request, env, corsHeaders, status) {
+async function handleAdminUpdateStatus(id, request, env, corsHeaders, status, authUser) {
   const existing = await env.OPERIT_SUBMISSION_DB.prepare(
     'SELECT id, type, language, target_path, title, content, status, author_name, author_email, created_at, reviewed_at, reviewer, review_notes, pr_number, pr_url, pr_branch, pr_state, pr_created_at, pr_error FROM submissions WHERE id = ? LIMIT 1',
   ).bind(id).first();
@@ -872,7 +1877,8 @@ async function handleAdminUpdateStatus(id, request, env, corsHeaders, status) {
     return json({ error: 'invalid_json' }, 400, corsHeaders);
   }
 
-  const reviewer = String(bodyResult.value.reviewer || '').trim() || null;
+  const reviewerInput = String(bodyResult.value.reviewer || '').trim();
+  const reviewer = reviewerInput || authUser?.display_name || authUser?.username || null;
   const reviewNotes = String(bodyResult.value.review_notes || bodyResult.value.reviewNotes || '').trim() || null;
   const now = new Date().toISOString();
 
@@ -1068,6 +2074,99 @@ async function handleAdminIpBanDelete(ipHash, env, corsHeaders) {
   return json({ ok: true, ip_hash: ipHash }, 200, corsHeaders);
 }
 
+async function handleAdminAssetsCleanup(url, env, corsHeaders) {
+  if (!env.OPERIT_SUBMISSION_DB) {
+    return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+  }
+
+  const bucket = ensureSubmissionAssetBucket(env);
+  const cfg = getSubmissionAssetConfig(env);
+  const now = new Date();
+
+  const rawHours = url.searchParams.get('older_than_hours') || url.searchParams.get('ttl_hours');
+  const keepHours = clampInt(rawHours, 1, 24 * 30, Math.max(1, Math.floor(cfg.ttlMs / (60 * 60 * 1000))));
+  const cutoff = new Date(now.getTime() - keepHours * 60 * 60 * 1000).toISOString();
+  const limit = clampInt(url.searchParams.get('limit'), 1, 500, 200);
+
+  const query =
+    'SELECT sa.submission_id, sa.id, sa.tmp_key, sa.status, sa.created_at, s.status AS submission_status ' +
+    'FROM submission_assets sa ' +
+    'LEFT JOIN submissions s ON s.id = sa.submission_id ' +
+    'WHERE sa.deleted_at IS NULL AND sa.tmp_key IS NOT NULL AND sa.tmp_key <> \'\' ' +
+    'AND (sa.status = \'migrated\' OR s.status = \'rejected\' OR sa.created_at < ?) ' +
+    'ORDER BY sa.created_at ASC LIMIT ?';
+
+  const { results } = await env.OPERIT_SUBMISSION_DB.prepare(query).bind(cutoff, limit).all();
+  const items = results || [];
+
+  let deleted = 0;
+  const deletedAt = now.toISOString();
+  for (const item of items) {
+    const key = String(item.tmp_key || '').trim();
+    if (!key) continue;
+    try {
+      await bucket.delete(key);
+      deleted += 1;
+    } catch {
+      // ignore single asset delete failure
+    }
+  }
+
+  if (items.length) {
+    try {
+      const pairs = items
+        .map(() => '(?, ?)')
+        .join(',');
+      const bindings = [deletedAt];
+      for (const item of items) {
+        bindings.push(item.submission_id, item.id);
+      }
+      await env.OPERIT_SUBMISSION_DB.prepare(
+        `UPDATE submission_assets SET deleted_at = ?, status = CASE WHEN status = 'migrated' THEN status ELSE 'deleted' END WHERE (submission_id, id) IN (${pairs})`,
+      ).bind(...bindings).run();
+    } catch {
+      // ignore metadata cleanup update failures
+    }
+  }
+
+  return json(
+    {
+      ok: true,
+      scanned: items.length,
+      deleted,
+      cutoff,
+      keep_hours: keepHours,
+    },
+    200,
+    corsHeaders,
+  );
+}
+
+async function handleLeaderboard(url, env, corsHeaders) {
+  if (!env.OPERIT_SUBMISSION_DB) {
+    return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+  }
+  const limit = clampInt(url.searchParams.get('limit'), 1, MAX_LEADERBOARD_LIMIT, 20);
+  const query =
+    'SELECT author_name, author_email, COUNT(*) AS edits, MAX(created_at) AS last_submitted ' +
+    'FROM submissions ' +
+    'WHERE (author_name IS NOT NULL AND author_name <> \'\') OR (author_email IS NOT NULL AND author_email <> \'\') ' +
+    'GROUP BY author_name, author_email ' +
+    'ORDER BY edits DESC, last_submitted DESC ' +
+    'LIMIT ?';
+  const { results } = await env.OPERIT_SUBMISSION_DB.prepare(query).bind(limit).all();
+  return json(
+    {
+      ok: true,
+      items: results || [],
+      limit,
+      generated_at: new Date().toISOString(),
+    },
+    200,
+    corsHeaders,
+  );
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -1098,14 +2197,103 @@ export default {
       return handlePublicLookup(request, env, corsHeaders);
     }
 
+    if (url.pathname === '/api/submissions/leaderboard' && request.method === 'GET') {
+      return handleLeaderboard(url, env, corsHeaders);
+    }
+
     if (url.pathname.startsWith('/api/admin/')) {
-      const auth = requireAdmin(request, env);
+      if (!env.OPERIT_SUBMISSION_DB) {
+        return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+      }
+      await ensureAdminAuthSchema(env);
+      await cleanupExpiredAdminSessions(env);
+
+      if (url.pathname === '/api/admin/auth/login' && request.method === 'POST') {
+        return handleAdminLogin(request, env, corsHeaders);
+      }
+
+      if (url.pathname === '/api/admin/bootstrap' && request.method === 'POST') {
+        const owner = await requireOwner(request, env);
+        if (!owner.ok) {
+          return json({ error: owner.error }, owner.status, corsHeaders);
+        }
+        await ensureAdminAuthSchema(env);
+
+        const countRow = await env.OPERIT_SUBMISSION_DB.prepare(
+          'SELECT COUNT(*) AS count FROM admin_users',
+        ).first();
+        const count = Number(countRow?.count || 0);
+        if (count > 0) {
+          return json({ ok: true, bootstrapped: true }, 200, corsHeaders);
+        }
+
+        const defaultUser = String(env.OPERIT_OWNER_ADMIN_USER || 'owner').trim().toLowerCase();
+        const defaultPass = String(env.OPERIT_OWNER_ADMIN_PASSWORD || '').trim();
+        if (!ADMIN_USERNAME_RE.test(defaultUser)) {
+          return json({ error: 'bootstrap_username_invalid' }, 400, corsHeaders);
+        }
+        if (defaultPass.length < ADMIN_PASSWORD_MIN_LENGTH) {
+          return json({ error: 'bootstrap_password_too_short' }, 400, corsHeaders);
+        }
+
+        const passwordHash = await hashAdminCredential(defaultPass, env);
+        const now = new Date().toISOString();
+        await env.OPERIT_SUBMISSION_DB.prepare(
+          'INSERT INTO admin_users (username, display_name, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+        ).bind(
+          defaultUser,
+          'Owner Admin',
+          'admin',
+          passwordHash,
+          now,
+          'owner',
+          now,
+        ).run();
+        return json({ ok: true, bootstrapped: true, username: defaultUser }, 201, corsHeaders);
+      }
+
+      if (url.pathname.startsWith('/api/admin/owner/')) {
+        const owner = await requireOwner(request, env);
+        if (!owner.ok) {
+          return json({ error: owner.error }, owner.status, corsHeaders);
+        }
+        if (!env.OPERIT_SUBMISSION_DB) {
+          return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+        }
+
+        if (url.pathname === '/api/admin/owner/users' && request.method === 'GET') {
+          return handleOwnerListUsers(env, corsHeaders);
+        }
+
+        if (url.pathname === '/api/admin/owner/users' && request.method === 'POST') {
+          return handleOwnerCreateUser(request, env, corsHeaders);
+        }
+
+        const ownerParts = url.pathname.split('/').filter(Boolean);
+        if (ownerParts.length === 5 && ownerParts[2] === 'owner' && ownerParts[3] === 'users' && request.method === 'POST') {
+          return handleOwnerUpdateUser(ownerParts[4], request, env, corsHeaders);
+        }
+      }
+
+      const auth = await requireAdmin(request, env);
       if (!auth.ok) {
         return json({ error: auth.error }, auth.status, corsHeaders);
       }
 
       if (!env.OPERIT_SUBMISSION_DB) {
         return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+      }
+
+      if (url.pathname === '/api/admin/auth/me' && request.method === 'GET') {
+        return handleAdminMe(auth, corsHeaders);
+      }
+
+      if (url.pathname === '/api/admin/auth/logout' && request.method === 'POST') {
+        return handleAdminLogout(request, env, auth, corsHeaders);
+      }
+
+      if (url.pathname === '/api/admin/assets/cleanup' && request.method === 'POST') {
+        return handleAdminAssetsCleanup(url, env, corsHeaders);
       }
 
       const parts = url.pathname.split('/').filter(Boolean); // ['api','admin','submissions', ...]
@@ -1139,10 +2327,10 @@ export default {
           const id = parts[3];
           const action = parts[4];
           if (action === 'approve') {
-            return handleAdminUpdateStatus(id, request, env, corsHeaders, 'approved');
+            return handleAdminUpdateStatus(id, request, env, corsHeaders, 'approved', auth.user);
           }
           if (action === 'reject') {
-            return handleAdminUpdateStatus(id, request, env, corsHeaders, 'rejected');
+            return handleAdminUpdateStatus(id, request, env, corsHeaders, 'rejected', auth.user);
           }
         }
       }

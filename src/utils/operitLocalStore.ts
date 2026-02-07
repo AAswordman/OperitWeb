@@ -26,6 +26,8 @@ export interface OperitHistoryEntry {
   target_path: string;
   language: string;
   reviewed_at?: string;
+  author_name?: string;
+  author_email?: string;
 }
 
 export interface OperitProgressEntry {
@@ -41,10 +43,23 @@ export interface OperitTemplate {
   updated_at: string;
 }
 
+export interface OperitLeaderboardEntry {
+  author_name: string | null;
+  author_email: string | null;
+  edits: number;
+  last_submitted?: string | null;
+}
+
+export interface OperitLeaderboardCache {
+  updated_at: string;
+  items: OperitLeaderboardEntry[];
+}
+
 const PROFILE_KEY = 'operit_submission_profile';
 const HISTORY_KEY = 'operit_submission_history';
 const PROGRESS_KEY = 'operit_submission_progress';
 const TEMPLATE_KEY = 'operit_submission_templates';
+const LEADERBOARD_KEY = 'operit_submission_leaderboard';
 const DRAFT_PREFIX = 'operit_submission_draft:';
 
 const safeParse = <T>(raw: string | null, fallback: T): T => {
@@ -121,6 +136,18 @@ export const saveOperitTemplates = (items: OperitTemplate[]) => {
   localStorage.setItem(TEMPLATE_KEY, payload);
 };
 
+export const getOperitLeaderboard = (): OperitLeaderboardCache | null => {
+  const data = safeParse<OperitLeaderboardCache | null>(localStorage.getItem(LEADERBOARD_KEY), null);
+  if (!data || !Array.isArray(data.items)) return null;
+  return data;
+};
+
+export const saveOperitLeaderboard = (cache: OperitLeaderboardCache) => {
+  const payload = safeStringify(cache);
+  if (!payload) return;
+  localStorage.setItem(LEADERBOARD_KEY, payload);
+};
+
 export const getOperitDraft = (targetPath: string) => {
   if (!targetPath) return null;
   const key = `${DRAFT_PREFIX}${targetPath}`;
@@ -157,6 +184,7 @@ export const exportOperitLocalData = () => ({
   history: getOperitHistory(),
   progress: getOperitProgress(),
   templates: getOperitTemplates(),
+  leaderboard: getOperitLeaderboard(),
   drafts: listOperitDrafts(),
 });
 
@@ -165,12 +193,14 @@ export const importOperitLocalData = (data: {
   history?: OperitHistoryEntry[];
   progress?: Record<string, OperitProgressEntry>;
   templates?: OperitTemplate[];
+  leaderboard?: OperitLeaderboardCache | null;
   drafts?: OperitDraft[];
 }) => {
   if (data.profile) saveOperitProfile(data.profile);
   if (data.history) saveOperitHistory(data.history);
   if (data.progress) saveOperitProgress(data.progress);
   if (data.templates) saveOperitTemplates(data.templates);
+  if (data.leaderboard) saveOperitLeaderboard(data.leaderboard);
   if (data.drafts) {
     data.drafts.forEach(saveOperitDraft);
   }
@@ -181,6 +211,7 @@ export const clearOperitLocalData = () => {
   localStorage.removeItem(HISTORY_KEY);
   localStorage.removeItem(PROGRESS_KEY);
   localStorage.removeItem(TEMPLATE_KEY);
+  localStorage.removeItem(LEADERBOARD_KEY);
   const draftKeys: string[] = [];
   for (let index = 0; index < localStorage.length; index += 1) {
     const key = localStorage.key(index);

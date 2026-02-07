@@ -14,8 +14,15 @@ OPERIT_GITHUB_OWNER = "AAswordman"
 OPERIT_GITHUB_REPO = "OperitWeb"
 OPERIT_GITHUB_DEFAULT_BRANCH = "main"
 OPERIT_REPO_CONTENT_PREFIX = "public"
+OPERIT_GITHUB_ASSET_PREFIX = "public/manuals/assets/submissions"
+OPERIT_SUBMISSION_ASSET_TMP_PREFIX = "tmp/submissions"
+OPERIT_SUBMISSION_ASSET_TTL_HOURS = "72"
 
 [[d1_databases]]
 binding = "OPERIT_SUBMISSION_DB"
 database_name = "operit_submission"
 database_id = "094b2ad8-0bd2-478b-be7c-ecbde87c2e2c"
+
+[[r2_buckets]]
+binding = "OPERIT_SUBMISSION_ASSET_BUCKET"
+bucket_name = "operit-submission-assets"

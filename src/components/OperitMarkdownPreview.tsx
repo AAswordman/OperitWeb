@@ -25,9 +25,10 @@ const urlTransform = (uri: string) => {
 
 interface OperitMarkdownPreviewProps {
   content: string;
+  resolveImageUrl?: (uri: string) => string;
 }
 
-const OperitMarkdownPreview: React.FC<OperitMarkdownPreviewProps> = ({ content }) => (
+const OperitMarkdownPreview: React.FC<OperitMarkdownPreviewProps> = ({ content, resolveImageUrl }) => (
   <div className="markdown-body">
     <Image.PreviewGroup>
       <ReactMarkdown
@@ -56,7 +57,9 @@ const OperitMarkdownPreview: React.FC<OperitMarkdownPreviewProps> = ({ content }
           img: ({ node, onClick, ...props }) => {
             void node;
             void onClick;
-            return <Image {...props} />;
+            const source = typeof props.src === 'string' ? props.src : '';
+            const resolved = source && resolveImageUrl ? resolveImageUrl(source) : source;
+            return <Image {...props} src={resolved || props.src} />;
           },
         }}
       >

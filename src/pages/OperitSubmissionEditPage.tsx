@@ -37,6 +37,13 @@ import {
   type OperitTemplate,
   type OperitViewMode,
 } from '../utils/operitLocalStore';
+import {
+  buildOperitLocalImageUri,
+  deleteOperitLocalImage,
+  extractOperitLocalImageIds,
+  getOperitLocalImage,
+  saveOperitLocalImage,
+} from '../utils/operitLocalImageStore';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -51,6 +58,14 @@ const extractTitle = (content: string, fallback: string) => {
 
 const normalizeBase = (base: string) => (base.endsWith('/') ? base : `${base}/`);
 const formatDateTime = (value: string) => new Date(value).toLocaleString();
+
+const toSha256Hex = async (blob: Blob) => {
+  const data = await blob.arrayBuffer();
+  const hash = await crypto.subtle.digest('SHA-256', data);
+  return Array.from(new Uint8Array(hash))
+    .map(byte => byte.toString(16).padStart(2, '0'))
+    .join('');
+};
 
 interface OperitSubmissionEditPageProps {
   language: 'zh' | 'en';
@@ -105,6 +120,9 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
   const [viewMode, setViewMode] = useState<OperitViewMode>('split');
   const [fontSize, setFontSize] = useState(14);
   const [templates, setTemplates] = useState<OperitTemplate[]>([]);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [localImageUrls, setLocalImageUrls] = useState<Record<string, string>>({});
+  const localImageUrlsRef = useRef<Record<string, string>>({});
 
   const handleTurnstileVerify = useCallback((token: string) => {
     setTurnstileToken(token);
@@ -262,6 +280,82 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     return () => window.clearTimeout(timer);
   }, [draftStorageKey, draftPending, hasEdits, saveDraft, targetPath, title]);
 
+  useEffect(() => {
+    localImageUrlsRef.current = localImageUrls;
+  }, [localImageUrls]);
+
+  useEffect(() => {
+    const localIds = extractOperitLocalImageIds(content);
+    if (!localIds.length) {
+      setLocalImageUrls(prev => {
+        const urls = Object.values(prev);
+        urls.forEach(url => URL.revokeObjectURL(url));
+        if (!Object.keys(prev).length) return prev;
+        return {};
+      });
+      return;
+    }
+
+    const active = new Set(localIds);
+    setLocalImageUrls(prev => {
+      const next: Record<string, string> = {};
+      Object.entries(prev).forEach(([id, url]) => {
+        if (active.has(id)) {
+          next[id] = url;
+        } else {
+          URL.revokeObjectURL(url);
+        }
+      });
+      const prevKeys = Object.keys(prev);
+      const nextKeys = Object.keys(next);
+      if (
+        prevKeys.length === nextKeys.length
+        && prevKeys.every(key => next[key] === prev[key])
+      ) {
+        return prev;
+      }
+      return next;
+    });
+
+    let cancelled = false;
+    const loadImages = async () => {
+      for (const id of localIds) {
+        if (cancelled) return;
+        if (localImageUrlsRef.current[id]) continue;
+        try {
+          const asset = await getOperitLocalImage(id);
+          if (!asset?.blob || cancelled) continue;
+          const objectUrl = URL.createObjectURL(asset.blob);
+          setLocalImageUrls(prev => {
+            if (!active.has(id)) {
+              URL.revokeObjectURL(objectUrl);
+              return prev;
+            }
+            if (prev[id]) {
+              URL.revokeObjectURL(objectUrl);
+              return prev;
+            }
+            return {
+              ...prev,
+              [id]: objectUrl,
+            };
+          });
+        } catch {
+          // ignore missing local assets
+        }
+      }
+    };
+    void loadImages();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [content]);
+
+  useEffect(() => () => {
+    Object.values(localImageUrlsRef.current).forEach(url => URL.revokeObjectURL(url));
+  }, []);
+
   const handleUseDraft = () => {
     if (!draftInfo) return;
     setTitle(draftInfo.title || '');
@@ -302,6 +396,52 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     message.success(t.templateInserted);
   };
 
+  const resolveImageUrl = useCallback((uri: string) => {
+    const match = uri.match(/^operit-local:\/\/([a-z0-9][a-z0-9_-]{7,63})$/i);
+    if (!match) return uri;
+    return localImageUrls[match[1]] || '';
+  }, [localImageUrls]);
+
+  const handleInsertImage = useCallback(async () => {
+    if (uploadingImage) return;
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.multiple = true;
+
+    const files = await new Promise<File[]>((resolve) => {
+      input.onchange = () => {
+        const selected = input.files ? Array.from(input.files) : [];
+        resolve(selected);
+      };
+      input.click();
+    });
+
+    if (!files.length) return;
+
+    setUploadingImage(true);
+    try {
+      let inserted = 0;
+      for (const file of files) {
+        if (!file.type.startsWith('image/')) {
+          message.warning(`${file.name}: unsupported image type`);
+          continue;
+        }
+        const asset = await saveOperitLocalImage(file);
+        const alt = (asset.name || 'image').replace(/\.[^.]+$/, '');
+        editorRef.current?.insertText(`![${alt}](${buildOperitLocalImageUri(asset.id)})`);
+        inserted += 1;
+      }
+      if (inserted > 0) {
+        message.success(`Inserted ${inserted} image${inserted > 1 ? 's' : ''}`);
+      }
+    } catch {
+      message.error('Image insert failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  }, [uploadingImage]);
+
   const handleSubmit = async () => {
     setSubmitError(null);
     if (!title.trim()) {
@@ -332,21 +472,48 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     setSubmitLoading(true);
     setIpBanInfo(null);
     try {
+      const localImageIds = extractOperitLocalImageIds(content);
+      const formData = new FormData();
+      const payload = {
+        type: 'edit',
+        language: targetLanguage,
+        target_path: targetPath,
+        title: title.trim(),
+        content: content.trim(),
+        author_name: authorName.trim(),
+        author_email: authorEmail.trim() || undefined,
+        turnstile_token: turnstileToken,
+      };
+      formData.set('payload', JSON.stringify(payload));
+
+      if (localImageIds.length) {
+        const manifest: Array<{ id: string; name: string; type: string; size: number; sha256: string }> = [];
+        for (const assetId of localImageIds) {
+          const asset = await getOperitLocalImage(assetId);
+          if (!asset?.blob) {
+            throw new Error(`local_image_missing:${assetId}`);
+          }
+          const file = new File([asset.blob], asset.name || `${assetId}.bin`, {
+            type: asset.type || 'application/octet-stream',
+          });
+          const sha256 = await toSha256Hex(asset.blob);
+          manifest.push({
+            id: assetId,
+            name: file.name,
+            type: file.type,
+            size: file.size,
+            sha256,
+          });
+          formData.append(`asset_${assetId}`, file, file.name);
+        }
+        formData.set('assets_manifest', JSON.stringify(manifest));
+      }
+
       const controller = new AbortController();
-      const timeout = window.setTimeout(() => controller.abort(), 15000);
+      const timeout = window.setTimeout(() => controller.abort(), 45000);
       const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/submissions`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          type: 'edit',
-          language: targetLanguage,
-          target_path: targetPath,
-          title: title.trim(),
-          content: content.trim(),
-          author_name: authorName.trim(),
-          author_email: authorEmail.trim() || undefined,
-          turnstile_token: turnstileToken,
-        }),
+        body: formData,
         signal: controller.signal,
       });
       window.clearTimeout(timeout);
@@ -375,6 +542,15 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
         status,
         created_at: createdAt,
       });
+
+      for (const assetId of localImageIds) {
+        try {
+          await deleteOperitLocalImage(assetId);
+        } catch {
+          // ignore local cleanup failure
+        }
+      }
+
       setSubmissionHistory(prev => {
         const next = [
           {
@@ -384,6 +560,8 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
             title: title.trim(),
             target_path: targetPath,
             language: targetLanguage,
+            author_name: authorName.trim(),
+            author_email: authorEmail.trim() || undefined,
           },
           ...prev,
         ].slice(0, 50);
@@ -614,6 +792,8 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
                       mode={editorMode}
                       view={viewMode}
                       fontSize={fontSize}
+                      onInsertImage={handleInsertImage}
+                      resolveImageUrl={resolveImageUrl}
                       labels={{
                         toolbarBold: t.toolbarBold,
                         toolbarItalic: t.toolbarItalic,

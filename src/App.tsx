@@ -12,6 +12,8 @@ const ReturnCodeGeneratorPage = lazy(() => import('./pages/ReturnCodeGeneratorPa
 const OperitSubmissionAdminPage = lazy(() => import('./pages/OperitSubmissionAdminPage'));
 const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEditPage'));
 const OperitSubmissionCenterPage = lazy(() => import('./pages/OperitSubmissionCenterPage'));
+const OperitLoginPage = lazy(() => import('./pages/OperitLoginPage'));
+const OperitOwnerAdminPage = lazy(() => import('./pages/OperitOwnerAdminPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -86,7 +88,9 @@ const App: React.FC = () => {
               <Route path=":category/:slug" element={<GuideContent language={language} />} />
             </Route>
             <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
+            <Route path="operit-login" element={<OperitLoginPage language={language} />} />
             <Route path="operit-submission-admin" element={<OperitSubmissionAdminPage language={language} />} />
+            <Route path="operit-owner-admin" element={<OperitOwnerAdminPage language={language} />} />
             <Route path="operit-submission-center/*" element={<OperitSubmissionCenterPage language={language} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Route>

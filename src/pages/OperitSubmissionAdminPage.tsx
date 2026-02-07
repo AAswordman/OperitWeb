@@ -26,10 +26,10 @@ import {
   CloseCircleOutlined,
   EyeOutlined,
   ReloadOutlined,
-  SettingOutlined,
   BlockOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations';
+import { useNavigate } from 'react-router-dom';
 
 const { Content } = Layout;
 const { Title, Text, Paragraph, Link } = Typography;
@@ -83,12 +83,15 @@ interface OperitSubmissionAdminPageProps {
   language: 'zh' | 'en';
 }
 
+interface AdminAuthUser {
+  username: string;
+  display_name?: string | null;
+  role?: string | null;
+  owner?: boolean;
+}
+
 const STORAGE = {
-  apiBase: 'operit_submission_admin_api_base',
-  docsBase: 'operit_submission_admin_docs_base',
   adminToken: 'operit_submission_admin_token',
-  rememberToken: 'operit_submission_admin_remember',
-  reviewer: 'operit_submission_admin_reviewer',
 };
 
 const DEFAULT_DOCS_BASE = 'https://operit.aaswordsman.org';
@@ -211,17 +214,11 @@ const buildAdminHeaders = (token: string): HeadersInit => ({
 const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ language }) => {
   const languageKey = translations[language] ? language : 'zh';
   const t = translations[languageKey].admin;
-  const [apiBase, setApiBase] = useState(() => {
-    return localStorage.getItem(STORAGE.apiBase) || 'https://api.aaswordsman.org';
-  });
-  const [docsBase, setDocsBase] = useState(() => {
-    return localStorage.getItem(STORAGE.docsBase) || DEFAULT_DOCS_BASE;
-  });
+  const navigate = useNavigate();
+  const [apiBase] = useState('https://api.aaswordsman.org');
+  const [docsBase] = useState(DEFAULT_DOCS_BASE);
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(STORAGE.adminToken) || '');
-  const [rememberToken, setRememberToken] = useState(() => {
-    return localStorage.getItem(STORAGE.rememberToken) === '1';
-  });
-  const [reviewer, setReviewer] = useState(() => localStorage.getItem(STORAGE.reviewer) || '');
+  const [authUser, setAuthUser] = useState<AdminAuthUser | null>(null);
 
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('pending');
   const [limit, setLimit] = useState(50);
@@ -257,26 +254,15 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   const [ipBanListLoading, setIpBanListLoading] = useState(false);
   const [ipBanError, setIpBanError] = useState<string | null>(null);
 
-  useEffect(() => {
-    localStorage.setItem(STORAGE.apiBase, apiBase);
-  }, [apiBase]);
+  const reviewerName = (authUser?.display_name || authUser?.username || '').trim();
 
   useEffect(() => {
-    localStorage.setItem(STORAGE.docsBase, docsBase);
-  }, [docsBase]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE.reviewer, reviewer);
-  }, [reviewer]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE.rememberToken, rememberToken ? '1' : '0');
-    if (rememberToken && adminToken) {
+    if (adminToken) {
       localStorage.setItem(STORAGE.adminToken, adminToken);
     } else {
       localStorage.removeItem(STORAGE.adminToken);
     }
-  }, [adminToken, rememberToken]);
+  }, [adminToken]);
 
   const fetchJson = useCallback(async (url: string, options?: RequestInit) => {
     const response = await fetch(url, options);
@@ -289,6 +275,47 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     }
     return { response, data, text };
   }, []);
+
+  const loadAdminProfile = useCallback(async (token: string) => {
+    if (!token.trim()) {
+      setAuthUser(null);
+      return false;
+    }
+    try {
+      const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/me`, {
+        headers: buildAdminHeaders(token),
+      });
+      if (!response.ok) {
+        setAuthUser(null);
+        return false;
+      }
+      const user = (data as { user?: AdminAuthUser })?.user || null;
+      setAuthUser(user);
+      return true;
+    } catch {
+      setAuthUser(null);
+      return false;
+    }
+  }, [apiBase, fetchJson]);
+
+  useEffect(() => {
+    if (!adminToken.trim()) {
+      setAuthUser(null);
+      navigate('/operit-login?next=/operit-submission-admin', { replace: true });
+      return;
+    }
+    let active = true;
+    loadAdminProfile(adminToken).then(ok => {
+      if (!active) return;
+      if (!ok) {
+        setAdminToken('');
+        navigate('/operit-login?next=/operit-submission-admin', { replace: true });
+      }
+    });
+    return () => {
+      active = false;
+    };
+  }, [adminToken, loadAdminProfile, navigate]);
 
   const loadOriginalContent = useCallback(
     async (targetPath?: string, type?: 'add' | 'edit') => {
@@ -373,6 +400,27 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     }
   }, [adminToken, apiBase, fetchJson, t]);
 
+  const handleLogout = useCallback(async () => {
+    try {
+      if (adminToken.trim()) {
+        await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/logout`, {
+          method: 'POST',
+          headers: buildAdminHeaders(adminToken),
+        });
+      }
+    } catch {
+      // ignore logout request failures
+    }
+    setAdminToken('');
+    setAuthUser(null);
+    setItems([]);
+    setSelectedItem(null);
+    setDetailOpen(false);
+    localStorage.removeItem(STORAGE.adminToken);
+    message.success('Logged out');
+    navigate('/operit-login?next=/operit-submission-admin', { replace: true });
+  }, [adminToken, apiBase, fetchJson, navigate, t]);
+
   const createIpBan = useCallback(async () => {
     if (!adminToken.trim()) {
       setIpBanError(t.errorTokenRequired);
@@ -392,7 +440,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
         ip: ipBanForm.ip.trim() || undefined,
         reason: ipBanForm.reason.trim() || undefined,
         notes: ipBanForm.notes.trim() || undefined,
-        banned_by: reviewer.trim() || undefined,
+        banned_by: reviewerName || undefined,
         expires_at: expiresAt,
       };
       const { response, data } = await fetchJson(url, {
@@ -423,7 +471,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     } finally {
       setIpBanLoading(false);
     }
-  }, [adminToken, apiBase, fetchJson, ipBanForm, reviewer, t, loadIpBans]);
+  }, [adminToken, apiBase, fetchJson, ipBanForm, reviewerName, t, loadIpBans]);
 
   const deleteIpBan = useCallback(async (ipHash: string) => {
     if (!adminToken.trim()) {
@@ -542,7 +590,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
 
     const nextStatus = actionType === 'approve' ? 'approved' : 'rejected';
     const payload = {
-      reviewer: reviewer.trim() || undefined,
+      reviewer: reviewerName || undefined,
       review_notes: actionNotes.trim() || undefined,
     };
 
@@ -585,7 +633,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               ...entry,
               status: nextStatus,
               reviewed_at: reviewedAt,
-              reviewer: reviewer || entry.reviewer,
+              reviewer: reviewerName || entry.reviewer,
               review_notes: actionNotes || entry.review_notes,
               ...prInfo,
             },
@@ -599,7 +647,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
           ...prev,
           status: nextStatus,
           reviewed_at: reviewedAt,
-          reviewer: reviewer || prev.reviewer,
+          reviewer: reviewerName || prev.reviewer,
           review_notes: actionNotes || prev.review_notes,
           ...prInfo,
         };
@@ -625,7 +673,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     adminToken,
     apiBase,
     fetchJson,
-    reviewer,
+    reviewerName,
     selectedItem,
     statusFilter,
     t,
@@ -829,42 +877,29 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
 
             <Row gutter={[16, 16]} align="middle">
               <Col xs={24} lg={12}>
-                <Input
-                  addonBefore={<SettingOutlined />}
-                  value={apiBase}
-                  onChange={event => setApiBase(event.target.value)}
-                  placeholder={t.apiBasePlaceholder}
-                />
+                <Space>
+                  <Tag color="blue">
+                    Reviewer: {authUser?.display_name || authUser?.username || '-'}
+                  </Tag>
+                  <Tag color={authUser?.role === 'admin' ? 'red' : 'geekblue'}>
+                    {authUser?.role || 'reviewer'}
+                  </Tag>
+                </Space>
               </Col>
-              <Col xs={24} lg={12}>
-                <Input
-                  addonBefore={<SettingOutlined />}
-                  value={docsBase}
-                  onChange={event => setDocsBase(event.target.value)}
-                  placeholder={t.docsBasePlaceholder}
-                />
-              </Col>
-              <Col xs={24} lg={12}>
-                <Input.Password
-                  value={adminToken}
-                  onChange={event => setAdminToken(event.target.value)}
-                  placeholder={t.adminTokenPlaceholder}
-                />
-              </Col>
-              <Col xs={24} lg={12}>
-                <Input
-                  value={reviewer}
-                  onChange={event => setReviewer(event.target.value)}
-                  placeholder={t.reviewerPlaceholder}
-                />
+              <Col xs={24} lg={8}>
+                <Space>
+                  <Tag color={adminToken.trim() ? 'green' : 'default'}>
+                    {adminToken.trim() ? 'Logged in' : 'Not logged in'}
+                  </Tag>
+                </Space>
               </Col>
               <Col xs={24} lg={8}>
                 <Space>
                   <Button
-                    type={rememberToken ? 'primary' : 'default'}
-                    onClick={() => setRememberToken(value => !value)}
+                    onClick={handleLogout}
+                    disabled={!adminToken.trim()}
                   >
-                    {rememberToken ? t.tokenSaved : t.rememberToken}
+                    Logout
                   </Button>
                 </Space>
               </Col>
@@ -874,10 +909,10 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                     type="primary"
                     icon={<ReloadOutlined />}
                     onClick={loadSubmissions}
+                    disabled={!adminToken.trim()}
                   >
                     {t.loadSubmissions}
                   </Button>
-                  <Button onClick={() => setOffset(0)}>{t.firstPage}</Button>
                 </Space>
               </Col>
             </Row>
@@ -922,6 +957,11 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                 <Button onClick={loadSubmissions} icon={<ReloadOutlined />}>
                   {t.refresh}
                 </Button>
+                {authUser && (
+                  <Tag color="blue">
+                    {authUser.display_name || authUser.username || 'admin'} ({authUser.role || 'admin'})
+                  </Tag>
+                )}
               </Space>
             </Col>
           </Row>
@@ -1200,11 +1240,9 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
           <Text>
             {t.modalTargetLabel}: <Text code>{selectedItem?.title || '-'}</Text>
           </Text>
-          <Input
-            value={reviewer}
-            onChange={event => setReviewer(event.target.value)}
-            placeholder={t.modalReviewerPlaceholder}
-          />
+          <Text type="secondary">
+            Reviewer: {reviewerName || '-'}
+          </Text>
           <Input.TextArea
             rows={4}
             value={actionNotes}
