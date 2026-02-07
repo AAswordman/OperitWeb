@@ -533,6 +533,22 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
               <Text type="secondary">{t.subtitle}</Text>
             </div>
             <Alert showIcon type="info" message={t.localNotice} />
+            {isMobileLayout && (
+              <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                <Segmented
+                  block
+                  options={mobileGroupOptions}
+                  value={mobileSectionGroup}
+                  onChange={value => setMobileSectionGroup(value as MobileSectionGroup)}
+                />
+                <Segmented
+                  block
+                  options={mobileLeafOptionsMap[mobileSectionGroup]}
+                  value={mobileSectionLeaf}
+                  onChange={value => setMobileSectionLeaf(value as MobileSectionLeaf)}
+                />
+              </Space>
+            )}
             <Space direction="vertical" size={6} style={{ width: '100%' }}>
               <Space wrap>
                 <Button onClick={() => navigate('/operit-login?next=/operit-submission-center')}>
@@ -558,9 +574,9 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
         </Card>
 
         <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
-          <Col xs={24} xl={12}>
+          <Col xs={24} xl={12} style={showLeftColumn ? undefined : { display: 'none' }}>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Card>
+              <Card style={showSection('profile') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.profileTitle}
@@ -622,7 +638,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('lookup') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.lookupTitle}
@@ -736,7 +752,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('progress') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.progressTitle}
@@ -777,7 +793,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('drafts') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.draftTitle}
@@ -822,9 +838,9 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
             </Space>
           </Col>
 
-          <Col xs={24} xl={12}>
+          <Col xs={24} xl={12} style={showRightColumn ? undefined : { display: 'none' }}>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <Card>
+              <Card style={showSection('history') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.historyTitle}
@@ -868,7 +884,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('leaderboard') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.leaderboardTitle}
@@ -914,7 +930,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('templates') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.templateTitle}
@@ -968,7 +984,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 </Space>
               </Card>
 
-              <Card>
+              <Card style={showSection('data') ? undefined : { display: 'none' }}>
                 <Space direction="vertical" size="middle" style={{ width: '100%' }}>
                   <Title level={4} style={{ margin: 0 }}>
                     {t.dataTitle}

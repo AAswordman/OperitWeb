@@ -9,7 +9,7 @@ set "ENV_FILE=%ROOT%\.env.local"
 set "WORKER_DIR=%ROOT%\workers\operit-api"
 set "NPM_CACHE=%ROOT%\.npm-cache"
 set "NPM_REGISTRY=https://registry.npmjs.org/"
-set "WRANGLER_ARGS=deploy --no-bundle"
+set "WRANGLER_ARGS=deploy"
 
 if not exist "%WORKER_DIR%" (
   echo Missing worker directory: %WORKER_DIR%
@@ -92,3 +92,4 @@ if %ERRORLEVEL%==0 (
 popd >nul
 echo Could not find npx/pnpm/npm in PATH.
 exit /b 4
+
