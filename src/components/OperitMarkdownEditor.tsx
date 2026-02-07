@@ -66,7 +66,7 @@ interface OperitMarkdownEditorProps {
   view: OperitViewMode;
   fontSize: number;
   labels: OperitMarkdownEditorLabels;
-  onInsertImage?: () => void | Promise<void>;
+  onInsertImage?: (files?: File[]) => void | Promise<void>;
   resolveImageUrl?: (uri: string) => string;
 }
 
@@ -305,6 +305,36 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
     runVisualCommand('insertHTML', '<pre><code>code</code></pre>');
   }, [runVisualCommand]);
 
+  const extractImageFilesFromClipboard = useCallback((event: React.ClipboardEvent<HTMLDivElement>) => {
+    const items = Array.from(event.clipboardData?.items || []);
+    return items
+      .filter(item => item.kind === 'file' && item.type.startsWith('image/'))
+      .map(item => item.getAsFile())
+      .filter((file): file is File => file instanceof File);
+  }, []);
+
+  const handleVisualPaste = useCallback(async (event: React.ClipboardEvent<HTMLDivElement>) => {
+    const imageFiles = extractImageFilesFromClipboard(event);
+    if (!imageFiles.length) return;
+    event.preventDefault();
+    if (onInsertImage) {
+      await onInsertImage(imageFiles);
+      return;
+    }
+    imageFiles.forEach(() => insertImageVisual());
+  }, [extractImageFilesFromClipboard, insertImageVisual, onInsertImage]);
+
+  const handleVisualDrop = useCallback(async (event: React.DragEvent<HTMLDivElement>) => {
+    const imageFiles = Array.from(event.dataTransfer?.files || []).filter(file => file.type.startsWith('image/'));
+    if (!imageFiles.length) return;
+    event.preventDefault();
+    if (onInsertImage) {
+      await onInsertImage(imageFiles);
+      return;
+    }
+    imageFiles.forEach(() => insertImageVisual());
+  }, [insertImageVisual, onInsertImage]);
+
   const renderMarkdownEditor = () => (
     <Input.TextArea
       ref={textAreaRef}
@@ -326,6 +356,17 @@ const OperitMarkdownEditor = React.forwardRef<OperitMarkdownEditorHandle, Operit
       aria-multiline
       data-placeholder={placeholder}
       onInput={event => emitVisualChange(event.currentTarget)}
+      onPaste={event => {
+        void handleVisualPaste(event);
+      }}
+      onDragOver={event => {
+        if (Array.from(event.dataTransfer?.types || []).includes('Files')) {
+          event.preventDefault();
+        }
+      }}
+      onDrop={event => {
+        void handleVisualDrop(event);
+      }}
       onScroll={() => syncScroll('editor')}
       style={{ fontSize, ...panelStyle }}
     />

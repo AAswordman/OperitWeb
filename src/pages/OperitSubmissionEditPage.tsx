@@ -67,6 +67,32 @@ const toSha256Hex = async (blob: Blob) => {
     .join('');
 };
 
+const EXT_BY_MIME: Record<string, string> = {
+  'image/png': 'png',
+  'image/jpeg': 'jpg',
+  'image/jpg': 'jpg',
+  'image/webp': 'webp',
+  'image/gif': 'gif',
+  'image/svg+xml': 'svg',
+};
+
+const parseDataImageUri = (value: string): { mime: string; bytes: Uint8Array } | null => {
+  const match = String(value || '').match(/^data:(image\/[a-z0-9.+-]+);base64,([a-z0-9+/=\s]+)$/i);
+  if (!match) return null;
+  const mime = match[1].toLowerCase();
+  const base64 = match[2].replace(/\s+/g, '');
+  try {
+    const binary = atob(base64);
+    const bytes = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i += 1) {
+      bytes[i] = binary.charCodeAt(i);
+    }
+    return { mime, bytes };
+  } catch {
+    return null;
+  }
+};
+
 interface OperitSubmissionEditPageProps {
   language: 'zh' | 'en';
 }
@@ -402,20 +428,24 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     return localImageUrls[match[1]] || '';
   }, [localImageUrls]);
 
-  const handleInsertImage = useCallback(async () => {
+  const handleInsertImage = useCallback(async (externalFiles?: File[]) => {
     if (uploadingImage) return;
-    const input = document.createElement('input');
-    input.type = 'file';
-    input.accept = 'image/*';
-    input.multiple = true;
 
-    const files = await new Promise<File[]>((resolve) => {
-      input.onchange = () => {
-        const selected = input.files ? Array.from(input.files) : [];
-        resolve(selected);
-      };
-      input.click();
-    });
+    let files: File[] = externalFiles ? Array.from(externalFiles) : [];
+    if (!files.length) {
+      const input = document.createElement('input');
+      input.type = 'file';
+      input.accept = 'image/*';
+      input.multiple = true;
+
+      files = await new Promise<File[]>((resolve) => {
+        input.onchange = () => {
+          const selected = input.files ? Array.from(input.files) : [];
+          resolve(selected);
+        };
+        input.click();
+      });
+    }
 
     if (!files.length) return;
 
@@ -441,6 +471,35 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
       setUploadingImage(false);
     }
   }, [uploadingImage]);
+
+  const convertInlineBase64Images = useCallback(async (markdown: string) => {
+    const source = String(markdown || '');
+    const imageRegex = /!\[([^\]]*)\]\((data:image\/[a-z0-9.+-]+;base64,[^)\s]+)\)/gi;
+
+    let nextMarkdown = source;
+    let convertedCount = 0;
+
+    const matches = Array.from(source.matchAll(imageRegex));
+    for (const match of matches) {
+      const full = match[0];
+      const altRaw = match[1] || 'image';
+      const dataUri = match[2] || '';
+      const parsed = parseDataImageUri(dataUri);
+      if (!parsed) continue;
+
+      const ext = EXT_BY_MIME[parsed.mime] || 'bin';
+      const safeAlt = (altRaw || 'image').trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9_-]/g, '') || 'image';
+      const fileName = `${safeAlt}.${ext}`;
+      const file = new File([parsed.bytes], fileName, { type: parsed.mime });
+      const asset = await saveOperitLocalImage(file);
+      const replacement = `![${altRaw}](${buildOperitLocalImageUri(asset.id)})`;
+
+      nextMarkdown = nextMarkdown.replace(full, replacement);
+      convertedCount += 1;
+    }
+
+    return { markdown: nextMarkdown, convertedCount };
+  }, []);
 
   const handleSubmit = async () => {
     setSubmitError(null);
@@ -472,14 +531,23 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
     setSubmitLoading(true);
     setIpBanInfo(null);
     try {
-      const localImageIds = extractOperitLocalImageIds(content);
+      const converted = await convertInlineBase64Images(content);
+      const normalizedContent = converted.markdown;
+      if (normalizedContent !== content) {
+        setContent(normalizedContent);
+      }
+      if (converted.convertedCount > 0) {
+        message.info(`Converted ${converted.convertedCount} pasted image${converted.convertedCount > 1 ? 's' : ''} to local assets`);
+      }
+
+      const localImageIds = extractOperitLocalImageIds(normalizedContent);
       const formData = new FormData();
       const payload = {
         type: 'edit',
         language: targetLanguage,
         target_path: targetPath,
         title: title.trim(),
-        content: content.trim(),
+        content: normalizedContent.trim(),
         author_name: authorName.trim(),
         author_email: authorEmail.trim() || undefined,
         turnstile_token: turnstileToken,

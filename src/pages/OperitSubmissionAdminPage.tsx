@@ -37,7 +37,21 @@ const { Title, Text, Paragraph, Link } = Typography;
 type SubmissionStatus = 'pending' | 'approved' | 'rejected';
 type StatusFilter = SubmissionStatus | 'all';
 
-type DiffRowType = 'equal' | 'insert' | 'delete';
+type DiffRowType = 'equal' | 'insert' | 'delete' | 'replace';
+
+interface RawDiffRow {
+  type: 'equal' | 'insert' | 'delete';
+  left: string | null;
+  right: string | null;
+}
+
+interface DiffRow {
+  type: DiffRowType;
+  left: string | null;
+  right: string | null;
+  leftLine: number | null;
+  rightLine: number | null;
+}
 
 interface SubmissionItem {
   id: string;
@@ -173,13 +187,13 @@ const buildLineDiff = (oldLines: string[], newLines: string[]) => {
   return trace;
 };
 
-const backtrackDiff = (trace: Map<number, number>[], oldLines: string[], newLines: string[]) => {
-  const rows: { type: DiffRowType; left: string; right: string }[] = [];
+const backtrackDiff = (trace: Map<number, number>[], oldLines: string[], newLines: string[]): RawDiffRow[] => {
+  const rows: RawDiffRow[] = [];
   let x = oldLines.length;
   let y = newLines.length;
 
-  for (let d = trace.length - 1; d >= 0; d -= 1) {
-    const v = trace[d];
+  for (let d = trace.length - 1; d > 0; d -= 1) {
+    const v = trace[d - 1];
     const k = x - y;
     const down = v.get(k + 1) ?? 0;
     const right = v.get(k - 1) ?? 0;
@@ -193,18 +207,96 @@ const backtrackDiff = (trace: Map<number, number>[], oldLines: string[], newLine
       y -= 1;
     }
 
-    if (d === 0) break;
-
     if (x === prevX) {
-      rows.unshift({ type: 'insert', left: '', right: newLines[y - 1] });
+      rows.unshift({ type: 'insert', left: null, right: newLines[y - 1] });
       y -= 1;
     } else {
-      rows.unshift({ type: 'delete', left: oldLines[x - 1], right: '' });
+      rows.unshift({ type: 'delete', left: oldLines[x - 1], right: null });
       x -= 1;
     }
   }
 
+  while (x > 0 && y > 0) {
+    rows.unshift({ type: 'equal', left: oldLines[x - 1], right: newLines[y - 1] });
+    x -= 1;
+    y -= 1;
+  }
+  while (x > 0) {
+    rows.unshift({ type: 'delete', left: oldLines[x - 1], right: null });
+    x -= 1;
+  }
+  while (y > 0) {
+    rows.unshift({ type: 'insert', left: null, right: newLines[y - 1] });
+    y -= 1;
+  }
+
   return rows;
+};
+
+const pairChangeRows = (rows: RawDiffRow[]): Array<Pick<DiffRow, 'type' | 'left' | 'right'>> => {
+  const paired: Array<Pick<DiffRow, 'type' | 'left' | 'right'>> = [];
+  let index = 0;
+
+  while (index < rows.length) {
+    const row = rows[index];
+    if (row.type === 'equal') {
+      paired.push({ type: 'equal', left: row.left, right: row.right });
+      index += 1;
+      continue;
+    }
+
+    const deleted: string[] = [];
+    const inserted: string[] = [];
+    while (index < rows.length && rows[index].type !== 'equal') {
+      const change = rows[index];
+      if (change.type === 'delete' && change.left !== null) {
+        deleted.push(change.left);
+      }
+      if (change.type === 'insert' && change.right !== null) {
+        inserted.push(change.right);
+      }
+      index += 1;
+    }
+
+    const max = Math.max(deleted.length, inserted.length);
+    for (let i = 0; i < max; i += 1) {
+      const left = deleted[i] ?? null;
+      const right = inserted[i] ?? null;
+      if (left !== null && right !== null) {
+        paired.push({ type: 'replace', left, right });
+      } else if (left !== null) {
+        paired.push({ type: 'delete', left, right: null });
+      } else {
+        paired.push({ type: 'insert', left: null, right });
+      }
+    }
+  }
+
+  return paired;
+};
+
+const addDiffLineNumbers = (
+  rows: Array<Pick<DiffRow, 'type' | 'left' | 'right'>>,
+): DiffRow[] => {
+  let leftLine = 1;
+  let rightLine = 1;
+
+  return rows.map(row => {
+    const next: DiffRow = {
+      ...row,
+      leftLine: row.left === null ? null : leftLine,
+      rightLine: row.right === null ? null : rightLine,
+    };
+
+    if (row.left !== null) {
+      leftLine += 1;
+    }
+    if (row.right !== null) {
+      rightLine += 1;
+    }
+
+    return next;
+  });
 };
 
 const buildAdminHeaders = (token: string): HeadersInit => ({
@@ -706,10 +798,12 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     const oldLines = splitLines(originalContent);
     const newLines = splitLines(selectedItem.content);
     if (oldLines.length + newLines.length > DIFF_MAX_LINES) {
-      return { tooLarge: true, rows: [] as { type: DiffRowType; left: string; right: string }[] };
+      return { tooLarge: true, rows: [] as DiffRow[] };
     }
     const trace = buildLineDiff(oldLines, newLines);
-    return { tooLarge: false, rows: backtrackDiff(trace, oldLines, newLines) };
+    const rawRows = backtrackDiff(trace, oldLines, newLines);
+    const pairedRows = pairChangeRows(rawRows);
+    return { tooLarge: false, rows: addDiffLineNumbers(pairedRows) };
   }, [originalContent, selectedItem?.content]);
 
   const columns: ColumnsType<SubmissionItem> = [
@@ -1166,9 +1260,14 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                   <div style={{ maxHeight: 360, overflow: 'auto' }}>
                     {diffRows.rows.map((row, index) => {
                       const leftBg =
-                        row.type === 'delete' ? 'rgba(255,77,79,0.15)' : 'transparent';
+                        row.type === 'delete' || row.type === 'replace'
+                          ? 'rgba(255,77,79,0.16)'
+                          : 'transparent';
                       const rightBg =
-                        row.type === 'insert' ? 'rgba(82,196,26,0.15)' : 'transparent';
+                        row.type === 'insert' || row.type === 'replace'
+                          ? 'rgba(82,196,26,0.16)'
+                          : 'transparent';
+                      const rowBg = row.type === 'equal' ? 'transparent' : 'rgba(255,255,255,0.02)';
                       return (
                         <div
                           key={`${row.type}-${index}`}
@@ -1176,16 +1275,41 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                             display: 'grid',
                             gridTemplateColumns: '1fr 1fr',
                             borderBottom: '1px solid rgba(255,255,255,0.06)',
+                            background: rowBg,
                             fontFamily:
                               'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
                             fontSize: 12,
                           }}
                         >
-                          <div style={{ padding: '4px 10px', background: leftBg, whiteSpace: 'pre-wrap' }}>
-                            {row.left || ''}
+                          <div
+                            style={{
+                              padding: '4px 10px',
+                              background: leftBg,
+                              whiteSpace: 'pre-wrap',
+                              display: 'grid',
+                              gridTemplateColumns: '44px 1fr',
+                              columnGap: 8,
+                            }}
+                          >
+                            <Text type="secondary" style={{ fontSize: 11, userSelect: 'none' }}>
+                              {row.leftLine ?? ''}
+                            </Text>
+                            <span>{row.left ?? ''}</span>
                           </div>
-                          <div style={{ padding: '4px 10px', background: rightBg, whiteSpace: 'pre-wrap' }}>
-                            {row.right || ''}
+                          <div
+                            style={{
+                              padding: '4px 10px',
+                              background: rightBg,
+                              whiteSpace: 'pre-wrap',
+                              display: 'grid',
+                              gridTemplateColumns: '44px 1fr',
+                              columnGap: 8,
+                            }}
+                          >
+                            <Text type="secondary" style={{ fontSize: 11, userSelect: 'none' }}>
+                              {row.rightLine ?? ''}
+                            </Text>
+                            <span>{row.right ?? ''}</span>
                           </div>
                         </div>
                       );
