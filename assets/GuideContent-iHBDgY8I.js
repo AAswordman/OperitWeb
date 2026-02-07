@@ -1,1 +1,0 @@
-import{g as e,j as s}from"./index-BCZOQpt-.js";import a from"./MarkdownRenderer-Dr0HK9Fi.js";import"./remarkDetails-D9nHR-jq.js";import"./EyeOutlined-DyLgew2v.js";import"./addEventListener-CHd5Yb_v.js";import"./index-ays6uG_w.js";const f=({language:t})=>{const r=e(),o=r.category?`${r.category}/${r.slug}`:r.slug;return s.jsx(a,{file:o||"",language:t})};export{f as default};
