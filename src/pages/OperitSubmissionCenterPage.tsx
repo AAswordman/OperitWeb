@@ -138,6 +138,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   const [leaderboardError, setLeaderboardError] = useState<string | null>(null);
   const [adminAuthUser, setAdminAuthUser] = useState<AdminAuthUser | null>(null);
   const [adminAuthLoading, setAdminAuthLoading] = useState(false);
+  const [adminLogoutLoading, setAdminLogoutLoading] = useState(false);
   const [mobileSectionGroup, setMobileSectionGroup] = useState<MobileSectionGroup>('account');
   const [mobileSectionLeaf, setMobileSectionLeaf] = useState<MobileSectionLeaf>('profile');
 
@@ -275,6 +276,29 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
       setLeaderboardUpdatedAt(cached.updated_at || null);
     }
   };
+
+  const handleAdminLogout = useCallback(async () => {
+    const token = (localStorage.getItem(STORAGE.adminToken) || '').trim();
+    setAdminLogoutLoading(true);
+    try {
+      if (token) {
+        await fetch(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/logout`, {
+          method: 'POST',
+          headers: {
+            'X-Operit-Admin-Token': token,
+          },
+        });
+      }
+    } catch {
+      // ignore logout request failures
+    } finally {
+      localStorage.removeItem(STORAGE.adminToken);
+      setAdminAuthUser(null);
+      setAdminAuthLoading(false);
+      setAdminLogoutLoading(false);
+      message.success(isZh ? '退出登录成功' : 'Signed out successfully');
+    }
+  }, [apiBase, isZh]);
 
   const handleOpenDraft = (draft: OperitDraft) => {
     navigate(`/operit-submission-edit?path=${encodeURIComponent(draft.target_path)}`);
@@ -554,6 +578,11 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 <Button onClick={() => navigate('/operit-login?next=/operit-submission-center')}>
                   {adminAuthUser ? (isZh ? '切换登录' : 'Switch sign-in') : (isZh ? '登录' : 'Sign in')}
                 </Button>
+                {adminAuthUser && (
+                  <Button danger onClick={handleAdminLogout} loading={adminLogoutLoading}>
+                    {isZh ? '退出登录' : 'Sign out'}
+                  </Button>
+                )}
                 {canOpenAdminReview && (
                   <Button type="primary" onClick={() => navigate('/operit-submission-admin')}>
                     {isZh ? '进入审核入口' : 'Open review entry'}

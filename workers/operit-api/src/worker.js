@@ -538,7 +538,17 @@ export default {
       await cleanupExpiredAdminSessions(env);
 
       if (url.pathname === '/api/admin/auth/login' && request.method === 'POST') {
-        return handleAdminLogin(request, env, corsHeaders);
+        const bodyResult = await readJson(request);
+        if (!bodyResult.ok) {
+          return json({ error: 'invalid_json' }, 400, corsHeaders);
+        }
+        const turnstileToken = bodyResult.value.turnstile_token || bodyResult.value.turnstileToken;
+        const ip = getClientIp(request);
+        const turnstile = await verifyTurnstile(turnstileToken, ip, env);
+        if (!turnstile.success) {
+          return json({ error: 'turnstile_failed', details: turnstile['error-codes'] || [] }, 403, corsHeaders);
+        }
+        return handleAdminLogin(request, env, corsHeaders, bodyResult.value);
       }
 
       if (url.pathname === '/api/admin/bootstrap' && request.method === 'POST') {

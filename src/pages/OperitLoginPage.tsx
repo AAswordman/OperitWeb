@@ -1,6 +1,7 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Alert, Button, Card, Input, Layout, Space, Typography } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
+import TurnstileWidget from '../components/TurnstileWidget';
 
 const { Content } = Layout;
 const { Title, Paragraph } = Typography;
@@ -29,14 +30,57 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
 
   const [username, setUsername] = useState(() => localStorage.getItem(STORAGE.loginUsername) || '');
   const [password, setPassword] = useState('');
+  const [turnstileToken, setTurnstileToken] = useState('');
+  const [siteKey, setSiteKey] = useState('');
+  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [submitting, setSubmitting] = useState(false);
 
+  const handleTurnstileVerify = useCallback((token: string) => {
+    setTurnstileToken(token);
+  }, []);
+
+  const handleTurnstileExpire = useCallback(() => {
+    setTurnstileToken('');
+  }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    const loadConfig = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/api/config`);
+        if (!response.ok) return;
+        const data = await response.json();
+        if (!cancelled) {
+          setSiteKey(String(data?.turnstile_site_key || ''));
+        }
+      } catch {
+        if (!cancelled) {
+          setSiteKey('');
+        }
+      }
+    };
+
+    loadConfig();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
-      setError(isZh ? '请输入用户名和密码' : 'Username and password are required');
+      setError(isZh ? '请输入用户名和密码。' : 'Username and password are required');
       return;
     }
+    if (!siteKey) {
+      setError(isZh ? '验证码配置未就绪，请稍后重试。' : 'Verification config is not ready. Please retry.');
+      return;
+    }
+    if (!turnstileToken) {
+      setError(isZh ? '请先完成人机验证。' : 'Please complete verification first.');
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     try {
@@ -48,6 +92,7 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
         body: JSON.stringify({
           username: username.trim(),
           password,
+          turnstile_token: turnstileToken,
         }),
       });
 
@@ -61,6 +106,11 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
 
       if (!response.ok) {
         const apiError = (data as { error?: string })?.error;
+        if (apiError === 'turnstile_failed') {
+          setTurnstileToken('');
+          setTurnstileResetKey(prev => prev + 1);
+          throw new Error(isZh ? '人机验证失败，请重试。' : 'Verification failed, please try again.');
+        }
         throw new Error(apiError || response.statusText || 'login_failed');
       }
 
@@ -108,7 +158,34 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
               placeholder={isZh ? '密码' : 'Password'}
               autoComplete="current-password"
             />
-            <Button type="primary" loading={submitting} onClick={handleLogin}>
+
+            {siteKey ? (
+              <Space direction="vertical" size={8} style={{ width: '100%' }}>
+                <Paragraph type="secondary" style={{ marginBottom: 0 }}>
+                  {isZh ? '请先完成人机验证' : 'Please complete human verification first'}
+                </Paragraph>
+                <TurnstileWidget
+                  key={turnstileResetKey}
+                  siteKey={siteKey}
+                  onVerify={handleTurnstileVerify}
+                  onExpire={handleTurnstileExpire}
+                  theme="light"
+                />
+              </Space>
+            ) : (
+              <Alert
+                type="warning"
+                showIcon
+                message={isZh ? '未获取到验证码组件，请稍后刷新。' : 'Verification widget not available. Please refresh.'}
+              />
+            )}
+
+            <Button
+              type="primary"
+              loading={submitting}
+              onClick={handleLogin}
+              disabled={!siteKey || !turnstileToken}
+            >
               {isZh ? '登录' : 'Sign In'}
             </Button>
 
@@ -128,4 +205,3 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
 };
 
 export default OperitLoginPage;
-

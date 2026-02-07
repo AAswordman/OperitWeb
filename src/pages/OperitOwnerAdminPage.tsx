@@ -14,7 +14,6 @@ import {
   Table,
   Tag,
   Typography,
-  message,
 } from 'antd';
 
 const { Content } = Layout;
@@ -39,6 +38,55 @@ const STORAGE = {
   ownerToken: 'operit_owner_token',
 };
 
+const OWNER_USERNAME_RE = /^[a-z0-9][a-z0-9._-]{2,31}$/;
+const OWNER_PASSWORD_MIN_LENGTH = 8;
+
+const mapOwnerApiError = (code: string, isZh: boolean) => {
+  const zh: Record<string, string> = {
+    owner_unauthorized: '站长令牌无效，请检查 Owner token。',
+    owner_token_not_configured: '服务端未配置站长令牌。',
+    username_invalid: '用户名不合法（3-32位，仅小写字母/数字/._-）。',
+    password_too_short: '密码太短（至少 8 位）。',
+    role_invalid: '角色无效，请使用 admin 或 reviewer。',
+    user_exists: '该用户名已存在。',
+    invalid_json: '请求格式错误，请重试。',
+    no_changes: '未检测到修改。',
+    not_found: '目标用户不存在。',
+    d1_binding_missing: '服务端数据库未绑定。',
+  };
+  const en: Record<string, string> = {
+    owner_unauthorized: 'Invalid owner token.',
+    owner_token_not_configured: 'Owner token is not configured on server.',
+    username_invalid: 'Invalid username (3-32 chars, lowercase letters/numbers/._-).',
+    password_too_short: 'Password is too short (min 8 chars).',
+    role_invalid: 'Invalid role, use admin or reviewer.',
+    user_exists: 'Username already exists.',
+    invalid_json: 'Invalid request payload.',
+    no_changes: 'No changes detected.',
+    not_found: 'Target user not found.',
+    d1_binding_missing: 'Server database is not configured.',
+  };
+  const table = isZh ? zh : en;
+  return table[code] || '';
+};
+
+const resolveOwnerRequestError = (response: Response, data: unknown, isZh: boolean) => {
+  const payload = (data || {}) as { error?: unknown; details?: unknown };
+  const code = typeof payload.error === 'string' ? payload.error : '';
+  const mapped = code ? mapOwnerApiError(code, isZh) : '';
+  const fallback = isZh
+    ? `请求失败（HTTP ${response.status}）`
+    : `Request failed (HTTP ${response.status})`;
+  const base = mapped || code || fallback;
+
+  if (Array.isArray(payload.details) && payload.details.length) {
+    const detailText = payload.details.map(item => String(item || '').trim()).filter(Boolean).join(', ');
+    if (detailText) return `${base}: ${detailText}`;
+  }
+
+  return base;
+};
+
 const formatDateTime = (value?: string | null) => {
   if (!value) return '-';
   const date = new Date(value);
@@ -46,15 +94,19 @@ const formatDateTime = (value?: string | null) => {
   return date.toLocaleString();
 };
 
-const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
+const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language }) => {
+  const isZh = language === 'zh';
+
   const [apiBase, setApiBase] = useState(() => localStorage.getItem(STORAGE.apiBase) || 'https://api.aaswordsman.org');
   const [ownerToken, setOwnerToken] = useState(() => localStorage.getItem(STORAGE.ownerToken) || '');
   const [items, setItems] = useState<OwnerAdminUser[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createSubmitting, setCreateSubmitting] = useState(false);
+  const [createError, setCreateError] = useState<string | null>(null);
   const [createForm, setCreateForm] = useState({
     username: '',
     displayName: '',
@@ -64,6 +116,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
 
   const [editOpen, setEditOpen] = useState(false);
   const [editSubmitting, setEditSubmitting] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     username: '',
     displayName: '',
@@ -104,41 +157,64 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
   );
 
   const loadUsers = useCallback(async () => {
+    setError(null);
+    setSuccess(null);
+
     if (!ownerToken.trim()) {
-      setError('Owner token required');
+      setError(isZh ? '请先填写 Owner token。' : 'Owner token is required.');
       return;
     }
+
     setLoading(true);
-    setError(null);
     try {
       const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/owner/users`, {
         headers: ownerHeaders(),
       });
       if (!response.ok) {
-        const apiError = (data as { error?: string })?.error || response.statusText;
-        throw new Error(apiError || 'request_failed');
+        throw new Error(resolveOwnerRequestError(response, data, isZh));
       }
       const list = (data as { items?: OwnerAdminUser[] })?.items || [];
       setItems(list);
     } catch (err) {
-      setError((err as Error).message || 'request_failed');
+      setError((err as Error).message || (isZh ? '请求失败' : 'Request failed'));
     } finally {
       setLoading(false);
     }
-  }, [apiBase, fetchJson, ownerHeaders, ownerToken]);
+  }, [apiBase, fetchJson, isZh, ownerHeaders, ownerToken]);
 
   const createUser = useCallback(async () => {
+    setCreateError(null);
+    setSuccess(null);
+
     if (!ownerToken.trim()) {
-      setError('Owner token required');
+      setCreateError(isZh ? '请先填写 Owner token。' : 'Owner token is required.');
       return;
     }
+
+    const username = createForm.username.trim().toLowerCase();
+    const password = createForm.password;
+
+    if (!OWNER_USERNAME_RE.test(username)) {
+      setCreateError(
+        isZh
+          ? '用户名格式不正确（3-32位，仅小写字母/数字/._-）。'
+          : 'Invalid username format (3-32 chars, lowercase letters/numbers/._-).',
+      );
+      return;
+    }
+
+    if (password.length < OWNER_PASSWORD_MIN_LENGTH) {
+      setCreateError(isZh ? '密码至少 8 位。' : 'Password must be at least 8 characters.');
+      return;
+    }
+
     setCreateSubmitting(true);
     try {
       const payload = {
-        username: createForm.username.trim(),
+        username,
         display_name: createForm.displayName.trim() || undefined,
         role: createForm.role,
-        password: createForm.password,
+        password,
       };
       const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/owner/users`, {
         method: 'POST',
@@ -149,29 +225,40 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
         body: JSON.stringify(payload),
       });
       if (!response.ok) {
-        const apiError = (data as { error?: string })?.error || response.statusText;
-        throw new Error(apiError || 'request_failed');
+        throw new Error(resolveOwnerRequestError(response, data, isZh));
       }
+
       setCreateOpen(false);
+      setCreateError(null);
       setCreateForm({ username: '', displayName: '', role: 'reviewer', password: '' });
-      message.success('Admin created');
+      setSuccess(isZh ? '管理员创建成功。' : 'Admin created.');
       await loadUsers();
     } catch (err) {
-      message.error((err as Error).message || 'request_failed');
+      setCreateError((err as Error).message || (isZh ? '请求失败' : 'Request failed'));
     } finally {
       setCreateSubmitting(false);
     }
-  }, [apiBase, createForm, fetchJson, loadUsers, ownerHeaders, ownerToken]);
+  }, [apiBase, createForm, fetchJson, isZh, loadUsers, ownerHeaders, ownerToken]);
 
   const saveEditUser = useCallback(async () => {
+    setEditError(null);
+    setSuccess(null);
+
     if (!ownerToken.trim()) {
-      setError('Owner token required');
+      setEditError(isZh ? '请先填写 Owner token。' : 'Owner token is required.');
       return;
     }
+
     if (!editForm.username.trim()) {
-      message.error('username required');
+      setEditError(isZh ? '用户名不能为空。' : 'Username is required.');
       return;
     }
+
+    if (editForm.password.trim() && editForm.password.trim().length < OWNER_PASSWORD_MIN_LENGTH) {
+      setEditError(isZh ? '新密码至少 8 位。' : 'New password must be at least 8 characters.');
+      return;
+    }
+
     setEditSubmitting(true);
     try {
       const payload: Record<string, unknown> = {
@@ -182,6 +269,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
       if (editForm.password.trim()) {
         payload.password = editForm.password;
       }
+
       const { response, data } = await fetchJson(
         `${apiBase.replace(/\/+$/, '')}/api/admin/owner/users/${encodeURIComponent(editForm.username.trim())}`,
         {
@@ -194,19 +282,20 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
         },
       );
       if (!response.ok) {
-        const apiError = (data as { error?: string })?.error || response.statusText;
-        throw new Error(apiError || 'request_failed');
+        throw new Error(resolveOwnerRequestError(response, data, isZh));
       }
+
       setEditOpen(false);
+      setEditError(null);
       setEditForm({ username: '', displayName: '', role: 'reviewer', password: '', disabled: false });
-      message.success('Admin updated');
+      setSuccess(isZh ? '管理员更新成功。' : 'Admin updated.');
       await loadUsers();
     } catch (err) {
-      message.error((err as Error).message || 'request_failed');
+      setEditError((err as Error).message || (isZh ? '请求失败' : 'Request failed'));
     } finally {
       setEditSubmitting(false);
     }
-  }, [apiBase, editForm, fetchJson, loadUsers, ownerHeaders, ownerToken]);
+  }, [apiBase, editForm, fetchJson, isZh, loadUsers, ownerHeaders, ownerToken]);
 
   const columns = [
     {
@@ -253,6 +342,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
         <Button
           size="small"
           onClick={() => {
+            setEditError(null);
             setEditForm({
               username: record.username,
               displayName: record.display_name || '',
@@ -276,10 +366,10 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
           <Space direction="vertical" size="large" style={{ width: '100%' }}>
             <div>
               <Title level={2} style={{ marginBottom: 8 }}>
-                Operit 站长后台
+                {isZh ? 'Operit 站长后台' : 'Operit Owner Console'}
               </Title>
               <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                仅站长可访问：管理管理员账号、角色与启用状态。
+                {isZh ? '仅站长可访问：管理管理员账号、角色与启用状态。' : 'Owner-only panel for managing admin accounts, roles and status.'}
               </Paragraph>
             </div>
 
@@ -301,10 +391,17 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
               <Col xs={24}>
                 <Space>
                   <Button type="primary" onClick={loadUsers} loading={loading}>
-                    Load admins
+                    {isZh ? '加载管理员列表' : 'Load admins'}
                   </Button>
-                  <Button onClick={() => setCreateOpen(true)} disabled={!ownerToken.trim()}>
-                    New admin
+                  <Button
+                    onClick={() => {
+                      setCreateError(null);
+                      setSuccess(null);
+                      setCreateOpen(true);
+                    }}
+                    disabled={!ownerToken.trim()}
+                  >
+                    {isZh ? '新建管理员' : 'New admin'}
                   </Button>
                 </Space>
               </Col>
@@ -317,8 +414,18 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
             type="error"
             showIcon
             style={{ marginTop: 16 }}
-            message="Owner panel error"
+            message={isZh ? '站长面板错误' : 'Owner panel error'}
             description={error}
+          />
+        )}
+
+        {success && (
+          <Alert
+            type="success"
+            showIcon
+            style={{ marginTop: 16 }}
+            message={isZh ? '操作成功' : 'Success'}
+            description={success}
           />
         )}
 
@@ -334,22 +441,26 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
         </Card>
 
         <Modal
-          title="Create admin"
+          title={isZh ? '创建管理员' : 'Create admin'}
           open={createOpen}
-          onCancel={() => setCreateOpen(false)}
+          onCancel={() => {
+            setCreateError(null);
+            setCreateOpen(false);
+          }}
           onOk={createUser}
           confirmLoading={createSubmitting}
         >
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            {createError && <Alert type="error" showIcon message={createError} />}
             <Input
               value={createForm.username}
               onChange={event => setCreateForm(prev => ({ ...prev, username: event.target.value }))}
-              placeholder="username"
+              placeholder={isZh ? '用户名（3-32位，小写字母/数字/._-）' : 'username (3-32, lowercase letters/numbers/._-)'}
             />
             <Input
               value={createForm.displayName}
               onChange={event => setCreateForm(prev => ({ ...prev, displayName: event.target.value }))}
-              placeholder="display name"
+              placeholder={isZh ? '显示名（可选）' : 'display name (optional)'}
             />
             <Select
               value={createForm.role}
@@ -362,24 +473,33 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
             <Input.Password
               value={createForm.password}
               onChange={event => setCreateForm(prev => ({ ...prev, password: event.target.value }))}
-              placeholder="password"
+              placeholder={isZh ? '密码（至少8位）' : 'password (min 8 chars)'}
             />
+            <Text type="secondary">
+              {isZh
+                ? '密码至少 8 位；用户名只能小写字母/数字/._-。'
+                : 'Password must be at least 8 chars; username allows lowercase letters/numbers/._-.'}
+            </Text>
           </Space>
         </Modal>
 
         <Modal
-          title={`Edit admin: ${editForm.username || '-'}`}
+          title={isZh ? `编辑管理员：${editForm.username || '-'}` : `Edit admin: ${editForm.username || '-'}`}
           open={editOpen}
-          onCancel={() => setEditOpen(false)}
+          onCancel={() => {
+            setEditError(null);
+            setEditOpen(false);
+          }}
           onOk={saveEditUser}
           confirmLoading={editSubmitting}
         >
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            {editError && <Alert type="error" showIcon message={editError} />}
             <Input disabled value={editForm.username} placeholder="username" />
             <Input
               value={editForm.displayName}
               onChange={event => setEditForm(prev => ({ ...prev, displayName: event.target.value }))}
-              placeholder="display name"
+              placeholder={isZh ? '显示名（可选）' : 'display name (optional)'}
             />
             <Select
               value={editForm.role}
@@ -392,14 +512,14 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
             <Input.Password
               value={editForm.password}
               onChange={event => setEditForm(prev => ({ ...prev, password: event.target.value }))}
-              placeholder="new password (optional)"
+              placeholder={isZh ? '新密码（可选，至少8位）' : 'new password (optional, min 8 chars)'}
             />
             <Space>
               <Switch
                 checked={editForm.disabled}
                 onChange={checked => setEditForm(prev => ({ ...prev, disabled: checked }))}
               />
-              <Text>Disable account</Text>
+              <Text>{isZh ? '禁用账号' : 'Disable account'}</Text>
             </Space>
           </Space>
         </Modal>
@@ -409,4 +529,3 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = () => {
 };
 
 export default OperitOwnerAdminPage;
-

@@ -230,17 +230,20 @@ async function requireAdmin(request, env) {
   return resolveAdminSession(request, env);
 }
 
-async function handleAdminLogin(request, env, corsHeaders) {
+async function handleAdminLogin(request, env, corsHeaders, bodyInput = null) {
   if (!env.OPERIT_SUBMISSION_DB) {
     return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
   }
   await ensureAdminAuthSchema(env);
 
-  const bodyResult = await readJson(request);
-  if (!bodyResult.ok) {
-    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  let body = bodyInput;
+  if (!body || typeof body !== 'object') {
+    const bodyResult = await readJson(request);
+    if (!bodyResult.ok) {
+      return json({ error: 'invalid_json' }, 400, corsHeaders);
+    }
+    body = bodyResult.value || {};
   }
-  const body = bodyResult.value || {};
   const username = normalizeAdminUsername(body.username);
   const password = String(body.password || '');
   if (!ADMIN_USERNAME_RE.test(username)) {
