@@ -945,7 +945,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                                   {t.leaderboardEmailLabel}: {maskEmail(item.author_email)}
                                 </Text>
                                 <Text type="secondary">
-                                  {t.leaderboardCountLabel}: {item.edits}
+                                  {t.leaderboardCountLabel}: {item.changed_words}
                                 </Text>
                               </Space>
                             )}

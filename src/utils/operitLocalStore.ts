@@ -46,7 +46,8 @@ export interface OperitTemplate {
 export interface OperitLeaderboardEntry {
   author_name: string | null;
   author_email: string | null;
-  edits: number;
+  changed_words: number;
+  approved_count?: number;
   last_submitted?: string | null;
 }
 

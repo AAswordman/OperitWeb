@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS submissions (
   target_path TEXT NOT NULL,
   title TEXT NOT NULL,
   content TEXT NOT NULL,
+  changed_words INTEGER NOT NULL DEFAULT 0,
   status TEXT NOT NULL,
   author_name TEXT,
   author_email TEXT,
@@ -25,6 +26,19 @@ CREATE TABLE IF NOT EXISTS submissions (
 
 CREATE INDEX IF NOT EXISTS idx_submissions_status_created
   ON submissions(status, created_at DESC);
+
+CREATE TABLE IF NOT EXISTS submission_leaderboard_cache (
+  author_key TEXT PRIMARY KEY,
+  author_name TEXT,
+  author_email TEXT,
+  total_changed_words INTEGER NOT NULL DEFAULT 0,
+  approved_submissions INTEGER NOT NULL DEFAULT 0,
+  last_approved_at TEXT,
+  updated_at TEXT NOT NULL
+);
+
+CREATE INDEX IF NOT EXISTS idx_submission_leaderboard_changed_words
+  ON submission_leaderboard_cache(total_changed_words DESC, last_approved_at DESC);
 
 CREATE TABLE IF NOT EXISTS submission_assets (
   submission_id TEXT NOT NULL,

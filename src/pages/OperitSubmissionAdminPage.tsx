@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Alert,
   Button,
@@ -315,6 +315,8 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
   const [statusFilter, setStatusFilter] = useState<StatusFilter>('pending');
   const [limit, setLimit] = useState(50);
   const [offset, setOffset] = useState(0);
+  const limitRef = useRef(limit);
+  const offsetRef = useRef(offset);
 
   const [items, setItems] = useState<SubmissionItem[]>([]);
   const [loading, setLoading] = useState(false);
@@ -355,6 +357,14 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
       localStorage.removeItem(STORAGE.adminToken);
     }
   }, [adminToken]);
+
+  useEffect(() => {
+    limitRef.current = limit;
+  }, [limit]);
+
+  useEffect(() => {
+    offsetRef.current = offset;
+  }, [offset]);
 
   const fetchJson = useCallback(async (url: string, options?: RequestInit) => {
     const response = await fetch(url, options);
@@ -587,7 +597,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     }
   }, [adminToken, apiBase, fetchJson, t]);
 
-  const loadSubmissions = useCallback(async () => {
+  const loadSubmissions = useCallback(async (filter: StatusFilter) => {
     if (!adminToken.trim()) {
       setError(t.errorTokenRequired);
       return;
@@ -598,11 +608,11 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
 
     try {
       const url = new URL(`${apiBase.replace(/\/+$/, '')}/api/admin/submissions`);
-      if (statusFilter !== 'all') {
-        url.searchParams.set('status', statusFilter);
+      if (filter !== 'all') {
+        url.searchParams.set('status', filter);
       }
-      url.searchParams.set('limit', String(limit));
-      url.searchParams.set('offset', String(offset));
+      url.searchParams.set('limit', String(limitRef.current));
+      url.searchParams.set('offset', String(offsetRef.current));
 
       const { response, data } = await fetchJson(url.toString(), {
         headers: buildAdminHeaders(adminToken),
@@ -620,7 +630,12 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     } finally {
       setLoading(false);
     }
-  }, [adminToken, apiBase, fetchJson, limit, offset, statusFilter, t]);
+  }, [adminToken, apiBase, fetchJson, t]);
+
+  useEffect(() => {
+    if (!adminToken.trim()) return;
+    void loadSubmissions(statusFilter);
+  }, [adminToken, statusFilter, loadSubmissions]);
 
   const openDetail = useCallback(
     async (item: SubmissionItem) => {
@@ -665,7 +680,13 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     loadOriginalContent(selectedItem.target_path, selectedItem.type);
   }, [loadOriginalContent, selectedItem?.target_path, selectedItem?.type]);
 
+  const canReviewSubmission = (item?: SubmissionItem | null) => item?.status === 'pending';
+
   const triggerAction = (item: SubmissionItem, type: 'approve' | 'reject') => {
+    if (!canReviewSubmission(item)) {
+      message.warning(t.messagePendingOnly);
+      return;
+    }
     setActionType(type);
     setActionNotes('');
     setSelectedItem(item);
@@ -677,6 +698,11 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
     if (actionSubmitting) return;
     if (!adminToken.trim()) {
       setError(t.errorTokenRequired);
+      return;
+    }
+    if (!canReviewSubmission(selectedItem)) {
+      message.warning(t.messagePendingOnly);
+      setActionOpen(false);
       return;
     }
 
@@ -751,7 +777,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
       }
       setActionOpen(false);
       if (statusFilter !== 'all') {
-        await loadSubmissions();
+        await loadSubmissions(statusFilter);
       }
     } catch (err) {
       message.error((err as Error).message || t.messageActionFailed);
@@ -878,38 +904,41 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
       title: t.actionsLabel,
       dataIndex: 'actions',
       width: 170,
-      render: (_, record) => (
-        <Space size="small">
-          <Tooltip title={t.viewDetail}>
-            <Button size="small" icon={<EyeOutlined />} onClick={() => openDetail(record)} />
-          </Tooltip>
-          <Tooltip title={t.approve}>
-            <Button
-              size="small"
-              type="primary"
-              icon={<CheckCircleOutlined />}
-              disabled={actionSubmitting}
-              onClick={() => triggerAction(record, 'approve')}
-            />
-          </Tooltip>
-          <Tooltip title={t.reject}>
-            <Button
-              size="small"
-              danger
-              icon={<CloseCircleOutlined />}
-              disabled={actionSubmitting}
-              onClick={() => triggerAction(record, 'reject')}
-            />
-          </Tooltip>
-          <Tooltip title={t.ipBanOpenAction}>
-            <Button
-              size="small"
-              icon={<BlockOutlined />}
-              onClick={() => openIpBanModal(record.id)}
-            />
-          </Tooltip>
-        </Space>
-      ),
+      render: (_, record) => {
+        const canReview = canReviewSubmission(record);
+        return (
+          <Space size="small">
+            <Tooltip title={t.viewDetail}>
+              <Button size="small" icon={<EyeOutlined />} onClick={() => openDetail(record)} />
+            </Tooltip>
+            <Tooltip title={canReview ? t.approve : t.messagePendingOnly}>
+              <Button
+                size="small"
+                type="primary"
+                icon={<CheckCircleOutlined />}
+                disabled={actionSubmitting || !canReview}
+                onClick={() => triggerAction(record, 'approve')}
+              />
+            </Tooltip>
+            <Tooltip title={canReview ? t.reject : t.messagePendingOnly}>
+              <Button
+                size="small"
+                danger
+                icon={<CloseCircleOutlined />}
+                disabled={actionSubmitting || !canReview}
+                onClick={() => triggerAction(record, 'reject')}
+              />
+            </Tooltip>
+            <Tooltip title={t.ipBanOpenAction}>
+              <Button
+                size="small"
+                icon={<BlockOutlined />}
+                onClick={() => openIpBanModal(record.id)}
+              />
+            </Tooltip>
+          </Space>
+        );
+      },
     },
   ];
 
@@ -997,18 +1026,6 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                   </Button>
                 </Space>
               </Col>
-              <Col xs={24} lg={8}>
-                <Space>
-                  <Button
-                    type="primary"
-                    icon={<ReloadOutlined />}
-                    onClick={loadSubmissions}
-                    disabled={!adminToken.trim()}
-                  >
-                    {t.loadSubmissions}
-                  </Button>
-                </Space>
-              </Col>
             </Row>
           </Space>
         </Card>
@@ -1029,7 +1046,10 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               <Segmented
                 options={statusOptions}
                 value={statusFilter}
-                onChange={value => setStatusFilter(value as StatusFilter)}
+                onChange={value => {
+                  setOffset(0);
+                  setStatusFilter(value as StatusFilter);
+                }}
               />
             </Col>
             <Col>
@@ -1048,7 +1068,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
                   value={offset}
                   onChange={value => setOffset(value || 0)}
                 />
-                <Button onClick={loadSubmissions} icon={<ReloadOutlined />}>
+                <Button onClick={() => loadSubmissions(statusFilter)} icon={<ReloadOutlined />}>
                   {t.refresh}
                 </Button>
                 {authUser && (
@@ -1066,7 +1086,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
             columns={columns}
             dataSource={items}
             pagination={false}
-            scroll={{ x: 'max-content' }}
+            scroll={{ x: 'max-content', y: 560 }}
             tableLayout="fixed"
             style={{ marginTop: 16 }}
           />
@@ -1325,9 +1345,13 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
             </div>
 
             <Space>
+              {selectedItem.status !== 'pending' && (
+                <Text type="secondary">{t.messagePendingOnly}</Text>
+              )}
               <Button
                 type="primary"
                 icon={<CheckCircleOutlined />}
+                disabled={!canReviewSubmission(selectedItem)}
                 onClick={() => triggerAction(selectedItem, 'approve')}
               >
                 {t.approve}
@@ -1335,6 +1359,7 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               <Button
                 danger
                 icon={<CloseCircleOutlined />}
+                disabled={!canReviewSubmission(selectedItem)}
                 onClick={() => triggerAction(selectedItem, 'reject')}
               >
                 {t.reject}

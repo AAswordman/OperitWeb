@@ -18,6 +18,7 @@ import {
   readSubmissionRequestBody,
   processSubmissionAssets,
   createSubmissionPullRequest,
+  computeSubmissionChangedWordsFromRaw,
   persistPrInfo,
   getSubmissionAssetConfig,
   ensureSubmissionAssetBucket,
@@ -35,6 +36,65 @@ import {
   handleAdminMe,
   handleAdminLogout,
 } from './workerAdminAuth.js';
+
+function normalizeLeaderboardAuthorValue(value) {
+  const normalized = String(value || '').trim();
+  return normalized || null;
+}
+
+function buildLeaderboardAuthorKey(authorName, authorEmail) {
+  const normalizedEmail = normalizeLeaderboardAuthorValue(authorEmail);
+  if (normalizedEmail) {
+    return `email:${normalizedEmail.toLowerCase()}`;
+  }
+  const normalizedName = normalizeLeaderboardAuthorValue(authorName);
+  if (normalizedName) {
+    return `name:${normalizedName.toLowerCase()}`;
+  }
+  return '';
+}
+
+async function updateApprovedLeaderboardCache(env, submission, reviewedAt) {
+  if (!env.OPERIT_SUBMISSION_DB || !submission?.id) return;
+
+  const authorName = normalizeLeaderboardAuthorValue(submission.author_name);
+  const authorEmailRaw = normalizeLeaderboardAuthorValue(submission.author_email);
+  const authorEmail = authorEmailRaw ? authorEmailRaw.toLowerCase() : null;
+  const authorKey = buildLeaderboardAuthorKey(authorName, authorEmail);
+  if (!authorKey) return;
+
+  const changedWords = Number.parseInt(String(submission.changed_words ?? ''), 10);
+  if (!Number.isFinite(changedWords) || changedWords <= 0) return;
+
+  try {
+    await env.OPERIT_SUBMISSION_DB.prepare(
+      'UPDATE submissions SET changed_words = ? WHERE id = ?',
+    ).bind(changedWords, submission.id).run();
+  } catch (err) {
+    throw err;
+  }
+
+  const now = new Date().toISOString();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'INSERT INTO submission_leaderboard_cache (author_key, author_name, author_email, total_changed_words, approved_submissions, last_approved_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?) ' +
+      "ON CONFLICT(author_key) DO UPDATE SET " +
+      "author_name = CASE WHEN excluded.author_name IS NOT NULL AND excluded.author_name <> '' THEN excluded.author_name ELSE submission_leaderboard_cache.author_name END, " +
+      "author_email = CASE WHEN excluded.author_email IS NOT NULL AND excluded.author_email <> '' THEN excluded.author_email ELSE submission_leaderboard_cache.author_email END, " +
+      'total_changed_words = submission_leaderboard_cache.total_changed_words + excluded.total_changed_words, ' +
+      'approved_submissions = submission_leaderboard_cache.approved_submissions + excluded.approved_submissions, ' +
+      'last_approved_at = CASE WHEN submission_leaderboard_cache.last_approved_at IS NULL OR excluded.last_approved_at > submission_leaderboard_cache.last_approved_at THEN excluded.last_approved_at ELSE submission_leaderboard_cache.last_approved_at END, ' +
+      'updated_at = excluded.updated_at',
+  ).bind(
+    authorKey,
+    authorName,
+    authorEmail,
+    changedWords,
+    1,
+    reviewedAt || now,
+    now,
+  ).run();
+}
+
 async function handleSubmit(request, env, corsHeaders) {
   if (!env.OPERIT_SUBMISSION_DB) {
     return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
@@ -94,7 +154,7 @@ async function handleSubmit(request, env, corsHeaders) {
   }
 
   const stmt = env.OPERIT_SUBMISSION_DB.prepare(
-    'INSERT INTO submissions (id, type, language, target_path, title, content, status, author_name, author_email, client_ip_hash, user_agent, turnstile_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO submissions (id, type, language, target_path, title, content, changed_words, status, author_name, author_email, client_ip_hash, user_agent, turnstile_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).bind(
     id,
     validation.value.type,
@@ -102,6 +162,7 @@ async function handleSubmit(request, env, corsHeaders) {
     validation.value.targetPath,
     validation.value.title,
     normalizedContent,
+    0,
     'pending',
     validation.value.authorName || null,
     validation.value.authorEmail || null,
@@ -136,9 +197,8 @@ async function handleAdminSubmit(request, env, corsHeaders) {
   const ip = getClientIp(request);
   const ipHash = await hashIp(ip, env.OPERIT_IP_SALT);
   const userAgent = request.headers.get('user-agent') || '';
-
   const stmt = env.OPERIT_SUBMISSION_DB.prepare(
-    'INSERT INTO submissions (id, type, language, target_path, title, content, status, author_name, author_email, client_ip_hash, user_agent, turnstile_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    'INSERT INTO submissions (id, type, language, target_path, title, content, changed_words, status, author_name, author_email, client_ip_hash, user_agent, turnstile_ok, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).bind(
     id,
     validation.value.type,
@@ -146,6 +206,7 @@ async function handleAdminSubmit(request, env, corsHeaders) {
     validation.value.targetPath,
     validation.value.title,
     validation.value.content,
+    0,
     'pending',
     validation.value.authorName || null,
     validation.value.authorEmail || null,
@@ -194,11 +255,15 @@ async function handleAdminGet(id, env, corsHeaders) {
 
 async function handleAdminUpdateStatus(id, request, env, corsHeaders, status, authUser) {
   const existing = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT id, type, language, target_path, title, content, status, author_name, author_email, created_at, reviewed_at, reviewer, review_notes, pr_number, pr_url, pr_branch, pr_state, pr_created_at, pr_error FROM submissions WHERE id = ? LIMIT 1',
+    'SELECT id, type, language, target_path, title, content, changed_words, status, author_name, author_email, created_at, reviewed_at, reviewer, review_notes, pr_number, pr_url, pr_branch, pr_state, pr_created_at, pr_error FROM submissions WHERE id = ? LIMIT 1',
   ).bind(id).first();
 
   if (!existing) {
     return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+
+  if (existing.status !== 'pending') {
+    return json({ error: 'status_not_pending', current_status: existing.status }, 409, corsHeaders);
   }
 
   const bodyResult = await readJson(request);
@@ -211,9 +276,34 @@ async function handleAdminUpdateStatus(id, request, env, corsHeaders, status, au
   const reviewNotes = String(bodyResult.value.review_notes || bodyResult.value.reviewNotes || '').trim() || null;
   const now = new Date().toISOString();
 
-  const stmt = env.OPERIT_SUBMISSION_DB.prepare(
-    'UPDATE submissions SET status = ?, reviewed_at = ?, reviewer = ?, review_notes = ? WHERE id = ?',
-  ).bind(status, now, reviewer, reviewNotes, id);
+  let approvedChangedWords = 0;
+  if (status === 'approved') {
+    try {
+      const computed = await computeSubmissionChangedWordsFromRaw(existing, env);
+      approvedChangedWords = Number.parseInt(String(computed ?? ''), 10);
+    } catch (err) {
+      return json(
+        {
+          error: 'changed_words_compute_failed',
+          detail: (err instanceof Error ? err.message : String(err)) || 'changed_words_compute_failed',
+        },
+        500,
+        corsHeaders,
+      );
+    }
+
+    if (!Number.isFinite(approvedChangedWords) || approvedChangedWords < 0) {
+      return json({ error: 'changed_words_compute_failed' }, 500, corsHeaders);
+    }
+  }
+
+  const stmt = status === 'approved'
+    ? env.OPERIT_SUBMISSION_DB.prepare(
+      'UPDATE submissions SET status = ?, changed_words = ?, reviewed_at = ?, reviewer = ?, review_notes = ? WHERE id = ?',
+    ).bind(status, approvedChangedWords, now, reviewer, reviewNotes, id)
+    : env.OPERIT_SUBMISSION_DB.prepare(
+      'UPDATE submissions SET status = ?, reviewed_at = ?, reviewer = ?, review_notes = ? WHERE id = ?',
+    ).bind(status, now, reviewer, reviewNotes, id);
 
   const result = await stmt.run();
   if (result.meta && result.meta.changes === 0) {
@@ -222,6 +312,23 @@ async function handleAdminUpdateStatus(id, request, env, corsHeaders, status, au
 
   let prInfo = null;
   if (status === 'approved') {
+    existing.changed_words = approvedChangedWords;
+
+    try {
+      await updateApprovedLeaderboardCache(
+        env,
+        {
+          ...existing,
+          reviewer,
+          review_notes: reviewNotes,
+          reviewed_at: now,
+        },
+        now,
+      );
+    } catch (err) {
+      console.error('update leaderboard cache failed', err);
+    }
+
     try {
       prInfo = await createSubmissionPullRequest(
         {
@@ -477,11 +584,10 @@ async function handleLeaderboard(url, env, corsHeaders) {
   }
   const limit = clampInt(url.searchParams.get('limit'), 1, MAX_LEADERBOARD_LIMIT, 20);
   const query =
-    'SELECT author_name, author_email, COUNT(*) AS edits, MAX(created_at) AS last_submitted ' +
-    'FROM submissions ' +
-    'WHERE (author_name IS NOT NULL AND author_name <> \'\') OR (author_email IS NOT NULL AND author_email <> \'\') ' +
-    'GROUP BY author_name, author_email ' +
-    'ORDER BY edits DESC, last_submitted DESC ' +
+    'SELECT author_name, author_email, total_changed_words AS changed_words, approved_submissions AS approved_count, last_approved_at AS last_submitted ' +
+    'FROM submission_leaderboard_cache ' +
+    'WHERE total_changed_words > 0 ' +
+    'ORDER BY total_changed_words DESC, last_approved_at DESC ' +
     'LIMIT ?';
   const { results } = await env.OPERIT_SUBMISSION_DB.prepare(query).bind(limit).all();
   return json(

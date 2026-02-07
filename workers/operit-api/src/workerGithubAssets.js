@@ -380,6 +380,86 @@ function toPublicAssetPath(repoPath) {
   return `/${normalized}`;
 }
 
+function tokenizeWordUnits(value) {
+  const source = String(value || '').replace(/\r\n?/g, '\n').toLowerCase();
+  const matches = source.match(/[\u3400-\u9fff]|[a-z0-9]+(?:['-][a-z0-9]+)*/g);
+  return matches || [];
+}
+
+function countChangedWordUnits(beforeValue, afterValue) {
+  const beforeTokens = tokenizeWordUnits(beforeValue);
+  const afterTokens = tokenizeWordUnits(afterValue);
+  if (!beforeTokens.length) return afterTokens.length;
+  if (!afterTokens.length) return beforeTokens.length;
+
+  const diff = new Map();
+  for (const token of beforeTokens) {
+    diff.set(token, (diff.get(token) || 0) + 1);
+  }
+  for (const token of afterTokens) {
+    diff.set(token, (diff.get(token) || 0) - 1);
+  }
+
+  let changed = 0;
+  diff.forEach(value => {
+    changed += Math.abs(value);
+  });
+  return changed;
+}
+
+async function fetchRawGitHubFileText({ owner, repo, ref, path, token }) {
+  const normalizedPath = normalizePath(path);
+  if (!normalizedPath) return null;
+  const encodedPath = normalizedPath
+    .split('/')
+    .map(segment => encodeURIComponent(segment))
+    .join('/');
+  const encodedRef = encodeURIComponent(String(ref || '').trim() || 'main');
+  const url = `https://raw.githubusercontent.com/${owner}/${repo}/${encodedRef}/${encodedPath}`;
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      Accept: 'text/plain',
+      'User-Agent': 'operit-bot',
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+  });
+
+  if (response.status === 404) {
+    return null;
+  }
+  if (!response.ok) {
+    throw new Error(`github_raw_fetch_failed:${response.status}`);
+  }
+  return await response.text();
+}
+
+async function computeSubmissionChangedWordsFromRaw(submission, env) {
+  const config = getGitHubConfig(env);
+  if (!config.owner || !config.repo) {
+    return null;
+  }
+
+  const auth = await getGitHubToken(env);
+  if (!auth?.token) {
+    return null;
+  }
+
+  const repoPath = resolveRepoPath(submission?.target_path, env);
+  const oldContent = await fetchRawGitHubFileText({
+    owner: config.owner,
+    repo: config.repo,
+    ref: config.defaultBranch || 'main',
+    path: repoPath,
+    token: auth.token,
+  });
+
+  const newContent = String(submission?.content || '');
+  const changedWords = countChangedWordUnits(oldContent || '', newContent);
+
+  return Math.max(0, changedWords);
+}
+
 async function migrateSubmissionAssetsForPr(submission, env, githubContext) {
   const assetIds = extractSubmissionAssetIds(submission.content || '');
   if (!assetIds.length) {
@@ -967,5 +1047,6 @@ export {
   readSubmissionRequestBody,
   processSubmissionAssets,
   createSubmissionPullRequest,
+  computeSubmissionChangedWordsFromRaw,
   persistPrInfo,
 };
