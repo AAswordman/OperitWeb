@@ -78,23 +78,24 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       { key: 'tts-reading', label: t.ttsReading, path: '/guide/character-system/tts-reading', category: 'character-system', level: 13 },
       { key: 'desktop-pet', label: t.desktopPet, path: '/guide/character-system/desktop-pet', category: 'character-system', level: 14 },
       { key: 'share-conversation', label: t.shareConversation, path: '/guide/character-system/share-conversation', category: 'character-system', level: 15 },
-      { key: 'ai-tools', label: t.aiTools, path: '/guide/tools-and-features/ai-tools', category: 'tools-and-features', level: 16 },
-      { key: 'toolkits', label: t.toolkits, path: '/guide/tools-and-features/toolkits', category: 'tools-and-features', level: 17 },
-      { key: 'mcp', label: t.mcp, path: '/guide/tools-and-features/mcp', category: 'tools-and-features', level: 18 },
-      { key: 'knowledge-base', label: t.knowledgeBase, path: '/guide/tools-and-features/knowledge-base', category: 'tools-and-features', level: 19 },
-      { key: 'toolbox', label: t.toolbox, path: '/guide/tools-and-features/toolbox', category: 'tools-and-features', level: 20 },
-      { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 21 },
-      { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 22 },
-      { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 23 },
-      { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 24 },
-      { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 25 },
-      { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 26 },
-      { key: 'web-development', label: t.webDevelopment, path: '/guide/development/web-development', category: 'development', level: 27 },
-      { key: 'web-packaging', label: t.webPackaging, path: '/guide/development/web-packaging', category: 'development', level: 28 },
-      { key: 'mobile-development', label: t.mobileDevelopment, path: '/guide/development/mobile-development', category: 'development', level: 29 },
-      { key: 'panel-introduction', label: t.panelIntroduction, path: '/guide/interface-guide/panel-introduction', category: 'interface-guide', level: 30 },
-      { key: 'return-code-generator', label: t.returnCodeGenerator, path: '/guide/tools-and-features/return-code-generator', category: 'tools-and-features', level: 31 },
-      { key: 'faq', label: t.faq, path: '/guide/faq', category: 'faq', level: 32 },
+      { key: 'ai-tools/overview', label: t.aiToolsOverview, path: '/guide/tools-and-features/ai-tools/overview', category: 'tools-and-features', level: 16 },
+      { key: 'ai-tools/sandbox-package', label: t.sandboxPackage, path: '/guide/tools-and-features/ai-tools/sandbox-package', category: 'tools-and-features', level: 17 },
+      { key: 'ai-tools/skill', label: t.skill, path: '/guide/tools-and-features/ai-tools/skill', category: 'tools-and-features', level: 18 },
+      { key: 'ai-tools/mcp', label: t.mcp, path: '/guide/tools-and-features/ai-tools/mcp', category: 'tools-and-features', level: 19 },
+      { key: 'knowledge-base', label: t.knowledgeBase, path: '/guide/tools-and-features/knowledge-base', category: 'tools-and-features', level: 20 },
+      { key: 'toolbox', label: t.toolbox, path: '/guide/tools-and-features/toolbox', category: 'tools-and-features', level: 21 },
+      { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 22 },
+      { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 23 },
+      { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 24 },
+      { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 25 },
+      { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 26 },
+      { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 27 },
+      { key: 'web-development', label: t.webDevelopment, path: '/guide/development/web-development', category: 'development', level: 28 },
+      { key: 'web-packaging', label: t.webPackaging, path: '/guide/development/web-packaging', category: 'development', level: 29 },
+      { key: 'mobile-development', label: t.mobileDevelopment, path: '/guide/development/mobile-development', category: 'development', level: 30 },
+      { key: 'panel-introduction', label: t.panelIntroduction, path: '/guide/interface-guide/panel-introduction', category: 'interface-guide', level: 31 },
+      { key: 'return-code-generator', label: t.returnCodeGenerator, path: '/guide/tools-and-features/return-code-generator', category: 'tools-and-features', level: 32 },
+      { key: 'faq', label: t.faq, path: '/guide/faq', category: 'faq', level: 33 },
     ];
     return docs;
   };
@@ -482,9 +483,16 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       key: 'tools-and-features',
       label: t.toolsAndFeatures,
       children: [
-        { key: 'ai-tools', label: <Link to="/guide/tools-and-features/ai-tools">{t.aiTools}</Link> },
-        { key: 'toolkits', label: <Link to="/guide/tools-and-features/toolkits">{t.toolkits}</Link> },
-        { key: 'mcp', label: <Link to="/guide/tools-and-features/mcp">{t.mcp}</Link> },
+        {
+          key: 'ai-tools-folder',
+          label: t.aiTools,
+          children: [
+            { key: 'ai-tools/overview', label: <Link to="/guide/tools-and-features/ai-tools/overview">{t.aiToolsOverview}</Link> },
+            { key: 'ai-tools/sandbox-package', label: <Link to="/guide/tools-and-features/ai-tools/sandbox-package">{t.sandboxPackage}</Link> },
+            { key: 'ai-tools/skill', label: <Link to="/guide/tools-and-features/ai-tools/skill">{t.skill}</Link> },
+            { key: 'ai-tools/mcp', label: <Link to="/guide/tools-and-features/ai-tools/mcp">{t.mcp}</Link> },
+          ],
+        },
         { key: 'knowledge-base', label: <Link to="/guide/tools-and-features/knowledge-base">{t.knowledgeBase}</Link> },
         { key: 'toolbox', label: <Link to="/guide/tools-and-features/toolbox">{t.toolbox}</Link> },
         { key: 'context-summary', label: <Link to="/guide/tools-and-features/context-summary">{t.contextSummary}</Link> },
@@ -528,20 +536,34 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
   const isToolPage = location.pathname.startsWith('/guide/tools/');
 
   const getSelectedKeys = () => {
-    const path = location.pathname.split('/').pop() || 'quick-start';
     if (location.pathname === '/guide' || location.pathname === '/guide/') {
       return ['/guide'];
     }
-    if (location.pathname.includes('/guide/tools/')) {
-      return [path];
+
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    if (pathParts[0] !== 'guide') {
+      return ['quick-start'];
     }
-    return [path];
+
+    if (pathParts.length === 2) {
+      return [pathParts[1]];
+    }
+
+    if (pathParts.length >= 3) {
+      return [pathParts.slice(2).join('/')];
+    }
+
+    return ['quick-start'];
   };
   
   const getDefaultOpenKeys = () => {
-    const pathParts = location.pathname.split('/');
-    if (pathParts.length > 3 && pathParts[1] === 'guide') {
-      return [pathParts[2]];
+    const pathParts = location.pathname.split('/').filter(Boolean);
+    if (pathParts.length >= 3 && pathParts[0] === 'guide') {
+      const openKeys = [pathParts[1]];
+      if (pathParts[1] === 'tools-and-features' && pathParts[2] === 'ai-tools') {
+        openKeys.push('ai-tools-folder');
+      }
+      return openKeys;
     }
     return [];
   };

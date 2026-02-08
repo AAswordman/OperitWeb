@@ -4,7 +4,8 @@ import MarkdownRenderer from '../components/MarkdownRenderer';
 
 const GuideContent: React.FC<{ language: 'zh' | 'en' }> = ({ language }) => {
   const params = useParams();
-  const filePath = params.category ? `${params.category}/${params.slug}` : params.slug;
+  const slugPath = (params['*'] || '').replace(/^\//, '');
+  const filePath = params.category ? `${params.category}/${slugPath}` : slugPath;
   return <MarkdownRenderer file={filePath || ''} language={language} />;
 };
 

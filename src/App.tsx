@@ -85,7 +85,7 @@ const App: React.FC = () => {
               <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
               <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
               <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
-              <Route path=":category/:slug" element={<GuideContent language={language} />} />
+              <Route path=":category/*" element={<GuideContent language={language} />} />
             </Route>
             <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
             <Route path="operit-login" element={<OperitLoginPage language={language} />} />

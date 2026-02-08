@@ -83,39 +83,39 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
 
   const features = [
     {
-      icon: <RobotOutlined />,
-      title: t('aiAssistant'),
-      description: t('aiAssistantDesc'),
+      icon: <WindowsOutlined />,
+      title: t('homeFeatureUbuntuTitle'),
+      description: t('homeFeatureUbuntuDesc'),
       color: '#1890ff'
     },
     {
-      icon: <ToolOutlined />,
-      title: t('richTools'),
-      description: t('richToolsDesc'),
+      icon: <RobotOutlined />,
+      title: t('homeFeatureMemoryTitle'),
+      description: t('homeFeatureMemoryDesc'),
       color: '#52c41a'
     },
     {
-      icon: <AppstoreOutlined />,
-      title: t('pluginSystem'),
-      description: t('pluginSystemDesc'),
+      icon: <PlayCircleOutlined />,
+      title: t('homeFeatureVoiceTitle'),
+      description: t('homeFeatureVoiceDesc'),
       color: '#722ed1'
     },
     {
-      icon: <PlayCircleOutlined />,
-      title: t('gameCreation'),
-      description: t('gameCreationDesc'),
+      icon: <GlobalOutlined />,
+      title: t('homeFeatureLocalModelTitle'),
+      description: t('homeFeatureLocalModelDesc'),
       color: '#fa541c'
     },
     {
-      icon: <GlobalOutlined />,
-      title: t('webDev'),
-      description: t('webDevDesc'),
+      icon: <AppstoreOutlined />,
+      title: t('homeFeaturePersonaTitle'),
+      description: t('homeFeaturePersonaDesc'),
       color: '#13c2c2'
     },
     {
-      icon: <WindowsOutlined />,
-      title: t('floatingWindow'),
-      description: t('floatingWindowDesc'),
+      icon: <ToolOutlined />,
+      title: t('homeFeatureWorkflowTitle'),
+      description: t('homeFeatureWorkflowDesc'),
       color: '#eb2f96'
     }
   ];
@@ -129,6 +129,72 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     { title: t('webScraping'), description: t('webScrapingDesc'), rarity: 'R' }
   ];
 
+  const toolchainOverview = [
+    {
+      title: t('homeToolchainLinuxTitle'),
+      description: t('homeToolchainLinuxDesc')
+    },
+    {
+      title: t('homeToolchainFileTitle'),
+      description: t('homeToolchainFileDesc')
+    },
+    {
+      title: t('homeToolchainNetworkTitle'),
+      description: t('homeToolchainNetworkDesc')
+    },
+    {
+      title: t('homeToolchainAutomationTitle'),
+      description: t('homeToolchainAutomationDesc')
+    },
+    {
+      title: t('homeToolchainMediaTitle'),
+      description: t('homeToolchainMediaDesc')
+    },
+    {
+      title: t('homeToolchainDevTitle'),
+      description: t('homeToolchainDevDesc')
+    },
+    {
+      title: t('homeToolchainCreationTitle'),
+      description: t('homeToolchainCreationDesc')
+    },
+    {
+      title: t('homeToolchainSearchTitle'),
+      description: t('homeToolchainSearchDesc')
+    },
+    {
+      title: t('homeToolchainWorkflowTitle'),
+      description: t('homeToolchainWorkflowDesc')
+    }
+  ];
+
+  const useCaseCards = [
+    {
+      title: t('homeUseCaseStudentTitle'),
+      description: t('homeUseCaseStudentDesc')
+    },
+    {
+      title: t('homeUseCaseDeveloperTitle'),
+      description: t('homeUseCaseDeveloperDesc')
+    },
+    {
+      title: t('homeUseCaseCreatorTitle'),
+      description: t('homeUseCaseCreatorDesc')
+    },
+    {
+      title: t('homeUseCaseProductivityTitle'),
+      description: t('homeUseCaseProductivityDesc')
+    },
+    {
+      title: t('homeUseCaseDailyTitle'),
+      description: t('homeUseCaseDailyDesc')
+    },
+    {
+      title: t('homeUseCaseModelOpsTitle'),
+      description: t('homeUseCaseModelOpsDesc')
+    }
+  ];
+
   return (
     <main style={{ paddingTop: 88, paddingBottom: 40 }}>
       {/* Hero Section */}
@@ -139,7 +205,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
             transition={{ duration: 0.8 }}
           >
             <Badge.Ribbon 
-              text="Android AI Assistant" 
+              text={t('homeRibbonText')} 
               color="blue"
               style={{ 
                 top: -10,
@@ -181,12 +247,12 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
               style={{
                 fontSize: 20,
                 color: darkMode ? '#a0a0a0' : '#595959',
-                maxWidth: 600,
+                maxWidth: 900,
                 margin: '0 auto 32px',
                 lineHeight: 1.7
               }}
             >
-              {t('heroSubtitle')}
+              {t('homeHeroDescription')}
             </Paragraph>
 
             <Space size="large" wrap style={{ justifyContent: 'center' }}>
@@ -211,19 +277,19 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                   </Button>
                 </Link>
               </motion.div>
-            <motion.div
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              <Button
-                size="large"
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Button
+                  size="large"
                   icon={<StarOutlined />}
-                style={{
-                  height: 52,
-                  fontSize: 18,
-                  paddingLeft: 36,
-                  paddingRight: 36,
-                  borderRadius: '8px',
+                  style={{
+                    height: 52,
+                    fontSize: 18,
+                    paddingLeft: 36,
+                    paddingRight: 36,
+                    borderRadius: '8px',
                   }}
                   onClick={() => {
                     const gachaElement = document.getElementById('gacha-gallery');
@@ -231,14 +297,15 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                       gachaElement.scrollIntoView({ behavior: 'smooth' });
                       setTimeout(() => {
                         gachaRef.current?.draw();
-                      }, 500); // 等待滚动动画结束
+                      }, 500);
                     }
                   }}
                 >
                   {t('goToGacha')}
-              </Button>
-            </motion.div>
+                </Button>
+              </motion.div>
             </Space>
+
           </motion.div>
       </div>
       
@@ -445,6 +512,82 @@ nt;
                         </Space>
                       </Card>
                     </motion.div>
+                  </Col>
+                ))}
+              </Row>
+            </Col>
+          </Row>
+        </div>
+      </AnimatedSection>
+
+      {/* 使用场景 */}
+      <AnimatedSection className="site-section">
+        <div style={{ padding: '60px 24px' }}>
+          <Row justify="center">
+            <Col xs={24} lg={20}>
+              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 12 }}>
+                {t('homeUseCasesTitle')}
+              </Title>
+              <Paragraph style={{ textAlign: 'center', color: darkMode ? '#a0a0a0' : '#595959', maxWidth: 860, margin: '0 auto 40px' }}>
+                {t('homeUseCasesDescription')}
+              </Paragraph>
+              <Row gutter={[24, 24]}>
+                {useCaseCards.map((item) => (
+                  <Col xs={24} md={12} lg={8} key={item.title}>
+                    <Card
+                      style={{
+                        height: '100%',
+                        background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
+                        backdropFilter: 'blur(10px)',
+                        border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(24, 144, 255, 0.2)'}`,
+                        borderRadius: '12px'
+                      }}
+                    >
+                      <Title level={4} style={{ color: darkMode ? '#fff' : '#1677ff', marginBottom: 10 }}>
+                        {item.title}
+                      </Title>
+                      <Paragraph style={{ color: darkMode ? '#d1d5db' : '#666', marginBottom: 0 }}>
+                        {item.description}
+                      </Paragraph>
+                    </Card>
+                  </Col>
+                ))}
+              </Row>
+            </Col>
+          </Row>
+        </div>
+      </AnimatedSection>
+
+      {/* 工具生态总览 */}
+      <AnimatedSection className="site-section">
+        <div style={{ padding: '60px 24px' }}>
+          <Row justify="center">
+            <Col xs={24} lg={20}>
+              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 12 }}>
+                {t('homeToolingOverviewTitle')}
+              </Title>
+              <Paragraph style={{ textAlign: 'center', color: darkMode ? '#a0a0a0' : '#595959', maxWidth: 900, margin: '0 auto 40px' }}>
+                {t('homeToolingOverviewDescription')}
+              </Paragraph>
+              <Row gutter={[18, 18]}>
+                {toolchainOverview.map((item) => (
+                  <Col xs={24} sm={12} lg={8} key={item.title}>
+                    <Card
+                      size="small"
+                      style={{
+                        height: '100%',
+                        background: darkMode ? 'rgba(255, 255, 255, 0.04)' : '#fafcff',
+                        border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : '#d6e4ff'}`,
+                        borderRadius: 10
+                      }}
+                    >
+                      <Text strong style={{ color: darkMode ? '#e6f4ff' : '#1d39c4', fontSize: 15 }}>
+                        {item.title}
+                      </Text>
+                      <Paragraph style={{ color: darkMode ? '#d1d5db' : '#555', marginTop: 8, marginBottom: 0 }}>
+                        {item.description}
+                      </Paragraph>
+                    </Card>
                   </Col>
                 ))}
               </Row>
