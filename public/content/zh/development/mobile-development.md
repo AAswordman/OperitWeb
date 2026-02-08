@@ -1,6 +1,5 @@
 ### 移动端开发
 
-pre { overflow-y: auto; max-height: 300px; }
 
 本章节将指导您如何使用 AIDE 和 Operit AI 在手机上打造原生安卓项目。
 
@@ -13,8 +12,6 @@ pre { overflow-y: auto; max-height: 300px; }
 > 示例模型:deepseek-chat(来自deepseek开放平台)
 
 1.新建工作区。步骤：`工作区>创建默认>Android项目`
-
-``
 
 2.向AI发送需求
 
@@ -32,13 +29,11 @@ pre { overflow-y: auto; max-height: 300px; }
 你依然有两个选择：打开工作区点击`构建debug apk`或者是让AI直接输入终端指令。
 
 ![89a0629358433e38d01d14d04751fc74](/manuals/assets/submissions/aae0960a-de35-4822-9345-096e041aa078/img_f7f398aa946d4f5a820e8f399089eaba-89a0629358433e38d01d14d04751fc74.png)
-
 ![c43738399417b3fb23737f996ec87f0b](/manuals/assets/submissions/aae0960a-de35-4822-9345-096e041aa078/img_964e3328e9444c54a38500ec4e405689-c43738399417b3fb23737f996ec87f0b.png)
 
 软件写的比较简单，在没报错的情况下，7s-11s即可完成编译成apk流程。下面是我让AI做好的软件
 
 ![696dcd2faaf9d50876836a2b05610ad8](/manuals/assets/submissions/aae0960a-de35-4822-9345-096e041aa078/img_520d3a36b13341ea8e78c4bec38a846d-696dcd2faaf9d50876836a2b05610ad8.jpg)
-
 ![5af89324972ad9b05975337c0fe053b5](/manuals/assets/submissions/aae0960a-de35-4822-9345-096e041aa078/img_6f69aedb47a04efca85239e640bfd2fb-5af89324972ad9b05975337c0fe053b5.jpg)
 
 5.报错处理 遇到报错打开终端包（一开始让你打开的）直接发给AI就好了。如果还有错误可以进用户群联系开发者~
