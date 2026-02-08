@@ -35,15 +35,17 @@ import DownloadLatestButton from '../components/DownloadLatestButton';
 import FooterComponent from '../components/Footer.tsx';
 
 // 导入所有服务商的logo
-import openAILogo from '/images/OTHER_LOGO/openai_new.png';
-import geminiLogo from '/images/OTHER_LOGO/gemini_new.svg';
-import zhipuLogo from '/images/OTHER_LOGO/zhipu.png';
-import openRouterLogo from '/images/OTHER_LOGO/OpenRouter.png';
-import siliconFlowLogo from '/images/OTHER_LOGO/SiliconFlow.png';
-import deepseekLogo from '/images/OTHER_LOGO/DEEPSEEK.png';
-import moonshotLogo from '/images/OTHER_LOGO/yuezhianmian.png';
-import anthropicLogo from '/images/OTHER_LOGO/anthropic.png';
-import tongyiLogo from '/images/OTHER_LOGO/tongyi_new.png';
+import openAILogo from '/images/OTHER_LOGO/openai_latest.svg';
+import geminiLogo from '/images/OTHER_LOGO/gemini_latest.svg';
+import zhipuLogo from '/images/OTHER_LOGO/zhipu_latest.svg';
+import openRouterLogo from '/images/OTHER_LOGO/openrouter_latest.svg';
+import siliconFlowLogo from '/images/OTHER_LOGO/siliconflow_latest.svg';
+import deepseekLogo from '/images/OTHER_LOGO/deepseek_latest.png';
+import moonshotLogo from '/images/OTHER_LOGO/moonshot_latest.ico';
+import anthropicLogo from '/images/OTHER_LOGO/anthropic_latest.svg';
+import alibabaCloudLogo from '/images/OTHER_LOGO/alibabacloud_latest.svg';
+import baiduLogo from '/images/OTHER_LOGO/baidu_latest.svg';
+import mnnLogo from '/images/OTHER_LOGO/mnn_latest.png';
 
 
 const { Title, Paragraph, Text } = Typography;
@@ -69,12 +71,14 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     { name: 'OpenAI', logo: openAILogo },
     { name: 'Google Gemini', logo: geminiLogo },
     { name: 'Anthropic', logo: anthropicLogo },
+    { name: 'DeepSeek', logo: deepseekLogo },
     { name: 'Zhipu AI', logo: zhipuLogo },
+    { name: 'Moonshot AI', logo: moonshotLogo },
     { name: 'OpenRouter', logo: openRouterLogo },
     { name: 'SiliconFlow', logo: siliconFlowLogo },
-    { name: 'DeepSeek', logo: deepseekLogo },
-    { name: 'Moonshot AI', logo: moonshotLogo },
-    { name: 'Tongyi Qianwen', logo: tongyiLogo }
+    { name: 'Alibaba Cloud (Tongyi Qianwen)', logo: alibabaCloudLogo },
+    { name: 'Baidu (Wenxin)', logo: baiduLogo },
+    { name: 'MNN (Local Models)', logo: mnnLogo }
   ];
 
   const features = [
