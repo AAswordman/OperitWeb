@@ -24,6 +24,20 @@ External package directory (shown by app):
 
 `Android/data/com.ai.assistance.operit/files/packages`
 
+## Where Is the Environment Config Button?
+
+Use this path:
+
+1. Open `Package Management`
+2. Switch to the `Packages` tab (not `Skills` / `MCP`)
+3. Check the bottom-right floating action area:
+   - Large `+` button: import external package
+   - Small gear button (`Manage Environment Variables`): environment config entry
+
+After tapping the gear icon, you will see the `Configure Environment Variables` dialog, where you can fill variables declared in package `env` (such as API keys).
+
+Note: if there are package load errors, an extra red error button appears in the same bottom-right area. In that case, the environment button is typically between the red error button and the `+` button.
+
 ## Built-in Sandbox Packages and Default Import Logic
 
 On startup, the app scans both built-in and external packages. Packages marked as built-in and enabled-by-default are auto-added to imported packages (unless manually disabled by user).
