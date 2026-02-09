@@ -1,45 +1,39 @@
 ### Creating Web: Using Workspace
 
-Workspace is a dedicated file environment provided by Operit AI that allows AI to directly write code, modify files, and perform other operations under your guidance, greatly enhancing AI's practicality in tasks such as Web development.
+If you want the full flow in Operit — build web pages, preview, then package — the first key is choosing the right workspace type.
 
 ![Set Workspace](/manuals/assets/workspace/image.png)
 
-#### Entering and Setting Up Workspace
+#### Choose the Right Workspace First (for direct packaging)
 
-In the AI chat interface, click the button in the upper right corner to enter the workspace settings page. Here, you can choose:
+- **Direct web packaging in chat workspace:** `Workspace > Create Default > Web Project`
+- This template creates `index.html` and enables `export.enabled=true` in `.operit/config.json` by default.
+- Other default templates (Android / Node.js / TypeScript / Python / Java / Go / Office / Blank) use `export.enabled=false` by default.
+- `Attach Local Storage Repository` (SAF) is for external folder collaboration and does not show export in chat workspace.
 
-*   **Create Default**: This will create a new workspace for you in the `Download/Operit/workspace/{chatId}/` directory and automatically generate an `index.html` file as a starting point. Each conversation (chatId) will have its own independent workspace.
-*   **Select Existing**: If you already have a project folder, you can select this option to bind the workspace to any folder on your device.
+#### Three Workspace Entry Options (UI labels)
+
+- **Create Default**: Create a new internal workspace for new projects.
+- **Select Existing**: Open the built-in file browser and click `Bind Current Folder`.
+- **Attach Local Storage Repository**: Bind an SAF directory through the system folder picker.
+
+#### How to Bind an SAF Workspace (from user UI)
+
+1. Open the workspace panel in chat and tap `Attach Local Storage Repository`.
+2. Pick a target folder in the system folder picker and grant permission.
+3. In the `Repository Name` dialog, enter a `Name` (cannot be empty and must be unique).
+4. Confirm, then the workspace is bound and AI can read/write files in that repository.
+
+> Tip: After binding, workspace operations use a repository environment like `repo:your-name`, useful for cross-folder collaboration.
 
 #### Workspace Interaction
 
-When you send messages in a conversation with a bound workspace, AI can not only see your instructions but also perceive the file structure and content changes of the entire workspace. This enables AI to:
+- AI can read, create, modify, and delete files.
+- File listing follows `.gitignore` filtering (for example, ignores `node_modules`).
+- To rollback text changes, long-press your message and choose `Edit and Resend`.
 
-*   Read file contents to understand existing code.
-*   Create, modify, or delete files to complete your development needs.
-*   Execute file operations such as move, copy, etc.
+#### Next Steps
 
-All operations within the workspace are logged and backed up to ensure your project's security.
-
-#### File Rollback
-
-> **⚠️ Important Warning (Version 1.5.0 / 1.5.1 / 1.5.2)**
-> 
-> If you are using **version 1.5.0, 1.5.1, or 1.5.2**, **it is strongly recommended NOT to use the file rollback feature in custom folder workspaces**! These versions contain a critical bug that will accidentally delete non-text files (such as images, videos, binary files, etc.) when performing file rollback. This issue has been fixed in subsequent versions. Please upgrade to the latest version before using this feature.
-
-Workspace provides a powerful file version rollback feature. When you need to undo a certain operation by AI, simply **long-press the message you sent**, and select **"Edit and Resend"** from the popup menu. At this point, all text files in the workspace will be rolled back to the state before you sent that message.
-
-#### File Filtering
-
-To keep the workspace clean and efficient, the file list and backup functions intelligently ignore rules defined in the `.gitignore` file, excluding dependency folders like `node_modules` or temporary files.
-
-#### Guiding AI in Development
-
-You can directly give instructions to AI to create and modify code files in the workspace. For example:
-
-"Please create an `index.html` file and write the basic HTML structure."
-
-AI can use built-in toolkits or terminals to run and test code, providing you with immediate feedback.
-
-**Tip:** When asking AI to modify an existing file, it's best to have it read the file first. This way, AI can more accurately understand the context and provide higher-quality modifications. For example: "Please read the contents of `script.js` first, then add a parameter to the function in it."
+- Packaging guide: [Package Web as App](/guide/development/web-packaging)
+- Full configuration reference: [Workspace Overview](/guide/development/workspace-overview)
 

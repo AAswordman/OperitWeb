@@ -56,115 +56,11 @@ Most of the time, you will see a long and hard-to-read progress bar, like the on
 
 Once AI has terminal capability, it can feel like it can do almost anything. So I only tell AI the project name and let it handle the rest, then rely on Operit's parallel conversation ability to run tests while modifying code (?)
 
-#### How to Configure Shortcut Commands
+#### Workspace Configuration Reference
 
-There is a `config.json` file in the `.operit` folder where you can configure shortcut commands.
+Workspace `.operit/config.json`, template differences, export switch behavior, and runtime notes are now centralized here:
 
-Example `.operit/config.json`:
+- [Workspace Overview](/guide/development/workspace-overview)
 
-```json
-{
-  "projectType": "android",
-  "title": "Android Project",
-  "description": "For Android development, provides quick buttons for common Gradle tasks",
-  "server": {
-    "enabled": false,
-    "port": 8080,
-    "autoStart": false
-  },
-  "preview": {
-    "type": "terminal",
-    "url": "",
-    "showPreviewButton": false,
-    "previewButtonLabel": ""
-  },
-  "commands": [
-    {
-      "id": "android_setup_env",
-      "label": "Initialize Android Build Environment",
-      "command": "bash setup_android_env.sh",
-      "workingDir": ".",
-      "shell": true
-    },
-    {
-      "id": "gradle_assemble_debug",
-      "label": "Build Debug APK",
-      "command": "./gradlew assembleDebug",
-      "workingDir": ".",
-      "shell": true
-    },
-    {
-      "id": "gradle_install_debug",
-      "label": "Install Debug APK",
-      "command": "./gradlew installDebug",
-      "workingDir": ".",
-      "shell": true
-    },
-    {
-      "id": "gradle_lint",
-      "label": "Run Lint",
-      "command": "./gradlew lint",
-      "workingDir": ".",
-      "shell": true
-    },
-    {
-      "id": "gradle_test",
-      "label": "Run Tests",
-      "command": "./gradlew test",
-      "workingDir": ".",
-      "shell": true
-    }
-  ],
-  "export": {
-    "enabled": false
-  }
-}
-```
-
-#### `config.json` Field Reference (Source-Based)
-
-- `projectType` (`String`, default: `"web"`): Project category label. Mainly used for display fallback (for example, default workspace title).
-- `title` (`String?`, default: `null`): Custom title shown at the top of command view.
-- `description` (`String?`, default: `null`): Optional subtitle/description in command view.
-
-`server` object:
-
-- `server.enabled` (`Boolean`, default: `false`)
-- `server.port` (`Int`, default: `8093`)
-- `server.autoStart` (`Boolean`, default: `false`)
-- Note: In the current app implementation, workspace preview server behavior is managed by internal server logic, and this `server` block is not the primary runtime switch for command execution UI.
-
-`preview` object:
-
-- `preview.type` (`String`, default: `"browser"`): Recommended values are `browser`, `terminal`, or `none`.
-  - `browser`: Show embedded WebView preview as the default workspace page.
-  - `terminal` / `none`: Show command buttons as the default page.
-- `preview.url` (`String`, default: `""`): URL for browser preview.
-  - If `preview.type = "browser"` and URL is empty, the app falls back to `http://localhost:8093`.
-- `preview.showPreviewButton` (`Boolean`, default: `false`): Whether to show a separate "open browser preview" button in command view.
-- `preview.previewButtonLabel` (`String`, default: `""`): Label text for that preview button.
-  - Practical tip: if you set `showPreviewButton` to `true`, set a non-empty label for better UX.
-
-`commands` array (`List<CommandConfig>`, default: empty): Each item becomes one runnable button.
-
-- `id` (`String`, required): Command identifier.
-- `label` (`String`, required): Button text shown in UI.
-- `command` (`String`, required): Terminal command to execute.
-- `workingDir` (`String`, default: `"."`): Intended working directory field.
-- `shell` (`Boolean`, default: `true`): Intended shell execution field.
-- `usesDedicatedSession` (`Boolean`, default: `false`): Run command in a dedicated terminal session (useful for long-running tasks like watchers/dev servers).
-- `sessionTitle` (`String?`, default: `null`): Title for dedicated terminal session; falls back to `label` when omitted.
-
-`export` object:
-
-- `export.enabled` (`Boolean`, default: `true`): Whether to show workspace export action.
-
-#### Runtime Notes
-
-- Config file path is fixed at `.operit/config.json` under the workspace root.
-- JSON parsing is lenient and unknown keys are ignored.
-- If the file is missing or parsing fails, the app falls back to default Web config (`projectType: web`, browser preview at `http://localhost:8093`).
-- In current command execution flow, commands run from workspace root, and `workingDir` / `shell` are reserved fields that are not actively applied yet.
-
-**(Feel free to keep extending this config.)**
+Recommend reading that page first, then returning here for Android-specific practice.
 
