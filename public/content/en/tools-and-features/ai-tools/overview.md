@@ -73,3 +73,32 @@ As a user, you mainly decide:
 - [Sandbox Package](/#/guide/tools-and-features/ai-tools/sandbox-package)
 - [Skill](/#/guide/tools-and-features/ai-tools/skill)
 - [MCP](/#/guide/tools-and-features/ai-tools/mcp)
+
+## Built-in AI Tool List (Based on `SystemToolPrompts.kt`)
+
+> The following are default built-in AI tools (excluding dynamically installed Package / Skill / MCP tools).
+
+### Basic Tools
+- `sleep`: Demonstration tool that pauses briefly.
+- `use_package`: Activates a dynamic package for the current session.
+
+### File System & Remote Tools
+- `ssh_login`: Logs in to a remote SSH server (used when `environment="linux"`).
+- `ssh_exit`: Exits the SSH session and returns to local terminal execution.
+- `list_files`: Lists files in a directory.
+- `read_file`: Reads file content (image files support OCR text extraction).
+- `read_file_part`: Reads file content by line range.
+- `apply_file`: Applies replace / delete / create edits to a file by match.
+- `delete_file`: Deletes a file or directory.
+- `make_directory`: Creates a directory.
+- `find_files`: Finds files by pattern.
+- `grep_code`: Searches code with regex and returns context lines.
+- `grep_context`: Finds semantically relevant files or code segments by intent.
+
+### Network Tools
+- `visit_web`: Visits a webpage and extracts textual information (optional image links).
+- `download_file`: Downloads files (direct URL or by index from `visit_web` results).
+
+### Memory Tools
+- `query_memory`: Performs hybrid keyword + semantic retrieval in memory library (supports folder/time filtering).
+- `get_memory_by_title`: Reads a memory/document by exact title (full, chunked, or in-document query).

@@ -1,22 +1,57 @@
-# Workflow Guide (Templates and Use Cases)
+# Workflow (Start from Templates)
 
-This page explains workflow usage from a product perspective:
-
-- How workflows run in real tasks
-- The difference between **connections** and **references**
-- How all built-in templates trigger and execute
+Workflow documentation is still limited, so the most reliable approach is: **run a template first, then modify it step by step**.  
+Do not start from a blank canvas unless you already know the full flow structure.
 
 ---
 
-## 1) Case at a glance: automated posting and monitoring
+## Recommended Way to Use It
 
-This is a typical **scheduled execution + status tracking** scenario:
+Follow this order to save time:
 
-- Goal: let AI publish updates regularly and keep monitoring activity
-- Constraint: the target platform may enforce posting intervals (for example, every 30 minutes)
-- Approach: use a workflow schedule instead of manually sending “continue” each time
+1. Pick the template closest to your goal.
+2. Only change minimal input first (for example, trigger text or target URL).
+3. Run once and confirm the main chain completes.
+4. Change only one node or one connection each time, then run again.
+5. Keep a failure branch (`on_error`) for critical actions.
 
-### Case screenshots
+If you change too many things at once, debugging becomes much slower.
+
+---
+
+## Essential Concepts (Practical Version)
+
+### Connection
+
+Connections control execution path:
+
+- where to go after success (`on_success`)
+- where to go after failure (`on_error`)
+- where to go on true/false (`true` / `false`)
+
+### Reference
+
+References control data source:
+
+- downstream parameters are not hardcoded
+- downstream nodes use upstream output directly
+
+### Relationship
+
+- Connections decide path
+- References decide value source
+
+---
+
+## Use Case: Scheduled Posting + Monitoring
+
+This is a typical “scheduled execution + status tracking” scenario:
+
+- Goal: let AI execute actions periodically and keep checking results
+- Constraint: platform rate limits may apply (for example, once every 30 minutes)
+- Approach: use workflow scheduling to reduce repeated manual actions
+
+### Case Screenshots
 
 ![workflow-case-01|225x500, 50%](/manuals/assets/workflow/01.png)
 
@@ -32,270 +67,77 @@ This is a typical **scheduled execution + status tracking** scenario:
 ![workflow-case-08|225x500, 50%](/manuals/assets/workflow/08.png)
 ![workflow-case-09|225x500, 50%](/manuals/assets/workflow/09.png)
 
-### Practical editing notes
+### Practical Notes
 
-- After AI generates a workflow, nodes may overlap at first; reorganize layout manually.
-- In some cases, the list does not refresh immediately after creation; reopen the app to confirm.
-- You can enable or disable a workflow in `Workflow > Edit Workflow`.
-- Long-press an existing node to edit it.
-- This kind of workflow can run under standard permission settings.
-
----
-
-## 2) Core concepts
-
-## 2.1 Connection
-
-Connections define **how execution moves** through the graph:
-
-- Sequence (run B after A)
-- Branching (choose different paths based on outcomes)
-
-Common branch conditions:
-
-- `on_success`: continue when the previous step succeeds
-- `on_error`: continue when the previous step fails
-- `true` / `false`: branch by condition result
-- Custom regex: branch by text pattern matching
-
-## 2.2 Reference
-
-References define **where parameter values come from**:
-
-- Downstream nodes use values from upstream outputs
-- Parameters stay dynamic instead of hardcoded
-
-Common usage:
-
-- Extract a token/code from one step
-- Pass it directly into the next step via reference
-
-## 2.3 Connection + reference together
-
-- Execution control depends on connections
-- Data flow depends on references
-- Reliable workflows use both, not just one
+- Auto-generated nodes may overlap. Arrange layout first.
+- If the workflow list does not refresh immediately, reopening the app usually fixes it.
+- Use `Workflow > Edit Workflow` to enable/disable a workflow.
+- You can usually long-press a node to edit it.
 
 ---
 
-## 3) AI tool exposure in workflows
+## Built-in Template Selection (8 Templates)
 
-`StandardWorkflowTools` is the mechanism that exposes available tools to AI so it can decide when to call them during execution.
+### 1) Intent-triggered chat with result callback
 
-From a user perspective, this means:
+- Best for: external systems trigger tasks and receive AI results back.
+- Main chain: receive trigger → start service → create session → extract message → send to AI → stop service → return result.
 
-- AI can pick the right tool at the right step instead of only replying in plain text.
-- The workflow can combine conversation, tool calls, and branching in one chain.
-- You can keep automation flexible without hardcoding every action path.
+### 2) Manual chat chain
 
-Recommended practice:
+- Best for: quickly verifying the core chat automation path.
+- Main chain: manual trigger → start service → create session → send message → stop service.
 
-- Expose only the tools needed for the current workflow goal.
-- Keep a validation or fallback branch after critical tool actions.
-- Add `on_error` branches for external actions that may fail.
+### 3) Conditional web branching flow
 
----
+- Best for: web inspection with branch-based follow-up.
+- Main chain: open page → extract info → evaluate condition → true branch / false branch.
 
-## 4) Execution model (user view)
+### 4) Logical AND branching flow
 
-A workflow typically runs in this order:
+- Best for: continue only when multiple conditions are all satisfied.
 
-1. A trigger starts the run.
-2. Nodes execute by dependency order.
-3. Each node reports a status (`running`, `success`, `skipped`, or `failed`).
-4. Downstream nodes continue only when connection conditions are met.
+### 5) Logical OR branching flow
 
-Status meanings:
+- Best for: continue when any condition is satisfied.
 
-- **Success**: step completed and produced usable output
-- **Skipped**: branch condition was not matched
-- **Failed**: step errored or required condition could not be satisfied
+### 6) Extract/compute demo flow
 
-Troubleshooting order:
+- Best for: practicing extraction, transformation, decision, and output.
 
-1. Check upstream output first.
-2. Verify connection conditions.
-3. Verify references point to the intended node output.
-4. Confirm the run entered the expected branch.
+### 7) Success/failure skeleton
+
+- Best for: adding standard fallback handling around critical actions.
+
+### 8) Voice-triggered chat start
+
+- Best for: starting workflow by voice keyword.
 
 ---
 
-## 5) Built-in templates (all 8)
+## Troubleshooting Order (Recommended)
 
-Each template is described by **trigger type + connection order**.
-
-## Template 1: Intent-triggered chat and result broadcast
-
-**Trigger**
-- External broadcast trigger
-
-**Connection order**
-- Receive trigger
-→ Start conversation service
-→ Create session
-→ Extract trigger message
-→ Send message to AI
-→ Stop conversation service
-→ Broadcast result back
-→ Clear virtual display
-
-**Best for**
-- External systems dispatch tasks and receive AI results automatically.
+1. Check whether upstream output is correct.
+2. Check whether connection conditions are correct.
+3. Check whether references point to the right node output.
+4. Confirm whether the run entered the expected branch.
 
 ---
 
-## Template 2: Manual chat chain
-
-**Trigger**
-- Manual trigger
-
-**Connection order**
-- Manual trigger
-→ Start conversation service
-→ Create session
-→ Send message
-→ Stop conversation service
-→ Clear virtual display
-
-**Best for**
-- Quickly validating the main chat automation path.
-
----
-
-## Template 3: Conditional web branching flow
-
-**Trigger**
-- Manual trigger
-
-**Connection order**
-- Manual trigger
-→ Visit web page A
-→ Extract key information
-→ Evaluate condition
-→ (true) follow in-page link
-→ (false) visit fallback page B
-
-**Best for**
-- Web checks where different findings require different follow-up actions.
-
----
-
-## Template 4: Logical AND branching
-
-**Trigger**
-- Manual trigger
-
-**Connection order**
-- Manual trigger
-→ Visit web page
-→ Evaluate condition A
-→ Evaluate condition B
-→ Merge with AND logic
-→ (true) primary action
-→ (false) fallback action
-
-**Best for**
-- Scenarios that must satisfy multiple conditions before proceeding.
-
----
-
-## Template 5: Logical OR branching
-
-**Trigger**
-- Manual trigger
-
-**Connection order**
-- Manual trigger
-→ Visit web page
-→ Evaluate condition A
-→ Evaluate condition B
-→ Merge with OR logic
-→ (true) primary action
-→ (false) fallback action
-
-**Best for**
-- Scenarios where any one condition can unlock the next step.
-
----
-
-## Template 6: Extract/compute demonstration flow
-
-**Trigger**
-- Manual trigger
-
-**Main chain**
-- Manual trigger
-→ Generate value/text
-→ Concatenate
-→ Slice
-
-**Branch chain**
-- Compare values
-→ (true) display result
-
-**Best for**
-- Practicing data pipelines: generate → transform → decide → output.
-
----
-
-## Template 7: Success/failure branch skeleton
-
-**Trigger**
-- Manual trigger
-
-**Connection order**
-- Manual trigger
-→ Primary action
-→ (success) success branch
-→ (failure) failure branch
-
-**Best for**
-- Adding standard error handling around critical actions.
-
----
-
-## Template 8: Speech-triggered chat start
-
-**Trigger**
-- Voice keyword trigger
-
-**Connection order**
-- Voice keyword matched
-→ Start conversation service
-
-**Best for**
-- Hands-free entry to start workflow execution.
-
----
-
-## 6) Template selection quick guide
-
-- Fast path verification: **Manual chat chain**
-- Web monitoring and branching: **Conditional web flow**
-- Multi-condition decisions: **AND / OR templates**
-- Data manipulation: **Extract/compute flow**
-- Reliability first: **Success/failure skeleton**
-- External system integration: **Intent-triggered flow**
-- Voice-first entry: **Speech-triggered flow**
-
----
-
-## 7) Editing recommendations
-
-- Build and verify the main chain first, then add branches.
-- Add connections first, then wire references.
-- Keep observable outputs on critical nodes for debugging.
-- Add `on_error` fallbacks for external or failure-prone actions.
-
----
-
-## 8) Recommended prompt when asking AI to modify a workflow
+## Prompt to Ask AI to Modify a Template
 
 ```txt
 Please modify the "Conditional web branching flow" template:
-- Keep the trigger and main chain order unchanged.
-- Only replace the condition logic and fallback branch target.
-- At the end, restate the final connection order with arrow steps.
+- Keep the trigger and main chain order unchanged
+- Only replace condition logic and fallback branch target
+- Modify one node at a time and show a preview before each change
+- At the end, restate the final connection order with arrows
 ```
 
-This instruction style helps limit unintended edits.
+This instruction style helps reduce unintended edits and makes rollback easier.
+
+---
+
+## Conclusion
+
+For workflows, template-first usage is recommended. Run first, then make small incremental changes.

@@ -1,0 +1,139 @@
+name: Cleanup Submission Branches
+
+on:
+  pull_request:
+    branches: [ main ]
+    types: [ closed ]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Only preview branches without deleting"
+        required: false
+        default: true
+        type: boolean
+
+jobs:
+  delete-merged-submission-branch:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Delete merged submission branch
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (!pr) {
+              core.info('No pull request payload.');
+              return;
+            }
+
+            if (!pr.merged) {
+              core.info(`PR #${pr.number} is closed but not merged. Skip.`);
+              return;
+            }
+
+            const repoFullName = `${context.repo.owner}/${context.repo.repo}`;
+            if (pr.head.repo?.full_name !== repoFullName) {
+              core.info('Head branch is from a fork. Skip deleting branch.');
+              return;
+            }
+
+            const branch = pr.head.ref;
+            const prefix = 'operit/submission/';
+            if (!branch.startsWith(prefix)) {
+              core.info(`Branch ${branch} does not match ${prefix}. Skip.`);
+              return;
+            }
+
+            const ref = `heads/${branch}`;
+            try {
+              await github.rest.git.deleteRef({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                ref,
+              });
+              core.info(`Deleted ${ref}`);
+            } catch (error) {
+              if (error.status === 404 || error.status === 422) {
+                core.info(`Ref ${ref} is already gone or protected. Skip.`);
+                return;
+              }
+              throw error;
+            }
+
+  prune-old-submission-branches:
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
+    steps:
+      - name: Prune historical merged submission branches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const dryRun = String(context.payload.inputs?.dry_run ?? 'true').toLowerCase() === 'true';
+            const prefix = 'operit/submission/';
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            const branches = await github.paginate(github.rest.repos.listBranches, {
+              owner,
+              repo,
+              per_page: 100,
+            });
+
+            const targets = branches.filter(b => b.name.startsWith(prefix));
+            core.info(`Found ${targets.length} branch(es) matching ${prefix}`);
+
+            let deleted = 0;
+            let skipped = 0;
+
+            for (const branch of targets) {
+              const branchName = branch.name;
+              const head = `${owner}:${branchName}`;
+
+              const prs = await github.paginate(github.rest.pulls.list, {
+                owner,
+                repo,
+                head,
+                state: 'all',
+                per_page: 100,
+              });
+
+              const hasOpen = prs.some(pr => pr.state === 'open');
+              const hasMerged = prs.some(pr => Boolean(pr.merged_at));
+
+              if (hasOpen || !hasMerged) {
+                core.info(`Skip ${branchName} (open PR or never merged)`);
+                skipped += 1;
+                continue;
+              }
+
+              if (dryRun) {
+                core.info(`[dry-run] Would delete heads/${branchName}`);
+                continue;
+              }
+
+              try {
+                await github.rest.git.deleteRef({
+                  owner,
+                  repo,
+                  ref: `heads/${branchName}`,
+                });
+                core.info(`Deleted heads/${branchName}`);
+                deleted += 1;
+              } catch (error) {
+                if (error.status === 404 || error.status === 422) {
+                  core.info(`Skip ${branchName} (already deleted/protected)`);
+                  skipped += 1;
+                  continue;
+                }
+                throw error;
+              }
+            }
+
+            core.info(`Done. deleted=${deleted}, skipped=${skipped}, dry_run=${dryRun}`);

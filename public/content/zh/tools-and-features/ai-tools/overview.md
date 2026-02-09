@@ -73,3 +73,32 @@
 - [沙盒包（Package）](/#/guide/tools-and-features/ai-tools/sandbox-package)
 - [Skill](/#/guide/tools-and-features/ai-tools/skill)
 - [MCP](/#/guide/tools-and-features/ai-tools/mcp)
+
+## AI 内置工具清单（基于 `SystemToolPrompts.kt`）
+
+> 以下为系统默认可用的 AI 内置工具（不含动态安装的 Package / Skill / MCP 工具）。
+
+### 基础工具
+- `sleep`：演示工具，短暂等待。
+- `use_package`：激活动态工具包，在当前会话中启用对应能力。
+
+### 文件系统与远程工具
+- `ssh_login`：登录远程 SSH 服务器（`environment="linux"` 时可走该连接）。
+- `ssh_exit`：退出 SSH 连接，恢复本地终端环境。
+- `list_files`：列出目录文件。
+- `read_file`：读取文件内容（图片类型支持 OCR 文本提取）。
+- `read_file_part`：按行范围读取文件内容。
+- `apply_file`：按匹配内容对文件执行替换 / 删除 / 创建。
+- `delete_file`：删除文件或目录。
+- `make_directory`：创建目录。
+- `find_files`：按模式搜索文件。
+- `grep_code`：用正则搜索代码并返回上下文。
+- `grep_context`：按语义意图搜索最相关文件或代码片段。
+
+### 网络工具
+- `visit_web`：访问网页并提取文本信息（可选返回图片链接）。
+- `download_file`：下载文件（支持 URL 直下，或从 `visit_web` 结果按编号下载）。
+
+### 记忆库工具
+- `query_memory`：在记忆库中做关键词 + 语义混合检索（支持目录/时间过滤）。
+- `get_memory_by_title`：按精确标题读取记忆或文档（整篇、分块、文档内查询）。
