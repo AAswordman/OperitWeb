@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "latestVersion": 1,
-  "latestFile": "/announcements/history/2026-02-13-chat-binding-announcement-v1.json",
-  "updatedAt": "2026-02-13T00:00:00Z",
+  "latestVersion": 2,
+  "latestFile": "/announcements/history/2026-02-13-community-newyear-v2.json",
+  "updatedAt": "2026-02-13T13:07:00+08:00",
   "notes": "For GitHub Pages, fetch this endpoint with a cache-busting query string."
 }

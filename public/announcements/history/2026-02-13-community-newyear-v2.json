@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "community-newyear-2026-02-13",
+  "version": 2,
+  "enabled": true,
+  "type": "modal",
+  "priority": "high",
+  "countdownSec": 5,
+  "target": {
+    "minAppVersionCode": 0,
+    "maxAppVersionCode": null,
+    "channels": ["stable", "beta"],
+    "locale": "all"
+  },
+  "schedule": {
+    "startAt": "2026-02-13T13:07:00+08:00",
+    "endAt": null
+  },
+  "content": {
+    "defaultLocale": "zh-CN",
+    "locales": {
+      "zh-CN": {
+        "title": "新年快乐",
+        "body": "软件冷门捏，欢迎各位多多探索、制作教程、帮忙宣传！祝大家新年快乐！",
+        "acknowledge": "我知道了"
+      },
+      "en-US": {
+        "title": "Happy New Year",
+        "body": "The app is still niche. You're warmly welcome to explore it, make tutorials, and help spread the word. Happy New Year, everyone!",
+        "acknowledge": "Got it"
+      }
+    }
+  },
+  "meta": {
+    "updatedAt": "2026-02-13T13:07:00+08:00",
+    "source": "https://operit.aaswordsman.org/announcements/history/2026-02-13-community-newyear-v2.json"
+  }
+}
