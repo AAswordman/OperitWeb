@@ -64,30 +64,31 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
     const docs = [
       { key: '/guide', label: t.welcome, path: '/guide', category: 'welcome', level: 0 },
       { key: 'quick-start', label: t.quickStart, path: '/guide/quick-start', category: 'quick-start', level: 1 },
-      { key: 'model-config', label: t.modelConfig, path: '/guide/basic-config/model-config', category: 'basic-config', level: 2 },
-      { key: 'terminal-config', label: t.terminalConfig, path: '/guide/basic-config/terminal-config', category: 'basic-config', level: 3 },
-      { key: 'mnn-local-model', label: t.mnnLocalModel, path: '/guide/basic-config/mnn-local-model', category: 'basic-config', level: 4 },
-      { key: 'image-recognition', label: t.imageRecognition, path: '/guide/basic-config/image-recognition', category: 'basic-config', level: 5 },
-      { key: 'functional-model-config', label: t.functionalModelConfig, path: '/guide/basic-config/functional-model-config', category: 'basic-config', level: 6 },
-      { key: 'user-preferences', label: t.userPreferences, path: '/guide/basic-config/user-preferences', category: 'basic-config', level: 7 },
-      { key: 'data-backup', label: t.dataBackup, path: '/guide/basic-config/data-backup', category: 'basic-config', level: 8 },
-      { key: 'ai-permissions', label: t.aiPermissions, path: '/guide/basic-config/ai-permissions', category: 'basic-config', level: 8 },
-      { key: 'software-authorization', label: t.softwareAuthorization, path: '/guide/basic-config/software-authorization', category: 'basic-config', level: 9 },
-      { key: 'character-cards', label: t.characterCards, path: '/guide/character-system/character-cards', category: 'character-system', level: 10 },
-      { key: 'tags', label: t.tags, path: '/guide/character-system/tags', category: 'character-system', level: 11 },
-      { key: 'voice-chat', label: t.voiceChat, path: '/guide/character-system/voice-chat', category: 'character-system', level: 12 },
-      { key: 'tts-reading', label: t.ttsReading, path: '/guide/character-system/tts-reading', category: 'character-system', level: 13 },
-      { key: 'desktop-pet', label: t.desktopPet, path: '/guide/character-system/desktop-pet', category: 'character-system', level: 14 },
-      { key: 'share-conversation', label: t.shareConversation, path: '/guide/character-system/share-conversation', category: 'character-system', level: 15 },
-      { key: 'ai-tools/overview', label: t.aiToolsOverview, path: '/guide/tools-and-features/ai-tools/overview', category: 'tools-and-features', level: 16 },
-      { key: 'ai-tools/sandbox-package', label: t.sandboxPackage, path: '/guide/tools-and-features/ai-tools/sandbox-package', category: 'tools-and-features', level: 17 },
-      { key: 'ai-tools/skill', label: t.skill, path: '/guide/tools-and-features/ai-tools/skill', category: 'tools-and-features', level: 18 },
-      { key: 'ai-tools/mcp', label: t.mcp, path: '/guide/tools-and-features/ai-tools/mcp', category: 'tools-and-features', level: 19 },
-      { key: 'knowledge-base', label: t.knowledgeBase, path: '/guide/tools-and-features/knowledge-base', category: 'tools-and-features', level: 20 },
-      { key: 'toolbox', label: t.toolbox, path: '/guide/tools-and-features/toolbox', category: 'tools-and-features', level: 21 },
-      { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 22 },
-      { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 23 },
-      { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 24 },
+      { key: 'ai-provider-basics', label: t.aiProviderBasics, path: '/guide/ai-provider-basics', category: 'quick-start', level: 2 },
+      { key: 'model-config', label: t.modelConfig, path: '/guide/basic-config/model-config', category: 'basic-config', level: 3 },
+      { key: 'terminal-config', label: t.terminalConfig, path: '/guide/basic-config/terminal-config', category: 'basic-config', level: 4 },
+      { key: 'mnn-local-model', label: t.mnnLocalModel, path: '/guide/basic-config/mnn-local-model', category: 'basic-config', level: 5 },
+      { key: 'image-recognition', label: t.imageRecognition, path: '/guide/basic-config/image-recognition', category: 'basic-config', level: 6 },
+      { key: 'functional-model-config', label: t.functionalModelConfig, path: '/guide/basic-config/functional-model-config', category: 'basic-config', level: 7 },
+      { key: 'user-preferences', label: t.userPreferences, path: '/guide/basic-config/user-preferences', category: 'basic-config', level: 8 },
+      { key: 'data-backup', label: t.dataBackup, path: '/guide/basic-config/data-backup', category: 'basic-config', level: 9 },
+      { key: 'ai-permissions', label: t.aiPermissions, path: '/guide/basic-config/ai-permissions', category: 'basic-config', level: 10 },
+      { key: 'software-authorization', label: t.softwareAuthorization, path: '/guide/basic-config/software-authorization', category: 'basic-config', level: 11 },
+      { key: 'character-cards', label: t.characterCards, path: '/guide/character-system/character-cards', category: 'character-system', level: 12 },
+      { key: 'tags', label: t.tags, path: '/guide/character-system/tags', category: 'character-system', level: 13 },
+      { key: 'voice-chat', label: t.voiceChat, path: '/guide/character-system/voice-chat', category: 'character-system', level: 14 },
+      { key: 'tts-reading', label: t.ttsReading, path: '/guide/character-system/tts-reading', category: 'character-system', level: 15 },
+      { key: 'desktop-pet', label: t.desktopPet, path: '/guide/character-system/desktop-pet', category: 'character-system', level: 16 },
+      { key: 'share-conversation', label: t.shareConversation, path: '/guide/character-system/share-conversation', category: 'character-system', level: 17 },
+      { key: 'ai-tools/overview', label: t.aiToolsOverview, path: '/guide/tools-and-features/ai-tools/overview', category: 'tools-and-features', level: 18 },
+      { key: 'ai-tools/sandbox-package', label: t.sandboxPackage, path: '/guide/tools-and-features/ai-tools/sandbox-package', category: 'tools-and-features', level: 19 },
+      { key: 'ai-tools/skill', label: t.skill, path: '/guide/tools-and-features/ai-tools/skill', category: 'tools-and-features', level: 20 },
+      { key: 'ai-tools/mcp', label: t.mcp, path: '/guide/tools-and-features/ai-tools/mcp', category: 'tools-and-features', level: 21 },
+      { key: 'knowledge-base', label: t.knowledgeBase, path: '/guide/tools-and-features/knowledge-base', category: 'tools-and-features', level: 22 },
+      { key: 'toolbox', label: t.toolbox, path: '/guide/tools-and-features/toolbox', category: 'tools-and-features', level: 23 },
+      { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 24 },
+      { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 25 },
+      { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 26 },
       { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 28 },
       { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 29 },
       { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 30 },
@@ -335,6 +336,8 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           filePath = `/content/${language}/faq.md`;
         } else if (doc.key === 'quick-start') {
           filePath = `/content/${language}/quick-start.md`;
+        } else if (doc.key === 'ai-provider-basics') {
+          filePath = `/content/${language}/ai-provider-basics.md`;
         } else if (doc.category === 'basic-config') {
           filePath = `/content/${language}/basic-config/${doc.key}.md`;
         } else if (doc.category === 'character-system') {
@@ -455,6 +458,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
   const menuItems = useMemo(() => [
     { key: '/guide', label: <Link to="/guide">{t.welcome}</Link> },
     { key: 'quick-start', label: <Link to="/guide/quick-start">{t.quickStart}</Link> },
+    { key: 'ai-provider-basics', label: <Link to="/guide/ai-provider-basics">{t.aiProviderBasics}</Link> },
     {
       key: 'basic-config',
       label: t.basicConfig,

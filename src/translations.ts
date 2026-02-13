@@ -402,6 +402,7 @@ export const translations = {
     guide: {
       welcome: '欢迎',
       quickStart: '快速使用',
+      aiProviderBasics: 'AI 提供商与 API 基础',
       basicConfig: '基础配置',
       modelConfig: '模型配置',
       terminalConfig: '终端配置',
@@ -871,6 +872,7 @@ export const translations = {
     guide: {
       welcome: 'Welcome',
       quickStart: 'Quick Start',
+      aiProviderBasics: 'AI Provider & API Basics',
       basicConfig: 'Basic Configuration',
       modelConfig: 'Model Configuration',
       terminalConfig: 'Terminal Configuration',

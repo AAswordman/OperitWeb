@@ -83,6 +83,7 @@ const App: React.FC = () => {
             <Route path="guide" element={<GuidePage darkMode={darkMode} language={language} />}>
               <Route index element={<GuideIndex language={language} />} />
               <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
+              <Route path="ai-provider-basics" element={<MarkdownRenderer file="ai-provider-basics" language={language} />} />
               <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
               <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
               <Route path=":category/*" element={<GuideContent language={language} />} />

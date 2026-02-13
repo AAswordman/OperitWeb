@@ -76,6 +76,27 @@ pnpm dev
 - **自定义域名**：仓库根目录 `CNAME` 为 `operit.aaswordsman.org`
 - **EdgeOne 重写**：`edgeone.json` 中包含 `/OperitWeb/*` 到 `/:splat` 的重写规则
 
+## 联网公告（静态 JSON）
+
+为 Android 客户端提供了无需 Worker 的公告发布方式（纯静态文件）：
+
+- 最新入口：`https://operit.aaswordsman.org/announcements/latest.json`
+- 版本化正文：`https://operit.aaswordsman.org/announcements/history/2026-02-13-chat-binding-announcement-v1.json`
+
+目录结构：
+
+- `public/announcements/latest.json`：当前生效公告指针（`latestFile` + `latestVersion`）
+- `public/announcements/history/*.json`：具体公告内容（可回溯）
+
+客户端建议接入流程：
+
+1. 拉取 `latest.json`（建议附带时间戳 query 防缓存，如 `?t=20260213T1200`）
+2. 读取 `latestFile` 并继续拉取对应历史公告
+3. 用公告 `version` 与本地已读版本比较（大于才展示）
+4. 网络失败时回退到应用内置公告逻辑
+
+注意：GitHub Pages 不支持像 Cloudflare Pages `_headers` 那样自定义响应头，缓存控制建议在客户端完成（query 参数 + 本地过期策略）。
+
 ## 开发提示
 
 - 如果你新增了新的文档页面，请确保路由（`src/App.tsx`）与文档文件路径对应
