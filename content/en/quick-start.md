@@ -44,6 +44,7 @@ The first time we will suggest you go to the settings, which will determine what
 
 #### Step 5: Configure Your Own API
 After completing the configuration, you can return to Operit AI and start your intelligent assistant journey!
+If this is your first time with APIs, read this beginner guide first: [`AI Provider, Token, Endpoint, and Model Basics`](/guide/ai-provider-basics)
 *Start using after configuring the API.*
 > AI's API and model can be changed in `Settings > AI Model Configuration > Model & Parameter Configuration/Functional Model Configuration`
 > Model prompts can be changed at `Settings > Personalization > Model Prompt Settings`, along with some model parameter settings

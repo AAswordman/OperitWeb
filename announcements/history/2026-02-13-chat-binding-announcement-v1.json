@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "chat-binding-2026-02-13",
+  "version": 1,
+  "enabled": true,
+  "type": "modal",
+  "priority": "high",
+  "countdownSec": 5,
+  "target": {
+    "minAppVersionCode": 0,
+    "maxAppVersionCode": null,
+    "channels": ["stable", "beta"],
+    "locale": "all"
+  },
+  "schedule": {
+    "startAt": "2026-02-13T00:00:00Z",
+    "endAt": null
+  },
+  "content": {
+    "defaultLocale": "zh-CN",
+    "locales": {
+      "zh-CN": {
+        "title": "声明",
+        "body": "本软件为免费软件，如果你是从哪里买来的，说明你被坑了。请警惕冒名/倒卖。",
+        "acknowledge": "我知道了"
+      },
+      "en-US": {
+        "title": "Notice",
+        "body": "This app is free. If you bought it from someone, you were scammed. Beware of impersonation/reselling.",
+        "acknowledge": "Got it"
+      }
+    }
+  },
+  "meta": {
+    "updatedAt": "2026-02-13T00:00:00Z",
+    "source": "https://operit.aaswordsman.org/announcements/history/2026-02-13-chat-binding-announcement-v1.json"
+  }
+}
