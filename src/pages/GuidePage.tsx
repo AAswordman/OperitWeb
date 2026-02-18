@@ -89,6 +89,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
       { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 24 },
       { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 25 },
       { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 26 },
+      { key: 'external-call', label: t.externalCall, path: '/guide/tools-and-features/external-call', category: 'tools-and-features', level: 27 },
       { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 28 },
       { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 29 },
       { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 30 },
@@ -501,6 +502,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           ],
         },
         { key: 'workflow', label: <Link to="/guide/tools-and-features/workflow">{t.workflow}</Link> },
+        { key: 'external-call', label: <Link to="/guide/tools-and-features/external-call">{t.externalCall}</Link> },
         { key: 'knowledge-base', label: <Link to="/guide/tools-and-features/knowledge-base">{t.knowledgeBase}</Link> },
         { key: 'toolbox', label: <Link to="/guide/tools-and-features/toolbox">{t.toolbox}</Link> },
         { key: 'context-summary', label: <Link to="/guide/tools-and-features/context-summary">{t.contextSummary}</Link> },
@@ -533,7 +535,6 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
         { key: 'panel-introduction', label: <Link to="/guide/interface-guide/panel-introduction">{t.panelIntroduction}</Link> },
       ],
     },
-    
     { key: 'return-code-generator', label: <Link to="/guide/tools-and-features/return-code-generator">{t.returnCodeGenerator}</Link> },
     { key: 'faq', label: <Link to="/guide/faq">{t.faq}</Link> },
   ], [t]);
