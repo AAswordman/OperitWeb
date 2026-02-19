@@ -39,12 +39,36 @@ Callback extras:
 - `ai_response`
 - `error`
 
+Recommended (explicit component):
+
 ```bash
 adb shell am broadcast \
+  --user 0 \
+  -n com.ai.assistance.operit/.integrations.intent.ExternalChatReceiver \
   -a com.ai.assistance.operit.EXTERNAL_CHAT \
   --es request_id "req-001" \
   --es message "Summarize this text" \
-  --ez create_new_chat true
+  --ez create_new_chat true \
+  --es group "workflow" \
+  --ez show_floating true \
+  --el auto_exit_after_ms 10000
+```
+
+Optional extras:
+
+- stop service after completion: `--ez stop_after true`
+- custom callback action: `--es reply_action "com.example.YOUR_RESULT_ACTION"`
+- callback package limit: `--es reply_package "com.example.yourapp"`
+
+If it does not work, check:
+
+- use explicit receiver component (`-n ...ExternalChatReceiver`)
+- `message` is not empty
+- target package is correct (`com.ai.assistance.operit`)
+- inspect logs:
+
+```bash
+adb logcat -s ExternalChatReceiver StandardChatManagerTool FloatingChatService
 ```
 
 ## 2. Trigger Workflow via Intent Trigger
