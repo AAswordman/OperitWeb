@@ -37,10 +37,12 @@
 - `ai_response` 可选
 - `error` 可选
 
-### adb 示例
+### adb 示例（推荐显式组件）
 
 ```bash
 adb shell am broadcast \
+  --user 0 \
+  -n com.ai.assistance.operit/.integrations.intent.ExternalChatReceiver \
   -a com.ai.assistance.operit.EXTERNAL_CHAT \
   --es request_id "req-001" \
   --es message "你好，帮我总结一下这段文本" \
@@ -48,6 +50,23 @@ adb shell am broadcast \
   --es group "workflow" \
   --ez show_floating true \
   --el auto_exit_after_ms 10000
+```
+
+可选参数补充：
+
+- 发送完成后自动停服务：`--ez stop_after true`
+- 指定回传 action：`--es reply_action "com.example.YOUR_RESULT_ACTION"`
+- 指定回传包名：`--es reply_package "com.example.yourapp"`
+
+如果你遇到“没生效”，优先检查：
+
+- 是否使用了显式组件（`-n ...ExternalChatReceiver`）
+- `message` 是否非空
+- 设备上目标包名是否正确：`com.ai.assistance.operit`
+- 查看运行日志：
+
+```bash
+adb logcat -s ExternalChatReceiver StandardChatManagerTool FloatingChatService
 ```
 
 ## 2. 触发工作流：Intent Trigger
