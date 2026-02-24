@@ -4,7 +4,7 @@ Operit image generation is configured in Package Management. Enable a draw packa
 
 ## Entry
 
-1. Open Settings
+1. Open the sidebar
 2. Open Package Management
 3. Switch to Packages
 
@@ -18,6 +18,16 @@ Find the Draw group and turn on the package switch.
 - Zhipu Draw
 - Nanobanana Draw
 - Pollinations Draw
+
+You do not need to enable every draw package.
+Enable only the package that matches the key you already configured.
+
+- If you have `OPENAI_API_KEY`, enable OpenAI Draw
+- If you have `DASHSCOPE_API_KEY`, enable Qwen Draw
+- If you have `XAI_API_KEY`, enable xAI Draw
+- If you have `ZHIPU_API_KEY`, enable Zhipu Draw
+- If you have `NANOBANANA_API_KEY`, enable Nanobanana Draw
+- If you have no key, you can still enable Pollinations Draw alone
 
 ## Available Options
 
@@ -71,6 +81,13 @@ Find the Draw group and turn on the package switch.
 5. Fill optional items as needed
 6. Save
 7. Return to chat and request image generation
+
+## Environment Button Location
+
+- Path: Sidebar -> Package Management -> Packages
+- The button is in the bottom-right floating action area
+- The bottom button is the import plus button
+- The environment button is the small gear button above the plus button
 
 ## Recommended Workflow
 
