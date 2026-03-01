@@ -443,7 +443,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   const [selectedIssue, setSelectedIssue] = useState<ParsedMarketIssue | null>(null);
   const [page, setPage] = useState<number>(1);
   const [totalPages, setTotalPages] = useState<number | null>(null);
-  const [hasNextPage, setHasNextPage] = useState<boolean>(false);
+  const [linkHasNextPage, setLinkHasNextPage] = useState<boolean>(false);
 
   const currentMarketName = marketType === 'mcp' ? uiText.mcpTab : uiText.skillTab;
   const marketSubtitle =
@@ -480,18 +480,19 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
       }
 
       const { hasNext, lastPage: parsedLastPage } = parseLinkHeader(response.headers.get('link'));
-      if (totalPages !== null) {
-        setHasNextPage(page < totalPages);
-      } else {
-        setHasNextPage(hasNext);
-        if (parsedLastPage !== null) {
-          setTotalPages(Math.max(1, parsedLastPage));
-        } else if (!hasNext) {
-          setTotalPages(page);
-        } else {
-          setTotalPages(null);
+      setLinkHasNextPage(hasNext);
+      setTotalPages(previousTotalPages => {
+        if (previousTotalPages !== null) {
+          return previousTotalPages;
         }
-      }
+        if (parsedLastPage !== null) {
+          return Math.max(1, parsedLastPage);
+        }
+        if (!hasNext) {
+          return page;
+        }
+        return null;
+      });
 
       const pageIssues = (await response.json()) as GitHubIssue[];
       const parsed = pageIssues
@@ -507,7 +508,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     } finally {
       setLoading(false);
     }
-  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page, totalPages]);
+  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page]);
 
   const loadTotalPages = useCallback(async () => {
     try {
@@ -546,18 +547,17 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   }, [loadTotalPages]);
 
   useEffect(() => {
-    if (totalPages !== null) {
-      setHasNextPage(page < totalPages);
-    }
-  }, [page, totalPages]);
-
-  useEffect(() => {
     setSelectedIssue(null);
     setPage(1);
     setTotalPages(null);
-    setHasNextPage(false);
+    setLinkHasNextPage(false);
     setSearchText('');
   }, [marketType]);
+
+  const hasNextPage = useMemo(
+    () => (totalPages !== null ? page < totalPages : linkHasNextPage),
+    [linkHasNextPage, page, totalPages],
+  );
 
   const filteredIssues = useMemo(() => {
     const normalizedSearch = searchText.trim().toLowerCase();
