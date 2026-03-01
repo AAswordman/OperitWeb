@@ -25,6 +25,7 @@ import {
   SunOutlined,
   MoonOutlined,
   ZoomInOutlined,
+  ShopOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
 import { translations } from '../translations';
@@ -140,6 +141,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
   }));
 
   const isHomePage = location.pathname === '/';
+  const marketLabel = language === 'zh' ? '市场' : 'Market';
   
   return (
     <Layout style={{ 
@@ -204,6 +206,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     style={{ backgroundColor: 'transparent' }}
                   />
                   <Link
+                    to="/market"
+                    style={{
+                      color: token.colorText,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    {marketLabel}
+                  </Link>
+                  <Link
                     to="/operit-submission-center"
                     style={{
                       color: token.colorText,
@@ -227,19 +238,29 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                   <Link 
                     to="/guide"
                     style={{ 
-                      color: location.pathname === '/guide' ? token.colorPrimary : token.colorText,
+                      color: location.pathname.startsWith('/guide') ? token.colorPrimary : token.colorText,
                       textDecoration: 'none',
-                      fontWeight: location.pathname === '/guide' ? 'bold' : 'normal'
+                      fontWeight: location.pathname.startsWith('/guide') ? 'bold' : 'normal'
                     }}
                   >
                     {t('userGuide')}
                   </Link>
                   <Link
+                    to="/market"
+                    style={{
+                      color: location.pathname.startsWith('/market') ? token.colorPrimary : token.colorText,
+                      textDecoration: 'none',
+                      fontWeight: location.pathname.startsWith('/market') ? 'bold' : 'normal'
+                    }}
+                  >
+                    {marketLabel}
+                  </Link>
+                  <Link
                     to="/operit-submission-center"
                     style={{
-                      color: location.pathname === '/operit-submission-center' ? token.colorPrimary : token.colorText,
+                      color: location.pathname.startsWith('/operit-submission-center') ? token.colorPrimary : token.colorText,
                       textDecoration: 'none',
-                      fontWeight: location.pathname === '/operit-submission-center' ? 'bold' : 'normal'
+                      fontWeight: location.pathname.startsWith('/operit-submission-center') ? 'bold' : 'normal'
                     }}
                   >
                     {t('personalCenter')}
@@ -364,6 +385,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 onClick={() => setMobileMenuOpen(false)}
               >
                 用户指南
+              </Button>
+            </Link>
+
+            <Link to="/market" style={{ width: '100%' }}>
+              <Button
+                type="default"
+                icon={<ShopOutlined />}
+                style={{ width: '100%' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {marketLabel}
               </Button>
             </Link>
 

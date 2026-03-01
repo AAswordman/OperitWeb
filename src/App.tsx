@@ -14,6 +14,7 @@ const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEdit
 const OperitSubmissionCenterPage = lazy(() => import('./pages/OperitSubmissionCenterPage'));
 const OperitLoginPage = lazy(() => import('./pages/OperitLoginPage'));
 const OperitOwnerAdminPage = lazy(() => import('./pages/OperitOwnerAdminPage'));
+const OperitMCPMarketPage = lazy(() => import('./pages/OperitMCPMarketPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -93,6 +94,7 @@ const App: React.FC = () => {
             <Route path="operit-submission-admin" element={<OperitSubmissionAdminPage language={language} />} />
             <Route path="operit-owner-admin" element={<OperitOwnerAdminPage language={language} />} />
             <Route path="operit-submission-center/*" element={<OperitSubmissionCenterPage language={language} />} />
+            <Route path="market" element={<OperitMCPMarketPage language={language} />} />
             <Route path="*" element={<Navigate to="/" />} />
           </Route>
         </Routes>
