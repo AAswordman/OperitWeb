@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { ConfigProvider, theme } from 'antd';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
+import SiteMetadata from './components/SiteMetadata';
 
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideIndex = lazy(() => import('./pages/GuideIndex'));
@@ -66,6 +67,7 @@ const App: React.FC = () => {
       }}
     >
       <Router>
+        <SiteMetadata language={language} />
         <Routes>
           <Route
             path="/"
