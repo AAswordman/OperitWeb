@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import {
   Alert,
@@ -377,9 +377,8 @@ const parsePageFromQuery = (value: string | null): number => {
 
 const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [marketType, setMarketType] = useState<MarketType>(() =>
-    parseMarketTypeFromQuery(searchParams.get('market')),
-  );
+  const marketType = parseMarketTypeFromQuery(searchParams.get('market'));
+  const page = parsePageFromQuery(searchParams.get('page'));
   const currentMarketConfig = MARKET_CONFIG[marketType];
   const currentIssuesWebUrl = getIssuesWebUrl(currentMarketConfig.repo);
 
@@ -459,9 +458,10 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedIssue, setSelectedIssue] = useState<ParsedMarketIssue | null>(null);
-  const [page, setPage] = useState<number>(() => parsePageFromQuery(searchParams.get('page')));
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [linkHasNextPage, setLinkHasNextPage] = useState<boolean>(false);
+  const issuesRequestRef = useRef(0);
+  const totalPagesRequestRef = useRef(0);
 
   const currentMarketName = marketType === 'mcp' ? uiText.mcpTab : uiText.skillTab;
   const marketSubtitle =
@@ -469,7 +469,31 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
       ? `当前展示 ${currentMarketName}，仅包含标签 ${currentMarketConfig.approvedLabel} 的过审项目。`
       : `Showing ${currentMarketName}, filtered by approved label: ${currentMarketConfig.approvedLabel}.`;
 
+  const writeQueryState = useCallback((nextMarketType: MarketType, nextPage: number) => {
+    const normalizedPage = String(Math.max(1, nextPage));
+    const currentMarket = searchParams.get('market');
+    const currentPage = searchParams.get('page');
+
+    if (currentMarket === nextMarketType && currentPage === normalizedPage) {
+      return;
+    }
+
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('market', nextMarketType);
+    nextParams.set('page', normalizedPage);
+    setSearchParams(nextParams, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  const setMarketAndResetPage = useCallback((nextMarketType: MarketType) => {
+    writeQueryState(nextMarketType, 1);
+  }, [writeQueryState]);
+
+  const setPageInQuery = useCallback((nextPage: number) => {
+    writeQueryState(marketType, nextPage);
+  }, [marketType, writeQueryState]);
+
   const loadIssues = useCallback(async () => {
+    const requestId = ++issuesRequestRef.current;
     setLoading(true);
     setError(null);
 
@@ -488,6 +512,10 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           'X-GitHub-Api-Version': '2022-11-28',
         },
       });
+
+      if (requestId !== issuesRequestRef.current) {
+        return;
+      }
 
       if (!response.ok) {
         const remaining = response.headers.get('x-ratelimit-remaining');
@@ -513,6 +541,10 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
       });
 
       const pageIssues = (await response.json()) as GitHubIssue[];
+      if (requestId !== issuesRequestRef.current) {
+        return;
+      }
+
       const parsed = pageIssues
         .filter(item => !item.pull_request && hasApprovedLabel(item, currentMarketConfig.approvedLabel))
         .map(parseIssue);
@@ -521,14 +553,22 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         prevSelected ? parsed.find(item => item.id === prevSelected.id) ?? null : null,
       );
     } catch (fetchError) {
+      if (requestId !== issuesRequestRef.current) {
+        return;
+      }
+
       const message = fetchError instanceof Error ? fetchError.message : 'Unknown error';
       setError(message);
     } finally {
-      setLoading(false);
+      if (requestId === issuesRequestRef.current) {
+        setLoading(false);
+      }
     }
   }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page]);
 
   const loadTotalPages = useCallback(async () => {
+    const requestId = ++totalPagesRequestRef.current;
+
     try {
       const searchUrl = getIssuesSearchApiUrl(currentMarketConfig.repo, currentMarketConfig.approvedLabel);
       const response = await fetch(searchUrl, {
@@ -538,18 +578,28 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         },
       });
 
+      if (requestId !== totalPagesRequestRef.current) {
+        return;
+      }
+
       if (!response.ok) {
         return;
       }
 
       const searchData = (await response.json()) as GitHubSearchIssuesResponse;
+      if (requestId !== totalPagesRequestRef.current) {
+        return;
+      }
+
       const preciseTotalPages = Math.max(1, Math.ceil(searchData.total_count / PER_PAGE));
       setTotalPages(preciseTotalPages);
-      setPage(prevPage => Math.min(prevPage, preciseTotalPages));
+      if (page > preciseTotalPages) {
+        setPageInQuery(preciseTotalPages);
+      }
     } catch {
       // Keep fallback pagination behavior based on Link header when search API is unavailable.
     }
-  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo]);
+  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page, setPageInQuery]);
 
   const handleRefresh = useCallback(() => {
     void loadTotalPages();
@@ -563,37 +613,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   useEffect(() => {
     void loadTotalPages();
   }, [loadTotalPages]);
-
-  useEffect(() => {
-    const queryMarketType = parseMarketTypeFromQuery(searchParams.get('market'));
-    const queryPage = parsePageFromQuery(searchParams.get('page'));
-    if (queryMarketType !== marketType) {
-      setMarketType(queryMarketType);
-    }
-    if (queryPage !== page) {
-      setPage(queryPage);
-    }
-  }, [marketType, page, searchParams]);
-
-  useEffect(() => {
-    const nextParams = new URLSearchParams(searchParams);
-    let changed = false;
-
-    if (nextParams.get('market') !== marketType) {
-      nextParams.set('market', marketType);
-      changed = true;
-    }
-
-    const pageText = String(page);
-    if (nextParams.get('page') !== pageText) {
-      nextParams.set('page', pageText);
-      changed = true;
-    }
-
-    if (changed) {
-      setSearchParams(nextParams, { replace: true });
-    }
-  }, [marketType, page, searchParams, setSearchParams]);
 
   useEffect(() => {
     setSelectedIssue(null);
@@ -690,10 +709,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                       { label: uiText.skillTab, value: 'skill' },
                     ]}
                     value={marketType}
-                    onChange={value => {
-                      setMarketType(value as MarketType);
-                      setPage(1);
-                    }}
+                    onChange={value => setMarketAndResetPage(value as MarketType)}
                   />
                   <Space wrap>
                     <Text strong>{uiText.sourceLabel}:</Text>
@@ -843,7 +859,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
             <Button
               className="market-page-arrow"
               icon={<LeftOutlined />}
-              onClick={() => setPage(prev => Math.max(1, prev - 1))}
+              onClick={() => setPageInQuery(page - 1)}
               disabled={loading || page <= 1}
               aria-label={uiText.prevPage}
             />
@@ -857,7 +873,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                   key={token.value}
                   className={Number(token.value) === page ? 'market-page-number active' : 'market-page-number'}
                   type="text"
-                  onClick={() => setPage(Number(token.value))}
+                  onClick={() => setPageInQuery(Number(token.value))}
                   disabled={loading}
                 >
                   {token.value}
@@ -871,7 +887,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 if (!hasNextPage) {
                   return;
                 }
-                setPage(prev => prev + 1);
+                setPageInQuery(page + 1);
               }}
               disabled={loading || !hasNextPage}
               aria-label={uiText.nextPage}
