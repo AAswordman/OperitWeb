@@ -93,6 +93,12 @@ const parseDataImageUri = (value: string): { mime: string; bytes: Uint8Array } |
   }
 };
 
+const toPlainArrayBuffer = (bytes: Uint8Array): ArrayBuffer => {
+  const buffer = new ArrayBuffer(bytes.byteLength);
+  new Uint8Array(buffer).set(bytes);
+  return buffer;
+};
+
 interface OperitSubmissionEditPageProps {
   language: 'zh' | 'en';
 }
@@ -490,7 +496,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
       const ext = EXT_BY_MIME[parsed.mime] || 'bin';
       const safeAlt = (altRaw || 'image').trim().replace(/\s+/g, '-').replace(/[^a-zA-Z0-9_-]/g, '') || 'image';
       const fileName = `${safeAlt}.${ext}`;
-      const file = new File([parsed.bytes], fileName, { type: parsed.mime });
+      const file = new File([toPlainArrayBuffer(parsed.bytes)], fileName, { type: parsed.mime });
       const asset = await saveOperitLocalImage(file);
       const replacement = `![${altRaw}](${buildOperitLocalImageUri(asset.id)})`;
 

@@ -19,7 +19,6 @@ import {
 import type { MenuProps } from 'antd';
 import {
   GlobalOutlined,
-  DownloadOutlined,
   BookOutlined,
   MenuOutlined,
   SunOutlined,
@@ -28,6 +27,7 @@ import {
   ShopOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
+import DownloadLatestButton from '../components/DownloadLatestButton';
 import { translations } from '../translations';
 import logo from '/logo.png';
 import './MainLayout.css';
@@ -293,14 +293,11 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     </Button>
                   </Dropdown>
 
-                  <Button 
-                    type="primary"
-                    icon={<DownloadOutlined />}
-                    href="https://github.com/AAswordman/Operit/releases"
-                    target="_blank"
-                  >
-                    {t('downloadLatest')}
-                  </Button>
+                  <DownloadLatestButton
+                    downloadText={t('downloadLatest')}
+                    buttonSize="middle"
+                    withMotion={false}
+                  />
                 </>
               )}
 
@@ -367,15 +364,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
               </Space>
             </div>
 
-            <Button 
-              type="primary"
-              icon={<DownloadOutlined />}
-              href="https://github.com/AAswordman/Operit/releases"
-              target="_blank"
+            <DownloadLatestButton
+              downloadText={t('downloadLatest')}
+              block
+              buttonSize="middle"
               style={{ width: '100%' }}
-            >
-              {t('downloadLatest')}
-            </Button>
+              withMotion={false}
+            />
 
             <Link to="/guide" style={{ width: '100%' }}>
               <Button 

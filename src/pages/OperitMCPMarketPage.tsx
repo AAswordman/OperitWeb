@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import {
   Alert,
   Button,
@@ -360,8 +361,25 @@ const extractRepoName = (repoUrl: string): string => {
   return repoUrl;
 };
 
+const parseMarketTypeFromQuery = (value: string | null): MarketType =>
+  value === 'skill' ? 'skill' : 'mcp';
+
+const parsePageFromQuery = (value: string | null): number => {
+  if (!value) {
+    return 1;
+  }
+  const parsed = Number.parseInt(value, 10);
+  if (!Number.isFinite(parsed) || parsed < 1) {
+    return 1;
+  }
+  return parsed;
+};
+
 const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) => {
-  const [marketType, setMarketType] = useState<MarketType>('mcp');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [marketType, setMarketType] = useState<MarketType>(() =>
+    parseMarketTypeFromQuery(searchParams.get('market')),
+  );
   const currentMarketConfig = MARKET_CONFIG[marketType];
   const currentIssuesWebUrl = getIssuesWebUrl(currentMarketConfig.repo);
 
@@ -441,7 +459,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedIssue, setSelectedIssue] = useState<ParsedMarketIssue | null>(null);
-  const [page, setPage] = useState<number>(1);
+  const [page, setPage] = useState<number>(() => parsePageFromQuery(searchParams.get('page')));
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [linkHasNextPage, setLinkHasNextPage] = useState<boolean>(false);
 
@@ -547,8 +565,38 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   }, [loadTotalPages]);
 
   useEffect(() => {
+    const queryMarketType = parseMarketTypeFromQuery(searchParams.get('market'));
+    const queryPage = parsePageFromQuery(searchParams.get('page'));
+    if (queryMarketType !== marketType) {
+      setMarketType(queryMarketType);
+    }
+    if (queryPage !== page) {
+      setPage(queryPage);
+    }
+  }, [marketType, page, searchParams]);
+
+  useEffect(() => {
+    const nextParams = new URLSearchParams(searchParams);
+    let changed = false;
+
+    if (nextParams.get('market') !== marketType) {
+      nextParams.set('market', marketType);
+      changed = true;
+    }
+
+    const pageText = String(page);
+    if (nextParams.get('page') !== pageText) {
+      nextParams.set('page', pageText);
+      changed = true;
+    }
+
+    if (changed) {
+      setSearchParams(nextParams, { replace: true });
+    }
+  }, [marketType, page, searchParams, setSearchParams]);
+
+  useEffect(() => {
     setSelectedIssue(null);
-    setPage(1);
     setTotalPages(null);
     setLinkHasNextPage(false);
     setSearchText('');
@@ -642,7 +690,10 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                       { label: uiText.skillTab, value: 'skill' },
                     ]}
                     value={marketType}
-                    onChange={value => setMarketType(value as MarketType)}
+                    onChange={value => {
+                      setMarketType(value as MarketType);
+                      setPage(1);
+                    }}
                   />
                   <Space wrap>
                     <Text strong>{uiText.sourceLabel}:</Text>
