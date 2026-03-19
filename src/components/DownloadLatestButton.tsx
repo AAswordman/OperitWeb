@@ -107,18 +107,6 @@ const createCacheBustedUrl = (url: string): string => {
   return `${url}${separator}operit_probe=${Date.now()}_${Math.random().toString(36).slice(2)}`;
 };
 
-const triggerDownloadTarget = (targetUrl: string) => {
-  const iframe = document.createElement('iframe');
-  iframe.style.display = 'none';
-  iframe.referrerPolicy = 'no-referrer';
-  iframe.src = targetUrl;
-  document.body.appendChild(iframe);
-
-  window.setTimeout(() => {
-    iframe.remove();
-  }, 60_000);
-};
-
 const probeMirrorAvailability = async (targetUrl: string, signal: AbortSignal): Promise<void> => {
   const requestController = new AbortController();
   const cancelRequest = () => requestController.abort();
@@ -217,6 +205,7 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
   const [isThanksModalVisible, setIsThanksModalVisible] = useState<boolean>(false);
   const [downloadedSourceName, setDownloadedSourceName] = useState<string | null>(null);
   const [downloadedTargetUrl, setDownloadedTargetUrl] = useState<string | null>(null);
+  const [hasOpenedDownloadLink, setHasOpenedDownloadLink] = useState<boolean>(false);
 
   const probeAbortControllerRef = useRef<AbortController | null>(null);
 
@@ -278,6 +267,7 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
     resetDownloadState();
     setDownloadedSourceName(null);
     setDownloadedTargetUrl(null);
+    setHasOpenedDownloadLink(false);
     setIsThanksModalVisible(false);
     setCurrentStage('choice');
     setIsModalVisible(true);
@@ -289,10 +279,10 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
     setIsModalVisible(true);
   };
 
-  const beginDownload = (sourceName: string, targetUrl: string) => {
-    triggerDownloadTarget(targetUrl);
+  const prepareDownload = (sourceName: string, targetUrl: string, hasOpenedLink = false) => {
     setDownloadedSourceName(sourceName);
     setDownloadedTargetUrl(targetUrl);
+    setHasOpenedDownloadLink(hasOpenedLink);
     setIsModalVisible(false);
     setCurrentStage('idle');
     setIsThanksModalVisible(true);
@@ -396,8 +386,8 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
 
       if (availableMirrors.length === 0) {
         setProgressPercent(100);
-        setStatusText('全部镜像探测失败，已自动回退到 GitHub 原链下载。');
-        beginDownload('GitHub', downloadUrl);
+        setStatusText('全部镜像探测失败，已自动回退到 GitHub 原链，请点击下载链接继续。');
+        prepareDownload('GitHub', downloadUrl);
         return;
       }
 
@@ -470,22 +460,22 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
 
       if (!bestMirror) {
         setProgressPercent(100);
-        setStatusText('测速结果不可用，已自动回退到 GitHub 原链下载。');
-        beginDownload('GitHub', downloadUrl);
+        setStatusText('测速结果不可用，已自动回退到 GitHub 原链，请点击下载链接继续。');
+        prepareDownload('GitHub', downloadUrl);
         return;
       }
 
       const bestMirrorUrl = createMirrorDownloadUrl(bestMirror.url, downloadUrl);
 
       setProgressPercent(100);
-      setStatusText(`已选择最快镜像 ${bestMirror.name}，正在开始下载。`);
-      beginDownload(bestMirror.name, bestMirrorUrl);
+      setStatusText(`已选择最快镜像 ${bestMirror.name}，请点击下载链接开始下载。`);
+      prepareDownload(bestMirror.name, bestMirrorUrl);
     } catch (error) {
       if (!abortController.signal.aborted) {
         console.error('Error testing download mirrors:', error);
         setProgressPercent(100);
-        setStatusText('测速过程中发生异常，已自动回退到 GitHub 原链下载。');
-        beginDownload('GitHub', downloadUrl);
+        setStatusText('测速过程中发生异常，已自动回退到 GitHub 原链，请点击下载链接继续。');
+        prepareDownload('GitHub', downloadUrl);
       }
     } finally {
       if (!abortController.signal.aborted) {
@@ -601,8 +591,11 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
               {manualDownloadSources.map((source, index) => (
                 <Button
                   key={source.name}
+                  href={source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   onClick={() => {
-                    beginDownload(source.name, source.url);
+                    prepareDownload(source.name, source.url, true);
                   }}
                   style={{
                     alignItems: 'center',
@@ -684,17 +677,27 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
           <Alert
             type="success"
             showIcon
-            message="感谢下载使用 Operit AI"
+            message="Operit AI 下载链接已准备好"
             description={
               downloadedSourceName
-                ? `下载已开始，当前下载源：${downloadedSourceName}`
-                : '下载已开始。'
+                ? hasOpenedDownloadLink
+                  ? `下载链接已打开，当前下载源：${downloadedSourceName}`
+                  : `已为你准备好下载链接，当前下载源：${downloadedSourceName}`
+                : hasOpenedDownloadLink
+                  ? '下载链接已打开。'
+                  : '已为你准备好下载链接。'
             }
           />
 
           {downloadedTargetUrl && (
-            <Button type="primary" onClick={() => triggerDownloadTarget(downloadedTargetUrl)}>
-              再次打开下载链接
+            <Button
+              type="primary"
+              href={downloadedTargetUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => setHasOpenedDownloadLink(true)}
+            >
+              {hasOpenedDownloadLink ? '再次打开下载链接' : '打开下载链接'}
             </Button>
           )}
 
