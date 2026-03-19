@@ -3,9 +3,11 @@ import { Alert, Button, Modal, Progress } from 'antd';
 import type { ButtonProps } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
+import SupportDevelopmentButton from './SupportDevelopmentButton';
 
 interface DownloadLatestButtonProps {
   downloadText: string;
+  language: 'zh' | 'en';
   block?: boolean;
   buttonSize?: ButtonProps['size'];
   buttonType?: ButtonProps['type'];
@@ -186,6 +188,7 @@ const measureMirrorDownloadSpeed = async (targetUrl: string, signal: AbortSignal
 
 const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
   downloadText,
+  language,
   block = false,
   buttonSize = 'large',
   buttonType = 'primary',
@@ -664,6 +667,27 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
             )}
           </div>
         )}
+
+        <div
+          style={{
+            marginTop: 18,
+            paddingTop: 16,
+            borderTop: '1px solid var(--border-color)',
+            display: 'flex',
+            justifyContent: 'center',
+          }}
+        >
+          <SupportDevelopmentButton
+            language={language}
+            buttonSize="middle"
+            buttonType="primary"
+            style={{
+              background: '#f96854',
+              borderColor: '#f96854',
+            }}
+            withMotion={false}
+          />
+        </div>
       </Modal>
 
       <Modal
@@ -717,6 +741,16 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
             <Button href={guideUrl} target="_blank">
               打开完整文档
             </Button>
+            <SupportDevelopmentButton
+              language={language}
+              buttonSize="middle"
+              buttonType="primary"
+              style={{
+                background: '#f96854',
+                borderColor: '#f96854',
+              }}
+              withMotion={false}
+            />
           </div>
         </div>
       </Modal>

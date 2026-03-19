@@ -1,12 +1,10 @@
 import React from 'react';
-import { theme, Layout, Typography, Row, Col, Space, Avatar, Button } from 'antd';
+import { theme, Layout, Typography, Row, Col, Space, Avatar } from 'antd';
 import {
   GithubOutlined,
   MailOutlined,
   MessageOutlined,
   WechatOutlined,
-  HeartOutlined,
-  GlobalOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations';
 import logo from '/logo.png';
@@ -103,55 +101,6 @@ const Footer: React.FC<FooterProps> = ({ language }) => {
                 </a>
               </Space>
             </div>
-
-            <div
-              style={{
-                padding: '20px 24px',
-                borderRadius: 16,
-                background: token.colorBgContainer,
-                border: `1px solid ${token.colorBorderSecondary}`,
-              }}
-            >
-              <Title
-                level={5}
-                style={{ color: token.colorText, marginBottom: 10 }}
-              >
-                {t('supportDevelopment')}
-              </Title>
-              <Text style={{ color: token.colorTextSecondary, display: 'block', marginBottom: 16 }}>
-                {t('supportDevelopmentNote')}
-              </Text>
-              <Space wrap size="middle" style={{ justifyContent: 'center' }}>
-                <Button
-                  type="primary"
-                  icon={<GlobalOutlined />}
-                  href="https://www.patreon.com/c/aaswordsman"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    borderRadius: 999,
-                    background: '#f96854',
-                    borderColor: '#f96854',
-                  }}
-                >
-                  Patreon
-                </Button>
-                <Button
-                  icon={<HeartOutlined />}
-                  href="https://afdian.com/a/aaswordsman"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    borderRadius: 999,
-                    color: token.colorText,
-                    borderColor: token.colorBorder,
-                  }}
-                >
-                  爱发电
-                </Button>
-              </Space>
-            </div>
-
             <Text style={{ color: token.colorTextTertiary, fontSize: 12 }}>
               © 2024 Operit AI. All rights reserved.
             </Text>

@@ -313,6 +313,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
 
                   <DownloadLatestButton
                     downloadText={t('downloadLatest')}
+                    language={language}
                     buttonSize="middle"
                     withMotion={false}
                   />
@@ -384,6 +385,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
 
             <DownloadLatestButton
               downloadText={t('downloadLatest')}
+              language={language}
               block
               buttonSize="middle"
               style={{ width: '100%' }}

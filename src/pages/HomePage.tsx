@@ -19,7 +19,6 @@ import {
   AppstoreOutlined,
   PlayCircleOutlined,
   GlobalOutlined,
-  HeartOutlined,
   WindowsOutlined,
   GithubOutlined,
   StarOutlined,
@@ -34,6 +33,7 @@ import type { GachaGalleryRef } from '../components/GachaGallery';
 import useGitHubStats from '../hooks/useGitHubStats';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 import FooterComponent from '../components/Footer.tsx';
+import SupportDevelopmentButton from '../components/SupportDevelopmentButton';
 
 // 导入所有服务商的logo
 import openAILogo from '/images/OTHER_LOGO/openai_latest.svg';
@@ -257,7 +257,22 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
             </Paragraph>
 
             <Space size="large" wrap style={{ justifyContent: 'center' }}>
-              <DownloadLatestButton downloadText={t('downloadLatest')} />
+              <DownloadLatestButton downloadText={t('downloadLatest')} language={language} />
+              <SupportDevelopmentButton
+                language={language}
+                buttonText={t('supportDevelopment')}
+                buttonType="primary"
+                style={{
+                  height: 52,
+                  fontSize: 18,
+                  paddingLeft: 36,
+                  paddingRight: 36,
+                  borderRadius: '8px',
+                  background: '#f96854',
+                  borderColor: '#f96854',
+                  boxShadow: '0 4px 15px rgba(249, 104, 84, 0.2)'
+                }}
+              />
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -664,131 +679,6 @@ nt;
                     {t('starOnGitHub')}
                   </Button>
                 </div>
-              </Card>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
-
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '20px 24px 60px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={16}>
-              <Card
-                style={{
-                  background: darkMode
-                    ? 'linear-gradient(135deg, rgba(249, 104, 84, 0.14), rgba(24, 144, 255, 0.08))'
-                    : 'linear-gradient(135deg, rgba(249, 104, 84, 0.1), rgba(24, 144, 255, 0.05))',
-                  backdropFilter: 'blur(10px)',
-                  border: `1px solid ${darkMode ? 'rgba(249, 104, 84, 0.25)' : 'rgba(249, 104, 84, 0.2)'}`,
-                  borderRadius: '18px',
-                  overflow: 'hidden'
-                }}
-                bodyStyle={{ padding: '32px 28px' }}
-              >
-                <Space direction="vertical" size="large" style={{ width: '100%', textAlign: 'center' }}>
-                  <div>
-                    <Title level={2} style={{ color: darkMode ? '#fff' : '#0d1a26', marginBottom: 12 }}>
-                      {t('supportDevelopment')}
-                    </Title>
-                    <Paragraph
-                      style={{
-                        color: darkMode ? '#d1d5db' : '#595959',
-                        maxWidth: 860,
-                        margin: '0 auto'
-                      }}
-                    >
-                      {t('supportDevelopmentDesc')}
-                    </Paragraph>
-                  </div>
-
-                  <Space size="middle" wrap style={{ justifyContent: 'center' }}>
-                    <Button
-                      size="large"
-                      type="primary"
-                      icon={<GlobalOutlined />}
-                      href="https://www.patreon.com/c/aaswordsman"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        height: 50,
-                        paddingLeft: 28,
-                        paddingRight: 28,
-                        borderRadius: 999,
-                        background: '#f96854',
-                        borderColor: '#f96854',
-                        boxShadow: '0 10px 30px rgba(249, 104, 84, 0.2)'
-                      }}
-                    >
-                      {t('supportPatreon')}
-                    </Button>
-                    <Button
-                      size="large"
-                      icon={<HeartOutlined />}
-                      href="https://afdian.com/a/aaswordsman"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      style={{
-                        height: 50,
-                        paddingLeft: 28,
-                        paddingRight: 28,
-                        borderRadius: 999,
-                        color: darkMode ? '#fff' : '#0d1a26',
-                        borderColor: darkMode ? 'rgba(255,255,255,0.18)' : '#ffd6cf',
-                        background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.78)'
-                      }}
-                    >
-                      {t('supportAfdian')}
-                    </Button>
-                  </Space>
-
-                  <Row gutter={[16, 16]} justify="center">
-                    <Col xs={24} md={10}>
-                      <Card
-                        size="small"
-                        style={{
-                          textAlign: 'center',
-                          background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.72)',
-                          border: `1px solid ${darkMode ? 'rgba(255,255,255,0.08)' : '#ffd8bf'}`,
-                          borderRadius: 14
-                        }}
-                      >
-                        <Text strong style={{ color: darkMode ? '#fff' : '#1f1f1f' }}>
-                          Patreon
-                        </Text>
-                        <div style={{ marginTop: 6 }}>
-                          <Text style={{ color: darkMode ? '#d1d5db' : '#666' }}>
-                            {t('supportPatreonHint')}
-                          </Text>
-                        </div>
-                      </Card>
-                    </Col>
-                    <Col xs={24} md={10}>
-                      <Card
-                        size="small"
-                        style={{
-                          textAlign: 'center',
-                          background: darkMode ? 'rgba(255,255,255,0.04)' : 'rgba(255,255,255,0.72)',
-                          border: `1px solid ${darkMode ? 'rgba(255,255,255,0.08)' : '#ffd8bf'}`,
-                          borderRadius: 14
-                        }}
-                      >
-                        <Text strong style={{ color: darkMode ? '#fff' : '#1f1f1f' }}>
-                          爱发电
-                        </Text>
-                        <div style={{ marginTop: 6 }}>
-                          <Text style={{ color: darkMode ? '#d1d5db' : '#666' }}>
-                            {t('supportAfdianHint')}
-                          </Text>
-                        </div>
-                      </Card>
-                    </Col>
-                  </Row>
-
-                  <Text style={{ color: darkMode ? '#a0a0a0' : '#666' }}>
-                    {t('supportDevelopmentNote')}
-                  </Text>
-                </Space>
               </Card>
             </Col>
           </Row>
