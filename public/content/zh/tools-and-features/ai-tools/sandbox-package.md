@@ -1,7 +1,7 @@
 # 沙盒包（Package）
 
 > 这里的“沙盒包”对应 Operit 界面里的 `Packages` 标签。  
-> 本页已按 `D:\Code\prog\assistance\app\src\main\assets\packages` 同步更新。
+> 本页已按宿主项目中的 `app/src/main/assets/packages` 目录同步更新。
 
 ## 它是什么
 

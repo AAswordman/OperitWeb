@@ -9,6 +9,8 @@ const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideIndex = lazy(() => import('./pages/GuideIndex'));
 const MarkdownRenderer = lazy(() => import('./components/MarkdownRenderer'));
 const GuideContent = lazy(() => import('./pages/GuideContent'));
+const PluginTutorialPage = lazy(() => import('./pages/PluginTutorialPage'));
+const PluginTutorialContent = lazy(() => import('./pages/PluginTutorialContent'));
 const ReturnCodeGeneratorPage = lazy(() => import('./pages/ReturnCodeGeneratorPage'));
 const OperitSubmissionAdminPage = lazy(() => import('./pages/OperitSubmissionAdminPage'));
 const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEditPage'));
@@ -83,6 +85,10 @@ const App: React.FC = () => {
             }
           >
             <Route index element={<HomePage darkMode={darkMode} language={language} />} />
+            <Route path="plugin-tutorial" element={<PluginTutorialPage darkMode={darkMode} language={language} />}>
+              <Route index element={<MarkdownRenderer file="plugin-tutorial/index" language={language} />} />
+              <Route path=":slug" element={<PluginTutorialContent language={language} />} />
+            </Route>
             <Route path="guide" element={<GuidePage darkMode={darkMode} language={language} />}>
               <Route index element={<GuideIndex language={language} />} />
               <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />

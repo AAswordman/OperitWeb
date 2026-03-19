@@ -20,6 +20,7 @@ import type { MenuProps } from 'antd';
 import {
   GlobalOutlined,
   BookOutlined,
+  CodeOutlined,
   MenuOutlined,
   SunOutlined,
   MoonOutlined,
@@ -200,11 +201,18 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     }}
                     items={[
                       { key: 'home', href: '#home', title: t('home') },
-                      { key: 'features', href: '#features', title: t('features') },
-                      { key: 'guide', href: '#guide', title: t('quickStart') },
                     ]}
                     style={{ backgroundColor: 'transparent' }}
                   />
+                  <Link
+                    to="/plugin-tutorial"
+                    style={{
+                      color: token.colorText,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    {t('pluginTutorial')}
+                  </Link>
                   <Link
                     to="/market"
                     style={{
@@ -244,6 +252,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     }}
                   >
                     {t('userGuide')}
+                  </Link>
+                  <Link
+                    to="/plugin-tutorial"
+                    style={{
+                      color: location.pathname.startsWith('/plugin-tutorial') ? token.colorPrimary : token.colorText,
+                      textDecoration: 'none',
+                      fontWeight: location.pathname.startsWith('/plugin-tutorial') ? 'bold' : 'normal'
+                    }}
+                  >
+                    {t('pluginTutorial')}
                   </Link>
                   <Link
                     to="/market"
@@ -380,6 +398,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 onClick={() => setMobileMenuOpen(false)}
               >
                 用户指南
+              </Button>
+            </Link>
+
+            <Link to="/plugin-tutorial" style={{ width: '100%' }}>
+              <Button
+                type="default"
+                icon={<CodeOutlined />}
+                style={{ width: '100%' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {t('pluginTutorial')}
               </Button>
             </Link>
 

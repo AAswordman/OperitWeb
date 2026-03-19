@@ -708,7 +708,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           style={{ height: '100%', borderRight: 0, background: 'transparent' }}
             />
       </Sider>
-      <Layout style={{ background: 'transparent' }}>
+      <Layout style={{ background: 'transparent', minWidth: 0 }}>
         {/* 移动端遮罩层 */}
         {broken && !collapsed && (
           <div
@@ -741,29 +741,39 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
         )}
         <Content 
           style={{ 
-            padding: isToolPage ? '0' : (broken ? '8px' : '24px'), 
             margin: 0, 
             minHeight: 280,
-            height: 'calc(100vh - 64px)', // 固定高度
-            overflow: 'auto', // 独立滚动
+            height: 'calc(100vh - 64px)',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
-          {isToolPage ? (
-            <Outlet />
-          ) : (
-            <div style={{
-              background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-              backdropFilter: 'blur(10px)',
-              border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-              borderRadius: '12px',
-              padding: '6px 24px',
-              minHeight: 'calc(100vh - 112px)', // 确保内容有足够高度
-            }}>
+          <div
+            style={{
+              flex: 1,
+              overflow: 'auto',
+              padding: isToolPage ? '0' : (broken ? '8px' : '24px'),
+            }}
+          >
+            {isToolPage ? (
               <Outlet />
+            ) : (
+              <div style={{
+                background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
+                backdropFilter: 'blur(10px)',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                borderRadius: '12px',
+                padding: '6px 24px',
+                minHeight: '100%',
+              }}>
+                <Outlet />
+              </div>
+            )}
+            <div style={{ marginTop: 16 }}>
+              <FooterComponent language={language} />
             </div>
-          )}
-
-          <FooterComponent language={language} />
+          </div>
         </Content>
       </Layout>
     </Layout>
