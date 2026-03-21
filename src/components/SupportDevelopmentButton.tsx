@@ -123,7 +123,7 @@ const SupportDevelopmentButton: React.FC<SupportDevelopmentButtonProps> = ({
             >
               <Button
                 icon={<HeartOutlined />}
-                href="https://ifdian.net/"
+                href="https://ifdian.net/a/aaswordsman"
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ borderRadius: 999 }}
