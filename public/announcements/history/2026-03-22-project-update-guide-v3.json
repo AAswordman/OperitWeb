@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "project-update-guide-2026-03-22",
+  "version": 3,
+  "enabled": true,
+  "type": "modal",
+  "priority": "high",
+  "countdownSec": 5,
+  "target": {
+    "minAppVersionCode": 0,
+    "maxAppVersionCode": null,
+    "channels": ["stable", "beta"],
+    "locale": "all"
+  },
+  "schedule": {
+    "startAt": "2026-03-22T00:00:00+08:00",
+    "endAt": null
+  },
+  "content": {
+    "defaultLocale": "zh-CN",
+    "locales": {
+      "zh-CN": {
+        "title": "官网赞助与项目近况",
+        "body": "官网首页已上线《项目近况与赞助说明》。关于赞助开通、维护计划与后续方向，请前往官网查看完整说明。感谢大家一路以来的支持。",
+        "acknowledge": "我知道了"
+      },
+      "en-US": {
+        "title": "Sponsorship and Project Update",
+        "body": "A full \"Project Update and Sponsorship Note\" is now available on the official website homepage. Please visit the site for the complete statement. Thank you for your support.",
+        "acknowledge": "Got it"
+      }
+    }
+  },
+  "meta": {
+    "updatedAt": "2026-03-22T00:00:00+08:00",
+    "source": "https://operit.aaswordsman.org/announcements/history/2026-03-22-project-update-guide-v3.json"
+  }
+}

@@ -88,6 +88,22 @@ function getRouteMetadata(pathname: string, language: Language): MetaContent {
         };
   }
 
+  if (pathname.startsWith('/project-update')) {
+    return language === 'zh'
+      ? {
+          title: 'Operit AI 项目近况与赞助说明',
+          description:
+            '查看 Operit AI 关于官网赞助、项目维护节奏、社区建设与后续规划的完整说明。',
+          locale: 'zh_CN',
+        }
+      : {
+          title: 'Operit AI Project Update and Sponsorship Note',
+          description:
+            'Read the full Operit AI statement about official sponsorship, project maintenance, community building, and future plans.',
+          locale: 'en_US',
+        };
+  }
+
   return language === 'zh'
     ? {
         title: 'Operit AI | Android AI 助手与自动化平台',

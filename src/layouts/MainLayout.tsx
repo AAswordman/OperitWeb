@@ -26,6 +26,7 @@ import {
   MoonOutlined,
   ZoomInOutlined,
   ShopOutlined,
+  ReadOutlined,
 } from '@ant-design/icons';
 import ParticleBackground from '../components/ParticleBackground';
 import DownloadLatestButton from '../components/DownloadLatestButton';
@@ -143,6 +144,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
 
   const isHomePage = location.pathname === '/';
   const marketLabel = language === 'zh' ? '市场' : 'Market';
+  const projectUpdateLabel = language === 'zh' ? '项目近况' : 'Project Update';
   
   return (
     <Layout style={{ 
@@ -223,6 +225,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     {marketLabel}
                   </Link>
                   <Link
+                    to="/project-update"
+                    style={{
+                      color: token.colorText,
+                      textDecoration: 'none'
+                    }}
+                  >
+                    {projectUpdateLabel}
+                  </Link>
+                  <Link
                     to="/operit-submission-center"
                     style={{
                       color: token.colorText,
@@ -272,6 +283,16 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     }}
                   >
                     {marketLabel}
+                  </Link>
+                  <Link
+                    to="/project-update"
+                    style={{
+                      color: location.pathname.startsWith('/project-update') ? token.colorPrimary : token.colorText,
+                      textDecoration: 'none',
+                      fontWeight: location.pathname.startsWith('/project-update') ? 'bold' : 'normal'
+                    }}
+                  >
+                    {projectUpdateLabel}
                   </Link>
                   <Link
                     to="/operit-submission-center"
@@ -422,6 +443,17 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {marketLabel}
+              </Button>
+            </Link>
+
+            <Link to="/project-update" style={{ width: '100%' }}>
+              <Button
+                type="default"
+                icon={<ReadOutlined />}
+                style={{ width: '100%' }}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {projectUpdateLabel}
               </Button>
             </Link>
 

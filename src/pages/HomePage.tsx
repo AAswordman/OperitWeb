@@ -24,7 +24,8 @@ import {
   StarOutlined,
   ForkOutlined,
   TeamOutlined,
-  BookOutlined
+  BookOutlined,
+  ReadOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations.ts';
 import AnimatedSection from '../components/AnimatedSection';
@@ -62,6 +63,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     const value = translation[key as keyof typeof translation];
     return typeof value === 'string' ? value : key;
   };
+  const projectUpdateLabel = language === 'zh' ? '项目近况与赞助说明' : 'Project Update';
 
   const gachaRef = useRef<GachaGalleryRef>(null);
 
@@ -273,6 +275,28 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                   boxShadow: '0 4px 15px rgba(249, 104, 84, 0.2)'
                 }}
               />
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link to="/project-update">
+                  <Button
+                    size="large"
+                    icon={<ReadOutlined />}
+                    style={{
+                      height: 52,
+                      fontSize: 18,
+                      paddingLeft: 30,
+                      paddingRight: 30,
+                      borderRadius: '8px',
+                      borderColor: '#1677ff',
+                      color: '#1677ff',
+                    }}
+                  >
+                    {projectUpdateLabel}
+                  </Button>
+                </Link>
+              </motion.div>
               <motion.div
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
