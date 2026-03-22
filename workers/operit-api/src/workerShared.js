@@ -1,4 +1,5 @@
 const DEFAULT_ALLOWED_ORIGINS = [
+  'https://operit.app',
   'https://operit.aaswordsman.org',
   'https://www.aaswordsman.org',
   'http://localhost:5173',

@@ -14,7 +14,7 @@ interface MetaContent {
 }
 
 const SITE_NAME = 'Operit AI';
-const SITE_URL = 'https://operit.aaswordsman.org/';
+const SITE_URL = 'https://operit.app/';
 const SITE_IMAGE = `${SITE_URL}logo.png`;
 
 const META_TAGS: Array<{ selector: string; attribute: 'name' | 'property'; key: string }> = [
