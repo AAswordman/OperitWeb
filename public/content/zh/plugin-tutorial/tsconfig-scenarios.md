@@ -153,4 +153,4 @@
 
 ## 下一章
 
-建议继续看《[项目结构与目录演进](/#/plugin-tutorial/project-structure)》。
+建议继续看《[项目结构与目录演进](/#/guide/plugin/project-structure)》。

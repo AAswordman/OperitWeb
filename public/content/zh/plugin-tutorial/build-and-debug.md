@@ -167,4 +167,4 @@ ToolPkg 不要按“直接执行某个导出函数”的思路调。
 
 ## 下一章
 
-建议继续看《[常见坑与定位方法](/#/plugin-tutorial/pitfalls)》。
+建议继续看《[常见坑与定位方法](/#/guide/plugin/pitfalls)》。

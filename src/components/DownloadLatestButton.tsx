@@ -509,8 +509,8 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
     typeof window === 'undefined' ? '#/guide' : `${window.location.origin}${window.location.pathname}#/guide`;
   const quickStartUrl =
     typeof window === 'undefined'
-      ? '#/guide/quick-start'
-      : `${window.location.origin}${window.location.pathname}#/guide/quick-start`;
+      ? '#/guide/old/quick-start'
+      : `${window.location.origin}${window.location.pathname}#/guide/old/quick-start`;
 
   const modalTitle = (() => {
     switch (currentStage) {

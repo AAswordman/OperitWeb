@@ -7,6 +7,8 @@ import SiteMetadata from './components/SiteMetadata';
 
 const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideIndex = lazy(() => import('./pages/GuideIndex'));
+const GuideHubPage = lazy(() => import('./pages/GuideHubPage'));
+const GuideNewPage = lazy(() => import('./pages/GuideNewPage'));
 const MarkdownRenderer = lazy(() => import('./components/MarkdownRenderer'));
 const GuideContent = lazy(() => import('./pages/GuideContent'));
 const PluginTutorialPage = lazy(() => import('./pages/PluginTutorialPage'));
@@ -86,17 +88,21 @@ const App: React.FC = () => {
             }
           >
             <Route index element={<HomePage darkMode={darkMode} language={language} />} />
-            <Route path="plugin-tutorial" element={<PluginTutorialPage darkMode={darkMode} language={language} />}>
-              <Route index element={<MarkdownRenderer file="plugin-tutorial/index" language={language} />} />
-              <Route path=":slug" element={<PluginTutorialContent language={language} />} />
-            </Route>
-            <Route path="guide" element={<GuidePage darkMode={darkMode} language={language} />}>
-              <Route index element={<GuideIndex language={language} />} />
-              <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
-              <Route path="ai-provider-basics" element={<MarkdownRenderer file="ai-provider-basics" language={language} />} />
-              <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
-              <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
-              <Route path=":category/*" element={<GuideContent language={language} />} />
+            <Route path="guide">
+              <Route index element={<GuideHubPage darkMode={darkMode} language={language} />} />
+              <Route path="new" element={<GuideNewPage darkMode={darkMode} language={language} />} />
+              <Route path="old" element={<GuidePage darkMode={darkMode} language={language} basePath="/guide/old" />}>
+                <Route index element={<GuideIndex language={language} basePath="/guide/old" />} />
+                <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
+                <Route path="ai-provider-basics" element={<MarkdownRenderer file="ai-provider-basics" language={language} />} />
+                <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
+                <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
+                <Route path=":category/*" element={<GuideContent language={language} />} />
+              </Route>
+              <Route path="plugin" element={<PluginTutorialPage darkMode={darkMode} language={language} basePath="/guide/plugin" homePath="/guide" />}>
+                <Route index element={<MarkdownRenderer file="plugin-tutorial/index" language={language} />} />
+                <Route path=":slug" element={<PluginTutorialContent language={language} />} />
+              </Route>
             </Route>
             <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
             <Route path="operit-login" element={<OperitLoginPage language={language} />} />

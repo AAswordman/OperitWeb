@@ -161,4 +161,4 @@ export type ToolReturnType<T extends string> =
 
 ## 下一章
 
-建议继续看《[宿主模块类型](/#/plugin-tutorial/runtime-module-types)》。
+建议继续看《[宿主模块类型](/#/guide/plugin/runtime-module-types)》。

@@ -36,7 +36,11 @@ const expandKeywordsByIntent = (query: string, baseKeywords: string[]): string[]
   return [...new Set(keywords)].filter(Boolean);
 };
 
-const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
+const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?: string }> = ({
+  darkMode,
+  language,
+  basePath = '/guide/old'
+}) => {
   const t = translations[language].guide;
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState('');
@@ -59,48 +63,51 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
     level?: number;
   }
 
+  const linkTo = (path?: string) => path ? `${basePath}/${path}` : basePath;
+  const basePathParts = useMemo(() => basePath.split('/').filter(Boolean), [basePath]);
+
   // 获取所有文档的元数据
   const getAllDocuments = () => {
     const docs = [
-      { key: '/guide', label: t.welcome, path: '/guide', category: 'welcome', level: 0 },
-      { key: 'quick-start', label: t.quickStart, path: '/guide/quick-start', category: 'quick-start', level: 1 },
-      { key: 'ai-provider-basics', label: t.aiProviderBasics, path: '/guide/ai-provider-basics', category: 'quick-start', level: 2 },
-      { key: 'model-config', label: t.modelConfig, path: '/guide/basic-config/model-config', category: 'basic-config', level: 3 },
-      { key: 'terminal-config', label: t.terminalConfig, path: '/guide/basic-config/terminal-config', category: 'basic-config', level: 4 },
-      { key: 'mnn-local-model', label: t.mnnLocalModel, path: '/guide/basic-config/mnn-local-model', category: 'basic-config', level: 5 },
-      { key: 'image-recognition', label: t.imageRecognition, path: '/guide/basic-config/image-recognition', category: 'basic-config', level: 6 },
-      { key: 'model-image-generation', label: t.modelImageGeneration, path: '/guide/basic-config/model-image-generation', category: 'basic-config', level: 7 },
-      { key: 'functional-model-config', label: t.functionalModelConfig, path: '/guide/basic-config/functional-model-config', category: 'basic-config', level: 8 },
-      { key: 'user-preferences', label: t.userPreferences, path: '/guide/basic-config/user-preferences', category: 'basic-config', level: 9 },
-      { key: 'data-backup', label: t.dataBackup, path: '/guide/basic-config/data-backup', category: 'basic-config', level: 10 },
-      { key: 'ai-permissions', label: t.aiPermissions, path: '/guide/basic-config/ai-permissions', category: 'basic-config', level: 11 },
-      { key: 'software-authorization', label: t.softwareAuthorization, path: '/guide/basic-config/software-authorization', category: 'basic-config', level: 12 },
-      { key: 'character-cards', label: t.characterCards, path: '/guide/character-system/character-cards', category: 'character-system', level: 13 },
-      { key: 'tags', label: t.tags, path: '/guide/character-system/tags', category: 'character-system', level: 14 },
-      { key: 'voice-chat', label: t.voiceChat, path: '/guide/character-system/voice-chat', category: 'character-system', level: 15 },
-      { key: 'tts-reading', label: t.ttsReading, path: '/guide/character-system/tts-reading', category: 'character-system', level: 16 },
-      { key: 'desktop-pet', label: t.desktopPet, path: '/guide/character-system/desktop-pet', category: 'character-system', level: 17 },
-      { key: 'share-conversation', label: t.shareConversation, path: '/guide/character-system/share-conversation', category: 'character-system', level: 18 },
-      { key: 'ai-tools/overview', label: t.aiToolsOverview, path: '/guide/tools-and-features/ai-tools/overview', category: 'tools-and-features', level: 19 },
-      { key: 'ai-tools/sandbox-package', label: t.sandboxPackage, path: '/guide/tools-and-features/ai-tools/sandbox-package', category: 'tools-and-features', level: 20 },
-      { key: 'ai-tools/skill', label: t.skill, path: '/guide/tools-and-features/ai-tools/skill', category: 'tools-and-features', level: 21 },
-      { key: 'ai-tools/mcp', label: t.mcp, path: '/guide/tools-and-features/ai-tools/mcp', category: 'tools-and-features', level: 22 },
-      { key: 'knowledge-base', label: t.knowledgeBase, path: '/guide/tools-and-features/knowledge-base', category: 'tools-and-features', level: 23 },
-      { key: 'toolbox', label: t.toolbox, path: '/guide/tools-and-features/toolbox', category: 'tools-and-features', level: 24 },
-      { key: 'context-summary', label: t.contextSummary, path: '/guide/tools-and-features/context-summary', category: 'tools-and-features', level: 25 },
-      { key: 'deep-search', label: t.deepSearch, path: '/guide/tools-and-features/deep-search', category: 'tools-and-features', level: 26 },
-      { key: 'workflow', label: t.workflow, path: '/guide/tools-and-features/workflow', category: 'tools-and-features', level: 27 },
-      { key: 'external-call', label: t.externalCall, path: '/guide/tools-and-features/external-call', category: 'tools-and-features', level: 28 },
-      { key: 'ui-automation', label: t.uiAutomation, path: '/guide/automation/ui-automation', category: 'automation', level: 29 },
-      { key: 'autoglm-mode', label: t.autoglmMode, path: '/guide/automation/autoglm-mode', category: 'automation', level: 30 },
-      { key: 'virtual-screen', label: t.virtualScreen, path: '/guide/automation/virtual-screen', category: 'automation', level: 31 },
-      { key: 'workspace-overview', label: t.workspaceOverview, path: '/guide/development/workspace-overview', category: 'development', level: 32 },
-      { key: 'web-development', label: t.webDevelopment, path: '/guide/development/web-development', category: 'development', level: 33 },
-      { key: 'web-packaging', label: t.webPackaging, path: '/guide/development/web-packaging', category: 'development', level: 34 },
-      { key: 'mobile-development', label: t.mobileDevelopment, path: '/guide/development/mobile-development', category: 'development', level: 35 },
-      { key: 'panel-introduction', label: t.panelIntroduction, path: '/guide/interface-guide/panel-introduction', category: 'interface-guide', level: 36 },
-      { key: 'return-code-generator', label: t.returnCodeGenerator, path: '/guide/tools-and-features/return-code-generator', category: 'tools-and-features', level: 37 },
-      { key: 'faq', label: t.faq, path: '/guide/faq', category: 'faq', level: 38 },
+      { key: 'home', label: t.welcome, path: linkTo(), category: 'welcome', level: 0 },
+      { key: 'quick-start', label: t.quickStart, path: linkTo('quick-start'), category: 'quick-start', level: 1 },
+      { key: 'ai-provider-basics', label: t.aiProviderBasics, path: linkTo('ai-provider-basics'), category: 'quick-start', level: 2 },
+      { key: 'model-config', label: t.modelConfig, path: linkTo('basic-config/model-config'), category: 'basic-config', level: 3 },
+      { key: 'terminal-config', label: t.terminalConfig, path: linkTo('basic-config/terminal-config'), category: 'basic-config', level: 4 },
+      { key: 'mnn-local-model', label: t.mnnLocalModel, path: linkTo('basic-config/mnn-local-model'), category: 'basic-config', level: 5 },
+      { key: 'image-recognition', label: t.imageRecognition, path: linkTo('basic-config/image-recognition'), category: 'basic-config', level: 6 },
+      { key: 'model-image-generation', label: t.modelImageGeneration, path: linkTo('basic-config/model-image-generation'), category: 'basic-config', level: 7 },
+      { key: 'functional-model-config', label: t.functionalModelConfig, path: linkTo('basic-config/functional-model-config'), category: 'basic-config', level: 8 },
+      { key: 'user-preferences', label: t.userPreferences, path: linkTo('basic-config/user-preferences'), category: 'basic-config', level: 9 },
+      { key: 'data-backup', label: t.dataBackup, path: linkTo('basic-config/data-backup'), category: 'basic-config', level: 10 },
+      { key: 'ai-permissions', label: t.aiPermissions, path: linkTo('basic-config/ai-permissions'), category: 'basic-config', level: 11 },
+      { key: 'software-authorization', label: t.softwareAuthorization, path: linkTo('basic-config/software-authorization'), category: 'basic-config', level: 12 },
+      { key: 'character-cards', label: t.characterCards, path: linkTo('character-system/character-cards'), category: 'character-system', level: 13 },
+      { key: 'tags', label: t.tags, path: linkTo('character-system/tags'), category: 'character-system', level: 14 },
+      { key: 'voice-chat', label: t.voiceChat, path: linkTo('character-system/voice-chat'), category: 'character-system', level: 15 },
+      { key: 'tts-reading', label: t.ttsReading, path: linkTo('character-system/tts-reading'), category: 'character-system', level: 16 },
+      { key: 'desktop-pet', label: t.desktopPet, path: linkTo('character-system/desktop-pet'), category: 'character-system', level: 17 },
+      { key: 'share-conversation', label: t.shareConversation, path: linkTo('character-system/share-conversation'), category: 'character-system', level: 18 },
+      { key: 'ai-tools/overview', label: t.aiToolsOverview, path: linkTo('tools-and-features/ai-tools/overview'), category: 'tools-and-features', level: 19 },
+      { key: 'ai-tools/sandbox-package', label: t.sandboxPackage, path: linkTo('tools-and-features/ai-tools/sandbox-package'), category: 'tools-and-features', level: 20 },
+      { key: 'ai-tools/skill', label: t.skill, path: linkTo('tools-and-features/ai-tools/skill'), category: 'tools-and-features', level: 21 },
+      { key: 'ai-tools/mcp', label: t.mcp, path: linkTo('tools-and-features/ai-tools/mcp'), category: 'tools-and-features', level: 22 },
+      { key: 'knowledge-base', label: t.knowledgeBase, path: linkTo('tools-and-features/knowledge-base'), category: 'tools-and-features', level: 23 },
+      { key: 'toolbox', label: t.toolbox, path: linkTo('tools-and-features/toolbox'), category: 'tools-and-features', level: 24 },
+      { key: 'context-summary', label: t.contextSummary, path: linkTo('tools-and-features/context-summary'), category: 'tools-and-features', level: 25 },
+      { key: 'deep-search', label: t.deepSearch, path: linkTo('tools-and-features/deep-search'), category: 'tools-and-features', level: 26 },
+      { key: 'workflow', label: t.workflow, path: linkTo('tools-and-features/workflow'), category: 'tools-and-features', level: 27 },
+      { key: 'external-call', label: t.externalCall, path: linkTo('tools-and-features/external-call'), category: 'tools-and-features', level: 28 },
+      { key: 'ui-automation', label: t.uiAutomation, path: linkTo('automation/ui-automation'), category: 'automation', level: 29 },
+      { key: 'autoglm-mode', label: t.autoglmMode, path: linkTo('automation/autoglm-mode'), category: 'automation', level: 30 },
+      { key: 'virtual-screen', label: t.virtualScreen, path: linkTo('automation/virtual-screen'), category: 'automation', level: 31 },
+      { key: 'workspace-overview', label: t.workspaceOverview, path: linkTo('development/workspace-overview'), category: 'development', level: 32 },
+      { key: 'web-development', label: t.webDevelopment, path: linkTo('development/web-development'), category: 'development', level: 33 },
+      { key: 'web-packaging', label: t.webPackaging, path: linkTo('development/web-packaging'), category: 'development', level: 34 },
+      { key: 'mobile-development', label: t.mobileDevelopment, path: linkTo('development/mobile-development'), category: 'development', level: 35 },
+      { key: 'panel-introduction', label: t.panelIntroduction, path: linkTo('interface-guide/panel-introduction'), category: 'interface-guide', level: 36 },
+      { key: 'return-code-generator', label: t.returnCodeGenerator, path: linkTo('tools-and-features/return-code-generator'), category: 'tools-and-features', level: 37 },
+      { key: 'faq', label: t.faq, path: linkTo('faq'), category: 'faq', level: 38 },
     ];
     return docs;
   };
@@ -458,35 +465,33 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
   };
 
   const menuItems = useMemo(() => [
-    { key: '/guide', label: <Link to="/guide">{t.welcome}</Link> },
-    { key: 'quick-start', label: <Link to="/guide/quick-start">{t.quickStart}</Link> },
-    { key: 'ai-provider-basics', label: <Link to="/guide/ai-provider-basics">{t.aiProviderBasics}</Link> },
+    { key: 'home', label: <Link to={linkTo()}>{t.welcome}</Link> },
     {
       key: 'basic-config',
       label: t.basicConfig,
       children: [
-        { key: 'model-config', label: <Link to="/guide/basic-config/model-config">{t.modelConfig}</Link> },
-        { key: 'terminal-config', label: <Link to="/guide/basic-config/terminal-config">{t.terminalConfig}</Link> },
-        { key: 'mnn-local-model', label: <Link to="/guide/basic-config/mnn-local-model">{t.mnnLocalModel}</Link> },
-        { key: 'image-recognition', label: <Link to="/guide/basic-config/image-recognition">{t.imageRecognition}</Link> },
-        { key: 'model-image-generation', label: <Link to="/guide/basic-config/model-image-generation">{t.modelImageGeneration}</Link> },
-        { key: 'functional-model-config', label: <Link to="/guide/basic-config/functional-model-config">{t.functionalModelConfig}</Link> },
-        { key: 'user-preferences', label: <Link to="/guide/basic-config/user-preferences">{t.userPreferences}</Link> },
-        { key: 'data-backup', label: <Link to="/guide/basic-config/data-backup">{t.dataBackup}</Link> },
-        { key: 'ai-permissions', label: <Link to="/guide/basic-config/ai-permissions">{t.aiPermissions}</Link> },
-        { key: 'software-authorization', label: <Link to="/guide/basic-config/software-authorization">{t.softwareAuthorization}</Link> },
+        { key: 'model-config', label: <Link to={linkTo('basic-config/model-config')}>{t.modelConfig}</Link> },
+        { key: 'terminal-config', label: <Link to={linkTo('basic-config/terminal-config')}>{t.terminalConfig}</Link> },
+        { key: 'mnn-local-model', label: <Link to={linkTo('basic-config/mnn-local-model')}>{t.mnnLocalModel}</Link> },
+        { key: 'image-recognition', label: <Link to={linkTo('basic-config/image-recognition')}>{t.imageRecognition}</Link> },
+        { key: 'model-image-generation', label: <Link to={linkTo('basic-config/model-image-generation')}>{t.modelImageGeneration}</Link> },
+        { key: 'functional-model-config', label: <Link to={linkTo('basic-config/functional-model-config')}>{t.functionalModelConfig}</Link> },
+        { key: 'user-preferences', label: <Link to={linkTo('basic-config/user-preferences')}>{t.userPreferences}</Link> },
+        { key: 'data-backup', label: <Link to={linkTo('basic-config/data-backup')}>{t.dataBackup}</Link> },
+        { key: 'ai-permissions', label: <Link to={linkTo('basic-config/ai-permissions')}>{t.aiPermissions}</Link> },
+        { key: 'software-authorization', label: <Link to={linkTo('basic-config/software-authorization')}>{t.softwareAuthorization}</Link> },
       ],
     },
     {
       key: 'character-system',
       label: t.characterSystem,
       children: [
-        { key: 'character-cards', label: <Link to="/guide/character-system/character-cards">{t.characterCards}</Link> },
-        { key: 'tags', label: <Link to="/guide/character-system/tags">{t.tags}</Link> },
-        { key: 'voice-chat', label: <Link to="/guide/character-system/voice-chat">{t.voiceChat}</Link> },
-        { key: 'tts-reading', label: <Link to="/guide/character-system/tts-reading">{t.ttsReading}</Link> },
-        { key: 'desktop-pet', label: <Link to="/guide/character-system/desktop-pet">{t.desktopPet}</Link> },
-        { key: 'share-conversation', label: <Link to="/guide/character-system/share-conversation">{t.shareConversation}</Link> },
+        { key: 'character-cards', label: <Link to={linkTo('character-system/character-cards')}>{t.characterCards}</Link> },
+        { key: 'tags', label: <Link to={linkTo('character-system/tags')}>{t.tags}</Link> },
+        { key: 'voice-chat', label: <Link to={linkTo('character-system/voice-chat')}>{t.voiceChat}</Link> },
+        { key: 'tts-reading', label: <Link to={linkTo('character-system/tts-reading')}>{t.ttsReading}</Link> },
+        { key: 'desktop-pet', label: <Link to={linkTo('character-system/desktop-pet')}>{t.desktopPet}</Link> },
+        { key: 'share-conversation', label: <Link to={linkTo('character-system/share-conversation')}>{t.shareConversation}</Link> },
       ],
     },
     {
@@ -497,71 +502,73 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           key: 'ai-tools-folder',
           label: t.aiTools,
           children: [
-            { key: 'ai-tools/overview', label: <Link to="/guide/tools-and-features/ai-tools/overview">{t.aiToolsOverview}</Link> },
-            { key: 'ai-tools/sandbox-package', label: <Link to="/guide/tools-and-features/ai-tools/sandbox-package">{t.sandboxPackage}</Link> },
-            { key: 'ai-tools/skill', label: <Link to="/guide/tools-and-features/ai-tools/skill">{t.skill}</Link> },
-            { key: 'ai-tools/mcp', label: <Link to="/guide/tools-and-features/ai-tools/mcp">{t.mcp}</Link> },
+            { key: 'ai-tools/overview', label: <Link to={linkTo('tools-and-features/ai-tools/overview')}>{t.aiToolsOverview}</Link> },
+            { key: 'ai-tools/sandbox-package', label: <Link to={linkTo('tools-and-features/ai-tools/sandbox-package')}>{t.sandboxPackage}</Link> },
+            { key: 'ai-tools/skill', label: <Link to={linkTo('tools-and-features/ai-tools/skill')}>{t.skill}</Link> },
+            { key: 'ai-tools/mcp', label: <Link to={linkTo('tools-and-features/ai-tools/mcp')}>{t.mcp}</Link> },
           ],
         },
-        { key: 'workflow', label: <Link to="/guide/tools-and-features/workflow">{t.workflow}</Link> },
-        { key: 'external-call', label: <Link to="/guide/tools-and-features/external-call">{t.externalCall}</Link> },
-        { key: 'knowledge-base', label: <Link to="/guide/tools-and-features/knowledge-base">{t.knowledgeBase}</Link> },
-        { key: 'toolbox', label: <Link to="/guide/tools-and-features/toolbox">{t.toolbox}</Link> },
-        { key: 'context-summary', label: <Link to="/guide/tools-and-features/context-summary">{t.contextSummary}</Link> },
-        { key: 'deep-search', label: <Link to="/guide/tools-and-features/deep-search">{t.deepSearch}</Link> },
+        { key: 'workflow', label: <Link to={linkTo('tools-and-features/workflow')}>{t.workflow}</Link> },
+        { key: 'external-call', label: <Link to={linkTo('tools-and-features/external-call')}>{t.externalCall}</Link> },
+        { key: 'knowledge-base', label: <Link to={linkTo('tools-and-features/knowledge-base')}>{t.knowledgeBase}</Link> },
+        { key: 'toolbox', label: <Link to={linkTo('tools-and-features/toolbox')}>{t.toolbox}</Link> },
+        { key: 'context-summary', label: <Link to={linkTo('tools-and-features/context-summary')}>{t.contextSummary}</Link> },
+        { key: 'deep-search', label: <Link to={linkTo('tools-and-features/deep-search')}>{t.deepSearch}</Link> },
       ],
     },
-        {
-          key: 'automation',
-          label: t.automation,
-          children: [
-            { key: 'ui-automation', label: <Link to="/guide/automation/ui-automation">{t.uiAutomation}</Link> },
-            { key: 'autoglm-mode', label: <Link to="/guide/automation/autoglm-mode">{t.autoglmMode}</Link> },
-            { key: 'virtual-screen', label: <Link to="/guide/automation/virtual-screen">{t.virtualScreen}</Link> },
-          ],
-        },
-        {
-          key: 'development',
-          label: t.development,
-          children: [
-            { key: 'workspace-overview', label: <Link to="/guide/development/workspace-overview">{t.workspaceOverview}</Link> },
-            { key: 'web-development', label: <Link to="/guide/development/web-development">{t.webDevelopment}</Link> },
-            { key: 'web-packaging', label: <Link to="/guide/development/web-packaging">{t.webPackaging}</Link> },
-            { key: 'mobile-development', label: <Link to="/guide/development/mobile-development">{t.mobileDevelopment}</Link> },
-          ],
-        },
+    {
+      key: 'automation',
+      label: t.automation,
+      children: [
+        { key: 'ui-automation', label: <Link to={linkTo('automation/ui-automation')}>{t.uiAutomation}</Link> },
+        { key: 'autoglm-mode', label: <Link to={linkTo('automation/autoglm-mode')}>{t.autoglmMode}</Link> },
+        { key: 'virtual-screen', label: <Link to={linkTo('automation/virtual-screen')}>{t.virtualScreen}</Link> },
+      ],
+    },
+    {
+      key: 'development',
+      label: t.development,
+      children: [
+        { key: 'workspace-overview', label: <Link to={linkTo('development/workspace-overview')}>{t.workspaceOverview}</Link> },
+        { key: 'web-development', label: <Link to={linkTo('development/web-development')}>{t.webDevelopment}</Link> },
+        { key: 'web-packaging', label: <Link to={linkTo('development/web-packaging')}>{t.webPackaging}</Link> },
+        { key: 'mobile-development', label: <Link to={linkTo('development/mobile-development')}>{t.mobileDevelopment}</Link> },
+      ],
+    },
     {
       key: 'interface-guide',
       label: t.interfaceGuide,
       children: [
-        { key: 'panel-introduction', label: <Link to="/guide/interface-guide/panel-introduction">{t.panelIntroduction}</Link> },
+        { key: 'panel-introduction', label: <Link to={linkTo('interface-guide/panel-introduction')}>{t.panelIntroduction}</Link> },
       ],
     },
-    { key: 'return-code-generator', label: <Link to="/guide/tools-and-features/return-code-generator">{t.returnCodeGenerator}</Link> },
-    { key: 'faq', label: <Link to="/guide/faq">{t.faq}</Link> },
-  ], [t]);
+    { key: 'quick-start', label: <Link to={linkTo('quick-start')}>{t.quickStart}</Link> },
+    { key: 'ai-provider-basics', label: <Link to={linkTo('ai-provider-basics')}>{t.aiProviderBasics}</Link> },
+    { key: 'return-code-generator', label: <Link to={linkTo('tools-and-features/return-code-generator')}>{t.returnCodeGenerator}</Link> },
+    { key: 'faq', label: <Link to={linkTo('faq')}>{t.faq}</Link> },
+  ], [basePath, t]);
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
   const location = useLocation();
 
-  const isToolPage = location.pathname.startsWith('/guide/tools/');
+  const isToolPage = location.pathname.startsWith(`${basePath}/tools/`);
 
   const getSelectedKeys = () => {
-    if (location.pathname === '/guide' || location.pathname === '/guide/') {
-      return ['/guide'];
+    if (location.pathname === basePath || location.pathname === `${basePath}/`) {
+      return ['home'];
     }
 
     const pathParts = location.pathname.split('/').filter(Boolean);
-    if (pathParts[0] !== 'guide') {
+    if (!basePathParts.every((part, index) => pathParts[index] === part)) {
       return ['quick-start'];
     }
 
-    if (pathParts.length === 2) {
-      return [pathParts[1]];
+    if (pathParts.length === basePathParts.length + 1) {
+      return [pathParts[basePathParts.length]];
     }
 
-    if (pathParts.length >= 3) {
-      return [pathParts.slice(2).join('/')];
+    if (pathParts.length > basePathParts.length + 1) {
+      return [pathParts.slice(basePathParts.length + 1).join('/')];
     }
 
     return ['quick-start'];
@@ -569,9 +576,10 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
   
   const getDefaultOpenKeys = () => {
     const pathParts = location.pathname.split('/').filter(Boolean);
-    if (pathParts.length >= 3 && pathParts[0] === 'guide') {
-      const openKeys = [pathParts[1]];
-      if (pathParts[1] === 'tools-and-features' && pathParts[2] === 'ai-tools') {
+    if (pathParts.length >= basePathParts.length + 2 && basePathParts.every((part, index) => pathParts[index] === part)) {
+      const category = pathParts[basePathParts.length];
+      const openKeys = [category];
+      if (category === 'tools-and-features' && pathParts[basePathParts.length + 1] === 'ai-tools') {
         openKeys.push('ai-tools-folder');
       }
       return openKeys;
@@ -601,7 +609,6 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           left: broken ? 0 : 'auto',
         }}
       >
-        {/* 搜索框 */}
         <div style={{ padding: '12px', borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)' }}>
           <Input
             placeholder={t.searchPlaceholder}
@@ -616,7 +623,6 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
           />
         </div>
 
-        {/* 搜索结果 */}
         {searchQuery && (
           <div style={{
             padding: '8px 12px',
@@ -733,7 +739,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ dar
               position: 'fixed',
               top: 74,
               left: 16,
-              zIndex: 1002, // 确保按钮在遮罩层之上
+              zIndex: 1002,
             }}
             type="primary"
             shape="circle"

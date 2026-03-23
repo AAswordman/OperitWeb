@@ -164,4 +164,4 @@ my-toolpkg/
 
 ## 下一章
 
-建议继续看《[ToolPkg 基础与 manifest](/#/plugin-tutorial/toolpkg-basics)》。
+建议继续看《[ToolPkg 基础与 manifest](/#/guide/plugin/toolpkg-basics)》。

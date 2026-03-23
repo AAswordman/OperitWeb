@@ -13,47 +13,48 @@ import { translations } from '../translations';
 
 const { Title, Paragraph } = Typography;
 
-const GuideIndex: React.FC<{ language: 'zh' | 'en' }> = ({ language }) => {
+const GuideIndex: React.FC<{ language: 'zh' | 'en'; basePath?: string }> = ({ language, basePath = '/guide/old' }) => {
   const t = translations[language].guide;
-  
+  const linkTo = (path: string) => `${basePath}/${path}`;
+
   const guideItems = useMemo(() => [
     {
       title: t.interfaceGuide,
       description: t.interfaceGuideDesc,
-      link: '/guide/interface-guide/panel-introduction',
+      link: linkTo('interface-guide/panel-introduction'),
       icon: <AppstoreOutlined />,
     },
     {
       title: t.quickStart,
       description: t.quickStartDesc,
-      link: '/guide/quick-start',
+      link: linkTo('quick-start'),
       icon: <BookOutlined />,
     },
     {
       title: t.modelConfig,
       description: t.modelConfigDesc,
-      link: '/guide/basic-config/model-config',
+      link: linkTo('basic-config/model-config'),
       icon: <ApiOutlined />,
     },
     {
       title: t.webPackagingTitle,
       description: t.webPackagingDesc,
-      link: '/guide/development/web-packaging',
+      link: linkTo('development/web-packaging'),
       icon: <BuildOutlined />,
     },
     {
       title: t.faq,
       description: t.faqDesc,
-      link: '/guide/faq',
+      link: linkTo('faq'),
       icon: <QuestionCircleOutlined />,
     },
     {
       title: t.characterCards,
       description: t.characterCardsDesc,
-      link: '/guide/character-system/character-cards',
+      link: linkTo('character-system/character-cards'),
       icon: <UserAddOutlined />,
     },
-  ], [t]);
+  ], [basePath, t]);
 
   return (
     <div>
@@ -65,7 +66,7 @@ const GuideIndex: React.FC<{ language: 'zh' | 'en' }> = ({ language }) => {
       </Paragraph>
       <Row gutter={[24, 24]}>
         {guideItems.map((item, index) => (
-          <Col xs={24} sm={12} md={8} key={index}>
+          <Col xs={24} sm={12} md={8} key={`guide-${index}`}>
             <Link to={item.link}>
               <Card hoverable style={{ height: '100%'}}>
                 <Card.Meta

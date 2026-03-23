@@ -179,4 +179,4 @@ const file = await Tools.Files.read(params.path);
 
 ## 下一章
 
-建议继续看《[tsconfig 基础模板](/#/plugin-tutorial/tsconfig)》。
+建议继续看《[tsconfig 基础模板](/#/guide/plugin/tsconfig)》。

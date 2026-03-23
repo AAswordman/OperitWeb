@@ -20,7 +20,6 @@ import type { MenuProps } from 'antd';
 import {
   GlobalOutlined,
   BookOutlined,
-  CodeOutlined,
   MenuOutlined,
   SunOutlined,
   MoonOutlined,
@@ -143,6 +142,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
   }));
 
   const isHomePage = location.pathname === '/';
+  const isGuideArea = location.pathname.startsWith('/guide');
   const marketLabel = language === 'zh' ? '市场' : 'Market';
   const projectUpdateLabel = language === 'zh' ? '项目近况' : 'Project Update';
   
@@ -207,13 +207,13 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                     style={{ backgroundColor: 'transparent' }}
                   />
                   <Link
-                    to="/plugin-tutorial"
+                    to="/guide"
                     style={{
                       color: token.colorText,
                       textDecoration: 'none'
                     }}
                   >
-                    {t('pluginTutorial')}
+                    {t('userGuide')}
                   </Link>
                   <Link
                     to="/market"
@@ -257,22 +257,12 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                   <Link 
                     to="/guide"
                     style={{ 
-                      color: location.pathname.startsWith('/guide') ? token.colorPrimary : token.colorText,
+                      color: isGuideArea ? token.colorPrimary : token.colorText,
                       textDecoration: 'none',
-                      fontWeight: location.pathname.startsWith('/guide') ? 'bold' : 'normal'
+                      fontWeight: isGuideArea ? 'bold' : 'normal'
                     }}
                   >
                     {t('userGuide')}
-                  </Link>
-                  <Link
-                    to="/plugin-tutorial"
-                    style={{
-                      color: location.pathname.startsWith('/plugin-tutorial') ? token.colorPrimary : token.colorText,
-                      textDecoration: 'none',
-                      fontWeight: location.pathname.startsWith('/plugin-tutorial') ? 'bold' : 'normal'
-                    }}
-                  >
-                    {t('pluginTutorial')}
                   </Link>
                   <Link
                     to="/market"
@@ -420,18 +410,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
                 style={{ width: '100%' }}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                用户指南
-              </Button>
-            </Link>
-
-            <Link to="/plugin-tutorial" style={{ width: '100%' }}>
-              <Button
-                type="default"
-                icon={<CodeOutlined />}
-                style={{ width: '100%' }}
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                {t('pluginTutorial')}
+                {t('userGuide')}
               </Button>
             </Link>
 

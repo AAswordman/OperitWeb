@@ -54,50 +54,50 @@
 
 ### 起步与仓库
 
-- 《[开发环境与仓库地图](/#/plugin-tutorial/setup-and-repo-map)》
+- 《[开发环境与仓库地图](/#/guide/plugin/setup-and-repo-map)》
   先把 `docs`、`examples`、`tools`、`examples/types` 四块材料的职责分清。
 
 ### JavaScript 脚本包
 
-- 《[变量、对象与数组](/#/plugin-tutorial/javascript-basics)》
+- 《[变量、对象与数组](/#/guide/plugin/javascript-basics)》
   只讲写插件时最高频的数据组织方式。
-- 《[函数、模板字符串与流程控制](/#/plugin-tutorial/javascript-functions-flow)》
+- 《[函数、模板字符串与流程控制](/#/guide/plugin/javascript-functions-flow)》
   帮你理解“一个工具函数到底是怎么把输入变成输出的”。
-- 《[异步、错误处理与宿主运行时](/#/plugin-tutorial/javascript-async-runtime)》
+- 《[异步、错误处理与宿主运行时](/#/guide/plugin/javascript-async-runtime)》
   讲 `async/await`、`try/catch`，以及这个环境为什么不是网页脚本环境。
-- 《[第一个 JavaScript 脚本包](/#/plugin-tutorial/javascript-package)》
+- 《[第一个 JavaScript 脚本包](/#/guide/plugin/javascript-package)》
   从零把一个最小脚本包拼出来。
-- 《[METADATA、exports 与 complete](/#/plugin-tutorial/metadata-exports-complete)》
+- 《[METADATA、exports 与 complete](/#/guide/plugin/metadata-exports-complete)》
   深入理解宿主如何发现你的工具、调用你的工具、接收你的结果。
 
 ### TypeScript 入门
 
-- 《[TypeScript 类型入门](/#/plugin-tutorial/typescript-basics)》
+- 《[TypeScript 类型入门](/#/guide/plugin/typescript-basics)》
   把参数、返回值、可选字段、`Promise<T>` 这些最常用写法建立起来。
 
 ### TypeScript 工程化
 
-- 《[从 JavaScript 迁移到 TypeScript](/#/plugin-tutorial/migrate-js-to-ts)》
+- 《[从 JavaScript 迁移到 TypeScript](/#/guide/plugin/migrate-js-to-ts)》
   用一个现成脚本包演示最稳的迁移路径。
-- 《[tsconfig 基础模板](/#/plugin-tutorial/tsconfig)》
+- 《[tsconfig 基础模板](/#/guide/plugin/tsconfig)》
   先把单文件脚本最常用的配置模板建立起来。
-- 《[场景化 tsconfig 与排错](/#/plugin-tutorial/tsconfig-scenarios)》
+- 《[场景化 tsconfig 与排错](/#/guide/plugin/tsconfig-scenarios)》
   专门处理多文件项目、ToolPkg、`Tools` 没提示、编译产物路径不对这些问题。
-- 《[项目结构与目录演进](/#/plugin-tutorial/project-structure)》
+- 《[项目结构与目录演进](/#/guide/plugin/project-structure)》
   讲脚本包为什么会从单文件一路演进到多文件工程和 ToolPkg。
 
 ### ToolPkg 插件包
 
-- 《[ToolPkg 基础与 manifest](/#/plugin-tutorial/toolpkg-basics)》
+- 《[ToolPkg 基础与 manifest](/#/guide/plugin/toolpkg-basics)》
   先判断你到底需不需要 ToolPkg，再讲 `manifest.json` 的角色。
-- 《[main、hooks 与注册流程](/#/plugin-tutorial/toolpkg-main-and-hooks)》
+- 《[main、hooks 与注册流程](/#/guide/plugin/toolpkg-main-and-hooks)》
   把 ToolPkg 主入口脚本、hook、UI 模块注册讲清楚。
 
 ### 调试与排错
 
-- 《[编译、运行与调试](/#/plugin-tutorial/build-and-debug)》
+- 《[编译、运行与调试](/#/guide/plugin/build-and-debug)》
   区分普通脚本和 ToolPkg 的两套调试路径。
-- 《[常见坑与定位方法](/#/plugin-tutorial/pitfalls)》
+- 《[常见坑与定位方法](/#/guide/plugin/pitfalls)》
   你最后很可能会反复回到这一页做排错。
 
 ## 推荐学习路线
@@ -111,7 +111,7 @@
 
 ## 读完本页后，先去哪一页
 
-建议先从《[开发环境与仓库地图](/#/plugin-tutorial/setup-and-repo-map)》开始。  
+建议先从《[开发环境与仓库地图](/#/guide/plugin/setup-and-repo-map)》开始。  
 如果你想对照用户手册里的相关概念，可以继续看：
 
 - 《[沙盒包（Package）](/#/guide/tools-and-features/ai-tools/sandbox-package)》

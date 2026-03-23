@@ -169,4 +169,4 @@ attempts += 1;
 
 ## 下一章
 
-建议继续看《[函数、模板字符串与流程控制](/#/plugin-tutorial/javascript-functions-flow)》。
+建议继续看《[函数、模板字符串与流程控制](/#/guide/plugin/javascript-functions-flow)》。
