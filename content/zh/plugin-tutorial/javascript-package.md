@@ -150,4 +150,4 @@ exports.hello_world = hello_world;
 
 ## 下一章
 
-建议继续看《[METADATA、exports 与 complete](/#/plugin-tutorial/metadata-exports-complete)》。
+建议继续看《[METADATA、exports 与 complete](/#/guide/plugin/metadata-exports-complete)》。

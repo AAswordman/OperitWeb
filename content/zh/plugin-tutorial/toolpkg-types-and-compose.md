@@ -198,4 +198,4 @@ const screen: ComposeDslScreen = () => ({ ... })
 
 ## 下一章
 
-建议继续看《[从 JavaScript 迁移到 TypeScript](/#/plugin-tutorial/migrate-js-to-ts)》。
+建议继续看《[从 JavaScript 迁移到 TypeScript](/#/guide/plugin/migrate-js-to-ts)》。

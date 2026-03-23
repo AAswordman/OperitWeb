@@ -157,4 +157,4 @@ exports.main = main;
 
 ## 下一章
 
-建议继续看《[tool-types 与 results](/#/plugin-tutorial/tool-result-types)》。
+建议继续看《[tool-types 与 results](/#/guide/plugin/tool-result-types)》。

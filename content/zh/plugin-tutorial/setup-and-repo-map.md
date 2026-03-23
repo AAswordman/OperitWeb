@@ -145,4 +145,4 @@ exports.main = main;
 
 ## 下一章
 
-建议继续看《[变量、对象与数组](/#/plugin-tutorial/javascript-basics)》。
+建议继续看《[变量、对象与数组](/#/guide/plugin/javascript-basics)》。

@@ -155,4 +155,4 @@ for (let i = 0; i < lines.length && i < max; i += 1) {
 
 ## 下一章
 
-建议继续看《[异步、错误处理与宿主运行时](/#/plugin-tutorial/javascript-async-runtime)》。
+建议继续看《[异步、错误处理与宿主运行时](/#/guide/plugin/javascript-async-runtime)》。

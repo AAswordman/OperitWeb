@@ -157,4 +157,4 @@ const maxLength = params.maxLength ?? 80;
 
 ## 下一章
 
-建议继续看《[index.d.ts 与 core.d.ts](/#/plugin-tutorial/host-types-overview)》。
+建议继续看《[index.d.ts 与 core.d.ts](/#/guide/plugin/host-types-overview)》。

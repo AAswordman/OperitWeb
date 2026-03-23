@@ -193,4 +193,4 @@ complete({
 
 ## 下一章
 
-建议继续看《[TypeScript 类型入门](/#/plugin-tutorial/typescript-basics)》。
+建议继续看《[TypeScript 类型入门](/#/guide/plugin/typescript-basics)》。

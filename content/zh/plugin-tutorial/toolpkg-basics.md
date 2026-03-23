@@ -174,4 +174,4 @@ my_toolpkg/
 
 ## 下一章
 
-建议继续看《[main、hooks 与注册流程](/#/plugin-tutorial/toolpkg-main-and-hooks)》。
+建议继续看《[main、hooks 与注册流程](/#/guide/plugin/toolpkg-main-and-hooks)》。

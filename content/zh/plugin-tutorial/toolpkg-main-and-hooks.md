@@ -444,4 +444,4 @@ ToolPkg.registerToolLifecycleHook({
 
 ## 下一章
 
-建议继续看《[编译、运行与调试](/#/plugin-tutorial/build-and-debug)》。
+建议继续看《[编译、运行与调试](/#/guide/plugin/build-and-debug)》。

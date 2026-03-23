@@ -145,4 +145,4 @@ exports.main = main;
 
 ## 下一章
 
-建议继续看《[场景化 tsconfig 与排错](/#/plugin-tutorial/tsconfig-scenarios)》。
+建议继续看《[场景化 tsconfig 与排错](/#/guide/plugin/tsconfig-scenarios)》。

@@ -165,4 +165,4 @@ export declare function complete<T>(result: T): void;
 
 ## 下一章
 
-建议继续看《[第一个 JavaScript 脚本包](/#/plugin-tutorial/javascript-package)》。
+建议继续看《[第一个 JavaScript 脚本包](/#/guide/plugin/javascript-package)》。

@@ -220,4 +220,4 @@ async function inspectWorkspace(path: string) {
 
 ## 下一章
 
-建议继续看《[ToolPkg 与 Compose DSL 类型](/#/plugin-tutorial/toolpkg-types-and-compose)》。
+建议继续看《[ToolPkg 与 Compose DSL 类型](/#/guide/plugin/toolpkg-types-and-compose)》。
