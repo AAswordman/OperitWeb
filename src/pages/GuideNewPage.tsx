@@ -182,16 +182,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
             >
               <Outlet />
             </div>
-          </div>
-          <div style={{ padding: broken ? '0 8px 16px' : '0 24px 16px' }}>
-            <div
-              style={{
-                background: darkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255,255,255,0.45)',
-                backdropFilter: 'blur(8px)',
-                borderRadius: 12,
-                padding: broken ? '12px 16px' : '12px 24px',
-              }}
-            >
+            <div style={{ marginTop: 16 }}>
               <FooterComponent language={language} />
             </div>
           </div>

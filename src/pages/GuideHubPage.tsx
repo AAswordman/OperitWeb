@@ -74,6 +74,7 @@ const GuideHubPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
             width: '100%',
             margin: '0 auto',
             flex: 1,
+            overflow: 'auto',
           }}
         >
           <div
@@ -83,6 +84,7 @@ const GuideHubPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
               border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
               borderRadius: 12,
               padding: '32px 24px',
+              minHeight: '100%',
             }}
           >
             <Title level={2} style={{ textAlign: 'center', marginBottom: 12 }}>
@@ -106,10 +108,10 @@ const GuideHubPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
                 </Col>
               ))}
             </Row>
+            <div style={{ marginTop: 32 }}>
+              <FooterComponent language={language} />
+            </div>
           </div>
-        </div>
-        <div style={{ maxWidth: 1080, width: '100%', margin: '16px auto 0' }}>
-          <FooterComponent language={language} />
         </div>
       </Content>
     </Layout>
