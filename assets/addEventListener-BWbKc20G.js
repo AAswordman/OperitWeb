@@ -1,0 +1,1 @@
+import{bv as s}from"./index-DqCsf3np.js";function u(e,n,d,i){var v=s.unstable_batchedUpdates?function(o){s.unstable_batchedUpdates(d,o)}:d;return e!=null&&e.addEventListener&&e.addEventListener(n,v,i),{remove:function(){e!=null&&e.removeEventListener&&e.removeEventListener(n,v,i)}}}export{u as a};
