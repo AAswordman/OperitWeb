@@ -30,3 +30,5 @@ converted_docs
 .npm-cache
 .codex
 .pnpm-store
+
+temp
