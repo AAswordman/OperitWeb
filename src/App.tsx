@@ -9,6 +9,7 @@ const GuidePage = lazy(() => import('./pages/GuidePage'));
 const GuideIndex = lazy(() => import('./pages/GuideIndex'));
 const GuideHubPage = lazy(() => import('./pages/GuideHubPage'));
 const GuideNewPage = lazy(() => import('./pages/GuideNewPage'));
+const GuideNewContent = lazy(() => import('./pages/GuideNewContent'));
 const MarkdownRenderer = lazy(() => import('./components/MarkdownRenderer'));
 const GuideContent = lazy(() => import('./pages/GuideContent'));
 const PluginTutorialPage = lazy(() => import('./pages/PluginTutorialPage'));
@@ -90,7 +91,10 @@ const App: React.FC = () => {
             <Route index element={<HomePage darkMode={darkMode} language={language} />} />
             <Route path="guide">
               <Route index element={<GuideHubPage darkMode={darkMode} language={language} />} />
-              <Route path="new" element={<GuideNewPage darkMode={darkMode} language={language} />} />
+              <Route path="new" element={<GuideNewPage darkMode={darkMode} language={language} />}>
+                <Route index element={<MarkdownRenderer file="newcontent/index" language={language} />} />
+                <Route path=":category/:slug" element={<GuideNewContent language={language} />} />
+              </Route>
               <Route path="old" element={<GuidePage darkMode={darkMode} language={language} basePath="/guide/old" />}>
                 <Route index element={<GuideIndex language={language} basePath="/guide/old" />} />
                 <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />

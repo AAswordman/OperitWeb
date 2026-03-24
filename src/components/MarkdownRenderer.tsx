@@ -12,6 +12,7 @@ import './MarkdownRenderer.css';
 import remarkImageGallery from '../remark/remarkImageGallery';
 import remarkDetails from '../remark/remarkDetails';
 import { translations } from '../translations';
+import { buildMarkdownCandidates } from '../utils/markdownPaths';
 
 // Omit 'ref' from the standard 'code' component props to avoid type conflicts with SyntaxHighlighter
 type CodeComponentProps = Omit<ComponentProps<'code'>, 'ref'>;
@@ -82,27 +83,21 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
     const fetchMarkdown = async () => {
       setLoading(true);
       setError(null);
+      setResolvedPath(null);
       try {
-        // Try to fetch language-specific file first (e.g., en/quick-start.md or zh/quick-start.md)
-        const response = await fetch(`${import.meta.env.BASE_URL}content/${language}/${file}.md`);
-        
-        if (response.ok) {
-          const text = await response.text();
-          setMarkdown(text);
-          setResolvedPath(`content/${language}/${file}.md`);
-        } else if (language === 'en') {
-          // If English file doesn't exist, fallback to Chinese version
-          const fallbackResponse = await fetch(`${import.meta.env.BASE_URL}content/zh/${file}.md`);
-          if (fallbackResponse.ok) {
-            const text = await fallbackResponse.text();
+        const candidates = buildMarkdownCandidates(file, language);
+
+        for (const candidate of candidates) {
+          const response = await fetch(`${import.meta.env.BASE_URL}${candidate}`);
+          if (response.ok) {
+            const text = await response.text();
             setMarkdown(text);
-            setResolvedPath(`content/zh/${file}.md`);
-          } else {
-            throw new Error(`Failed to fetch markdown file: ${file}.md`);
+            setResolvedPath(candidate);
+            return;
           }
-        } else {
-          throw new Error(`Failed to fetch markdown file: ${file}.md`);
         }
+
+        throw new Error(`Failed to fetch markdown file: ${file}.md`);
       } catch (err) {
         console.error(`Failed to load markdown file: ${file}.md`, err);
         setError(t.loadError);

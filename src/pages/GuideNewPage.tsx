@@ -1,72 +1,201 @@
-import React from 'react';
-import { Layout, Button, Space, Typography } from 'antd';
-import { Link } from 'react-router-dom';
+import React, { useMemo, useState } from 'react';
+import { Layout, Menu, Button } from 'antd';
+import { Outlet, Link, useLocation, useParams } from 'react-router-dom';
+import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import FooterComponent from '../components/Footer';
 
-const { Content } = Layout;
-const { Title, Paragraph } = Typography;
+const { Sider, Content } = Layout;
 
 const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
-  const copy = language === 'zh'
-    ? {
-        title: '新文档',
-        desc: '新版用户文档会在这里逐步重写。当前这一轮只保留最小占位页，不恢复之前那批多页占位稿。',
-        oldDocs: '去旧文档',
-        plugin: '去插件教程',
-      }
-    : {
-        title: 'New Docs',
-        desc: 'The rewritten user guide will be built here gradually. This round keeps only a minimal placeholder page and does not restore the previous multi-page placeholders.',
-        oldDocs: 'Go to Legacy Docs',
-        plugin: 'Go to Plugin Tutorial',
-      };
+  const location = useLocation();
+  const { category, slug } = useParams();
+  const [collapsed, setCollapsed] = useState(false);
+  const [broken, setBroken] = useState(false);
+
+  const tutorialItems = useMemo(() => (
+    language === 'zh'
+      ? [
+          { slug: '01-快速开始', label: '01. 快速开始' },
+          { slug: '02-权限授权详解', label: '02. 权限授权详解' },
+          { slug: '03-初识界面', label: '03. 初识界面' },
+          { slug: '04-模型配置', label: '04. 模型配置' },
+          { slug: '05-功能模型详解', label: '05. 功能模型详解' },
+          { slug: '06-上下文与压缩', label: '06. 上下文与压缩' },
+          { slug: '07-角色卡', label: '07. 角色卡' },
+          { slug: '08-角色标签', label: '08. 角色标签' },
+          { slug: '09-内置工具与权限', label: '09. 内置工具与权限' },
+          { slug: '10-工具-沙盒包', label: '10. 工具：沙盒包' },
+          { slug: '11-工具-MCP', label: '11. 工具：MCP' },
+          { slug: '12-工具-SKILL', label: '12. 工具：SKILL' },
+          { slug: '13-WAIFU模式', label: '13. WAIFU模式' },
+          { slug: '14-工作区基础', label: '14. 工作区基础' },
+          { slug: '15-数据备份', label: '15. 数据备份' },
+          { slug: '16-统计', label: '16. 统计' },
+        ]
+      : [
+          { slug: '01-快速开始', label: '01. Quick Start' },
+          { slug: '02-权限授权详解', label: '02. Permissions Explained' },
+          { slug: '03-初识界面', label: '03. First Look at the UI' },
+          { slug: '04-模型配置', label: '04. Model Configuration' },
+          { slug: '05-功能模型详解', label: '05. Feature Models Explained' },
+          { slug: '06-上下文与压缩', label: '06. Context and Compression' },
+          { slug: '07-角色卡', label: '07. Character Cards' },
+          { slug: '08-角色标签', label: '08. Character Tags' },
+          { slug: '09-内置工具与权限', label: '09. Built-in Tools and Permissions' },
+          { slug: '10-工具-沙盒包', label: '10. Tool: Sandbox Package' },
+          { slug: '11-工具-MCP', label: '11. Tool: MCP' },
+          { slug: '12-工具-SKILL', label: '12. Tool: SKILL' },
+          { slug: '13-WAIFU模式', label: '13. WAIFU Mode' },
+          { slug: '14-工作区基础', label: '14. Workspace Basics' },
+          { slug: '15-数据备份', label: '15. Data Backup' },
+          { slug: '16-统计', label: '16. Statistics' },
+        ]
+  ), [language]);
+
+  const labels = useMemo(() => (
+    language === 'zh'
+      ? {
+          welcome: '欢迎页',
+          beginner: '初级教程',
+        }
+      : {
+          welcome: 'Welcome',
+          beginner: 'Beginner Tutorial',
+        }
+  ), [language]);
+
+  const menuItems = useMemo(() => [
+    { key: 'welcome', label: <Link to="/guide/new">{labels.welcome}</Link> },
+    {
+      key: 'beginner',
+      label: labels.beginner,
+      children: tutorialItems.map((item) => ({
+        key: item.slug,
+        label: <Link to={`/guide/new/初级教程/${item.slug}`}>{item.label}</Link>,
+      })),
+    },
+  ], [labels, tutorialItems]);
+
+  const selectedKeys = useMemo(() => {
+    if (location.pathname === '/guide/new' || location.pathname === '/guide/new/') {
+      return ['welcome'];
+    }
+    return [slug ? decodeURIComponent(slug) : 'welcome'];
+  }, [location.pathname, slug]);
+
+  const defaultOpenKeys = useMemo(() => {
+    if (category === '初级教程' || slug) {
+      return ['beginner'];
+    }
+    return [];
+  }, [category, slug]);
 
   return (
     <Layout style={{ minHeight: 'calc(100vh - 64px)', paddingTop: 64, background: 'transparent' }}>
-      <Content
+      <Sider
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        breakpoint="lg"
+        collapsedWidth="0"
+        onBreakpoint={setBroken}
+        trigger={null}
         style={{
-          minHeight: 'calc(100vh - 64px)',
-          display: 'flex',
-          flexDirection: 'column',
-          padding: '24px',
+          overflow: 'auto',
+          height: 'calc(100vh - 64px)',
+          background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
+          backdropFilter: 'blur(10px)',
+          borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
+          zIndex: 1001,
+          position: broken ? 'fixed' : 'relative',
+          top: broken ? '64px' : 'auto',
+          left: broken ? 0 : 'auto',
         }}
       >
-        <div
+        <Menu
+          theme={darkMode ? 'dark' : 'light'}
+          mode="inline"
+          selectedKeys={selectedKeys}
+          defaultOpenKeys={defaultOpenKeys}
+          items={menuItems}
+          style={{ height: '100%', borderRight: 0, background: 'transparent' }}
+        />
+      </Sider>
+      <Layout style={{ background: 'transparent', minWidth: 0 }}>
+        {broken && !collapsed && (
+          <div
+            style={{
+              position: 'fixed',
+              top: 64,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: 'rgba(0, 0, 0, 0.5)',
+              zIndex: 1000,
+            }}
+            onClick={() => setCollapsed(true)}
+          />
+        )}
+
+        {broken && (
+          <Button
+            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              position: 'fixed',
+              top: 74,
+              left: 16,
+              zIndex: 1002,
+            }}
+            type="primary"
+            shape="circle"
+          />
+        )}
+
+        <Content
           style={{
-            maxWidth: 920,
-            width: '100%',
-            margin: '0 auto',
-            flex: 1,
+            margin: 0,
+            minHeight: 280,
+            height: 'calc(100vh - 64px)',
+            overflow: 'hidden',
+            display: 'flex',
+            flexDirection: 'column',
           }}
         >
           <div
             style={{
-              background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.72)',
-              backdropFilter: 'blur(10px)',
-              border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-              borderRadius: 12,
-              padding: '40px 24px',
-              textAlign: 'center',
+              flex: 1,
+              overflow: 'auto',
+              padding: broken ? '8px' : '24px',
             }}
           >
-            <Title level={2}>{copy.title}</Title>
-            <Paragraph style={{ maxWidth: 720, margin: '0 auto 24px', fontSize: 16 }}>
-              {copy.desc}
-            </Paragraph>
-            <Space wrap>
-              <Link to="/guide/old">
-                <Button type="primary">{copy.oldDocs}</Button>
-              </Link>
-              <Link to="/guide/plugin">
-                <Button>{copy.plugin}</Button>
-              </Link>
-            </Space>
+            <div
+              style={{
+                background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.72)',
+                backdropFilter: 'blur(10px)',
+                border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
+                borderRadius: 12,
+                padding: '6px 24px',
+                minHeight: '100%',
+              }}
+            >
+              <Outlet />
+            </div>
           </div>
-        </div>
-        <div style={{ maxWidth: 920, width: '100%', margin: '16px auto 0' }}>
-          <FooterComponent language={language} />
-        </div>
-      </Content>
+          <div style={{ padding: broken ? '0 8px 16px' : '0 24px 16px' }}>
+            <div
+              style={{
+                background: darkMode ? 'rgba(255, 255, 255, 0.04)' : 'rgba(255,255,255,0.45)',
+                backdropFilter: 'blur(8px)',
+                borderRadius: 12,
+                padding: broken ? '12px 16px' : '12px 24px',
+              }}
+            >
+              <FooterComponent language={language} />
+            </div>
+          </div>
+        </Content>
+      </Layout>
     </Layout>
   );
 };

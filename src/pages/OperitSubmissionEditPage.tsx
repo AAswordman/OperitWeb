@@ -44,6 +44,7 @@ import {
   getOperitLocalImage,
   saveOperitLocalImage,
 } from '../utils/operitLocalImageStore';
+import { isEditableMarkdownPath } from '../utils/markdownPaths';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
@@ -207,7 +208,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
       setDocError(t.errorMissingPath);
       return;
     }
-    if (!targetPath.startsWith('content/')) {
+    if (!isEditableMarkdownPath(targetPath)) {
       setDocError(t.errorInvalidPath);
       return;
     }
