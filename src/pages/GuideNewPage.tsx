@@ -91,9 +91,20 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
     return [];
   }, [category, slug]);
 
+  const isScreenshotMode = useMemo(
+    () => new URLSearchParams(location.search).get('mode') === 'screenshot',
+    [location.search],
+  );
+
   return (
-    <Layout style={{ minHeight: 'calc(100vh - 64px)', paddingTop: 64, background: 'transparent' }}>
-      <Sider
+    <Layout
+      style={{
+        minHeight: isScreenshotMode ? 'auto' : 'calc(100vh - 64px)',
+        paddingTop: isScreenshotMode ? 0 : 64,
+        background: isScreenshotMode ? '#ffffff' : 'transparent',
+      }}
+    >
+      {!isScreenshotMode && <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
@@ -121,9 +132,9 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           items={menuItems}
           style={{ height: '100%', borderRight: 0, background: 'transparent' }}
         />
-      </Sider>
+      </Sider>}
       <Layout style={{ background: 'transparent', minWidth: 0 }}>
-        {broken && !collapsed && (
+        {!isScreenshotMode && broken && !collapsed && (
           <div
             style={{
               position: 'fixed',
@@ -138,7 +149,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           />
         )}
 
-        {broken && (
+        {!isScreenshotMode && broken && (
           <Button
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
@@ -157,8 +168,8 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           style={{
             margin: 0,
             minHeight: 280,
-            height: 'calc(100vh - 64px)',
-            overflow: 'hidden',
+            height: isScreenshotMode ? 'auto' : 'calc(100vh - 64px)',
+            overflow: isScreenshotMode ? 'visible' : 'hidden',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -166,25 +177,33 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           <div
             style={{
               flex: 1,
-              overflow: 'auto',
-              padding: broken ? '8px' : '24px',
+              overflow: isScreenshotMode ? 'visible' : 'auto',
+              padding: isScreenshotMode ? '32px 0 48px' : broken ? '8px' : '24px',
             }}
           >
             <div
               style={{
-                background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.72)',
-                backdropFilter: 'blur(10px)',
-                border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-                borderRadius: 12,
-                padding: '6px 24px',
+                background: isScreenshotMode
+                  ? 'transparent'
+                  : darkMode
+                    ? 'rgba(255, 255, 255, 0.05)'
+                    : 'rgba(255, 255, 255, 0.72)',
+                backdropFilter: isScreenshotMode ? 'none' : 'blur(10px)',
+                border: isScreenshotMode
+                  ? 'none'
+                  : darkMode
+                    ? '1px solid rgba(255, 255, 255, 0.1)'
+                    : 'none',
+                borderRadius: isScreenshotMode ? 0 : 12,
+                padding: isScreenshotMode ? 0 : '6px 24px',
                 minHeight: '100%',
               }}
             >
               <Outlet />
             </div>
-            <div style={{ marginTop: 16 }}>
+            {!isScreenshotMode && <div style={{ marginTop: 16 }}>
               <FooterComponent language={language} />
-            </div>
+            </div>}
           </div>
         </Content>
       </Layout>

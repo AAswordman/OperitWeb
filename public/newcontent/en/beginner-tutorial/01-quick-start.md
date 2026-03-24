@@ -60,7 +60,7 @@ After choosing, fill in URL, then token, then click the button on the right side
 
 If it passes, then continue to scroll down. If it does not pass, try changing provider / troubleshoot based on the error.
 
-Also, endpoint often needs to be filled to the specific `completions` position.
+Also, the endpoint often needs to be filled to the specific `completions` path.
 
 For most models, please enable **toolcall**; for gpt, enable **strict toolcall**. For image/video recognition and similar features, enable according to whether the model truly supports them. If unsure, testing will also make one connection check; if image recognition etc. is found unsupported, please disable it.
 

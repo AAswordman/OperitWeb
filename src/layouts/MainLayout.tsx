@@ -143,6 +143,7 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
 
   const isHomePage = location.pathname === '/';
   const isGuideArea = location.pathname.startsWith('/guide');
+  const isScreenshotMode = new URLSearchParams(location.search).get('mode') === 'screenshot';
   const marketLabel = language === 'zh' ? '市场' : 'Market';
   const projectUpdateLabel = language === 'zh' ? '项目近况' : 'Project Update';
   
@@ -151,8 +152,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
       minHeight: '100vh',
       background: 'transparent'
     }}>
-      {isHomePage && <ParticleBackground darkMode={darkMode} />}
-      <Header style={{ 
+      {isHomePage && !isScreenshotMode && <ParticleBackground darkMode={darkMode} />}
+      {!isScreenshotMode && <Header style={{ 
         background: 'rgba(0,0,0,0)', // Let parent container control color
         backdropFilter: 'blur(10px)',
         borderBottom: `1px solid ${token.colorBorderSecondary}`,
@@ -341,10 +342,10 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
             </Space>
           </Col>
         </Row>
-      </Header>
+      </Header>}
 
       {/* 移动端菜单抽屉 */}
-      <Drawer
+      {!isScreenshotMode && <Drawer
         title="菜单"
         placement="right"
         onClose={() => setMobileMenuOpen(false)}
@@ -448,20 +449,20 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
             </Link>
           </Space>
         </div>
-      </Drawer>
+      </Drawer>}
 
       <Suspense fallback={<RouteFallback />}>
         <Outlet />
       </Suspense>
 
-      <FloatButton.Group>
+      {!isScreenshotMode && <FloatButton.Group>
         <FloatButton 
           icon={<BookOutlined />}
           tooltip="用户手册"
           onClick={() => navigate('/guide')}
         />
         <FloatButton.BackTop />
-      </FloatButton.Group>
+      </FloatButton.Group>}
     </Layout>
   );
 };

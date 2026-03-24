@@ -14,6 +14,155 @@
   font-size: 16px;
 }
 
+.markdown-renderer-root.screenshot-mode {
+  width: 100%;
+}
+
+.markdown-screenshot-toolbar {
+  width: min(640px, calc(100vw - 40px));
+  margin: 0 auto 16px;
+}
+
+.markdown-screenshot-status {
+  font-size: 13px;
+}
+
+.markdown-body-screenshot {
+  width: min(640px, calc(100vw - 40px));
+  margin: 0 auto;
+  padding: 30px 30px 36px;
+  background: #ffffff;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  color: #1f1f1f;
+  font-size: 21px;
+  line-height: 1.7;
+  box-sizing: border-box;
+}
+
+.markdown-body.markdown-body-screenshot,
+.markdown-body.markdown-body-screenshot h1,
+.markdown-body.markdown-body-screenshot h2,
+.markdown-body.markdown-body-screenshot h3,
+.markdown-body.markdown-body-screenshot h4,
+.markdown-body.markdown-body-screenshot h5,
+.markdown-body.markdown-body-screenshot h6,
+.markdown-body.markdown-body-screenshot p,
+.markdown-body.markdown-body-screenshot li,
+.markdown-body.markdown-body-screenshot blockquote,
+.markdown-body.markdown-body-screenshot table,
+.markdown-body.markdown-body-screenshot th,
+.markdown-body.markdown-body-screenshot td,
+.markdown-body.markdown-body-screenshot strong,
+.markdown-body.markdown-body-screenshot em,
+.markdown-body.markdown-body-screenshot a,
+.markdown-body.markdown-body-screenshot code,
+.markdown-body.markdown-body-screenshot summary {
+  color: #000000 !important;
+}
+
+.markdown-body-screenshot h1 {
+  font-size: 40px;
+}
+
+.markdown-body-screenshot h2 {
+  font-size: 32px;
+  margin-top: 26px;
+}
+
+.markdown-body-screenshot h3 {
+  font-size: 27px;
+  margin-top: 22px;
+}
+
+.markdown-body-screenshot h4,
+.markdown-body-screenshot h5,
+.markdown-body-screenshot h6 {
+  font-size: 24px;
+  margin-top: 20px;
+}
+
+.markdown-body-screenshot p,
+.markdown-body-screenshot li,
+.markdown-body-screenshot blockquote,
+.markdown-body-screenshot table,
+.markdown-body-screenshot th,
+.markdown-body-screenshot td {
+  font-size: inherit;
+}
+
+.markdown-body-screenshot .image-gallery {
+  gap: 12px;
+}
+
+.markdown-body-screenshot .image-gallery .image-container {
+  max-width: 32%;
+}
+
+.markdown-body-screenshot .paragraph-with-image,
+.markdown-body-screenshot .lazy-image-wrapper {
+  width: 100%;
+}
+
+.markdown-body-screenshot .paragraph-with-image .lazy-image-wrapper {
+  width: min(52%, 280px);
+  max-width: 100%;
+  min-height: 0;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+@media (max-width: 900px) {
+  .markdown-screenshot-toolbar {
+    width: calc(100vw - 24px);
+  }
+
+  .markdown-body-screenshot {
+    width: calc(100vw - 24px);
+    padding: 22px 18px 28px;
+    font-size: 17px;
+  }
+
+  .markdown-body-screenshot h1 {
+    font-size: 30px;
+  }
+
+  .markdown-body-screenshot h2 {
+    font-size: 25px;
+  }
+
+  .markdown-body-screenshot h3 {
+    font-size: 22px;
+  }
+
+  .markdown-body-screenshot h4,
+  .markdown-body-screenshot h5,
+  .markdown-body-screenshot h6 {
+    font-size: 19px;
+  }
+
+  .markdown-body-screenshot .image-gallery .image-container {
+    max-width: 38%;
+  }
+
+  .markdown-body-screenshot .paragraph-with-image .lazy-image-wrapper {
+    width: min(68%, 250px);
+  }
+}
+
+.markdown-export-stage {
+  position: absolute;
+  top: 0;
+  left: -20000px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.markdown-body-export {
+  margin: 0;
+}
+
 .markdown-edit-bar {
   display: flex;
   flex-wrap: wrap;
@@ -205,6 +354,28 @@
 
 [data-theme='dark'] .markdown-body img {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+.markdown-body.markdown-body-screenshot img,
+.markdown-body.markdown-body-screenshot .ant-image-img {
+  width: 100% !important;
+  max-width: 100% !important;
+  max-height: none !important;
+  height: auto !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  margin: 14px auto 18px !important;
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.markdown-body.markdown-body-screenshot .paragraph-with-image .ant-image {
+  width: 100% !important;
+}
+
+.markdown-body.markdown-body-screenshot .paragraph-with-image img {
+  margin-left: auto !important;
+  margin-right: auto !important;
 }
 
 .markdown-body table {
