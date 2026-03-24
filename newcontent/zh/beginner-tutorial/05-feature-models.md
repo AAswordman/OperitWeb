@@ -1,0 +1,21 @@
+# 05. 功能模型详解
+
+> 占位文档。后续会补充正式内容。
+
+## 预计覆盖
+
+- 不同功能模型在产品中的角色分工
+- 何时需要切换到专门模型
+- 典型任务和模型匹配建议
+
+## 当前状态
+
+- 本页是功能模型专题的占位稿。
+- 详细说明会在后续版本补齐。
+
+## 导航
+
+- [返回欢迎页](/#/guide/new)
+- [上一篇：04. 模型配置](/#/guide/new/beginner-tutorial/04-model-configuration)
+- [下一篇：06. 上下文与压缩](/#/guide/new/beginner-tutorial/06-context-and-compression)
+

@@ -1,0 +1,21 @@
+# 12. 工具：SKILL
+
+> 占位文档。后续会补充正式内容。
+
+## 预计覆盖
+
+- SKILL 适合沉淀哪类能力
+- 如何理解技能的使用入口和边界
+- 新建、复用和维护技能时的基本思路
+
+## 当前状态
+
+- 本页先为 SKILL 章节占位。
+- 示例结构和编写建议后续补上。
+
+## 导航
+
+- [返回欢迎页](/#/guide/new)
+- [上一篇：11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
+- [下一篇：13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
+
