@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：10. 工具：沙盒包](/#/guide/new/初级教程/10-工具-沙盒包)
-- [下一篇：12. 工具：SKILL](/#/guide/new/初级教程/12-工具-SKILL)
+- [上一篇：10. 工具：沙盒包](/#/guide/new/beginner-tutorial/10-tool-sandbox-package)
+- [下一篇：12. 工具：SKILL](/#/guide/new/beginner-tutorial/12-tool-skill)
+

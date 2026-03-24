@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：13. WAIFU模式](/#/guide/new/初级教程/13-WAIFU模式)
-- [下一篇：15. 数据备份](/#/guide/new/初级教程/15-数据备份)
+- [上一篇：13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
+- [下一篇：15. 数据备份](/#/guide/new/beginner-tutorial/15-data-backup)
+

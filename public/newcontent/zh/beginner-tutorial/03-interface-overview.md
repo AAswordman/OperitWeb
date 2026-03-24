@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：02. 权限授权详解](/#/guide/new/初级教程/02-权限授权详解)
-- [下一篇：04. 模型配置](/#/guide/new/初级教程/04-模型配置)
+- [上一篇：02. 权限授权详解](/#/guide/new/beginner-tutorial/02-permission-authorization)
+- [下一篇：04. 模型配置](/#/guide/new/beginner-tutorial/04-model-configuration)
+

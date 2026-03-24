@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：06. 上下文与压缩](/#/guide/new/初级教程/06-上下文与压缩)
-- [下一篇：08. 角色标签](/#/guide/new/初级教程/08-角色标签)
+- [上一篇：06. 上下文与压缩](/#/guide/new/beginner-tutorial/06-context-and-compression)
+- [下一篇：08. 角色标签](/#/guide/new/beginner-tutorial/08-character-tags)
+

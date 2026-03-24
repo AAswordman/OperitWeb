@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：09. 内置工具与权限](/#/guide/new/初级教程/09-内置工具与权限)
-- [下一篇：11. 工具：MCP](/#/guide/new/初级教程/11-工具-MCP)
+- [上一篇：09. 内置工具与权限](/#/guide/new/beginner-tutorial/09-built-in-tools-and-permissions)
+- [下一篇：11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
+

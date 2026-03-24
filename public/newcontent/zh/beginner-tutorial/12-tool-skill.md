@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：11. 工具：MCP](/#/guide/new/初级教程/11-工具-MCP)
-- [下一篇：13. WAIFU模式](/#/guide/new/初级教程/13-WAIFU模式)
+- [上一篇：11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
+- [下一篇：13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
+

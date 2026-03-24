@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：01. 快速开始](/#/guide/new/初级教程/01-快速开始)
-- [下一篇：03. 初识界面](/#/guide/new/初级教程/03-初识界面)
+- [上一篇：01. 快速开始](/#/guide/new/beginner-tutorial/01-quick-start)
+- [下一篇：03. 初识界面](/#/guide/new/beginner-tutorial/03-interface-overview)
+

@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：12. 工具：SKILL](/#/guide/new/初级教程/12-工具-SKILL)
-- [下一篇：14. 工作区基础](/#/guide/new/初级教程/14-工作区基础)
+- [上一篇：12. 工具：SKILL](/#/guide/new/beginner-tutorial/12-tool-skill)
+- [下一篇：14. 工作区基础](/#/guide/new/beginner-tutorial/14-workspace-basics)
+

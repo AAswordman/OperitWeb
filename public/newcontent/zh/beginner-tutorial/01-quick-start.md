@@ -16,4 +16,5 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [下一篇：02. 权限授权详解](/#/guide/new/初级教程/02-权限授权详解)
+- [下一篇：02. 权限授权详解](/#/guide/new/beginner-tutorial/02-permission-authorization)
+

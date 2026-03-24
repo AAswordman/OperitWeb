@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：04. 模型配置](/#/guide/new/初级教程/04-模型配置)
-- [下一篇：06. 上下文与压缩](/#/guide/new/初级教程/06-上下文与压缩)
+- [上一篇：04. 模型配置](/#/guide/new/beginner-tutorial/04-model-configuration)
+- [下一篇：06. 上下文与压缩](/#/guide/new/beginner-tutorial/06-context-and-compression)
+

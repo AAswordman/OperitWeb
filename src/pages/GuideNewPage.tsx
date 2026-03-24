@@ -5,6 +5,7 @@ import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
 import FooterComponent from '../components/Footer';
 
 const { Sider, Content } = Layout;
+const CATEGORY_SLUG = 'beginner-tutorial';
 
 const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
   const location = useLocation();
@@ -15,40 +16,40 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
   const tutorialItems = useMemo(() => (
     language === 'zh'
       ? [
-          { slug: '01-快速开始', label: '01. 快速开始' },
-          { slug: '02-权限授权详解', label: '02. 权限授权详解' },
-          { slug: '03-初识界面', label: '03. 初识界面' },
-          { slug: '04-模型配置', label: '04. 模型配置' },
-          { slug: '05-功能模型详解', label: '05. 功能模型详解' },
-          { slug: '06-上下文与压缩', label: '06. 上下文与压缩' },
-          { slug: '07-角色卡', label: '07. 角色卡' },
-          { slug: '08-角色标签', label: '08. 角色标签' },
-          { slug: '09-内置工具与权限', label: '09. 内置工具与权限' },
-          { slug: '10-工具-沙盒包', label: '10. 工具：沙盒包' },
-          { slug: '11-工具-MCP', label: '11. 工具：MCP' },
-          { slug: '12-工具-SKILL', label: '12. 工具：SKILL' },
-          { slug: '13-WAIFU模式', label: '13. WAIFU模式' },
-          { slug: '14-工作区基础', label: '14. 工作区基础' },
-          { slug: '15-数据备份', label: '15. 数据备份' },
-          { slug: '16-统计', label: '16. 统计' },
+          { slug: '01-quick-start', label: '01. 快速开始' },
+          { slug: '02-permission-authorization', label: '02. 权限授权详解' },
+          { slug: '03-interface-overview', label: '03. 初识界面' },
+          { slug: '04-model-configuration', label: '04. 模型配置' },
+          { slug: '05-feature-models', label: '05. 功能模型详解' },
+          { slug: '06-context-and-compression', label: '06. 上下文与压缩' },
+          { slug: '07-character-cards', label: '07. 角色卡' },
+          { slug: '08-character-tags', label: '08. 角色标签' },
+          { slug: '09-built-in-tools-and-permissions', label: '09. 内置工具与权限' },
+          { slug: '10-tool-sandbox-package', label: '10. 工具：沙盒包' },
+          { slug: '11-tool-mcp', label: '11. 工具：MCP' },
+          { slug: '12-tool-skill', label: '12. 工具：SKILL' },
+          { slug: '13-waifu-mode', label: '13. WAIFU模式' },
+          { slug: '14-workspace-basics', label: '14. 工作区基础' },
+          { slug: '15-data-backup', label: '15. 数据备份' },
+          { slug: '16-statistics', label: '16. 统计' },
         ]
       : [
-          { slug: '01-快速开始', label: '01. Quick Start' },
-          { slug: '02-权限授权详解', label: '02. Permissions Explained' },
-          { slug: '03-初识界面', label: '03. First Look at the UI' },
-          { slug: '04-模型配置', label: '04. Model Configuration' },
-          { slug: '05-功能模型详解', label: '05. Feature Models Explained' },
-          { slug: '06-上下文与压缩', label: '06. Context and Compression' },
-          { slug: '07-角色卡', label: '07. Character Cards' },
-          { slug: '08-角色标签', label: '08. Character Tags' },
-          { slug: '09-内置工具与权限', label: '09. Built-in Tools and Permissions' },
-          { slug: '10-工具-沙盒包', label: '10. Tool: Sandbox Package' },
-          { slug: '11-工具-MCP', label: '11. Tool: MCP' },
-          { slug: '12-工具-SKILL', label: '12. Tool: SKILL' },
-          { slug: '13-WAIFU模式', label: '13. WAIFU Mode' },
-          { slug: '14-工作区基础', label: '14. Workspace Basics' },
-          { slug: '15-数据备份', label: '15. Data Backup' },
-          { slug: '16-统计', label: '16. Statistics' },
+          { slug: '01-quick-start', label: '01. Quick Start' },
+          { slug: '02-permission-authorization', label: '02. Permissions Explained' },
+          { slug: '03-interface-overview', label: '03. First Look at the UI' },
+          { slug: '04-model-configuration', label: '04. Model Configuration' },
+          { slug: '05-feature-models', label: '05. Feature Models Explained' },
+          { slug: '06-context-and-compression', label: '06. Context and Compression' },
+          { slug: '07-character-cards', label: '07. Character Cards' },
+          { slug: '08-character-tags', label: '08. Character Tags' },
+          { slug: '09-built-in-tools-and-permissions', label: '09. Built-in Tools and Permissions' },
+          { slug: '10-tool-sandbox-package', label: '10. Tool: Sandbox Package' },
+          { slug: '11-tool-mcp', label: '11. Tool: MCP' },
+          { slug: '12-tool-skill', label: '12. Tool: SKILL' },
+          { slug: '13-waifu-mode', label: '13. WAIFU Mode' },
+          { slug: '14-workspace-basics', label: '14. Workspace Basics' },
+          { slug: '15-data-backup', label: '15. Data Backup' },
+          { slug: '16-statistics', label: '16. Statistics' },
         ]
   ), [language]);
 
@@ -71,7 +72,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
       label: labels.beginner,
       children: tutorialItems.map((item) => ({
         key: item.slug,
-        label: <Link to={`/guide/new/初级教程/${item.slug}`}>{item.label}</Link>,
+        label: <Link to={`/guide/new/${CATEGORY_SLUG}/${item.slug}`}>{item.label}</Link>,
       })),
     },
   ], [labels, tutorialItems]);
@@ -84,7 +85,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
   }, [location.pathname, slug]);
 
   const defaultOpenKeys = useMemo(() => {
-    if (category === '初级教程' || slug) {
+    if (category === CATEGORY_SLUG || slug) {
       return ['beginner'];
     }
     return [];

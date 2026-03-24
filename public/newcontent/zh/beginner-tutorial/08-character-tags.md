@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：07. 角色卡](/#/guide/new/初级教程/07-角色卡)
-- [下一篇：09. 内置工具与权限](/#/guide/new/初级教程/09-内置工具与权限)
+- [上一篇：07. 角色卡](/#/guide/new/beginner-tutorial/07-character-cards)
+- [下一篇：09. 内置工具与权限](/#/guide/new/beginner-tutorial/09-built-in-tools-and-permissions)
+

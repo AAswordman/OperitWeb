@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：05. 功能模型详解](/#/guide/new/初级教程/05-功能模型详解)
-- [下一篇：07. 角色卡](/#/guide/new/初级教程/07-角色卡)
+- [上一篇：05. 功能模型详解](/#/guide/new/beginner-tutorial/05-feature-models)
+- [下一篇：07. 角色卡](/#/guide/new/beginner-tutorial/07-character-cards)
+

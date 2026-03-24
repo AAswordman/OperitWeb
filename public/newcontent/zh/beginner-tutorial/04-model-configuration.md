@@ -16,5 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：03. 初识界面](/#/guide/new/初级教程/03-初识界面)
-- [下一篇：05. 功能模型详解](/#/guide/new/初级教程/05-功能模型详解)
+- [上一篇：03. 初识界面](/#/guide/new/beginner-tutorial/03-interface-overview)
+- [下一篇：05. 功能模型详解](/#/guide/new/beginner-tutorial/05-feature-models)
+
