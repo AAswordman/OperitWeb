@@ -75,3 +75,11 @@ After finishing API configuration, you can return to Operit AI and start your sm
 You can first try asking AI a few simple questions, for example: how many degrees today? where am I? open xxx app. search train tickets.
 
 More advanced usage will be introduced later. Please don’t rush, this is only the software introduction, and there are many more tutorials after this.
+
+#### Special Step: Terminal Setup
+
+At this point, some people may wonder: “Wait, is this really enough? In the permission page, there is also an Operit Terminal that needs authorization!”
+
+Yes, this part does need to be installed as well. But this is **not the most essential** part. For basic usage, doing the steps above is **already enough**. Of course, authorizing the terminal is also totally fine—just remember to do it in a place with good internet, because some components need to be downloaded.
+
+The later documents will also explain terminal-related things in detail.
