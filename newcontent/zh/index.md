@@ -1,36 +1,24 @@
 # 新文档欢迎页
 
-欢迎来到新版用户文档区。
+> 欢迎来到新版用户文档区。
+> 以前的老版文档，很多都是用ai直接生成的，所有人都不爱看，只能勉强凑合一下。现在在这里将会把所有的功能重新组合并写一份新的文档，使用教程的口吻表达。
+> 当然，因为我稀烂的语文水平(笑)所以新版本文档也没好到哪里去(？)
 
-这里会逐步替换旧文档，当前先把结构、入口和阅读顺序搭起来。下面这批页面暂时都是占位稿，后续会按顺序补全正式内容。
+Operit是一款全能手机助手，能够对接系统实现很多操作，满足很多的日常、办公场景以及一些技术场景。
 
-## 阅读建议
+相信很多人拿到Operit的第一反应是: 这是啥玩意，怎么那么多按钮？
 
-- 第一次接触的话，建议从《[01. 快速开始](/#/guide/new/beginner-tutorial/01-quick-start)》开始。
-- 如果你正在迁移旧使用习惯，可以先对照旧文档：[/#/guide/old](/#/guide/old)。
-- 本区目前先以中文为主，英文访问会先回退到中文内容。
+别急别急，在接下来的文档里面，将会详细讲解软件的配置。
 
-## 初级教程
+整个软件的核心还是对话，掌握如何和AI交流，是一个非常重要的能力。在目前ai不足够聪明的情况下，意图很容易被错误理解。当然了，这就需要我们说出的话减少歧义，且目的尽可能清晰。想想我们和别人的交流，是否存在类似的传达问题呢？
 
-1. [01. 快速开始](/#/guide/new/beginner-tutorial/01-quick-start)
-2. [02. 权限授权详解](/#/guide/new/beginner-tutorial/02-permission-authorization)
-3. [03. 初识界面](/#/guide/new/beginner-tutorial/03-interface-overview)
-4. [04. 模型配置](/#/guide/new/beginner-tutorial/04-model-configuration)
-5. [05. 功能模型详解](/#/guide/new/beginner-tutorial/05-feature-models)
-6. [06. 上下文与压缩](/#/guide/new/beginner-tutorial/06-context-and-compression)
-7. [07. 角色卡](/#/guide/new/beginner-tutorial/07-character-cards)
-8. [08. 角色标签](/#/guide/new/beginner-tutorial/08-character-tags)
-9. [09. 内置工具与权限](/#/guide/new/beginner-tutorial/09-built-in-tools-and-permissions)
-10. [10. 工具：沙盒包](/#/guide/new/beginner-tutorial/10-tool-sandbox-package)
-11. [11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
-12. [12. 工具：SKILL](/#/guide/new/beginner-tutorial/12-tool-skill)
-13. [13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
-14. [14. 工作区基础](/#/guide/new/beginner-tutorial/14-workspace-basics)
-15. [15. 数据备份](/#/guide/new/beginner-tutorial/15-data-backup)
-16. [16. 统计](/#/guide/new/beginner-tutorial/16-statistics)
+软件围绕的东西很简单: 你如何同ai对话并触发别的工具调用。软件下载后，很多的东西都自动配置完成了，我们要干的事很简单: 完成权限授予，填个key，开始对话。
 
-## 当前状态
+那么这里就有个问题: 权限授予之后怎么还要我授权更多啊！key又是什么，不能直接开始对话吗？
 
-- 这套新文档已经有了稳定入口和固定路径，后面可以直接往现有页面里填内容。
-- 如果你打算按批次编写，建议优先补完 01 到 04，这几页最适合作为第一轮基础引导。
+嗯，我们可以简单理解一下。需要授权软件，是因为软件本身非常的底层，因此有一些受限的比如开发者或者root下的授权，就需要进行一些额外操作。
 
+至于key，用户只需要跟随引导，前往deepseek页完成申请和充值即可。(我们和deepseek没有合作关系，仅仅只是认为deepseek的官网界面简单易懂，模型效果还行，仅此而已)
+
+详细的，说起来可能会比较复杂。但是文档也会尽可能给各位讲清楚。
+后续可能会保持两天左右一更新的速度吧，大概？
