@@ -9,7 +9,6 @@ import {
   Space,
   Avatar,
   Badge,
-  Statistic,
   Carousel,
 } from 'antd';
 import { motion } from 'framer-motion';
@@ -20,18 +19,13 @@ import {
   PlayCircleOutlined,
   GlobalOutlined,
   WindowsOutlined,
-  GithubOutlined,
   StarOutlined,
-  ForkOutlined,
-  TeamOutlined,
   BookOutlined,
-  ReadOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations.ts';
 import AnimatedSection from '../components/AnimatedSection';
 import GachaGallery from '../components/GachaGallery';
 import type { GachaGalleryRef } from '../components/GachaGallery';
-import useGitHubStats from '../hooks/useGitHubStats';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 import FooterComponent from '../components/Footer.tsx';
 import SupportDevelopmentButton from '../components/SupportDevelopmentButton';
@@ -63,12 +57,8 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     const value = translation[key as keyof typeof translation];
     return typeof value === 'string' ? value : key;
   };
-  const projectUpdateLabel = language === 'zh' ? '项目近况与赞助说明' : 'Project Update';
 
   const gachaRef = useRef<GachaGalleryRef>(null);
-
-  // 使用GitHub Stats Hook
-  const { stargazersCount, forksCount, contributorsCount, loading, error } = useGitHubStats('AAswordman', 'Operit');
 
   const providers = [
     { name: 'OpenAI', logo: openAILogo },
@@ -279,28 +269,6 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
               >
-                <Link to="/project-update">
-                  <Button
-                    size="large"
-                    icon={<ReadOutlined />}
-                    style={{
-                      height: 52,
-                      fontSize: 18,
-                      paddingLeft: 30,
-                      paddingRight: 30,
-                      borderRadius: '8px',
-                      borderColor: '#1677ff',
-                      color: '#1677ff',
-                    }}
-                  >
-                    {projectUpdateLabel}
-                  </Button>
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
                 <Link to="/guide">
                   <Button
                     size="large"
@@ -385,9 +353,6 @@ nt;
           }
           .dark-mode-steps .ant-steps-item-tail::after {
               background-color: rgba(255, 255, 255, 0.25) !important;
-          }
-          .dark-mode-statistic .ant-statistic-title {
-              color: rgba(255, 255, 255, 0.85) !important;
           }
         `}
       </style>
@@ -631,79 +596,6 @@ nt;
                   </Col>
                 ))}
               </Row>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
-      
-      {/* GitHub统计 */}
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={16}>
-              <Card
-                style={{
-                  background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                  backdropFilter: 'blur(10px)',
-                  border: '1px solid rgba(255, 255, 255, 0.1)',
-                  borderRadius: '12px',
-                  textAlign: 'center'
-                }}
-              >
-                <Row gutter={[24, 24]}>
-                  <Col xs={24} sm={8}>
-                    <div className={darkMode ? 'dark-mode-statistic' : ''}>
-                      <Statistic
-                        title={t('projectStars')}
-                        value={loading ? 0 : stargazersCount}
-                        prefix={<StarOutlined />}
-                        valueStyle={{ color: '#fadb14' }}
-                        loading={loading}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <div className={darkMode ? 'dark-mode-statistic' : ''}>
-                      <Statistic
-                        title={t('forkCount')}
-                        value={loading ? 0 : forksCount}
-                        prefix={<ForkOutlined />}
-                        valueStyle={{ color: '#52c41a' }}
-                        loading={loading}
-                      />
-                    </div>
-                  </Col>
-                  <Col xs={24} sm={8}>
-                    <div className={darkMode ? 'dark-mode-statistic' : ''}>
-                      <Statistic
-                        title={t('contributorsTitle')}
-                        value={loading ? 0 : contributorsCount}
-                        prefix={<TeamOutlined />}
-                        valueStyle={{ color: '#1890ff' }}
-                        loading={loading}
-                      />
-                    </div>
-                  </Col>
-                </Row>
-                {error && (
-                  <div style={{ marginTop: 16, textAlign: 'center' }}>
-                    <Text type="secondary" style={{ fontSize: 14 }}>
-                      {t('githubDataError')}
-                    </Text>
-                  </div>
-                )}
-                <div style={{ marginTop: 24 }}>
-                  <Button
-                    type="primary"
-                    icon={<GithubOutlined />}
-                    size="large"
-                    href="https://github.com/AAswordman/Operit"
-                    target="_blank"
-                  >
-                    {t('starOnGitHub')}
-                  </Button>
-                </div>
-              </Card>
             </Col>
           </Row>
         </div>
