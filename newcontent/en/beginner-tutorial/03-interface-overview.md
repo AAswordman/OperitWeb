@@ -1,7 +1,6 @@
-# 初识界面
+# Interface Overview
 
-本教程简单说明一下用户界面的ui以及触发方式。后面会更具体地去讲各个功能。
-
+This tutorial briefly introduces the UI and how different parts are triggered. Later articles will explain each feature in more detail.
 
 ![](/manuals/assets/screen/3dc3a9650293ecc862d788efe440318e.png)
 ![](/manuals/assets/screen/28635539346989d19c23fa785325fa19.png)
