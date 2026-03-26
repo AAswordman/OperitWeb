@@ -1,1 +1,0 @@
-import{g as r,j as s}from"./index-CS2021Fk.js";import i from"./MarkdownRenderer-DmlbsBfZ.js";import"./markdownPaths-Btwmzgb2.js";import"./EyeOutlined-B29rDhOW.js";import"./addEventListener-CztUGnFY.js";const d=({language:o})=>{const{category:t,slug:e}=r(),n=t&&e?`newcontent/${t}/${e}`:"newcontent/index";return s.jsx(i,{file:n,language:o})};export{d as default};
