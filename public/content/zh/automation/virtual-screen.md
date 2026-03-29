@@ -46,6 +46,6 @@
 
 关于 AutoGLM 的详细配置、工具包切换、版本差异，请直接参考：
 
-- [AutoGLM 模式](/#/guide/automation/autoglm-mode)
+- [AutoGLM 模式](/#/guide/old/automation/autoglm-mode)
 
 本页不再重复 AutoGLM 配置细节。

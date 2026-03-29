@@ -39,11 +39,11 @@ Please try the following troubleshooting steps:
 
 ### ❓ Q: How can I use a local model for offline conversations?
 
-We support running AI models locally on your device via the MNN framework. For detailed configuration steps, please refer to the [MNN Local Model Configuration Guide](/#/guide/basic-config/mnn-local-model).
+We support running AI models locally on your device via the MNN framework. For detailed configuration steps, please refer to the [MNN Local Model Configuration Guide](/#/guide/old/basic-config/mnn-local-model).
 
 ### ❓ Q: How can I get the AI to recognize images?
 
-Operit AI supports multimodal models that can understand image content. Please select a model that supports vision (e.g., GPT-4V) in the model configuration, and then you can send images directly in the chat. For detailed instructions, please refer to the [Image Recognition Configuration Guide](/#/guide/basic-config/image-recognition).
+Operit AI supports multimodal models that can understand image content. Please select a model that supports vision (e.g., GPT-4V) in the model configuration, and then you can send images directly in the chat. For detailed instructions, please refer to the [Image Recognition Configuration Guide](/#/guide/old/basic-config/image-recognition).
 
 ### ❓ Q: Why can't my AI start applications?
 
@@ -61,5 +61,5 @@ You can try going to "Model & Parameter Settings," find and enable an option lik
 
 ### ❓ Q: Why does the AI output "cannot create task" or always plan a large, slow task flow?
 
-This is likely because the "Deep Search" feature is enabled. Deep Search is a powerful analysis tool, but it consumes more resources and plans complex task flows. If your current task does not require deep analysis, we recommend disabling this feature in the settings to improve response speed. For more details, see the [Deep Search Guide](/#/guide/tools-and-features/deep-search).
+This is likely because the "Deep Search" feature is enabled. Deep Search is a powerful analysis tool, but it consumes more resources and plans complex task flows. If your current task does not require deep analysis, we recommend disabling this feature in the settings to improve response speed. For more details, see the [Deep Search Guide](/#/guide/old/tools-and-features/deep-search).
 

@@ -47,7 +47,7 @@ If tasks do not run, behave abnormally, or fail quickly, check in this order:
 
 For full AutoGLM setup details, package switching, and version differences, go to:
 
-- [AutoGLM Mode](/#/guide/automation/autoglm-mode)
+- [AutoGLM Mode](/#/guide/old/automation/autoglm-mode)
 
 This page intentionally does not duplicate AutoGLM setup steps.
 
