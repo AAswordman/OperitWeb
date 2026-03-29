@@ -70,9 +70,9 @@
 
 ## 继续阅读（按类型）
 
-- [沙盒包（Package）](/#/guide/tools-and-features/ai-tools/sandbox-package)
-- [Skill](/#/guide/tools-and-features/ai-tools/skill)
-- [MCP](/#/guide/tools-and-features/ai-tools/mcp)
+- [沙盒包（Package）](/#/guide/old/tools-and-features/ai-tools/sandbox-package)
+- [Skill](/#/guide/old/tools-and-features/ai-tools/skill)
+- [MCP](/#/guide/old/tools-and-features/ai-tools/mcp)
 
 ## AI 内置工具清单（基于 `SystemToolPrompts.kt`）
 

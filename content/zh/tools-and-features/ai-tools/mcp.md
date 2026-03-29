@@ -180,7 +180,7 @@ pnpm exec tsc -p ./tsconfig.json
 ### 常见现象怎么对照
 
  - 工具一直是 0 个：先确认插件开关是否打开；再看是否处于运行中；本地插件还要确认是否已部署。
- - 提示桥接器/终端环境相关问题：一般意味着用于运行 MCP 的终端环境还没准备好。比如终端服务未连接，或者 Node/pnpm 不可用。可以先完成终端环境准备，再回到 MCP 页面刷新。你可以参考[终端环境配置](/#/guide/basic-config/terminal-config)。
+ - 提示桥接器/终端环境相关问题：一般意味着用于运行 MCP 的终端环境还没准备好。比如终端服务未连接，或者 Node/pnpm 不可用。可以先完成终端环境准备，再回到 MCP 页面刷新。你可以参考[终端环境配置](/#/guide/old/basic-config/terminal-config)。
  - 远程服务连不上：优先检查你填的地址在当前网络环境是否可达，以及连接类型（`httpStream` / `sse`）是否与远端一致。
 
 > 注意：部分 MCP 包自带 Docker 相关文件，但 Operit 不支持 Docker，可以忽略。

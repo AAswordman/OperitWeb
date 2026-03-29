@@ -176,7 +176,7 @@ Common cases:
 ### Symptom checklist
 
  - Tool count stays 0: check plugin toggle, then check running status; for local plugins, also confirm it has been deployed.
- - Bridge/terminal environment errors: usually means the terminal environment for running MCP is not ready (for example terminal service not connected, or Node/pnpm missing). Prepare the terminal environment first, then come back and refresh. See [Terminal Configuration](/#/guide/basic-config/terminal-config).
+ - Bridge/terminal environment errors: usually means the terminal environment for running MCP is not ready (for example terminal service not connected, or Node/pnpm missing). Prepare the terminal environment first, then come back and refresh. See [Terminal Configuration](/#/guide/old/basic-config/terminal-config).
  - Remote plugin cannot connect: verify the URL is reachable in your current network, and the transport (`httpStream` / `sse`) matches the remote server.
 
 > Note: some MCP repos include Docker files, but Operit doesn’t support Docker, so you can ignore them.

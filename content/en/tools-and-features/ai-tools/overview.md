@@ -70,9 +70,9 @@ As a user, you mainly decide:
 
 ## Continue by Type
 
-- [Sandbox Package](/#/guide/tools-and-features/ai-tools/sandbox-package)
-- [Skill](/#/guide/tools-and-features/ai-tools/skill)
-- [MCP](/#/guide/tools-and-features/ai-tools/mcp)
+- [Sandbox Package](/#/guide/old/tools-and-features/ai-tools/sandbox-package)
+- [Skill](/#/guide/old/tools-and-features/ai-tools/skill)
+- [MCP](/#/guide/old/tools-and-features/ai-tools/mcp)
 
 ## Built-in AI Tool List (Based on `SystemToolPrompts.kt`)
 

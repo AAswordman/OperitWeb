@@ -12,7 +12,7 @@ To enable and use AutoGLM Mode, follow these configuration steps.
 
 A powerful and correctly configured language model is the foundation for understanding and executing complex tasks. You need to set up a working AI model for Operit AI. We recommend using a high-performance model for the best experience.
 
-For detailed instructions on how to configure a model, please refer to our guide: [Model & Parameter Configuration](/#/guide/basic-config/model-config).
+For detailed instructions on how to configure a model, please refer to our guide: [Model & Parameter Configuration](/#/guide/old/basic-config/model-config).
 
 > **Special Note**: When configuring models, do **not** directly modify your current default chat model. Instead, create a new model configuration dedicated to AutoGLM. All later image-processing switches and parameter tuning should be done on this new configuration so that your everyday chat model remains unaffected.
 
@@ -20,7 +20,7 @@ For detailed instructions on how to configure a model, please refer to our guide
 
 To allow the AI to observe the screen and simulate actions like tapping, swiping, and typing, you need to grant the app the appropriate system permissions. This feature requires at least **Accessibility Permissions**.
 
-Please go to the authorization screen to grant permissions based on your device and needs. For more details, see: [Authorizing the Software](/#/guide/basic-config/software-authorization).
+Please go to the authorization screen to grant permissions based on your device and needs. For more details, see: [Authorizing the Software](/#/guide/old/basic-config/software-authorization).
 
 > **Special Note**: After granting permissions, make sure you tap the **"Switch to current permission"** button (or the equivalent in your system UI) so that the app actually starts using the newly granted permissions. Otherwise, AutoGLM may not function correctly.
 
@@ -28,7 +28,7 @@ Please go to the authorization screen to grant permissions based on your device 
 
 Next, you need to decide how the AI uses tools when performing tasks. You can set it to "Auto-Approve" for the smoothest automation experience or choose "Always Ask" to retain final control over every action.
 
-Configure this in the permission settings based on your level of trust and usage scenario. For setup instructions, see: [AI Permission Control](/#/guide/basic-config/ai-permissions).
+Configure this in the permission settings based on your level of trust and usage scenario. For setup instructions, see: [AI Permission Control](/#/guide/old/basic-config/ai-permissions).
 
 > **Special Note**: If you want to minimize confirmation pop-ups and let tools run more automatically in the current session, enable **"Auto-Approve"** from the menu in the bottom-right corner of the chat window. If you keep it off, the AI will ask for confirmation more often, even for tools that are already authorized.
 

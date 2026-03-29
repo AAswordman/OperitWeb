@@ -8,9 +8,9 @@ Operit AI 强大的 UI 自动化功能，能够将您从繁琐的重复性操作
 
 首先，一个强大且配置正确的语言模型是实现复杂任务理解和执行的基础。您需要为 Operit AI 配置一个可用的 AI 模型。我们建议您使用性能较强的模型以获得最佳体验。
 
-关于如何配置模型，您可以参考我们的详细指南：[模型与参数配置](/#/guide/basic-config/model-config)。
+关于如何配置模型，您可以参考我们的详细指南：[模型与参数配置](/#/guide/old/basic-config/model-config)。
 
-> **注意**：如果您使用的是 DeepSeek 官方 API，我们建议您在对话设置中开启 [Max 模式](/#/guide/tools-and-features/context-summary)。由于该 API 具有缓存机制，开启 Max 模式可以减少不必要的上下文总结，提升运行效率。
+> **注意**：如果您使用的是 DeepSeek 官方 API，我们建议您在对话设置中开启 [Max 模式](/#/guide/old/tools-and-features/context-summary)。由于该 API 具有缓存机制，开启 Max 模式可以减少不必要的上下文总结，提升运行效率。
 
 ### 2. 授予软件操作权限
 
@@ -22,7 +22,7 @@ Operit AI 强大的 UI 自动化功能，能够将您从繁琐的重复性操作
 
 接下来，您需要决定 AI 在执行任务时如何使用工具。您可以设置为“自动批准”以获得最流畅的自动化体验，也可以选择“总是询问”来保留对每一步操作的最终控制权。
 
-请根据您的信任程度和使用场景，在权限设置中进行配置。具体设置方法请见：[AI 权限控制](/#/guide/basic-config/ai-permissions)。
+请根据您的信任程度和使用场景，在权限设置中进行配置。具体设置方法请见：[AI 权限控制](/#/guide/old/basic-config/ai-permissions)。
 
 ### 4. 启用 UI 自动化工具包
 
