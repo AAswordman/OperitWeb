@@ -10,6 +10,8 @@ The main functions currently include: **chat, summary, multimodal input, group c
 
 When you encounter strange errors but your chat model itself is working, **check the functional models first**.
 
+One more thing to emphasize: role-card binding and the model selected under chat both map directly to the **chat functional model**. Entry points for modifying other functional models are only available in the functional model configuration page.
+
 ![Functional model configuration](/manuals/assets/preference/functional-model-config.png)
 
 Next, we will explain a few functional models in detail, mainly multimodal input and UI controller. These are relatively more special than the others. For most other functions, you only need a normal model that can chat; these ones have special configuration requirements.
