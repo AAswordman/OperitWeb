@@ -1,0 +1,1 @@
+import{g as a,j as s}from"./index-oOYYJlNd.js";import m from"./MarkdownRenderer-CJ9a8Bpo.js";import"./markdownPaths-CM7Giu54.js";import"./EyeOutlined-_v5L_3ji.js";import"./addEventListener-4weVMg8j.js";const f=({language:o})=>{const t=a(),r=(t["*"]||"").replace(/^\//,""),e=t.category?`${t.category}/${r}`:r;return s.jsx(m,{file:e||"",language:o})};export{f as default};
