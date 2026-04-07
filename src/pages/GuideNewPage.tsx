@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { Layout, Menu, Button } from 'antd';
-import { Outlet, Link, useLocation, useParams } from 'react-router-dom';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
+import React, { useMemo, useState, useRef } from 'react';
+import { Layout, Menu, Button, Input } from 'antd';
+import { Outlet, Link, useLocation, useParams, useNavigate } from 'react-router-dom';
+import { MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons';
 import FooterComponent from '../components/Footer';
+import { translations } from '../translations';
 
 const { Sider, Content } = Layout;
 const CATEGORY_SLUG = 'beginner-tutorial';
@@ -10,8 +11,14 @@ const CATEGORY_SLUG = 'beginner-tutorial';
 const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
   const location = useLocation();
   const { category, slug } = useParams();
+  const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const contentCacheRef = useRef(new Map<string, string>());
 
   const tutorialItems = useMemo(() => (
     language === 'zh'
@@ -56,12 +63,110 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
       ? {
           welcome: '欢迎页',
           beginner: '初级教程',
+          searchPlaceholder: '搜索教程...',
+          searching: '搜索中...',
+          searchResults: '搜索结果',
+          noResults: '未找到相关内容',
         }
       : {
           welcome: 'Welcome',
           beginner: 'Beginner Tutorial',
+          searchPlaceholder: 'Search tutorials...',
+          searching: 'Searching...',
+          searchResults: 'Search Results',
+          noResults: 'No results found',
         }
   ), [language]);
+
+  const t = labels;
+
+  // 搜索功能
+  const searchTutorials = async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const results: any[] = [];
+
+    for (const item of tutorialItems) {
+      const labelLower = item.label.toLowerCase();
+      const queryLower = query.trim().toLowerCase();
+      
+      if (labelLower.includes(queryLower)) {
+        results.push({
+          key: item.slug,
+          label: item.label,
+          path: `/guide/new/${CATEGORY_SLUG}/${item.slug}`,
+          score: 100,
+          matchType: 'title' as const,
+        });
+        continue;
+      }
+
+      // 搜索文档内容
+      try {
+        const filePath = `/newcontent/${language}/${CATEGORY_SLUG}/${item.slug}.md`;
+        let content = contentCacheRef.current.get(filePath);
+        if (!content) {
+          const response = await fetch(filePath);
+          if (response.ok) {
+            content = await response.text();
+            contentCacheRef.current.set(filePath, content);
+          }
+        }
+
+        if (content && content.toLowerCase().includes(queryLower)) {
+          const matchIndex = content.toLowerCase().indexOf(queryLower);
+          const start = Math.max(0, matchIndex - 40);
+          const end = Math.min(content.length, matchIndex + 80);
+          const highlight = content.slice(start, end).replace(/\s+/g, ' ').trim();
+
+          results.push({
+            key: item.slug,
+            label: item.label,
+            path: `/guide/new/${CATEGORY_SLUG}/${item.slug}`,
+            score: 60,
+            matchType: 'content' as const,
+            highlight,
+          });
+        }
+      } catch (error) {
+        console.error(`Error searching ${item.slug}:`, error);
+      }
+    }
+
+    results.sort((a, b) => b.score - a.score);
+    setSearchResults(results.slice(0, 10));
+    setIsSearching(false);
+  };
+
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setSearchQuery(value);
+
+    if (!value.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      searchTutorials(value);
+    }, 250);
+  };
+
+  const handleResultClick = (path: string) => {
+    navigate(path);
+    setSearchQuery('');
+    setSearchResults([]);
+  };
 
   const menuItems = useMemo(() => [
     { key: 'welcome', label: <Link to="/guide/new">{labels.welcome}</Link> },
@@ -122,6 +227,90 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           left: broken ? 0 : 'auto',
         }}
       >
+        <div style={{ padding: '12px', borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)' }}>
+          <Input
+            placeholder={t.searchPlaceholder}
+            prefix={<SearchOutlined />}
+            value={searchQuery}
+            onChange={handleSearchChange}
+            allowClear
+            style={{
+              background: darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(255,255,255,0.5)',
+              borderRadius: '8px',
+            }}
+          />
+        </div>
+
+        {searchQuery && (
+          <div style={{
+            padding: '8px 12px',
+            borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)',
+            maxHeight: '300px',
+            overflowY: 'auto'
+          }}>
+            {isSearching ? (
+              <div style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', padding: '8px' }}>
+                {t.searching}
+              </div>
+            ) : searchResults.length > 0 ? (
+              <>
+                <div style={{
+                  fontSize: '12px',
+                  color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+                  marginBottom: '8px',
+                  fontWeight: 'bold'
+                }}>
+                  {t.searchResults} ({searchResults.length})
+                </div>
+                {searchResults.map((result, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleResultClick(result.path)}
+                    style={{
+                      padding: '8px 12px',
+                      marginBottom: '4px',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      background: darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
+                      transition: 'background 0.2s',
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.background = darkMode ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.background = darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)';
+                    }}
+                  >
+                    <div style={{
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: darkMode ? '#fff' : '#000',
+                      marginBottom: '4px',
+                    }}>
+                      {result.label}
+                    </div>
+                    {result.matchType === 'content' && result.highlight && (
+                      <div style={{
+                        fontSize: '12px',
+                        color: darkMode ? 'rgba(255,255,255,0.6)' : 'rgba(0,0,0,0.6)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap'
+                      }}>
+                        {result.highlight}
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div style={{ color: darkMode ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)', padding: '8px' }}>
+                {t.noResults}
+              </div>
+            )}
+          </div>
+        )}
+
         <Menu
           theme={darkMode ? 'dark' : 'light'}
           mode="inline"
