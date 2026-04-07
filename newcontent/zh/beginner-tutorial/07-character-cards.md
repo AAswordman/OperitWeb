@@ -118,3 +118,9 @@
 这些提示词的拼接可以通过 **禁用项** 去控制开关。
 
 ![](/manuals/assets/images/3.jpg)
+
+## 导航
+
+- [返回欢迎页](/#/guide/new)
+- [上一篇：06. 上下文与压缩](/#/guide/new/beginner-tutorial/06-context-and-compression)
+- [下一篇：08. 内置工具与权限](/#/guide/new/beginner-tutorial/08-built-in-tools-and-permissions)

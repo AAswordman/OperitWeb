@@ -1,4 +1,4 @@
-# 15. 数据备份
+# 14. 数据备份
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：14. 工作区基础](/#/guide/new/beginner-tutorial/14-workspace-basics)
-- [下一篇：16. 统计](/#/guide/new/beginner-tutorial/16-statistics)
+- [上一篇：13. 工作区基础](/#/guide/new/beginner-tutorial/13-workspace-basics)
+- [下一篇：15. 统计](/#/guide/new/beginner-tutorial/15-statistics)
 

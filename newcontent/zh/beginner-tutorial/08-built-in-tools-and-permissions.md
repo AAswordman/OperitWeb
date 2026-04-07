@@ -1,4 +1,4 @@
-# 09. 内置工具与权限
+# 08. 内置工具与权限
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：08. 角色标签](/#/guide/new/beginner-tutorial/08-character-tags)
-- [下一篇：10. 工具：沙盒包](/#/guide/new/beginner-tutorial/10-tool-sandbox-package)
+- [上一篇：07. 角色卡、标签、群聊](/#/guide/new/beginner-tutorial/07-character-cards)
+- [下一篇：09. 工具：沙盒包](/#/guide/new/beginner-tutorial/09-tool-sandbox-package)
 
