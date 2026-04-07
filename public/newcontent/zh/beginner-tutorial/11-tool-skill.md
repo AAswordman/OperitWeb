@@ -1,4 +1,4 @@
-# 12. 工具：SKILL
+# 11. 工具：SKILL
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
-- [下一篇：13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
+- [上一篇：10. 工具：MCP](/#/guide/new/beginner-tutorial/10-tool-mcp)
+- [下一篇：12. WAIFU模式](/#/guide/new/beginner-tutorial/12-waifu-mode)
 

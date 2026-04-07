@@ -1,4 +1,4 @@
-# 10. 工具：沙盒包
+# 09. 工具：沙盒包
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：09. 内置工具与权限](/#/guide/new/beginner-tutorial/09-built-in-tools-and-permissions)
-- [下一篇：11. 工具：MCP](/#/guide/new/beginner-tutorial/11-tool-mcp)
+- [上一篇：08. 内置工具与权限](/#/guide/new/beginner-tutorial/08-built-in-tools-and-permissions)
+- [下一篇：10. 工具：MCP](/#/guide/new/beginner-tutorial/10-tool-mcp)
 

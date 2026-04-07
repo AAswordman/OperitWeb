@@ -1,4 +1,4 @@
-# 14. 工作区基础
+# 13. 工作区基础
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：13. WAIFU模式](/#/guide/new/beginner-tutorial/13-waifu-mode)
-- [下一篇：15. 数据备份](/#/guide/new/beginner-tutorial/15-data-backup)
+- [上一篇：12. WAIFU模式](/#/guide/new/beginner-tutorial/12-waifu-mode)
+- [下一篇：14. 数据备份](/#/guide/new/beginner-tutorial/14-data-backup)
 

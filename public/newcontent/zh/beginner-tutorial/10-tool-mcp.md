@@ -1,4 +1,4 @@
-# 11. 工具：MCP
+# 10. 工具：MCP
 
 > 占位文档。后续会补充正式内容。
 
@@ -16,6 +16,6 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：10. 工具：沙盒包](/#/guide/new/beginner-tutorial/10-tool-sandbox-package)
-- [下一篇：12. 工具：SKILL](/#/guide/new/beginner-tutorial/12-tool-skill)
+- [上一篇：09. 工具：沙盒包](/#/guide/new/beginner-tutorial/09-tool-sandbox-package)
+- [下一篇：11. 工具：SKILL](/#/guide/new/beginner-tutorial/11-tool-skill)
 
