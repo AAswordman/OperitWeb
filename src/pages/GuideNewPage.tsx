@@ -3,7 +3,6 @@ import { Layout, Menu, Button, Input } from 'antd';
 import { Outlet, Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons';
 import FooterComponent from '../components/Footer';
-import { translations } from '../translations';
 
 const { Sider, Content } = Layout;
 const CATEGORY_SLUG = 'beginner-tutorial';
