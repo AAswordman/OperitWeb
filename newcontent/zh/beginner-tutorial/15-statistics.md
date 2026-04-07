@@ -16,5 +16,5 @@
 ## 导航
 
 - [返回欢迎页](/#/guide/new)
-- [上一篇：14. 数据备份](/#/guide/new/beginner-tutorial/15-data-backup)
+- [上一篇：14. 数据备份](/#/guide/new/beginner-tutorial/14-data-backup)
 
