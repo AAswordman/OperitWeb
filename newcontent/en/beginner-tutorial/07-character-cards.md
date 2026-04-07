@@ -118,9 +118,3 @@ Yes, the above does NOT include **memory**. Memory must be actively called via *
 The concatenation of these prompts can be controlled via **Disable Items**.
 
 ![](/manuals/assets/images/3.jpg)
-
-## Navigation
-
-- [Return to Welcome Page](/#/guide/new)
-- [Previous: 06. Context and Compression](/#/guide/new/beginner-tutorial/06-context-and-compression)
-- [Next: 08. Built-in Tools and Permissions](/#/guide/new/beginner-tutorial/08-built-in-tools-and-permissions)
