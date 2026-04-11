@@ -31,17 +31,28 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 最基础的工具之一。可以读取**文本文件**的内容，也可以读取**媒体文件**（比如图片、音频等），后者会调用后端识别模型进行分析。
 
-参数很简单：给一个**文件路径**就行。如果是媒体文件，还可以传一个`intent`参数，告诉AI你想问关于这个文件的什么问题。
-
 路径分为两种环境：
 - **Android**：默认环境，路径形如`/sdcard/Download/xxx.txt`
 - **Linux**：本地Ubuntu环境，路径形如`/home/user/xxx`
 
 另外还支持`repo:<仓库名>`的格式，用来读取附加的本地储存仓库里的文件。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 文件路径 |
+| `environment` | string | ❌ | 执行环境：`"android"`（默认）/ `"linux"` / `"repo:<仓库名>"` |
+| `intent` | string | ❌ | 对媒体文件的问题（用于后端识别模型分析） |
+
 #### read_file_part — 按行号读取文件
 
 和`read_file`类似，但可以指定**起始行号**和**结束行号**。适合读取大文件的一部分，比如只看第10到第50行。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 文件路径 |
+| `start_line` | number | ❌ | 起始行号，从1开始，默认1 |
+| `end_line` | number | ❌ | 结束行号（含该行），默认 start_line + 99 |
+| `environment` | string | ❌ | 同 `read_file` 的 `environment` |
 
 ### 文件编辑类
 
@@ -55,13 +66,33 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 有一点要注意：如果要**重写整个已存在的文件**，不要直接用`apply_file`覆盖，应该先用`delete_file`删掉，再通过`apply_file`的`create`模式创建。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 文件路径 |
+| `type` | string | ✅ | 操作类型：`"replace"` / `"delete"` / `"create"` |
+| `old` | string | ⚠️ | 匹配的内容（replace/delete 时必填） |
+| `new` | string | ⚠️ | 要插入的新内容（replace/create 时必填） |
+| `environment` | string | ❌ | 执行环境 |
+
 #### delete_file — 删除文件或目录
 
 删除指定的文件或目录。如果目标是目录且不为空，需要把`recursive`参数设为`true`才会递归删除。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 目标路径 |
+| `recursive` | boolean | ❌ | 是否递归删除，默认 `false` |
+| `environment` | string | ❌ | 执行环境 |
+
 #### make_directory — 创建目录
 
 创建目录。如果父目录不存在，把`create_parents`设为`true`可以自动创建所有缺失的父目录（类似`mkdir -p`）。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 目录路径 |
+| `create_parents` | boolean | ❌ | 是否自动创建父目录，默认 `false` |
+| `environment` | string | ❌ | 执行环境 |
 
 ### 文件搜索类
 
@@ -69,13 +100,37 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 列出指定目录下的文件和子目录。和电脑上的`ls`命令类似，会显示文件大小、修改时间等信息。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 目录路径，如 `"/sdcard/Download"` |
+| `environment` | string | ❌ | 执行环境 |
+
 #### find_files — 按模式搜索文件
 
 在指定目录下搜索匹配某个模式的文件。比如搜索`*.jpg`就能找出所有图片文件。支持控制**搜索深度**，也支持**路径模式匹配**。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 搜索路径 |
+| `pattern` | string | ✅ | 搜索模式，如 `"*.jpg"` |
+| `max_depth` | number | ❌ | 子目录搜索深度，`-1` 为无限 |
+| `use_path_pattern` | boolean | ❌ | 是否使用路径模式匹配，默认 `false` |
+| `case_insensitive` | boolean | ❌ | 是否忽略大小写，默认 `false` |
+| `environment` | string | ❌ | 执行环境 |
+
 #### grep_code — 正则搜索代码
 
 在文件中搜索匹配**正则表达式**的内容，并返回带有**上下文**的匹配结果。适合精确搜索代码片段，可以指定文件过滤模式（比如只搜`.ts`文件）。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 搜索路径 |
+| `pattern` | string | ✅ | 正则表达式模式 |
+| `file_pattern` | string | ❌ | 文件过滤，如 `"*.ts"`，默认 `"*"` |
+| `context_lines` | number | ❌ | 匹配行前后的上下文行数，默认 3 |
+| `max_results` | number | ❌ | 最大匹配数，默认 100 |
+| `case_insensitive` | boolean | ❌ | 是否忽略大小写，默认 `false` |
+| `environment` | string | ❌ | 执行环境 |
 
 #### grep_context — 语义搜索
 
@@ -84,6 +139,14 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 - **文件模式**：传入文件路径，找出文件内最相关的代码段
 
 它基于**语义相关性评分**，不需要精确的关键词匹配，而是理解你的意图去找内容。比如你想找"路由相关的代码"，它就能把路由文件排在前面。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `path` | string | ✅ | 目录或文件路径 |
+| `intent` | string | ✅ | 意图或上下文描述字符串 |
+| `file_pattern` | string | ❌ | 目录模式下的文件过滤，默认 `"*"` |
+| `max_results` | number | ❌ | 返回的最大项数，默认 10 |
+| `environment` | string | ❌ | 执行环境 |
 
 ### 网络类
 
@@ -95,11 +158,31 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 需要注意：这个工具只用于**浏览和读取**，不能执行登录、点击、填表等交互操作。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `url` | string | ❌ | 要访问的网页URL |
+| `visit_key` | string | ❌ | 上一次 visit_web 返回的 visitKey |
+| `link_number` | number | ❌ | 要继续访问的链接编号（从1开始） |
+| `include_image_links` | boolean | ❌ | 是否提取图片链接，默认 `false` |
+| `user_agent` | string | ❌ | 完整自定义UA |
+| `user_agent_preset` | string | ❌ | UA预设：`"desktop"` / `"android"` |
+| `headers` | string | ❌ | 自定义请求头，JSON字符串 |
+
 #### download_file — 下载文件
 
 从互联网下载文件到本地。有两种用法：
 - 直接提供`url`和`destination`下载
 - 配合`visit_web`的结果，用`visit_key`加`link_number`或`image_number`按编号下载
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `destination` | string | ✅ | 保存路径 |
+| `url` | string | ❌ | 文件URL |
+| `visit_key` | string | ❌ | 上一次 visit_web 返回的 visitKey |
+| `link_number` | number | ❌ | Results 中的链接编号 |
+| `image_number` | number | ❌ | Images 中的图片编号 |
+| `headers` | string | ❌ | 自定义请求头，JSON字符串 |
+| `environment` | string | ❌ | 执行环境 |
 
 ### 记忆类
 
@@ -107,9 +190,27 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 从**记忆库**中搜索相关的记忆和文档分块。支持自然语言问题、空格分隔的短语，或用`|`分隔多个关键词。可以按时间范围过滤，也支持分页（通过`snapshot_id`排除已返回过的结果）。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `query` | string | ✅ | 搜索查询，支持自然语言/关键词/`*`通配 |
+| `folder_path` | string | ❌ | 要搜索的特定文件夹路径 |
+| `limit` | number | ❌ | 返回结果最大数量，默认 20 |
+| `threshold` | number | ❌ | 最小相关度分数，默认 0 |
+| `snapshot_id` | string | ❌ | 快照ID，用于分页排除已返回结果 |
+| `start_time` | string | ❌ | 起始时间过滤，格式 `YYYY-MM-DD` |
+| `end_time` | string | ❌ | 结束时间过滤，格式 `YYYY-MM-DD` |
+
 #### get_memory_by_title — 按标题获取记忆
 
 通过**精确标题**检索记忆，可读取完整内容或文档分块。也可以在文档内部搜索匹配的分块。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `title` | string | ✅ | 记忆的精确标题 |
+| `chunk_index` | number | ❌ | 读取特定编号的分块 |
+| `chunk_range` | string | ❌ | 分块范围，如 `"3-7"` |
+| `query` | string | ❌ | 在文档内部搜索匹配分块 |
+| `limit` | number | ❌ | 使用 query 时最多返回的分块数，默认 20 |
 
 ### 系统类
 
@@ -117,15 +218,28 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 演示用的暂停工具。让AI等待指定的毫秒数。一般在需要给系统一些反应时间的时候用到。
 
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `duration_ms` | number | ❌ | 等待毫秒数，默认 1000，≥ 0 |
+
 #### use_package — 激活包
 
 用来激活扩展功能包。传入`package_name`参数即可。包被激活后，里面的工具就可以通过`package_proxy`调用了。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `package_name` | string | ✅ | 要激活的包名 |
 
 #### package_proxy — 包代理调用
 
 当包被`use_package`激活后，就可以用这个工具调用包里面的具体工具。调用格式是`包名:工具名`，参数放在`params`里。
 
 这就是为什么前面说，ai会用`use_package`去拆开工具包，然后用`包名:工具名`的方式去调用——`package_proxy`就是那个中间代理。
+
+| 参数 | 类型 | 必填 | 说明 |
+|------|------|------|------|
+| `tool_name` | string | ✅ | 目标工具名，如 `包名:工具名` |
+| `params` | object | ✅ | 传递给目标工具的参数（JSON对象） |
 
 
 ## 工具授权
