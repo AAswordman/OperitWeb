@@ -39,9 +39,9 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 文件路径 |
-| `environment` | string | ❌ | 执行环境：`"android"`（默认）/ `"linux"` / `"repo:<仓库名>"` |
-| `intent` | string | ❌ | 对媒体文件的问题（用于后端识别模型分析） |
+| `path` | string | 是 | 文件路径 |
+| `environment` | string | 否 | 执行环境：`"android"`（默认）/ `"linux"` / `"repo:<仓库名>"` |
+| `intent` | string | 否 | 对媒体文件的问题（用于后端识别模型分析） |
 
 #### read_file_part — 按行号读取文件
 
@@ -49,10 +49,10 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 文件路径 |
-| `start_line` | number | ❌ | 起始行号，从1开始，默认1 |
-| `end_line` | number | ❌ | 结束行号（含该行），默认 start_line + 99 |
-| `environment` | string | ❌ | 同 `read_file` 的 `environment` |
+| `path` | string | 是 | 文件路径 |
+| `start_line` | number | 否 | 起始行号，从1开始，默认1 |
+| `end_line` | number | 否 | 结束行号（含该行），默认 start_line + 99 |
+| `environment` | string | 否 | 同 `read_file` 的 `environment` |
 
 ### 文件编辑类
 
@@ -68,11 +68,11 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 文件路径 |
-| `type` | string | ✅ | 操作类型：`"replace"` / `"delete"` / `"create"` |
-| `old` | string | ⚠️ | 匹配的内容（replace/delete 时必填） |
-| `new` | string | ⚠️ | 要插入的新内容（replace/create 时必填） |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 文件路径 |
+| `type` | string | 是 | 操作类型：`"replace"` / `"delete"` / `"create"` |
+| `old` | string | 条件必填 | 匹配的内容（replace/delete 时必填） |
+| `new` | string | 条件必填 | 要插入的新内容（replace/create 时必填） |
+| `environment` | string | 否 | 执行环境 |
 
 #### delete_file — 删除文件或目录
 
@@ -80,9 +80,9 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 目标路径 |
-| `recursive` | boolean | ❌ | 是否递归删除，默认 `false` |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 目标路径 |
+| `recursive` | boolean | 否 | 是否递归删除，默认 `false` |
+| `environment` | string | 否 | 执行环境 |
 
 #### make_directory — 创建目录
 
@@ -90,9 +90,9 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 目录路径 |
-| `create_parents` | boolean | ❌ | 是否自动创建父目录，默认 `false` |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 目录路径 |
+| `create_parents` | boolean | 否 | 是否自动创建父目录，默认 `false` |
+| `environment` | string | 否 | 执行环境 |
 
 ### 文件搜索类
 
@@ -102,8 +102,8 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 目录路径，如 `"/sdcard/Download"` |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 目录路径，如 `"/sdcard/Download"` |
+| `environment` | string | 否 | 执行环境 |
 
 #### find_files — 按模式搜索文件
 
@@ -111,12 +111,12 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 搜索路径 |
-| `pattern` | string | ✅ | 搜索模式，如 `"*.jpg"` |
-| `max_depth` | number | ❌ | 子目录搜索深度，`-1` 为无限 |
-| `use_path_pattern` | boolean | ❌ | 是否使用路径模式匹配，默认 `false` |
-| `case_insensitive` | boolean | ❌ | 是否忽略大小写，默认 `false` |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 搜索路径 |
+| `pattern` | string | 是 | 搜索模式，如 `"*.jpg"` |
+| `max_depth` | number | 否 | 子目录搜索深度，`-1` 为无限 |
+| `use_path_pattern` | boolean | 否 | 是否使用路径模式匹配，默认 `false` |
+| `case_insensitive` | boolean | 否 | 是否忽略大小写，默认 `false` |
+| `environment` | string | 否 | 执行环境 |
 
 #### grep_code — 正则搜索代码
 
@@ -124,13 +124,13 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 搜索路径 |
-| `pattern` | string | ✅ | 正则表达式模式 |
-| `file_pattern` | string | ❌ | 文件过滤，如 `"*.ts"`，默认 `"*"` |
-| `context_lines` | number | ❌ | 匹配行前后的上下文行数，默认 3 |
-| `max_results` | number | ❌ | 最大匹配数，默认 100 |
-| `case_insensitive` | boolean | ❌ | 是否忽略大小写，默认 `false` |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 搜索路径 |
+| `pattern` | string | 是 | 正则表达式模式 |
+| `file_pattern` | string | 否 | 文件过滤，如 `"*.ts"`，默认 `"*"` |
+| `context_lines` | number | 否 | 匹配行前后的上下文行数，默认 3 |
+| `max_results` | number | 否 | 最大匹配数，默认 100 |
+| `case_insensitive` | boolean | 否 | 是否忽略大小写，默认 `false` |
+| `environment` | string | 否 | 执行环境 |
 
 #### grep_context — 语义搜索
 
@@ -142,11 +142,11 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `path` | string | ✅ | 目录或文件路径 |
-| `intent` | string | ✅ | 意图或上下文描述字符串 |
-| `file_pattern` | string | ❌ | 目录模式下的文件过滤，默认 `"*"` |
-| `max_results` | number | ❌ | 返回的最大项数，默认 10 |
-| `environment` | string | ❌ | 执行环境 |
+| `path` | string | 是 | 目录或文件路径 |
+| `intent` | string | 是 | 意图或上下文描述字符串 |
+| `file_pattern` | string | 否 | 目录模式下的文件过滤，默认 `"*"` |
+| `max_results` | number | 否 | 返回的最大项数，默认 10 |
+| `environment` | string | 否 | 执行环境 |
 
 ### 网络类
 
@@ -160,13 +160,13 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `url` | string | ❌ | 要访问的网页URL |
-| `visit_key` | string | ❌ | 上一次 visit_web 返回的 visitKey |
-| `link_number` | number | ❌ | 要继续访问的链接编号（从1开始） |
-| `include_image_links` | boolean | ❌ | 是否提取图片链接，默认 `false` |
-| `user_agent` | string | ❌ | 完整自定义UA |
-| `user_agent_preset` | string | ❌ | UA预设：`"desktop"` / `"android"` |
-| `headers` | string | ❌ | 自定义请求头，JSON字符串 |
+| `url` | string | 否 | 要访问的网页URL |
+| `visit_key` | string | 否 | 上一次 visit_web 返回的 visitKey |
+| `link_number` | number | 否 | 要继续访问的链接编号（从1开始） |
+| `include_image_links` | boolean | 否 | 是否提取图片链接，默认 `false` |
+| `user_agent` | string | 否 | 完整自定义UA |
+| `user_agent_preset` | string | 否 | UA预设：`"desktop"` / `"android"` |
+| `headers` | string | 否 | 自定义请求头，JSON字符串 |
 
 #### download_file — 下载文件
 
@@ -176,13 +176,13 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `destination` | string | ✅ | 保存路径 |
-| `url` | string | ❌ | 文件URL |
-| `visit_key` | string | ❌ | 上一次 visit_web 返回的 visitKey |
-| `link_number` | number | ❌ | Results 中的链接编号 |
-| `image_number` | number | ❌ | Images 中的图片编号 |
-| `headers` | string | ❌ | 自定义请求头，JSON字符串 |
-| `environment` | string | ❌ | 执行环境 |
+| `destination` | string | 是 | 保存路径 |
+| `url` | string | 否 | 文件URL |
+| `visit_key` | string | 否 | 上一次 visit_web 返回的 visitKey |
+| `link_number` | number | 否 | Results 中的链接编号 |
+| `image_number` | number | 否 | Images 中的图片编号 |
+| `headers` | string | 否 | 自定义请求头，JSON字符串 |
+| `environment` | string | 否 | 执行环境 |
 
 ### 记忆类
 
@@ -192,13 +192,13 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `query` | string | ✅ | 搜索查询，支持自然语言/关键词/`*`通配 |
-| `folder_path` | string | ❌ | 要搜索的特定文件夹路径 |
-| `limit` | number | ❌ | 返回结果最大数量，默认 20 |
-| `threshold` | number | ❌ | 最小相关度分数，默认 0 |
-| `snapshot_id` | string | ❌ | 快照ID，用于分页排除已返回结果 |
-| `start_time` | string | ❌ | 起始时间过滤，格式 `YYYY-MM-DD` |
-| `end_time` | string | ❌ | 结束时间过滤，格式 `YYYY-MM-DD` |
+| `query` | string | 是 | 搜索查询，支持自然语言/关键词/`*`通配 |
+| `folder_path` | string | 否 | 要搜索的特定文件夹路径 |
+| `limit` | number | 否 | 返回结果最大数量，默认 20 |
+| `threshold` | number | 否 | 最小相关度分数，默认 0 |
+| `snapshot_id` | string | 否 | 快照ID，用于分页排除已返回结果 |
+| `start_time` | string | 否 | 起始时间过滤，格式 `YYYY-MM-DD` |
+| `end_time` | string | 否 | 结束时间过滤，格式 `YYYY-MM-DD` |
 
 #### get_memory_by_title — 按标题获取记忆
 
@@ -206,11 +206,11 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `title` | string | ✅ | 记忆的精确标题 |
-| `chunk_index` | number | ❌ | 读取特定编号的分块 |
-| `chunk_range` | string | ❌ | 分块范围，如 `"3-7"` |
-| `query` | string | ❌ | 在文档内部搜索匹配分块 |
-| `limit` | number | ❌ | 使用 query 时最多返回的分块数，默认 20 |
+| `title` | string | 是 | 记忆的精确标题 |
+| `chunk_index` | number | 否 | 读取特定编号的分块 |
+| `chunk_range` | string | 否 | 分块范围，如 `"3-7"` |
+| `query` | string | 否 | 在文档内部搜索匹配分块 |
+| `limit` | number | 否 | 使用 query 时最多返回的分块数，默认 20 |
 
 ### 系统类
 
@@ -220,7 +220,7 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `duration_ms` | number | ❌ | 等待毫秒数，默认 1000，≥ 0 |
+| `duration_ms` | number | 否 | 等待毫秒数，默认 1000，≥ 0 |
 
 #### use_package — 激活包
 
@@ -228,7 +228,7 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `package_name` | string | ✅ | 要激活的包名 |
+| `package_name` | string | 是 | 要激活的包名 |
 
 #### package_proxy — 包代理调用
 
@@ -238,8 +238,8 @@ ai链式工具调用的流程大概是: 提交用户问题 -> ai调用工具 -> 
 
 | 参数 | 类型 | 必填 | 说明 |
 |------|------|------|------|
-| `tool_name` | string | ✅ | 目标工具名，如 `包名:工具名` |
-| `params` | object | ✅ | 传递给目标工具的参数（JSON对象） |
+| `tool_name` | string | 是 | 目标工具名，如 `包名:工具名` |
+| `params` | object | 是 | 传递给目标工具的参数（JSON对象） |
 
 
 ## 工具授权
