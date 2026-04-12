@@ -22,8 +22,21 @@ Of course, that's not the whole story. Some tools should be available without ac
 
 This tutorial will cover these regular tools (built-in tools) in detail. Package tools will be covered in a future tutorial.
 
-## Built-in Tools
+## Managing Built-in Tools
 
+Before we go into the details of each built-in tool, let's talk about how to manage them.
+
+If you want to **enable or disable** a specific built-in tool, there are two ways:
+
+1. **Chat menu**: In the chat interface menu, find "Disabled items" — here you can manage tools and set any built-in tool to disabled.
+
+![Tool prompt management](</manuals/assets/tools/tool_prompt_management.jpg>)
+
+2. **Character card advanced options**: In the character card editing interface's advanced options, you can set a **tool whitelist** to precisely control which tools are allowed for that character card.
+
+![Character card tool whitelist](</manuals/assets/tools/character_card_tool_whitelist.jpg>)
+
+## Built-in Tools in Detail
 This section goes into detail. AI hallucinations are normal, and when they happen, you need to guide the AI to correctly invoke the built-in tools.
 
 ### File Reading
