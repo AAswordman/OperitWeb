@@ -3,6 +3,7 @@ import {
   readJson,
   parseAllowedOrigins,
   buildCorsHeaders,
+  isOriginAllowed,
   clampInt,
   validateSubmission,
   validateLookup,
@@ -611,6 +612,10 @@ export default {
 
     if (request.method === 'OPTIONS') {
       return new Response(null, { status: 204, headers: corsHeaders });
+    }
+
+    if (!isOriginAllowed(origin, allowedOrigins)) {
+      return json({ error: 'origin_not_allowed' }, 403, corsHeaders);
     }
 
     if (url.pathname === '/api/health') {

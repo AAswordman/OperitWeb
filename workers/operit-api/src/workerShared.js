@@ -1,5 +1,6 @@
 const DEFAULT_ALLOWED_ORIGINS = [
   'https://operit.app',
+  'https://www.operit.app',
   'https://operit.aaswordsman.org',
   'https://www.aaswordsman.org',
   'http://localhost:5173',
@@ -49,15 +50,20 @@ function buildCorsHeaders(origin, allowedOrigins) {
     'Access-Control-Allow-Methods': 'GET,POST,OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Operit-Admin-Token, X-Operit-Owner-Token',
     'Access-Control-Max-Age': '86400',
+    Vary: 'Origin',
   };
 
   if (origin && allowedOrigins.has(origin)) {
     headers['Access-Control-Allow-Origin'] = origin;
     headers['Access-Control-Allow-Credentials'] = 'true';
-    headers['Vary'] = 'Origin';
   }
 
   return headers;
+}
+
+function isOriginAllowed(origin, allowedOrigins) {
+  if (!origin) return true;
+  return allowedOrigins.has(origin);
 }
 
 function normalizePath(value) {
@@ -322,6 +328,7 @@ export {
   json,
   parseAllowedOrigins,
   buildCorsHeaders,
+  isOriginAllowed,
   normalizePath,
   normalizePrefix,
   joinPath,

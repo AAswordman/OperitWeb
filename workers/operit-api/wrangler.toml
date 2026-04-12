@@ -7,7 +7,7 @@ workers_dev = true
 routes = ["api.aaswordsman.org/*"]
 
 [vars]
-OPERIT_ALLOWED_ORIGINS = "https://operit.app,https://operit.aaswordsman.org,http://localhost:5173,http://127.0.0.1:5173"
+OPERIT_ALLOWED_ORIGINS = "https://operit.app,https://www.operit.app,https://operit.aaswordsman.org,http://localhost:5173,http://127.0.0.1:5173"
 OPERIT_TURNSTILE_SITE_KEY = "0x4AAAAAACYav8V4Md9nh4Z0"
 OPERIT_GITHUB_AUTO_PR = "true"
 OPERIT_GITHUB_OWNER = "AAswordman"

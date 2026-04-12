@@ -1,12 +1,14 @@
 @echo off
 setlocal enabledelayedexpansion
 
-REM Deploy operit-api with one command.
-REM Usage: workers\worker_submit.bat
+REM Deploy a worker in the workers folder with one command.
+REM Usage: workers\worker_submit.bat [worker-name]
 
 set "ROOT=%~dp0.."
 set "ENV_FILE=%ROOT%\.env.local"
-set "WORKER_DIR=%ROOT%\workers\operit-api"
+set "WORKER_NAME=%~1"
+if "%WORKER_NAME%"=="" set "WORKER_NAME=operit-api"
+set "WORKER_DIR=%ROOT%\workers\%WORKER_NAME%"
 set "NPM_CACHE=%ROOT%\.npm-cache"
 set "NPM_REGISTRY=https://registry.npmjs.org/"
 set "WRANGLER_ARGS=deploy"
@@ -43,23 +45,20 @@ if "%CLOUDFLARE_API_TOKEN%"=="" (
 
 pushd "%WORKER_DIR%" >nul
 
+if not "%WORKER_WRANGLER_CMD%"=="" (
+  echo Using WORKER_WRANGLER_CMD: %WORKER_WRANGLER_CMD%
+  call %WORKER_WRANGLER_CMD%
+  set "EXITCODE=%ERRORLEVEL%"
+  popd >nul
+  exit /b %EXITCODE%
+)
+
 if not "%OPERIT_WRANGLER_CMD%"=="" (
   echo Using OPERIT_WRANGLER_CMD: %OPERIT_WRANGLER_CMD%
   call %OPERIT_WRANGLER_CMD%
   set "EXITCODE=%ERRORLEVEL%"
   popd >nul
   exit /b %EXITCODE%
-)
-
-REM Try direct CLI from local npx cache to avoid spawn EPERM in wrangler wrapper.
-for /d %%D in ("%NPM_CACHE%\\_npx\\*") do (
-  if exist "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" (
-    echo Using cached wrangler CLI
-    call node "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" %WRANGLER_ARGS%
-    set "EXITCODE=%ERRORLEVEL%"
-    popd >nul
-    exit /b %EXITCODE%
-  )
 )
 
 where npx >nul 2>&1
@@ -69,6 +68,17 @@ if %ERRORLEVEL%==0 (
   set "EXITCODE=%ERRORLEVEL%"
   popd >nul
   exit /b %EXITCODE%
+)
+
+REM Fallback to direct CLI from local npx cache if PATH tools are unavailable.
+for /d %%D in ("%NPM_CACHE%\\_npx\\*") do (
+  if exist "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" (
+    echo Using cached wrangler CLI
+    call node "%%D\\node_modules\\wrangler\\wrangler-dist\\cli.js" %WRANGLER_ARGS%
+    set "EXITCODE=%ERRORLEVEL%"
+    popd >nul
+    exit /b %EXITCODE%
+  )
 )
 
 where pnpm >nul 2>&1
