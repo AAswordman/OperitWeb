@@ -36,12 +36,36 @@ Building on sandbox packages, we've also extended the Toolpkg plugin format (kin
 
 ## Built-in vs External
 
+Sandbox packages come in two types: built-in and external.
+
+Built-in packages are the ones that ship with the app — the ones listed in the table above. They come pre-installed and don't need any setup. You can't delete them, but you can toggle them on and off — just disable the ones you don't need.
+
+External packages are ones you import yourself. The process is straightforward: just place a `.js` script file or a `.toolpkg` plugin file into the external packages directory (`Android/data/com.ai.assistance.operit/files/packages`), and the app will detect it automatically. When you no longer need one, you can simply delete it by its file path.
+
+What's interesting is that from the AI's perspective, there's absolutely no difference between built-in and external packages. It just uses `use_package` to activate them and `package_proxy` to call the tools inside — it doesn't need to know where a package came from.
+
 ## Structure
+
+As mentioned earlier, a sandbox package is essentially a JS script running in the QuickJS engine. But it's not just any script — it interacts with the system through the app's built-in functions and interfaces.
+
+A basic sandbox package is simply a `.js` file. Inside the script, you can use `Tools.*` to call any of the app's built-in tools — meaning everything you saw in chapter 08 (read_file, apply_file, visit_web, etc.) is fully available inside sandbox packages. Beyond that, it can also interact directly with the app's Kotlin code through JavaBridge, making it extremely capable.
+
+Building on regular sandbox packages, we've extended a plugin format called **ToolPkg**. You can think of it as a bundled plugin package that can contain multiple scripts, resource files, and a configuration manifest. It's somewhat like Minecraft's modpkg — pack everything together, install one package, and get a whole suite of features. We'll cover ToolPkg in detail in a later tutorial.
+
+If you want to write your own sandbox packages, you can refer to the official script development documentation (available on GitHub), which includes complete API references and examples.
 
 ## Applications
 
+Talking about principles can be a bit abstract, so let's look at a few real-world scenarios to get a feel for what sandbox packages can actually do.
+
 ### Drawing Output
+
+You might wonder — how does the AI draw pictures? The drawing feature is actually implemented through sandbox packages. The app includes several drawing-related packages, each integrating a different drawing solution. You just need to enable one of the available drawing packages in the package manager — you don't need all of them. When the AI needs to generate an image, it automatically activates the corresponding package, calls the drawing tools inside, and presents the result to you.
 
 ### Delayed Reminders
 
+"Set an alarm for 8am tomorrow" or "Remind me about the meeting at 3pm" — these everyday tasks are handled by the `daily_life` sandbox package. It wraps system capabilities like alarms and reminders into tools the AI can call directly. When the AI receives your instruction, it activates this package and uses the reminder or alarm tools to complete the action. All you need to do is say what you want — the AI and the sandbox package handle everything else.
+
 ### File Conversion
+
+If you have a `.webp` image and want to convert it to `.jpg`, or a `.wav` audio file you'd like as `.mp3`, the format conversion is handled by the `file_converter` sandbox package. It wraps the power of FFmpeg and other conversion tools, supporting a wide range of conversions between audio, video, image, and document formats. Just tell the AI what file you want converted and to which format, and it will activate this package to get it done.
