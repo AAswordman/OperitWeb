@@ -60,7 +60,15 @@ Talking about principles can be a bit abstract, so let's look at a few real-worl
 
 ### Drawing Output
 
-You might wonder — how does the AI draw pictures? The drawing feature is actually implemented through sandbox packages. The app includes several drawing-related packages, each integrating a different drawing solution. You just need to enable one of the available drawing packages in the package manager — you don't need all of them. When the AI needs to generate an image, it automatically activates the corresponding package, calls the drawing tools inside, and presents the result to you.
+You might wonder — how does the AI draw pictures? The drawing feature is actually implemented through sandbox packages. The app includes multiple drawing-related packages, each integrating a different drawing service — such as MiniMax, OpenAI, SiliconFlow, Qwen, xAI, Zhipu, and more.
+
+![Drawing package list](</manuals/assets/tools/draw_package_list.jpg>)
+
+You just need to enable one of the available drawing packages in the package manager — you don't need all of them. When the AI needs to generate an image, it automatically activates the corresponding package, calls the drawing tools inside, and presents the result to you.
+
+One thing to keep in mind: drawing packages are a bit different from regular sandbox packages. They usually require **environment variables** to be configured (such as API Keys). In the package manager, each package has a few buttons on the right side — the first button opens the "Manage Configuration" dialog. Inside, you'll see exactly which environment variables need to be filled in. For example, the MiniMax drawing package requires `MINIMAX_API_KEY` before it can make API calls.
+
+![Drawing package environment variable configuration](</manuals/assets/tools/draw_package_env_config.jpg>)
 
 ### Delayed Reminders
 
