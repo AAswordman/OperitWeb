@@ -6,7 +6,7 @@ Following up on our discussion of progressive tool loading from the previous sec
 
 The software includes many built-in sandbox packages that implement a wide variety of functions. This section will break down the structure and principles of sandbox packages, and list all currently available packages. (Individual tools within each package won't be listed here — you can see those in the app itself.)
 
-The software currently includes the following **28 sandbox packages**:
+The software currently includes the following sandbox packages:
 
 | Package | Description |
 |---------|-------------|
@@ -19,18 +19,23 @@ The software currently includes the following **28 sandbox packages**:
 | `extended_http_tools` | Extended network tools: file uploads, GET/POST and other direct HTTP requests |
 | `extended_memory_tools` | Extended memory tools: create/update/delete/query/link memories, update user preferences |
 | `ffmpeg` | FFmpeg multimedia processing |
-| `file_converter` | File format conversion: audio/video (MP4, MOV, MP3, WAV), images (JPG, PNG, WEBP), documents (Markdown, HTML, DOCX, PDF) |
-| `super_admin` | Super admin toolkit: terminal commands and shell operations, terminal runs in Ubuntu environment, shell executes Android system commands via Shizuku/Root |
-| `system_tools` | System-level tools: settings management, app install/uninstall/launch, notification retrieval, location services, device info, Intent/broadcast calls |
+| `file_converter` | File format conversion: audio, video, image, and document conversions |
+| `super_admin` | Super admin toolkit: terminal commands and shell operations |
+
+And another category focused on system interaction and automation:
+
+| Package | Description |
+|---------|-------------|
+| `system_tools` | System-level tools: settings, app management, notifications, location, device info, Intent/broadcast |
 | `time` | Time-related functions |
 | `various_search` | Multi-platform search (including image search), supports Bing, Baidu, Sogou, Quark, etc. |
-| `workflow` | Workflow management: create/query/update/enable/disable/delete/trigger execution, supports on_success/on_error branching and voice triggers |
-| `Automatic_ui_subagent` | UI automation sub-agent, based on an independent UI controller model, automatically plans and executes click/input/swipe interface operations |
-| `bilibili_tools` | Bilibili video analysis: get subtitles, danmaku, comments, and search videos |
+| `workflow` | Workflow management: create/query/update/trigger, supports branching and voice triggers |
+| `Automatic_ui_subagent` | UI automation sub-agent, automatically plans and executes click/input/swipe operations |
+| `bilibili_tools` | Bilibili video analysis: subtitles, danmaku, comments, and search |
 | `linux_ssh` | Linux SSH connections, tmux long-running tasks, and remote file operations |
-| `browser` | Browser automation toolkit, aligned with Playwright MCP default browser tools |
-| `operit_editor` | Operit platform configuration editor: MCP, Skills, sandbox packages, feature model binding, model parameters, context summarization, TTS/STT voice service config |
-| `ctx_limiter_c` | Truncates the latest N context layers, keeps SYSTEM messages and the most recent N USER/ASSISTANT layers, mainly for APIs without caching |
+| `browser` | Browser automation toolkit, aligned with Playwright MCP browser tools |
+| `operit_editor` | Operit platform configuration editor: MCP, Skills, sandbox packages, model parameters, etc. |
+| `ctx_limiter_c` | Truncates the latest N context layers, mainly for APIs without caching |
 
 Building on sandbox packages, we've also extended the Toolpkg plugin format (kind of like Minecraft's modpkg?). This will be covered in detail in a later section.
 
