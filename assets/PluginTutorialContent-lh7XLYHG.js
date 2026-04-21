@@ -1,0 +1,1 @@
+import{g as i,j as n}from"./index-D_6qdL-2.js";import s from"./MarkdownRenderer-DrXi4zFN.js";import"./markdownPaths-B-q-dA2_.js";import"./EyeOutlined-B3bqXw2E.js";import"./addEventListener-C8AjUna4.js";const p=({language:r})=>{const{slug:t}=i(),o=t?`plugin-tutorial/${t}`:"plugin-tutorial/index";return n.jsx(s,{file:o,language:r})};export{p as default};
