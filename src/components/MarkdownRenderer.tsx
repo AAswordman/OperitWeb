@@ -202,56 +202,65 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
       const node = markdownBodyRef.current;
       const { default: html2canvas } = await import('html2canvas');
       const { default: JSZip } = await import('jszip');
-      const blockNodes = Array.from(node.children).filter(
-        (child): child is HTMLElement => child instanceof HTMLElement && child.offsetHeight > 0,
-      );
       const preferredChunkHeight = 1250;
       const minChunkHeight = 900;
       const hardChunkHeight = 1600;
       const minimumTailHeight = 600;
+      const tableSplitTargetHeight = 900;
       const isHeadingTag = (tagName: string) => /^H[1-6]$/i.test(tagName);
-      const blockRanges = blockNodes.map((child) => {
+      const blockNodes = Array.from(node.children).filter(
+        (child): child is HTMLElement => child instanceof HTMLElement && child.offsetHeight > 0,
+      );
+      const exportRoot = document.createElement('div');
+      exportRoot.className = 'markdown-export-stage';
+      document.body.appendChild(exportRoot);
+
+      const createExportContainer = () => {
+        const container = document.createElement('div');
+        container.className = 'markdown-body markdown-body-screenshot markdown-body-export';
+        container.style.width = `${node.clientWidth}px`;
+        container.style.maxWidth = 'none';
+        container.style.background = '#ffffff';
+        return container;
+      };
+
+      const getOuterHeight = (child: HTMLElement) => {
         const style = window.getComputedStyle(child);
         const marginTop = Number.parseFloat(style.marginTop || '0') || 0;
         const marginBottom = Number.parseFloat(style.marginBottom || '0') || 0;
-        const top = Math.max(0, child.offsetTop - marginTop);
-        const bottom = child.offsetTop + child.offsetHeight + marginBottom;
+        return Math.ceil(marginTop + child.offsetHeight + marginBottom);
+      };
+
+      const measureExportBlockHeight = (createNode: () => HTMLElement) => {
+        const container = createExportContainer();
+        container.appendChild(createNode());
+        exportRoot.appendChild(container);
+        const measuredHeight = Math.ceil(Math.max(
+          container.scrollHeight,
+          container.getBoundingClientRect().height,
+        ));
+        container.remove();
+        return measuredHeight;
+      };
+
+      type ExportBlock = {
+        createNode: () => HTMLElement;
+        estimatedHeight: number;
+        containsImage: boolean;
+        isHeading: boolean;
+        tagName: string;
+      };
+
+      const createRegularExportBlock = (child: HTMLElement): ExportBlock => {
         const tagName = child.tagName.toUpperCase();
         return {
-          top,
-          bottom,
-          tagName,
-          isHeading: isHeadingTag(tagName),
+          createNode: () => child.cloneNode(true) as HTMLElement,
+          estimatedHeight: getOuterHeight(child),
           containsImage: Boolean(child.querySelector('img')),
+          isHeading: isHeadingTag(tagName),
+          tagName,
         };
-      });
-      const sectionRanges: Array<{
-        startIndex: number;
-        endIndex: number;
-        top: number;
-        bottom: number;
-        containsImage: boolean;
-      }> = [];
-
-      if (blockRanges.length > 0) {
-        let sectionStart = 0;
-        for (let index = 1; index <= blockRanges.length; index += 1) {
-          const reachedEnd = index >= blockRanges.length;
-          const startsNewSection = !reachedEnd && blockRanges[index].isHeading;
-
-          if (reachedEnd || startsNewSection) {
-            const blocks = blockRanges.slice(sectionStart, index);
-            sectionRanges.push({
-              startIndex: sectionStart,
-              endIndex: index - 1,
-              top: blocks[0].top,
-              bottom: blocks[blocks.length - 1].bottom,
-              containsImage: blocks.some((block) => block.containsImage),
-            });
-            sectionStart = index;
-          }
-        }
-      }
+      };
 
       const waitForImages = async (container: HTMLElement) => {
         const images = Array.from(container.querySelectorAll('img'));
@@ -266,51 +275,155 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
         )));
       };
 
-      const chunkRanges: Array<{ startIndex: number; endIndex: number }> = [];
-      if (sectionRanges.length === 0) {
-        chunkRanges.push({ startIndex: 0, endIndex: -1 });
-      } else {
-        let startSectionIndex = 0;
+      const buildSplitTableBlocks = (table: HTMLTableElement): ExportBlock[] => {
+        const headerRows = table.tHead
+          ? Array.from(table.tHead.rows)
+          : (table.rows.length > 0 ? [table.rows[0]] : []);
+        const bodyRows = table.tHead
+          ? Array.from(table.tBodies).flatMap((tbody) => Array.from(tbody.rows))
+          : Array.from(table.rows).slice(headerRows.length);
 
-        while (startSectionIndex < sectionRanges.length) {
-          const startTop = startSectionIndex === 0 ? 0 : sectionRanges[startSectionIndex].top;
-          let endSectionIndex = startSectionIndex;
-          let bestBreakSectionIndex = -1;
-
-          for (let index = startSectionIndex; index < sectionRanges.length; index += 1) {
-            const currentSection = sectionRanges[index];
-            const nextSection = sectionRanges[index + 1];
-            const currentHeight = currentSection.bottom - startTop;
-            const nextProjectedHeight = nextSection ? nextSection.bottom - startTop : currentHeight;
-            const isPreferredBreak = !nextSection || currentSection.containsImage;
-
-            if (isPreferredBreak && currentHeight >= minChunkHeight) {
-              bestBreakSectionIndex = index;
-            }
-
-            const shouldBreakAtPreferred = currentHeight >= preferredChunkHeight && bestBreakSectionIndex >= startSectionIndex;
-            const shouldPreventOvershoot = Boolean(nextSection) && nextProjectedHeight > hardChunkHeight;
-
-            if (shouldBreakAtPreferred || shouldPreventOvershoot) {
-              endSectionIndex = bestBreakSectionIndex >= startSectionIndex ? bestBreakSectionIndex : index;
-              break;
-            }
-
-            endSectionIndex = index;
-          }
-
-          chunkRanges.push({
-            startIndex: sectionRanges[startSectionIndex].startIndex,
-            endIndex: sectionRanges[endSectionIndex].endIndex,
-          });
-          startSectionIndex = endSectionIndex + 1;
+        if (bodyRows.length < 2) {
+          return [createRegularExportBlock(table)];
         }
 
-        if (chunkRanges.length > 1) {
+        const buildTableSegment = (startRowIndex: number, endRowIndex: number, includeFooter: boolean) => () => {
+          const tableClone = table.cloneNode(false) as HTMLTableElement;
+
+          if (table.caption) {
+            tableClone.appendChild(table.caption.cloneNode(true));
+          }
+
+          Array.from(table.children).forEach((child) => {
+            if (child.tagName.toUpperCase() === 'COLGROUP') {
+              tableClone.appendChild(child.cloneNode(true));
+            }
+          });
+
+          if (table.tHead) {
+            tableClone.appendChild(table.tHead.cloneNode(true));
+          } else if (headerRows.length > 0) {
+            const thead = document.createElement('thead');
+            headerRows.forEach((row) => {
+              thead.appendChild(row.cloneNode(true));
+            });
+            tableClone.appendChild(thead);
+          }
+
+          const tbody = document.createElement('tbody');
+          bodyRows.slice(startRowIndex, endRowIndex).forEach((row) => {
+            tbody.appendChild(row.cloneNode(true));
+          });
+          tableClone.appendChild(tbody);
+
+          if (includeFooter && table.tFoot) {
+            tableClone.appendChild(table.tFoot.cloneNode(true));
+          }
+
+          return tableClone;
+        };
+
+        const rowHeights = bodyRows.map((row) => Math.ceil(
+          row.getBoundingClientRect().height || row.offsetHeight || 0,
+        ));
+        const segmentBlocks: ExportBlock[] = [];
+        let startRowIndex = 0;
+
+        while (startRowIndex < bodyRows.length) {
+          let endRowIndex = startRowIndex;
+          let currentHeight = 0;
+
+          while (endRowIndex < bodyRows.length) {
+            const nextRowHeight = rowHeights[endRowIndex] || 0;
+            if (currentHeight > 0 && currentHeight + nextRowHeight > tableSplitTargetHeight) {
+              break;
+            }
+            currentHeight += nextRowHeight;
+            endRowIndex += 1;
+          }
+
+          if (endRowIndex === startRowIndex) {
+            endRowIndex += 1;
+          }
+
+          const includeFooter = Boolean(table.tFoot) && endRowIndex >= bodyRows.length;
+          const createNode = buildTableSegment(startRowIndex, endRowIndex, includeFooter);
+
+          segmentBlocks.push({
+            createNode,
+            estimatedHeight: measureExportBlockHeight(createNode),
+            containsImage: bodyRows
+              .slice(startRowIndex, endRowIndex)
+              .some((row) => Boolean(row.querySelector('img'))),
+            isHeading: false,
+            tagName: 'TABLE',
+          });
+
+          startRowIndex = endRowIndex;
+        }
+
+        return segmentBlocks.length > 1 ? segmentBlocks : [createRegularExportBlock(table)];
+      };
+
+      const exportBlocks = blockNodes.flatMap((child) => {
+        if (child instanceof HTMLTableElement && getOuterHeight(child) > tableSplitTargetHeight) {
+          return buildSplitTableBlocks(child);
+        }
+        return [createRegularExportBlock(child)];
+      });
+
+      const chunkRanges: Array<{ startIndex: number; endIndex: number }> = [];
+      const getChunkHeight = (startIndex: number, endIndex: number) => exportBlocks
+        .slice(startIndex, endIndex + 1)
+        .reduce((sum, block) => sum + block.estimatedHeight, 0);
+
+      if (exportBlocks.length === 0) {
+        chunkRanges.push({ startIndex: 0, endIndex: -1 });
+      } else {
+        let chunkStart = 0;
+        let chunkHeight = 0;
+
+        for (let index = 0; index < exportBlocks.length; index += 1) {
+          const block = exportBlocks[index];
+
+          if (index > chunkStart && block.isHeading && chunkHeight >= minChunkHeight) {
+            chunkRanges.push({ startIndex: chunkStart, endIndex: index - 1 });
+            chunkStart = index;
+            chunkHeight = 0;
+          }
+
+          if (index > chunkStart && chunkHeight + block.estimatedHeight > hardChunkHeight) {
+            chunkRanges.push({ startIndex: chunkStart, endIndex: index - 1 });
+            chunkStart = index;
+            chunkHeight = 0;
+          }
+
+          chunkHeight += block.estimatedHeight;
+
+          const nextBlock = exportBlocks[index + 1];
+          const nextStartsSection = Boolean(nextBlock?.isHeading);
+          const shouldBreakAfterBlock = !block.isHeading && chunkHeight >= preferredChunkHeight && (
+            nextStartsSection
+            || block.tagName === 'TABLE'
+            || block.containsImage
+            || chunkHeight >= hardChunkHeight * 0.85
+          );
+
+          if (shouldBreakAfterBlock) {
+            chunkRanges.push({ startIndex: chunkStart, endIndex: index });
+            chunkStart = index + 1;
+            chunkHeight = 0;
+          }
+        }
+
+        if (chunkStart < exportBlocks.length) {
+          chunkRanges.push({ startIndex: chunkStart, endIndex: exportBlocks.length - 1 });
+        }
+
+        if (chunkRanges.length > 1 && chunkRanges[chunkRanges.length - 1].endIndex >= 0) {
           const lastChunk = chunkRanges[chunkRanges.length - 1];
-          const lastChunkStart = blockRanges[lastChunk.startIndex]?.top ?? 0;
-          const lastChunkEnd = blockRanges[lastChunk.endIndex]?.bottom ?? lastChunkStart;
-          if (lastChunkEnd - lastChunkStart < minimumTailHeight) {
+          const lastChunkHeight = getChunkHeight(lastChunk.startIndex, lastChunk.endIndex);
+          if (lastChunkHeight < minimumTailHeight) {
             chunkRanges[chunkRanges.length - 2].endIndex = lastChunk.endIndex;
             chunkRanges.pop();
           }
@@ -318,23 +431,16 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
       }
 
       const baseName = (resolvedPath?.split('/').pop() || 'guide-screenshot.md').replace(/\.md$/i, '');
-      const exportRoot = document.createElement('div');
-      exportRoot.className = 'markdown-export-stage';
-      document.body.appendChild(exportRoot);
       const zip = new JSZip();
 
       try {
         for (let index = 0; index < chunkRanges.length; index += 1) {
           const chunkRange = chunkRanges[index];
-          const exportNode = document.createElement('div');
-          exportNode.className = 'markdown-body markdown-body-screenshot markdown-body-export';
-          exportNode.style.width = `${node.clientWidth}px`;
-          exportNode.style.maxWidth = 'none';
-          exportNode.style.background = '#ffffff';
+          const exportNode = createExportContainer();
 
           if (chunkRange.endIndex >= 0) {
             for (let blockIndex = chunkRange.startIndex; blockIndex <= chunkRange.endIndex; blockIndex += 1) {
-              exportNode.appendChild(blockNodes[blockIndex].cloneNode(true));
+              exportNode.appendChild(exportBlocks[blockIndex].createNode());
             }
           } else {
             exportNode.appendChild(node.cloneNode(true));

@@ -10,21 +10,23 @@ custom_domain = true
 
 [vars]
 MARKET_ROUTE_PREFIX = "/market-stats"
+MARKET_STATIC_OBJECT_PREFIX = "market-stats"
 MARKET_ALLOWED_ORIGINS = "*"
 MARKET_ALLOWED_DOWNLOAD_HOSTS = "github.com,objects.githubusercontent.com,release-assets.githubusercontent.com,raw.githubusercontent.com"
 MARKET_SUPPORTED_TYPES = "script,package,skill,mcp"
 MARKET_RANK_PAGE_SIZE = "20"
 MARKET_RANK_MAX_PAGES = "5"
 MARKET_JSON_CACHE_MAX_AGE = "300"
+MARKET_ANALYTICS_ACCOUNT_ID = "c667bf70582c5ceceda8d3d183ad8e3b"
+MARKET_ANALYTICS_DATASET = "operit_market_stats"
 
 [triggers]
-crons = ["*/15 * * * *"]
+crons = ["0 */6 * * *"]
 
-[[d1_databases]]
-binding = "MARKET_STATS_DB"
-database_name = "operit-market-stats"
-database_id = "276b4876-9e9b-4660-9adc-9e1d38abdf03"
+[[analytics_engine_datasets]]
+binding = "MARKET_ANALYTICS"
+dataset = "operit_market_stats"
 
-[[kv_namespaces]]
-binding = "MARKET_STATS_CACHE"
-id = "2d348a7b9c114bcdb0d02ea204317861"
+[[r2_buckets]]
+binding = "MARKET_STATS_BUCKET"
+bucket_name = "operit-market-stats-static"
