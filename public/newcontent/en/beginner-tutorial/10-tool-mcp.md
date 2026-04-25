@@ -20,9 +20,56 @@ That said, MCP is an open standard, so any MCP project you find on other communi
 
 ## How to Install MCP
 
-The MCP configuration directory is at `/sdcard/Download/Operit/mcp_plugins/`. The main configuration file is `mcp_config.json`, which goes in that directory. You might also see a `server_status.json` file — that's just a status cache, not a config file, so you can ignore it.
+Open the app's "Package Manager", switch to the MCP tab, and tap the "+" or "Import/Connect" button. A dialog will pop up with several import methods.
 
-The top-level structure of `mcp_config.json` is pretty straightforward: it has an `mcpServers` object, where each key is a plugin ID. Each plugin takes the following fields:
+### Config Import
+
+Best for services that can be run with a single command, like `npx` or `uvx`. Switch to the "Config Import" tab, paste the MCP JSON, and tap "Merge Config". No need to download repos or manually place files.
+
+![Config Import](</manuals/assets/tools/mcp_config_import.jpg>)
+
+For example, to add a Playwright MCP, paste this JSON:
+
+```json
+{
+  "mcpServers": {
+    "playwright": {
+      "command": "npx",
+      "args": ["@playwright/mcp@latest"],
+      "env": {},
+      "autoApprove": []
+    }
+  }
+}
+```
+
+The `playwright` key is the plugin ID — use only letters, numbers, and underscores, preferably lowercase. Once merged, the plugin will appear in the list.
+
+### Import from Repo
+
+Best for MCPs that are GitHub projects, especially Python, Node.js, or TypeScript ones. Switch to the "Repo" tab, enter the repository URL, give it a plugin name, tap "Get MCP", then "Import".
+
+![Repo Import](</manuals/assets/tools/mcp_repo_import.jpg>)
+
+One thing to note: importing doesn't mean it's ready to use. Local plugins usually need you to tap "Deploy/Redploy" to install dependencies and compile.
+
+### Import from ZIP
+
+Best for local plugin packages you've downloaded or transferred to your phone. Just select the ZIP file and import. After that, you'll also need to deploy it.
+
+### Connect to Remote Service
+
+Best if you already have an MCP server running on your computer or another server, and your phone just needs to connect to it. Switch to the "Remote" tab, enter the server address (e.g., `http://192.168.1.100:8752`), and select the connection type (`httpStream` or `sse`).
+
+![Remote Connection](</manuals/assets/tools/mcp_remote_connect.jpg>)
+
+If the remote service requires authentication, you can fill in a Bearer Token. Need extra headers? You can add custom headers below. Once saved, it will appear in the list as a remote plugin — no deployment needed, just connect and use.
+
+### Manual Config Editing
+
+Besides the UI import methods above, you can also edit the config file directly. The MCP configuration directory is at `/sdcard/Download/Operit/mcp_plugins/`. The main config file is `mcp_config.json`. You might also see a `server_status.json` — that's just a status cache, ignore it.
+
+The top-level structure of `mcp_config.json` has an `mcpServers` object, where each key is a plugin ID. Each plugin takes the following fields:
 
 - `command`: The startup command, required. For example, `node`, `python`, `npx`, or `uvx`.
 - `args`: Command arguments, as an array. For example, `["dist/index.js"]`.
