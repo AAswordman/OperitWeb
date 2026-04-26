@@ -1,41 +1,31 @@
 # 10. Tools: MCP
 
-Last chapter we covered sandbox packages. This one is about another way to extend tools — MCP.
+Now that we've covered sandbox packages, let's talk about another tool type — MCP.
 
-MCP stands for Model Context Protocol. It's an open standard that lets AI interact with external tools and services in a standardized way. Think of it as the USB port for the AI world — as long as everything follows the same protocol, the AI can plug and play regardless of what service is running on the other end.
+MCP stands for Model Context Protocol. It's a tool server that runs as a separate process, and it's quite resource-heavy. In Operit, we integrate it into the existing tool system as a package type, fully compatible with sandbox packages. Same deal — you activate it dynamically, then call the tools inside.
 
-## Where MCP Fits
+Because MCP is heavy, Operit dynamically loads and unloads MCP servers, restarting them only when needed.
 
-From the previous chapters, you should have a sense that Operit has three layers of tooling.
+From the AI's perspective, MCP, sandbox packages, and Skills are all the same thing. The AI activates them all with `use_package` and calls the tools inside with `package_proxy`. You don't need to tell the AI where a feature comes from — it uses the same unified interface for everything.
 
-First, there are the built-in tools from Chapter08 — `read_file`, `apply_file`, and so on. These are the most basic capabilities that come with the system. Second, there are sandbox packages from Chapter09 — JS scripts running in the QuickJS engine, tightly integrated with the app and very powerful, but only usable within Operit. Third, there's MCP, which is heavier than sandbox packages, but standardized — MCP is cross-platform, so you can use the same MCP setup across different AI tools.
+## Installing MCP
 
-In simple terms: if the functionality you need already has a ready-made MCP service, go with MCP. If you're building deep custom features for Operit, use sandbox packages. If you just need a simple set of instructions, write a Skill.
-
-## Where to Find MCPs
-
-Operit has its own MCP marketplace — it's a GitHub Issues repository where people share various MCP plugins. You can check it out at https://github.com/AAswordman/OperitMCPMarket/issues.
-
-That said, MCP is an open standard, so any MCP project you find on other communities or GitHub will work as long as it follows the protocol. Common ones like the `npx`-based MCPs (such as `@modelcontextprotocol/server-filesystem`) or `uvx`-based Python MCPs can all be configured directly.
-
-## How to Install MCP
-
-Open the app's "Package Manager", switch to the MCP tab, and tap the "+" or "Import/Connect" button. A dialog will pop up with several import methods.
+Open the Package Manager in the app, switch to the MCP tab, and tap the "+" or "Import/Connect" button. A dialog will pop up with several import methods.
 
 ### Config Import
 
-Best for services that can be run with a single command, like `npx` or `uvx`. Switch to the "Config Import" tab, paste the MCP JSON, and tap "Merge Config". No need to download repos or manually place files.
+Best for services that can run with a single command, like `npx` or `uvx`. Switch to the "Config Import" tab, paste the MCP JSON, and tap "Merge Config". That's all.
 
 ![Config Import](</manuals/assets/tools/mcp_config_import.jpg>)
 
-For example, to add a Playwright MCP, paste this JSON:
+For example, to add a Fetch MCP, paste this JSON:
 
 ```json
 {
   "mcpServers": {
-    "playwright": {
-      "command": "npx",
-      "args": ["@playwright/mcp@latest"],
+    "fetch": {
+      "command": "uvx",
+      "args": ["mcp-server-fetch"],
       "env": {},
       "autoApprove": []
     }
@@ -43,75 +33,77 @@ For example, to add a Playwright MCP, paste this JSON:
 }
 ```
 
-The `playwright` key is the plugin ID — use only letters, numbers, and underscores, preferably lowercase. Once merged, the plugin will appear in the list.
+The `fetch` key is the plugin ID — use only letters, numbers, and underscores, preferably lowercase. Once merged, the plugin will appear in the list.
+
+**Important: this method only works for local stdio MCPs. For remote MCPs, use the dedicated remote import below — never use config merge for remote services!!**
+
+Then tap the run button on the right to complete the import.
 
 ### Import from Repo
 
-Best for MCPs that are GitHub projects, especially Python, Node.js, or TypeScript ones. Switch to the "Repo" tab, enter the repository URL, give it a plugin name, tap "Get MCP", then "Import".
+Best for MCPs that are GitHub projects written in Python, Node.js, or TypeScript. Switch to the "Repo" tab, enter the repository URL, give it a plugin name, tap "Get MCP", then "Import".
 
 ![Repo Import](</manuals/assets/tools/mcp_repo_import.jpg>)
 
-One thing to note: importing doesn't mean it's ready to use. Local plugins usually need you to tap "Deploy/Redploy" to install dependencies and compile.
+One thing to note: the software currently only recognizes and deploys Node.js and Python projects automatically. If the repo isn't structured for these two, or if it's something else entirely, don't use repo import.
 
 ### Import from ZIP
 
-Best for local plugin packages you've downloaded or transferred to your phone. Just select the ZIP file and import. After that, you'll also need to deploy it.
+Best if you already have a local plugin archive. The principle is the same as repo import above.
 
 ### Connect to Remote Service
 
-Best if you already have an MCP server running on your computer or another server, and your phone just needs to connect to it. Switch to the "Remote" tab, enter the server address (e.g., `http://192.168.1.100:8752`), and select the connection type (`httpStream` or `sse`).
+Best if the MCP is already running on your computer or server, and your phone just needs to connect. Switch to the "Remote" tab, enter the server address (e.g., `http://192.168.1.100:8752`), and select the connection type (`httpStream` or `sse`). **Don't pick the wrong type!!!**
 
 ![Remote Connection](</manuals/assets/tools/mcp_remote_connect.jpg>)
 
-If the remote service requires authentication, you can fill in a Bearer Token. Need extra headers? You can add custom headers below. Once saved, it will appear in the list as a remote plugin — no deployment needed, just connect and use.
+If the remote service needs authentication, fill in a Bearer Token. Need extra headers? You can add custom ones below. Once saved, it'll appear as a remote plugin — no deployment needed, just connect and use.
+
+Don't forget to tap the start button after configuring it.
+
+A note: remote MCP config is stored in `pluginMetadata`, which differs from the standard mcp_config format. So don't try to import remote MCPs via config merge.
 
 ### Manual Config Editing
 
-Besides the UI import methods above, you can also edit the config file directly. The MCP configuration directory is at `/sdcard/Download/Operit/mcp_plugins/`. The main config file is `mcp_config.json`. You might also see a `server_status.json` — that's just a status cache, ignore it.
+This is the most universal method. It's a bit more involved, but you can also leave it to Operit's AI to handle — it can edit the config and start the plugin automatically.
 
-The top-level structure of `mcp_config.json` has an `mcpServers` object, where each key is a plugin ID. Each plugin takes the following fields:
+The process is similar to configuring MCP on Linux or Windows. The config directory is at `/sdcard/Download/Operit/mcp_plugins/`, and the main config file is `mcp_config.json`. You might also see `server_status.json` — that's just a status cache, ignore it.
 
-- `command`: The startup command, required. For example, `node`, `python`, `npx`, or `uvx`.
-- `args`: Command arguments, as an array. For example, `["dist/index.js"]`.
-- `env`: Environment variables, as key-value pairs. Put sensitive info like API keys here.
-- `autoApprove`: An optional list of operations that can auto-execute without confirmation.
-- `disabled`: Set to `true` to disable the plugin without deleting its config.
+I won't go into the structure of `mcp_config.json` here — you can search for that yourself.
 
-One important thing to keep in mind: the working directory for MCP startup is fixed to `~/mcp_plugins/<last-segment-of-pluginId>/`. So when writing `args`, use paths relative to this directory — don't put Android paths (like `/sdcard/...`) in there.
+One important thing: the MCP startup working directory is a fixed Linux path `~/mcp_plugins/<last-segment-of-pluginId>/`. So paths in `args` must be relative to this directory. Think of it as: first cd into this path, then run the startup command.
 
-For example, if you have a plugin called `my-org/my-plugin`, its startup directory is `~/mcp_plugins/my-plugin/`. If the entry file is at `~/mcp_plugins/my-plugin/dist/index.js`, then `args` should be `["dist/index.js"]`, not the Android-side path.
+The `~` here refers to the path inside Operit's built-in Linux environment, not the Android side.
 
-There's also a special case for `npx` MCPs: you still write `"command": "npx"` in the config as usual, but the app internally converts it to `pnpm dlx` at runtime. So your Linux environment needs `pnpm` installed. Don't manually change it to `npm` or `pnpm` — that can cause compatibility issues.
+So why are we placing files under `/sdcard` and writing config there, but the startup path is inside Linux? Simple: when you deploy, the software copies the MCP files from `/sdcard` into the Linux environment, then starts it there. That's what "deployment" actually is.
 
-## Local vs Remote MCP
+For `npx`-type MCPs: write `"command": "npx"` as usual in the config. The software automatically converts it to `pnpm dlx` at runtime. So your Linux environment needs `pnpm`. Don't manually change it to `npm` or `pnpm` — that can cause compatibility issues.
 
-MCP comes in two flavors: local and remote.
+## How Startup Works
 
-Local MCP runs a process on your device to provide services. The app reads `mcp_config.json` at startup and launches each plugin accordingly. Whether it starts successfully depends on dependencies being installed, paths being correct, and environment variables being complete.
+Now that you know the import methods, you might wonder — what actually happens when you tap the start button? And what do you do when things go wrong? Let's look at the process.
 
-Remote MCP connects to an external MCP server — no local process needed. It's configured differently, mainly through `pluginMetadata` with an `endpoint` and connection method (like bearerToken or custom headers). This is suited for scenarios where you already have a running service.
+Operit starts three terminal sessions. The first one is the default session. The second — `mcp_shared` — checks if the pnpm environment is ready and if the bridge can be copied. If everything checks out, a third window is created to run the MCP bridge separately. **If something goes wrong, go to the third terminal window to debug.**
 
-## The Unified Package Model
+Once the bridge is running, the software tries to register each plugin. If registration succeeds, it runs a tool probe. If the probe succeeds, MCP is good to go. A few key points: the MCP needs to actually start — if the environment is missing dependencies, it'll crash. Also, if your phone is low on memory, the terminal process might get killed. Close some apps to prevent "double free" errors. And check the actual error messages — some say a dependency is missing, and you'll need to install it.
 
-This is a neat detail: from the AI's perspective, MCP, sandbox packages, and Skills are all the same thing. The AI activates them all with `use_package` and calls the tools inside with `package_proxy`. You don't need to tell the AI what kind of package a feature comes from — it works through a unified interface.
+The next time `use_package` is called, the software reactivates the MCP, and may shut it down a few minutes later. This keeps the number of simultaneously running MCPs manageable.
 
-So the three tabs you see in the package manager — MCP, Sandbox, Skill — are just there to help you organize. To the AI, they're all the same. This is also why Chapter09 mentioned that `use_package` is a triple-compatible entry point.
+As mentioned in the manual config section, the startup process follows the config. Add things gradually — MCP is heavy, especially local ones. Remote MCPs are lighter in comparison.
+
+If a feature overlaps with what built-in packages or Skills can do, prefer those — they're much lighter.
 
 ## Common Issues
 
 When MCP isn't working, the problem usually falls into one of these categories:
 
-**Switch not turned on**: First, check if the plugin is disabled. If `mcp_config.json` has `"disabled": true`, the plugin won't start.
+**Wrong paths**: This is the most common mistake. Writing Android paths (like `/sdcard/...`) in `args` when the working directory is on the Linux side (`~/mcp_plugins/`). Won't work.
 
-**Wrong paths**: This is the most common mistake. Writing Android paths (like `/sdcard/...`) in `args` when the working directory is on the Linux side (`~/mcp_plugins/`). They won't match up, so the plugin can't run.
+**Missing dependencies**: Node-based MCPs need `pnpm`, Python-based ones need `uv` or `pip` with required packages. Check your Linux terminal.
 
-**Missing dependencies**: Node-based MCPs need `pnpm`, Python-based ones need `uv` or `pip` with required packages installed. Check your Linux terminal to make sure dependencies are complete.
+**Missing environment variables**: Some MCPs need API keys or other env vars in the `env` field. Miss or mistype them, and the MCP may start but its features won't work.
 
-**Missing environment variables**: Some MCPs need API keys or other environment variables set in the `env` field. If they're missing or wrong, the MCP may start but its features won't work.
-
-**Directory doesn't exist**: The plugin directory on the Linux side is created automatically, but if the auto-analysis of build commands fails, the directory might be empty. Check `~/mcp_plugins/<plugin-name>/` to see if there are files.
-
-When troubleshooting, follow this order: check the switch first, then check if the directory has files, then verify the command/args/env fields in the config, make sure args don't use Android paths, and finally check dependencies in the Linux terminal. Following this sequence, most problems can be pinned down quickly.
+**Directory doesn't exist**: The plugin directory on the Linux side is created automatically, but if auto-analysis of build commands fails, the directory might be empty. This usually happens after resetting the terminal — just redeploy the plugin.
 
 ## Navigation
 
