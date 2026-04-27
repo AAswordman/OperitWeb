@@ -32,3 +32,4 @@ converted_docs
 .pnpm-store
 
 temp
+.wrangler

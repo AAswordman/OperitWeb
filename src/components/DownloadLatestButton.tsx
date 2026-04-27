@@ -36,7 +36,6 @@ const GITHUB_MIRRORS: GitHubMirror[] = [
   { name: 'GhProxy', url: 'https://ghproxy.com/' },
   { name: 'GhProxyNet', url: 'https://ghproxy.net/' },
   { name: 'GhProxyMirror', url: 'https://mirror.ghproxy.com/' },
-  { name: 'Flash', url: 'https://flash.aaswordsman.org/' },
   { name: 'Gh-Proxy', url: 'https://gh-proxy.com/' },
   { name: 'GitMirror', url: 'https://hub.gitmirror.com/' },
   { name: 'Moeyy', url: 'https://github.moeyy.xyz/' },

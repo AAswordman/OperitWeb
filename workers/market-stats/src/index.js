@@ -1,4 +1,4 @@
-const SUPPORTED_RANK_METRICS = ['downloads', 'installs', 'updated'];
+const SUPPORTED_RANK_METRICS = ['downloads', 'likes', 'updated'];
 const DEFAULT_ALLOWED_DOWNLOAD_HOSTS = [
   'github.com',
   'objects.githubusercontent.com',
@@ -9,8 +9,7 @@ const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4';
 const GITHUB_API_BASE = 'https://api.github.com';
 const ISSUE_PAGE_SIZE = 100;
 const ANALYTICS_DOWNLOAD_EVENT = 'download';
-const ANALYTICS_INSTALL_EVENT = 'install';
-const ANALYTICS_SUPPORTED_EVENTS = [ANALYTICS_DOWNLOAD_EVENT, ANALYTICS_INSTALL_EVENT];
+const ANALYTICS_SUPPORTED_EVENTS = [ANALYTICS_DOWNLOAD_EVENT];
 const DESCRIPTION_LABEL_WORDS = new Set([
   'description',
   'desc',
@@ -83,10 +82,6 @@ export default {
         return await handleDownload(request, env, corsHeaders);
       }
 
-      if (pathname === '/install') {
-        return await handleInstall(request, env, corsHeaders);
-      }
-
       if (isStaticJsonPath(pathname)) {
         return await handleStaticJson(pathname, env, corsHeaders);
       }
@@ -97,7 +92,6 @@ export default {
           supported_routes: [
             '/health',
             '/download',
-            '/install',
             '/stats.json',
             '/stats/<type>.json',
             '/rank/<type>-<metric>-page-<n>.json',
@@ -138,30 +132,6 @@ async function handleDownload(request, env, corsHeaders) {
 
   recordMarketCounter(env, type, id, 'downloads');
   return redirect(target, corsHeaders);
-}
-
-async function handleInstall(request, env, corsHeaders) {
-  requireAnalyticsBinding(env);
-
-  let payload = {};
-  if (request.method === 'POST') {
-    payload = await request.json().catch(() => ({}));
-  } else {
-    const url = new URL(request.url);
-    payload = {
-      type: url.searchParams.get('type'),
-      id: url.searchParams.get('id'),
-    };
-  }
-
-  const type = normalizeType(payload.type);
-  const id = normalizeArtifactId(payload.id);
-
-  validateType(type, env);
-  validateArtifactId(id);
-
-  recordMarketCounter(env, type, id, 'installs');
-  return json({ ok: true, type, id }, 200, corsHeaders);
 }
 
 async function handleStaticJson(pathname, env, corsHeaders) {
@@ -234,7 +204,7 @@ async function regenerateStaticJson(env) {
 
   const supportedTypes = getSupportedTypes(env);
   const pageSize = getPositiveInt(env.MARKET_RANK_PAGE_SIZE, 20);
-  const maxPages = getPositiveInt(env.MARKET_RANK_MAX_PAGES, 5);
+  const maxPages = getNonNegativeInt(env.MARKET_RANK_MAX_PAGES, 0);
   const updatedAt = new Date().toISOString();
 
   const statsByType = await loadStatsByType(env, supportedTypes);
@@ -264,7 +234,7 @@ async function regenerateStaticJson(env) {
     for (const metric of SUPPORTED_RANK_METRICS) {
       const sorted = sortRankEntries(entries, metric);
       const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
-      const pageCount = Math.min(totalPages, maxPages);
+      const pageCount = maxPages > 0 ? Math.min(totalPages, maxPages) : totalPages;
 
       for (let page = 1; page <= pageCount; page += 1) {
         const start = (page - 1) * pageSize;
@@ -329,12 +299,9 @@ async function loadStatsByType(env, supportedTypes) {
     if (event === ANALYTICS_DOWNLOAD_EVENT) {
       stats.downloads += total;
       stats.lastDownloadAt = latestTimestamp(stats.lastDownloadAt, lastAt);
-    } else if (event === ANALYTICS_INSTALL_EVENT) {
-      stats.installs += total;
-      stats.lastInstallAt = latestTimestamp(stats.lastInstallAt, lastAt);
     }
 
-    stats.updatedAt = latestTimestamp(stats.lastDownloadAt, stats.lastInstallAt);
+    stats.updatedAt = stats.lastDownloadAt;
     byType[type][id] = stats;
   }
 
@@ -411,9 +378,7 @@ function buildRankEntry(type, issue, statsMap) {
   return {
     id: summary.id,
     downloads: stats.downloads,
-    installs: stats.installs,
     lastDownloadAt: stats.lastDownloadAt,
-    lastInstallAt: stats.lastInstallAt,
     updatedAt: issue?.updated_at || stats.updatedAt || null,
     statsUpdatedAt: stats.updatedAt || null,
     displayTitle: summary.displayTitle,
@@ -546,15 +511,16 @@ function sortRankEntries(entries, metric) {
     return list.sort(
       (left, right) =>
         compareNumbers(right.downloads, left.downloads) ||
+        compareNumbers(getThumbsUpCount(right), getThumbsUpCount(left)) ||
         compareStrings(right.updatedAt, left.updatedAt) ||
         left.id.localeCompare(right.id)
     );
   }
 
-  if (metric === 'installs') {
+  if (metric === 'likes') {
     return list.sort(
       (left, right) =>
-        compareNumbers(right.installs, left.installs) ||
+        compareNumbers(getThumbsUpCount(right), getThumbsUpCount(left)) ||
         compareStrings(right.updatedAt, left.updatedAt) ||
         left.id.localeCompare(right.id)
     );
@@ -565,6 +531,10 @@ function sortRankEntries(entries, metric) {
       compareStrings(right.updatedAt, left.updatedAt) ||
       left.id.localeCompare(right.id)
   );
+}
+
+function getThumbsUpCount(entry) {
+  return toInt(entry?.issue?.reactions?.['+1']);
 }
 
 async function githubRequest(path, token) {
@@ -846,9 +816,7 @@ function canonicalizeMarketSource(raw) {
 function createEmptyStats() {
   return {
     downloads: 0,
-    installs: 0,
     lastDownloadAt: null,
-    lastInstallAt: null,
     updatedAt: null,
   };
 }
@@ -924,7 +892,7 @@ function buildCorsHeaders(request, env) {
 
   return {
     'access-control-allow-origin': allowAll ? '*' : (allowedOrigins.includes(origin) ? origin : allowedOrigins[0] || '*'),
-    'access-control-allow-methods': 'GET,POST,OPTIONS',
+    'access-control-allow-methods': 'GET,OPTIONS',
     'access-control-allow-headers': 'Content-Type',
   };
 }
@@ -1072,9 +1040,6 @@ function resolveAnalyticsEvent(counterField) {
   if (counterField === 'downloads') {
     return ANALYTICS_DOWNLOAD_EVENT;
   }
-  if (counterField === 'installs') {
-    return ANALYTICS_INSTALL_EVENT;
-  }
   throw new Error(`Unsupported market counter field: ${counterField}`);
 }
 
@@ -1153,6 +1118,11 @@ function splitCsv(value) {
 function getPositiveInt(value, fallback) {
   const parsed = Number.parseInt(String(value || ''), 10);
   return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getNonNegativeInt(value, fallback) {
+  const parsed = Number.parseInt(String(value || ''), 10);
+  return Number.isFinite(parsed) && parsed >= 0 ? parsed : fallback;
 }
 
 function toInt(value) {

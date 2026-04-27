@@ -1,6 +1,6 @@
 # market-stats Worker
 
-This Worker tracks download and install counts for the Operit script, package, Skill, and MCP markets
+This Worker tracks download counts for the Operit script, package, Skill, and MCP markets
 with Analytics Engine, then periodically generates static JSON files into R2 so the app can fetch
 precomputed market data without burning Workers KV reads.
 
@@ -18,8 +18,6 @@ mounted under the `/market-stats` path prefix. Static ranking JSON is written in
 - `GET /market-stats/download?type=script|package|skill|mcp&id=<artifact-id>&target=<url>`
   - Writes a download event into Analytics Engine
   - Redirects the user to the real asset URL
-- `POST /market-stats/install`
-  - Writes an install event into Analytics Engine
 - `GET /market-stats/stats.json`
   - Returns all current counters
 - `GET /market-stats/stats/<type>.json`
@@ -29,7 +27,7 @@ mounted under the `/market-stats` path prefix. Static ranking JSON is written in
 - Scheduled task
   - Rebuilds static JSON snapshots every 6 hours
   - Pulls the latest market issues from GitHub
-  - Aggregates download/install totals from Analytics Engine into fresh static JSON pages
+  - Aggregates download totals from Analytics Engine into fresh static JSON pages
 
 ## Setup
 
@@ -76,16 +74,16 @@ The Worker stores generated objects in the R2 bucket under the `market-stats/` p
 - `market-stats/stats/skill.json`
 - `market-stats/stats/mcp.json`
 - `market-stats/rank/script-downloads-page-1.json`
-- `market-stats/rank/script-installs-page-1.json`
+- `market-stats/rank/script-likes-page-1.json`
 - `market-stats/rank/script-updated-page-1.json`
 - `market-stats/rank/package-downloads-page-1.json`
-- `market-stats/rank/package-installs-page-1.json`
+- `market-stats/rank/package-likes-page-1.json`
 - `market-stats/rank/package-updated-page-1.json`
 - `market-stats/rank/skill-downloads-page-1.json`
-- `market-stats/rank/skill-installs-page-1.json`
+- `market-stats/rank/skill-likes-page-1.json`
 - `market-stats/rank/skill-updated-page-1.json`
 - `market-stats/rank/mcp-downloads-page-1.json`
-- `market-stats/rank/mcp-installs-page-1.json`
+- `market-stats/rank/mcp-likes-page-1.json`
 - `market-stats/rank/mcp-updated-page-1.json`
 - `market-stats/manifest.json`
 
@@ -94,10 +92,11 @@ The Worker stores generated objects in the R2 bucket under the `market-stats/` p
 - This project is intentionally precomputed. The app should fetch static JSON and sort/page locally or read the pre-ranked pages directly.
 - The rank JSON now carries enough issue snapshot data for market list pages to render without first fetching the full issue list from GitHub.
 - Static JSON is now persisted in R2 instead of Workers KV. That removes the tiny KV free-read ceiling from the market browse path.
-- Download/install events no longer use D1. They are written to Analytics Engine and rolled up into static JSON on the 6-hour schedule.
-- The intended production split is: app reads from `static.operit.app`, while download/install reporting stays on `api.operit.app`.
+- Download events no longer use D1. They are written to Analytics Engine and rolled up into static JSON on the 6-hour schedule.
+- The intended production split is: app reads from `static.operit.app`, while download reporting stays on `api.operit.app`.
 - `MARKET_STATIC_OBJECT_PREFIX` controls the prefix inside the bucket. The default is `market-stats`, which makes it easy to expose later on a dedicated static domain.
 - The Worker only allows redirect targets on approved hosts. Update `MARKET_ALLOWED_DOWNLOAD_HOSTS` if your asset host list changes.
 - Update `MARKET_SUPPORTED_TYPES` if you want to add or remove market categories later.
+- `MARKET_RANK_MAX_PAGES=0` means generate all rank pages. Set it to a positive integer only if you intentionally want to cap the number of static pages written.
 - `wrangler.toml` now needs both the `MARKET_ANALYTICS` dataset binding and the `MARKET_ANALYTICS_API_TOKEN` secret because writing and querying Analytics Engine use different mechanisms.
 - `wrangler.toml` uses a Cloudflare Worker custom domain on `api.operit.app`, which avoids exposing a `workers.dev` URL in the app.
