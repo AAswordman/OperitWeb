@@ -20,6 +20,10 @@ Skill 本质上就是一份**带格式的文档**，里面写清楚了 AI 该怎
 
 ![Skill列表与导入界面](</manuals/assets/tools/skill_list_import.jpg>)
 
+点加号会弹出导入弹窗，支持几种方式：
+
+![导入 Skill 弹窗](</manuals/assets/tools/skill_detail.jpg>)
+
 ### 从 Skill 市场安装
 
 这是最推荐的方式。点右下角的商店按钮，就会进入 Skill 市场。里面有很多别人分享的 Skill，可以直接搜索、浏览。每个 Skill 卡片右边有个圆形按钮——下载图标表示可以安装，转圈表示正在安装，勾号表示已经装好了。点一下下载就能装到本地。
@@ -32,13 +36,14 @@ Skill 本质上就是一份**带格式的文档**，里面写清楚了 AI 该怎
 
 如果你已经有一个本地的 Skill 压缩包，点加号切到 ZIP，选文件导入就行。ZIP 包里面必须能找到 `SKILL.md` 文件，可以放在子目录里。如果有重名的 Skill 已经存在，会提示你并拒绝导入。
 
+### 手动导入
+
+如果你不想从仓库或 ZIP 导入，也可以手动创建。在导入弹窗里切到「手动」标签页，自己填 Skill ID、简介和内容，还可以添加附件。填好之后点导入，就会生成一个 Skill 放到目录下。
+
 ## 管理 Skill
 
-Skill 装好之后，在列表里就能看到。每个条目右边有一个可见性开关——打开就是允许 AI 使用，关掉就是保留在本地但 AI 不会调用。点条目可以查看 `SKILL.md` 的内容，在详情弹窗里也能直接删除。详情弹窗里分为几个标签页——「简介」展示你写的 `name` 和 `description`，「内容」展示 `SKILL.md` 正文，「附件」可以管理 Skill 附带的资源文件。
-
-![Skill详情弹窗](</manuals/assets/tools/skill_detail.jpg>)
-
-Skill 的存放路径在 `/sdcard/Download/Operit/skills/` 目录下，每个 Skill 就是一个文件夹，里面放着 `SKILL.md`。应用识别 Skill 的依据就是这个文件——有 `SKILL.md`（或者 `skill.md`）就算一个 Skill。
+Skill 装好之后，在列表里就能看到，每个条目右边有一个可见性开关——打开就是允许 AI 使用，关掉就是保留在本地但 AI 不会调用。
+软件本身对 Skill 的管理功能比较简单，只有删除。如果你需要修改 Skill 的内容或者添加附件，得自己去文件路径里改。Skill 的存放路径在 `/sdcard/Download/Operit/skills/` 目录下，每个 Skill 就是一个文件夹，里面放着 `SKILL.md`。应用识别 Skill 的依据就是这个文件——有 `SKILL.md`（或者 `skill.md`）就算一个 Skill。
 
 当 AI 激活这个 Skill 的时候，整个文件夹里的文件结构和内容都会被展示给 AI，不仅仅是 `SKILL.md`。所以如果你需要附带一些参考文件、模板或者配置，可以放在 Skill 文件夹的子目录下，AI 激活时也能看到。
 

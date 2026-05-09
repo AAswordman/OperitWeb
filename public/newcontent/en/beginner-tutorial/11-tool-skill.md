@@ -20,6 +20,10 @@ Open the Package Manager, switch to the Skills tab, and you'll see several impor
 
 ![Skill list and import](</manuals/assets/tools/skill_list_import.jpg>)
 
+Tap the "+" button to open the import dialog, which supports several methods:
+
+![Import Skill dialog](</manuals/assets/tools/skill_detail.jpg>)
+
 ### Install from Skill Market
 
 This is the recommended way. Tap the store button in the bottom right corner to enter the Skill Market. You'll find many Skills shared by others — you can search and browse them. Each Skill card has a circular button on the right: a download icon means it's available to install, a spinner means it's installing, and a checkmark means it's already installed. Just tap to download.
@@ -32,13 +36,14 @@ If you come across a Skill repository on GitHub, use this method. Tap the "+" bu
 
 If you already have a local Skill archive, tap "+", switch to ZIP, and select the file to import. The ZIP must contain a `SKILL.md` file — it can be in a subdirectory. If a Skill with the same name already exists, you'll get a notification and the import will be rejected.
 
+### Manual Import
+
+If you'd rather not use a repo or ZIP, you can create a Skill manually. In the import dialog, switch to the "Manual" tab, fill in the Skill ID, description, and content, and optionally add attachments. Tap "Import" and it'll generate a Skill and place it in the directory.
+
 ## Managing Skills
 
-Once installed, Skills appear in the list. Each entry has a visibility toggle on the right — on means the AI can use it, off means it stays locally but the AI won't call it. Tap an entry to view the `SKILL.md` content, and you can delete it from the detail dialog. The detail dialog has several tabs — "Description" shows your `name` and `description`, "Content" shows the `SKILL.md` body, and "Attachments" lets you manage resource files.
-
-![Skill detail dialog](</manuals/assets/tools/skill_detail.jpg>)
-
-Skills are stored in `/sdcard/Download/Operit/skills/`. Each Skill is a folder containing `SKILL.md`. The app recognizes a Skill by this file — if it has `SKILL.md` (or `skill.md`), it counts as a Skill.
+Once installed, Skills appear in the list. Each entry has a visibility toggle on the right — on means the AI can use it, off means it stays locally but the AI won't call it.
+The app's built-in management for Skills is limited to deletion. If you need to modify the content or add attachments, you'll need to go directly to the file path. Skills are stored in `/sdcard/Download/Operit/skills/`. Each Skill is a folder containing `SKILL.md`. The app recognizes a Skill by this file — if it has `SKILL.md` (or `skill.md`), it counts as a Skill.
 
 When the AI activates a Skill, the entire folder structure and all files inside are exposed to the AI — not just `SKILL.md`. So if you need to include reference files, templates, or configurations, put them in subdirectories inside the Skill folder. The AI will see them when it's activated.
 
