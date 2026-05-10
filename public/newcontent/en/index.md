@@ -23,3 +23,15 @@ Yeah, here’s a simple way to understand it. The app works at a pretty low leve
 As for the key, just follow the guide and go to the DeepSeek page to apply and top up. (We have no partnership with DeepSeek — we only use it as an example because its website is easy to understand and the model quality is decent.)
 
 The detailed parts can get a bit complex, but this documentation will do its best to explain everything clearly.
+
+### On AI Hallucination
+
+One last thing: **AI can lie to you.**
+
+Not on purpose — it's called "hallucination." AI will confidently tell you incorrect information, even fabricate files, features, or steps that don't exist. Sometimes it'll throw out a bunch of fancy-sounding technical jargon and solutions, sounding totally convincing — and it's all made up, none of it actually works.
+
+Even when we equip AI with tools, it can still pick the wrong parameters, misunderstand your intent, or take actions you never asked for.
+
+So please stay alert. AI says "I've fixed it" — that doesn't mean it's actually fixed. AI says "this file doesn't exist" — that doesn't mean it actually looked. **Always trust what you see with your own eyes, not what the AI tells you.** The documentation is what's accurate. AI is just a helper, not the truth.
+
+**If something seems off, verify it yourself.**
