@@ -532,10 +532,9 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   const body = bodyResult.value || {};
   const username = normalizeApplicationUsername(body.username);
   const displayName = normalizeApplicationText(body.display_name || body.displayName || '', 60, '');
-  const reason = normalizeApplicationText(body.reason, 500, '');
-  const skills = normalizeApplicationText(body.skills, 500, '');
   const contact = normalizeApplicationText(body.contact, 200, '');
   const password = String(body.password || '');
+  const commitment = Boolean(body.commitment);
 
   if (!ADMIN_USERNAME_RE.test(username)) {
     return json({ error: 'username_invalid' }, 400, corsHeaders);
@@ -543,14 +542,11 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
     return json({ error: 'password_too_short' }, 400, corsHeaders);
   }
-  if (reason.length < 10) {
-    return json({ error: 'reason_too_short' }, 400, corsHeaders);
-  }
-  if (skills.length < 2) {
-    return json({ error: 'skills_too_short' }, 400, corsHeaders);
-  }
   if (contact.length < 3) {
     return json({ error: 'contact_required' }, 400, corsHeaders);
+  }
+  if (!commitment) {
+    return json({ error: 'commitment_required' }, 400, corsHeaders);
   }
 
   const existingUser = await env.OPERIT_SUBMISSION_DB.prepare(
@@ -570,6 +566,8 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   const passwordHash = await hashAdminCredential(password, env);
   const now = new Date().toISOString();
   const applicationId = crypto.randomUUID();
+  const reason = 'commitment_confirmed';
+  const skills = 'responsible_contributor';
   await env.OPERIT_SUBMISSION_DB.prepare(
     'INSERT INTO reviewer_applications (id, username, display_name, reason, skills, contact, password_hash, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)',
   ).bind(

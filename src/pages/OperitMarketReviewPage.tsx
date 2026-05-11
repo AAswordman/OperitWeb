@@ -332,7 +332,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
 
   const [marketFilter, setMarketFilter] = useState<'all' | MarketType>('all');
   const [reviewStateFilter, setReviewStateFilter] = useState<'all' | ReviewState>('pending');
-  const [shelfStateFilter, setShelfStateFilter] = useState<'all' | ShelfState>('all');
+  const [shelfStateFilter, setShelfStateFilter] = useState<'all' | ShelfState>('open');
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [page, setPage] = useState(1);

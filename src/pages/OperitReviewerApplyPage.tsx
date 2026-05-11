@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Alert, Button, Card, Input, Layout, Space, Typography } from 'antd';
+import { Alert, Button, Card, Checkbox, Input, Layout, Space, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import TurnstileWidget from '../components/TurnstileWidget';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text } = Typography;
-const { TextArea } = Input;
-
 interface OperitReviewerApplyPageProps {
   language: 'zh' | 'en';
 }
@@ -23,9 +21,8 @@ const mapApplyError = (code: string, isZh: boolean) => {
   const zh: Record<string, string> = {
     username_invalid: '用户名不合法（3-32位，仅小写字母/数字/._-）。',
     password_too_short: '密码至少 8 位。',
-    reason_too_short: '申请原因至少填写 10 个字。',
-    skills_too_short: '请填写你的能力或经验。',
     contact_required: '请填写联系方式。',
+    commitment_required: '请先勾选承诺。',    
     user_exists: '该账号名已存在。',
     application_exists: '这个账号名已经提交过申请。',
     turnstile_failed: '人机验证失败，请重试。',
@@ -35,9 +32,8 @@ const mapApplyError = (code: string, isZh: boolean) => {
   const en: Record<string, string> = {
     username_invalid: 'Invalid username (3-32 chars, lowercase letters/numbers/._-).',
     password_too_short: 'Password must be at least 8 characters.',
-    reason_too_short: 'Please provide a longer application reason.',
-    skills_too_short: 'Please describe your skills or experience.',
     contact_required: 'Contact information is required.',
+    commitment_required: 'Please confirm the commitment first.',
     user_exists: 'This username already exists.',
     application_exists: 'An application already exists for this username.',
     turnstile_failed: 'Verification failed. Please try again.',
@@ -61,8 +57,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     displayName: localStorage.getItem(STORAGE.reviewerApplyDisplayName) || '',
     contact: localStorage.getItem(STORAGE.reviewerApplyContact) || '',
     password: '',
-    reason: '',
-    skills: '',
+    commitment: false,
   }));
 
   useEffect(() => {
@@ -94,8 +89,12 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!form.username.trim() || !form.password.trim() || !form.contact.trim() || !form.reason.trim() || !form.skills.trim()) {
+    if (!form.username.trim() || !form.password.trim() || !form.contact.trim()) {
       setError(isZh ? '请把必填项填写完整。' : 'Please fill in all required fields.');
+      return;
+    }
+    if (!form.commitment) {
+      setError(isZh ? '请先勾选承诺。' : 'Please confirm the commitment first.');
       return;
     }
     if (!siteKey) {
@@ -120,8 +119,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
           display_name: form.displayName.trim() || undefined,
           contact: form.contact.trim(),
           password: form.password,
-          reason: form.reason.trim(),
-          skills: form.skills.trim(),
+          commitment: true,
           turnstile_token: turnstileToken,
         }),
       });
@@ -140,7 +138,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
         id: String((data as { id?: string })?.id || ''),
         createdAt: String((data as { created_at?: string })?.created_at || ''),
       });
-      setForm(prev => ({ ...prev, password: '', reason: '', skills: '' }));
+      setForm(prev => ({ ...prev, password: '', commitment: false }));
       setTurnstileToken('');
       setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
@@ -161,8 +159,8 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
               </Title>
               <Paragraph type="secondary" style={{ marginBottom: 0 }}>
                 {isZh
-                  ? '填写账号、密码、能力说明、申请原因和联系方式后提交，等待管理员审批。'
-                  : 'Submit your account, password, skills, reason, and contact info for admin approval.'}
+                  ? '填写账号、密码和联系方式，勾选承诺后提交，等待管理员审批。'
+                  : 'Submit your account, password, and contact info, then confirm the commitment for admin approval.'}
               </Paragraph>
             </div>
 
@@ -188,18 +186,14 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
               onChange={event => setForm(prev => ({ ...prev, contact: event.target.value }))}
               placeholder={isZh ? '联系方式（QQ / 邮箱 / Telegram 等）' : 'Contact info (QQ / email / Telegram, etc.)'}
             />
-            <TextArea
-              value={form.skills}
-              onChange={event => setForm(prev => ({ ...prev, skills: event.target.value }))}
-              placeholder={isZh ? '你的能力、经验、擅长审核的方向' : 'Your skills, experience, and review strengths'}
-              rows={4}
-            />
-            <TextArea
-              value={form.reason}
-              onChange={event => setForm(prev => ({ ...prev, reason: event.target.value }))}
-              placeholder={isZh ? '申请原因，为什么想成为审核员' : 'Why do you want to become a reviewer?'}
-              rows={5}
-            />
+            <Checkbox
+              checked={form.commitment}
+              onChange={event => setForm(prev => ({ ...prev, commitment: event.target.checked }))}
+            >
+              {isZh
+                ? '我愿意负责任地发电，并认真参与审核。'
+                : 'I will contribute responsibly and take review work seriously.'}
+            </Checkbox>
 
             {siteKey ? (
               <Space direction="vertical" size={8} style={{ width: '100%' }}>

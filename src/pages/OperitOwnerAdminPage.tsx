@@ -33,8 +33,6 @@ interface ReviewerApplication {
   id: string;
   username: string;
   display_name?: string | null;
-  reason: string;
-  skills: string;
   contact: string;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
@@ -69,9 +67,8 @@ const mapOwnerApiError = (code: string, isZh: boolean) => {
     no_changes: '未检测到修改。',
     not_found: '目标用户不存在。',
     status_not_pending: '该申请已处理，不能重复审批。',
-    reason_too_short: '申请原因太短。',
-    skills_too_short: '能力说明太短。',
     contact_required: '联系方式不能为空。',
+    commitment_required: '申请人未勾选承诺。',
     d1_binding_missing: '服务端数据库未绑定。',
   };
   const en: Record<string, string> = {
@@ -86,9 +83,8 @@ const mapOwnerApiError = (code: string, isZh: boolean) => {
     no_changes: 'No changes detected.',
     not_found: 'Target user not found.',
     status_not_pending: 'This application has already been processed.',
-    reason_too_short: 'Application reason is too short.',
-    skills_too_short: 'Skills description is too short.',
     contact_required: 'Contact information is required.',
+    commitment_required: 'Commitment confirmation is required.',
     d1_binding_missing: 'Server database is not configured.',
   };
   const table = isZh ? zh : en;
@@ -492,18 +488,6 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
         const color = value === 'approved' ? 'green' : value === 'rejected' ? 'red' : 'gold';
         return <Tag color={color}>{value}</Tag>;
       },
-    },
-    {
-      title: 'Reason',
-      dataIndex: 'reason',
-      width: 260,
-      render: (value: string) => <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>{value}</div>,
-    },
-    {
-      title: 'Skills',
-      dataIndex: 'skills',
-      width: 260,
-      render: (value: string) => <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>{value}</div>,
     },
     {
       title: 'Created',

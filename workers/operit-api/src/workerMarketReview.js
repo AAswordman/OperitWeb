@@ -1136,7 +1136,7 @@ async function handleAdminMarketReviewList(url, env, corsHeaders) {
   try {
     const requestedMarket = String(url.searchParams.get('market') || 'all').trim().toLowerCase();
     const requestedReviewState = String(url.searchParams.get('review_state') || 'pending').trim().toLowerCase();
-    const requestedShelfState = String(url.searchParams.get('shelf_state') || 'all').trim().toLowerCase();
+    const requestedShelfState = String(url.searchParams.get('shelf_state') || 'open').trim().toLowerCase();
     const query = String(url.searchParams.get('q') || '').trim().toLowerCase();
     const limit = clampInt(url.searchParams.get('limit'), 1, MAX_LIST_LIMIT, 30);
     const offset = Math.max(0, clampInt(url.searchParams.get('offset'), 0, 100000, 0));
