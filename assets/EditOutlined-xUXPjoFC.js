@@ -1,0 +1,1 @@
+import{r as o,I as s,b0 as i}from"./index-5-0NMARr.js";function a(){return a=Object.assign?Object.assign.bind():function(n){for(var t=1;t<arguments.length;t++){var r=arguments[t];for(var e in r)Object.prototype.hasOwnProperty.call(r,e)&&(n[e]=r[e])}return n},a.apply(this,arguments)}const c=(n,t)=>o.createElement(s,a({},n,{ref:t,icon:i})),p=o.forwardRef(c);export{p as R};
