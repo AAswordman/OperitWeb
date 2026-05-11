@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { flushSync } from 'react-dom';
 import {
   Alert,
   Button,
@@ -477,10 +478,12 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       return;
     }
 
-    setDetailOpen(true);
-    setDetailLoading(true);
-    setDetailItem(null);
-    setDetailLogs([]);
+    flushSync(() => {
+      setDetailOpen(true);
+      setDetailLoading(true);
+      setDetailItem(null);
+      setDetailLogs([]);
+    });
     try {
       const { response, data } = await fetchJson(
         `${apiBase.replace(/\/+$/, '')}/api/admin/market-review/issues/${marketType}/${issueNumber}`,
