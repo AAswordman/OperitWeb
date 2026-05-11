@@ -37,6 +37,13 @@ import {
   handleAdminMe,
   handleAdminLogout,
 } from './workerAdminAuth.js';
+import {
+  handleAdminMarketReviewMeta,
+  handleAdminMarketReviewList,
+  handleAdminMarketReviewDetail,
+  handleAdminMarketReviewLogs,
+  handleAdminMarketReviewAction,
+} from './workerMarketReview.js';
 
 function normalizeLeaderboardAuthorValue(value) {
   const normalized = String(value || '').trim();
@@ -747,6 +754,28 @@ export default {
       }
 
       const parts = url.pathname.split('/').filter(Boolean); // ['api','admin','submissions', ...]
+
+      if (parts.length >= 3 && parts[2] === 'market-review') {
+        if (parts.length === 4 && parts[3] === 'meta' && request.method === 'GET') {
+          return handleAdminMarketReviewMeta(auth, env, corsHeaders);
+        }
+
+        if (parts.length === 4 && parts[3] === 'issues' && request.method === 'GET') {
+          return handleAdminMarketReviewList(url, env, corsHeaders);
+        }
+
+        if (parts.length === 6 && parts[3] === 'issues' && request.method === 'GET') {
+          return handleAdminMarketReviewDetail(parts[4], parts[5], env, corsHeaders);
+        }
+
+        if (parts.length === 7 && parts[3] === 'issues' && parts[6] === 'action' && request.method === 'POST') {
+          return handleAdminMarketReviewAction(parts[4], parts[5], request, env, corsHeaders, auth.user);
+        }
+
+        if (parts.length === 4 && parts[3] === 'logs' && request.method === 'GET') {
+          return handleAdminMarketReviewLogs(url, env, corsHeaders);
+        }
+      }
 
       if (parts.length >= 3 && parts[2] === 'ip-bans') {
         if (parts.length === 3 && request.method === 'GET') {

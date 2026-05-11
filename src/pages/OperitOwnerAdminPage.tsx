@@ -393,6 +393,9 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
                   <Button type="primary" onClick={loadUsers} loading={loading}>
                     {isZh ? '加载管理员列表' : 'Load admins'}
                   </Button>
+                  <Button onClick={() => window.location.hash = '#/operit-market-review'}>
+                    {isZh ? '打开市场审核台' : 'Open market review'}
+                  </Button>
                   <Button
                     onClick={() => {
                       setCreateError(null);

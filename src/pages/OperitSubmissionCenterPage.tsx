@@ -143,6 +143,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   const [mobileSectionLeaf, setMobileSectionLeaf] = useState<MobileSectionLeaf>('profile');
 
   const canOpenAdminReview = Boolean(adminAuthUser && (adminAuthUser.role === 'admin' || adminAuthUser.owner));
+  const canOpenMarketReview = Boolean(adminAuthUser);
 
   const mobileGroupOptions = useMemo(
     () => [
@@ -586,6 +587,11 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                 {canOpenAdminReview && (
                   <Button type="primary" onClick={() => navigate('/operit-submission-admin')}>
                     {isZh ? '进入审核入口' : 'Open review entry'}
+                  </Button>
+                )}
+                {canOpenMarketReview && (
+                  <Button onClick={() => navigate('/operit-market-review')}>
+                    {isZh ? '进入市场审核台' : 'Open market review'}
                   </Button>
                 )}
               </Space>

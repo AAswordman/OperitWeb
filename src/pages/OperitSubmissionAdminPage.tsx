@@ -1019,6 +1019,12 @@ const OperitSubmissionAdminPage: React.FC<OperitSubmissionAdminPageProps> = ({ l
               <Col xs={24} lg={8}>
                 <Space>
                   <Button
+                    onClick={() => navigate('/operit-market-review')}
+                    disabled={!adminToken.trim()}
+                  >
+                    {language === 'zh' ? '市场审核台' : 'Market Review'}
+                  </Button>
+                  <Button
                     onClick={handleLogout}
                     disabled={!adminToken.trim()}
                   >
