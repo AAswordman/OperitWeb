@@ -13,6 +13,7 @@ const ISSUE_PAGE_SIZE = 100;
 const MAX_LIST_LIMIT = 100;
 const MAX_LOG_LIMIT = 100;
 const DEFAULT_LOG_LIMIT = 50;
+const GITHUB_SEARCH_PAGE_SIZE = 100;
 const MARKET_REVIEW_TABLE = 'market_review_logs';
 const REVIEW_LABELS = {
   changesRequested: 'review:changes-requested',
@@ -693,43 +694,106 @@ async function githubApiRequest(path, options, env, requestOptions = {}) {
   return { response, data, text };
 }
 
-async function fetchMarketIssues(marketType, env) {
+function buildQuotedSearchTerm(value) {
+  return `"${String(value || '').replace(/"/g, '\\"')}"`;
+}
+
+function buildBaseSearchTerms(config, reviewState, shelfState, query) {
+  const terms = [
+    `repo:${config.owner}/${config.repo}`,
+    'is:issue',
+  ];
+
+  const normalizedShelfState = normalizeShelfState(shelfState);
+  if (normalizedShelfState) {
+    terms.push(`state:${normalizedShelfState}`);
+  }
+
+  if (reviewState === 'approved') {
+    terms.push(`label:${buildQuotedSearchTerm(config.publicLabel)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.changesRequested)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else if (reviewState === 'changes_requested') {
+    terms.push(`label:${buildQuotedSearchTerm(REVIEW_LABELS.changesRequested)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else if (reviewState === 'rejected') {
+    terms.push(`label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else if (reviewState === 'pending') {
+    terms.push(`-label:${buildQuotedSearchTerm(config.publicLabel)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.changesRequested)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  }
+
+  if (query) {
+    terms.push(query);
+  }
+
+  return terms;
+}
+
+function buildSearchQuery(config, reviewState, shelfState, query) {
+  return buildBaseSearchTerms(config, reviewState, shelfState, query).join(' ');
+}
+
+async function searchIssuesByQuery(config, query, page, perPage, env) {
+  const params = new URLSearchParams();
+  params.set('q', query);
+  params.set('sort', 'updated');
+  params.set('order', 'desc');
+  params.set('per_page', String(perPage));
+  params.set('page', String(page));
+
+  const { data } = await githubApiRequest(
+    `/search/issues?${params.toString()}`,
+    { method: 'GET' },
+    env,
+  );
+
+  return {
+    total_count: Number(data?.total_count || 0),
+    items: Array.isArray(data?.items) ? data.items : [],
+  };
+}
+
+async function fetchMarketIssues(marketType, reviewState, shelfState, query, targetCount, env) {
   const config = getMarketConfig(marketType);
   if (!config) {
     throw new Error('market_invalid');
   }
 
+  const searchQuery = buildSearchQuery(config, reviewState, shelfState, query);
   const items = [];
+  let totalCount = 0;
   let page = 1;
+  let exhausted = false;
 
-  while (true) {
-    const params = new URLSearchParams();
-    params.set('state', 'all');
-    params.set('sort', 'updated');
-    params.set('direction', 'desc');
-    params.set('per_page', String(ISSUE_PAGE_SIZE));
-    params.set('page', String(page));
-
-    const { data } = await githubApiRequest(
-      `/repos/${config.owner}/${config.repo}/issues?${params.toString()}`,
-      { method: 'GET' },
+  while (!exhausted && items.length < targetCount) {
+    const result = await searchIssuesByQuery(
+      config,
+      searchQuery,
+      page,
+      Math.min(GITHUB_SEARCH_PAGE_SIZE, targetCount),
       env,
     );
 
-    const list = Array.isArray(data) ? data : [];
-    items.push(
-      ...list
-        .filter(issue => !issue?.pull_request)
-        .map(issue => buildIssueSummary(issue, config.code, config)),
-    );
+    totalCount = Number(result.total_count || 0);
+    const pageItems = result.items
+      .filter(issue => !issue?.pull_request)
+      .map(issue => buildIssueSummary(issue, config.code, config));
 
-    if (list.length < ISSUE_PAGE_SIZE) {
-      break;
+    items.push(...pageItems);
+
+    if (pageItems.length < Math.min(GITHUB_SEARCH_PAGE_SIZE, targetCount)) {
+      exhausted = true;
+    } else {
+      page += 1;
     }
-    page += 1;
   }
 
-  return items;
+  return {
+    total: totalCount,
+    items: items.slice(0, targetCount),
+  };
 }
 
 async function fetchMarketIssueDetail(marketType, issueNumber, env) {
@@ -989,7 +1053,7 @@ async function handleAdminMarketReviewMeta(_auth, env, corsHeaders) {
 async function handleAdminMarketReviewList(url, env, corsHeaders) {
   try {
     const requestedMarket = String(url.searchParams.get('market') || 'all').trim().toLowerCase();
-    const requestedReviewState = String(url.searchParams.get('review_state') || 'all').trim().toLowerCase();
+    const requestedReviewState = String(url.searchParams.get('review_state') || 'pending').trim().toLowerCase();
     const requestedShelfState = String(url.searchParams.get('shelf_state') || 'all').trim().toLowerCase();
     const query = String(url.searchParams.get('q') || '').trim().toLowerCase();
     const limit = clampInt(url.searchParams.get('limit'), 1, MAX_LIST_LIMIT, 30);
@@ -1010,15 +1074,28 @@ async function handleAdminMarketReviewList(url, env, corsHeaders) {
       return json({ error: 'shelf_state_invalid' }, 400, corsHeaders);
     }
 
-    const results = await Promise.all(markets.map(marketType => fetchMarketIssues(marketType, env)));
-    const filtered = results
-      .flat()
-      .filter(item => requestedReviewState === 'all' || item.review_state === requestedReviewState)
-      .filter(item => requestedShelfState === 'all' || item.shelf_state === requestedShelfState)
-      .filter(item => matchesQuery(item, query))
-      .sort(compareIssueItems);
+    const normalizedReviewState = requestedReviewState === 'all' ? '' : requestedReviewState;
+    const normalizedShelfState = requestedShelfState === 'all' ? '' : requestedShelfState;
+    const targetCount = offset + limit;
 
-    const items = filtered.slice(offset, offset + limit);
+    const results = await Promise.all(
+      markets.map(marketType =>
+        fetchMarketIssues(
+          marketType,
+          normalizedReviewState,
+          normalizedShelfState,
+          query,
+          targetCount,
+          env,
+        )
+      ),
+    );
+    const items = results
+      .flatMap(result => result.items)
+      .sort(compareIssueItems)
+      .slice(offset, offset + limit);
+    const total = results.reduce((sum, result) => sum + Number(result.total || 0), 0);
+
     return json({
       ok: true,
       market: requestedMarket,
@@ -1027,7 +1104,7 @@ async function handleAdminMarketReviewList(url, env, corsHeaders) {
       q: query,
       limit,
       offset,
-      total: filtered.length,
+      total,
       items,
     }, 200, corsHeaders);
   } catch (error) {

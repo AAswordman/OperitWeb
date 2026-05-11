@@ -329,7 +329,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [error, setError] = useState<string | null>(null);
 
   const [marketFilter, setMarketFilter] = useState<'all' | MarketType>('all');
-  const [reviewStateFilter, setReviewStateFilter] = useState<'all' | ReviewState>('all');
+  const [reviewStateFilter, setReviewStateFilter] = useState<'all' | ReviewState>('pending');
   const [shelfStateFilter, setShelfStateFilter] = useState<'all' | ShelfState>('all');
   const [searchInput, setSearchInput] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
@@ -651,7 +651,11 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           <Button type="link" onClick={() => loadDetail(record.market_type, record.issue_number)} style={{ paddingInline: 0 }}>
             {record.title || t.unknown}
           </Button>
-          {record.body_excerpt ? <Text type="secondary">{record.body_excerpt}</Text> : null}
+          {record.body_excerpt ? (
+            <Text type="secondary" className="operit-market-review-excerpt">
+              {record.body_excerpt}
+            </Text>
+          ) : null}
         </Space>
       ),
     },
@@ -781,12 +785,12 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 </Paragraph>
               </div>
 
-              <Space wrap size={[12, 12]}>
+              <Space wrap size={[12, 12]} className="operit-market-review-topbar">
                 <Input
                   value={apiBase}
                   onChange={event => setApiBase(event.target.value)}
                   addonBefore={t.apiBase}
-                  style={{ minWidth: 360 }}
+                  className="operit-market-review-api-input"
                 />
                 <Tag color={adminToken.trim() ? 'green' : 'default'}>
                   {adminToken.trim() ? t.loggedIn : (isZh ? '未登录' : 'Not signed in')}
@@ -810,14 +814,14 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               {error ? (
                 <Alert showIcon type="error" message={t.loadFailed} description={error} />
               ) : null}
-              <Space wrap size={[12, 12]}>
+              <Space wrap size={[12, 12]} className="operit-market-review-filters-row">
                 <Select
                   value={marketFilter}
                   onChange={value => {
                     setMarketFilter(value as 'all' | MarketType);
                     setPage(1);
                   }}
-                  style={{ width: 180 }}
+                  className="operit-market-review-filter-select"
                   options={[
                     { label: t.all, value: 'all' },
                     ...[...(meta?.markets || [])].sort((left, right) => MARKET_TYPE_ORDER.indexOf(left.code) - MARKET_TYPE_ORDER.indexOf(right.code)).map(item => ({
@@ -832,7 +836,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                     setReviewStateFilter(value as 'all' | ReviewState);
                     setPage(1);
                   }}
-                  style={{ width: 180 }}
+                  className="operit-market-review-filter-select"
                   options={[
                     { label: t.all, value: 'all' },
                     { label: getReviewStateLabel('pending', language), value: 'pending' },
@@ -847,7 +851,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                     setShelfStateFilter(value as 'all' | ShelfState);
                     setPage(1);
                   }}
-                  style={{ width: 180 }}
+                  className="operit-market-review-filter-select"
                   options={[
                     { label: t.all, value: 'all' },
                     { label: t.open, value: 'open' },
@@ -863,7 +867,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                     setPage(1);
                   }}
                   placeholder={t.searchPlaceholder}
-                  style={{ minWidth: 360, flex: 1 }}
+                  className="operit-market-review-search"
                 />
               </Space>
             </Space>
@@ -897,7 +901,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           width={860}
           onClose={() => setDetailOpen(false)}
           extra={detailItem ? (
-            <Space wrap>
+            <Space wrap className="operit-market-review-drawer-actions">
               <Button icon={<ReloadOutlined />} loading={detailLoading} onClick={() => loadDetail(detailItem.market_type, detailItem.issue_number)}>
                 {t.reload}
               </Button>

@@ -23,3 +23,77 @@
   flex-direction: column;
   gap: 2px;
 }
+
+.operit-market-review-excerpt {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-height: 1.5;
+  max-height: 3em;
+  word-break: break-word;
+}
+
+.operit-market-review-topbar,
+.operit-market-review-filters-row,
+.operit-market-review-drawer-actions {
+  width: 100%;
+}
+
+.operit-market-review-api-input {
+  min-width: 360px;
+}
+
+.operit-market-review-filter-select {
+  width: 180px;
+}
+
+.operit-market-review-search {
+  min-width: 360px;
+  flex: 1 1 360px;
+}
+
+.operit-market-review-drawer-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 768px) {
+  .operit-market-review-topbar,
+  .operit-market-review-filters-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .operit-market-review-api-input,
+  .operit-market-review-filter-select,
+  .operit-market-review-search {
+    width: 100% !important;
+    min-width: 0;
+    flex: none;
+  }
+
+  .operit-market-review-drawer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    gap: 8px;
+    max-width: min(100vw - 120px, 320px);
+  }
+
+  .operit-market-review-drawer-actions .ant-btn {
+    flex: 1 1 calc(50% - 8px);
+    min-width: 120px;
+  }
+}
+
+@media (max-width: 520px) {
+  .operit-market-review-drawer-actions {
+    max-width: min(100vw - 96px, 220px);
+  }
+
+  .operit-market-review-drawer-actions .ant-btn {
+    flex-basis: 100%;
+    min-width: 0;
+  }
+}
