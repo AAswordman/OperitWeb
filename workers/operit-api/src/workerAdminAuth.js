@@ -89,6 +89,30 @@ async function ensureAdminAuthSchema(env) {
   await env.OPERIT_SUBMISSION_DB.prepare(
     'CREATE INDEX IF NOT EXISTS idx_admin_users_disabled ON admin_users(disabled_at)',
   ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE TABLE IF NOT EXISTS reviewer_applications (' +
+      'id TEXT PRIMARY KEY,' +
+      'username TEXT NOT NULL UNIQUE,' +
+      'display_name TEXT,' +
+      'reason TEXT NOT NULL,' +
+      'skills TEXT NOT NULL,' +
+      'contact TEXT NOT NULL,' +
+      'password_hash TEXT NOT NULL,' +
+      'turnstile_ok INTEGER NOT NULL DEFAULT 0,' +
+      'status TEXT NOT NULL,' +
+      'created_at TEXT NOT NULL,' +
+      'reviewed_at TEXT,' +
+      'reviewed_by TEXT,' +
+      'review_notes TEXT,' +
+      'granted_at TEXT' +
+      ')',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_reviewer_applications_status_created ON reviewer_applications(status, created_at DESC)',
+  ).run();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'CREATE INDEX IF NOT EXISTS idx_reviewer_applications_username ON reviewer_applications(username)',
+  ).run();
 }
 
 function getAdminSessionTtlMs(env) {
@@ -483,6 +507,200 @@ async function handleOwnerUpdateUser(usernameRaw, request, env, corsHeaders) {
 
   return json({ ok: true, item: updated || null }, 200, corsHeaders);
 }
+
+function normalizeApplicationUsername(value) {
+  return normalizeAdminUsername(value);
+}
+
+function normalizeApplicationText(value, maxLength, fallback = '') {
+  const text = String(value || '').trim();
+  if (!text) return fallback;
+  return text.slice(0, maxLength);
+}
+
+async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
+  if (!env.OPERIT_SUBMISSION_DB) {
+    return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+  }
+  await ensureAdminAuthSchema(env);
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+
+  const body = bodyResult.value || {};
+  const username = normalizeApplicationUsername(body.username);
+  const displayName = normalizeApplicationText(body.display_name || body.displayName || '', 60, '');
+  const reason = normalizeApplicationText(body.reason, 500, '');
+  const skills = normalizeApplicationText(body.skills, 500, '');
+  const contact = normalizeApplicationText(body.contact, 200, '');
+  const password = String(body.password || '');
+
+  if (!ADMIN_USERNAME_RE.test(username)) {
+    return json({ error: 'username_invalid' }, 400, corsHeaders);
+  }
+  if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
+    return json({ error: 'password_too_short' }, 400, corsHeaders);
+  }
+  if (reason.length < 10) {
+    return json({ error: 'reason_too_short' }, 400, corsHeaders);
+  }
+  if (skills.length < 2) {
+    return json({ error: 'skills_too_short' }, 400, corsHeaders);
+  }
+  if (contact.length < 3) {
+    return json({ error: 'contact_required' }, 400, corsHeaders);
+  }
+
+  const existingUser = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+  if (existingUser) {
+    return json({ error: 'user_exists' }, 409, corsHeaders);
+  }
+
+  const existingApplication = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT id, status FROM reviewer_applications WHERE username = ? LIMIT 1',
+  ).bind(username).first();
+  if (existingApplication) {
+    return json({ error: 'application_exists' }, 409, corsHeaders);
+  }
+
+  const passwordHash = await hashAdminCredential(password, env);
+  const now = new Date().toISOString();
+  const applicationId = crypto.randomUUID();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'INSERT INTO reviewer_applications (id, username, display_name, reason, skills, contact, password_hash, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)',
+  ).bind(
+    applicationId,
+    username,
+    displayName || null,
+    reason,
+    skills,
+    contact,
+    passwordHash,
+    1,
+    'pending',
+    now,
+  ).run();
+
+  return json({ ok: true, id: applicationId, status: 'pending', created_at: now }, 201, corsHeaders);
+}
+
+async function handleReviewerApplicationList(url, env, corsHeaders) {
+  await ensureAdminAuthSchema(env);
+  const status = String(url.searchParams.get('status') || '').trim();
+  const limit = clampInt(url.searchParams.get('limit'), 1, 200, 50);
+  const offset = clampInt(url.searchParams.get('offset'), 0, 10000, 0);
+
+  let query = 'SELECT id, username, display_name, reason, skills, contact, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at FROM reviewer_applications';
+  const bindings = [];
+  if (status) {
+    query += ' WHERE status = ?';
+    bindings.push(status);
+  }
+  query += ' ORDER BY created_at DESC LIMIT ? OFFSET ?';
+  bindings.push(limit, offset);
+
+  const { results } = await env.OPERIT_SUBMISSION_DB.prepare(query).bind(...bindings).all();
+  return json({ ok: true, items: results || [], limit, offset }, 200, corsHeaders);
+}
+
+async function handleReviewerApplicationApprove(id, request, env, corsHeaders, authUser) {
+  await ensureAdminAuthSchema(env);
+  const existing = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT id, username, display_name, reason, skills, contact, password_hash, status FROM reviewer_applications WHERE id = ? LIMIT 1',
+  ).bind(id).first();
+  if (!existing) {
+    return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+  if (existing.status !== 'pending') {
+    return json({ error: 'status_not_pending' }, 409, corsHeaders);
+  }
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const reviewNotes = normalizeApplicationText(bodyResult.value?.review_notes || bodyResult.value?.reviewNotes || '', 500, '') || null;
+  const displayName = normalizeAdminDisplayName(existing.display_name || '') || existing.username;
+  const now = new Date().toISOString();
+
+  const userExists = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(existing.username).first();
+  if (userExists) {
+    return json({ error: 'user_exists' }, 409, corsHeaders);
+  }
+
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'INSERT INTO admin_users (username, display_name, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+  ).bind(
+    existing.username,
+    displayName || null,
+    'reviewer',
+    existing.password_hash,
+    now,
+    authUser?.username || 'owner',
+    now,
+  ).run();
+
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'UPDATE reviewer_applications SET status = ?, reviewed_at = ?, reviewed_by = ?, review_notes = ?, granted_at = ? WHERE id = ?',
+  ).bind(
+    'approved',
+    now,
+    authUser?.username || 'owner',
+    reviewNotes,
+    now,
+    id,
+  ).run();
+
+  return json(
+    {
+      ok: true,
+      id,
+      status: 'approved',
+      granted_username: existing.username,
+      granted_at: now,
+    },
+    200,
+    corsHeaders,
+  );
+}
+
+async function handleReviewerApplicationReject(id, request, env, corsHeaders, authUser) {
+  await ensureAdminAuthSchema(env);
+  const existing = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT id, status FROM reviewer_applications WHERE id = ? LIMIT 1',
+  ).bind(id).first();
+  if (!existing) {
+    return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+  if (existing.status !== 'pending') {
+    return json({ error: 'status_not_pending' }, 409, corsHeaders);
+  }
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const reviewNotes = normalizeApplicationText(bodyResult.value?.review_notes || bodyResult.value?.reviewNotes || '', 500, '') || null;
+  const now = new Date().toISOString();
+
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'UPDATE reviewer_applications SET status = ?, reviewed_at = ?, reviewed_by = ?, review_notes = ? WHERE id = ?',
+  ).bind(
+    'rejected',
+    now,
+    authUser?.username || 'owner',
+    reviewNotes,
+    id,
+  ).run();
+
+  return json({ ok: true, id, status: 'rejected', reviewed_at: now }, 200, corsHeaders);
+}
 export {
   getOwnerToken,
   hashAdminCredential,
@@ -496,4 +714,8 @@ export {
   handleOwnerListUsers,
   handleOwnerCreateUser,
   handleOwnerUpdateUser,
+  handleReviewerApplicationSubmit,
+  handleReviewerApplicationList,
+  handleReviewerApplicationApprove,
+  handleReviewerApplicationReject,
 };

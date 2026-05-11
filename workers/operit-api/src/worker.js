@@ -32,6 +32,10 @@ import {
   handleOwnerListUsers,
   handleOwnerCreateUser,
   handleOwnerUpdateUser,
+  handleReviewerApplicationSubmit,
+  handleReviewerApplicationList,
+  handleReviewerApplicationApprove,
+  handleReviewerApplicationReject,
   requireAdmin,
   handleAdminLogin,
   handleAdminMe,
@@ -648,6 +652,31 @@ export default {
       return handleLeaderboard(url, env, corsHeaders);
     }
 
+    if (url.pathname === '/api/reviewer-applications' && request.method === 'POST') {
+      if (!env.OPERIT_SUBMISSION_DB) {
+        return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
+      }
+      const bodyResult = await readJson(request);
+      if (!bodyResult.ok) {
+        return json({ error: 'invalid_json' }, 400, corsHeaders);
+      }
+      const turnstileToken = bodyResult.value.turnstile_token || bodyResult.value.turnstileToken;
+      const ip = getClientIp(request);
+      const turnstile = await verifyTurnstile(turnstileToken, ip, env);
+      if (!turnstile.success) {
+        return json({ error: 'turnstile_failed', details: turnstile['error-codes'] || [] }, 403, corsHeaders);
+      }
+      return handleReviewerApplicationSubmit(
+        new Request(request.url, {
+          method: request.method,
+          headers: request.headers,
+          body: JSON.stringify(bodyResult.value),
+        }),
+        env,
+        corsHeaders,
+      );
+    }
+
     if (url.pathname.startsWith('/api/admin/')) {
       if (!env.OPERIT_SUBMISSION_DB) {
         return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
@@ -726,9 +755,21 @@ export default {
           return handleOwnerCreateUser(request, env, corsHeaders);
         }
 
+        if (url.pathname === '/api/admin/owner/reviewer-applications' && request.method === 'GET') {
+          return handleReviewerApplicationList(url, env, corsHeaders);
+        }
+
         const ownerParts = url.pathname.split('/').filter(Boolean);
         if (ownerParts.length === 5 && ownerParts[2] === 'owner' && ownerParts[3] === 'users' && request.method === 'POST') {
           return handleOwnerUpdateUser(ownerParts[4], request, env, corsHeaders);
+        }
+        if (ownerParts.length === 6 && ownerParts[2] === 'owner' && ownerParts[3] === 'reviewer-applications' && request.method === 'POST') {
+          if (ownerParts[5] === 'approve') {
+            return handleReviewerApplicationApprove(ownerParts[4], request, env, corsHeaders, owner.user);
+          }
+          if (ownerParts[5] === 'reject') {
+            return handleReviewerApplicationReject(ownerParts[4], request, env, corsHeaders, owner.user);
+          }
         }
       }
 

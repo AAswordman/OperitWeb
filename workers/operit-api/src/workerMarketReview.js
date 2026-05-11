@@ -166,6 +166,8 @@ const REVIEW_LABEL_SET = new Set([
   normalizeLabelName(REVIEW_LABELS.rejected),
 ]);
 const LEGACY_PENDING_LABEL_SET = new Set(LEGACY_PENDING_LABELS.map(item => normalizeLabelName(item)));
+const MARKET_CONFIG_LIST = Object.values(MARKET_SOURCE_CONFIG);
+const ALL_PUBLIC_LABELS = MARKET_CONFIG_LIST.map(config => config.publicLabel);
 
 function normalizeMarketType(value) {
   const normalized = String(value || '').trim().toLowerCase();
@@ -731,6 +733,37 @@ function buildBaseSearchTerms(config, reviewState, shelfState, query) {
   return terms;
 }
 
+function buildCrossMarketBaseSearchTerms(reviewState, shelfState, query) {
+  const terms = [
+    ...MARKET_CONFIG_LIST.map(config => `repo:${config.owner}/${config.repo}`),
+    'is:issue',
+  ];
+
+  const normalizedShelfState = normalizeShelfState(shelfState);
+  if (normalizedShelfState) {
+    terms.push(`state:${normalizedShelfState}`);
+  }
+
+  if (reviewState === 'pending') {
+    terms.push(...ALL_PUBLIC_LABELS.map(label => `-label:${buildQuotedSearchTerm(label)}`));
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.changesRequested)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else if (reviewState === 'changes_requested') {
+    terms.push(`label:${buildQuotedSearchTerm(REVIEW_LABELS.changesRequested)}`);
+    terms.push(`-label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else if (reviewState === 'rejected') {
+    terms.push(`label:${buildQuotedSearchTerm(REVIEW_LABELS.rejected)}`);
+  } else {
+    return null;
+  }
+
+  if (query) {
+    terms.push(query);
+  }
+
+  return terms;
+}
+
 function buildSearchQuery(config, reviewState, shelfState, query) {
   return buildBaseSearchTerms(config, reviewState, shelfState, query).join(' ');
 }
@@ -780,6 +813,55 @@ async function fetchMarketIssues(marketType, reviewState, shelfState, query, tar
     const pageItems = result.items
       .filter(issue => !issue?.pull_request)
       .map(issue => buildIssueSummary(issue, config.code, config));
+
+    items.push(...pageItems);
+
+    if (pageItems.length < Math.min(GITHUB_SEARCH_PAGE_SIZE, targetCount)) {
+      exhausted = true;
+    } else {
+      page += 1;
+    }
+  }
+
+  return {
+    total: totalCount,
+    items: items.slice(0, targetCount),
+  };
+}
+
+async function fetchAllMarketIssues(reviewState, shelfState, query, targetCount, env) {
+  const searchTerms = buildCrossMarketBaseSearchTerms(reviewState, shelfState, query);
+  if (!searchTerms) {
+    return null;
+  }
+
+  const searchQuery = searchTerms.join(' ');
+  const items = [];
+  let totalCount = 0;
+  let page = 1;
+  let exhausted = false;
+
+  while (!exhausted && items.length < targetCount) {
+    const result = await searchIssuesByQuery(
+      null,
+      searchQuery,
+      page,
+      Math.min(GITHUB_SEARCH_PAGE_SIZE, targetCount),
+      env,
+    );
+
+    totalCount = Number(result.total_count || 0);
+    const pageItems = result.items
+      .filter(issue => !issue?.pull_request)
+      .map(issue => {
+        const repoName = String(issue?.repository_url || '').split('/').pop() || '';
+        const config = MARKET_CONFIG_LIST.find(candidate => candidate.repo === repoName);
+        if (!config) {
+          return null;
+        }
+        return buildIssueSummary(issue, config.code, config);
+      })
+      .filter(Boolean);
 
     items.push(...pageItems);
 
@@ -1078,23 +1160,41 @@ async function handleAdminMarketReviewList(url, env, corsHeaders) {
     const normalizedShelfState = requestedShelfState === 'all' ? '' : requestedShelfState;
     const targetCount = offset + limit;
 
-    const results = await Promise.all(
-      markets.map(marketType =>
-        fetchMarketIssues(
-          marketType,
-          normalizedReviewState,
-          normalizedShelfState,
-          query,
-          targetCount,
-          env,
-        )
-      ),
-    );
-    const items = results
-      .flatMap(result => result.items)
-      .sort(compareIssueItems)
-      .slice(offset, offset + limit);
-    const total = results.reduce((sum, result) => sum + Number(result.total || 0), 0);
+    const canUseCrossMarketSearch = requestedMarket === 'all'
+      && ['pending', 'changes_requested', 'rejected'].includes(normalizedReviewState);
+
+    let items = [];
+    let total = 0;
+
+    if (canUseCrossMarketSearch) {
+      const result = await fetchAllMarketIssues(
+        normalizedReviewState,
+        normalizedShelfState,
+        query,
+        targetCount,
+        env,
+      );
+      items = (result?.items || []).slice(offset, offset + limit);
+      total = Number(result?.total || 0);
+    } else {
+      const results = await Promise.all(
+        markets.map(marketType =>
+          fetchMarketIssues(
+            marketType,
+            normalizedReviewState,
+            normalizedShelfState,
+            query,
+            targetCount,
+            env,
+          )
+        ),
+      );
+      items = results
+        .flatMap(result => result.items)
+        .sort(compareIssueItems)
+        .slice(offset, offset + limit);
+      total = results.reduce((sum, result) => sum + Number(result.total || 0), 0);
+    }
 
     return json({
       ok: true,

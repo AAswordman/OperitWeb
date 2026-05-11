@@ -11,6 +11,7 @@ import {
   Layout,
   Modal,
   Select,
+  Spin,
   Space,
   Table,
   Tag,
@@ -476,7 +477,10 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       return;
     }
 
+    setDetailOpen(true);
     setDetailLoading(true);
+    setDetailItem(null);
+    setDetailLogs([]);
     try {
       const { response, data } = await fetchJson(
         `${apiBase.replace(/\/+$/, '')}/api/admin/market-review/issues/${marketType}/${issueNumber}`,
@@ -494,7 +498,6 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       const payload = (data || {}) as { item?: MarketReviewItem; logs?: MarketReviewLog[] };
       setDetailItem(payload.item || null);
       setDetailLogs(payload.logs || []);
-      setDetailOpen(true);
     } catch (err) {
       message.error((err as Error).message || t.detailLoadFailed);
     } finally {
@@ -1071,6 +1074,10 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 </pre>
               </Card>
             </Space>
+          ) : detailLoading ? (
+            <div className="operit-market-review-detail-loading">
+              <Spin size="large" tip={isZh ? '加载中...' : 'Loading...'} />
+            </div>
           ) : null}
         </Drawer>
 

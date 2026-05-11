@@ -189,6 +189,10 @@ const OperitLoginPage: React.FC<OperitLoginPageProps> = ({ language }) => {
               {isZh ? '登录' : 'Sign In'}
             </Button>
 
+            <Button onClick={() => navigate('/operit-reviewer-apply')}>
+              {isZh ? '申请审核员账号' : 'Apply for reviewer account'}
+            </Button>
+
             {error && (
               <Alert
                 type="error"

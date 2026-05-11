@@ -18,6 +18,13 @@
   border-radius: 12px;
 }
 
+.operit-market-review-detail-loading {
+  min-height: 320px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .operit-market-review-reason-option {
   display: flex;
   flex-direction: column;

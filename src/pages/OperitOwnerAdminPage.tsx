@@ -29,6 +29,21 @@ interface OwnerAdminUser {
   disabled_at?: string | null;
 }
 
+interface ReviewerApplication {
+  id: string;
+  username: string;
+  display_name?: string | null;
+  reason: string;
+  skills: string;
+  contact: string;
+  status: 'pending' | 'approved' | 'rejected';
+  created_at: string;
+  reviewed_at?: string | null;
+  reviewed_by?: string | null;
+  review_notes?: string | null;
+  granted_at?: string | null;
+}
+
 interface OperitOwnerAdminPageProps {
   language: 'zh' | 'en';
 }
@@ -49,9 +64,14 @@ const mapOwnerApiError = (code: string, isZh: boolean) => {
     password_too_short: '密码太短（至少 8 位）。',
     role_invalid: '角色无效，请使用 admin 或 reviewer。',
     user_exists: '该用户名已存在。',
+    application_exists: '该账号已经提交过申请。',
     invalid_json: '请求格式错误，请重试。',
     no_changes: '未检测到修改。',
     not_found: '目标用户不存在。',
+    status_not_pending: '该申请已处理，不能重复审批。',
+    reason_too_short: '申请原因太短。',
+    skills_too_short: '能力说明太短。',
+    contact_required: '联系方式不能为空。',
     d1_binding_missing: '服务端数据库未绑定。',
   };
   const en: Record<string, string> = {
@@ -61,9 +81,14 @@ const mapOwnerApiError = (code: string, isZh: boolean) => {
     password_too_short: 'Password is too short (min 8 chars).',
     role_invalid: 'Invalid role, use admin or reviewer.',
     user_exists: 'Username already exists.',
+    application_exists: 'An application already exists for this username.',
     invalid_json: 'Invalid request payload.',
     no_changes: 'No changes detected.',
     not_found: 'Target user not found.',
+    status_not_pending: 'This application has already been processed.',
+    reason_too_short: 'Application reason is too short.',
+    skills_too_short: 'Skills description is too short.',
+    contact_required: 'Contact information is required.',
     d1_binding_missing: 'Server database is not configured.',
   };
   const table = isZh ? zh : en;
@@ -101,8 +126,10 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
   const [ownerToken, setOwnerToken] = useState(() => localStorage.getItem(STORAGE.ownerToken) || '');
   const [items, setItems] = useState<OwnerAdminUser[]>([]);
   const [loading, setLoading] = useState(false);
+  const [applicationsLoading, setApplicationsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [applications, setApplications] = useState<ReviewerApplication[]>([]);
 
   const [createOpen, setCreateOpen] = useState(false);
   const [createSubmitting, setCreateSubmitting] = useState(false);
@@ -123,6 +150,16 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
     role: 'reviewer' as 'admin' | 'reviewer',
     password: '',
     disabled: false,
+  });
+
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewSubmitting, setReviewSubmitting] = useState(false);
+  const [reviewError, setReviewError] = useState<string | null>(null);
+  const [reviewForm, setReviewForm] = useState({
+    id: '',
+    username: '',
+    action: 'approve' as 'approve' | 'reject',
+    notes: '',
   });
 
   useEffect(() => {
@@ -240,6 +277,31 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
     }
   }, [apiBase, createForm, fetchJson, isZh, loadUsers, ownerHeaders, ownerToken]);
 
+  const loadApplications = useCallback(async () => {
+    setError(null);
+    setSuccess(null);
+
+    if (!ownerToken.trim()) {
+      setError(isZh ? '请先填写 Owner token。' : 'Owner token is required.');
+      return;
+    }
+
+    setApplicationsLoading(true);
+    try {
+      const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/owner/reviewer-applications`, {
+        headers: ownerHeaders(),
+      });
+      if (!response.ok) {
+        throw new Error(resolveOwnerRequestError(response, data, isZh));
+      }
+      setApplications((data as { items?: ReviewerApplication[] })?.items || []);
+    } catch (err) {
+      setError((err as Error).message || (isZh ? '请求失败' : 'Request failed'));
+    } finally {
+      setApplicationsLoading(false);
+    }
+  }, [apiBase, fetchJson, isZh, ownerHeaders, ownerToken]);
+
   const saveEditUser = useCallback(async () => {
     setEditError(null);
     setSuccess(null);
@@ -296,6 +358,56 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
       setEditSubmitting(false);
     }
   }, [apiBase, editForm, fetchJson, isZh, loadUsers, ownerHeaders, ownerToken]);
+
+  const submitReviewAction = useCallback(async () => {
+    setReviewError(null);
+    setSuccess(null);
+
+    if (!ownerToken.trim()) {
+      setReviewError(isZh ? '请先填写 Owner token。' : 'Owner token is required.');
+      return;
+    }
+    if (!reviewForm.id) {
+      setReviewError(isZh ? '缺少申请编号。' : 'Missing application id.');
+      return;
+    }
+
+    setReviewSubmitting(true);
+    try {
+      const { response, data } = await fetchJson(
+        `${apiBase.replace(/\/+$/, '')}/api/admin/owner/reviewer-applications/${encodeURIComponent(reviewForm.id)}/${reviewForm.action}`,
+        {
+          method: 'POST',
+          headers: {
+            ...ownerHeaders(),
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            review_notes: reviewForm.notes.trim() || undefined,
+          }),
+        },
+      );
+      if (!response.ok) {
+        throw new Error(resolveOwnerRequestError(response, data, isZh));
+      }
+
+      setReviewOpen(false);
+      setReviewForm({ id: '', username: '', action: 'approve', notes: '' });
+      setSuccess(
+        reviewForm.action === 'approve'
+          ? (isZh ? '审核员申请已批准并创建账号。' : 'Reviewer application approved and account created.')
+          : (isZh ? '审核员申请已驳回。' : 'Reviewer application rejected.'),
+      );
+      await loadApplications();
+      if (reviewForm.action === 'approve') {
+        await loadUsers();
+      }
+    } catch (err) {
+      setReviewError((err as Error).message || (isZh ? '请求失败' : 'Request failed'));
+    } finally {
+      setReviewSubmitting(false);
+    }
+  }, [apiBase, fetchJson, isZh, loadApplications, loadUsers, ownerHeaders, ownerToken, reviewForm]);
 
   const columns = [
     {
@@ -359,6 +471,93 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
     },
   ];
 
+  const applicationColumns = [
+    {
+      title: 'Username',
+      dataIndex: 'username',
+      width: 160,
+      render: (value: string) => <Text code>{value}</Text>,
+    },
+    {
+      title: 'Contact',
+      dataIndex: 'contact',
+      width: 180,
+      render: (value: string) => value || '-',
+    },
+    {
+      title: 'Status',
+      dataIndex: 'status',
+      width: 120,
+      render: (value: ReviewerApplication['status']) => {
+        const color = value === 'approved' ? 'green' : value === 'rejected' ? 'red' : 'gold';
+        return <Tag color={color}>{value}</Tag>;
+      },
+    },
+    {
+      title: 'Reason',
+      dataIndex: 'reason',
+      width: 260,
+      render: (value: string) => <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>{value}</div>,
+    },
+    {
+      title: 'Skills',
+      dataIndex: 'skills',
+      width: 260,
+      render: (value: string) => <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>{value}</div>,
+    },
+    {
+      title: 'Created',
+      dataIndex: 'created_at',
+      width: 180,
+      render: (value: string) => formatDateTime(value),
+    },
+    {
+      title: 'Reviewed',
+      dataIndex: 'reviewed_at',
+      width: 180,
+      render: (value: string | null) => formatDateTime(value),
+    },
+    {
+      title: 'Notes',
+      dataIndex: 'review_notes',
+      width: 220,
+      render: (value: string | null) => value || '-',
+    },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      width: 160,
+      render: (_: unknown, record: ReviewerApplication) => (
+        <Space>
+          <Button
+            size="small"
+            type="primary"
+            disabled={record.status !== 'pending'}
+            onClick={() => {
+              setReviewError(null);
+              setReviewForm({ id: record.id, username: record.username, action: 'approve', notes: '' });
+              setReviewOpen(true);
+            }}
+          >
+            {isZh ? '批准' : 'Approve'}
+          </Button>
+          <Button
+            size="small"
+            danger
+            disabled={record.status !== 'pending'}
+            onClick={() => {
+              setReviewError(null);
+              setReviewForm({ id: record.id, username: record.username, action: 'reject', notes: '' });
+              setReviewOpen(true);
+            }}
+          >
+            {isZh ? '驳回' : 'Reject'}
+          </Button>
+        </Space>
+      ),
+    },
+  ];
+
   return (
     <main style={{ paddingTop: 88, paddingBottom: 48 }}>
       <Content style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
@@ -392,6 +591,9 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
                 <Space>
                   <Button type="primary" onClick={loadUsers} loading={loading}>
                     {isZh ? '加载管理员列表' : 'Load admins'}
+                  </Button>
+                  <Button onClick={loadApplications} loading={applicationsLoading}>
+                    {isZh ? '加载审核员申请' : 'Load reviewer applications'}
                   </Button>
                   <Button onClick={() => window.location.hash = '#/operit-market-review'}>
                     {isZh ? '打开市场审核台' : 'Open market review'}
@@ -438,6 +640,25 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
             loading={loading}
             columns={columns}
             dataSource={items}
+            pagination={false}
+            scroll={{ x: 'max-content' }}
+          />
+        </Card>
+
+        <Card
+          style={{ marginTop: 16 }}
+          title={isZh ? '审核员申请审批' : 'Reviewer Applications'}
+          extra={
+            <Button onClick={loadApplications} loading={applicationsLoading}>
+              {isZh ? '刷新申请列表' : 'Refresh applications'}
+            </Button>
+          }
+        >
+          <Table
+            rowKey="id"
+            loading={applicationsLoading}
+            columns={applicationColumns}
+            dataSource={applications}
             pagination={false}
             scroll={{ x: 'max-content' }}
           />
@@ -524,6 +745,38 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
               />
               <Text>{isZh ? '禁用账号' : 'Disable account'}</Text>
             </Space>
+          </Space>
+        </Modal>
+
+        <Modal
+          title={
+            reviewForm.action === 'approve'
+              ? (isZh ? `批准审核员申请：${reviewForm.username || '-'}` : `Approve application: ${reviewForm.username || '-'}`)
+              : (isZh ? `驳回审核员申请：${reviewForm.username || '-'}` : `Reject application: ${reviewForm.username || '-'}`)
+          }
+          open={reviewOpen}
+          onCancel={() => {
+            setReviewError(null);
+            setReviewOpen(false);
+          }}
+          onOk={submitReviewAction}
+          confirmLoading={reviewSubmitting}
+          okText={reviewForm.action === 'approve' ? (isZh ? '确认批准' : 'Approve') : (isZh ? '确认驳回' : 'Reject')}
+          okButtonProps={reviewForm.action === 'reject' ? { danger: true } : undefined}
+        >
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            {reviewError && <Alert type="error" showIcon message={reviewError} />}
+            <Text type="secondary">
+              {reviewForm.action === 'approve'
+                ? (isZh ? '批准后会自动创建 reviewer 账号，账号密码使用申请人提交的内容。' : 'Approval will automatically create a reviewer account using the submitted credentials.')
+                : (isZh ? '可以填写驳回说明，方便申请人后续重新沟通。' : 'You can add rejection notes for follow-up communication.')}
+            </Text>
+            <Input.TextArea
+              rows={4}
+              value={reviewForm.notes}
+              onChange={event => setReviewForm(prev => ({ ...prev, notes: event.target.value }))}
+              placeholder={isZh ? '审批备注（可选）' : 'Review notes (optional)'}
+            />
           </Space>
         </Modal>
       </Content>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, lazy } from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
@@ -19,10 +19,12 @@ const OperitSubmissionAdminPage = lazy(() => import('./pages/OperitSubmissionAdm
 const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEditPage'));
 const OperitSubmissionCenterPage = lazy(() => import('./pages/OperitSubmissionCenterPage'));
 const OperitLoginPage = lazy(() => import('./pages/OperitLoginPage'));
+const OperitReviewerApplyPage = lazy(() => import('./pages/OperitReviewerApplyPage'));
 const OperitOwnerAdminPage = lazy(() => import('./pages/OperitOwnerAdminPage'));
 const OperitMCPMarketPage = lazy(() => import('./pages/OperitMCPMarketPage'));
 const OperitMarketReviewPage = lazy(() => import('./pages/OperitMarketReviewPage'));
 const ProjectUpdatePage = lazy(() => import('./pages/ProjectUpdatePage'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -111,13 +113,14 @@ const App: React.FC = () => {
             </Route>
             <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
             <Route path="operit-login" element={<OperitLoginPage language={language} />} />
+            <Route path="operit-reviewer-apply" element={<OperitReviewerApplyPage language={language} />} />
             <Route path="operit-submission-admin" element={<OperitSubmissionAdminPage language={language} />} />
             <Route path="operit-owner-admin" element={<OperitOwnerAdminPage language={language} />} />
             <Route path="operit-market-review" element={<OperitMarketReviewPage language={language} />} />
             <Route path="operit-submission-center/*" element={<OperitSubmissionCenterPage language={language} />} />
             <Route path="project-update" element={<ProjectUpdatePage darkMode={darkMode} language={language} />} />
             <Route path="market" element={<OperitMCPMarketPage language={language} />} />
-            <Route path="*" element={<Navigate to="/" />} />
+            <Route path="*" element={<NotFoundPage language={language} />} />
           </Route>
         </Routes>
       </Router>
