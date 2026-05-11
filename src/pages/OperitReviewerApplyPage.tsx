@@ -12,7 +12,6 @@ interface OperitReviewerApplyPageProps {
 }
 
 const STORAGE = {
-  apiBase: 'operit_submission_admin_api_base',
   reviewerApplyUsername: 'operit_reviewer_apply_username',
   reviewerApplyDisplayName: 'operit_reviewer_apply_display_name',
   reviewerApplyContact: 'operit_reviewer_apply_contact',
@@ -51,7 +50,6 @@ const mapApplyError = (code: string, isZh: boolean) => {
 const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ language }) => {
   const isZh = language === 'zh';
   const navigate = useNavigate();
-  const [apiBase, setApiBase] = useState(() => localStorage.getItem(STORAGE.apiBase) || API_BASE);
   const [siteKey, setSiteKey] = useState('');
   const [turnstileToken, setTurnstileToken] = useState('');
   const [turnstileResetKey, setTurnstileResetKey] = useState(0);
@@ -68,10 +66,6 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
   }));
 
   useEffect(() => {
-    localStorage.setItem(STORAGE.apiBase, apiBase);
-  }, [apiBase]);
-
-  useEffect(() => {
     localStorage.setItem(STORAGE.reviewerApplyUsername, form.username);
     localStorage.setItem(STORAGE.reviewerApplyDisplayName, form.displayName);
     localStorage.setItem(STORAGE.reviewerApplyContact, form.contact);
@@ -81,7 +75,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     let cancelled = false;
     const loadConfig = async () => {
       try {
-        const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/config`);
+        const response = await fetch(`${API_BASE}/api/config`);
         if (!response.ok) return;
         const data = await response.json();
         if (!cancelled) {
@@ -97,7 +91,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     return () => {
       cancelled = true;
     };
-  }, [apiBase]);
+  }, []);
 
   const handleSubmit = useCallback(async () => {
     if (!form.username.trim() || !form.password.trim() || !form.contact.trim() || !form.reason.trim() || !form.skills.trim()) {
@@ -116,7 +110,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     setSubmitting(true);
     setError(null);
     try {
-      const response = await fetch(`${apiBase.replace(/\/+$/, '')}/api/reviewer-applications`, {
+      const response = await fetch(`${API_BASE}/api/reviewer-applications`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -154,7 +148,7 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     } finally {
       setSubmitting(false);
     }
-  }, [apiBase, form, isZh, siteKey, turnstileToken]);
+  }, [form, isZh, siteKey, turnstileToken]);
 
   return (
     <main style={{ paddingTop: 88, paddingBottom: 48 }}>
@@ -172,11 +166,6 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
               </Paragraph>
             </div>
 
-            <Input
-              value={apiBase}
-              onChange={event => setApiBase(event.target.value)}
-              placeholder="API Base (https://api.aaswordsman.org)"
-            />
             <Input
               value={form.username}
               onChange={event => setForm(prev => ({ ...prev, username: event.target.value }))}
