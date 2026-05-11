@@ -340,7 +340,9 @@ function parseCommentJson(body, prefix) {
   }
 
   const jsonStart = start + prefix.length;
-  const end = source.indexOf(' -->', jsonStart);
+  const spacedEnd = source.indexOf(' -->', jsonStart);
+  const compactEnd = source.indexOf('-->', jsonStart);
+  const end = spacedEnd > jsonStart ? spacedEnd : compactEnd;
   if (end <= jsonStart) {
     return null;
   }
@@ -358,15 +360,23 @@ function parseArtifactMetadata(body) {
     return null;
   }
 
+  const publisherLogin = String(metadata.publisherLogin || '').trim();
+  const forgeRepo = String(metadata.forgeRepo || '').trim();
+  const projectId = String(metadata.projectId || metadata.normalizedId || metadata.runtimePackageId || '').trim();
+  const repositoryUrl = publisherLogin && forgeRepo
+    ? `https://github.com/${publisherLogin}/${forgeRepo}`
+    : '';
+  const description = String(metadata.description || metadata.projectDescription || '').trim();
+
   return {
-    description: String(metadata.description || metadata.summary || ''),
-    repositoryUrl: String(metadata.repositoryUrl || metadata.repoUrl || ''),
-    homepageUrl: String(metadata.homepageUrl || metadata.homepage || ''),
-    installConfig: String(metadata.installConfig || metadata.installCommand || metadata.install || ''),
-    category: String(metadata.category || ''),
-    tags: normalizeTagList(metadata.tags),
+    description,
+    repositoryUrl,
+    homepageUrl: '',
+    installConfig: '',
+    category: '',
+    tags: [],
     version: String(metadata.version || ''),
-    projectId: String(metadata.projectId || metadata.normalizedId || metadata.runtimePackageId || ''),
+    projectId,
   };
 }
 
@@ -539,8 +549,16 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
   const labelObjects = extractIssueLabelObjects(issue);
   const labelNames = labelObjects.map(label => label.name);
   const metadata = parseIssueMetadata(rawBody, config.parser) || {};
-  const repositoryUrl = String(metadata.repositoryUrl || guessRepositoryUrl(rawBody) || '').trim();
-  const homepageUrl = String(metadata.homepageUrl || guessHomepageUrl(rawBody, repositoryUrl) || '').trim();
+  const repositoryUrl = String(
+    metadata.repositoryUrl ||
+      (config.parser === 'artifact' ? '' : guessRepositoryUrl(rawBody)) ||
+      ''
+  ).trim();
+  const homepageUrl = String(
+    metadata.homepageUrl ||
+      (config.parser === 'artifact' ? '' : guessHomepageUrl(rawBody, repositoryUrl)) ||
+      ''
+  ).trim();
   const reviewState = getReviewStateFromLabels(labelNames, config.publicLabel);
   const reviewReasonCodes = getReviewReasonCodesFromLabels(labelNames);
   const createdAt = toIsoDateString(issue?.created_at);

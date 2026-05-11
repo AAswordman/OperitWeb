@@ -657,25 +657,7 @@ export default {
       if (!env.OPERIT_SUBMISSION_DB) {
         return json({ error: 'd1_binding_missing' }, 500, corsHeaders);
       }
-      const bodyResult = await readJson(request);
-      if (!bodyResult.ok) {
-        return json({ error: 'invalid_json' }, 400, corsHeaders);
-      }
-      const turnstileToken = bodyResult.value.turnstile_token || bodyResult.value.turnstileToken;
-      const ip = getClientIp(request);
-      const turnstile = await verifyTurnstile(turnstileToken, ip, env);
-      if (!turnstile.success) {
-        return json({ error: 'turnstile_failed', details: turnstile['error-codes'] || [] }, 403, corsHeaders);
-      }
-      return handleReviewerApplicationSubmit(
-        new Request(request.url, {
-          method: request.method,
-          headers: request.headers,
-          body: JSON.stringify(bodyResult.value),
-        }),
-        env,
-        corsHeaders,
-      );
+      return handleReviewerApplicationSubmit(request, env, corsHeaders);
     }
 
     if (url.pathname.startsWith('/api/admin/')) {
@@ -686,17 +668,7 @@ export default {
       await cleanupExpiredAdminSessions(env);
 
       if (url.pathname === '/api/admin/auth/login' && request.method === 'POST') {
-        const bodyResult = await readJson(request);
-        if (!bodyResult.ok) {
-          return json({ error: 'invalid_json' }, 400, corsHeaders);
-        }
-        const turnstileToken = bodyResult.value.turnstile_token || bodyResult.value.turnstileToken;
-        const ip = getClientIp(request);
-        const turnstile = await verifyTurnstile(turnstileToken, ip, env);
-        if (!turnstile.success) {
-          return json({ error: 'turnstile_failed', details: turnstile['error-codes'] || [] }, 403, corsHeaders);
-        }
-        return handleAdminLogin(request, env, corsHeaders, bodyResult.value);
+        return handleAdminLogin(request, env, corsHeaders);
       }
 
       if (url.pathname === '/api/admin/bootstrap' && request.method === 'POST') {
