@@ -58,6 +58,9 @@ interface OperitMarketReviewPageProps {
 interface AdminAuthUser {
   username: string;
   display_name?: string | null;
+  contact_email?: string | null;
+  contact_qq?: string | null;
+  contact_telegram?: string | null;
   role?: string | null;
   owner?: boolean;
 }
@@ -352,6 +355,15 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [actionType, setActionType] = useState<ReviewAction>('approve');
   const [actionTarget, setActionTarget] = useState<MarketReviewItem | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [profileSubmitting, setProfileSubmitting] = useState(false);
+  const [profileError, setProfileError] = useState<string | null>(null);
+  const [profileForm, setProfileForm] = useState({
+    displayName: '',
+    contactEmail: '',
+    contactQq: '',
+    contactTelegram: '',
+  });
 
   const reasonMap = useMemo(() => {
     const map = new Map<string, ReviewReasonOption>();
@@ -372,6 +384,16 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       localStorage.removeItem(STORAGE.adminToken);
     }
   }, [adminToken]);
+
+  useEffect(() => {
+    if (!authUser) return;
+    setProfileForm({
+      displayName: authUser.display_name || '',
+      contactEmail: authUser.contact_email || '',
+      contactQq: authUser.contact_qq || '',
+      contactTelegram: authUser.contact_telegram || '',
+    });
+  }, [authUser]);
 
   const fetchJson = useCallback(async (url: string, options?: RequestInit) => {
     const response = await fetch(url, options);
@@ -521,6 +543,44 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     }
     handleUnauthorized();
   }, [adminToken, apiBase, fetchJson, handleUnauthorized]);
+
+  const saveProfile = useCallback(async () => {
+    if (!authUser || authUser.owner) return;
+    if (!profileForm.contactEmail.trim() && !profileForm.contactQq.trim() && !profileForm.contactTelegram.trim()) {
+      setProfileError(isZh ? '至少填写一种联系方式。' : 'Provide at least one contact channel.');
+      return;
+    }
+    setProfileSubmitting(true);
+    setProfileError(null);
+    try {
+      const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/profile`, {
+        method: 'POST',
+        headers: {
+          ...buildAdminHeaders(adminToken),
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          display_name: profileForm.displayName.trim() || '',
+          contact_email: profileForm.contactEmail.trim() || '',
+          contact_qq: profileForm.contactQq.trim() || '',
+          contact_telegram: profileForm.contactTelegram.trim() || '',
+        }),
+      });
+      if (!response.ok) {
+        throw new Error(resolveApiError(response, data, isZh));
+      }
+      const user = ((data as { user?: AdminAuthUser })?.user || null) as AdminAuthUser | null;
+      if (user) {
+        setAuthUser(prev => ({ ...(prev || {}), ...user }));
+      }
+      setProfileOpen(false);
+      message.success(isZh ? '个人信息已更新。' : 'Profile updated.');
+    } catch (err) {
+      setProfileError((err as Error).message || (isZh ? '更新失败。' : 'Update failed.'));
+    } finally {
+      setProfileSubmitting(false);
+    }
+  }, [adminToken, apiBase, authUser, fetchJson, isZh, profileForm]);
 
   useEffect(() => {
     if (!adminToken.trim()) {
@@ -807,6 +867,16 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                     {' · '}
                     {t.currentRole}: {authUser.role || 'reviewer'}
                   </Text>
+                ) : null}
+                {authUser && !authUser.owner ? (
+                  <Button
+                    onClick={() => {
+                      setProfileError(null);
+                      setProfileOpen(true);
+                    }}
+                  >
+                    {isZh ? '个人信息' : 'Profile'}
+                  </Button>
                 ) : null}
                 <Button icon={<LogoutOutlined />} onClick={handleLogout}>
                   {t.logout}
@@ -1116,6 +1186,38 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 />
               </>
             ) : null}
+          </Space>
+        </Modal>
+
+        <Modal
+          title={isZh ? '编辑个人信息' : 'Edit Profile'}
+          open={profileOpen}
+          onCancel={() => setProfileOpen(false)}
+          onOk={saveProfile}
+          confirmLoading={profileSubmitting}
+        >
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            {profileError ? <Alert type="error" showIcon message={profileError} /> : null}
+            <Input
+              value={profileForm.displayName}
+              onChange={event => setProfileForm(prev => ({ ...prev, displayName: event.target.value }))}
+              placeholder={isZh ? '显示名（可选）' : 'Display name (optional)'}
+            />
+            <Input
+              value={profileForm.contactEmail}
+              onChange={event => setProfileForm(prev => ({ ...prev, contactEmail: event.target.value }))}
+              placeholder={isZh ? '邮箱（至少填一种联系方式）' : 'Email (at least one contact channel)'}
+            />
+            <Input
+              value={profileForm.contactQq}
+              onChange={event => setProfileForm(prev => ({ ...prev, contactQq: event.target.value }))}
+              placeholder={isZh ? 'QQ（可选）' : 'QQ (optional)'}
+            />
+            <Input
+              value={profileForm.contactTelegram}
+              onChange={event => setProfileForm(prev => ({ ...prev, contactTelegram: event.target.value }))}
+              placeholder={isZh ? 'Telegram（可选）' : 'Telegram (optional)'}
+            />
           </Space>
         </Modal>
       </Content>

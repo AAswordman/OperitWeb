@@ -39,6 +39,7 @@ import {
   requireAdmin,
   handleAdminLogin,
   handleAdminMe,
+  handleAdminProfileUpdate,
   handleAdminLogout,
 } from './workerAdminAuth.js';
 import {
@@ -784,6 +785,10 @@ export default {
 
       if (url.pathname === '/api/admin/auth/me' && request.method === 'GET') {
         return handleAdminMe(auth, corsHeaders);
+      }
+
+      if (url.pathname === '/api/admin/auth/profile' && request.method === 'POST') {
+        return handleAdminProfileUpdate(request, env, auth, corsHeaders);
       }
 
       if (url.pathname === '/api/admin/auth/logout' && request.method === 'POST') {

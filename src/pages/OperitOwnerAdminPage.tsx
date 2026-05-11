@@ -22,6 +22,9 @@ const { Title, Paragraph, Text } = Typography;
 interface OwnerAdminUser {
   username: string;
   display_name?: string | null;
+  contact_email?: string | null;
+  contact_qq?: string | null;
+  contact_telegram?: string | null;
   role: 'admin' | 'reviewer';
   created_at: string;
   created_by?: string | null;
@@ -34,6 +37,9 @@ interface ReviewerApplication {
   username: string;
   display_name?: string | null;
   contact: string;
+  contact_email?: string | null;
+  contact_qq?: string | null;
+  contact_telegram?: string | null;
   status: 'pending' | 'approved' | 'rejected';
   created_at: string;
   reviewed_at?: string | null;
@@ -133,6 +139,9 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
   const [createForm, setCreateForm] = useState({
     username: '',
     displayName: '',
+    contactEmail: '',
+    contactQq: '',
+    contactTelegram: '',
     role: 'reviewer' as 'admin' | 'reviewer',
     password: '',
   });
@@ -143,6 +152,9 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
   const [editForm, setEditForm] = useState({
     username: '',
     displayName: '',
+    contactEmail: '',
+    contactQq: '',
+    contactTelegram: '',
     role: 'reviewer' as 'admin' | 'reviewer',
     password: '',
     disabled: false,
@@ -240,12 +252,19 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
       setCreateError(isZh ? '密码至少 8 位。' : 'Password must be at least 8 characters.');
       return;
     }
+    if (!createForm.contactEmail.trim() && !createForm.contactQq.trim() && !createForm.contactTelegram.trim()) {
+      setCreateError(isZh ? '至少填写一种联系方式。' : 'Provide at least one contact channel.');
+      return;
+    }
 
     setCreateSubmitting(true);
     try {
       const payload = {
         username,
         display_name: createForm.displayName.trim() || undefined,
+        contact_email: createForm.contactEmail.trim() || undefined,
+        contact_qq: createForm.contactQq.trim() || undefined,
+        contact_telegram: createForm.contactTelegram.trim() || undefined,
         role: createForm.role,
         password,
       };
@@ -263,7 +282,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
 
       setCreateOpen(false);
       setCreateError(null);
-      setCreateForm({ username: '', displayName: '', role: 'reviewer', password: '' });
+      setCreateForm({ username: '', displayName: '', contactEmail: '', contactQq: '', contactTelegram: '', role: 'reviewer', password: '' });
       setSuccess(isZh ? '管理员创建成功。' : 'Admin created.');
       await loadUsers();
     } catch (err) {
@@ -316,11 +335,18 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
       setEditError(isZh ? '新密码至少 8 位。' : 'New password must be at least 8 characters.');
       return;
     }
+    if (!editForm.contactEmail.trim() && !editForm.contactQq.trim() && !editForm.contactTelegram.trim()) {
+      setEditError(isZh ? '至少填写一种联系方式。' : 'Provide at least one contact channel.');
+      return;
+    }
 
     setEditSubmitting(true);
     try {
       const payload: Record<string, unknown> = {
         display_name: editForm.displayName.trim() || '',
+        contact_email: editForm.contactEmail.trim() || '',
+        contact_qq: editForm.contactQq.trim() || '',
+        contact_telegram: editForm.contactTelegram.trim() || '',
         role: editForm.role,
         disabled: editForm.disabled,
       };
@@ -345,7 +371,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
 
       setEditOpen(false);
       setEditError(null);
-      setEditForm({ username: '', displayName: '', role: 'reviewer', password: '', disabled: false });
+      setEditForm({ username: '', displayName: '', contactEmail: '', contactQq: '', contactTelegram: '', role: 'reviewer', password: '', disabled: false });
       setSuccess(isZh ? '管理员更新成功。' : 'Admin updated.');
       await loadUsers();
     } catch (err) {
@@ -419,6 +445,20 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
       render: (value: string | null) => value || '-',
     },
     {
+      title: 'Contacts',
+      dataIndex: 'contacts',
+      width: 280,
+      render: (_: unknown, record: OwnerAdminUser) => (
+        <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>
+          {[
+            record.contact_email ? `Email: ${record.contact_email}` : '',
+            record.contact_qq ? `QQ: ${record.contact_qq}` : '',
+            record.contact_telegram ? `Telegram: ${record.contact_telegram}` : '',
+          ].filter(Boolean).join('\n') || '-'}
+        </div>
+      ),
+    },
+    {
       title: 'Role',
       dataIndex: 'role',
       width: 120,
@@ -454,6 +494,9 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
             setEditForm({
               username: record.username,
               displayName: record.display_name || '',
+              contactEmail: record.contact_email || '',
+              contactQq: record.contact_qq || '',
+              contactTelegram: record.contact_telegram || '',
               role: record.role,
               password: '',
               disabled: Boolean(record.disabled_at),
@@ -477,8 +520,17 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
     {
       title: 'Contact',
       dataIndex: 'contact',
-      width: 180,
-      render: (value: string) => value || '-',
+      width: 260,
+      render: (_: string, record: ReviewerApplication) => (
+        <div style={{ whiteSpace: 'pre-wrap', minWidth: 220 }}>
+          {[
+            record.contact_email ? `Email: ${record.contact_email}` : '',
+            record.contact_qq ? `QQ: ${record.contact_qq}` : '',
+            record.contact_telegram ? `Telegram: ${record.contact_telegram}` : '',
+            !record.contact_email && !record.contact_qq && !record.contact_telegram ? record.contact : '',
+          ].filter(Boolean).join('\n') || '-'}
+        </div>
+      ),
     },
     {
       title: 'Status',
@@ -670,6 +722,21 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
               onChange={event => setCreateForm(prev => ({ ...prev, displayName: event.target.value }))}
               placeholder={isZh ? '显示名（可选）' : 'display name (optional)'}
             />
+            <Input
+              value={createForm.contactEmail}
+              onChange={event => setCreateForm(prev => ({ ...prev, contactEmail: event.target.value }))}
+              placeholder={isZh ? '邮箱（至少填一种联系方式）' : 'email (at least one contact channel)'}
+            />
+            <Input
+              value={createForm.contactQq}
+              onChange={event => setCreateForm(prev => ({ ...prev, contactQq: event.target.value }))}
+              placeholder={isZh ? 'QQ（可选）' : 'QQ (optional)'}
+            />
+            <Input
+              value={createForm.contactTelegram}
+              onChange={event => setCreateForm(prev => ({ ...prev, contactTelegram: event.target.value }))}
+              placeholder={isZh ? 'Telegram（可选）' : 'Telegram (optional)'}
+            />
             <Select
               value={createForm.role}
               options={[
@@ -708,6 +775,21 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
               value={editForm.displayName}
               onChange={event => setEditForm(prev => ({ ...prev, displayName: event.target.value }))}
               placeholder={isZh ? '显示名（可选）' : 'display name (optional)'}
+            />
+            <Input
+              value={editForm.contactEmail}
+              onChange={event => setEditForm(prev => ({ ...prev, contactEmail: event.target.value }))}
+              placeholder={isZh ? '邮箱（至少填一种联系方式）' : 'email (at least one contact channel)'}
+            />
+            <Input
+              value={editForm.contactQq}
+              onChange={event => setEditForm(prev => ({ ...prev, contactQq: event.target.value }))}
+              placeholder={isZh ? 'QQ（可选）' : 'QQ (optional)'}
+            />
+            <Input
+              value={editForm.contactTelegram}
+              onChange={event => setEditForm(prev => ({ ...prev, contactTelegram: event.target.value }))}
+              placeholder={isZh ? 'Telegram（可选）' : 'Telegram (optional)'}
             />
             <Select
               value={editForm.role}

@@ -12,7 +12,9 @@ interface OperitReviewerApplyPageProps {
 const STORAGE = {
   reviewerApplyUsername: 'operit_reviewer_apply_username',
   reviewerApplyDisplayName: 'operit_reviewer_apply_display_name',
-  reviewerApplyContact: 'operit_reviewer_apply_contact',
+  reviewerApplyContactEmail: 'operit_reviewer_apply_contact_email',
+  reviewerApplyContactQq: 'operit_reviewer_apply_contact_qq',
+  reviewerApplyContactTelegram: 'operit_reviewer_apply_contact_telegram',
 };
 
 const API_BASE = 'https://api.aaswordsman.org';
@@ -55,7 +57,9 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
   const [form, setForm] = useState(() => ({
     username: localStorage.getItem(STORAGE.reviewerApplyUsername) || '',
     displayName: localStorage.getItem(STORAGE.reviewerApplyDisplayName) || '',
-    contact: localStorage.getItem(STORAGE.reviewerApplyContact) || '',
+    contactEmail: localStorage.getItem(STORAGE.reviewerApplyContactEmail) || '',
+    contactQq: localStorage.getItem(STORAGE.reviewerApplyContactQq) || '',
+    contactTelegram: localStorage.getItem(STORAGE.reviewerApplyContactTelegram) || '',
     password: '',
     commitment: false,
   }));
@@ -63,8 +67,10 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
   useEffect(() => {
     localStorage.setItem(STORAGE.reviewerApplyUsername, form.username);
     localStorage.setItem(STORAGE.reviewerApplyDisplayName, form.displayName);
-    localStorage.setItem(STORAGE.reviewerApplyContact, form.contact);
-  }, [form.contact, form.displayName, form.username]);
+    localStorage.setItem(STORAGE.reviewerApplyContactEmail, form.contactEmail);
+    localStorage.setItem(STORAGE.reviewerApplyContactQq, form.contactQq);
+    localStorage.setItem(STORAGE.reviewerApplyContactTelegram, form.contactTelegram);
+  }, [form.contactEmail, form.contactQq, form.contactTelegram, form.displayName, form.username]);
 
   useEffect(() => {
     let cancelled = false;
@@ -89,8 +95,12 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    if (!form.username.trim() || !form.password.trim() || !form.contact.trim()) {
+    if (!form.username.trim() || !form.password.trim()) {
       setError(isZh ? '请把必填项填写完整。' : 'Please fill in all required fields.');
+      return;
+    }
+    if (!form.contactEmail.trim() && !form.contactQq.trim() && !form.contactTelegram.trim()) {
+      setError(isZh ? '请至少填写一种联系方式。' : 'Please provide at least one contact channel.');
       return;
     }
     if (!form.commitment) {
@@ -117,7 +127,9 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
         body: JSON.stringify({
           username: form.username.trim().toLowerCase(),
           display_name: form.displayName.trim() || undefined,
-          contact: form.contact.trim(),
+          contact_email: form.contactEmail.trim() || undefined,
+          contact_qq: form.contactQq.trim() || undefined,
+          contact_telegram: form.contactTelegram.trim() || undefined,
           password: form.password,
           commitment: true,
           turnstile_token: turnstileToken,
@@ -182,9 +194,19 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
               autoComplete="new-password"
             />
             <Input
-              value={form.contact}
-              onChange={event => setForm(prev => ({ ...prev, contact: event.target.value }))}
-              placeholder={isZh ? '联系方式（QQ / 邮箱 / Telegram 等）' : 'Contact info (QQ / email / Telegram, etc.)'}
+              value={form.contactEmail}
+              onChange={event => setForm(prev => ({ ...prev, contactEmail: event.target.value }))}
+              placeholder={isZh ? '邮箱（至少填一种联系方式）' : 'Email (at least one contact channel)'}
+            />
+            <Input
+              value={form.contactQq}
+              onChange={event => setForm(prev => ({ ...prev, contactQq: event.target.value }))}
+              placeholder={isZh ? 'QQ（可选）' : 'QQ (optional)'}
+            />
+            <Input
+              value={form.contactTelegram}
+              onChange={event => setForm(prev => ({ ...prev, contactTelegram: event.target.value }))}
+              placeholder={isZh ? 'Telegram（可选）' : 'Telegram (optional)'}
             />
             <Checkbox
               checked={form.commitment}

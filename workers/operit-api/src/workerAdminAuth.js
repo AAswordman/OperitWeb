@@ -50,6 +50,32 @@ function normalizeAdminDisplayName(value) {
   return name.slice(0, 60);
 }
 
+function normalizeContactValue(value, maxLength = 120) {
+  const text = String(value || '').trim();
+  if (!text) return '';
+  return text.slice(0, maxLength);
+}
+
+function readContactChannels(body) {
+  return {
+    contact_email: normalizeContactValue(body.contact_email || body.contactEmail || '', 160),
+    contact_qq: normalizeContactValue(body.contact_qq || body.contactQq || '', 60),
+    contact_telegram: normalizeContactValue(body.contact_telegram || body.contactTelegram || '', 120),
+  };
+}
+
+function hasAnyContactChannel(channels) {
+  return Boolean(channels.contact_email || channels.contact_qq || channels.contact_telegram);
+}
+
+function buildLegacyContactSummary(channels) {
+  const parts = [];
+  if (channels.contact_email) parts.push(`email:${channels.contact_email}`);
+  if (channels.contact_qq) parts.push(`qq:${channels.contact_qq}`);
+  if (channels.contact_telegram) parts.push(`telegram:${channels.contact_telegram}`);
+  return parts.join(' | ');
+}
+
 function normalizeAdminRole(value) {
   const role = String(value || '').trim().toLowerCase();
   if (ADMIN_ROLES.has(role)) return role;
@@ -62,6 +88,9 @@ async function ensureAdminAuthSchema(env) {
     'CREATE TABLE IF NOT EXISTS admin_users (' +
       'username TEXT PRIMARY KEY,' +
       'display_name TEXT,' +
+      'contact_email TEXT,' +
+      'contact_qq TEXT,' +
+      'contact_telegram TEXT,' +
       'role TEXT NOT NULL,' +
       'password_hash TEXT NOT NULL,' +
       'created_at TEXT NOT NULL,' +
@@ -97,6 +126,9 @@ async function ensureAdminAuthSchema(env) {
       'reason TEXT NOT NULL,' +
       'skills TEXT NOT NULL,' +
       'contact TEXT NOT NULL,' +
+      'contact_email TEXT,' +
+      'contact_qq TEXT,' +
+      'contact_telegram TEXT,' +
       'password_hash TEXT NOT NULL,' +
       'turnstile_ok INTEGER NOT NULL DEFAULT 0,' +
       'status TEXT NOT NULL,' +
@@ -113,6 +145,21 @@ async function ensureAdminAuthSchema(env) {
   await env.OPERIT_SUBMISSION_DB.prepare(
     'CREATE INDEX IF NOT EXISTS idx_reviewer_applications_username ON reviewer_applications(username)',
   ).run();
+  const addColumnStatements = [
+    'ALTER TABLE admin_users ADD COLUMN contact_email TEXT',
+    'ALTER TABLE admin_users ADD COLUMN contact_qq TEXT',
+    'ALTER TABLE admin_users ADD COLUMN contact_telegram TEXT',
+    'ALTER TABLE reviewer_applications ADD COLUMN contact_email TEXT',
+    'ALTER TABLE reviewer_applications ADD COLUMN contact_qq TEXT',
+    'ALTER TABLE reviewer_applications ADD COLUMN contact_telegram TEXT',
+  ];
+  for (const statement of addColumnStatements) {
+    try {
+      await env.OPERIT_SUBMISSION_DB.prepare(statement).run();
+    } catch {
+      // ignore duplicate-column errors for existing deployments
+    }
+  }
 }
 
 function getAdminSessionTtlMs(env) {
@@ -167,6 +214,9 @@ async function resolveAdminSession(request, env) {
       user: {
         username: 'owner',
         display_name: 'Owner',
+        contact_email: '',
+        contact_qq: '',
+        contact_telegram: '',
         role: 'admin',
         owner: true,
       },
@@ -177,7 +227,7 @@ async function resolveAdminSession(request, env) {
 
   const tokenHash = await hashAdminCredential(token, env);
   const row = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT s.token_hash, s.username, s.role, s.created_at, s.expires_at, u.display_name, u.role AS user_role, u.disabled_at ' +
+    'SELECT s.token_hash, s.username, s.role, s.created_at, s.expires_at, u.display_name, u.contact_email, u.contact_qq, u.contact_telegram, u.role AS user_role, u.disabled_at ' +
       'FROM admin_sessions s LEFT JOIN admin_users u ON u.username = s.username ' +
       'WHERE s.token_hash = ? LIMIT 1',
   ).bind(tokenHash).first();
@@ -222,6 +272,9 @@ async function resolveAdminSession(request, env) {
     user: {
       username: String(row.username || '').trim(),
       display_name: normalizeAdminDisplayName(row.display_name || ''),
+      contact_email: normalizeContactValue(row.contact_email || '', 160),
+      contact_qq: normalizeContactValue(row.contact_qq || '', 60),
+      contact_telegram: normalizeContactValue(row.contact_telegram || '', 120),
       role,
       owner: false,
     },
@@ -244,6 +297,9 @@ async function requireOwner(request, env) {
     user: {
       username: 'owner',
       display_name: 'Owner',
+      contact_email: '',
+      contact_qq: '',
+      contact_telegram: '',
       role: 'admin',
       owner: true,
     },
@@ -278,7 +334,7 @@ async function handleAdminLogin(request, env, corsHeaders, bodyInput = null) {
   }
 
   const row = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT username, display_name, role, password_hash, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+    'SELECT username, display_name, contact_email, contact_qq, contact_telegram, role, password_hash, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
   ).bind(username).first();
   if (!row || row.disabled_at) {
     return json({ error: 'invalid_credentials' }, 401, corsHeaders);
@@ -304,6 +360,9 @@ async function handleAdminLogin(request, env, corsHeaders, bodyInput = null) {
       user: {
         username,
         display_name: normalizeAdminDisplayName(row.display_name || ''),
+        contact_email: normalizeContactValue(row.contact_email || '', 160),
+        contact_qq: normalizeContactValue(row.contact_qq || '', 60),
+        contact_telegram: normalizeContactValue(row.contact_telegram || '', 120),
         role,
       },
     },
@@ -358,7 +417,7 @@ async function cleanupExpiredAdminSessions(env) {
 async function handleOwnerListUsers(env, corsHeaders) {
   await ensureAdminAuthSchema(env);
   const { results } = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT username, display_name, role, created_at, created_by, updated_at, disabled_at FROM admin_users ORDER BY created_at DESC',
+    'SELECT username, display_name, contact_email, contact_qq, contact_telegram, role, created_at, created_by, updated_at, disabled_at FROM admin_users ORDER BY created_at DESC',
   ).all();
   return json({ ok: true, items: results || [] }, 200, corsHeaders);
 }
@@ -372,6 +431,7 @@ async function handleOwnerCreateUser(request, env, corsHeaders) {
   const body = bodyResult.value || {};
   const username = normalizeAdminUsername(body.username);
   const displayName = normalizeAdminDisplayName(body.display_name || body.displayName || '');
+  const channels = readContactChannels(body);
   const role = normalizeAdminRole(body.role || 'reviewer');
   const password = String(body.password || '');
 
@@ -384,6 +444,9 @@ async function handleOwnerCreateUser(request, env, corsHeaders) {
   if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
     return json({ error: 'password_too_short' }, 400, corsHeaders);
   }
+  if (!hasAnyContactChannel(channels)) {
+    return json({ error: 'contact_required' }, 400, corsHeaders);
+  }
 
   const exists = await env.OPERIT_SUBMISSION_DB.prepare(
     'SELECT username FROM admin_users WHERE username = ? LIMIT 1',
@@ -395,10 +458,13 @@ async function handleOwnerCreateUser(request, env, corsHeaders) {
   const passwordHash = await hashAdminCredential(password, env);
   const now = new Date().toISOString();
   await env.OPERIT_SUBMISSION_DB.prepare(
-    'INSERT INTO admin_users (username, display_name, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+    'INSERT INTO admin_users (username, display_name, contact_email, contact_qq, contact_telegram, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)',
   ).bind(
     username,
     displayName || null,
+    channels.contact_email || null,
+    channels.contact_qq || null,
+    channels.contact_telegram || null,
     role,
     passwordHash,
     now,
@@ -412,6 +478,9 @@ async function handleOwnerCreateUser(request, env, corsHeaders) {
       item: {
         username,
         display_name: displayName || null,
+        contact_email: channels.contact_email || null,
+        contact_qq: channels.contact_qq || null,
+        contact_telegram: channels.contact_telegram || null,
         role,
         created_at: now,
         created_by: 'owner',
@@ -432,7 +501,7 @@ async function handleOwnerUpdateUser(usernameRaw, request, env, corsHeaders) {
   }
 
   const existing = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT username, display_name, role, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+    'SELECT username, display_name, contact_email, contact_qq, contact_telegram, role, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
   ).bind(username).first();
   if (!existing) {
     return json({ error: 'not_found' }, 404, corsHeaders);
@@ -451,6 +520,26 @@ async function handleOwnerUpdateUser(usernameRaw, request, env, corsHeaders) {
     const displayName = normalizeAdminDisplayName(body.display_name || body.displayName || '');
     updates.push('display_name = ?');
     bindings.push(displayName || null);
+  }
+
+  if (
+    Object.prototype.hasOwnProperty.call(body, 'contact_email') ||
+    Object.prototype.hasOwnProperty.call(body, 'contactEmail') ||
+    Object.prototype.hasOwnProperty.call(body, 'contact_qq') ||
+    Object.prototype.hasOwnProperty.call(body, 'contactQq') ||
+    Object.prototype.hasOwnProperty.call(body, 'contact_telegram') ||
+    Object.prototype.hasOwnProperty.call(body, 'contactTelegram')
+  ) {
+    const channels = readContactChannels(body);
+    if (!hasAnyContactChannel(channels)) {
+      return json({ error: 'contact_required' }, 400, corsHeaders);
+    }
+    updates.push('contact_email = ?');
+    bindings.push(channels.contact_email || null);
+    updates.push('contact_qq = ?');
+    bindings.push(channels.contact_qq || null);
+    updates.push('contact_telegram = ?');
+    bindings.push(channels.contact_telegram || null);
   }
 
   if (Object.prototype.hasOwnProperty.call(body, 'role')) {
@@ -502,7 +591,7 @@ async function handleOwnerUpdateUser(usernameRaw, request, env, corsHeaders) {
   }
 
   const updated = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT username, display_name, role, created_at, created_by, updated_at, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+    'SELECT username, display_name, contact_email, contact_qq, contact_telegram, role, created_at, created_by, updated_at, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
   ).bind(username).first();
 
   return json({ ok: true, item: updated || null }, 200, corsHeaders);
@@ -532,7 +621,7 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   const body = bodyResult.value || {};
   const username = normalizeApplicationUsername(body.username);
   const displayName = normalizeApplicationText(body.display_name || body.displayName || '', 60, '');
-  const contact = normalizeApplicationText(body.contact, 200, '');
+  const channels = readContactChannels(body);
   const password = String(body.password || '');
   const commitment = Boolean(body.commitment);
 
@@ -542,7 +631,7 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   if (password.length < ADMIN_PASSWORD_MIN_LENGTH) {
     return json({ error: 'password_too_short' }, 400, corsHeaders);
   }
-  if (contact.length < 3) {
+  if (!hasAnyContactChannel(channels)) {
     return json({ error: 'contact_required' }, 400, corsHeaders);
   }
   if (!commitment) {
@@ -568,8 +657,9 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   const applicationId = crypto.randomUUID();
   const reason = 'commitment_confirmed';
   const skills = 'responsible_contributor';
+  const contact = buildLegacyContactSummary(channels);
   await env.OPERIT_SUBMISSION_DB.prepare(
-    'INSERT INTO reviewer_applications (id, username, display_name, reason, skills, contact, password_hash, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)',
+    'INSERT INTO reviewer_applications (id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, password_hash, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)',
   ).bind(
     applicationId,
     username,
@@ -577,6 +667,9 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
     reason,
     skills,
     contact,
+    channels.contact_email || null,
+    channels.contact_qq || null,
+    channels.contact_telegram || null,
     passwordHash,
     1,
     'pending',
@@ -592,7 +685,7 @@ async function handleReviewerApplicationList(url, env, corsHeaders) {
   const limit = clampInt(url.searchParams.get('limit'), 1, 200, 50);
   const offset = clampInt(url.searchParams.get('offset'), 0, 10000, 0);
 
-  let query = 'SELECT id, username, display_name, reason, skills, contact, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at FROM reviewer_applications';
+  let query = 'SELECT id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at FROM reviewer_applications';
   const bindings = [];
   if (status) {
     query += ' WHERE status = ?';
@@ -608,7 +701,7 @@ async function handleReviewerApplicationList(url, env, corsHeaders) {
 async function handleReviewerApplicationApprove(id, request, env, corsHeaders, authUser) {
   await ensureAdminAuthSchema(env);
   const existing = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT id, username, display_name, reason, skills, contact, password_hash, status FROM reviewer_applications WHERE id = ? LIMIT 1',
+    'SELECT id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, password_hash, status FROM reviewer_applications WHERE id = ? LIMIT 1',
   ).bind(id).first();
   if (!existing) {
     return json({ error: 'not_found' }, 404, corsHeaders);
@@ -633,10 +726,13 @@ async function handleReviewerApplicationApprove(id, request, env, corsHeaders, a
   }
 
   await env.OPERIT_SUBMISSION_DB.prepare(
-    'INSERT INTO admin_users (username, display_name, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, NULL)',
+    'INSERT INTO admin_users (username, display_name, contact_email, contact_qq, contact_telegram, role, password_hash, created_at, created_by, updated_at, disabled_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL)',
   ).bind(
     existing.username,
     displayName || null,
+    normalizeContactValue(existing.contact_email || '', 160) || null,
+    normalizeContactValue(existing.contact_qq || '', 60) || null,
+    normalizeContactValue(existing.contact_telegram || '', 120) || null,
     'reviewer',
     existing.password_hash,
     now,
@@ -699,6 +795,45 @@ async function handleReviewerApplicationReject(id, request, env, corsHeaders, au
 
   return json({ ok: true, id, status: 'rejected', reviewed_at: now }, 200, corsHeaders);
 }
+
+async function handleAdminProfileUpdate(request, env, auth, corsHeaders) {
+  if (!auth?.ok) {
+    return json({ error: 'unauthorized' }, 401, corsHeaders);
+  }
+  if (auth.owner) {
+    return json({ error: 'owner_profile_not_editable' }, 400, corsHeaders);
+  }
+  await ensureAdminAuthSchema(env);
+
+  const bodyResult = await readJson(request);
+  if (!bodyResult.ok) {
+    return json({ error: 'invalid_json' }, 400, corsHeaders);
+  }
+  const body = bodyResult.value || {};
+  const displayName = normalizeAdminDisplayName(body.display_name || body.displayName || '');
+  const channels = readContactChannels(body);
+  if (!hasAnyContactChannel(channels)) {
+    return json({ error: 'contact_required' }, 400, corsHeaders);
+  }
+
+  const now = new Date().toISOString();
+  await env.OPERIT_SUBMISSION_DB.prepare(
+    'UPDATE admin_users SET display_name = ?, contact_email = ?, contact_qq = ?, contact_telegram = ?, updated_at = ? WHERE username = ?',
+  ).bind(
+    displayName || null,
+    channels.contact_email || null,
+    channels.contact_qq || null,
+    channels.contact_telegram || null,
+    now,
+    auth.user.username,
+  ).run();
+
+  const updated = await env.OPERIT_SUBMISSION_DB.prepare(
+    'SELECT username, display_name, contact_email, contact_qq, contact_telegram, role, created_at, created_by, updated_at, disabled_at FROM admin_users WHERE username = ? LIMIT 1',
+  ).bind(auth.user.username).first();
+
+  return json({ ok: true, user: updated || null }, 200, corsHeaders);
+}
 export {
   getOwnerToken,
   hashAdminCredential,
@@ -712,6 +847,7 @@ export {
   handleOwnerListUsers,
   handleOwnerCreateUser,
   handleOwnerUpdateUser,
+  handleAdminProfileUpdate,
   handleReviewerApplicationSubmit,
   handleReviewerApplicationList,
   handleReviewerApplicationApprove,

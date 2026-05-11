@@ -1,6 +1,9 @@
 CREATE TABLE IF NOT EXISTS admin_users (
   username TEXT PRIMARY KEY,
   display_name TEXT,
+  contact_email TEXT,
+  contact_qq TEXT,
+  contact_telegram TEXT,
   role TEXT NOT NULL,
   password_hash TEXT NOT NULL,
   created_at TEXT NOT NULL,
@@ -26,4 +29,3 @@ CREATE INDEX IF NOT EXISTS idx_admin_sessions_expires
 
 CREATE INDEX IF NOT EXISTS idx_admin_users_disabled
   ON admin_users(disabled_at);
-
