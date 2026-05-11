@@ -24,6 +24,11 @@ mounted under the `/market-stats` path prefix. Static ranking JSON is written in
 - `GET /market-stats/rank/<type>-<metric>-page-<n>.json`
   - Returns pre-generated ranking pages
   - Each item now includes counters, an embedded issue snapshot, and precomputed summary fields
+- `GET /market-stats/artifact-rank/<type>-<metric>-page-<n>.json`
+  - Returns artifact project-cluster ranking pages for `script` and `package`
+  - Each rank item keeps the old project-level summary fields and now also carries a lightweight default-node install summary
+- `GET /market-stats/artifact-projects/<projectId>.json`
+  - Returns a full project-cluster detail payload, including nodes and edges
 - Scheduled task
   - Rebuilds static JSON snapshots every 6 hours
   - Pulls the latest market issues from GitHub
@@ -64,6 +69,23 @@ workers\worker_submit.bat market-stats
   - or `OPERIT_GITHUB_APP_ID`, `OPERIT_GITHUB_INSTALLATION_ID`, `OPERIT_GITHUB_PRIVATE_KEY`
 - If no GitHub secret is provided, the Worker will still try unauthenticated GitHub requests, but rate limits are much lower.
 
+## Manual Refresh
+
+To trigger the scheduled rebuild on demand:
+
+```bat
+cd /d D:\Code\prog\assistance_web\workers\market-stats
+manual-sync.bat
+```
+
+This script:
+
+- loads `CLOUDFLARE_API_TOKEN` from the repo root `.env.local`
+- starts `wrangler dev --remote --test-scheduled`
+- calls the local `http://127.0.0.1:8787/__scheduled` endpoint once
+- polls `https://static.operit.app/market-stats/manifest.json` with cache-busting query params until `updatedAt` changes
+- writes logs to `manual-sync.out.log` and `manual-sync.err.log`
+
 ## Expected Static JSON Objects
 
 The Worker stores generated objects in the R2 bucket under the `market-stats/` prefix by default:
@@ -79,6 +101,13 @@ The Worker stores generated objects in the R2 bucket under the `market-stats/` p
 - `market-stats/rank/package-downloads-page-1.json`
 - `market-stats/rank/package-likes-page-1.json`
 - `market-stats/rank/package-updated-page-1.json`
+- `market-stats/artifact-rank/script-downloads-page-1.json`
+- `market-stats/artifact-rank/script-likes-page-1.json`
+- `market-stats/artifact-rank/script-updated-page-1.json`
+- `market-stats/artifact-rank/package-downloads-page-1.json`
+- `market-stats/artifact-rank/package-likes-page-1.json`
+- `market-stats/artifact-rank/package-updated-page-1.json`
+- `market-stats/artifact-projects/<projectId>.json`
 - `market-stats/rank/skill-downloads-page-1.json`
 - `market-stats/rank/skill-likes-page-1.json`
 - `market-stats/rank/skill-updated-page-1.json`
@@ -91,6 +120,7 @@ The Worker stores generated objects in the R2 bucket under the `market-stats/` p
 
 - This project is intentionally precomputed. The app should fetch static JSON and sort/page locally or read the pre-ranked pages directly.
 - The rank JSON now carries enough issue snapshot data for market list pages to render without first fetching the full issue list from GitHub.
+- `script` and `package` now have two static rank views: legacy issue-based `rank/*` files for published clients, and project-cluster `artifact-rank/*` files for the new artifact market.
 - Static JSON is now persisted in R2 instead of Workers KV. That removes the tiny KV free-read ceiling from the market browse path.
 - Download events no longer use D1. They are written to Analytics Engine and rolled up into static JSON on the 6-hour schedule.
 - The intended production split is: app reads from `static.operit.app`, while download reporting stays on `api.operit.app`.

@@ -1,0 +1,21 @@
+  % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                 Dload  Upload   Total   Spent    Left  Speed
+
+  0     0    0     0    0     0      0      0 --:--:-- --:--:-- --:--:--     0
+  0     0    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+  0    19    0     0    0     0      0      0 --:--:--  0:00:01 --:--:--     0
+100    19  100    19    0     0     12      0  0:00:01  0:00:01 --:--:--    12
+HTTP/1.1 200 OK
+Content-Length: 19
+Date: Wed, 29 Apr 2026 15:41:49 GMT
+Content-Type: text/plain;charset=UTF-8
+Server: cloudflare
+Vary: Accept-Encoding
+CF-Ray: 9f3f69bf5e507598-SEA
+NEL: {"success_fraction":0,"report_to":"cf-nel","max_age":604800}
+Report-To: {"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v4?s=fIF1zzLfZUfWEjnS0aL7czafFsvocMhZwy3czkcQD6oTYLKTW5u%2B%2FX%2FSwiMYvb0iz76XqnN3QzUvsIReSLg6Lp9hYtZURXz3Ct%2Bi8ltsF%2BsMZp7uO%2FgouIf9Zlv%2B%2BOazDg%3D%3D"}],"group":"cf-nel","max_age":604800}
+alt-svc: h3=":443"; ma=86400
+server-timing: cfL4;desc="?proto=TCP&rtt=1082&min_rtt=1061&rtt_var=316&sent=5&recv=8&lost=0&retrans=0&sent_bytes=3002&recv_bytes=3241&delivery_rate=2729500&cwnd=53&unsent_bytes=0&cid=f06a07e537516ad7&ts=532&x=0"
+server-timing: cfL4;desc="?proto=TCP&rtt=240912&min_rtt=227915&rtt_var=111463&sent=4&recv=6&lost=0&retrans=0&sent_bytes=2824&recv_bytes=1301&delivery_rate=8556&cwnd=52&unsent_bytes=0&cid=d97997c75e91ee4a&ts=916&x=0"
+
+Ran scheduled event

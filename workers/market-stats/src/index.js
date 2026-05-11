@@ -10,6 +10,7 @@ const GITHUB_API_BASE = 'https://api.github.com';
 const ISSUE_PAGE_SIZE = 100;
 const ANALYTICS_DOWNLOAD_EVENT = 'download';
 const ANALYTICS_SUPPORTED_EVENTS = [ANALYTICS_DOWNLOAD_EVENT];
+const ARTIFACT_TYPES = ['script', 'package'];
 const DESCRIPTION_LABEL_WORDS = new Set([
   'description',
   'desc',
@@ -95,6 +96,8 @@ export default {
             '/stats.json',
             '/stats/<type>.json',
             '/rank/<type>-<metric>-page-<n>.json',
+            '/artifact-rank/<type>-<metric>-page-<n>.json',
+            '/artifact-projects/<projectId>.json',
             '/manifest.json',
           ],
         },
@@ -169,7 +172,9 @@ function isStaticJsonPath(pathname) {
   return pathname === '/stats.json' ||
     pathname === '/manifest.json' ||
     pathname.startsWith('/stats/') ||
-    pathname.startsWith('/rank/');
+    pathname.startsWith('/rank/') ||
+    pathname.startsWith('/artifact-rank/') ||
+    pathname.startsWith('/artifact-projects/');
 }
 
 function getRequestPath(pathname, env) {
@@ -206,9 +211,12 @@ async function regenerateStaticJson(env) {
   const pageSize = getPositiveInt(env.MARKET_RANK_PAGE_SIZE, 20);
   const maxPages = getNonNegativeInt(env.MARKET_RANK_MAX_PAGES, 0);
   const updatedAt = new Date().toISOString();
+  const artifactTypes = supportedTypes.filter(isArtifactType);
+  const issueRankTypes = supportedTypes.filter((type) => !isArtifactType(type));
 
   const statsByType = await loadStatsByType(env, supportedTypes);
   const rankEntriesByType = await loadRankEntriesByType(env, supportedTypes, statsByType);
+  const artifactProjectsByType = await loadArtifactProjectsByType(env, artifactTypes, statsByType);
 
   const writes = [];
   const manifest = {
@@ -228,7 +236,7 @@ async function regenerateStaticJson(env) {
     manifest.keys.push(statsKey);
   }
 
-  for (const type of supportedTypes) {
+  for (const type of issueRankTypes) {
     const entries = rankEntriesByType[type] || [];
 
     for (const metric of SUPPORTED_RANK_METRICS) {
@@ -255,6 +263,71 @@ async function regenerateStaticJson(env) {
         );
         manifest.keys.push(key);
       }
+    }
+  }
+
+  for (const type of artifactTypes) {
+    const artifactProjects = artifactProjectsByType[type] || {
+      rankEntries: [],
+      detailEntries: {},
+    };
+    const legacyEntries = rankEntriesByType[type] || [];
+
+    for (const metric of SUPPORTED_RANK_METRICS) {
+      const sorted = sortArtifactProjectRankEntries(artifactProjects.rankEntries, metric);
+      const totalPages = Math.max(1, Math.ceil(sorted.length / pageSize));
+      const pageCount = maxPages > 0 ? Math.min(totalPages, maxPages) : totalPages;
+
+      for (let page = 1; page <= pageCount; page += 1) {
+        const start = (page - 1) * pageSize;
+        const slice = sorted.slice(start, start + pageSize);
+        const key = `artifact-rank/${type}-${metric}-page-${page}.json`;
+
+        writes.push(
+          putStaticJson(env, key, {
+            updatedAt,
+            type,
+            metric,
+            page,
+            pageSize,
+            totalPages,
+            totalItems: sorted.length,
+            items: slice,
+          })
+        );
+        manifest.keys.push(key);
+      }
+
+      const legacySorted = sortRankEntries(legacyEntries, metric);
+      const legacyTotalPages = Math.max(1, Math.ceil(legacySorted.length / pageSize));
+      const legacyPageCount =
+        maxPages > 0 ? Math.min(legacyTotalPages, maxPages) : legacyTotalPages;
+
+      for (let page = 1; page <= legacyPageCount; page += 1) {
+        const start = (page - 1) * pageSize;
+        const slice = legacySorted.slice(start, start + pageSize);
+        const legacyKey = `rank/${type}-${metric}-page-${page}.json`;
+
+        writes.push(
+          putStaticJson(env, legacyKey, {
+            updatedAt,
+            type,
+            metric,
+            page,
+            pageSize,
+            totalPages: legacyTotalPages,
+            totalItems: legacySorted.length,
+            items: slice,
+          })
+        );
+        manifest.keys.push(legacyKey);
+      }
+    }
+
+    for (const [projectId, detail] of Object.entries(artifactProjects.detailEntries)) {
+      const key = `artifact-projects/${projectId}.json`;
+      writes.push(putStaticJson(env, key, detail));
+      manifest.keys.push(key);
     }
   }
 
@@ -335,13 +408,43 @@ async function loadRankEntriesByType(env, supportedTypes, statsByType) {
   return byType;
 }
 
+async function loadArtifactProjectsByType(env, artifactTypes, statsByType) {
+  const byType = Object.fromEntries(
+    artifactTypes.map((type) => [
+      type,
+      {
+        rankEntries: [],
+        detailEntries: {},
+      },
+    ])
+  );
+  const auth = await getGitHubToken(env);
+  const token = auth?.token || '';
+
+  for (const type of artifactTypes) {
+    const source = MARKET_SOURCE_CONFIG[type];
+    if (!source) {
+      continue;
+    }
+
+    const issues = await fetchAllIssuesForSource(source, token, 'all');
+    byType[type] = buildArtifactProjects(type, issues, statsByType[type] || {});
+  }
+
+  return byType;
+}
+
 async function fetchAllOpenIssuesForSource(source, token) {
+  return fetchAllIssuesForSource(source, token, 'open');
+}
+
+async function fetchAllIssuesForSource(source, token, state = 'open') {
   const issues = [];
   let page = 1;
 
   while (true) {
     const query = new URLSearchParams({
-      state: 'open',
+      state,
       page: String(page),
       per_page: String(ISSUE_PAGE_SIZE),
     });
@@ -366,6 +469,217 @@ async function fetchAllOpenIssuesForSource(source, token) {
   }
 
   return issues;
+}
+
+function buildArtifactProjects(type, issues, statsMap) {
+  const grouped = new Map();
+
+  for (const issue of issues) {
+    const node = buildArtifactNode(type, issue);
+    if (!node) {
+      continue;
+    }
+
+    if (!grouped.has(node.projectId)) {
+      grouped.set(node.projectId, []);
+    }
+    grouped.get(node.projectId).push(node);
+  }
+
+  const rankEntries = [];
+  const detailEntries = {};
+
+  for (const [projectId, nodes] of grouped.entries()) {
+    const summary = summarizeArtifactProject(type, nodes, statsMap);
+    detailEntries[projectId] = buildArtifactProjectDetail(summary);
+    if (summary.latestOpenNodeId) {
+      rankEntries.push(buildArtifactProjectRankEntry(summary));
+    }
+  }
+
+  return {
+    rankEntries,
+    detailEntries,
+  };
+}
+
+function buildArtifactNode(type, issue) {
+  const body = String(issue?.body || '');
+  const metadata = parseArtifactMetadata(body);
+  if (!metadata || typeof metadata !== 'object') {
+    return null;
+  }
+
+  const displayName = String(metadata.displayName || issue?.title || '').trim();
+  const description = String(metadata.description || extractHumanDescriptionFromBody(body)).trim();
+  const projectId = resolveArtifactProjectId(metadata, issue, displayName);
+  const runtimePackageId = String(metadata.runtimePackageId || metadata.normalizedId || projectId).trim();
+  const nodeId = String(metadata.nodeId || `legacy-${toInt(issue?.id)}`).trim() || `legacy-${toInt(issue?.id)}`;
+  const rootNodeId = String(metadata.rootNodeId || nodeId).trim() || nodeId;
+  const parentNodeIds = Array.isArray(metadata.parentNodeIds)
+    ? metadata.parentNodeIds.map((item) => String(item || '').trim()).filter(Boolean)
+    : [];
+
+  return {
+    projectId,
+    type: String(metadata.type || type || '').trim() || type,
+    projectDisplayName: String(metadata.projectDisplayName || displayName || issue?.title || '').trim(),
+    projectDescription: String(metadata.projectDescription || description || '').trim(),
+    runtimePackageId,
+    nodeId,
+    rootNodeId,
+    parentNodeIds,
+    publisherLogin: String(metadata.publisherLogin || issue?.user?.login || '').trim(),
+    releaseTag: String(metadata.releaseTag || '').trim(),
+    assetName: String(metadata.assetName || '').trim(),
+    downloadUrl: String(metadata.downloadUrl || '').trim(),
+    sha256: String(metadata.sha256 || '').trim(),
+    version: String(metadata.version || '').trim(),
+    displayName,
+    description,
+    sourceFileName: String(metadata.sourceFileName || '').trim(),
+    minSupportedAppVersion: normalizeOptionalString(metadata.minSupportedAppVersion),
+    maxSupportedAppVersion: normalizeOptionalString(metadata.maxSupportedAppVersion),
+    publishedAt: normalizeOptionalTimestamp(issue?.created_at),
+    state: String(issue?.state || 'open').trim() || 'open',
+    issue: simplifyIssue(issue),
+  };
+}
+
+function summarizeArtifactProject(type, nodes, statsMap) {
+  const normalizedNodes = [...nodes].sort(
+    (left, right) => compareStrings(left.publishedAt, right.publishedAt) || left.nodeId.localeCompare(right.nodeId)
+  );
+  const nodeIds = new Set(normalizedNodes.map((node) => node.nodeId));
+  const rootNode =
+    normalizedNodes.find((node) => node.nodeId === node.rootNodeId) ||
+    normalizedNodes[0] ||
+    null;
+  const latestNode = pickLatestArtifactNode(normalizedNodes);
+  const latestOpenNode = pickLatestArtifactNode(normalizedNodes.filter((node) => node.state === 'open'));
+  const defaultNode = latestOpenNode || latestNode;
+  const stats = statsMap[normalizeArtifactId(nodes[0]?.projectId)] || createEmptyStats();
+  const contributorCount =
+    new Set(
+      normalizedNodes
+        .map((node) => node.publisherLogin || node.issue?.user?.login || '')
+        .filter(Boolean)
+    ).size || 1;
+  const likes = normalizedNodes.reduce(
+    (sum, node) => sum + toInt(node?.issue?.reactions?.['+1']),
+    0
+  );
+  const defaultRuntimePackageId = String(defaultNode?.runtimePackageId || '').trim();
+  const runtimePackageNodeSha256s = defaultRuntimePackageId
+    ? normalizedNodes
+      .filter((node) => normalizeArtifactId(node.runtimePackageId) === normalizeArtifactId(defaultRuntimePackageId))
+      .map((node) => String(node.sha256 || '').trim())
+      .filter(Boolean)
+      .filter((sha256, index, list) => list.indexOf(sha256) === index)
+    : [];
+  const edges = [];
+
+  for (const node of normalizedNodes) {
+    for (const parentNodeId of node.parentNodeIds) {
+      if (nodeIds.has(parentNodeId)) {
+        edges.push({
+          parentNodeId,
+          childNodeId: node.nodeId,
+        });
+      }
+    }
+  }
+
+  return {
+    projectId: nodes[0]?.projectId || '',
+    type,
+    projectDisplayName: rootNode?.projectDisplayName || latestNode?.projectDisplayName || '',
+    projectDescription: rootNode?.projectDescription || latestNode?.projectDescription || '',
+    rootNodeId: rootNode?.rootNodeId || rootNode?.nodeId || '',
+    rootPublisherLogin: rootNode?.publisherLogin || rootNode?.issue?.user?.login || '',
+    rootPublisherAvatarUrl: rootNode?.issue?.user?.avatar_url || '',
+    contributorCount,
+    downloads: stats.downloads,
+    likes,
+    latestNodeId: latestNode?.nodeId || '',
+    latestOpenNodeId: latestOpenNode?.nodeId || '',
+    defaultNodeId: defaultNode?.nodeId || '',
+    latestPublishedAt: latestOpenNode?.publishedAt || latestNode?.publishedAt || null,
+    defaultNode: buildArtifactProjectRankDefaultNode(defaultNode),
+    runtimePackageNodeSha256s,
+    nodes: normalizedNodes,
+    edges,
+  };
+}
+
+function buildArtifactProjectRankEntry(summary) {
+  return {
+    projectId: summary.projectId,
+    type: summary.type,
+    projectDisplayName: summary.projectDisplayName,
+    projectDescription: summary.projectDescription,
+    rootPublisherLogin: summary.rootPublisherLogin,
+    rootPublisherAvatarUrl: summary.rootPublisherAvatarUrl,
+    contributorCount: summary.contributorCount,
+    downloads: summary.downloads,
+    likes: summary.likes,
+    latestNodeId: summary.latestNodeId,
+    latestOpenNodeId: summary.latestOpenNodeId,
+    defaultNodeId: summary.defaultNodeId,
+    latestPublishedAt: summary.latestPublishedAt,
+    defaultNode: summary.defaultNode,
+    runtimePackageNodeSha256s: summary.runtimePackageNodeSha256s,
+  };
+}
+
+function buildArtifactProjectDetail(summary) {
+  return {
+    projectId: summary.projectId,
+    type: summary.type,
+    projectDisplayName: summary.projectDisplayName,
+    projectDescription: summary.projectDescription,
+    rootNodeId: summary.rootNodeId,
+    rootPublisherLogin: summary.rootPublisherLogin,
+    rootPublisherAvatarUrl: summary.rootPublisherAvatarUrl,
+    contributorCount: summary.contributorCount,
+    downloads: summary.downloads,
+    likes: summary.likes,
+    latestNodeId: summary.latestNodeId,
+    latestOpenNodeId: summary.latestOpenNodeId,
+    defaultNodeId: summary.defaultNodeId,
+    latestPublishedAt: summary.latestPublishedAt,
+    nodes: summary.nodes,
+    edges: summary.edges,
+  };
+}
+
+function buildArtifactProjectRankDefaultNode(node) {
+  if (!node) {
+    return null;
+  }
+
+  return {
+    nodeId: node.nodeId,
+    runtimePackageId: node.runtimePackageId,
+    sha256: node.sha256,
+    version: node.version,
+    downloadUrl: node.downloadUrl,
+    state: node.state,
+    publishedAt: node.publishedAt,
+  };
+}
+
+function pickLatestArtifactNode(nodes) {
+  if (!Array.isArray(nodes) || nodes.length === 0) {
+    return null;
+  }
+
+  return [...nodes].sort(
+    (left, right) =>
+      compareStrings(right.publishedAt, left.publishedAt) ||
+      compareStrings(right.issue?.created_at, left.issue?.created_at) ||
+      left.nodeId.localeCompare(right.nodeId)
+  )[0];
 }
 
 function buildRankEntry(type, issue, statsMap) {
@@ -400,10 +714,11 @@ function summarizeMarketIssue(type, issue) {
     if (!metadata) {
       return null;
     }
+    const displayName = String(metadata.displayName || issue?.title || '').trim();
 
     return {
-      id: normalizeArtifactId(metadata.normalizedId || metadata.displayName || metadata.assetName),
-      displayTitle: String(metadata.displayName || issue?.title || '').trim(),
+      id: resolveArtifactProjectId(metadata, issue, displayName),
+      displayTitle: displayName,
       summaryDescription: String(metadata.description || extractHumanDescriptionFromBody(body)).trim(),
       authorLogin: String(metadata.publisherLogin || publisherLogin).trim(),
       authorAvatarUrl: publisherAvatarUrl,
@@ -530,6 +845,35 @@ function sortRankEntries(entries, metric) {
     (left, right) =>
       compareStrings(right.updatedAt, left.updatedAt) ||
       left.id.localeCompare(right.id)
+  );
+}
+
+function sortArtifactProjectRankEntries(entries, metric) {
+  const list = [...entries];
+
+  if (metric === 'downloads') {
+    return list.sort(
+      (left, right) =>
+        compareNumbers(right.downloads, left.downloads) ||
+        compareNumbers(right.likes, left.likes) ||
+        compareStrings(right.latestPublishedAt, left.latestPublishedAt) ||
+        left.projectId.localeCompare(right.projectId)
+    );
+  }
+
+  if (metric === 'likes') {
+    return list.sort(
+      (left, right) =>
+        compareNumbers(right.likes, left.likes) ||
+        compareStrings(right.latestPublishedAt, left.latestPublishedAt) ||
+        left.projectId.localeCompare(right.projectId)
+    );
+  }
+
+  return list.sort(
+    (left, right) =>
+      compareStrings(right.latestPublishedAt, left.latestPublishedAt) ||
+      left.projectId.localeCompare(right.projectId)
   );
 }
 
@@ -1090,6 +1434,55 @@ function quoteSqlString(value) {
   return `'${String(value || '').replace(/'/g, "''")}'`;
 }
 
+function resolveArtifactProjectId(metadata, issue, displayName = '') {
+  const rawProjectId = String(metadata?.projectId || '').trim();
+  const normalizedProjectId = normalizeArtifactId(rawProjectId);
+
+  if (rawProjectId && isPlaceholderArtifactProjectId(normalizedProjectId)) {
+    const nodeKey = normalizeArtifactNodeKey(metadata?.rootNodeId || metadata?.nodeId);
+    if (nodeKey) {
+      return nodeKey;
+    }
+
+    const fallbackCandidates = [
+      metadata?.normalizedId,
+      metadata?.runtimePackageId,
+      displayName,
+      metadata?.assetName,
+      issue?.title,
+    ];
+
+    for (const candidate of fallbackCandidates) {
+      const normalized = normalizeArtifactId(candidate);
+      if (normalized && !isPlaceholderArtifactProjectId(normalized)) {
+        return normalized;
+      }
+    }
+  }
+
+  return normalizeArtifactId(
+    metadata?.projectId ||
+      metadata?.normalizedId ||
+      metadata?.runtimePackageId ||
+      displayName ||
+      metadata?.assetName ||
+      issue?.title
+  );
+}
+
+function normalizeArtifactNodeKey(value) {
+  const normalized = String(value || '').trim().toLowerCase();
+  return /^[a-z0-9-]+$/.test(normalized) ? normalized : '';
+}
+
+function isPlaceholderArtifactProjectId(value) {
+  return normalizeArtifactId(value) === 'artifact';
+}
+
+function isArtifactType(type) {
+  return ARTIFACT_TYPES.includes(normalizeType(type));
+}
+
 function normalizeType(value) {
   return String(value || '').trim().toLowerCase();
 }
@@ -1106,6 +1499,11 @@ function normalizeArtifactId(value) {
 
 function normalizeTargetUrl(value) {
   return String(value || '').trim();
+}
+
+function normalizeOptionalString(value) {
+  const normalized = String(value || '').trim();
+  return normalized || null;
 }
 
 function splitCsv(value) {
