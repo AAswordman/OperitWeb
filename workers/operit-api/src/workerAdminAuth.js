@@ -655,8 +655,6 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
   const passwordHash = await hashAdminCredential(password, env);
   const now = new Date().toISOString();
   const applicationId = crypto.randomUUID();
-  const reason = 'commitment_confirmed';
-  const skills = 'responsible_contributor';
   const contact = buildLegacyContactSummary(channels);
   await env.OPERIT_SUBMISSION_DB.prepare(
     'INSERT INTO reviewer_applications (id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, password_hash, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NULL, NULL, NULL, NULL)',
@@ -664,8 +662,8 @@ async function handleReviewerApplicationSubmit(request, env, corsHeaders) {
     applicationId,
     username,
     displayName || null,
-    reason,
-    skills,
+    '',
+    '',
     contact,
     channels.contact_email || null,
     channels.contact_qq || null,
@@ -685,7 +683,7 @@ async function handleReviewerApplicationList(url, env, corsHeaders) {
   const limit = clampInt(url.searchParams.get('limit'), 1, 200, 50);
   const offset = clampInt(url.searchParams.get('offset'), 0, 10000, 0);
 
-  let query = 'SELECT id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at FROM reviewer_applications';
+  let query = 'SELECT id, username, display_name, contact, contact_email, contact_qq, contact_telegram, turnstile_ok, status, created_at, reviewed_at, reviewed_by, review_notes, granted_at FROM reviewer_applications';
   const bindings = [];
   if (status) {
     query += ' WHERE status = ?';
@@ -701,7 +699,7 @@ async function handleReviewerApplicationList(url, env, corsHeaders) {
 async function handleReviewerApplicationApprove(id, request, env, corsHeaders, authUser) {
   await ensureAdminAuthSchema(env);
   const existing = await env.OPERIT_SUBMISSION_DB.prepare(
-    'SELECT id, username, display_name, reason, skills, contact, contact_email, contact_qq, contact_telegram, password_hash, status FROM reviewer_applications WHERE id = ? LIMIT 1',
+    'SELECT id, username, display_name, contact, contact_email, contact_qq, contact_telegram, password_hash, status FROM reviewer_applications WHERE id = ? LIMIT 1',
   ).bind(id).first();
   if (!existing) {
     return json({ error: 'not_found' }, 404, corsHeaders);

@@ -1,10 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Alert, Button, Card, Checkbox, Input, Layout, Space, Typography } from 'antd';
 import { useNavigate } from 'react-router-dom';
-import TurnstileWidget from '../components/TurnstileWidget';
 
 const { Content } = Layout;
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 interface OperitReviewerApplyPageProps {
   language: 'zh' | 'en';
 }
@@ -24,10 +23,9 @@ const mapApplyError = (code: string, isZh: boolean) => {
     username_invalid: '用户名不合法（3-32位，仅小写字母/数字/._-）。',
     password_too_short: '密码至少 8 位。',
     contact_required: '请填写联系方式。',
-    commitment_required: '请先勾选承诺。',    
+    commitment_required: '请先勾选承诺。',
     user_exists: '该账号名已存在。',
     application_exists: '这个账号名已经提交过申请。',
-    turnstile_failed: '人机验证失败，请重试。',
     invalid_json: '请求格式错误，请重试。',
     d1_binding_missing: '服务端数据库未配置。',
   };
@@ -38,7 +36,6 @@ const mapApplyError = (code: string, isZh: boolean) => {
     commitment_required: 'Please confirm the commitment first.',
     user_exists: 'This username already exists.',
     application_exists: 'An application already exists for this username.',
-    turnstile_failed: 'Verification failed. Please try again.',
     invalid_json: 'Invalid request payload.',
     d1_binding_missing: 'Server database is not configured.',
   };
@@ -48,9 +45,6 @@ const mapApplyError = (code: string, isZh: boolean) => {
 const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ language }) => {
   const isZh = language === 'zh';
   const navigate = useNavigate();
-  const [siteKey, setSiteKey] = useState('');
-  const [turnstileToken, setTurnstileToken] = useState('');
-  const [turnstileResetKey, setTurnstileResetKey] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<{ id: string; createdAt: string } | null>(null);
@@ -72,28 +66,6 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     localStorage.setItem(STORAGE.reviewerApplyContactTelegram, form.contactTelegram);
   }, [form.contactEmail, form.contactQq, form.contactTelegram, form.displayName, form.username]);
 
-  useEffect(() => {
-    let cancelled = false;
-    const loadConfig = async () => {
-      try {
-        const response = await fetch(`${API_BASE}/api/config`);
-        if (!response.ok) return;
-        const data = await response.json();
-        if (!cancelled) {
-          setSiteKey(String(data?.turnstile_site_key || ''));
-        }
-      } catch {
-        if (!cancelled) {
-          setSiteKey('');
-        }
-      }
-    };
-    loadConfig();
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
   const handleSubmit = useCallback(async () => {
     if (!form.username.trim() || !form.password.trim()) {
       setError(isZh ? '请把必填项填写完整。' : 'Please fill in all required fields.');
@@ -105,14 +77,6 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
     }
     if (!form.commitment) {
       setError(isZh ? '请先勾选承诺。' : 'Please confirm the commitment first.');
-      return;
-    }
-    if (!siteKey) {
-      setError(isZh ? '验证码配置未就绪，请稍后再试。' : 'Verification config is not ready yet.');
-      return;
-    }
-    if (!turnstileToken) {
-      setError(isZh ? '请先完成人机验证。' : 'Please complete verification first.');
       return;
     }
 
@@ -132,7 +96,6 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
           contact_telegram: form.contactTelegram.trim() || undefined,
           password: form.password,
           commitment: true,
-          turnstile_token: turnstileToken,
         }),
       });
       const text = await response.text();
@@ -151,14 +114,12 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
         createdAt: String((data as { created_at?: string })?.created_at || ''),
       });
       setForm(prev => ({ ...prev, password: '', commitment: false }));
-      setTurnstileToken('');
-      setTurnstileResetKey(prev => prev + 1);
     } catch (err) {
       setError((err as Error).message || (isZh ? '申请提交失败。' : 'Failed to submit application.'));
     } finally {
       setSubmitting(false);
     }
-  }, [form, isZh, siteKey, turnstileToken]);
+  }, [form, isZh]);
 
   return (
     <main style={{ paddingTop: 88, paddingBottom: 48 }}>
@@ -171,8 +132,8 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
               </Title>
               <Paragraph type="secondary" style={{ marginBottom: 0 }}>
                 {isZh
-                  ? '填写账号、密码和联系方式，勾选承诺后提交，等待管理员审批。'
-                  : 'Submit your account, password, and contact info, then confirm the commitment for admin approval.'}
+                  ? '填写账号、密码和联系方式，勾选承诺后直接提交，不需要额外写申请理由。'
+                  : 'Submit your account, password, and contact info, then confirm the commitment. No extra reason text is required.'}
               </Paragraph>
             </div>
 
@@ -217,27 +178,8 @@ const OperitReviewerApplyPage: React.FC<OperitReviewerApplyPageProps> = ({ langu
                 : 'I will contribute responsibly and take review work seriously.'}
             </Checkbox>
 
-            {siteKey ? (
-              <Space direction="vertical" size={8} style={{ width: '100%' }}>
-                <Text type="secondary">{isZh ? '请先完成人机验证' : 'Please complete human verification'}</Text>
-                <TurnstileWidget
-                  key={turnstileResetKey}
-                  siteKey={siteKey}
-                  onVerify={token => setTurnstileToken(token)}
-                  onExpire={() => setTurnstileToken('')}
-                  theme="light"
-                />
-              </Space>
-            ) : (
-              <Alert
-                type="warning"
-                showIcon
-                message={isZh ? '未获取到验证码组件，请稍后刷新。' : 'Verification widget not available. Please refresh.'}
-              />
-            )}
-
             <Space wrap>
-              <Button type="primary" loading={submitting} disabled={!siteKey || !turnstileToken} onClick={handleSubmit}>
+              <Button type="primary" loading={submitting} onClick={handleSubmit}>
                 {isZh ? '提交申请' : 'Submit application'}
               </Button>
               <Button onClick={() => navigate('/operit-login')}>
