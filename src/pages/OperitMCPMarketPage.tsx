@@ -18,9 +18,11 @@ import {
   Typography,
 } from 'antd';
 import {
+  DownloadOutlined,
   EyeOutlined,
   GithubOutlined,
   LeftOutlined,
+  LikeOutlined,
   LinkOutlined,
   MessageOutlined,
   ReloadOutlined,
@@ -36,27 +38,42 @@ interface OperitMCPMarketPageProps {
   language: 'zh' | 'en';
 }
 
+interface GitHubLabel {
+  id: number;
+  name: string;
+  color: string;
+  description?: string | null;
+}
+
+interface GitHubUser {
+  login: string;
+  html_url?: string;
+  avatar_url?: string;
+}
+
+interface GitHubReactions {
+  total_count?: number;
+  '+1'?: number;
+  heart?: number;
+  [key: string]: number | undefined;
+}
+
 interface GitHubIssue {
   id: number;
   number: number;
   title: string;
-  body: string;
+  body: string | null;
   html_url: string;
+  state?: string;
   created_at: string;
   updated_at: string;
-  comments: number;
-  labels: Array<{ id: number; name: string; color: string }>;
-  user: {
-    login: string;
-    html_url: string;
-  };
+  comments?: number;
+  labels: GitHubLabel[];
+  user: GitHubUser;
+  reactions?: GitHubReactions | null;
   pull_request?: {
     html_url: string;
   };
-}
-
-interface GitHubSearchIssuesResponse {
-  total_count: number;
 }
 
 interface MarketLabel {
@@ -87,16 +104,127 @@ interface ParsedMarketIssue {
   sections: MarketSection[];
 }
 
+interface ArtifactProjectRankDefaultNode {
+  nodeId: string;
+  runtimePackageId: string;
+  sha256: string;
+  version: string;
+  downloadUrl: string;
+  state: string;
+  publishedAt: string | null;
+}
+
+interface ArtifactProjectRankEntry {
+  projectId: string;
+  type: string;
+  projectDisplayName: string;
+  projectDescription: string;
+  rootPublisherLogin: string;
+  rootPublisherAvatarUrl: string;
+  contributorCount: number;
+  downloads: number;
+  likes: number;
+  latestNodeId: string;
+  latestOpenNodeId: string;
+  defaultNodeId: string;
+  latestPublishedAt: string | null;
+  defaultNode: ArtifactProjectRankDefaultNode | null;
+  runtimePackageNodeSha256s: string[];
+}
+
+interface MarketRankIssueEntry {
+  id: string;
+  downloads: number;
+  lastDownloadAt: string | null;
+  updatedAt: string | null;
+  statsUpdatedAt: string | null;
+  displayTitle: string;
+  summaryDescription: string;
+  authorLogin: string;
+  authorAvatarUrl: string;
+  metadata?: unknown;
+  issue: GitHubIssue;
+}
+
+interface MarketRankPageResponse {
+  updatedAt?: string | null;
+  type: string;
+  metric: string;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  totalItems: number;
+  items: MarketRankIssueEntry[];
+}
+
+interface ArtifactProjectRankPageResponse {
+  updatedAt?: string | null;
+  type: string;
+  metric: string;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+  totalItems: number;
+  items: ArtifactProjectRankEntry[];
+}
+
+interface ArtifactProjectEdge {
+  parentNodeId: string;
+  childNodeId: string;
+}
+
+interface ArtifactProjectNode {
+  projectId: string;
+  type: string;
+  projectDisplayName: string;
+  projectDescription: string;
+  runtimePackageId: string;
+  nodeId: string;
+  rootNodeId: string;
+  parentNodeIds: string[];
+  publisherLogin: string;
+  releaseTag: string;
+  assetName: string;
+  downloadUrl: string;
+  sha256: string;
+  version: string;
+  displayName: string;
+  description: string;
+  sourceFileName: string;
+  minSupportedAppVersion: string | null;
+  maxSupportedAppVersion: string | null;
+  publishedAt: string | null;
+  state: string;
+  issue: GitHubIssue;
+}
+
+interface ArtifactProjectDetail {
+  projectId: string;
+  type: string;
+  projectDisplayName: string;
+  projectDescription: string;
+  rootNodeId: string;
+  rootPublisherLogin: string;
+  rootPublisherAvatarUrl: string;
+  contributorCount: number;
+  downloads: number;
+  likes: number;
+  latestNodeId: string;
+  latestOpenNodeId: string;
+  defaultNodeId: string;
+  latestPublishedAt: string | null;
+  nodes: ArtifactProjectNode[];
+  edges: ArtifactProjectEdge[];
+}
+
 interface UiText {
   title: string;
-  subtitle: string;
+  artifactTab: string;
   mcpTab: string;
   skillTab: string;
-  sourceLabel: string;
-  sourceLink: string;
   reload: string;
-  searchPlaceholder: string;
   loading: string;
+  loadingArtifactDetail: string;
   loadError: string;
   noData: string;
   updatedAt: string;
@@ -120,46 +248,79 @@ interface UiText {
   pageIndicator: string;
   totalPageIndicator: string;
   unknownTotalPageIndicator: string;
+  artifactProjectId: string;
+  artifactType: string;
+  downloads: string;
+  likes: string;
+  contributors: string;
+  nodeCount: string;
+  runtimePackageId: string;
+  latestVersion: string;
+  nodesTitle: string;
+  nodeId: string;
+  version: string;
+  publisher: string;
+  releaseTag: string;
+  assetName: string;
+  publishTime: string;
+  state: string;
+  downloadButton: string;
+  rootIssue: string;
 }
 
-const GITHUB_OWNER = 'AAswordman';
-const PER_PAGE = 30;
+type MarketType = 'artifact' | 'mcp' | 'skill';
+type ArtifactSourceType = 'script' | 'package';
+type IssueSourceType = 'mcp' | 'skill';
 
-type MarketType = 'mcp' | 'skill';
-
-interface MarketConfig {
-  repo: string;
-  approvedLabel: string;
+interface IssueMarketConfig {
+  kind: 'issue';
+  statsType: IssueSourceType;
+  searchPlaceholderZh: string;
+  searchPlaceholderEn: string;
 }
+
+interface ArtifactMarketConfig {
+  kind: 'artifact';
+  searchPlaceholderZh: string;
+  searchPlaceholderEn: string;
+}
+
+type MarketConfig = IssueMarketConfig | ArtifactMarketConfig;
+
+const ISSUE_PAGE_SIZE = 20;
+const ARTIFACT_PAGE_SIZE = 20;
+const MARKET_RANK_METRIC = 'updated';
+const MARKET_STATIC_BASE_URL = 'https://static.operit.app/market-stats';
+const MARKET_STATIC_QUERY = 'client=operit-web&v=20260511-cors1';
+const ARTIFACT_SOURCE_TYPES: ArtifactSourceType[] = ['script', 'package'];
+
+const buildIssueRankUrl = (type: IssueSourceType, page: number): string =>
+  `${MARKET_STATIC_BASE_URL}/rank/${type}-${MARKET_RANK_METRIC}-page-${page}.json?${MARKET_STATIC_QUERY}`;
+
+const buildArtifactRankUrl = (type: ArtifactSourceType, page: number): string =>
+  `${MARKET_STATIC_BASE_URL}/artifact-rank/${type}-${MARKET_RANK_METRIC}-page-${page}.json?${MARKET_STATIC_QUERY}`;
+
+const buildArtifactProjectUrl = (projectId: string): string =>
+  `${MARKET_STATIC_BASE_URL}/artifact-projects/${encodeURIComponent(projectId)}.json?${MARKET_STATIC_QUERY}`;
 
 const MARKET_CONFIG: Record<MarketType, MarketConfig> = {
+  artifact: {
+    kind: 'artifact',
+    searchPlaceholderZh: '搜索名称或作者',
+    searchPlaceholderEn: 'Search name or author',
+  },
   mcp: {
-    repo: 'OperitMCPMarket',
-    approvedLabel: 'mcp-plugin',
+    kind: 'issue',
+    statsType: 'mcp',
+    searchPlaceholderZh: '搜索标题、简介、标签或仓库',
+    searchPlaceholderEn: 'Search title, summary, labels, or repo',
   },
   skill: {
-    repo: 'OperitSkillMarket',
-    approvedLabel: 'skill-plugin',
+    kind: 'issue',
+    statsType: 'skill',
+    searchPlaceholderZh: '搜索标题、简介、标签或仓库',
+    searchPlaceholderEn: 'Search title, summary, labels, or repo',
   },
-};
-
-const getIssuesWebUrl = (repo: string): string => `https://github.com/${GITHUB_OWNER}/${repo}/issues`;
-const getIssuesApiUrl = (repo: string): string => `https://api.github.com/repos/${GITHUB_OWNER}/${repo}/issues`;
-const getIssuesSearchApiUrl = (repo: string, approvedLabel: string): string => {
-  const query = encodeURIComponent(`repo:${GITHUB_OWNER}/${repo} is:issue is:open label:${approvedLabel}`);
-  return `https://api.github.com/search/issues?q=${query}&per_page=1&page=1`;
-};
-
-const parseLinkHeader = (linkHeader: string | null): { hasNext: boolean; lastPage: number | null } => {
-  if (!linkHeader) {
-    return { hasNext: false, lastPage: null };
-  }
-
-  const hasNext = /rel="next"/.test(linkHeader);
-  const lastMatch = linkHeader.match(/<[^>]*[?&]page=(\d+)[^>]*>;\s*rel="last"/);
-  const lastPage = lastMatch ? Number.parseInt(lastMatch[1], 10) : null;
-
-  return { hasNext, lastPage: Number.isFinite(lastPage) ? lastPage : null };
 };
 
 const normalizeKey = (value: string): string =>
@@ -265,9 +426,6 @@ const dedupeLabels = (labels: MarketLabel[]): MarketLabel[] => {
   return result;
 };
 
-const hasApprovedLabel = (issue: GitHubIssue, approvedLabel: string): boolean =>
-  issue.labels.some(label => label.name.trim().toLowerCase() === approvedLabel.toLowerCase());
-
 const parseIssue = (issue: GitHubIssue): ParsedMarketIssue => {
   const body = issue.body ?? '';
   const sections = parseSections(body)
@@ -344,10 +502,10 @@ const parseIssue = (issue: GitHubIssue): ParsedMarketIssue => {
     description,
     labels,
     author: issue.user.login,
-    authorUrl: issue.user.html_url,
+    authorUrl: issue.user.html_url ?? issue.html_url,
     createdAt: issue.created_at,
     updatedAt: issue.updated_at,
-    comments: issue.comments,
+    comments: issue.comments ?? 0,
     rawBody: body.trim(),
     sections,
   };
@@ -361,8 +519,12 @@ const extractRepoName = (repoUrl: string): string => {
   return repoUrl;
 };
 
-const parseMarketTypeFromQuery = (value: string | null): MarketType =>
-  value === 'skill' ? 'skill' : 'mcp';
+const parseMarketTypeFromQuery = (value: string | null): MarketType => {
+  if (value === 'mcp' || value === 'skill' || value === 'artifact') {
+    return value;
+  }
+  return 'artifact';
+};
 
 const parsePageFromQuery = (value: string | null): number => {
   if (!value) {
@@ -375,26 +537,177 @@ const parsePageFromQuery = (value: string | null): number => {
   return parsed;
 };
 
+const artifactTypeLabel = (type: string, language: 'zh' | 'en'): string => {
+  if (type === 'script') {
+    return language === 'zh' ? '脚本' : 'Script';
+  }
+  if (type === 'package') {
+    return language === 'zh' ? '工具包' : 'Package';
+  }
+  return type || (language === 'zh' ? '未分类' : 'Unknown');
+};
+
+const sortArtifactEntries = (entries: ArtifactProjectRankEntry[]): ArtifactProjectRankEntry[] =>
+  [...entries].sort(
+    (left, right) =>
+      (right.latestPublishedAt ?? '').localeCompare(left.latestPublishedAt ?? '') ||
+      left.projectDisplayName.localeCompare(right.projectDisplayName, undefined, { sensitivity: 'base' }),
+  );
+
+const uniqueArtifactEntries = (entries: ArtifactProjectRankEntry[]): ArtifactProjectRankEntry[] => {
+  const seen = new Set<string>();
+  return entries.filter(entry => {
+    if (!entry.projectId || seen.has(entry.projectId)) {
+      return false;
+    }
+    seen.add(entry.projectId);
+    return true;
+  });
+};
+
+const fetchIssueRankPage = async (
+  type: IssueSourceType,
+  page: number,
+): Promise<MarketRankPageResponse> => {
+  const response = await fetch(buildIssueRankUrl(type, page), {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (response.status === 404) {
+    return {
+      type,
+      metric: MARKET_RANK_METRIC,
+      page,
+      pageSize: ISSUE_PAGE_SIZE,
+      totalPages: 0,
+      totalItems: 0,
+      items: [],
+    };
+  }
+
+  if (!response.ok) {
+    throw new Error(`Market rank API error: ${response.status}`);
+  }
+
+  return (await response.json()) as MarketRankPageResponse;
+};
+
+const fetchArtifactRankPage = async (
+  type: ArtifactSourceType,
+  page: number,
+): Promise<ArtifactProjectRankPageResponse> => {
+  const response = await fetch(buildArtifactRankUrl(type, page), {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (response.status === 404) {
+    return {
+      type,
+      metric: MARKET_RANK_METRIC,
+      page,
+      pageSize: ARTIFACT_PAGE_SIZE,
+      totalPages: 0,
+      totalItems: 0,
+      items: [],
+    };
+  }
+
+  if (!response.ok) {
+    throw new Error(`Artifact rank API error: ${response.status}`);
+  }
+
+  return (await response.json()) as ArtifactProjectRankPageResponse;
+};
+
+const fetchArtifactProjectDetail = async (projectId: string): Promise<ArtifactProjectDetail> => {
+  const response = await fetch(buildArtifactProjectUrl(projectId), {
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Artifact project API error: ${response.status}`);
+  }
+
+  return (await response.json()) as ArtifactProjectDetail;
+};
+
+const loadArtifactPagesForType = async (
+  type: ArtifactSourceType,
+  targetCount: number,
+): Promise<{ items: ArtifactProjectRankEntry[]; totalItems: number }> => {
+  const firstPage = await fetchArtifactRankPage(type, 1);
+  const sourcePageSize = Math.max(1, firstPage.pageSize || ARTIFACT_PAGE_SIZE);
+  const totalPages = Math.max(0, firstPage.totalPages || 0);
+
+  if (totalPages <= 1 || firstPage.items.length === 0) {
+    return {
+      items: firstPage.items,
+      totalItems: firstPage.totalItems,
+    };
+  }
+
+  const pagesNeeded = Math.min(totalPages, Math.max(1, Math.ceil(targetCount / sourcePageSize)));
+  if (pagesNeeded === 1) {
+    return {
+      items: firstPage.items,
+      totalItems: firstPage.totalItems,
+    };
+  }
+
+  const remainingPages = await Promise.all(
+    Array.from({ length: pagesNeeded - 1 }, (_, index) => fetchArtifactRankPage(type, index + 2)),
+  );
+
+  return {
+    items: [...firstPage.items, ...remainingPages.flatMap(page => page.items)],
+    totalItems: firstPage.totalItems,
+  };
+};
+
+const resolveArtifactDefaultNode = (
+  project: ArtifactProjectDetail | null,
+  item: ArtifactProjectRankEntry | null,
+): ArtifactProjectNode | null => {
+  const nodes = project?.nodes ?? [];
+  if (nodes.length === 0) {
+    return null;
+  }
+
+  return (
+    nodes.find(node => node.nodeId === project?.defaultNodeId) ??
+    nodes.find(node => node.nodeId === item?.defaultNodeId) ??
+    nodes.find(node => node.nodeId === project?.latestOpenNodeId) ??
+    nodes.find(node => node.nodeId === item?.latestOpenNodeId) ??
+    nodes.find(node => node.nodeId === project?.latestNodeId) ??
+    nodes.find(node => node.nodeId === item?.latestNodeId) ??
+    nodes[0]
+  );
+};
+
 const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const marketType = parseMarketTypeFromQuery(searchParams.get('market'));
   const page = parsePageFromQuery(searchParams.get('page'));
   const currentMarketConfig = MARKET_CONFIG[marketType];
-  const currentIssuesWebUrl = getIssuesWebUrl(currentMarketConfig.repo);
+  const currentIssueMarketConfig = currentMarketConfig.kind === 'issue' ? currentMarketConfig : null;
 
   const uiText: UiText =
     language === 'zh'
       ? {
           title: 'Operit 插件市场',
-          subtitle: '仅展示带有过审标签的条目，支持详情查看与快速筛选。',
+          artifactTab: '沙盒包',
           mcpTab: 'MCP 市场',
           skillTab: 'Skill 市场',
-          sourceLabel: '数据源',
-          sourceLink: '查看 Issues',
           reload: '刷新',
-          searchPlaceholder: '搜索标题、简介、标签或仓库',
           loading: '正在加载市场数据...',
-          loadError: '加载失败，可能是 GitHub API 速率限制或网络问题。',
+          loadingArtifactDetail: '正在加载项目详情...',
+          loadError: '加载失败，请检查网络或数据源可用性。',
           noData: '当前没有可展示的条目。',
           updatedAt: '更新时间',
           issueButton: 'Issue',
@@ -402,7 +715,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           homepageButton: '主页',
           comments: '评论',
           author: '作者',
-          notProvided: '未提供简介',
+          notProvided: '未提供',
           detailButton: '查看详情',
           detailSummaryTitle: '项目简介',
           detailSectionsTitle: 'Issue 详情分段',
@@ -417,18 +730,34 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           pageIndicator: '当前第 {page} 页',
           totalPageIndicator: '共 {total} 页',
           unknownTotalPageIndicator: '总页数未知',
+          artifactProjectId: '项目 ID',
+          artifactType: '类型',
+          downloads: '下载',
+          likes: '点赞',
+          contributors: '贡献者',
+          nodeCount: '节点数',
+          runtimePackageId: '运行包 ID',
+          latestVersion: '默认版本',
+          nodesTitle: '项目节点',
+          nodeId: '节点 ID',
+          version: '版本',
+          publisher: '发布者',
+          releaseTag: '发布标签',
+          assetName: '资产文件',
+          publishTime: '发布时间',
+          state: '状态',
+          downloadButton: '下载',
+          rootIssue: '默认节点 Issue',
         }
       : {
           title: 'Operit Plugin Market',
-          subtitle: 'Only approved-tagged entries are shown, with detail view and quick filters.',
+          artifactTab: 'Sandbox Packages',
           mcpTab: 'MCP Market',
           skillTab: 'Skill Market',
-          sourceLabel: 'Source',
-          sourceLink: 'Open Issues',
           reload: 'Refresh',
-          searchPlaceholder: 'Search title, summary, labels, or repo',
           loading: 'Loading market data...',
-          loadError: 'Failed to load data. This may be a GitHub API rate-limit or network issue.',
+          loadingArtifactDetail: 'Loading project detail...',
+          loadError: 'Failed to load data. Please check network access or source availability.',
           noData: 'No entries available.',
           updatedAt: 'Updated At',
           issueButton: 'Issue',
@@ -436,7 +765,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           homepageButton: 'Homepage',
           comments: 'Comments',
           author: 'Author',
-          notProvided: 'No summary provided',
+          notProvided: 'Not provided',
           detailButton: 'Details',
           detailSummaryTitle: 'Summary',
           detailSectionsTitle: 'Issue Sections',
@@ -451,23 +780,64 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           pageIndicator: 'Current {page}',
           totalPageIndicator: 'Total {total}',
           unknownTotalPageIndicator: 'Total unknown',
+          artifactProjectId: 'Project ID',
+          artifactType: 'Type',
+          downloads: 'Downloads',
+          likes: 'Likes',
+          contributors: 'Contributors',
+          nodeCount: 'Nodes',
+          runtimePackageId: 'Runtime Package ID',
+          latestVersion: 'Default Version',
+          nodesTitle: 'Project Nodes',
+          nodeId: 'Node ID',
+          version: 'Version',
+          publisher: 'Publisher',
+          releaseTag: 'Release Tag',
+          assetName: 'Asset Name',
+          publishTime: 'Published At',
+          state: 'State',
+          downloadButton: 'Download',
+          rootIssue: 'Default Issue',
         };
 
   const [issues, setIssues] = useState<ParsedMarketIssue[]>([]);
+  const [artifactProjects, setArtifactProjects] = useState<ArtifactProjectRankEntry[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedIssue, setSelectedIssue] = useState<ParsedMarketIssue | null>(null);
+  const [selectedArtifact, setSelectedArtifact] = useState<ArtifactProjectRankEntry | null>(null);
+  const [selectedArtifactDetail, setSelectedArtifactDetail] = useState<ArtifactProjectDetail | null>(null);
+  const [artifactDetailLoading, setArtifactDetailLoading] = useState<boolean>(false);
+  const [artifactDetailError, setArtifactDetailError] = useState<string | null>(null);
   const [totalPages, setTotalPages] = useState<number | null>(null);
   const [linkHasNextPage, setLinkHasNextPage] = useState<boolean>(false);
   const issuesRequestRef = useRef(0);
-  const totalPagesRequestRef = useRef(0);
+  const artifactRequestRef = useRef(0);
+  const artifactDetailRequestRef = useRef(0);
 
-  const currentMarketName = marketType === 'mcp' ? uiText.mcpTab : uiText.skillTab;
-  const marketSubtitle =
+  const currentMarketName =
+    marketType === 'artifact' ? uiText.artifactTab : marketType === 'mcp' ? uiText.mcpTab : uiText.skillTab;
+  const currentSearchPlaceholder =
     language === 'zh'
-      ? `当前展示 ${currentMarketName}，仅包含标签 ${currentMarketConfig.approvedLabel} 的过审项目。`
-      : `Showing ${currentMarketName}, filtered by approved label: ${currentMarketConfig.approvedLabel}.`;
+      ? currentMarketConfig.searchPlaceholderZh
+      : currentMarketConfig.searchPlaceholderEn;
+
+  const marketSubtitle = useMemo(() => {
+    if (marketType === 'artifact') {
+      return language === 'zh'
+        ? '当前展示沙盒包，聚合 Script 与 Package 的 artifact 项目排行。'
+        : 'Showing sandbox packages, aggregated from script and package artifact rankings.';
+    }
+
+    if (!currentIssueMarketConfig) {
+      return '';
+    }
+
+    return language === 'zh'
+      ? `当前展示 ${currentMarketName}，数据来自 static.operit.app 的预生成市场排行。`
+      : `Showing ${currentMarketName}, backed by precomputed ranking JSON from static.operit.app.`;
+  }, [currentIssueMarketConfig, currentMarketName, language, marketType]);
 
   const writeQueryState = useCallback((nextMarketType: MarketType, nextPage: number) => {
     const normalizedPage = String(Math.max(1, nextPage));
@@ -492,62 +862,84 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     writeQueryState(marketType, nextPage);
   }, [marketType, writeQueryState]);
 
+  const closeDetailDrawer = useCallback(() => {
+    artifactDetailRequestRef.current += 1;
+    setSelectedIssue(null);
+    setSelectedArtifact(null);
+    setSelectedArtifactDetail(null);
+    setArtifactDetailError(null);
+    setArtifactDetailLoading(false);
+  }, []);
+
+  const openIssueDetail = useCallback((issue: ParsedMarketIssue) => {
+    artifactDetailRequestRef.current += 1;
+    setSelectedArtifact(null);
+    setSelectedArtifactDetail(null);
+    setArtifactDetailError(null);
+    setArtifactDetailLoading(false);
+    setSelectedIssue(issue);
+  }, []);
+
+  const openArtifactDetail = useCallback((item: ArtifactProjectRankEntry) => {
+    const requestId = ++artifactDetailRequestRef.current;
+    setSelectedIssue(null);
+    setSelectedArtifact(item);
+    setSelectedArtifactDetail(null);
+    setArtifactDetailError(null);
+    setArtifactDetailLoading(true);
+
+    void (async () => {
+      try {
+        const detail = await fetchArtifactProjectDetail(item.projectId);
+        if (requestId !== artifactDetailRequestRef.current) {
+          return;
+        }
+        setSelectedArtifactDetail(detail);
+      } catch (fetchError) {
+        if (requestId !== artifactDetailRequestRef.current) {
+          return;
+        }
+        const message = fetchError instanceof Error ? fetchError.message : 'Unknown error';
+        setArtifactDetailError(message);
+      } finally {
+        if (requestId === artifactDetailRequestRef.current) {
+          setArtifactDetailLoading(false);
+        }
+      }
+    })();
+  }, []);
+
   const loadIssues = useCallback(async () => {
+    if (!currentIssueMarketConfig) {
+      return;
+    }
+
     const requestId = ++issuesRequestRef.current;
     setLoading(true);
     setError(null);
 
     try {
-      const requestUrl = new URL(getIssuesApiUrl(currentMarketConfig.repo));
-      requestUrl.searchParams.set('state', 'open');
-      requestUrl.searchParams.set('sort', 'updated');
-      requestUrl.searchParams.set('direction', 'desc');
-      requestUrl.searchParams.set('per_page', String(PER_PAGE));
-      requestUrl.searchParams.set('page', String(page));
-      requestUrl.searchParams.set('labels', currentMarketConfig.approvedLabel);
-
-      const response = await fetch(requestUrl.toString(), {
-        headers: {
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
-
+      const rankPage = await fetchIssueRankPage(currentIssueMarketConfig.statsType, page);
       if (requestId !== issuesRequestRef.current) {
         return;
       }
 
-      if (!response.ok) {
-        const remaining = response.headers.get('x-ratelimit-remaining');
-        if (response.status === 403 && remaining === '0') {
-          throw new Error('GitHub API rate limit reached');
-        }
-        throw new Error(`GitHub API error: ${response.status}`);
-      }
-
-      const { hasNext, lastPage: parsedLastPage } = parseLinkHeader(response.headers.get('link'));
-      setLinkHasNextPage(hasNext);
-      setTotalPages(previousTotalPages => {
-        if (previousTotalPages !== null) {
-          return previousTotalPages;
-        }
-        if (parsedLastPage !== null) {
-          return Math.max(1, parsedLastPage);
-        }
-        if (!hasNext) {
-          return page;
-        }
-        return null;
-      });
-
-      const pageIssues = (await response.json()) as GitHubIssue[];
-      if (requestId !== issuesRequestRef.current) {
+      const resolvedTotalPages = Math.max(1, rankPage.totalPages || 0);
+      if (rankPage.totalItems > 0 && page > resolvedTotalPages) {
+        setTotalPages(resolvedTotalPages);
+        setLinkHasNextPage(false);
+        setIssues([]);
+        setPageInQuery(resolvedTotalPages);
         return;
       }
 
-      const parsed = pageIssues
-        .filter(item => !item.pull_request && hasApprovedLabel(item, currentMarketConfig.approvedLabel))
+      const parsed = rankPage.items
+        .map(entry => entry.issue)
+        .filter(item => !item.pull_request)
         .map(parseIssue);
+
+      setTotalPages(resolvedTotalPages);
+      setLinkHasNextPage(page < resolvedTotalPages);
       setIssues(parsed);
       setSelectedIssue(prevSelected =>
         prevSelected ? parsed.find(item => item.id === prevSelected.id) ?? null : null,
@@ -564,62 +956,86 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         setLoading(false);
       }
     }
-  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page]);
+  }, [currentIssueMarketConfig, page, setPageInQuery]);
 
-  const loadTotalPages = useCallback(async () => {
-    const requestId = ++totalPagesRequestRef.current;
+  const loadArtifacts = useCallback(async () => {
+    if (currentMarketConfig.kind !== 'artifact') {
+      return;
+    }
+
+    const requestId = ++artifactRequestRef.current;
+    setLoading(true);
+    setError(null);
 
     try {
-      const searchUrl = getIssuesSearchApiUrl(currentMarketConfig.repo, currentMarketConfig.approvedLabel);
-      const response = await fetch(searchUrl, {
-        headers: {
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
+      const targetCount = page * ARTIFACT_PAGE_SIZE;
+      const artifactGroups = await Promise.all(
+        ARTIFACT_SOURCE_TYPES.map(type => loadArtifactPagesForType(type, targetCount)),
+      );
 
-      if (requestId !== totalPagesRequestRef.current) {
+      if (requestId !== artifactRequestRef.current) {
         return;
       }
 
-      if (!response.ok) {
+      const merged = uniqueArtifactEntries(sortArtifactEntries(artifactGroups.flatMap(group => group.items)));
+      const combinedTotalItems = artifactGroups.reduce((sum, group) => sum + Math.max(0, group.totalItems), 0);
+      const resolvedTotalPages = Math.max(1, Math.ceil(combinedTotalItems / ARTIFACT_PAGE_SIZE));
+
+      if (combinedTotalItems > 0 && page > resolvedTotalPages) {
+        setTotalPages(resolvedTotalPages);
+        setLinkHasNextPage(false);
+        setArtifactProjects([]);
+        setPageInQuery(resolvedTotalPages);
         return;
       }
 
-      const searchData = (await response.json()) as GitHubSearchIssuesResponse;
-      if (requestId !== totalPagesRequestRef.current) {
+      const sliceStart = (page - 1) * ARTIFACT_PAGE_SIZE;
+      const visibleItems = merged.slice(sliceStart, sliceStart + ARTIFACT_PAGE_SIZE);
+
+      setArtifactProjects(visibleItems);
+      setTotalPages(resolvedTotalPages);
+      setLinkHasNextPage(page < resolvedTotalPages);
+      setSelectedArtifact(prevSelected =>
+        prevSelected ? merged.find(item => item.projectId === prevSelected.projectId) ?? prevSelected : null,
+      );
+    } catch (fetchError) {
+      if (requestId !== artifactRequestRef.current) {
         return;
       }
 
-      const preciseTotalPages = Math.max(1, Math.ceil(searchData.total_count / PER_PAGE));
-      setTotalPages(preciseTotalPages);
-      if (page > preciseTotalPages) {
-        setPageInQuery(preciseTotalPages);
+      const message = fetchError instanceof Error ? fetchError.message : 'Unknown error';
+      setError(message);
+    } finally {
+      if (requestId === artifactRequestRef.current) {
+        setLoading(false);
       }
-    } catch {
-      // Keep fallback pagination behavior based on Link header when search API is unavailable.
     }
-  }, [currentMarketConfig.approvedLabel, currentMarketConfig.repo, page, setPageInQuery]);
+  }, [currentMarketConfig.kind, page, setPageInQuery]);
 
   const handleRefresh = useCallback(() => {
-    void loadTotalPages();
-    void loadIssues();
-  }, [loadIssues, loadTotalPages]);
+    if (currentIssueMarketConfig) {
+      void loadIssues();
+      return;
+    }
+    void loadArtifacts();
+  }, [currentIssueMarketConfig, loadArtifacts, loadIssues]);
 
   useEffect(() => {
-    void loadIssues();
-  }, [loadIssues]);
+    if (currentIssueMarketConfig) {
+      void loadIssues();
+      return;
+    }
+    void loadArtifacts();
+  }, [currentIssueMarketConfig, loadArtifacts, loadIssues]);
 
   useEffect(() => {
-    void loadTotalPages();
-  }, [loadTotalPages]);
-
-  useEffect(() => {
-    setSelectedIssue(null);
+    closeDetailDrawer();
     setTotalPages(null);
     setLinkHasNextPage(false);
     setSearchText('');
-  }, [marketType]);
+    setIssues([]);
+    setArtifactProjects([]);
+  }, [closeDetailDrawer, marketType]);
 
   const hasNextPage = useMemo(
     () => (totalPages !== null ? page < totalPages : linkHasNextPage),
@@ -649,6 +1065,29 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     });
   }, [issues, searchText]);
 
+  const filteredArtifactProjects = useMemo(() => {
+    const normalizedSearch = searchText.trim().toLowerCase();
+    if (!normalizedSearch) {
+      return artifactProjects;
+    }
+
+    return artifactProjects.filter(project => {
+      const haystack = [
+        project.projectDisplayName,
+        project.projectDescription,
+        project.projectId,
+        project.rootPublisherLogin,
+        project.type,
+        project.defaultNode?.runtimePackageId ?? '',
+        project.defaultNode?.version ?? '',
+      ]
+        .join(' ')
+        .toLowerCase();
+
+      return haystack.includes(normalizedSearch);
+    });
+  }, [artifactProjects, searchText]);
+
   const timeFormatter = useMemo(
     () =>
       new Intl.DateTimeFormat(language === 'zh' ? 'zh-CN' : 'en-US', {
@@ -658,6 +1097,17 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     [language],
   );
 
+  const formatTime = useCallback((value: string | null | undefined): string => {
+    if (!value) {
+      return '-';
+    }
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) {
+      return value;
+    }
+    return timeFormatter.format(date);
+  }, [timeFormatter]);
+
   const detailSections = useMemo(
     () =>
       (selectedIssue?.sections ?? []).map((section, index) => ({
@@ -666,6 +1116,85 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         children: <div className="market-detail-section-content">{section.content || '-'}</div>,
       })),
     [selectedIssue, uiText.sectionUntitled],
+  );
+
+  const artifactNodes = useMemo(
+    () =>
+      [...(selectedArtifactDetail?.nodes ?? [])].sort(
+        (left, right) =>
+          (right.publishedAt ?? '').localeCompare(left.publishedAt ?? '') ||
+          left.nodeId.localeCompare(right.nodeId),
+      ),
+    [selectedArtifactDetail],
+  );
+
+  const defaultArtifactNode = useMemo(
+    () => resolveArtifactDefaultNode(selectedArtifactDetail, selectedArtifact),
+    [selectedArtifact, selectedArtifactDetail],
+  );
+
+  const artifactNodePanels = useMemo(
+    () =>
+      artifactNodes.map((node, index) => ({
+        key: `${node.nodeId}-${index}`,
+        label: `${node.displayName || selectedArtifact?.projectDisplayName || node.nodeId}${
+          node.version ? ` · v${node.version}` : ''
+        }`,
+        children: (
+          <div className="market-detail-section-content">
+            <Space direction="vertical" size={12} style={{ width: '100%' }}>
+              <Descriptions column={1} size="small" bordered>
+                <Descriptions.Item label={uiText.nodeId}>{node.nodeId}</Descriptions.Item>
+                <Descriptions.Item label={uiText.version}>
+                  {node.version || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.publisher}>
+                  {node.publisherLogin || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.publishTime}>
+                  {formatTime(node.publishedAt)}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.runtimePackageId}>
+                  {node.runtimePackageId || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.releaseTag}>
+                  {node.releaseTag || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.assetName}>
+                  {node.assetName || '-'}
+                </Descriptions.Item>
+                <Descriptions.Item label={uiText.state}>
+                  {node.state || '-'}
+                </Descriptions.Item>
+              </Descriptions>
+
+              <Paragraph className="market-detail-summary">
+                {node.description || node.projectDescription || uiText.notProvided}
+              </Paragraph>
+
+              <Space wrap>
+                {node.issue?.html_url && (
+                  <Button icon={<GithubOutlined />} href={node.issue.html_url} target="_blank">
+                    {uiText.issueButton}
+                  </Button>
+                )}
+                {node.downloadUrl && (
+                  <Button icon={<DownloadOutlined />} href={node.downloadUrl} target="_blank">
+                    {uiText.downloadButton}
+                  </Button>
+                )}
+              </Space>
+
+              {node.issue?.body ? (
+                <pre className="market-raw-body">{node.issue.body}</pre>
+              ) : (
+                <Text type="secondary">{uiText.notProvided}</Text>
+              )}
+            </Space>
+          </div>
+        ),
+      })),
+    [artifactNodes, formatTime, selectedArtifact?.projectDisplayName, uiText],
   );
 
   const paginationTokens = useMemo(() => {
@@ -687,6 +1216,11 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     return tokens;
   }, [page, totalPages, hasNextPage]);
 
+  const artifactDetailIssueUrl =
+    defaultArtifactNode?.issue?.html_url ?? artifactNodes.find(node => node.issue?.html_url)?.issue.html_url ?? null;
+  const artifactDetailDownloadUrl =
+    defaultArtifactNode?.downloadUrl || selectedArtifact?.defaultNode?.downloadUrl || null;
+
   return (
     <main className="market-page">
       <section className="market-hero">
@@ -705,18 +1239,13 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 <Space direction="vertical" size={8} style={{ width: '100%' }}>
                   <Segmented
                     options={[
-                      { label: uiText.mcpTab, value: 'mcp' },
+                      { label: uiText.artifactTab, value: 'artifact' },
                       { label: uiText.skillTab, value: 'skill' },
+                      { label: uiText.mcpTab, value: 'mcp' },
                     ]}
                     value={marketType}
                     onChange={value => setMarketAndResetPage(value as MarketType)}
                   />
-                  <Space wrap>
-                    <Text strong>{uiText.sourceLabel}:</Text>
-                    <Link href={currentIssuesWebUrl} target="_blank">
-                      {uiText.sourceLink}
-                    </Link>
-                  </Space>
                 </Space>
               </Col>
               <Col xs={24} lg={12}>
@@ -724,7 +1253,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                   <Input
                     allowClear
                     prefix={<SearchOutlined />}
-                    placeholder={uiText.searchPlaceholder}
+                    placeholder={currentSearchPlaceholder}
                     value={searchText}
                     onChange={event => setSearchText(event.target.value)}
                     className="market-search"
@@ -759,94 +1288,174 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           </Card>
         )}
 
-        {!loading && filteredIssues.length === 0 && (
+        {!loading && marketType === 'artifact' && filteredArtifactProjects.length === 0 && (
+          <Empty description={uiText.noData} className="market-empty" />
+        )}
+
+        {!loading && marketType !== 'artifact' && filteredIssues.length === 0 && (
           <Empty description={uiText.noData} className="market-empty" />
         )}
 
         <Row gutter={[18, 18]}>
-          {filteredIssues.map((issue, index) => (
-            <Col xs={24} md={12} xl={8} key={issue.id}>
-              <div
-                className="market-item-wrap"
-                style={{ animationDelay: `${(index % 10) * 0.04}s` }}
-              >
-                <Card className="market-item-card" bodyStyle={{ padding: 0 }}>
-                  <div className="market-item-shell">
-                    <div className="market-item-cover">
-                      <div className="market-item-cover-meta">
-                        <Tag className="market-id-tag">#{issue.number}</Tag>
-                        <Text className="market-cover-time">
-                          {timeFormatter.format(new Date(issue.updatedAt))}
-                        </Text>
+          {marketType === 'artifact'
+            ? filteredArtifactProjects.map((project, index) => (
+                <Col xs={24} md={12} xl={8} key={project.projectId}>
+                  <div
+                    className="market-item-wrap"
+                    style={{ animationDelay: `${(index % 10) * 0.04}s` }}
+                  >
+                    <Card className="market-item-card" styles={{ body: { padding: 0 } }}>
+                      <div className="market-item-shell">
+                        <div className="market-item-cover">
+                          <div className="market-item-cover-meta">
+                            <Tag className="market-id-tag">
+                              {artifactTypeLabel(project.type, language)}
+                            </Tag>
+                            <Text className="market-cover-time">
+                              {formatTime(project.latestPublishedAt)}
+                            </Text>
+                          </div>
+                          <Title level={4} className="market-item-title">
+                            {project.projectDisplayName}
+                          </Title>
+                          <span className="market-cover-repo">{project.projectId}</span>
+                        </div>
+
+                        <div className="market-item-body">
+                          <Paragraph className="market-item-description" ellipsis={{ rows: 3 }}>
+                            {project.projectDescription || uiText.notProvided}
+                          </Paragraph>
+
+                          <div className="market-item-tags">
+                            <Tag className="market-chip">{artifactTypeLabel(project.type, language)}</Tag>
+                            {project.defaultNode?.version && (
+                              <Tag className="market-chip">v{project.defaultNode.version}</Tag>
+                            )}
+                            {project.defaultNode?.runtimePackageId && (
+                              <Tag className="market-chip">{project.defaultNode.runtimePackageId}</Tag>
+                            )}
+                          </div>
+
+                          <div className="market-item-meta">
+                            <span>
+                              <UserOutlined /> {project.rootPublisherLogin || '-'}
+                            </span>
+                            <span>
+                              <DownloadOutlined /> {uiText.downloads}: {project.downloads}
+                            </span>
+                            <span>
+                              <LikeOutlined /> {uiText.likes}: {project.likes}
+                            </span>
+                          </div>
+
+                          <Space wrap className="market-item-actions">
+                            <Button
+                              className="market-detail-btn"
+                              icon={<EyeOutlined />}
+                              onClick={() => openArtifactDetail(project)}
+                            >
+                              {uiText.detailButton}
+                            </Button>
+                            {project.defaultNode?.downloadUrl && (
+                              <Button
+                                size="small"
+                                icon={<DownloadOutlined />}
+                                href={project.defaultNode.downloadUrl}
+                                target="_blank"
+                              >
+                                {uiText.downloadButton}
+                              </Button>
+                            )}
+                          </Space>
+                        </div>
                       </div>
-                      <Title level={4} className="market-item-title">
-                        {issue.title}
-                      </Title>
-                      {issue.repositoryUrl && (
-                        <a
-                          className="market-cover-repo"
-                          href={issue.repositoryUrl}
-                          target="_blank"
-                          rel="noreferrer"
-                        >
-                          {extractRepoName(issue.repositoryUrl)}
-                        </a>
-                      )}
-                    </div>
-
-                    <div className="market-item-body">
-                      <Paragraph className="market-item-description" ellipsis={{ rows: 3 }}>
-                        {issue.description || uiText.notProvided}
-                      </Paragraph>
-
-                      <div className="market-item-tags">
-                        {issue.labels.slice(0, 6).map(label => (
-                          <Tag
-                            key={`${issue.id}-${label.name}`}
-                            className="market-chip"
-                          >
-                            {label.name}
-                          </Tag>
-                        ))}
-                      </div>
-
-                      <div className="market-item-meta">
-                        <span>
-                          <UserOutlined /> {issue.author}
-                        </span>
-                        <span>
-                          <MessageOutlined /> {uiText.comments}: {issue.comments}
-                        </span>
-                      </div>
-
-                      <Space wrap className="market-item-actions">
-                        <Button
-                          className="market-detail-btn"
-                          icon={<EyeOutlined />}
-                          onClick={() => setSelectedIssue(issue)}
-                        >
-                          {uiText.detailButton}
-                        </Button>
-                        <Button size="small" icon={<GithubOutlined />} href={issue.issueUrl} target="_blank">
-                          {uiText.issueButton}
-                        </Button>
-                        {issue.repositoryUrl && (
-                          <Button size="small" icon={<LinkOutlined />} href={issue.repositoryUrl} target="_blank">
-                            {uiText.repoButton}
-                          </Button>
-                        )}
-                        {issue.homepageUrl && (
-                          <Button size="small" icon={<LinkOutlined />} href={issue.homepageUrl} target="_blank">
-                            {uiText.homepageButton}
-                          </Button>
-                        )}
-                      </Space>
-                    </div>
+                    </Card>
                   </div>
-                </Card>
-              </div>
-            </Col>
-          ))}
+                </Col>
+              ))
+            : filteredIssues.map((issue, index) => (
+                <Col xs={24} md={12} xl={8} key={issue.id}>
+                  <div
+                    className="market-item-wrap"
+                    style={{ animationDelay: `${(index % 10) * 0.04}s` }}
+                  >
+                    <Card className="market-item-card" styles={{ body: { padding: 0 } }}>
+                      <div className="market-item-shell">
+                        <div className="market-item-cover">
+                          <div className="market-item-cover-meta">
+                            <Tag className="market-id-tag">#{issue.number}</Tag>
+                            <Text className="market-cover-time">
+                              {formatTime(issue.updatedAt)}
+                            </Text>
+                          </div>
+                          <Title level={4} className="market-item-title">
+                            {issue.title}
+                          </Title>
+                          {issue.repositoryUrl && (
+                            <a
+                              className="market-cover-repo"
+                              href={issue.repositoryUrl}
+                              target="_blank"
+                              rel="noreferrer"
+                            >
+                              {extractRepoName(issue.repositoryUrl)}
+                            </a>
+                          )}
+                        </div>
+
+                        <div className="market-item-body">
+                          <Paragraph className="market-item-description" ellipsis={{ rows: 3 }}>
+                            {issue.description || uiText.notProvided}
+                          </Paragraph>
+
+                          <div className="market-item-tags">
+                            {issue.labels.slice(0, 6).map(label => (
+                              <Tag
+                                key={`${issue.id}-${label.name}`}
+                                className="market-chip"
+                              >
+                                {label.name}
+                              </Tag>
+                            ))}
+                          </div>
+
+                          <div className="market-item-meta">
+                            <span>
+                              <UserOutlined /> {issue.author}
+                            </span>
+                            <span>
+                              <MessageOutlined /> {uiText.comments}: {issue.comments}
+                            </span>
+                          </div>
+
+                          <Space wrap className="market-item-actions">
+                            <Button
+                              className="market-detail-btn"
+                              icon={<EyeOutlined />}
+                              onClick={() => openIssueDetail(issue)}
+                            >
+                              {uiText.detailButton}
+                            </Button>
+                            <Button size="small" icon={<GithubOutlined />} href={issue.issueUrl} target="_blank">
+                              {uiText.issueButton}
+                            </Button>
+                            {issue.repositoryUrl && (
+                              <Button size="small" icon={<LinkOutlined />} href={issue.repositoryUrl} target="_blank">
+                                {uiText.repoButton}
+                              </Button>
+                            )}
+                            {issue.homepageUrl && (
+                              <Button size="small" icon={<LinkOutlined />} href={issue.homepageUrl} target="_blank">
+                                {uiText.homepageButton}
+                              </Button>
+                            )}
+                          </Space>
+                        </div>
+                      </div>
+                    </Card>
+                  </div>
+                </Col>
+              ))}
         </Row>
 
         <div className="market-google-pagination">
@@ -897,13 +1506,107 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
       </section>
 
       <Drawer
-        title={selectedIssue?.title ?? uiText.detailButton}
-        open={Boolean(selectedIssue)}
-        onClose={() => setSelectedIssue(null)}
+        title={selectedArtifact?.projectDisplayName ?? selectedIssue?.title ?? uiText.detailButton}
+        open={Boolean(selectedArtifact || selectedIssue)}
+        onClose={closeDetailDrawer}
         width={860}
         destroyOnClose
         className="market-detail-drawer"
       >
+        {selectedArtifact && (
+          <Space direction="vertical" size={16} style={{ width: '100%' }}>
+            <div className="market-detail-tags">
+              <Tag className="market-id-tag">{artifactTypeLabel(selectedArtifact.type, language)}</Tag>
+              {selectedArtifact.defaultNode?.version && (
+                <Tag className="market-chip">v{selectedArtifact.defaultNode.version}</Tag>
+              )}
+              {selectedArtifact.defaultNode?.runtimePackageId && (
+                <Tag className="market-chip">{selectedArtifact.defaultNode.runtimePackageId}</Tag>
+              )}
+            </div>
+
+            <Space wrap>
+              {artifactDetailIssueUrl && (
+                <Button icon={<GithubOutlined />} href={artifactDetailIssueUrl} target="_blank">
+                  {uiText.rootIssue}
+                </Button>
+              )}
+              {artifactDetailDownloadUrl && (
+                <Button icon={<DownloadOutlined />} href={artifactDetailDownloadUrl} target="_blank">
+                  {uiText.downloadButton}
+                </Button>
+              )}
+            </Space>
+
+            <Descriptions column={1} size="small" bordered>
+              <Descriptions.Item label={uiText.artifactProjectId}>
+                {selectedArtifactDetail?.projectId ?? selectedArtifact.projectId}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.artifactType}>
+                {artifactTypeLabel(selectedArtifactDetail?.type ?? selectedArtifact.type, language)}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.author}>
+                {(selectedArtifactDetail?.rootPublisherLogin ?? selectedArtifact.rootPublisherLogin) || '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.contributors}>
+                {selectedArtifactDetail?.contributorCount ?? selectedArtifact.contributorCount}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.downloads}>
+                {selectedArtifactDetail?.downloads ?? selectedArtifact.downloads}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.likes}>
+                {selectedArtifactDetail?.likes ?? selectedArtifact.likes}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.updatedAt}>
+                {formatTime(selectedArtifactDetail?.latestPublishedAt ?? selectedArtifact.latestPublishedAt)}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.nodeCount}>
+                {artifactNodes.length || selectedArtifactDetail?.nodes.length || 0}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.runtimePackageId}>
+                {defaultArtifactNode?.runtimePackageId ?? selectedArtifact.defaultNode?.runtimePackageId ?? '-'}
+              </Descriptions.Item>
+              <Descriptions.Item label={uiText.latestVersion}>
+                {defaultArtifactNode?.version ?? selectedArtifact.defaultNode?.version ?? '-'}
+              </Descriptions.Item>
+            </Descriptions>
+
+            <Card title={uiText.detailSummaryTitle}>
+              <Paragraph className="market-detail-summary">
+                {selectedArtifactDetail?.projectDescription || selectedArtifact.projectDescription || uiText.notProvided}
+              </Paragraph>
+            </Card>
+
+            {artifactDetailError && (
+              <Alert
+                type="error"
+                message={uiText.loadError}
+                description={artifactDetailError}
+                showIcon
+              />
+            )}
+
+            {artifactDetailLoading && (
+              <Card className="market-loading-card">
+                <Space size="middle" style={{ width: '100%', justifyContent: 'center' }}>
+                  <Spin />
+                  <Text>{uiText.loadingArtifactDetail}</Text>
+                </Space>
+              </Card>
+            )}
+
+            <Card title={`${uiText.nodesTitle} (${artifactNodes.length})`}>
+              {artifactNodePanels.length > 0 ? (
+                <Collapse items={artifactNodePanels} />
+              ) : artifactDetailLoading ? (
+                <Text type="secondary">{uiText.loadingArtifactDetail}</Text>
+              ) : (
+                <Text type="secondary">{uiText.notProvided}</Text>
+              )}
+            </Card>
+          </Space>
+        )}
+
         {selectedIssue && (
           <Space direction="vertical" size={16} style={{ width: '100%' }}>
             <div className="market-detail-tags">
@@ -941,10 +1644,10 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 </Link>
               </Descriptions.Item>
               <Descriptions.Item label={uiText.createdAt}>
-                {timeFormatter.format(new Date(selectedIssue.createdAt))}
+                {formatTime(selectedIssue.createdAt)}
               </Descriptions.Item>
               <Descriptions.Item label={uiText.updatedAt}>
-                {timeFormatter.format(new Date(selectedIssue.updatedAt))}
+                {formatTime(selectedIssue.updatedAt)}
               </Descriptions.Item>
               <Descriptions.Item label={uiText.comments}>
                 {selectedIssue.comments}

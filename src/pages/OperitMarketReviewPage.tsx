@@ -73,12 +73,29 @@ interface MarketLabel {
 interface MarketMetadata {
   description?: string;
   repository_url?: string;
-  homepage_url?: string;
   install_config?: string;
   category?: string;
   tags?: string[];
   version?: string;
   project_id?: string;
+  type?: string;
+  project_display_name?: string;
+  project_description?: string;
+  runtime_package_id?: string;
+  node_id?: string;
+  root_node_id?: string;
+  parent_node_ids?: string[];
+  publisher_login?: string;
+  release_tag?: string;
+  asset_name?: string;
+  download_url?: string;
+  sha256?: string;
+  display_name?: string;
+  source_file_name?: string;
+  min_supported_app_version?: string;
+  max_supported_app_version?: string;
+  normalized_id?: string;
+  forge_repo?: string;
 }
 
 interface MarketReviewItem {
@@ -133,6 +150,19 @@ interface ReviewMetaResponse {
   }>;
 }
 
+function isArtifactMarketType(type: MarketType): boolean {
+  return type === 'script' || type === 'package';
+}
+
+function formatSupportedAppVersions(metadata?: MarketMetadata | null): string {
+  const min = String(metadata?.min_supported_app_version || '').trim();
+  const max = String(metadata?.max_supported_app_version || '').trim();
+  if (min && max) return `${min} - ${max}`;
+  if (min) return `>= ${min}`;
+  if (max) return `<= ${max}`;
+  return '';
+}
+
 const STORAGE = {
   apiBase: 'operit_submission_admin_api_base',
   adminToken: 'operit_submission_admin_token',
@@ -167,11 +197,24 @@ const TEXT = {
     reviewInfo: '审核信息',
     metadata: '投稿元数据',
     repository: '仓库地址',
-    homepage: '主页地址',
     installConfig: '安装配置',
     category: '分类',
     version: '版本',
     projectId: '项目 ID',
+    projectDisplayName: '项目显示名',
+    projectDescription: '项目描述',
+    runtimePackageId: '运行包 ID',
+    nodeId: '节点 ID',
+    rootNodeId: '根节点 ID',
+    parentNodeIds: '父节点 ID',
+    publisherLogin: '发布者',
+    releaseTag: '发布 Tag',
+    assetName: '制品文件',
+    downloadUrl: '下载地址',
+    sha256: 'SHA-256',
+    sourceFileName: '源文件名',
+    supportedAppVersions: '支持的应用版本',
+    forgeRepo: 'Forge 仓库',
     description: '描述',
     author: '作者',
     comments: '评论数',
@@ -231,11 +274,24 @@ const TEXT = {
     reviewInfo: 'Review Info',
     metadata: 'Submission Metadata',
     repository: 'Repository',
-    homepage: 'Homepage',
     installConfig: 'Install Config',
     category: 'Category',
     version: 'Version',
     projectId: 'Project ID',
+    projectDisplayName: 'Project Display Name',
+    projectDescription: 'Project Description',
+    runtimePackageId: 'Runtime Package ID',
+    nodeId: 'Node ID',
+    rootNodeId: 'Root Node ID',
+    parentNodeIds: 'Parent Node IDs',
+    publisherLogin: 'Publisher',
+    releaseTag: 'Release Tag',
+    assetName: 'Asset Name',
+    downloadUrl: 'Download URL',
+    sha256: 'SHA-256',
+    sourceFileName: 'Source File Name',
+    supportedAppVersions: 'Supported App Versions',
+    forgeRepo: 'Forge Repo',
     description: 'Description',
     author: 'Author',
     comments: 'Comments',
@@ -1061,39 +1117,92 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                   <Descriptions.Item label={t.description}>
                     {detailItem.metadata?.description || detailItem.body_excerpt || t.unknown}
                   </Descriptions.Item>
-                  <Descriptions.Item label={t.repository}>
-                    {detailItem.metadata?.repository_url ? (
-                      <Link href={detailItem.metadata.repository_url} target="_blank" rel="noreferrer">
-                        {detailItem.metadata.repository_url}
-                      </Link>
-                    ) : t.unknown}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.homepage}>
-                    {detailItem.metadata?.homepage_url ? (
-                      <Link href={detailItem.metadata.homepage_url} target="_blank" rel="noreferrer">
-                        {detailItem.metadata.homepage_url}
-                      </Link>
-                    ) : t.unknown}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.installConfig}>
-                    {detailItem.metadata?.install_config || t.unknown}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.category}>
-                    {detailItem.metadata?.category || t.unknown}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={isZh ? '标签' : 'Tags'}>
-                    <Space wrap size={[4, 4]}>
-                      {(detailItem.metadata?.tags || []).length > 0
-                        ? detailItem.metadata?.tags?.map(tag => <Tag key={tag}>{tag}</Tag>)
-                        : <Text type="secondary">{t.unknown}</Text>}
-                    </Space>
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.version}>
-                    {detailItem.metadata?.version || t.unknown}
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.projectId}>
-                    {detailItem.metadata?.project_id || t.unknown}
-                  </Descriptions.Item>
+                  {isArtifactMarketType(detailItem.market_type) ? (
+                    <>
+                      <Descriptions.Item label={t.projectId}>
+                        {detailItem.metadata?.project_id || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.projectDisplayName}>
+                        {detailItem.metadata?.project_display_name || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.projectDescription}>
+                        {detailItem.metadata?.project_description || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.runtimePackageId}>
+                        {detailItem.metadata?.runtime_package_id || detailItem.metadata?.normalized_id || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.nodeId}>
+                        {detailItem.metadata?.node_id || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.rootNodeId}>
+                        {detailItem.metadata?.root_node_id || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.parentNodeIds}>
+                        {(detailItem.metadata?.parent_node_ids || []).length > 0
+                          ? detailItem.metadata.parent_node_ids?.join(', ')
+                          : t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.publisherLogin}>
+                        {detailItem.metadata?.publisher_login || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.forgeRepo}>
+                        {detailItem.metadata?.forge_repo || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.releaseTag}>
+                        {detailItem.metadata?.release_tag || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.assetName}>
+                        {detailItem.metadata?.asset_name || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.downloadUrl}>
+                        {detailItem.metadata?.download_url ? (
+                          <Link href={detailItem.metadata.download_url} target="_blank" rel="noreferrer">
+                            {detailItem.metadata.download_url}
+                          </Link>
+                        ) : t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.sha256}>
+                        {detailItem.metadata?.sha256 || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.version}>
+                        {detailItem.metadata?.version || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.sourceFileName}>
+                        {detailItem.metadata?.source_file_name || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.supportedAppVersions}>
+                        {formatSupportedAppVersions(detailItem.metadata) || t.unknown}
+                      </Descriptions.Item>
+                    </>
+                  ) : (
+                    <>
+                      <Descriptions.Item label={t.repository}>
+                        {detailItem.metadata?.repository_url ? (
+                          <Link href={detailItem.metadata.repository_url} target="_blank" rel="noreferrer">
+                            {detailItem.metadata.repository_url}
+                          </Link>
+                        ) : t.unknown}
+                      </Descriptions.Item>
+                      {detailItem.market_type === 'mcp' && (
+                        <Descriptions.Item label={t.installConfig}>
+                          {detailItem.metadata?.install_config || t.unknown}
+                        </Descriptions.Item>
+                      )}
+                      <Descriptions.Item label={t.category}>
+                        {detailItem.metadata?.category || t.unknown}
+                      </Descriptions.Item>
+                      <Descriptions.Item label={isZh ? '标签' : 'Tags'}>
+                        <Space wrap size={[4, 4]}>
+                          {(detailItem.metadata?.tags || []).length > 0
+                            ? detailItem.metadata?.tags?.map(tag => <Tag key={tag}>{tag}</Tag>)
+                            : <Text type="secondary">{t.unknown}</Text>}
+                        </Space>
+                      </Descriptions.Item>
+                      <Descriptions.Item label={t.version}>
+                        {detailItem.metadata?.version || t.unknown}
+                      </Descriptions.Item>
+                    </>
+                  )}
                 </Descriptions>
               </Card>
 

@@ -55,14 +55,30 @@ The token should have access to the account's Analytics Engine SQL API. Reusing 
 API token may work if it already has the required account-level permissions, but a dedicated read token
 is safer.
 
-4. Deploy:
+4. Apply CORS to the R2 bucket used by `static.operit.app`.
+
+The web market page reads the same pre-generated JSON as the Android app from `https://static.operit.app/market-stats`.
+To let browsers fetch those files directly without proxying through a Worker, configure bucket CORS once:
+
+```bat
+cd /d D:\Code\prog\assistance_web
+workers\market-stats\apply-static-cors.bat
+```
+
+This script applies [cors.json](./cors.json) to the `operit-market-stats-static` bucket with `wrangler r2 bucket cors set`.
+The included origins cover the production web site and local Vite dev/preview ports.
+
+If `static.operit.app` still responds without `Access-Control-Allow-Origin` immediately after the change,
+wait up to 5 minutes for the cached objects to refresh or purge the static domain cache.
+
+5. Deploy:
 
 ```bat
 cd /d D:\Code\prog\assistance_web
 workers\worker_submit.bat market-stats
 ```
 
-5. Configure GitHub access for the Worker.
+6. Configure GitHub access for the Worker.
 
 - Reuse the same secrets already used by `operit-api` if you have them:
   - `OPERIT_GITHUB_TOKEN`

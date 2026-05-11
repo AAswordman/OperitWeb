@@ -340,9 +340,7 @@ function parseCommentJson(body, prefix) {
   }
 
   const jsonStart = start + prefix.length;
-  const spacedEnd = source.indexOf(' -->', jsonStart);
-  const compactEnd = source.indexOf('-->', jsonStart);
-  const end = spacedEnd > jsonStart ? spacedEnd : compactEnd;
+  const end = source.indexOf(' -->', jsonStart);
   if (end <= jsonStart) {
     return null;
   }
@@ -360,23 +358,30 @@ function parseArtifactMetadata(body) {
     return null;
   }
 
-  const publisherLogin = String(metadata.publisherLogin || '').trim();
-  const forgeRepo = String(metadata.forgeRepo || '').trim();
-  const projectId = String(metadata.projectId || metadata.normalizedId || metadata.runtimePackageId || '').trim();
-  const repositoryUrl = publisherLogin && forgeRepo
-    ? `https://github.com/${publisherLogin}/${forgeRepo}`
-    : '';
-  const description = String(metadata.description || metadata.projectDescription || '').trim();
-
   return {
-    description,
-    repositoryUrl,
-    homepageUrl: '',
-    installConfig: '',
-    category: '',
-    tags: [],
-    version: String(metadata.version || ''),
-    projectId,
+    type: String(metadata.type || '').trim(),
+    projectId: String(metadata.projectId || '').trim(),
+    projectDisplayName: String(metadata.projectDisplayName || '').trim(),
+    projectDescription: String(metadata.projectDescription || '').trim(),
+    runtimePackageId: String(metadata.runtimePackageId || '').trim(),
+    nodeId: String(metadata.nodeId || '').trim(),
+    rootNodeId: String(metadata.rootNodeId || '').trim(),
+    parentNodeIds: Array.isArray(metadata.parentNodeIds)
+      ? metadata.parentNodeIds.map(item => String(item || '').trim()).filter(Boolean)
+      : [],
+    publisherLogin: String(metadata.publisherLogin || '').trim(),
+    releaseTag: String(metadata.releaseTag || '').trim(),
+    assetName: String(metadata.assetName || '').trim(),
+    downloadUrl: String(metadata.downloadUrl || '').trim(),
+    sha256: String(metadata.sha256 || '').trim(),
+    version: String(metadata.version || '').trim(),
+    displayName: String(metadata.displayName || '').trim(),
+    description: String(metadata.description || '').trim(),
+    sourceFileName: String(metadata.sourceFileName || '').trim(),
+    minSupportedAppVersion: metadata.minSupportedAppVersion ? String(metadata.minSupportedAppVersion).trim() : '',
+    maxSupportedAppVersion: metadata.maxSupportedAppVersion ? String(metadata.maxSupportedAppVersion).trim() : '',
+    normalizedId: String(metadata.normalizedId || '').trim(),
+    forgeRepo: String(metadata.forgeRepo || '').trim(),
   };
 }
 
@@ -387,14 +392,11 @@ function parseSkillMetadata(body) {
   }
 
   return {
-    description: String(metadata.description || metadata.summary || ''),
-    repositoryUrl: String(metadata.repositoryUrl || metadata.repoUrl || ''),
-    homepageUrl: String(metadata.homepageUrl || metadata.homepage || ''),
-    installConfig: String(metadata.installConfig || metadata.installCommand || ''),
-    category: String(metadata.category || ''),
+    description: String(metadata.description || '').trim(),
+    repositoryUrl: String(metadata.repositoryUrl || metadata.repoUrl || '').trim(),
+    category: String(metadata.category || '').trim(),
     tags: normalizeTagList(metadata.tags),
-    version: String(metadata.version || ''),
-    projectId: String(metadata.projectId || metadata.normalizedId || ''),
+    version: String(metadata.version || '').trim(),
   };
 }
 
@@ -405,14 +407,12 @@ function parseMcpMetadata(body) {
   }
 
   return {
-    description: String(metadata.description || metadata.summary || ''),
-    repositoryUrl: String(metadata.repositoryUrl || metadata.repoUrl || ''),
-    homepageUrl: String(metadata.homepageUrl || metadata.homepage || ''),
-    installConfig: String(metadata.installConfig || metadata.installCommand || metadata.install || ''),
-    category: String(metadata.category || ''),
+    description: String(metadata.description || '').trim(),
+    repositoryUrl: String(metadata.repositoryUrl || metadata.repoUrl || '').trim(),
+    installConfig: String(metadata.installConfig || metadata.installCommand || '').trim(),
+    category: String(metadata.category || '').trim(),
     tags: normalizeTagList(metadata.tags),
-    version: String(metadata.version || ''),
-    projectId: String(metadata.projectId || metadata.normalizedId || ''),
+    version: String(metadata.version || '').trim(),
   };
 }
 
@@ -427,6 +427,54 @@ function parseIssueMetadata(body, parser) {
     return parseMcpMetadata(body);
   }
   return null;
+}
+
+function normalizeMarketArtifactId(raw) {
+  const normalized = String(raw || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized || 'artifact';
+}
+
+function resolveArtifactMetadata(metadata, issueId) {
+  const projectId = normalizeMarketArtifactId(
+    String(metadata?.projectId || '').trim() ||
+      String(metadata?.normalizedId || '').trim() ||
+      String(metadata?.runtimePackageId || '').trim() ||
+      String(metadata?.displayName || '').trim() ||
+      String(metadata?.assetName || '').trim()
+  );
+  const projectDisplayName = String(metadata?.projectDisplayName || '').trim() || String(metadata?.displayName || '').trim();
+  const projectDescription = String(metadata?.projectDescription || '').trim() || String(metadata?.description || '').trim();
+  const runtimePackageId = String(metadata?.runtimePackageId || '').trim()
+    || String(metadata?.normalizedId || '').trim()
+    || projectId;
+  const nodeId = String(metadata?.nodeId || '').trim() || `legacy-${issueId || projectId}`;
+  const rootNodeId = String(metadata?.rootNodeId || '').trim() || nodeId;
+  const parentNodeIds = Array.isArray(metadata?.parentNodeIds)
+    ? metadata.parentNodeIds.map(item => String(item || '').trim()).filter(Boolean)
+    : [];
+
+  return {
+    ...metadata,
+    projectId,
+    projectDisplayName,
+    projectDescription,
+    runtimePackageId,
+    nodeId,
+    rootNodeId,
+    parentNodeIds,
+  };
+}
+
+function getResolvedDescription(parser, rawBody, metadata) {
+  if (parser === 'artifact') {
+    return String(metadata?.description || '').trim();
+  }
+  return String(metadata?.description || extractHumanDescriptionFromBody(rawBody) || '').trim();
 }
 
 function isLabelOnlyLine(raw) {
@@ -504,33 +552,6 @@ function extractHumanDescriptionFromBody(body) {
   return (candidate || '').slice(0, 300).trim();
 }
 
-function findFirstUrl(value, matcher) {
-  const matches = String(value || '').match(matcher) || [];
-  for (const matched of matches) {
-    const sanitized = String(matched || '').trim().replace(/[)>.,]+$/g, '');
-    if (sanitized && !sanitized.includes('{') && !sanitized.includes('}')) {
-      return sanitized;
-    }
-  }
-  return '';
-}
-
-function guessRepositoryUrl(body) {
-  return findFirstUrl(body, /https?:\/\/github\.com\/[^\s)>\]}]+/gi);
-}
-
-function guessHomepageUrl(body, repositoryUrl) {
-  const matches = String(body || '').match(/https?:\/\/[^\s)>\]}]+/gi) || [];
-  for (const matched of matches) {
-    const sanitized = String(matched || '').trim().replace(/[)>.,]+$/g, '');
-    if (!sanitized || sanitized === repositoryUrl) {
-      continue;
-    }
-    return sanitized;
-  }
-  return '';
-}
-
 function toIsoDateString(value) {
   const raw = String(value || '').trim();
   if (!raw) return null;
@@ -548,22 +569,19 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
   const rawBody = String(issue?.body || '');
   const labelObjects = extractIssueLabelObjects(issue);
   const labelNames = labelObjects.map(label => label.name);
-  const metadata = parseIssueMetadata(rawBody, config.parser) || {};
-  const repositoryUrl = String(
-    metadata.repositoryUrl ||
-      (config.parser === 'artifact' ? '' : guessRepositoryUrl(rawBody)) ||
-      ''
-  ).trim();
-  const homepageUrl = String(
-    metadata.homepageUrl ||
-      (config.parser === 'artifact' ? '' : guessHomepageUrl(rawBody, repositoryUrl)) ||
-      ''
-  ).trim();
+  const parsedMetadata = parseIssueMetadata(rawBody, config.parser) || {};
+  const metadata = config.parser === 'artifact'
+    ? resolveArtifactMetadata(parsedMetadata, issue?.id)
+    : parsedMetadata;
+  const resolvedDescription = getResolvedDescription(config.parser, rawBody, metadata);
   const reviewState = getReviewStateFromLabels(labelNames, config.publicLabel);
   const reviewReasonCodes = getReviewReasonCodesFromLabels(labelNames);
   const createdAt = toIsoDateString(issue?.created_at);
   const updatedAt = toIsoDateString(issue?.updated_at);
   const shelfState = String(issue?.state || '').trim().toLowerCase() === 'closed' ? 'closed' : 'open';
+  const title = config.parser === 'artifact'
+    ? String(metadata.displayName || issue?.title || '').trim()
+    : String(issue?.title || '').trim();
 
   return {
     id: Number(issue?.id || 0),
@@ -573,7 +591,7 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
     repo_name: config.repo,
     public_label: config.publicLabel,
     issue_number: Number(issue?.number || 0),
-    title: String(issue?.title || '').trim(),
+    title,
     html_url: String(issue?.html_url || '').trim(),
     created_at: createdAt,
     updated_at: updatedAt,
@@ -585,16 +603,33 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
     author_login: String(issue?.user?.login || '').trim(),
     author_url: String(issue?.user?.html_url || '').trim(),
     comments: Number(issue?.comments || 0),
-    body_excerpt: String(metadata.description || extractHumanDescriptionFromBody(rawBody) || '').trim(),
+    body_excerpt: resolvedDescription,
     metadata: {
-      description: String(metadata.description || '').trim(),
-      repository_url: repositoryUrl,
-      homepage_url: homepageUrl,
+      description: resolvedDescription,
+      repository_url: String(metadata.repositoryUrl || '').trim(),
       install_config: String(metadata.installConfig || '').trim(),
       category: String(metadata.category || '').trim(),
       tags: Array.isArray(metadata.tags) ? metadata.tags : [],
       version: String(metadata.version || '').trim(),
       project_id: String(metadata.projectId || '').trim(),
+      type: String(metadata.type || '').trim(),
+      project_display_name: String(metadata.projectDisplayName || '').trim(),
+      project_description: String(metadata.projectDescription || '').trim(),
+      runtime_package_id: String(metadata.runtimePackageId || '').trim(),
+      node_id: String(metadata.nodeId || '').trim(),
+      root_node_id: String(metadata.rootNodeId || '').trim(),
+      parent_node_ids: Array.isArray(metadata.parentNodeIds) ? metadata.parentNodeIds : [],
+      publisher_login: String(metadata.publisherLogin || '').trim(),
+      release_tag: String(metadata.releaseTag || '').trim(),
+      asset_name: String(metadata.assetName || '').trim(),
+      download_url: String(metadata.downloadUrl || '').trim(),
+      sha256: String(metadata.sha256 || '').trim(),
+      display_name: String(metadata.displayName || '').trim(),
+      source_file_name: String(metadata.sourceFileName || '').trim(),
+      min_supported_app_version: String(metadata.minSupportedAppVersion || '').trim(),
+      max_supported_app_version: String(metadata.maxSupportedAppVersion || '').trim(),
+      normalized_id: String(metadata.normalizedId || '').trim(),
+      forge_repo: String(metadata.forgeRepo || '').trim(),
     },
     raw_body: includeBody ? rawBody : undefined,
   };
@@ -935,11 +970,19 @@ function matchesQuery(item, query) {
     item.repo_name,
     item.market_name,
     item.metadata?.repository_url,
-    item.metadata?.homepage_url,
     item.metadata?.category,
     item.metadata?.version,
+    item.metadata?.project_id,
+    item.metadata?.project_display_name,
+    item.metadata?.runtime_package_id,
+    item.metadata?.publisher_login,
+    item.metadata?.forge_repo,
+    item.metadata?.asset_name,
+    item.metadata?.download_url,
     item.issue_number,
     ...(Array.isArray(item.labels) ? item.labels.map(label => label.name) : []),
+    ...(Array.isArray(item.metadata?.tags) ? item.metadata.tags : []),
+    ...(Array.isArray(item.metadata?.parent_node_ids) ? item.metadata.parent_node_ids : []),
     ...(Array.isArray(item.review_reason_codes) ? item.review_reason_codes : []),
   ]
     .map(value => String(value || '').toLowerCase())

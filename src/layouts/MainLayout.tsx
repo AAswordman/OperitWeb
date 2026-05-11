@@ -329,13 +329,15 @@ const MainLayout: React.FC<MainLayoutProps> = ({ darkMode, setDarkMode, language
         placement="right"
         onClose={() => setMobileMenuOpen(false)}
         open={mobileMenuOpen}
-        bodyStyle={{ padding: 0 }}
-        headerStyle={{ 
-          background: token.colorBgElevated,
-          color: token.colorText
-        }}
         style={{
           backgroundColor: token.colorBgElevated
+        }}
+        styles={{
+          body: { padding: 0 },
+          header: {
+            background: token.colorBgElevated,
+            color: token.colorText
+          }
         }}
       >
         <div style={{ padding: '20px' }}>
