@@ -30,6 +30,7 @@ import {
   SearchOutlined,
   UserOutlined,
 } from '@ant-design/icons';
+import OperitMarkdownPreview from '../components/OperitMarkdownPreview';
 import './OperitMCPMarketPage.css';
 
 const { Title, Paragraph, Text, Link } = Typography;
@@ -100,7 +101,6 @@ interface ParsedMarketIssue {
   createdAt: string;
   updatedAt: string;
   comments: number;
-  rawBody: string;
   sections: MarketSection[];
 }
 
@@ -237,7 +237,6 @@ interface UiText {
   detailButton: string;
   detailSummaryTitle: string;
   detailSectionsTitle: string;
-  detailRawTitle: string;
   issueNumber: string;
   createdAt: string;
   repository: string;
@@ -506,7 +505,6 @@ const parseIssue = (issue: GitHubIssue): ParsedMarketIssue => {
     createdAt: issue.created_at,
     updatedAt: issue.updated_at,
     comments: issue.comments ?? 0,
-    rawBody: body.trim(),
     sections,
   };
 };
@@ -719,7 +717,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           detailButton: '查看详情',
           detailSummaryTitle: '项目简介',
           detailSectionsTitle: 'Issue 详情分段',
-          detailRawTitle: '原始 Issue 内容',
           issueNumber: 'Issue 编号',
           createdAt: '创建时间',
           repository: '仓库地址',
@@ -769,7 +766,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
           detailButton: 'Details',
           detailSummaryTitle: 'Summary',
           detailSectionsTitle: 'Issue Sections',
-          detailRawTitle: 'Raw Issue Body',
           issueNumber: 'Issue Number',
           createdAt: 'Created At',
           repository: 'Repository',
@@ -1055,7 +1051,9 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         issue.repositoryUrl ?? '',
         issue.homepageUrl ?? '',
         issue.author,
-        issue.rawBody,
+        issue.sections
+          .map(section => `${section.heading} ${stripMarkdown(section.content)}`)
+          .join(' '),
         issue.labels.map(label => label.name).join(' '),
       ]
         .join(' ')
@@ -1113,7 +1111,13 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
       (selectedIssue?.sections ?? []).map((section, index) => ({
         key: `${selectedIssue?.id ?? 'issue'}-${index}`,
         label: section.heading || `${uiText.sectionUntitled} ${index + 1}`,
-        children: <div className="market-detail-section-content">{section.content || '-'}</div>,
+        children: section.content ? (
+          <div className="market-detail-section-content">
+            <OperitMarkdownPreview content={section.content} />
+          </div>
+        ) : (
+          <Text type="secondary">-</Text>
+        ),
       })),
     [selectedIssue, uiText.sectionUntitled],
   );
@@ -1168,9 +1172,13 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 </Descriptions.Item>
               </Descriptions>
 
-              <Paragraph className="market-detail-summary">
-                {node.description || node.projectDescription || uiText.notProvided}
-              </Paragraph>
+              {node.description || node.projectDescription ? (
+                <div className="market-detail-summary market-detail-section-content">
+                  <OperitMarkdownPreview content={node.description || node.projectDescription} />
+                </div>
+              ) : (
+                <Text type="secondary">{uiText.notProvided}</Text>
+              )}
 
               <Space wrap>
                 {node.issue?.html_url && (
@@ -1184,12 +1192,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                   </Button>
                 )}
               </Space>
-
-              {node.issue?.body ? (
-                <pre className="market-raw-body">{node.issue.body}</pre>
-              ) : (
-                <Text type="secondary">{uiText.notProvided}</Text>
-              )}
             </Space>
           </div>
         ),
@@ -1572,9 +1574,15 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
             </Descriptions>
 
             <Card title={uiText.detailSummaryTitle}>
-              <Paragraph className="market-detail-summary">
-                {selectedArtifactDetail?.projectDescription || selectedArtifact.projectDescription || uiText.notProvided}
-              </Paragraph>
+              {selectedArtifactDetail?.projectDescription || selectedArtifact.projectDescription ? (
+                <div className="market-detail-summary market-detail-section-content">
+                  <OperitMarkdownPreview
+                    content={selectedArtifactDetail?.projectDescription || selectedArtifact.projectDescription}
+                  />
+                </div>
+              ) : (
+                <Text type="secondary">{uiText.notProvided}</Text>
+              )}
             </Card>
 
             {artifactDetailError && (
@@ -1673,9 +1681,13 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
             </Descriptions>
 
             <Card title={uiText.detailSummaryTitle}>
-              <Paragraph className="market-detail-summary">
-                {selectedIssue.description || uiText.notProvided}
-              </Paragraph>
+              {selectedIssue.description ? (
+                <div className="market-detail-summary market-detail-section-content">
+                  <OperitMarkdownPreview content={selectedIssue.description} />
+                </div>
+              ) : (
+                <Text type="secondary">{uiText.notProvided}</Text>
+              )}
             </Card>
 
             <Card title={uiText.detailSectionsTitle}>
@@ -1684,12 +1696,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
               ) : (
                 <Text type="secondary">{uiText.notProvided}</Text>
               )}
-            </Card>
-
-            <Card title={uiText.detailRawTitle}>
-              <pre className="market-raw-body">
-                {selectedIssue.rawBody || uiText.notProvided}
-              </pre>
             </Card>
           </Space>
         )}
