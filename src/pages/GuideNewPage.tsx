@@ -33,9 +33,9 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           { slug: '09-tool-sandbox-package', label: '09. 工具：沙盒包' },
           { slug: '10-tool-mcp', label: '10. 工具：MCP' },
           { slug: '11-tool-skill', label: '11. 工具：SKILL' },
-          { slug: '12-waifu-mode', label: '12. WAIFU模式' },
-          { slug: '13-workspace-basics', label: '13. 工作区基础' },
-          { slug: '14-data-backup', label: '14. 数据备份' },
+          { slug: '12-workspace-basics', label: '12. 工作区基础' },
+          { slug: '13-data-backup', label: '13. 数据备份' },
+          { slug: '14-waifu-mode', label: '14. WAIFU模式' },
           { slug: '15-statistics', label: '15. 统计' },
         ]
       : [
@@ -50,9 +50,9 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           { slug: '09-tool-sandbox-package', label: '09. Tool: Sandbox Package' },
           { slug: '10-tool-mcp', label: '10. Tool: MCP' },
           { slug: '11-tool-skill', label: '11. Tool: SKILL' },
-          { slug: '12-waifu-mode', label: '12. WAIFU Mode' },
-          { slug: '13-workspace-basics', label: '13. Workspace Basics' },
-          { slug: '14-data-backup', label: '14. Data Backup' },
+          { slug: '12-workspace-basics', label: '12. Workspace Basics' },
+          { slug: '13-data-backup', label: '13. Data Backup' },
+          { slug: '14-waifu-mode', label: '14. WAIFU Mode' },
           { slug: '15-statistics', label: '15. Statistics' },
         ]
   ), [language]);

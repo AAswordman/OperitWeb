@@ -13,8 +13,4 @@
 - 本页当前是统计章节占位页。
 - 正式内容和示例解读后续补充。
 
-## 导航
-
-- [返回欢迎页](/#/guide/new)
-- [上一篇：14. 数据备份](/#/guide/new/beginner-tutorial/14-data-backup)
 

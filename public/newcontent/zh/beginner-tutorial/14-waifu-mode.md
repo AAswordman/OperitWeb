@@ -1,4 +1,4 @@
-# 12. WAIFU模式
+# 14. WAIFU模式
 
 > 占位文档。后续会补充正式内容。
 
@@ -13,9 +13,4 @@
 - 本页当前只保留章节入口。
 - 后续会补充模式说明和使用建议。
 
-## 导航
-
-- [返回欢迎页](/#/guide/new)
-- [上一篇：11. 工具：SKILL](/#/guide/new/beginner-tutorial/11-tool-skill)
-- [下一篇：13. 工作区基础](/#/guide/new/beginner-tutorial/13-workspace-basics)
 
