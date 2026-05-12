@@ -291,7 +291,7 @@ const ISSUE_PAGE_SIZE = 20;
 const ARTIFACT_PAGE_SIZE = 20;
 const MARKET_RANK_METRIC = 'updated';
 const MARKET_STATIC_BASE_URL = 'https://static.operit.app/market-stats';
-const MARKET_STATIC_QUERY = 'client=operit-web&v=20260511-cors1';
+const MARKET_STATIC_QUERY = 'client=operit-web&v=20260512-cors2';
 const ARTIFACT_SOURCE_TYPES: ArtifactSourceType[] = ['script', 'package'];
 
 const buildIssueRankUrl = (type: IssueSourceType, page: number): string =>

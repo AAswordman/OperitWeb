@@ -3,6 +3,8 @@
     {
       "allowed": {
         "origins": [
+          "https://operit.app",
+          "https://www.operit.app",
           "https://operit.aaswordsman.org",
           "http://localhost:5173",
           "http://127.0.0.1:5173",

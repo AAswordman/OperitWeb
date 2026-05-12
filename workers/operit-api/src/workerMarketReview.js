@@ -569,7 +569,9 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
   const rawBody = String(issue?.body || '');
   const labelObjects = extractIssueLabelObjects(issue);
   const labelNames = labelObjects.map(label => label.name);
-  const parsedMetadata = parseIssueMetadata(rawBody, config.parser) || {};
+  const parsedMetadataRaw = parseIssueMetadata(rawBody, config.parser);
+  const hasStandardPublishMetadata = Boolean(parsedMetadataRaw && typeof parsedMetadataRaw === 'object');
+  const parsedMetadata = parsedMetadataRaw || {};
   const metadata = config.parser === 'artifact'
     ? resolveArtifactMetadata(parsedMetadata, issue?.id)
     : parsedMetadata;
@@ -598,6 +600,7 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
     shelf_state: shelfState,
     review_state: reviewState,
     review_reason_codes: reviewReasonCodes,
+    submission_format_valid: hasStandardPublishMetadata,
     is_publicly_visible: shelfState === 'open' && reviewState === 'approved',
     labels: labelObjects,
     author_login: String(issue?.user?.login || '').trim(),
