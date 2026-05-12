@@ -118,9 +118,3 @@ When MCP isn't working, the problem usually falls into one of these categories:
 **Missing environment variables**: Some MCPs need API keys or other env vars in the `env` field. Miss or mistype them, and the MCP may start but its features won't work.
 
 **Directory doesn't exist**: The plugin directory on the Linux side is created automatically, but if auto-analysis of build commands fails, the directory might be empty. This usually happens after resetting the terminal — just redeploy the plugin.
-
-## Navigation
-
-- [Back to Welcome](/#/guide/new)
-- [Previous: 09. Tools: Sandbox Packages](/#/guide/new/beginner-tutorial/09-tool-sandbox-package)
-- [Next: 11. Tools: SKILL](/#/guide/new/beginner-tutorial/11-tool-skill)
