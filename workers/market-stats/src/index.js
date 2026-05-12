@@ -8,6 +8,8 @@ const DEFAULT_ALLOWED_DOWNLOAD_HOSTS = [
 const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4';
 const GITHUB_API_BASE = 'https://api.github.com';
 const ISSUE_PAGE_SIZE = 100;
+const AGENT_SEARCH_DEFAULT_LIMIT = 10;
+const AGENT_SEARCH_MAX_LIMIT = 50;
 const ANALYTICS_DOWNLOAD_EVENT = 'download';
 const ANALYTICS_SUPPORTED_EVENTS = [ANALYTICS_DOWNLOAD_EVENT];
 const ARTIFACT_TYPES = ['script', 'package'];
@@ -83,6 +85,14 @@ export default {
         return await handleDownload(request, env, corsHeaders);
       }
 
+      if (pathname === '/agent/search') {
+        return await handleAgentSearch(request, env, corsHeaders);
+      }
+
+      if (pathname.startsWith('/agent/items/')) {
+        return await handleAgentItemRequest(request, pathname, env, corsHeaders);
+      }
+
       if (isStaticJsonPath(pathname)) {
         return await handleStaticJson(pathname, env, corsHeaders);
       }
@@ -98,6 +108,9 @@ export default {
             '/rank/<type>-<metric>-page-<n>.json',
             '/artifact-rank/<type>-<metric>-page-<n>.json',
             '/artifact-projects/<projectId>.json',
+            '/agent/search',
+            '/agent/items/<type>/<id>',
+            '/agent/items/<type>/<id>/install-plan',
             '/manifest.json',
           ],
         },
@@ -175,6 +188,437 @@ function isStaticJsonPath(pathname) {
     pathname.startsWith('/rank/') ||
     pathname.startsWith('/artifact-rank/') ||
     pathname.startsWith('/artifact-projects/');
+}
+
+async function handleAgentSearch(request, env, corsHeaders) {
+  const url = new URL(request.url);
+  const query = String(url.searchParams.get('q') || url.searchParams.get('query') || '').trim();
+  const types = resolveAgentTypes(url.searchParams.get('type') || url.searchParams.get('types'), env);
+  const limit = clampNumber(
+    url.searchParams.get('limit'),
+    1,
+    AGENT_SEARCH_MAX_LIMIT,
+    AGENT_SEARCH_DEFAULT_LIMIT
+  );
+  const includeInstallPlan = parseBooleanParam(url.searchParams.get('include_install_plan'));
+  const items = [];
+
+  for (const type of types) {
+    const entries = await loadAgentEntriesForType(type, env);
+    for (const entry of entries) {
+      const item = buildAgentSearchItem(type, entry, request);
+      if (!item || !matchesAgentQuery(item, query)) {
+        continue;
+      }
+      items.push({
+        score: scoreAgentItem(item, query),
+        item: includeInstallPlan ? item : omitAgentInstallPlan(item),
+      });
+    }
+  }
+
+  items.sort((left, right) =>
+    compareNumbers(right.score, left.score) ||
+    compareNumbers(right.item.downloads, left.item.downloads) ||
+    compareStrings(right.item.updated_at, left.item.updated_at) ||
+    left.item.id.localeCompare(right.item.id)
+  );
+
+  return json(
+    {
+      ok: true,
+      query,
+      types,
+      limit,
+      items: items.slice(0, limit).map((entry) => entry.item),
+    },
+    200,
+    corsHeaders
+  );
+}
+
+async function handleAgentItemRequest(request, pathname, env, corsHeaders) {
+  const parts = pathname.split('/').filter(Boolean);
+  if (parts.length !== 4 && parts.length !== 5) {
+    return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+
+  const type = normalizeAgentType(parts[2]);
+  const id = decodeURIComponent(parts[3] || '').trim();
+  const wantsInstallPlan = parts.length === 5 && parts[4] === 'install-plan';
+  if (!type || !id || (parts.length === 5 && !wantsInstallPlan)) {
+    return json({ error: 'not_found' }, 404, corsHeaders);
+  }
+
+  const item = await loadAgentItem(type, id, env, request);
+  if (!item) {
+    return json({ error: 'not_found', type, id }, 404, corsHeaders);
+  }
+
+  return json(
+    wantsInstallPlan
+      ? { ok: true, id: item.id, type: item.type, install_plan: item.install_plan }
+      : { ok: true, item },
+    200,
+    corsHeaders
+  );
+}
+
+async function loadAgentItem(type, id, env, request) {
+  if (isArtifactType(type)) {
+    const detail = await readStaticJson(env, `artifact-projects/${id}.json`);
+    if (!detail) {
+      return null;
+    }
+    const detailType = normalizeAgentType(detail?.type);
+    if (detailType && detailType !== type) {
+      return null;
+    }
+    return buildAgentArtifactItem(type, detail, request, true);
+  }
+
+  const entries = await loadAgentEntriesForType(type, env);
+  const entry = entries.find((candidate) => String(candidate?.id || '') === id);
+  return entry ? buildAgentIssueItem(type, entry, request, true) : null;
+}
+
+async function loadAgentEntriesForType(type, env) {
+  validateType(type, env);
+
+  const rankPrefix = isArtifactType(type) ? 'artifact-rank' : 'rank';
+  const entries = [];
+  const firstPage = await readStaticJson(env, `${rankPrefix}/${type}-updated-page-1.json`);
+  if (!firstPage || !Array.isArray(firstPage.items)) {
+    return entries;
+  }
+
+  entries.push(...firstPage.items);
+
+  const totalPages = Math.max(1, toInt(firstPage.totalPages));
+  const maxPages = Math.min(totalPages, getPositiveInt(env.MARKET_AGENT_MAX_SCAN_PAGES, 20));
+  for (let page = 2; page <= maxPages; page += 1) {
+    const rankPage = await readStaticJson(env, `${rankPrefix}/${type}-updated-page-${page}.json`);
+    if (!rankPage || !Array.isArray(rankPage.items) || rankPage.items.length === 0) {
+      break;
+    }
+    entries.push(...rankPage.items);
+  }
+
+  return entries;
+}
+
+async function readStaticJson(env, logicalKey) {
+  requireStatsBucket(env);
+
+  const object = await env.MARKET_STATS_BUCKET.get(buildStaticObjectKey(logicalKey, env));
+  if (!object) {
+    return null;
+  }
+
+  try {
+    const text = await object.text();
+    return text ? JSON.parse(text) : null;
+  } catch {
+    return null;
+  }
+}
+
+function buildAgentSearchItem(type, entry, request) {
+  if (isArtifactType(type)) {
+    return buildAgentArtifactRankItem(type, entry, request);
+  }
+  return buildAgentIssueItem(type, entry, request, false);
+}
+
+function buildAgentIssueItem(type, entry, request, includeRaw = false) {
+  const metadata = entry?.metadata && typeof entry.metadata === 'object' ? entry.metadata : {};
+  const tags = normalizeTagList(metadata.tags);
+  const item = {
+    id: String(entry?.id || ''),
+    type,
+    name: String(entry?.displayTitle || entry?.issue?.title || '').trim(),
+    description: String(entry?.summaryDescription || metadata.description || '').trim(),
+    author: String(entry?.authorLogin || '').trim(),
+    author_avatar_url: String(entry?.authorAvatarUrl || '').trim(),
+    version: String(metadata.version || '').trim(),
+    category: String(metadata.category || '').trim(),
+    tags,
+    downloads: toInt(entry?.downloads),
+    likes: getThumbsUpCount(entry),
+    updated_at: entry?.updatedAt || null,
+    issue_url: String(entry?.issue?.html_url || '').trim(),
+    repository_url: String(metadata.repositoryUrl || '').trim(),
+    install_plan: buildIssueInstallPlan(type, entry, request),
+  };
+
+  if (includeRaw) {
+    item.metadata = metadata;
+    item.issue = entry?.issue || null;
+  }
+
+  return item.id ? item : null;
+}
+
+function buildAgentArtifactRankItem(type, entry, request) {
+  const node = entry?.defaultNode || {};
+  const item = {
+    id: String(entry?.projectId || ''),
+    type,
+    name: String(entry?.projectDisplayName || '').trim(),
+    description: String(entry?.projectDescription || '').trim(),
+    author: String(entry?.rootPublisherLogin || '').trim(),
+    author_avatar_url: String(entry?.rootPublisherAvatarUrl || '').trim(),
+    version: String(node.version || '').trim(),
+    category: '',
+    tags: [],
+    downloads: toInt(entry?.downloads),
+    likes: toInt(entry?.likes),
+    updated_at: entry?.latestPublishedAt || null,
+    runtime_package_id: String(node.runtimePackageId || '').trim(),
+    sha256: String(node.sha256 || '').trim(),
+    download_url: String(node.downloadUrl || '').trim(),
+    install_plan: buildArtifactInstallPlan(type, entry.projectId, node, request),
+  };
+
+  return item.id ? item : null;
+}
+
+function buildAgentArtifactItem(type, detail, request, includeRaw = false) {
+  const defaultNode =
+    (Array.isArray(detail?.nodes)
+      ? detail.nodes.find((node) => node.nodeId === detail.defaultNodeId) || detail.nodes[0]
+      : null) || {};
+  const item = {
+    id: String(detail?.projectId || '').trim(),
+    type: normalizeAgentType(detail?.type) || type,
+    name: String(detail?.projectDisplayName || defaultNode.displayName || '').trim(),
+    description: String(detail?.projectDescription || defaultNode.description || '').trim(),
+    author: String(detail?.rootPublisherLogin || defaultNode.publisherLogin || '').trim(),
+    author_avatar_url: String(detail?.rootPublisherAvatarUrl || '').trim(),
+    version: String(defaultNode.version || '').trim(),
+    category: '',
+    tags: [],
+    downloads: toInt(detail?.downloads),
+    likes: toInt(detail?.likes),
+    updated_at: detail?.latestPublishedAt || defaultNode.publishedAt || null,
+    runtime_package_id: String(defaultNode.runtimePackageId || '').trim(),
+    sha256: String(defaultNode.sha256 || '').trim(),
+    download_url: String(defaultNode.downloadUrl || '').trim(),
+    source_file_name: String(defaultNode.sourceFileName || '').trim(),
+    min_supported_app_version: defaultNode.minSupportedAppVersion || null,
+    max_supported_app_version: defaultNode.maxSupportedAppVersion || null,
+    install_plan: buildArtifactInstallPlan(type, detail?.projectId, defaultNode, request),
+  };
+
+  if (includeRaw) {
+    item.nodes = Array.isArray(detail?.nodes) ? detail.nodes : [];
+    item.edges = Array.isArray(detail?.edges) ? detail.edges : [];
+  }
+
+  return item.id ? item : null;
+}
+
+function buildIssueInstallPlan(type, entry, request) {
+  const metadata = entry?.metadata && typeof entry.metadata === 'object' ? entry.metadata : {};
+  const repositoryUrl = String(metadata.repositoryUrl || '').trim();
+
+  if (type === 'skill') {
+    return {
+      method: 'skill_repo',
+      repository_url: repositoryUrl,
+      tool_hint: 'install_skill_from_repo_url',
+      args: {
+        repository_url: repositoryUrl,
+      },
+    };
+  }
+
+  const installConfigText = stripJsonCodeFence(String(metadata.installConfig || '').trim());
+  const parsedConfig = parseJsonObjectOrNull(installConfigText);
+  if (parsedConfig) {
+    return {
+      method: 'mcp_config',
+      config: parsedConfig,
+      config_text: installConfigText,
+      tool_hint: 'install_mcp_from_config',
+      args: {
+        config: parsedConfig,
+      },
+    };
+  }
+
+  return {
+    method: 'mcp_repo',
+    repository_url: repositoryUrl,
+    config_text: installConfigText,
+    tool_hint: 'install_mcp_from_repo_url',
+    args: {
+      repository_url: repositoryUrl,
+    },
+  };
+}
+
+function buildArtifactInstallPlan(type, projectId, node, request) {
+  const downloadUrl = String(node?.downloadUrl || '').trim();
+  const sha256 = String(node?.sha256 || '').trim();
+  const runtimePackageId = String(node?.runtimePackageId || projectId || '').trim();
+  const trackedDownloadUrl = buildTrackedDownloadUrl(type, projectId, downloadUrl, request);
+
+  return {
+    method: 'artifact_download',
+    artifact_type: type,
+    runtime_package_id: runtimePackageId,
+    download_url: downloadUrl,
+    tracked_download_url: trackedDownloadUrl,
+    sha256,
+    tool_hint: type === 'package' ? 'install_package_from_url' : 'install_script_from_url',
+    args: {
+      url: trackedDownloadUrl || downloadUrl,
+      sha256,
+      runtime_package_id: runtimePackageId,
+    },
+  };
+}
+
+function buildTrackedDownloadUrl(type, projectId, target, request) {
+  if (!target || !projectId) {
+    return '';
+  }
+
+  const url = new URL(request.url);
+  url.pathname = `${normalizeRoutePrefixForUrl(url.pathname)}/download`.replace(/\/{2,}/g, '/');
+  url.search = '';
+  url.searchParams.set('type', type);
+  url.searchParams.set('id', normalizeArtifactId(projectId));
+  url.searchParams.set('target', target);
+  return url.toString();
+}
+
+function normalizeRoutePrefixForUrl(pathname) {
+  const parts = String(pathname || '').split('/').filter(Boolean);
+  const agentIndex = parts.indexOf('agent');
+  if (agentIndex <= 0) {
+    return '';
+  }
+  return `/${parts.slice(0, agentIndex).join('/')}`;
+}
+
+function omitAgentInstallPlan(item) {
+  const { install_plan: _installPlan, ...rest } = item;
+  return rest;
+}
+
+function matchesAgentQuery(item, query) {
+  if (!query) {
+    return true;
+  }
+
+  const normalizedQuery = normalizeSearchText(query);
+  const haystack = normalizeSearchText([
+    item.id,
+    item.type,
+    item.name,
+    item.description,
+    item.author,
+    item.version,
+    item.category,
+    item.repository_url,
+    item.runtime_package_id,
+    item.source_file_name,
+    ...(Array.isArray(item.tags) ? item.tags : []),
+  ].join('\n'));
+
+  return normalizedQuery
+    .split(/\s+/)
+    .filter(Boolean)
+    .every((part) => haystack.includes(part));
+}
+
+function scoreAgentItem(item, query) {
+  if (!query) {
+    return 0;
+  }
+
+  const normalizedQuery = normalizeSearchText(query);
+  const name = normalizeSearchText(item.name);
+  const id = normalizeSearchText(item.id);
+  const tags = normalizeSearchText((item.tags || []).join(' '));
+  const description = normalizeSearchText(item.description);
+
+  let score = 0;
+  if (name === normalizedQuery || id === normalizedQuery) score += 100;
+  if (name.includes(normalizedQuery)) score += 40;
+  if (id.includes(normalizedQuery)) score += 30;
+  if (tags.includes(normalizedQuery)) score += 20;
+  if (description.includes(normalizedQuery)) score += 10;
+  return score;
+}
+
+function resolveAgentTypes(raw, env) {
+  const supportedTypes = new Set(getSupportedTypes(env));
+  const requested = splitCsv(raw)
+    .flatMap((type) => {
+      const normalized = normalizeAgentType(type);
+      return normalized === 'artifact' ? ['script', 'package'] : [normalized];
+    })
+    .filter((type) => type && supportedTypes.has(type));
+
+  const defaults = ['mcp', 'skill', 'package', 'script'].filter((type) => supportedTypes.has(type));
+  return [...new Set(requested.length > 0 ? requested : defaults)];
+}
+
+function normalizeAgentType(value) {
+  const type = normalizeType(value);
+  if (type === 'mcp' || type === 'skill' || type === 'script' || type === 'package' || type === 'artifact') {
+    return type;
+  }
+  return '';
+}
+
+function normalizeTagList(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item || '').trim()).filter(Boolean).slice(0, 20);
+  }
+  return String(value || '')
+    .replace(/[;|]/g, ',')
+    .split(/[,\n，]/)
+    .map((item) => item.trim())
+    .filter(Boolean)
+    .slice(0, 20);
+}
+
+function stripJsonCodeFence(value) {
+  const trimmed = String(value || '').trim();
+  const fenceMatch = /^```(?:json)?\s*([\s\S]*?)\s*```$/i.exec(trimmed);
+  return fenceMatch ? fenceMatch[1].trim() : trimmed;
+}
+
+function parseJsonObjectOrNull(value) {
+  if (!value) {
+    return null;
+  }
+  try {
+    const parsed = JSON.parse(value);
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function parseBooleanParam(value) {
+  return ['1', 'true', 'yes', 'on'].includes(String(value || '').trim().toLowerCase());
+}
+
+function clampNumber(value, min, max, fallback) {
+  const parsed = Number.parseInt(String(value || ''), 10);
+  if (!Number.isFinite(parsed)) {
+    return fallback;
+  }
+  return Math.min(max, Math.max(min, parsed));
+}
+
+function normalizeSearchText(value) {
+  return String(value || '').trim().toLowerCase();
 }
 
 function getRequestPath(pathname, env) {
