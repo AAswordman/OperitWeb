@@ -1,7 +1,13 @@
 export type MarketType = 'mcp' | 'skill' | 'script' | 'package';
 export type ReviewState = 'pending' | 'approved' | 'changes_requested' | 'rejected';
 export type ShelfState = 'open' | 'closed';
-export type ReviewAction = 'approve' | 'changes_requested' | 'reject' | 'reset_pending';
+export type ReviewAction =
+  | 'approve'
+  | 'changes_requested'
+  | 'reject'
+  | 'reset_pending'
+  | 'set_featured'
+  | 'unset_featured';
 
 export interface ReviewReasonOption {
   code: string;
@@ -32,6 +38,8 @@ export const REVIEW_ACTION_STATE_MAP: Record<ReviewAction, ReviewState> = {
   changes_requested: 'changes_requested',
   reject: 'rejected',
   reset_pending: 'pending',
+  set_featured: 'approved',
+  unset_featured: 'approved',
 };
 
 export function getMarketTypeLabel(type: string, language: 'zh' | 'en'): string {
@@ -84,12 +92,16 @@ export function getReviewActionLabel(action: string, language: 'zh' | 'en'): str
     changes_requested: '打回',
     reject: '拒绝',
     reset_pending: '作者重新提交',
+    set_featured: '设为精选',
+    unset_featured: '取消精选',
   };
   const mapEn: Record<string, string> = {
     approve: 'Approve',
     changes_requested: 'Changes Requested',
     reject: 'Reject',
     reset_pending: 'Reset Pending',
+    set_featured: 'Set Featured',
+    unset_featured: 'Unset Featured',
   };
   return (language === 'zh' ? mapZh : mapEn)[action] || action;
 }

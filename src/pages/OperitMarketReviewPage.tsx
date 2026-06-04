@@ -25,6 +25,8 @@ import {
   CloseCircleOutlined,
   EditOutlined,
   EyeOutlined,
+  StarFilled,
+  StarOutlined,
   LogoutOutlined,
   ReloadOutlined,
   UndoOutlined,
@@ -113,6 +115,7 @@ interface MarketReviewItem {
   shelf_state: ShelfState;
   review_state: ReviewState;
   review_reason_codes: string[];
+  featured: boolean;
   submission_format_valid?: boolean;
   is_publicly_visible: boolean;
   labels: MarketLabel[];
@@ -222,6 +225,10 @@ const TEXT = {
     createdAt: '创建时间',
     updatedAt: '更新时间',
     reviewReasons: '未通过原因',
+    featured: '精选',
+    setFeatured: '设为精选',
+    unsetFeatured: '取消精选',
+    featuredRequiresPublic: '需要先审核通过并保持上架，才可以设为精选。',
     reviewAction: '审核操作',
     approve: '审核通过',
     changesRequested: '打回',
@@ -301,6 +308,10 @@ const TEXT = {
     createdAt: 'Created At',
     updatedAt: 'Updated At',
     reviewReasons: 'Reasons',
+    featured: 'Featured',
+    setFeatured: 'Set Featured',
+    unsetFeatured: 'Unset Featured',
+    featuredRequiresPublic: 'Approve and keep the entry open before setting it as featured.',
     reviewAction: 'Review Actions',
     approve: 'Approve',
     changesRequested: 'Changes Requested',
@@ -360,6 +371,7 @@ function resolveApiError(response: Response, data: unknown, isZh: boolean) {
     github_issue_not_found: '未找到对应的 GitHub Issue。',
     github_issue_is_pull_request: '目标不是普通 Issue，无法审核。',
     github_auth_missing: '服务端未配置 GitHub 审核权限。',
+    featured_requires_public_issue: '需要先审核通过并保持上架，才可以设为精选。',
     invalid_json: '请求格式错误。',
   };
   const en: Record<string, string> = {
@@ -376,6 +388,7 @@ function resolveApiError(response: Response, data: unknown, isZh: boolean) {
     github_issue_not_found: 'GitHub issue not found.',
     github_issue_is_pull_request: 'Target is not a regular issue.',
     github_auth_missing: 'GitHub review credentials are not configured on the server.',
+    featured_requires_public_issue: 'Approve and keep the entry open before setting it as featured.',
     invalid_json: 'Invalid request payload.',
   };
   const mapped = (isZh ? zh : en)[code];
@@ -688,6 +701,13 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   }, [authUser, loadIssues]);
 
   const openActionModal = useCallback((action: ReviewAction, item: MarketReviewItem) => {
+    if (action === 'set_featured' || action === 'unset_featured') {
+      setActionType(action);
+      setActionTarget(item);
+      setSelectedReasonCodes([]);
+      setActionOpen(true);
+      return;
+    }
     setActionType(action);
     setActionTarget(item);
     if (action === 'reject' && hasInvalidSubmissionFormat(item) && (item.review_reason_codes || []).length === 0) {
@@ -775,6 +795,11 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           <Tag color={record.is_publicly_visible ? 'green' : 'default'}>
             {record.is_publicly_visible ? t.publiclyVisible : t.notPubliclyVisible}
           </Tag>
+          {record.featured ? (
+            <Tag color="gold" icon={<StarFilled />}>
+              {t.featured}
+            </Tag>
+          ) : null}
         </Space>
       ),
     },
@@ -877,6 +902,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     reasonMap,
     t.author,
     t.detail,
+    t.featured,
     t.issueNumber,
     t.market,
     t.noReason,
@@ -1056,6 +1082,20 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                   <Button icon={<ReloadOutlined />} loading={detailLoading} onClick={() => loadDetail(detailItem.market_type, detailItem.issue_number)}>
                     {t.reload}
                   </Button>
+                  {detailItem.featured ? (
+                    <Button icon={<StarOutlined />} onClick={() => openActionModal('unset_featured', detailItem)}>
+                      {t.unsetFeatured}
+                    </Button>
+                  ) : (
+                    <Button
+                      icon={<StarFilled />}
+                      disabled={!detailItem.is_publicly_visible}
+                      title={!detailItem.is_publicly_visible ? t.featuredRequiresPublic : undefined}
+                      onClick={() => openActionModal('set_featured', detailItem)}
+                    >
+                      {t.setFeatured}
+                    </Button>
+                  )}
                   <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', detailItem)}>
                     {t.approve}
                   </Button>
@@ -1103,6 +1143,11 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                   <Descriptions.Item label={t.shelfState}>
                     <Tag color={SHELF_STATE_COLORS[detailItem.shelf_state] || 'default'}>
                       {getShelfStateLabel(detailItem.shelf_state, language)}
+                    </Tag>
+                  </Descriptions.Item>
+                  <Descriptions.Item label={t.featured}>
+                    <Tag color={detailItem.featured ? 'gold' : 'default'} icon={detailItem.featured ? <StarFilled /> : undefined}>
+                      {detailItem.featured ? t.featured : t.unknown}
                     </Tag>
                   </Descriptions.Item>
                   <Descriptions.Item label={t.comments}>{detailItem.comments}</Descriptions.Item>

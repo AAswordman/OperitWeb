@@ -1,4 +1,5 @@
-const SUPPORTED_RANK_METRICS = ['downloads', 'likes', 'updated'];
+const SUPPORTED_RANK_METRICS = ['downloads', 'likes', 'updated', 'featured'];
+const FEATURED_LABEL = 'market:featured';
 const DEFAULT_ALLOWED_DOWNLOAD_HOSTS = [
   'github.com',
   'objects.githubusercontent.com',
@@ -129,8 +130,8 @@ export default {
     }
   },
 
-  async scheduled(_controller, env, ctx) {
-    ctx.waitUntil(regenerateStaticJson(env));
+  async scheduled(_controller, env, _ctx) {
+    await regenerateStaticJson(env);
   },
 };
 
@@ -986,6 +987,7 @@ function buildArtifactNode(type, issue) {
     maxSupportedAppVersion: normalizeOptionalString(metadata.maxSupportedAppVersion),
     publishedAt: normalizeOptionalTimestamp(issue?.created_at),
     state: String(issue?.state || 'open').trim() || 'open',
+    featured: issueHasLabelName(issue, FEATURED_LABEL),
     issue: simplifyIssue(issue),
   };
 }
@@ -1013,6 +1015,7 @@ function summarizeArtifactProject(type, nodes, statsMap) {
     (sum, node) => sum + toInt(node?.issue?.reactions?.['+1']),
     0
   );
+  const featured = normalizedNodes.some((node) => node.state === 'open' && node.featured);
   const defaultRuntimePackageId = String(defaultNode?.runtimePackageId || '').trim();
   const runtimePackageNodeSha256s = defaultRuntimePackageId
     ? normalizedNodes
@@ -1037,14 +1040,15 @@ function summarizeArtifactProject(type, nodes, statsMap) {
   return {
     projectId: nodes[0]?.projectId || '',
     type,
-    projectDisplayName: rootNode?.projectDisplayName || latestNode?.projectDisplayName || '',
-    projectDescription: rootNode?.projectDescription || latestNode?.projectDescription || '',
+    projectDisplayName: defaultNode?.projectDisplayName || latestNode?.projectDisplayName || rootNode?.projectDisplayName || '',
+    projectDescription: defaultNode?.projectDescription || latestNode?.projectDescription || rootNode?.projectDescription || '',
     rootNodeId: rootNode?.rootNodeId || rootNode?.nodeId || '',
     rootPublisherLogin: rootNode?.publisherLogin || rootNode?.issue?.user?.login || '',
     rootPublisherAvatarUrl: rootNode?.issue?.user?.avatar_url || '',
     contributorCount,
     downloads: stats.downloads,
     likes,
+    featured,
     latestNodeId: latestNode?.nodeId || '',
     latestOpenNodeId: latestOpenNode?.nodeId || '',
     defaultNodeId: defaultNode?.nodeId || '',
@@ -1067,6 +1071,7 @@ function buildArtifactProjectRankEntry(summary) {
     contributorCount: summary.contributorCount,
     downloads: summary.downloads,
     likes: summary.likes,
+    featured: summary.featured,
     latestNodeId: summary.latestNodeId,
     latestOpenNodeId: summary.latestOpenNodeId,
     defaultNodeId: summary.defaultNodeId,
@@ -1088,6 +1093,7 @@ function buildArtifactProjectDetail(summary) {
     contributorCount: summary.contributorCount,
     downloads: summary.downloads,
     likes: summary.likes,
+    featured: summary.featured,
     latestNodeId: summary.latestNodeId,
     latestOpenNodeId: summary.latestOpenNodeId,
     defaultNodeId: summary.defaultNodeId,
@@ -1139,6 +1145,7 @@ function buildRankEntry(type, issue, statsMap) {
     lastDownloadAt: stats.lastDownloadAt,
     updatedAt: issue?.updated_at || stats.updatedAt || null,
     statsUpdatedAt: stats.updatedAt || null,
+    featured: issueHasLabelName(issue, FEATURED_LABEL),
     displayTitle: summary.displayTitle,
     summaryDescription: summary.summaryDescription,
     authorLogin: summary.authorLogin,
@@ -1266,6 +1273,16 @@ function simplifyReactions(reactions) {
 function sortRankEntries(entries, metric) {
   const list = [...entries];
 
+  if (metric === 'featured') {
+    return list
+      .filter((entry) => entry.featured)
+      .sort(
+        (left, right) =>
+          compareStrings(right.updatedAt, left.updatedAt) ||
+          left.id.localeCompare(right.id)
+      );
+  }
+
   if (metric === 'downloads') {
     return list.sort(
       (left, right) =>
@@ -1295,6 +1312,16 @@ function sortRankEntries(entries, metric) {
 function sortArtifactProjectRankEntries(entries, metric) {
   const list = [...entries];
 
+  if (metric === 'featured') {
+    return list
+      .filter((entry) => entry.featured)
+      .sort(
+        (left, right) =>
+          compareStrings(right.latestPublishedAt, left.latestPublishedAt) ||
+          left.projectId.localeCompare(right.projectId)
+      );
+  }
+
   if (metric === 'downloads') {
     return list.sort(
       (left, right) =>
@@ -1323,6 +1350,22 @@ function sortArtifactProjectRankEntries(entries, metric) {
 
 function getThumbsUpCount(entry) {
   return toInt(entry?.issue?.reactions?.['+1']);
+}
+
+function issueHasLabelName(issue, expectedLabelName) {
+  const normalizedExpected = String(expectedLabelName || '').trim().toLowerCase();
+  if (!normalizedExpected) {
+    return false;
+  }
+
+  const labels = Array.isArray(issue?.labels) ? issue.labels : [];
+  return labels.some((label) => {
+    const labelName =
+      typeof label === 'string'
+        ? label
+        : label?.name;
+    return String(labelName || '').trim().toLowerCase() === normalizedExpected;
+  });
 }
 
 async function githubRequest(path, token) {

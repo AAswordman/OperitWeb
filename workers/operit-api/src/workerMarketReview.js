@@ -19,6 +19,7 @@ const REVIEW_LABELS = {
   changesRequested: 'review:changes-requested',
   rejected: 'review:rejected',
 };
+const FEATURED_LABEL = 'market:featured';
 const LEGACY_PENDING_LABELS = [
   'Pending Review',
   'pending review',
@@ -186,7 +187,14 @@ function normalizeShelfState(value) {
 
 function normalizeReviewAction(value) {
   const normalized = String(value || '').trim().toLowerCase();
-  if (['approve', 'changes_requested', 'reject', 'reset_pending'].includes(normalized)) {
+  if ([
+    'approve',
+    'changes_requested',
+    'reject',
+    'reset_pending',
+    'set_featured',
+    'unset_featured',
+  ].includes(normalized)) {
     return normalized;
   }
   return '';
@@ -232,6 +240,11 @@ function extractIssueLabelObjects(issue) {
 
 function extractIssueLabelNames(issue) {
   return extractIssueLabelObjects(issue).map(label => label.name);
+}
+
+function hasLabelName(labelNames, expectedLabelName) {
+  const normalizedExpected = normalizeLabelName(expectedLabelName);
+  return labelNames.some(labelName => normalizeLabelName(labelName) === normalizedExpected);
 }
 
 function getReviewStateFromLabels(labelNames, publicLabel) {
@@ -298,10 +311,16 @@ function buildNextIssueLabels(currentLabelNames, action, publicLabel, reasonCode
   const managed = getManagedLabelSet(publicLabel);
   const preserved = [];
   const preservedSet = new Set();
+  const keepFeaturedLabel = action === 'approve';
 
   for (const labelName of currentLabelNames) {
     const normalized = normalizeLabelName(labelName);
-    if (!normalized || managed.has(normalized) || preservedSet.has(normalized)) {
+    if (
+      !normalized ||
+      managed.has(normalized) ||
+      preservedSet.has(normalized) ||
+      (!keepFeaturedLabel && normalized === normalizeLabelName(FEATURED_LABEL))
+    ) {
       continue;
     }
     preserved.push(labelName);
@@ -318,6 +337,44 @@ function buildNextIssueLabels(currentLabelNames, action, publicLabel, reasonCode
   }
 
   return preserved;
+}
+
+function addIssueLabelName(currentLabelNames, labelName) {
+  const nextLabels = [];
+  const seen = new Set();
+
+  for (const currentLabelName of currentLabelNames) {
+    const normalized = normalizeLabelName(currentLabelName);
+    if (!normalized || seen.has(normalized)) {
+      continue;
+    }
+    nextLabels.push(currentLabelName);
+    seen.add(normalized);
+  }
+
+  const normalizedLabelName = normalizeLabelName(labelName);
+  if (normalizedLabelName && !seen.has(normalizedLabelName)) {
+    nextLabels.push(labelName);
+  }
+
+  return nextLabels;
+}
+
+function removeIssueLabelName(currentLabelNames, labelName) {
+  const normalizedLabelName = normalizeLabelName(labelName);
+  const nextLabels = [];
+  const seen = new Set();
+
+  for (const currentLabelName of currentLabelNames) {
+    const normalized = normalizeLabelName(currentLabelName);
+    if (!normalized || normalized === normalizedLabelName || seen.has(normalized)) {
+      continue;
+    }
+    nextLabels.push(currentLabelName);
+    seen.add(normalized);
+  }
+
+  return nextLabels;
 }
 
 function normalizeTagList(value) {
@@ -578,6 +635,7 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
   const resolvedDescription = getResolvedDescription(config.parser, rawBody, metadata);
   const reviewState = getReviewStateFromLabels(labelNames, config.publicLabel);
   const reviewReasonCodes = getReviewReasonCodesFromLabels(labelNames);
+  const featured = hasLabelName(labelNames, FEATURED_LABEL);
   const createdAt = toIsoDateString(issue?.created_at);
   const updatedAt = toIsoDateString(issue?.updated_at);
   const shelfState = String(issue?.state || '').trim().toLowerCase() === 'closed' ? 'closed' : 'open';
@@ -600,6 +658,7 @@ function buildIssueSummary(issue, marketType, config, options = {}) {
     shelf_state: shelfState,
     review_state: reviewState,
     review_reason_codes: reviewReasonCodes,
+    featured,
     submission_format_valid: hasStandardPublishMetadata,
     is_publicly_visible: shelfState === 'open' && reviewState === 'approved',
     labels: labelObjects,
@@ -1160,11 +1219,14 @@ function createMetaPayload() {
       { code: 'changes_requested', review_state: 'changes_requested' },
       { code: 'reject', review_state: 'rejected' },
       { code: 'reset_pending', review_state: 'pending' },
+      { code: 'set_featured', review_state: 'approved' },
+      { code: 'unset_featured', review_state: 'approved' },
     ],
     review_labels: {
       changes_requested: REVIEW_LABELS.changesRequested,
       rejected: REVIEW_LABELS.rejected,
     },
+    featured_label: FEATURED_LABEL,
     reasons: MARKET_REVIEW_REASONS,
     legacy_pending_labels: LEGACY_PENDING_LABELS,
   };
@@ -1178,6 +1240,7 @@ function getRequestErrorPayload(error) {
     'action_invalid',
     'reason_codes_required',
     'reason_code_invalid',
+    'featured_requires_public_issue',
     'github_issue_is_pull_request',
   ].includes(message)) {
     return { status: 400, error: message };
@@ -1376,12 +1439,23 @@ async function handleAdminMarketReviewAction(marketType, issueNumberInput, reque
 
     const currentLabelNames = extractIssueLabelNames(detail.issue);
     const previousReviewState = getReviewStateFromLabels(currentLabelNames, detail.config.publicLabel);
-    const nextLabelNames = buildNextIssueLabels(
-      currentLabelNames,
-      action,
-      detail.config.publicLabel,
-      rawReasonCodes,
-    );
+    const shelfState = String(detail.issue?.state || '').trim().toLowerCase() === 'closed' ? 'closed' : 'open';
+    let nextLabelNames;
+    if (action === 'set_featured') {
+      if (previousReviewState !== 'approved' || shelfState !== 'open') {
+        return json({ error: 'featured_requires_public_issue' }, 400, corsHeaders);
+      }
+      nextLabelNames = addIssueLabelName(currentLabelNames, FEATURED_LABEL);
+    } else if (action === 'unset_featured') {
+      nextLabelNames = removeIssueLabelName(currentLabelNames, FEATURED_LABEL);
+    } else {
+      nextLabelNames = buildNextIssueLabels(
+        currentLabelNames,
+        action,
+        detail.config.publicLabel,
+        rawReasonCodes,
+      );
+    }
 
     const { data } = await githubApiRequest(
       `/repos/${detail.config.owner}/${detail.config.repo}/issues/${issueNumber}/labels`,
