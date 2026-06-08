@@ -1,4 +1,4 @@
-# 14. 数据备份
+# 13. 数据备份
 
 > 占位文档。后续会补充正式内容。
 
@@ -13,9 +13,4 @@
 - 本页是数据备份章节占位稿。
 - 之后会补充推荐流程和风险提示。
 
-## 导航
-
-- [返回欢迎页](/#/guide/new)
-- [上一篇：13. 工作区基础](/#/guide/new/beginner-tutorial/13-workspace-basics)
-- [下一篇：15. 统计](/#/guide/new/beginner-tutorial/15-statistics)
 
