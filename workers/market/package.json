@@ -1,0 +1,12 @@
+{
+  "name": "operit-market-v2-worker",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "pnpm build && node --test test/*.test.js"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
+  }
+}

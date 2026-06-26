@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022", "WebWorker"],
+    "rootDir": "src",
+    "outDir": "dist",
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "exactOptionalPropertyTypes": false,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "allowJs": false,
+    "checkJs": false,
+    "declaration": true,
+    "sourceMap": true,
+    "removeComments": false
+  },
+  "include": ["src/**/*.ts"]
+}

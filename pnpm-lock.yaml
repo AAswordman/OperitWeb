@@ -92,6 +92,9 @@ importers:
       remark-stringify:
         specifier: ^11.0.0
         version: 11.0.0
+      sql.js:
+        specifier: ^1.14.1
+        version: 1.14.1
       unified:
         specifier: ^11.0.5
         version: 11.0.5
@@ -2366,6 +2369,9 @@ packages:
 
   space-separated-tokens@2.0.2:
     resolution: {integrity: sha512-PEGlAwrG8yXGXRjW32fGbg66JAlOAwbObuqVoJpv/mRgoWDQfgH1wDPvtzWyUSNAXBGSk8h755YDbbcEy3SH2Q==}
+
+  sql.js@1.14.1:
+    resolution: {integrity: sha512-gcj8zBWU5cFsi9WUP+4bFNXAyF1iRpA3LLyS/DP5xlrNzGmPIizUeBggKa8DbDwdqaKwUcTEnChtd2grWo/x/A==}
 
   streamx@2.22.1:
     resolution: {integrity: sha512-znKXEBxfatz2GBNK02kRnCXjV+AA4kjZIUxeWSr3UGirZMJfTE9uiwKHobnbgxWyL/JWro8tTq+vOqAK1/qbSA==}
@@ -5386,6 +5392,8 @@ snapshots:
   space-separated-tokens@1.1.5: {}
 
   space-separated-tokens@2.0.2: {}
+
+  sql.js@1.14.1: {}
 
   streamx@2.22.1:
     dependencies:
