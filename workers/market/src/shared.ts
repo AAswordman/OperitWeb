@@ -24,6 +24,15 @@ export function fail(code: string, message: string, status = 400): Response { re
 export function jsonResponse(body: JsonObject, status = 200): Response { return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } }); }
 export function errorResponse(code: string, message: string, status = 400): Response { return jsonResponse({ ok: false, error: { code, message } }, status); }
 export function corsHeaders(_request?: Request): Record<string, string> { return { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,PATCH,DELETE,OPTIONS', 'access-control-allow-headers': 'content-type,authorization', vary: 'origin' }; }
+export function withHeaders(response: Response, headers: Record<string, string>): Response {
+  const nextHeaders = new Headers(response.headers);
+  for (const [key, value] of Object.entries(headers)) nextHeaders.set(key, value);
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: nextHeaders,
+  });
+}
 
 export function requireString(value: unknown, field: string): string {
   const text = String(value ?? '').trim();

@@ -1,12 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { flushSync } from 'react-dom';
 import {
   Alert,
   Button,
   Card,
   Checkbox,
   Descriptions,
-  Divider,
   Drawer,
   Input,
   Layout,
@@ -19,36 +17,44 @@ import {
   Typography,
   message,
 } from 'antd';
+import { Avatar } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   EditOutlined,
   EyeOutlined,
-  StarFilled,
-  StarOutlined,
   LogoutOutlined,
   ReloadOutlined,
-  UndoOutlined,
+  StarFilled,
+  UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import './OperitMarketReviewPage.css';
+import OperitMarkdownPreview from '../components/OperitMarkdownPreview';
+
 import {
   MARKET_TYPE_ORDER,
   REVIEW_STATE_COLORS,
-  SHELF_STATE_COLORS,
   getMarketTypeLabel,
   getReasonDescription,
   getReasonLabel,
   getReviewActionLabel,
   getReviewStateLabel,
-  getShelfStateLabel,
   type MarketType,
-  type ReviewAction,
   type ReviewReasonOption,
   type ReviewState,
-  type ShelfState,
 } from '../utils/operitMarketReview';
+import {
+  fetchMarketV2Json,
+  marketV2ApiUrl,
+  marketV2StaticUrl,
+  type MarketEntryType,
+  type MarketV2Entry,
+  type MarketV2ListPage,
+  type MarketV2Manifest,
+} from '../utils/operitMarketV2';
+import './OperitMarketReviewPage.css';
 
 const { Content } = Layout;
 const { Title, Paragraph, Text, Link } = Typography;
@@ -67,869 +73,790 @@ interface AdminAuthUser {
   owner?: boolean;
 }
 
-interface MarketLabel {
-  name: string;
-  color?: string;
-}
-
-interface MarketMetadata {
-  description?: string;
-  repository_url?: string;
-  install_config?: string;
-  category?: string;
-  tags?: string[];
-  version?: string;
-  project_id?: string;
-  type?: string;
-  project_display_name?: string;
-  project_description?: string;
-  runtime_package_id?: string;
-  node_id?: string;
-  root_node_id?: string;
-  parent_node_ids?: string[];
-  publisher_login?: string;
-  release_tag?: string;
-  asset_name?: string;
-  download_url?: string;
-  sha256?: string;
-  display_name?: string;
-  source_file_name?: string;
-  min_supported_app_version?: string;
-  max_supported_app_version?: string;
-  normalized_id?: string;
-  forge_repo?: string;
-}
-
-interface MarketReviewItem {
-  id: number;
-  market_type: MarketType;
-  market_name: string;
-  repo_owner: string;
-  repo_name: string;
-  public_label: string;
-  issue_number: number;
+interface ReviewEntrySummary {
+  id: string;
+  type: MarketEntryType;
   title: string;
-  html_url: string;
-  created_at: string | null;
-  updated_at: string | null;
-  shelf_state: ShelfState;
-  review_state: ReviewState;
-  review_reason_codes: string[];
+  description: string;
+  authorId: string;
+  publisherId: string;
+  author?: { id?: string; login?: string; avatar?: string };
+  publisher?: { id?: string; login?: string; avatar?: string };
+  categoryId: string;
+  stateCode: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt?: string;
+}
+
+interface ReviewVersion {
+  id: string;
+  entryId?: string;
+  version: string;
+  formatVer: string;
+  minAppVer?: string;
+  maxAppVer?: string;
+  stateCode: string;
+  changelog?: string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
+}
+
+interface ReviewEntryDetail {
+  ok?: boolean;
+  item: ReviewEntrySummary & { detail: string };
+  versions: ReviewVersion[];
+  repoSource?: Record<string, unknown>;
+  artifactProject?: Record<string, unknown>;
+  artifactNodes?: Record<string, unknown>[];
+  assets?: Record<string, unknown>[];
+}
+
+interface MarketReviewRow {
+  id: string;
+  type: MarketType;
+  title: string;
+  description: string;
+  detail?: string;
+  authorId: string;
+  publisherId: string;
+  authorLogin: string;
+  authorAvatar: string;
+  publisherLogin: string;
+  publisherAvatar: string;
+  categoryId: string;
+  stateCode: ReviewState | string;
+  createdAt?: string;
+  updatedAt?: string;
+  publishedAt?: string;
   featured: boolean;
-  submission_format_valid?: boolean;
-  is_publicly_visible: boolean;
-  labels: MarketLabel[];
-  author_login: string;
-  author_url: string;
-  comments: number;
-  body_excerpt: string;
-  metadata: MarketMetadata;
-  raw_body?: string;
+  source: 'review' | 'published';
 }
 
-interface MarketReviewLog {
-  id: number;
-  market_type: MarketType;
-  repo: string;
-  issue_number: number;
-  issue_title: string;
-  action: ReviewAction;
-  reason_codes: string[];
-  previous_review_state: string;
-  next_review_state: string;
-  actor_username: string;
-  actor_display_name: string;
-  actor_role: string;
-  created_at: string | null;
-}
-
-interface ReviewMetaResponse {
-  reasons: ReviewReasonOption[];
-  markets: Array<{
-    code: MarketType;
-    name: string;
-    owner: string;
-    repo: string;
-    public_label: string;
-  }>;
-}
-
-function isArtifactMarketType(type: MarketType): boolean {
-  return type === 'script' || type === 'package';
-}
-
-function formatSupportedAppVersions(metadata?: MarketMetadata | null): string {
-  const min = String(metadata?.min_supported_app_version || '').trim();
-  const max = String(metadata?.max_supported_app_version || '').trim();
-  if (min && max) return `${min} - ${max}`;
-  if (min) return `>= ${min}`;
-  if (max) return `<= ${max}`;
-  return '';
-}
+type ReviewFilter = ReviewState | 'all';
+type FeaturedFilter = 'all' | 'featured' | 'normal';
+type SourceFilter = 'all' | 'review' | 'published';
+type MarketReviewAction = 'approve' | 'changes_requested' | 'reject' | 'set_featured' | 'unset_featured';
 
 const STORAGE = {
-  apiBase: 'operit_submission_admin_api_base',
   adminToken: 'operit_submission_admin_token',
 };
+
+const ADMIN_API_BASE = 'https://api.aaswordsman.org';
+
+const FALLBACK_REASONS: ReviewReasonOption[] = [
+  { code: 'metadata-incomplete', label: 'metadata-incomplete', zh: '元数据不完整', en: 'Metadata incomplete', description_zh: '标题、简介、详情、分类、版本或来源信息缺失。', description_en: 'Title, description, detail, category, version, or source metadata is incomplete.' },
+  { code: 'install-config-invalid', label: 'install-config-invalid', zh: '安装配置无效', en: 'Invalid install config', description_zh: '安装配置无法被客户端识别或执行。', description_en: 'Install config cannot be recognized or executed by the client.' },
+  { code: 'repository-unreachable', label: 'repository-unreachable', zh: '仓库不可访问', en: 'Repository unreachable', description_zh: 'GitHub 仓库、引用或目录不可访问。', description_en: 'GitHub repository, ref, or subdirectory is unreachable.' },
+  { code: 'repository-content-invalid', label: 'repository-content-invalid', zh: '仓库内容无效', en: 'Invalid repository content', description_zh: '仓库内容与提交类型不匹配。', description_en: 'Repository content does not match the submitted type.' },
+  { code: 'entry-unusable', label: 'entry-unusable', zh: '插件不可用', en: 'Entry unusable', description_zh: '插件无法安装、加载或完成基本运行。', description_en: 'Entry cannot be installed, loaded, or run normally.' },
+  { code: 'quality-too-low', label: 'quality-too-low', zh: '质量过低', en: 'Quality too low', description_zh: '内容质量不足以上架。', description_en: 'Quality is too low for listing.' },
+  { code: 'security-risk', label: 'security-risk', zh: '安全风险', en: 'Security risk', description_zh: '存在明显安全风险或危险行为。', description_en: 'Contains obvious security risks or dangerous behavior.' },
+  { code: 'duplicate-submission', label: 'duplicate-submission', zh: '重复投稿', en: 'Duplicate submission', description_zh: '与已有条目重复。', description_en: 'Duplicates an existing entry.' },
+  { code: 'policy-violation', label: 'policy-violation', zh: '违反规则', en: 'Policy violation', description_zh: '违反市场发布规则。', description_en: 'Violates market publishing rules.' },
+];
 
 const TEXT = {
   zh: {
     title: 'Operit 市场审核台',
-    subtitle: '统一审核 MCP / Skill / Script / Package 四类市场投稿，审核意见只使用固定状态与原因码。',
-    apiBase: 'API 地址',
+    subtitle: '统一审核 MCP / Skill / Script / Package 四类插件投稿，管理已上架插件与精选。',
     currentUser: '当前账号',
     currentRole: '角色',
-    loggedIn: '已登录',
     logout: '退出登录',
+    reload: '刷新',
     filters: '筛选条件',
     market: '市场类型',
     reviewState: '审核状态',
-    shelfState: '上架状态',
+    category: '分类',
+    featured: '精选',
+    source: '数据范围',
     search: '搜索',
-    searchPlaceholder: '搜索标题、作者、标签、仓库、原因码',
-    reload: '刷新',
+    searchPlaceholder: '搜索标题、ID、作者、发布者、分类、简介',
+    reviewListTitle: '市场条目',
     detail: '查看详情',
-    loadFailed: '加载失败',
-    reviewListTitle: '审核列表',
-    openIssue: '打开 Issue',
-    detailTitle: '投稿详情',
-    rawBody: '原始内容',
-    labels: '全部标签',
-    auditLogs: '审核日志',
-    noLogs: '暂无审核日志',
+    detailTitle: '插件详情',
     metaInfo: '基础信息',
     reviewInfo: '审核信息',
-    metadata: '投稿元数据',
-    repository: '仓库地址',
-    installConfig: '安装配置',
-    category: '分类',
-    version: '版本',
-    projectId: '项目 ID',
-    projectDisplayName: '项目显示名',
-    projectDescription: '项目描述',
-    runtimePackageId: '运行包 ID',
-    nodeId: '节点 ID',
-    rootNodeId: '根节点 ID',
-    parentNodeIds: '父节点 ID',
-    publisherLogin: '发布者',
-    releaseTag: '发布 Tag',
-    assetName: '制品文件',
-    downloadUrl: '下载地址',
-    sha256: 'SHA-256',
-    sourceFileName: '源文件名',
-    supportedAppVersions: '支持的应用版本',
-    forgeRepo: 'Forge 仓库',
-    description: '描述',
-    author: '作者',
-    comments: '评论数',
-    createdAt: '创建时间',
-    updatedAt: '更新时间',
-    reviewReasons: '未通过原因',
-    featured: '精选',
+    contentInfo: '内容信息',
+    versions: '版本',
+    sourceInfo: '来源信息',
+    artifactInfo: 'Artifact 信息',
+    assets: '资产',
+    description: '简介',
+    detailField: '详情',
+    unknown: '未知',
+    all: '全部',
+    onlyFeatured: '只看精选',
+    notFeatured: '非精选',
+    reviewQueue: '审核队列',
+    publishedList: '已上架列表',
+    loading: '加载中...',
+    empty: '暂无条目',
+    updatedAtLabel: '更新时间',
+    loadFailed: '加载失败',
+    loginExpired: '管理员登录已失效，请重新登录。',
+    approve: '审核通过',
+    changes: '打回修改',
+    reject: '拒绝',
     setFeatured: '设为精选',
     unsetFeatured: '取消精选',
-    featuredRequiresPublic: '需要先审核通过并保持上架，才可以设为精选。',
-    reviewAction: '审核操作',
-    approve: '审核通过',
-    changesRequested: '打回',
-    reject: '拒绝',
-    resetPending: '作者重新提交',
-    invalidSubmissionFormatTitle: '该 Issue 不符合发布规范',
-    invalidSubmissionFormatDescription: '未检测到软件内发布生成的标准元数据。该 Issue 未通过软件发布，审核操作仅允许拒绝。',
+    actionTarget: '操作对象',
+    actionReasonTitle: '请选择原因码',
     actionSubmit: '确认提交',
     actionCancel: '取消',
-    actionReasonRequired: '打回或拒绝时，至少选择一个原因码。',
-    actionReasonTitle: '请选择原因码',
-    actionTarget: '目标条目',
-    publiclyVisible: '公开可见',
-    notPubliclyVisible: '未公开',
-    unknown: '-',
-    issueNumber: 'Issue 编号',
-    repo: '仓库',
-    reviewerActionSuccess: '审核状态已更新。',
-    detailLoadFailed: '加载详情失败。',
-    actionFailed: '提交审核动作失败。',
-    loginExpired: '登录已失效，请重新登录。',
-    noReason: '无',
-    empty: '暂无数据',
-    all: '全部',
-    open: '上架中',
-    closed: '已下架',
+    actionSuccess: '操作已提交。',
+    reasonRequired: '打回或拒绝必须选择原因码。',
+    noReason: '无原因码',
+    publishedHint: '已上架列表来自 R2 静态产物；审核操作仍走管理员 API。',
   },
   en: {
     title: 'Operit Market Review',
-    subtitle: 'Review MCP / Skill / Script / Package submissions with fixed states and reason codes only.',
-    apiBase: 'API Base',
-    currentUser: 'Current User',
+    subtitle: 'Review MCP / Skill / Script / Package submissions and manage published entries and featured curation.',
+    currentUser: 'User',
     currentRole: 'Role',
-    loggedIn: 'Signed in',
     logout: 'Sign out',
-    filters: 'Filters',
-    market: 'Market',
-    reviewState: 'Review State',
-    shelfState: 'Shelf State',
-    search: 'Search',
-    searchPlaceholder: 'Search title, author, labels, repo, or reason code',
     reload: 'Reload',
-    detail: 'View Detail',
-    loadFailed: 'Load failed',
-    reviewListTitle: 'Review Queue',
-    openIssue: 'Open Issue',
-    detailTitle: 'Submission Detail',
-    rawBody: 'Raw Body',
-    labels: 'Labels',
-    auditLogs: 'Audit Logs',
-    noLogs: 'No audit logs yet',
+    filters: 'Filters',
+    market: 'Type',
+    reviewState: 'Review State',
+    category: 'Category',
+    featured: 'Featured',
+    source: 'Source',
+    search: 'Search',
+    searchPlaceholder: 'Search title, ID, author, publisher, category, description',
+    reviewListTitle: 'Market Entries',
+    detail: 'Detail',
+    detailTitle: 'Entry Detail',
     metaInfo: 'Basic Info',
     reviewInfo: 'Review Info',
-    metadata: 'Submission Metadata',
-    repository: 'Repository',
-    installConfig: 'Install Config',
-    category: 'Category',
-    version: 'Version',
-    projectId: 'Project ID',
-    projectDisplayName: 'Project Display Name',
-    projectDescription: 'Project Description',
-    runtimePackageId: 'Runtime Package ID',
-    nodeId: 'Node ID',
-    rootNodeId: 'Root Node ID',
-    parentNodeIds: 'Parent Node IDs',
-    publisherLogin: 'Publisher',
-    releaseTag: 'Release Tag',
-    assetName: 'Asset Name',
-    downloadUrl: 'Download URL',
-    sha256: 'SHA-256',
-    sourceFileName: 'Source File Name',
-    supportedAppVersions: 'Supported App Versions',
-    forgeRepo: 'Forge Repo',
+    contentInfo: 'Content',
+    versions: 'Versions',
+    sourceInfo: 'Source',
+    artifactInfo: 'Artifact',
+    assets: 'Assets',
     description: 'Description',
-    author: 'Author',
-    comments: 'Comments',
-    createdAt: 'Created At',
-    updatedAt: 'Updated At',
-    reviewReasons: 'Reasons',
-    featured: 'Featured',
-    setFeatured: 'Set Featured',
-    unsetFeatured: 'Unset Featured',
-    featuredRequiresPublic: 'Approve and keep the entry open before setting it as featured.',
-    reviewAction: 'Review Actions',
+    detailField: 'Detail',
+    unknown: 'Unknown',
+    all: 'All',
+    onlyFeatured: 'Featured only',
+    notFeatured: 'Not featured',
+    reviewQueue: 'Review queue',
+    publishedList: 'Published list',
+    loading: 'Loading...',
+    empty: 'No entries',
+    updatedAtLabel: 'Updated',
+    loadFailed: 'Load failed',
+    loginExpired: 'Admin session expired. Please sign in again.',
     approve: 'Approve',
-    changesRequested: 'Changes Requested',
+    changes: 'Request changes',
     reject: 'Reject',
-    resetPending: 'Reset Pending',
-    invalidSubmissionFormatTitle: 'This issue does not match the publish format',
-    invalidSubmissionFormatDescription: 'Standard metadata generated by in-app publishing was not detected. This issue was not published through the app, so only rejection is available.',
+    setFeatured: 'Set featured',
+    unsetFeatured: 'Unset featured',
+    actionTarget: 'Target',
+    actionReasonTitle: 'Select reason code',
     actionSubmit: 'Submit',
     actionCancel: 'Cancel',
-    actionReasonRequired: 'At least one reason code is required for changes requested or reject.',
-    actionReasonTitle: 'Select reason codes',
-    actionTarget: 'Target',
-    publiclyVisible: 'Publicly Visible',
-    notPubliclyVisible: 'Not Public',
-    unknown: '-',
-    issueNumber: 'Issue Number',
-    repo: 'Repository',
-    reviewerActionSuccess: 'Review state updated.',
-    detailLoadFailed: 'Failed to load detail.',
-    actionFailed: 'Failed to submit review action.',
-    loginExpired: 'Your session expired. Please sign in again.',
-    noReason: 'None',
-    empty: 'No data',
-    all: 'All',
-    open: 'Open',
-    closed: 'Closed',
+    actionSuccess: 'Action submitted.',
+    reasonRequired: 'A reason code is required for changes or rejection.',
+    noReason: 'No reason',
+    publishedHint: 'Published list is loaded from R2 static output; review actions still use admin API.',
   },
 };
 
-function formatDateTime(value?: string | null) {
+function buildAdminHeaders(token: string): HeadersInit {
+  const trimmed = token.trim();
+  return {
+    Authorization: `Bearer ${trimmed}`,
+    'X-Operit-Admin-Token': trimmed,
+    'x-operit-admin-token': trimmed,
+    'Content-Type': 'application/json',
+  };
+}
+
+function buildMarketV2AdminHeaders(token: string): HeadersInit {
+  return {
+    Authorization: `Bearer ${token.trim()}`,
+    'Content-Type': 'application/json',
+  };
+}
+
+async function fetchJson(url: string, options?: RequestInit): Promise<{ response: Response; data: unknown; text: string }> {
+  const response = await fetch(url, options);
+  const text = await response.text();
+  let data: unknown = null;
+  try {
+    data = text ? JSON.parse(text) : null;
+  } catch {
+    data = null;
+  }
+  return { response, data, text };
+}
+
+function formatDateTime(value?: string | null): string {
   if (!value) return '-';
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return value;
   return date.toLocaleString();
 }
 
-function buildAdminHeaders(token: string): HeadersInit {
+function asReviewState(value: string): ReviewState | string {
+  return value || 'pending';
+}
+
+function normalizeEntry(entry: ReviewEntrySummary | MarketV2Entry, source: 'review' | 'published', featuredIds: Set<string>): MarketReviewRow {
+  const author = 'author' in entry ? entry.author : undefined;
+  const publisher = 'publisher' in entry ? entry.publisher : undefined;
   return {
-    'X-Operit-Admin-Token': token.trim(),
+    id: String(entry.id),
+    type: String(entry.type) as MarketType,
+    title: String(entry.title),
+    description: String(entry.description),
+    detail: 'detail' in entry ? String(entry.detail) : '',
+    authorId: String(entry.authorId),
+    publisherId: String(entry.publisherId),
+    authorLogin: author?.login || '',
+    authorAvatar: author?.avatar || '',
+    publisherLogin: publisher?.login || '',
+    publisherAvatar: publisher?.avatar || '',
+    categoryId: String(entry.categoryId),
+    stateCode: asReviewState(String(entry.stateCode || (source === 'published' ? 'approved' : 'pending'))),
+    createdAt: String(entry.createdAt),
+    updatedAt: String(entry.updatedAt),
+    publishedAt: 'publishedAt' in entry ? String(entry.publishedAt) : '',
+    featured: featuredIds.has(String(entry.id)),
+    source,
   };
 }
 
-function resolveApiError(response: Response, data: unknown, isZh: boolean) {
-  const payload = (data || {}) as { error?: unknown };
-  const code = typeof payload.error === 'string' ? payload.error : '';
-  const zh: Record<string, string> = {
-    unauthorized: '管理员登录已失效。',
-    session_expired: '管理员登录已过期。',
-    account_disabled: '该审核账号已被停用。',
-    market_invalid: '市场类型无效。',
-    review_state_invalid: '审核状态筛选无效。',
-    shelf_state_invalid: '上架状态筛选无效。',
-    issue_number_invalid: 'Issue 编号无效。',
-    action_invalid: '审核动作无效。',
-    reason_codes_required: '打回或拒绝必须选择至少一个原因码。',
-    reason_code_invalid: '存在无效原因码。',
-    github_issue_not_found: '未找到对应的 GitHub Issue。',
-    github_issue_is_pull_request: '目标不是普通 Issue，无法审核。',
-    github_auth_missing: '服务端未配置 GitHub 审核权限。',
-    featured_requires_public_issue: '需要先审核通过并保持上架，才可以设为精选。',
-    invalid_json: '请求格式错误。',
+function stateColor(state: string): string {
+  return REVIEW_STATE_COLORS[state as ReviewState] || (state === 'withdrawn' ? 'default' : 'blue');
+}
+
+function shortText(value: string, fallback: string): string {
+  const text = value.trim();
+  return text || fallback;
+}
+
+function baseVersionOf(version: string): string {
+  return version.replace(/(?:\+|-)?legacy\.\d+$/i, '').replace(/[+.-]+$/g, '');
+}
+
+function versionSortValue(version: ReviewVersion): string {
+  return version.publishedAt || version.updatedAt || version.createdAt || version.version;
+}
+
+interface VersionGraphRow {
+  version: ReviewVersion;
+  depth: number;
+  hasChildren: boolean;
+  isLast: boolean;
+  ancestorLast: boolean[];
+  laneColor: string;
+}
+
+const VERSION_GRAPH_COLORS = ['#2f81f7', '#a371f7', '#f778ba', '#3fb950', '#d29922', '#56d4dd'];
+
+function buildVersionGraphRows(versions: ReviewVersion[]): VersionGraphRow[] {
+  const sorted = [...versions].sort((a, b) => versionSortValue(b).localeCompare(versionSortValue(a)));
+  const byVersion = new Map(sorted.map(version => [version.version, version]));
+  const childrenByBase = new Map<string, ReviewVersion[]>();
+  const roots: ReviewVersion[] = [];
+
+  for (const version of sorted) {
+    const base = baseVersionOf(version.version);
+    if (base && base !== version.version && byVersion.has(base)) {
+      const children = childrenByBase.get(base) || [];
+      children.push(version);
+      childrenByBase.set(base, children);
+    } else {
+      roots.push(version);
+    }
+  }
+
+  const rows: VersionGraphRow[] = [];
+  const visit = (version: ReviewVersion, depth: number, isLast: boolean, ancestorLast: boolean[]) => {
+    const children = childrenByBase.get(version.version) || [];
+    rows.push({
+      version,
+      depth,
+      hasChildren: children.length > 0,
+      isLast,
+      ancestorLast,
+      laneColor: VERSION_GRAPH_COLORS[depth % VERSION_GRAPH_COLORS.length],
+    });
+    children.forEach((child, index) => visit(child, depth + 1, index === children.length - 1, [...ancestorLast, isLast]));
   };
-  const en: Record<string, string> = {
-    unauthorized: 'Admin session is invalid.',
-    session_expired: 'Admin session expired.',
-    account_disabled: 'This reviewer account is disabled.',
-    market_invalid: 'Invalid market type.',
-    review_state_invalid: 'Invalid review state filter.',
-    shelf_state_invalid: 'Invalid shelf state filter.',
-    issue_number_invalid: 'Invalid issue number.',
-    action_invalid: 'Invalid review action.',
-    reason_codes_required: 'At least one reason code is required.',
-    reason_code_invalid: 'One or more reason codes are invalid.',
-    github_issue_not_found: 'GitHub issue not found.',
-    github_issue_is_pull_request: 'Target is not a regular issue.',
-    github_auth_missing: 'GitHub review credentials are not configured on the server.',
-    featured_requires_public_issue: 'Approve and keep the entry open before setting it as featured.',
-    invalid_json: 'Invalid request payload.',
-  };
-  const mapped = (isZh ? zh : en)[code];
-  return mapped || code || `${isZh ? '请求失败' : 'Request failed'} (HTTP ${response.status})`;
+  roots.forEach((root, index) => visit(root, 0, index === roots.length - 1, []));
+  return rows;
+}
+
+function renderVersionGraph(versions: ReviewVersion[], language: 'zh' | 'en'): React.ReactNode {
+  const rows = buildVersionGraphRows(versions);
+  return (
+    <div className="operit-market-review-version-graph">
+      {rows.map(row => (
+        <div key={row.version.id} className="operit-market-review-version-row">
+          <div className="operit-market-review-version-lanes" style={{ width: 40 + row.depth * 22 }}>
+            {row.ancestorLast.map((isLast, index) => (
+              <span
+                key={`${row.version.id}-lane-${index}`}
+                className={isLast ? 'operit-market-review-version-lane is-empty' : 'operit-market-review-version-lane'}
+                style={{ left: index * 22 + 12, backgroundColor: VERSION_GRAPH_COLORS[index % VERSION_GRAPH_COLORS.length] }}
+              />
+            ))}
+            {row.depth > 0 ? (
+              <span
+                className="operit-market-review-version-branch"
+                style={{
+                  left: (row.depth - 1) * 22 + 12,
+                  width: 22,
+                  borderColor: row.laneColor,
+                }}
+              />
+            ) : null}
+            <span
+              className={row.isLast ? 'operit-market-review-version-stem is-last' : 'operit-market-review-version-stem'}
+              style={{ left: row.depth * 22 + 12, backgroundColor: row.laneColor }}
+            />
+            <span
+              className={row.hasChildren ? 'operit-market-review-version-dot has-children' : 'operit-market-review-version-dot'}
+              style={{ left: row.depth * 22 + 6, borderColor: row.laneColor, color: row.laneColor }}
+            />
+          </div>
+          <div className="operit-market-review-version-content">
+            <Space wrap size={[8, 4]}>
+              <Text strong>{row.version.version}</Text>
+              <Text type="secondary">{row.version.formatVer}</Text>
+              <Text type="secondary">min {row.version.minAppVer}</Text>
+              {row.version.maxAppVer ? <Text type="secondary">max {row.version.maxAppVer}</Text> : null}
+              <Tag color={stateColor(row.version.stateCode)}>{getReviewStateLabel(row.version.stateCode, language)}</Tag>
+              <Text type="secondary">{formatDateTime(row.version.publishedAt)}</Text>
+            </Space>
+            {row.version.changelog ? <Paragraph type="secondary" className="operit-market-review-version-changelog">{row.version.changelog}</Paragraph> : null}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function displayValue(value: unknown): string {
+  if (value === null || value === undefined) return '';
+  if (typeof value === 'string') return value;
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return '';
+}
+
+function renderRepoSource(source: Record<string, unknown>): React.ReactNode {
+  const sourceUrl = displayValue(source.source_url || source.sourceUrl || source.url);
+  return (
+    <Descriptions column={1} size="small" bordered>
+      {sourceUrl ? (
+        <Descriptions.Item label="Repository">
+          <Link href={sourceUrl} target="_blank">{sourceUrl}</Link>
+        </Descriptions.Item>
+      ) : null}
+      {displayValue(source.repo_owner || source.repoOwner) ? <Descriptions.Item label="Owner">{displayValue(source.repo_owner || source.repoOwner)}</Descriptions.Item> : null}
+      {displayValue(source.repo_name || source.repoName) ? <Descriptions.Item label="Repo">{displayValue(source.repo_name || source.repoName)}</Descriptions.Item> : null}
+    </Descriptions>
+  );
+}
+
+function renderArtifactInfo(project?: Record<string, unknown>, nodes?: Record<string, unknown>[]): React.ReactNode {
+  const visibleNodes = nodes || [];
+  return (
+    <Space direction="vertical" size={12} style={{ width: '100%' }}>
+      {project ? (
+        <Descriptions column={1} size="small" bordered>
+          {displayValue(project.project_key || project.projectId) ? <Descriptions.Item label="Project">{displayValue(project.project_key || project.projectId)}</Descriptions.Item> : null}
+          {displayValue(project.root_node_id || project.rootNodeId) ? <Descriptions.Item label="Root">{displayValue(project.root_node_id || project.rootNodeId)}</Descriptions.Item> : null}
+          {displayValue(project.runtime_pkg || project.runtimePkg) ? <Descriptions.Item label="Runtime">{displayValue(project.runtime_pkg || project.runtimePkg)}</Descriptions.Item> : null}
+        </Descriptions>
+      ) : null}
+      {visibleNodes.length > 0 ? (
+        <Space wrap>
+          {visibleNodes.map((node, index) => {
+            const id = displayValue(node.id || node.node_id || node.nodeId) || `node-${index + 1}`;
+            const label = displayValue(node.node_key || node.nodeKey) || id;
+            return <Tag key={`${id}-${index}`} color="blue">{label}</Tag>;
+          })}
+        </Space>
+      ) : null}
+    </Space>
+  );
+}
+
+function renderAssets(assets: Record<string, unknown>[]): React.ReactNode {
+  return (
+    <Space direction="vertical" size={10} style={{ width: '100%' }}>
+      {assets.map((asset, index) => {
+        const url = displayValue(asset.url);
+        const name = displayValue(asset.asset_name || asset.assetName || asset.name || asset.id) || `Asset ${index + 1}`;
+        return (
+          <Descriptions key={`${name}-${index}`} column={1} size="small" bordered>
+            <Descriptions.Item label="Name">{name}</Descriptions.Item>
+            {displayValue(asset.kind) ? <Descriptions.Item label="Kind">{displayValue(asset.kind)}</Descriptions.Item> : null}
+            {url ? <Descriptions.Item label="URL"><Link href={url} target="_blank">{url}</Link></Descriptions.Item> : null}
+            {displayValue(asset.sha256) ? <Descriptions.Item label="SHA-256"><Text copyable>{displayValue(asset.sha256)}</Text></Descriptions.Item> : null}
+          </Descriptions>
+        );
+      })}
+    </Space>
+  );
 }
 
 const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ language }) => {
-  const isZh = language === 'zh';
   const t = TEXT[language];
   const navigate = useNavigate();
-
-  const [apiBase, setApiBase] = useState(() => localStorage.getItem(STORAGE.apiBase) || 'https://api.aaswordsman.org');
   const [adminToken, setAdminToken] = useState(() => localStorage.getItem(STORAGE.adminToken) || '');
   const [authUser, setAuthUser] = useState<AdminAuthUser | null>(null);
-  const [meta, setMeta] = useState<ReviewMetaResponse | null>(null);
-  const [loadingMeta, setLoadingMeta] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  const [marketFilter, setMarketFilter] = useState<'all' | MarketType>('all');
-  const [reviewStateFilter, setReviewStateFilter] = useState<'all' | ReviewState>('pending');
-  const [shelfStateFilter, setShelfStateFilter] = useState<'all' | ShelfState>('open');
-  const [searchInput, setSearchInput] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [page, setPage] = useState(1);
-  const [pageSize, setPageSize] = useState(30);
-
-  const [items, setItems] = useState<MarketReviewItem[]>([]);
-  const [total, setTotal] = useState(0);
+  const [authChecking, setAuthChecking] = useState(true);
   const [loading, setLoading] = useState(false);
-
+  const [error, setError] = useState<string | null>(null);
+  const [manifest, setManifest] = useState<MarketV2Manifest | null>(null);
+  const [reviewRows, setReviewRows] = useState<ReviewEntrySummary[]>([]);
+  const [publishedRows, setPublishedRows] = useState<MarketV2Entry[]>([]);
+  const [featuredRows, setFeaturedRows] = useState<MarketV2Entry[]>([]);
+  const [featuredIds, setFeaturedIds] = useState<Set<string>>(() => new Set());
+  const [marketFilter, setMarketFilter] = useState<MarketType | 'all'>('all');
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all');
+  const [categoryFilter, setCategoryFilter] = useState<string>('all');
+  const [featuredFilter, setFeaturedFilter] = useState<FeaturedFilter>('all');
+  const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
+  const [search, setSearch] = useState('');
   const [detailOpen, setDetailOpen] = useState(false);
   const [detailLoading, setDetailLoading] = useState(false);
-  const [detailItem, setDetailItem] = useState<MarketReviewItem | null>(null);
-  const [detailLogs, setDetailLogs] = useState<MarketReviewLog[]>([]);
-
+  const [detail, setDetail] = useState<ReviewEntryDetail | null>(null);
+  const [detailFallback, setDetailFallback] = useState<MarketReviewRow | null>(null);
   const [actionOpen, setActionOpen] = useState(false);
-  const [actionSubmitting, setActionSubmitting] = useState(false);
-  const [actionType, setActionType] = useState<ReviewAction>('approve');
-  const [actionTarget, setActionTarget] = useState<MarketReviewItem | null>(null);
+  const [actionType, setActionType] = useState<MarketReviewAction>('approve');
+  const [actionTarget, setActionTarget] = useState<MarketReviewRow | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
-  const [profileOpen, setProfileOpen] = useState(false);
-  const [profileSubmitting, setProfileSubmitting] = useState(false);
-  const [profileError, setProfileError] = useState<string | null>(null);
-  const [profileForm, setProfileForm] = useState({
-    displayName: '',
-    contactEmail: '',
-    contactQq: '',
-    contactTelegram: '',
-  });
-
-  const reasonMap = useMemo(() => {
-    const map = new Map<string, ReviewReasonOption>();
-    for (const option of meta?.reasons || []) {
-      map.set(option.code, option);
-    }
-    return map;
-  }, [meta]);
-
-  useEffect(() => {
-    localStorage.setItem(STORAGE.apiBase, apiBase);
-  }, [apiBase]);
-
-  useEffect(() => {
-    if (adminToken.trim()) {
-      localStorage.setItem(STORAGE.adminToken, adminToken);
-    } else {
-      localStorage.removeItem(STORAGE.adminToken);
-    }
-  }, [adminToken]);
-
-  useEffect(() => {
-    if (!authUser) return;
-    setProfileForm({
-      displayName: authUser.display_name || '',
-      contactEmail: authUser.contact_email || '',
-      contactQq: authUser.contact_qq || '',
-      contactTelegram: authUser.contact_telegram || '',
-    });
-  }, [authUser]);
-
-  const fetchJson = useCallback(async (url: string, options?: RequestInit) => {
-    const response = await fetch(url, options);
-    const text = await response.text();
-    let data: unknown = null;
-    try {
-      data = text ? JSON.parse(text) : null;
-    } catch {
-      data = null;
-    }
-    return { response, data };
-  }, []);
+  const [actionSubmitting, setActionSubmitting] = useState(false);
 
   const handleUnauthorized = useCallback(() => {
+    localStorage.removeItem(STORAGE.adminToken);
     setAdminToken('');
     setAuthUser(null);
-    localStorage.removeItem(STORAGE.adminToken);
+    message.warning(t.loginExpired);
     navigate('/operit-login?next=/operit-market-review', { replace: true });
-  }, [navigate]);
+  }, [navigate, t.loginExpired]);
 
-  const loadAdminProfile = useCallback(async (token: string) => {
-    const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/me`, {
-      headers: buildAdminHeaders(token),
-    });
-    if (!response.ok) {
-      return null;
-    }
-    return ((data as { user?: AdminAuthUser })?.user || null) as AdminAuthUser | null;
-  }, [apiBase, fetchJson]);
-
-  const loadMeta = useCallback(async (token: string) => {
-    setLoadingMeta(true);
+  const loadAdminProfile = useCallback(async (token: string): Promise<boolean> => {
+    if (!token.trim()) return false;
     try {
-      const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/market-review/meta`, {
+      const { response, data } = await fetchJson(`${ADMIN_API_BASE}/api/admin/auth/me`, {
         headers: buildAdminHeaders(token),
       });
-      if (response.status === 401 || response.status === 403) {
-        handleUnauthorized();
-        return;
-      }
-      if (!response.ok) {
-        throw new Error(resolveApiError(response, data, isZh));
-      }
-      setMeta((data || null) as ReviewMetaResponse | null);
-    } finally {
-      setLoadingMeta(false);
+      if (!response.ok) return false;
+      const user = (data as { user?: AdminAuthUser })?.user || null;
+      setAuthUser(user);
+      return Boolean(user);
+    } catch {
+      return false;
     }
-  }, [apiBase, fetchJson, handleUnauthorized, isZh]);
+  }, []);
 
-  const loadIssues = useCallback(async () => {
-    if (!adminToken.trim()) {
-      return;
-    }
-
+  const loadData = useCallback(async (token: string) => {
+    if (!token.trim()) return;
     setLoading(true);
     setError(null);
     try {
-      const url = new URL(`${apiBase.replace(/\/+$/, '')}/api/admin/market-review/issues`);
-      url.searchParams.set('market', marketFilter);
-      url.searchParams.set('review_state', reviewStateFilter);
-      url.searchParams.set('shelf_state', shelfStateFilter);
-      url.searchParams.set('limit', String(pageSize));
-      url.searchParams.set('offset', String((page - 1) * pageSize));
-      if (searchQuery.trim()) {
-        url.searchParams.set('q', searchQuery.trim());
-      }
-
-      const { response, data } = await fetchJson(url.toString(), {
-        headers: buildAdminHeaders(adminToken),
-      });
-      if (response.status === 401 || response.status === 403) {
-        handleUnauthorized();
-        return;
-      }
-      if (!response.ok) {
-        throw new Error(resolveApiError(response, data, isZh));
-      }
-
-      const payload = (data || {}) as { items?: MarketReviewItem[]; total?: number };
-      setItems(payload.items || []);
-      setTotal(Number(payload.total || 0));
+      const [manifestData, reviewData, updatedData, featuredData] = await Promise.all([
+        fetchMarketV2Json<MarketV2Manifest>(marketV2StaticUrl('manifest.json')),
+        fetchMarketV2Json<{ ok?: boolean; items?: ReviewEntrySummary[] }>(marketV2ApiUrl('admin/review/entries?limit=100&offset=0'), {
+          headers: buildMarketV2AdminHeaders(token),
+        }),
+        fetchMarketV2Json<MarketV2ListPage>(marketV2StaticUrl('lists/all/updated/page-1.json')),
+        fetchMarketV2Json<MarketV2ListPage>(marketV2StaticUrl('lists/all/featured/page-1.json')),
+      ]);
+      const featuredItems = featuredData.items || [];
+      setManifest(manifestData);
+      setReviewRows(reviewData.items || []);
+      setPublishedRows(updatedData.items || []);
+      setFeaturedRows(featuredItems);
+      setFeaturedIds(new Set(featuredItems.map(item => item.id)));
     } catch (err) {
-      setError((err as Error).message || t.loadFailed);
+      const messageText = (err as Error).message || t.loadFailed;
+      setError(messageText);
+      if (/401|403|unauthorized|forbidden/i.test(messageText)) handleUnauthorized();
     } finally {
       setLoading(false);
     }
-  }, [
-    adminToken,
-    apiBase,
-    fetchJson,
-    handleUnauthorized,
-    isZh,
-    marketFilter,
-    page,
-    pageSize,
-    reviewStateFilter,
-    searchQuery,
-    shelfStateFilter,
-    t.loadFailed,
-  ]);
-
-  const loadDetail = useCallback(async (marketType: MarketType, issueNumber: number) => {
-    if (!adminToken.trim()) {
-      return;
-    }
-
-    flushSync(() => {
-      setDetailOpen(true);
-      setDetailLoading(true);
-      setDetailItem(null);
-      setDetailLogs([]);
-    });
-    try {
-      const { response, data } = await fetchJson(
-        `${apiBase.replace(/\/+$/, '')}/api/admin/market-review/issues/${marketType}/${issueNumber}`,
-        {
-          headers: buildAdminHeaders(adminToken),
-        },
-      );
-      if (response.status === 401 || response.status === 403) {
-        handleUnauthorized();
-        return;
-      }
-      if (!response.ok) {
-        throw new Error(resolveApiError(response, data, isZh));
-      }
-      const payload = (data || {}) as { item?: MarketReviewItem; logs?: MarketReviewLog[] };
-      setDetailItem(payload.item || null);
-      setDetailLogs(payload.logs || []);
-    } catch (err) {
-      message.error((err as Error).message || t.detailLoadFailed);
-    } finally {
-      setDetailLoading(false);
-    }
-  }, [adminToken, apiBase, fetchJson, handleUnauthorized, isZh, t.detailLoadFailed]);
-
-  const hasInvalidSubmissionFormat = useCallback((item: MarketReviewItem | null) => {
-    return item?.submission_format_valid === false;
-  }, []);
-
-  const handleLogout = useCallback(async () => {
-    try {
-      if (adminToken.trim()) {
-        await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/logout`, {
-          method: 'POST',
-          headers: buildAdminHeaders(adminToken),
-        });
-      }
-    } catch {
-      // ignore logout request failures
-    }
-    handleUnauthorized();
-  }, [adminToken, apiBase, fetchJson, handleUnauthorized]);
-
-  const saveProfile = useCallback(async () => {
-    if (!authUser || authUser.owner) return;
-    if (!profileForm.contactEmail.trim() && !profileForm.contactQq.trim() && !profileForm.contactTelegram.trim()) {
-      setProfileError(isZh ? '至少填写一种联系方式。' : 'Provide at least one contact channel.');
-      return;
-    }
-    setProfileSubmitting(true);
-    setProfileError(null);
-    try {
-      const { response, data } = await fetchJson(`${apiBase.replace(/\/+$/, '')}/api/admin/auth/profile`, {
-        method: 'POST',
-        headers: {
-          ...buildAdminHeaders(adminToken),
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          display_name: profileForm.displayName.trim() || '',
-          contact_email: profileForm.contactEmail.trim() || '',
-          contact_qq: profileForm.contactQq.trim() || '',
-          contact_telegram: profileForm.contactTelegram.trim() || '',
-        }),
-      });
-      if (!response.ok) {
-        throw new Error(resolveApiError(response, data, isZh));
-      }
-      const user = ((data as { user?: AdminAuthUser })?.user || null) as AdminAuthUser | null;
-      if (user) {
-        setAuthUser(prev => ({ ...(prev || {}), ...user }));
-      }
-      setProfileOpen(false);
-      message.success(isZh ? '个人信息已更新。' : 'Profile updated.');
-    } catch (err) {
-      setProfileError((err as Error).message || (isZh ? '更新失败。' : 'Update failed.'));
-    } finally {
-      setProfileSubmitting(false);
-    }
-  }, [adminToken, apiBase, authUser, fetchJson, isZh, profileForm]);
+  }, [handleUnauthorized, t.loadFailed]);
 
   useEffect(() => {
     if (!adminToken.trim()) {
-      handleUnauthorized();
+      navigate('/operit-login?next=/operit-market-review', { replace: true });
       return;
     }
-
     let active = true;
-    (async () => {
-      try {
-        const user = await loadAdminProfile(adminToken);
-        if (!active) {
-          return;
-        }
-        if (!user) {
-          message.warning(t.loginExpired);
-          handleUnauthorized();
-          return;
-        }
-        setAuthUser(user);
-        await loadMeta(adminToken);
-      } catch (err) {
-        if (!active) {
-          return;
-        }
-        setError((err as Error).message || t.loadFailed);
+    setAuthChecking(true);
+    loadAdminProfile(adminToken).then(ok => {
+      if (!active) return;
+      setAuthChecking(false);
+      if (!ok) {
+        handleUnauthorized();
+        return;
       }
-    })();
-
+      void loadData(adminToken);
+    });
     return () => {
       active = false;
     };
-  }, [adminToken, handleUnauthorized, loadAdminProfile, loadMeta, t.loadFailed, t.loginExpired]);
+  }, [adminToken, handleUnauthorized, loadAdminProfile, loadData, navigate]);
 
-  useEffect(() => {
-    if (!authUser) {
-      return;
-    }
-    loadIssues();
-  }, [authUser, loadIssues]);
+  const categoryOptions = useMemo(() => {
+    const categories = manifest?.categories || [];
+    const known = new Map(categories.map(category => [category.id, category.name || category.id]));
+    for (const row of reviewRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
+    for (const row of publishedRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
+    for (const row of featuredRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
+    return [{ label: t.all, value: 'all' }, ...Array.from(known.entries()).map(([id, name]) => ({ label: `${name} (${id})`, value: id }))];
+  }, [featuredRows, manifest?.categories, publishedRows, reviewRows, t.all]);
 
-  const openActionModal = useCallback((action: ReviewAction, item: MarketReviewItem) => {
-    if (action === 'set_featured' || action === 'unset_featured') {
-      setActionType(action);
-      setActionTarget(item);
-      setSelectedReasonCodes([]);
-      setActionOpen(true);
-      return;
-    }
-    setActionType(action);
-    setActionTarget(item);
-    if (action === 'reject' && hasInvalidSubmissionFormat(item) && (item.review_reason_codes || []).length === 0) {
-      setSelectedReasonCodes(['metadata-incomplete']);
-    } else if (action === 'changes_requested' || action === 'reject') {
-      setSelectedReasonCodes(item.review_reason_codes || []);
-    } else {
-      setSelectedReasonCodes([]);
-    }
-    setActionOpen(true);
-  }, [hasInvalidSubmissionFormat]);
+  const categoryLabel = useCallback((categoryId: string): string => {
+    if (!categoryId) return '-';
+    const category = manifest?.categories?.find(item => item.id === categoryId);
+    return category ? `${category.name || category.id} (${category.id})` : categoryId;
+  }, [manifest?.categories]);
 
-  const submitAction = useCallback(async () => {
-    if (!adminToken.trim() || !actionTarget) {
-      return;
-    }
-    if ((actionType === 'changes_requested' || actionType === 'reject') && selectedReasonCodes.length === 0) {
-      message.error(t.actionReasonRequired);
-      return;
-    }
+  const rows = useMemo(() => {
+    const byId = new Map<string, MarketReviewRow>();
+    for (const row of publishedRows) byId.set(row.id, normalizeEntry(row, 'published', featuredIds));
+    for (const row of featuredRows) byId.set(row.id, { ...normalizeEntry(row, 'published', featuredIds), featured: true });
+    for (const row of reviewRows) byId.set(row.id, normalizeEntry(row, 'review', featuredIds));
+    return Array.from(byId.values()).sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
+  }, [featuredIds, featuredRows, publishedRows, reviewRows]);
 
-    setActionSubmitting(true);
+  const filteredRows = useMemo(() => {
+    const query = search.trim().toLowerCase();
+    return rows.filter(row => {
+      if (marketFilter !== 'all' && row.type !== marketFilter) return false;
+      if (reviewFilter !== 'all' && row.stateCode !== reviewFilter) return false;
+      if (categoryFilter !== 'all' && row.categoryId !== categoryFilter) return false;
+      if (featuredFilter === 'featured' && !row.featured) return false;
+      if (featuredFilter === 'normal' && row.featured) return false;
+      if (sourceFilter !== 'all' && row.source !== sourceFilter) return false;
+      if (!query) return true;
+      return [row.id, row.title, row.description, row.authorLogin, row.publisherLogin, row.categoryId, row.stateCode, row.type]
+        .some(value => String(value).toLowerCase().includes(query));
+    });
+  }, [categoryFilter, featuredFilter, marketFilter, reviewFilter, rows, search, sourceFilter]);
+
+  const loadDetail = useCallback(async (row: MarketReviewRow) => {
+    setDetailOpen(true);
+    setDetailFallback(row);
+    setDetail(null);
+    setDetailLoading(true);
     try {
-      const { response, data } = await fetchJson(
-        `${apiBase.replace(/\/+$/, '')}/api/admin/market-review/issues/${actionTarget.market_type}/${actionTarget.issue_number}/action`,
-        {
-          method: 'POST',
-          headers: {
-            ...buildAdminHeaders(adminToken),
-            'Content-Type': 'application/json',
+      const data = await fetchMarketV2Json<ReviewEntryDetail>(marketV2ApiUrl(`admin/review/entries/${encodeURIComponent(row.id)}`), {
+        headers: buildMarketV2AdminHeaders(adminToken),
+      });
+      setDetail(data);
+    } catch (err) {
+      if (row.source === 'published') {
+        setDetail({
+          item: {
+            id: row.id,
+            type: row.type as MarketEntryType,
+            title: row.title,
+            description: row.description,
+            authorId: row.authorId,
+            publisherId: row.publisherId,
+            author: { id: row.authorId, login: row.authorLogin, avatar: row.authorAvatar },
+            publisher: { id: row.publisherId, login: row.publisherLogin, avatar: row.publisherAvatar },
+            categoryId: row.categoryId,
+            stateCode: String(row.stateCode || 'approved'),
+            createdAt: row.createdAt || '',
+            updatedAt: row.updatedAt || '',
+            publishedAt: row.publishedAt || '',
+            detail: row.detail || '',
           },
-          body: JSON.stringify({
-            action: actionType,
-            reason_codes: selectedReasonCodes,
-          }),
-        },
-      );
-
-      if (response.status === 401 || response.status === 403) {
-        handleUnauthorized();
+          versions: [],
+        });
         return;
       }
-      if (!response.ok) {
-        throw new Error(resolveApiError(response, data, isZh));
-      }
+      const messageText = (err as Error).message || t.loadFailed;
+      message.error(messageText);
+      if (/401|403|unauthorized|forbidden/i.test(messageText)) handleUnauthorized();
+    } finally {
+      setDetailLoading(false);
+    }
+  }, [adminToken, handleUnauthorized, t.loadFailed]);
 
-      message.success(t.reviewerActionSuccess);
-      setActionOpen(false);
-      const currentTarget = actionTarget;
-      await loadIssues();
-      if (detailOpen && detailItem && currentTarget.market_type === detailItem.market_type && currentTarget.issue_number === detailItem.issue_number) {
-        await loadDetail(currentTarget.market_type, currentTarget.issue_number);
+  const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow) => {
+    setActionType(action);
+    setActionTarget(row);
+    setSelectedReasonCodes([]);
+    setActionOpen(true);
+  }, []);
+
+  const submitAction = useCallback(async () => {
+    if (!actionTarget) return;
+    if ((actionType === 'changes_requested' || actionType === 'reject') && selectedReasonCodes.length === 0) {
+      message.warning(t.reasonRequired);
+      return;
+    }
+    setActionSubmitting(true);
+    try {
+      if (actionType === 'set_featured' || actionType === 'unset_featured') {
+        await fetchMarketV2Json(marketV2ApiUrl(`entries/${encodeURIComponent(actionTarget.id)}/curation`), {
+          method: 'POST',
+          headers: buildMarketV2AdminHeaders(adminToken),
+          body: JSON.stringify({
+            entryId: actionTarget.id,
+            listKey: 'featured',
+            position: 1,
+            ...(actionType === 'unset_featured' ? { operation: 'hide' } : {}),
+          }),
+        });
+      } else {
+        const endpoint = actionType === 'approve' ? 'approve' : actionType === 'reject' ? 'reject' : 'changes';
+        await fetchMarketV2Json(marketV2ApiUrl(`entries/${encodeURIComponent(actionTarget.id)}/review/${endpoint}`), {
+          method: 'POST',
+          headers: buildMarketV2AdminHeaders(adminToken),
+          body: JSON.stringify({ entryId: actionTarget.id, reasonCode: selectedReasonCodes[0] }),
+        });
       }
+      message.success(t.actionSuccess);
+      setActionOpen(false);
+      setDetailOpen(false);
+      await loadData(adminToken);
     } catch (err) {
-      message.error((err as Error).message || t.actionFailed);
+      const messageText = (err as Error).message || t.loadFailed;
+      message.error(messageText);
+      if (/401|403|unauthorized|forbidden/i.test(messageText)) handleUnauthorized();
     } finally {
       setActionSubmitting(false);
     }
-  }, [
-    actionTarget,
-    actionType,
-    adminToken,
-    apiBase,
-    detailItem,
-    detailOpen,
-    fetchJson,
-    handleUnauthorized,
-    isZh,
-    loadDetail,
-    loadIssues,
-    selectedReasonCodes,
-    t.actionFailed,
-    t.actionReasonRequired,
-    t.reviewerActionSuccess,
-  ]);
+  }, [actionTarget, actionType, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired]);
 
-  const columns = useMemo<ColumnsType<MarketReviewItem>>(() => [
-    {
-      title: t.issueNumber,
-      dataIndex: 'issue_number',
-      width: 116,
-      render: (value: number, record) => (
-        <Space direction="vertical" size={4}>
-          <Text strong>#{value}</Text>
-          <Tag color={record.is_publicly_visible ? 'green' : 'default'}>
-            {record.is_publicly_visible ? t.publiclyVisible : t.notPubliclyVisible}
-          </Tag>
-          {record.featured ? (
-            <Tag color="gold" icon={<StarFilled />}>
-              {t.featured}
-            </Tag>
-          ) : null}
-        </Space>
-      ),
-    },
-    {
-      title: isZh ? '标题' : 'Title',
-      dataIndex: 'title',
-      render: (_value: string, record) => (
-        <Space direction="vertical" size={4}>
-          <Button type="link" onClick={() => loadDetail(record.market_type, record.issue_number)} style={{ paddingInline: 0 }}>
-            {record.title || t.unknown}
-          </Button>
-          {record.body_excerpt ? (
-            <Text type="secondary" className="operit-market-review-excerpt">
-              {record.body_excerpt}
-            </Text>
-          ) : null}
-        </Space>
-      ),
-    },
+  const logout = useCallback(async () => {
+    localStorage.removeItem(STORAGE.adminToken);
+    setAdminToken('');
+    setAuthUser(null);
+    navigate('/operit-login?next=/operit-market-review', { replace: true });
+  }, [navigate]);
+
+  const renderRowActions = useCallback((record: MarketReviewRow) => (
+    <Space wrap className="operit-market-review-row-actions">
+      <Button size="small" icon={<EyeOutlined />} onClick={() => void loadDetail(record)}>{t.detail}</Button>
+      {record.stateCode !== 'approved' ? (
+        <>
+          <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', record)}>{t.approve}</Button>
+          <Button size="small" icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', record)}>{t.changes}</Button>
+          <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', record)}>{t.reject}</Button>
+        </>
+      ) : (
+        <Button
+          size="small"
+          icon={<StarFilled />}
+          onClick={() => openActionModal(record.featured ? 'unset_featured' : 'set_featured', record)}
+        >
+          {record.featured ? t.unsetFeatured : t.setFeatured}
+        </Button>
+      )}
+    </Space>
+  ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured]);
+
+  const columns = useMemo<ColumnsType<MarketReviewRow>>(() => [
     {
       title: t.market,
-      dataIndex: 'market_type',
-      width: 120,
-      render: (value: string) => <Tag color="geekblue">{getMarketTypeLabel(value, language)}</Tag>,
+      dataIndex: 'type',
+      width: 110,
+      render: (type: MarketType) => <Tag color="blue">{getMarketTypeLabel(type, language)}</Tag>,
+      filters: MARKET_TYPE_ORDER.map(type => ({ text: getMarketTypeLabel(type, language), value: type })),
+      onFilter: (value, record) => record.type === value,
+    },
+    {
+      title: '条目',
+      dataIndex: 'title',
+      render: (_value, record) => (
+        <Space direction="vertical" size={2} style={{ maxWidth: 520 }}>
+          <Space wrap size={[6, 4]}>
+            <Text strong>{shortText(record.title, record.id)}</Text>
+            {record.featured ? <Tag color="gold" icon={<StarFilled />}>{t.featured}</Tag> : null}
+            <Tag color={record.source === 'review' ? 'purple' : 'green'}>{record.source === 'review' ? t.reviewQueue : t.publishedList}</Tag>
+          </Space>
+          <Text type="secondary" copyable={{ text: record.id }}>{record.id}</Text>
+          <Paragraph className="operit-market-review-excerpt" type="secondary">
+            {shortText(record.description, '-')}
+          </Paragraph>
+        </Space>
+      ),
     },
     {
       title: t.reviewState,
-      dataIndex: 'review_state',
-      width: 148,
-      render: (value: ReviewState) => (
-        <Tag color={REVIEW_STATE_COLORS[value] || 'default'}>
-          {getReviewStateLabel(value, language)}
-        </Tag>
-      ),
+      dataIndex: 'stateCode',
+      width: 130,
+      render: (state: string) => <Tag color={stateColor(state)}>{getReviewStateLabel(state, language)}</Tag>,
     },
     {
-      title: t.shelfState,
-      dataIndex: 'shelf_state',
-      width: 120,
-      render: (value: ShelfState) => (
-        <Tag color={SHELF_STATE_COLORS[value] || 'default'}>
-          {getShelfStateLabel(value, language)}
-        </Tag>
-      ),
-    },
-    {
-      title: t.reviewReasons,
-      dataIndex: 'review_reason_codes',
-      render: (value: string[]) => (
-        <Space wrap size={[4, 4]}>
-          {(value || []).length > 0
-            ? value.map(code => {
-                const option = reasonMap.get(code);
-                return (
-                  <Tag key={code} color="orange">
-                    {option ? getReasonLabel(option, language) : code}
-                  </Tag>
-                );
-              })
-            : <Text type="secondary">{t.noReason}</Text>}
-        </Space>
-      ),
-    },
-    {
-      title: t.author,
-      dataIndex: 'author_login',
-      width: 160,
-      render: (_value: string, record) => (
-        record.author_url ? (
-          <Link href={record.author_url} target="_blank" rel="noreferrer">
-            {record.author_login || t.unknown}
-          </Link>
-        ) : (
-          <Text>{record.author_login || t.unknown}</Text>
-        )
-      ),
-    },
-    {
-      title: t.updatedAt,
-      dataIndex: 'updated_at',
+      title: t.category,
+      dataIndex: 'categoryId',
       width: 180,
-      render: (value: string | null) => formatDateTime(value),
+      render: (categoryId: string) => categoryLabel(categoryId),
     },
     {
-      title: isZh ? '操作' : 'Actions',
-      key: 'actions',
-      width: 150,
-      render: (_value: unknown, record) => (
-        <Space wrap>
-          <Button icon={<EyeOutlined />} onClick={() => loadDetail(record.market_type, record.issue_number)}>
-            {t.detail}
-          </Button>
+      title: '作者 / 发布者',
+      width: 230,
+      render: (_value, record) => (
+        <Space direction="vertical" size={2}>
+          <Space size={6}>
+            <Avatar size={22} icon={!record.authorAvatar ? <UserOutlined /> : undefined} src={record.authorAvatar || undefined} />
+            <Text>{record.authorLogin}</Text>
+          </Space>
+          <Space size={6}>
+            <Avatar size={22} icon={!record.publisherAvatar ? <UserOutlined /> : undefined} src={record.publisherAvatar || undefined} />
+            <Text type="secondary">{record.publisherLogin}</Text>
+          </Space>
         </Space>
       ),
     },
-  ], [
-    isZh,
-    language,
-    loadDetail,
-    reasonMap,
-    t.author,
-    t.detail,
-    t.featured,
-    t.issueNumber,
-    t.market,
-    t.noReason,
-    t.notPubliclyVisible,
-    t.publiclyVisible,
-    t.reviewReasons,
-    t.reviewState,
-    t.shelfState,
-    t.unknown,
-    t.updatedAt,
-  ]);
+    {
+      title: '更新时间',
+      dataIndex: 'updatedAt',
+      width: 180,
+      sorter: (a, b) => String(a.updatedAt || '').localeCompare(String(b.updatedAt || '')),
+      defaultSortOrder: 'descend',
+      render: formatDateTime,
+    },
+    {
+      title: '操作',
+      key: 'actions',
+      width: 260,
+      fixed: 'right',
+      render: (_value, record) => renderRowActions(record),
+    },
+  ], [categoryLabel, language, renderRowActions, t.category, t.featured, t.market, t.publishedList, t.reviewQueue, t.reviewState]);
 
-  const reasonOptions = useMemo(() => {
-    return (meta?.reasons || []).map(option => ({
-      label: (
-        <div className="operit-market-review-reason-option">
-          <Text strong>{getReasonLabel(option, language)}</Text>
-          {getReasonDescription(option, language) ? (
-            <Text type="secondary">{getReasonDescription(option, language)}</Text>
-          ) : null}
-        </div>
-      ),
-      value: option.code,
-    }));
-  }, [language, meta]);
+  const detailItem = detail?.item;
+  const reasonOptions = FALLBACK_REASONS.map(reason => ({
+    label: (
+      <div className="operit-market-review-reason-option">
+        <Text>{getReasonLabel(reason, language)}</Text>
+        <Text type="secondary">{getReasonDescription(reason, language) || reason.code}</Text>
+      </div>
+    ),
+    value: reason.code,
+  }));
 
-  const actionNeedsReasons = actionType === 'changes_requested' || actionType === 'reject';
+  if (authChecking) {
+    return (
+      <main style={{ paddingTop: 88, paddingBottom: 48 }}>
+        <Content style={{ maxWidth: 1480, margin: '0 auto', padding: '0 24px' }}>
+          <Card>
+            <div className="operit-market-review-detail-loading">
+              <Spin size="large" />
+              <Text type="secondary">{t.loading}</Text>
+            </div>
+          </Card>
+        </Content>
+      </main>
+    );
+  }
 
   return (
     <main style={{ paddingTop: 88, paddingBottom: 48 }}>
@@ -937,404 +864,188 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Card>
             <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              <div>
-                <Title level={2} style={{ marginBottom: 8 }}>
-                  {t.title}
-                </Title>
-                <Paragraph type="secondary" style={{ marginBottom: 0 }}>
-                  {t.subtitle}
-                </Paragraph>
+              <div className="operit-market-review-topbar" style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'flex-start' }}>
+                <div>
+                  <Title level={2} style={{ marginBottom: 8 }}>{t.title}</Title>
+                  <Paragraph type="secondary" style={{ marginBottom: 0 }}>{t.subtitle}</Paragraph>
+                </div>
+                <Space wrap>
+                  {authUser ? (
+                    <Text>
+                      {t.currentUser}: {authUser.display_name || authUser.username || t.unknown}
+                      {' · '}
+                      {t.currentRole}: {authUser.role || 'reviewer'}
+                    </Text>
+                  ) : null}
+                  <Button icon={<ReloadOutlined />} onClick={() => void loadData(adminToken)} loading={loading}>{t.reload}</Button>
+                  <Button danger icon={<LogoutOutlined />} onClick={logout}>{t.logout}</Button>
+                </Space>
               </div>
-
-              <Space wrap size={[12, 12]} className="operit-market-review-topbar">
-                <Input
-                  value={apiBase}
-                  onChange={event => setApiBase(event.target.value)}
-                  addonBefore={t.apiBase}
-                  className="operit-market-review-api-input"
-                />
-                <Tag color={adminToken.trim() ? 'green' : 'default'}>
-                  {adminToken.trim() ? t.loggedIn : (isZh ? '未登录' : 'Not signed in')}
-                </Tag>
-                {authUser ? (
-                  <Text>
-                    {t.currentUser}: {authUser.display_name || authUser.username || t.unknown}
-                    {' · '}
-                    {t.currentRole}: {authUser.role || 'reviewer'}
-                  </Text>
-                ) : null}
-                {authUser && !authUser.owner ? (
-                  <Button
-                    onClick={() => {
-                      setProfileError(null);
-                      setProfileOpen(true);
-                    }}
-                  >
-                    {isZh ? '个人信息' : 'Profile'}
-                  </Button>
-                ) : null}
-                <Button icon={<LogoutOutlined />} onClick={handleLogout}>
-                  {t.logout}
-                </Button>
-              </Space>
+              <Alert type="info" showIcon message={t.publishedHint} />
             </Space>
           </Card>
 
-          <Card title={t.filters} extra={<Button icon={<ReloadOutlined />} onClick={loadIssues} loading={loading || loadingMeta}>{t.reload}</Button>}>
-            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-              {error ? (
-                <Alert showIcon type="error" message={t.loadFailed} description={error} />
-              ) : null}
-              <Space wrap size={[12, 12]} className="operit-market-review-filters-row">
-                <Select
-                  value={marketFilter}
-                  onChange={value => {
-                    setMarketFilter(value as 'all' | MarketType);
-                    setPage(1);
-                  }}
-                  className="operit-market-review-filter-select"
-                  options={[
-                    { label: t.all, value: 'all' },
-                    ...[...(meta?.markets || [])].sort((left, right) => MARKET_TYPE_ORDER.indexOf(left.code) - MARKET_TYPE_ORDER.indexOf(right.code)).map(item => ({
-                      label: getMarketTypeLabel(item.code, language),
-                      value: item.code,
-                    })),
-                  ]}
-                />
-                <Select
-                  value={reviewStateFilter}
-                  onChange={value => {
-                    setReviewStateFilter(value as 'all' | ReviewState);
-                    setPage(1);
-                  }}
-                  className="operit-market-review-filter-select"
-                  options={[
-                    { label: t.all, value: 'all' },
-                    { label: getReviewStateLabel('pending', language), value: 'pending' },
-                    { label: getReviewStateLabel('approved', language), value: 'approved' },
-                    { label: getReviewStateLabel('changes_requested', language), value: 'changes_requested' },
-                    { label: getReviewStateLabel('rejected', language), value: 'rejected' },
-                  ]}
-                />
-                <Select
-                  value={shelfStateFilter}
-                  onChange={value => {
-                    setShelfStateFilter(value as 'all' | ShelfState);
-                    setPage(1);
-                  }}
-                  className="operit-market-review-filter-select"
-                  options={[
-                    { label: t.all, value: 'all' },
-                    { label: t.open, value: 'open' },
-                    { label: t.closed, value: 'closed' },
-                  ]}
-                />
-                <Input.Search
-                  allowClear
-                  value={searchInput}
-                  onChange={event => setSearchInput(event.target.value)}
-                  onSearch={value => {
-                    setSearchQuery(value);
-                    setPage(1);
-                  }}
-                  placeholder={t.searchPlaceholder}
-                  className="operit-market-review-search"
-                />
-              </Space>
+          <Card title={t.filters}>
+            <Space wrap className="operit-market-review-filters-row">
+              <Select className="operit-market-review-filter-select" value={marketFilter} onChange={setMarketFilter} options={[{ label: t.all, value: 'all' }, ...MARKET_TYPE_ORDER.map(type => ({ label: getMarketTypeLabel(type, language), value: type }))]} />
+              <Select className="operit-market-review-filter-select" value={reviewFilter} onChange={setReviewFilter} options={[{ label: t.all, value: 'all' }, ...(['pending', 'approved', 'changes_requested', 'rejected'] as ReviewState[]).map(state => ({ label: getReviewStateLabel(state, language), value: state }))]} />
+              <Select className="operit-market-review-filter-select" value={categoryFilter} onChange={setCategoryFilter} options={categoryOptions} showSearch optionFilterProp="label" />
+              <Select className="operit-market-review-filter-select" value={featuredFilter} onChange={setFeaturedFilter} options={[{ label: t.all, value: 'all' }, { label: t.onlyFeatured, value: 'featured' }, { label: t.notFeatured, value: 'normal' }]} />
+              <Select className="operit-market-review-filter-select" value={sourceFilter} onChange={setSourceFilter} options={[{ label: t.all, value: 'all' }, { label: t.reviewQueue, value: 'review' }, { label: t.publishedList, value: 'published' }]} />
+              <Input.Search className="operit-market-review-search" allowClear value={search} onChange={event => setSearch(event.target.value)} placeholder={t.searchPlaceholder} />
             </Space>
           </Card>
 
-          <Card title={t.reviewListTitle}>
-            <Table
-              rowKey={record => `${record.market_type}:${record.issue_number}`}
-              loading={loading || loadingMeta}
-              columns={columns}
-              dataSource={items}
-              locale={{ emptyText: t.empty }}
-              pagination={{
-                current: page,
-                pageSize,
-                total,
-                showSizeChanger: true,
-                onChange: (nextPage, nextPageSize) => {
-                  setPage(nextPage);
-                  setPageSize(nextPageSize);
-                },
-              }}
-              scroll={{ x: 1180 }}
-            />
+          {error ? <Alert type="error" showIcon message={error} /> : null}
+
+          <Card title={`${t.reviewListTitle} (${filteredRows.length}/${rows.length})`}>
+            <div className="operit-market-review-table-wrap">
+              <Table
+                rowKey="id"
+                loading={loading}
+                columns={columns}
+                dataSource={filteredRows}
+                scroll={{ x: 'max-content' }}
+                pagination={{ pageSize: 20, showSizeChanger: true, showTotal: total => `Total ${total}` }}
+              />
+            </div>
+            <div className="operit-market-review-mobile-list">
+              {loading ? (
+                <div className="operit-market-review-mobile-loading"><Spin tip={t.loading} /></div>
+              ) : filteredRows.length === 0 ? (
+                <div className="operit-market-review-mobile-empty">{t.empty}</div>
+              ) : filteredRows.map(record => (
+                <Card key={record.id} size="small" className="operit-market-review-mobile-card">
+                  <Space direction="vertical" size="small" style={{ width: '100%' }}>
+                    <div className="operit-market-review-mobile-card-head">
+                      <Space wrap size={[6, 4]}>
+                        <Tag color="blue">{getMarketTypeLabel(record.type, language)}</Tag>
+                        <Tag color={stateColor(record.stateCode)}>{getReviewStateLabel(record.stateCode, language)}</Tag>
+                        {record.featured ? <Tag color="gold" icon={<StarFilled />}>{t.featured}</Tag> : null}
+                        <Tag color={record.source === 'review' ? 'purple' : 'green'}>{record.source === 'review' ? t.reviewQueue : t.publishedList}</Tag>
+                      </Space>
+                    </div>
+                    <div className="operit-market-review-mobile-title">{shortText(record.title, record.id)}</div>
+                    <Text className="operit-market-review-mobile-id" type="secondary" copyable={{ text: record.id }}>{record.id}</Text>
+                    <Paragraph className="operit-market-review-excerpt" type="secondary">{shortText(record.description, '-')}</Paragraph>
+                    <div className="operit-market-review-mobile-meta">
+                      <div>{t.category}: {categoryLabel(record.categoryId)}</div>
+                      <div>{t.updatedAtLabel}: {formatDateTime(record.updatedAt)}</div>
+                    </div>
+                    <div className="operit-market-review-mobile-people">
+                      <Space size={6}>
+                        <Avatar size={22} icon={!record.authorAvatar ? <UserOutlined /> : undefined} src={record.authorAvatar || undefined} />
+                        <Text>{record.authorLogin}</Text>
+                      </Space>
+                      <Space size={6}>
+                        <Avatar size={22} icon={!record.publisherAvatar ? <UserOutlined /> : undefined} src={record.publisherAvatar || undefined} />
+                        <Text type="secondary">{record.publisherLogin}</Text>
+                      </Space>
+                    </div>
+                    {renderRowActions(record)}
+                  </Space>
+                </Card>
+              ))}
+            </div>
           </Card>
         </Space>
 
         <Drawer
-          title={t.detailTitle}
+          title={detailItem?.title || detailFallback?.title || t.detailTitle}
           open={detailOpen}
           width={860}
           onClose={() => setDetailOpen(false)}
-          extra={detailItem ? (
+          extra={detailFallback ? (
             <Space wrap className="operit-market-review-drawer-actions">
-              {hasInvalidSubmissionFormat(detailItem) ? (
-                <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailItem)}>
-                  {t.reject}
-                </Button>
-              ) : (
+              {detailFallback.stateCode !== 'approved' ? (
                 <>
-                  <Button icon={<ReloadOutlined />} loading={detailLoading} onClick={() => loadDetail(detailItem.market_type, detailItem.issue_number)}>
-                    {t.reload}
-                  </Button>
-                  {detailItem.featured ? (
-                    <Button icon={<StarOutlined />} onClick={() => openActionModal('unset_featured', detailItem)}>
-                      {t.unsetFeatured}
-                    </Button>
-                  ) : (
-                    <Button
-                      icon={<StarFilled />}
-                      disabled={!detailItem.is_publicly_visible}
-                      title={!detailItem.is_publicly_visible ? t.featuredRequiresPublic : undefined}
-                      onClick={() => openActionModal('set_featured', detailItem)}
-                    >
-                      {t.setFeatured}
-                    </Button>
-                  )}
-                  <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', detailItem)}>
-                    {t.approve}
-                  </Button>
-                  <Button icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', detailItem)}>
-                    {t.changesRequested}
-                  </Button>
-                  <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailItem)}>
-                    {t.reject}
-                  </Button>
-                  <Button icon={<UndoOutlined />} onClick={() => openActionModal('reset_pending', detailItem)}>
-                    {t.resetPending}
-                  </Button>
+                  <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', detailFallback)}>{t.approve}</Button>
+                  <Button icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', detailFallback)}>{t.changes}</Button>
+                  <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailFallback)}>{t.reject}</Button>
                 </>
+              ) : (
+                <Button
+                  icon={<StarFilled />}
+                  onClick={() => openActionModal(detailFallback.featured ? 'unset_featured' : 'set_featured', detailFallback)}
+                >
+                  {detailFallback.featured ? t.unsetFeatured : t.setFeatured}
+                </Button>
               )}
             </Space>
           ) : null}
         >
-          {detailItem ? (
-            <Space direction="vertical" size="large" style={{ width: '100%' }}>
-              {hasInvalidSubmissionFormat(detailItem) ? (
-                <Alert
-                  showIcon
-                  type="warning"
-                  message={t.invalidSubmissionFormatTitle}
-                  description={t.invalidSubmissionFormatDescription}
-                />
-              ) : null}
-
-              <Card size="small" title={t.metaInfo} loading={detailLoading}>
-                <Descriptions column={2} size="small" bordered>
-                  <Descriptions.Item label={t.issueNumber}>#{detailItem.issue_number}</Descriptions.Item>
-                  <Descriptions.Item label={t.market}>{getMarketTypeLabel(detailItem.market_type, language)}</Descriptions.Item>
-                  <Descriptions.Item label={t.repo}>{detailItem.repo_owner}/{detailItem.repo_name}</Descriptions.Item>
-                  <Descriptions.Item label={t.author}>
-                    {detailItem.author_url ? (
-                      <Link href={detailItem.author_url} target="_blank" rel="noreferrer">
-                        {detailItem.author_login || t.unknown}
-                      </Link>
-                    ) : (
-                      detailItem.author_login || t.unknown
-                    )}
+          {detailLoading ? (
+            <div className="operit-market-review-detail-loading"><Spin size="large" tip={t.loading} /></div>
+          ) : detailItem ? (
+            <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+              <Card size="small" title={t.metaInfo}>
+                <Descriptions column={1} size="small" bordered>
+                  <Descriptions.Item label="ID"><Text copyable>{detailItem.id}</Text></Descriptions.Item>
+                  <Descriptions.Item label="Title">{detailItem.title}</Descriptions.Item>
+                  <Descriptions.Item label={t.market}>{getMarketTypeLabel(detailItem.type, language)}</Descriptions.Item>
+                  <Descriptions.Item label={t.category}>{categoryLabel(detailItem.categoryId)}</Descriptions.Item>
+                  <Descriptions.Item label="Author">
+                    <Space size={6}>
+                      <Avatar size={22} icon={!detailFallback?.authorAvatar ? <UserOutlined /> : undefined} src={detailFallback?.authorAvatar || undefined} />
+                      <Text>{detailFallback?.authorLogin}</Text>
+                    </Space>
                   </Descriptions.Item>
-                  <Descriptions.Item label={t.createdAt}>{formatDateTime(detailItem.created_at)}</Descriptions.Item>
-                  <Descriptions.Item label={t.updatedAt}>{formatDateTime(detailItem.updated_at)}</Descriptions.Item>
-                  <Descriptions.Item label={t.shelfState}>
-                    <Tag color={SHELF_STATE_COLORS[detailItem.shelf_state] || 'default'}>
-                      {getShelfStateLabel(detailItem.shelf_state, language)}
-                    </Tag>
+                  <Descriptions.Item label="Publisher">
+                    <Space size={6}>
+                      <Avatar size={22} icon={!detailFallback?.publisherAvatar ? <UserOutlined /> : undefined} src={detailFallback?.publisherAvatar || undefined} />
+                      <Text>{detailFallback?.publisherLogin}</Text>
+                    </Space>
                   </Descriptions.Item>
-                  <Descriptions.Item label={t.featured}>
-                    <Tag color={detailItem.featured ? 'gold' : 'default'} icon={detailItem.featured ? <StarFilled /> : undefined}>
-                      {detailItem.featured ? t.featured : t.unknown}
-                    </Tag>
-                  </Descriptions.Item>
-                  <Descriptions.Item label={t.comments}>{detailItem.comments}</Descriptions.Item>
-                  <Descriptions.Item label={t.openIssue} span={2}>
-                    <Link href={detailItem.html_url} target="_blank" rel="noreferrer">
-                      {detailItem.title || t.unknown}
-                    </Link>
-                  </Descriptions.Item>
+                  <Descriptions.Item label="Created">{formatDateTime(detailItem.createdAt)}</Descriptions.Item>
+                  <Descriptions.Item label="Updated">{formatDateTime(detailItem.updatedAt)}</Descriptions.Item>
+                  <Descriptions.Item label="Published">{formatDateTime(detailItem.publishedAt)}</Descriptions.Item>
                 </Descriptions>
               </Card>
 
               <Card size="small" title={t.reviewInfo}>
-                <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-                  <Space wrap>
-                    <Tag color={REVIEW_STATE_COLORS[detailItem.review_state] || 'default'}>
-                      {getReviewStateLabel(detailItem.review_state, language)}
-                    </Tag>
-                    <Tag color={detailItem.is_publicly_visible ? 'green' : 'default'}>
-                      {detailItem.is_publicly_visible ? t.publiclyVisible : t.notPubliclyVisible}
-                    </Tag>
-                  </Space>
-                  <div>
-                    <Text strong>{t.reviewReasons}</Text>
-                    <div style={{ marginTop: 8 }}>
-                      <Space wrap size={[4, 4]}>
-                        {detailItem.review_reason_codes.length > 0 ? detailItem.review_reason_codes.map(code => {
-                          const option = reasonMap.get(code);
-                          return (
-                            <Tag key={code} color="orange">
-                              {option ? getReasonLabel(option, language) : code}
-                            </Tag>
-                          );
-                        }) : <Text type="secondary">{t.noReason}</Text>}
-                      </Space>
+                <Space wrap>
+                  <Tag color={stateColor(detailItem.stateCode)}>{getReviewStateLabel(detailItem.stateCode, language)}</Tag>
+                  {detailFallback?.featured ? <Tag color="gold" icon={<StarFilled />}>{t.featured}</Tag> : null}
+                  <Tag color={detailFallback?.source === 'review' ? 'purple' : 'green'}>{detailFallback?.source === 'review' ? t.reviewQueue : t.publishedList}</Tag>
+                </Space>
+              </Card>
+
+              <Card size="small" title={t.contentInfo}>
+                <Space direction="vertical" size={16} style={{ width: '100%' }}>
+                  {detailItem.description ? (
+                    <div>
+                      <Text strong>{t.description}</Text>
+                      <OperitMarkdownPreview content={detailItem.description} />
                     </div>
-                  </div>
-                </Space>
-              </Card>
-
-              <Card size="small" title={t.metadata}>
-                <Descriptions column={1} size="small" bordered>
-                  <Descriptions.Item label={t.description}>
-                    {detailItem.metadata?.description || detailItem.body_excerpt || t.unknown}
-                  </Descriptions.Item>
-                  {isArtifactMarketType(detailItem.market_type) ? (
-                    <>
-                      <Descriptions.Item label={t.projectId}>
-                        {detailItem.metadata?.project_id || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.projectDisplayName}>
-                        {detailItem.metadata?.project_display_name || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.projectDescription}>
-                        {detailItem.metadata?.project_description || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.runtimePackageId}>
-                        {detailItem.metadata?.runtime_package_id || detailItem.metadata?.normalized_id || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.nodeId}>
-                        {detailItem.metadata?.node_id || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.rootNodeId}>
-                        {detailItem.metadata?.root_node_id || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.parentNodeIds}>
-                        {(detailItem.metadata?.parent_node_ids || []).length > 0
-                          ? detailItem.metadata.parent_node_ids?.join(', ')
-                          : t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.publisherLogin}>
-                        {detailItem.metadata?.publisher_login || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.forgeRepo}>
-                        {detailItem.metadata?.forge_repo || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.releaseTag}>
-                        {detailItem.metadata?.release_tag || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.assetName}>
-                        {detailItem.metadata?.asset_name || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.downloadUrl}>
-                        {detailItem.metadata?.download_url ? (
-                          <Link href={detailItem.metadata.download_url} target="_blank" rel="noreferrer">
-                            {detailItem.metadata.download_url}
-                          </Link>
-                        ) : t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.sha256}>
-                        {detailItem.metadata?.sha256 || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.version}>
-                        {detailItem.metadata?.version || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.sourceFileName}>
-                        {detailItem.metadata?.source_file_name || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.supportedAppVersions}>
-                        {formatSupportedAppVersions(detailItem.metadata) || t.unknown}
-                      </Descriptions.Item>
-                    </>
-                  ) : (
-                    <>
-                      <Descriptions.Item label={t.repository}>
-                        {detailItem.metadata?.repository_url ? (
-                          <Link href={detailItem.metadata.repository_url} target="_blank" rel="noreferrer">
-                            {detailItem.metadata.repository_url}
-                          </Link>
-                        ) : t.unknown}
-                      </Descriptions.Item>
-                      {detailItem.market_type === 'mcp' && (
-                        <Descriptions.Item label={t.installConfig}>
-                          {detailItem.metadata?.install_config || t.unknown}
-                        </Descriptions.Item>
-                      )}
-                      <Descriptions.Item label={t.category}>
-                        {detailItem.metadata?.category || t.unknown}
-                      </Descriptions.Item>
-                      <Descriptions.Item label={isZh ? '标签' : 'Tags'}>
-                        <Space wrap size={[4, 4]}>
-                          {(detailItem.metadata?.tags || []).length > 0
-                            ? detailItem.metadata?.tags?.map(tag => <Tag key={tag}>{tag}</Tag>)
-                            : <Text type="secondary">{t.unknown}</Text>}
-                        </Space>
-                      </Descriptions.Item>
-                      <Descriptions.Item label={t.version}>
-                        {detailItem.metadata?.version || t.unknown}
-                      </Descriptions.Item>
-                    </>
-                  )}
-                </Descriptions>
-              </Card>
-
-              <Card size="small" title={t.labels}>
-                <Space wrap size={[4, 4]}>
-                  {detailItem.labels.length > 0 ? detailItem.labels.map(label => (
-                    <Tag key={label.name} color={label.color ? `#${label.color}` : undefined}>
-                      {label.name}
-                    </Tag>
-                  )) : <Text type="secondary">{t.empty}</Text>}
-                </Space>
-              </Card>
-
-              <Card size="small" title={t.auditLogs}>
-                <Space direction="vertical" size="small" style={{ width: '100%' }}>
-                  {detailLogs.length > 0 ? detailLogs.map(log => (
-                    <div key={log.id} className="operit-market-review-log">
-                      <Space wrap>
-                        <Tag color="processing">{getReviewActionLabel(log.action, language)}</Tag>
-                        <Tag color={REVIEW_STATE_COLORS[(log.next_review_state as ReviewState) || 'pending'] || 'default'}>
-                          {getReviewStateLabel(log.next_review_state, language)}
-                        </Tag>
-                        <Text type="secondary">{formatDateTime(log.created_at)}</Text>
-                      </Space>
-                      <div>
-                        <Text>
-                          {(log.actor_display_name || log.actor_username || t.unknown)}
-                          {log.actor_role ? ` (${log.actor_role})` : ''}
-                        </Text>
-                      </div>
-                      <Space wrap size={[4, 4]}>
-                        {log.reason_codes.length > 0 ? log.reason_codes.map(code => {
-                          const option = reasonMap.get(code);
-                          return (
-                            <Tag key={`${log.id}-${code}`} color="orange">
-                              {option ? getReasonLabel(option, language) : code}
-                            </Tag>
-                          );
-                        }) : <Text type="secondary">{t.noReason}</Text>}
-                      </Space>
+                  ) : null}
+                  {detailItem.detail ? (
+                    <div>
+                      <Text strong>{t.detailField}</Text>
+                      <OperitMarkdownPreview content={detailItem.detail} />
                     </div>
-                  )) : <Text type="secondary">{t.noLogs}</Text>}
+                  ) : null}
+                  {!detailItem.description && !detailItem.detail ? <Text type="secondary">-</Text> : null}
                 </Space>
               </Card>
 
-              <Divider style={{ margin: 0 }} />
-
-              <Card size="small" title={t.rawBody}>
-                <pre className="operit-market-review-raw-body">
-                  {detailItem.raw_body || ''}
-                </pre>
+              <Card size="small" title={t.versions}>
+                {renderVersionGraph(detail.versions || [], language)}
               </Card>
+
+              {detail.repoSource ? (
+                <Card size="small" title={t.sourceInfo}>{renderRepoSource(detail.repoSource)}</Card>
+              ) : null}
+
+              {detail.artifactProject || (detail.artifactNodes && detail.artifactNodes.length > 0) ? (
+                <Card size="small" title={t.artifactInfo}>
+                  {renderArtifactInfo(detail.artifactProject || undefined, detail.artifactNodes || [])}
+                </Card>
+              ) : null}
+
+              {detail.assets && detail.assets.length > 0 ? (
+                <Card size="small" title={t.assets}>{renderAssets(detail.assets)}</Card>
+              ) : null}
             </Space>
-          ) : detailLoading ? (
-            <div className="operit-market-review-detail-loading">
-              <Spin size="large" tip={isZh ? '加载中...' : 'Loading...'} />
-            </div>
           ) : null}
         </Drawer>
 
@@ -1352,56 +1063,21 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               <Alert
                 type="info"
                 showIcon
-                message={`${t.actionTarget}: #${actionTarget.issue_number} · ${actionTarget.title}`}
-                description={`${getMarketTypeLabel(actionTarget.market_type, language)} / ${getReviewStateLabel(actionTarget.review_state, language)}`}
+                message={`${t.actionTarget}: ${actionTarget.title || actionTarget.id}`}
+                description={`${getMarketTypeLabel(actionTarget.type, language)} / ${getReviewStateLabel(actionTarget.stateCode, language)} / ${actionTarget.id}`}
               />
             ) : null}
-
-            {actionNeedsReasons ? (
+            {actionType === 'changes_requested' || actionType === 'reject' ? (
               <>
-                <Paragraph style={{ marginBottom: 0 }}>
-                  {t.actionReasonTitle}
-                </Paragraph>
+                <Paragraph style={{ marginBottom: 0 }}>{t.actionReasonTitle}</Paragraph>
                 <Checkbox.Group
                   style={{ width: '100%' }}
                   value={selectedReasonCodes}
                   options={reasonOptions}
-                  onChange={values => setSelectedReasonCodes(values as string[])}
+                  onChange={values => setSelectedReasonCodes((values as string[]).slice(0, 1))}
                 />
               </>
             ) : null}
-          </Space>
-        </Modal>
-
-        <Modal
-          title={isZh ? '编辑个人信息' : 'Edit Profile'}
-          open={profileOpen}
-          onCancel={() => setProfileOpen(false)}
-          onOk={saveProfile}
-          confirmLoading={profileSubmitting}
-        >
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            {profileError ? <Alert type="error" showIcon message={profileError} /> : null}
-            <Input
-              value={profileForm.displayName}
-              onChange={event => setProfileForm(prev => ({ ...prev, displayName: event.target.value }))}
-              placeholder={isZh ? '显示名（可选）' : 'Display name (optional)'}
-            />
-            <Input
-              value={profileForm.contactEmail}
-              onChange={event => setProfileForm(prev => ({ ...prev, contactEmail: event.target.value }))}
-              placeholder={isZh ? '邮箱（至少填一种联系方式）' : 'Email (at least one contact channel)'}
-            />
-            <Input
-              value={profileForm.contactQq}
-              onChange={event => setProfileForm(prev => ({ ...prev, contactQq: event.target.value }))}
-              placeholder={isZh ? 'QQ（可选）' : 'QQ (optional)'}
-            />
-            <Input
-              value={profileForm.contactTelegram}
-              onChange={event => setProfileForm(prev => ({ ...prev, contactTelegram: event.target.value }))}
-              placeholder={isZh ? 'Telegram（可选）' : 'Telegram (optional)'}
-            />
           </Space>
         </Modal>
       </Content>

@@ -1,0 +1,1875 @@
+{
+  "updatedAt": "2026-06-28T12:00:48.880Z",
+  "items": {
+    "raw-githubusercontent-com-tanweai-pua-main-skills-pua-skill-md": {
+      "downloads": 867,
+      "lastDownloadAt": "2026-06-26 08:19:18",
+      "updatedAt": "2026-06-26 08:19:18"
+    },
+    "github-com-trailofbits-skills-tree-main-plugins-sharp-edges-skills-sharp-edges": {
+      "downloads": 81,
+      "lastDownloadAt": "2026-06-23 15:00:07",
+      "updatedAt": "2026-06-23 15:00:07"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-images": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-20 00:18:45",
+      "updatedAt": "2026-05-20 00:18:45"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-pathml": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-05-24 10:11:32",
+      "updatedAt": "2026-05-24 10:11:32"
+    },
+    "github-com-bingyang1-operit-skills-anime-epic-immersion-generator": {
+      "downloads": 532,
+      "lastDownloadAt": "2026-06-26 08:18:51",
+      "updatedAt": "2026-06-26 08:18:51"
+    },
+    "github-com-weinicole14-android-apk-builder-skill": {
+      "downloads": 1878,
+      "lastDownloadAt": "2026-06-26 08:10:27",
+      "updatedAt": "2026-06-26 08:10:27"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-version-manager": {
+      "downloads": 21,
+      "lastDownloadAt": "2026-06-20 06:51:35",
+      "updatedAt": "2026-06-20 06:51:35"
+    },
+    "github-com-obra-superpowers-tree-main-skills-using-superpowers": {
+      "downloads": 172,
+      "lastDownloadAt": "2026-06-26 05:12:18",
+      "updatedAt": "2026-06-26 05:12:18"
+    },
+    "github-com-sanjay3290-ai-skills-tree-main-skills-imagen": {
+      "downloads": 37,
+      "lastDownloadAt": "2026-06-21 11:00:47",
+      "updatedAt": "2026-06-21 11:00:47"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-twitter": {
+      "downloads": 13,
+      "lastDownloadAt": "2026-06-01 23:25:09",
+      "updatedAt": "2026-06-01 23:25:09"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-reddit": {
+      "downloads": 20,
+      "lastDownloadAt": "2026-06-20 06:51:37",
+      "updatedAt": "2026-06-20 06:51:37"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-requesthunt": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-19 03:38:16",
+      "updatedAt": "2026-06-19 03:38:16"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-nanobanana": {
+      "downloads": 29,
+      "lastDownloadAt": "2026-06-20 06:51:12",
+      "updatedAt": "2026-06-20 06:51:12"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-prompt-agent": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-06-20 06:52:06",
+      "updatedAt": "2026-06-20 06:52:06"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-tailor": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-18 23:03:41",
+      "updatedAt": "2026-06-18 23:03:41"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-section-builder": {
+      "downloads": 22,
+      "lastDownloadAt": "2026-06-20 06:51:32",
+      "updatedAt": "2026-06-20 06:51:32"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-quantifier": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-18 23:03:40",
+      "updatedAt": "2026-06-18 23:03:40"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-formatter": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-18 23:03:39",
+      "updatedAt": "2026-06-18 23:03:39"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-bullet-writer": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-18 23:03:38",
+      "updatedAt": "2026-06-18 23:03:38"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-resume-ats-optimizer": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-06-18 23:03:38",
+      "updatedAt": "2026-06-18 23:03:38"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-cover-letter-generator": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-05-31 03:34:55",
+      "updatedAt": "2026-05-31 03:34:55"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-career-changer-translator": {
+      "downloads": 29,
+      "lastDownloadAt": "2026-06-20 06:51:14",
+      "updatedAt": "2026-06-20 06:51:14"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-18-multimodal-whisper": {
+      "downloads": 123,
+      "lastDownloadAt": "2026-06-26 08:09:48",
+      "updatedAt": "2026-06-26 08:09:48"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-13-mlops-mlflow": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-20 13:59:58",
+      "updatedAt": "2026-05-20 13:59:58"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-06-post-training-miles": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-04-21 17:36:27",
+      "updatedAt": "2026-04-21 17:36:27"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-14-agents-llamaindex": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-15 21:50:33",
+      "updatedAt": "2026-06-15 21:50:33"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-10-optimization-gptq": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-05-19 23:55:37",
+      "updatedAt": "2026-05-19 23:55:37"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-15-rag-chroma": {
+      "downloads": 48,
+      "lastDownloadAt": "2026-06-25 03:06:57",
+      "updatedAt": "2026-06-25 03:06:57"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-transcribe": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-20 11:29:14",
+      "updatedAt": "2026-06-20 11:29:14"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-spreadsheet": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-13 03:58:14",
+      "updatedAt": "2026-06-13 03:58:14"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-notion-knowledge-capture": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-04-21 17:40:10",
+      "updatedAt": "2026-04-21 17:40:10"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-sop-creator": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-30 02:00:26",
+      "updatedAt": "2026-05-30 02:00:26"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-prd-generator": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-12 17:39:41",
+      "updatedAt": "2026-06-12 17:39:41"
+    },
+    "github-com-obra-superpowers-tree-main-skills-writing-skills": {
+      "downloads": 41,
+      "lastDownloadAt": "2026-06-26 05:12:28",
+      "updatedAt": "2026-06-26 05:12:28"
+    },
+    "github-com-obra-superpowers-tree-main-skills-writing-plans": {
+      "downloads": 15,
+      "lastDownloadAt": "2026-06-13 16:53:46",
+      "updatedAt": "2026-06-13 16:53:46"
+    },
+    "github-com-obra-superpowers-tree-main-skills-verification-before-completion": {
+      "downloads": 13,
+      "lastDownloadAt": "2026-06-09 04:22:16",
+      "updatedAt": "2026-06-09 04:22:16"
+    },
+    "github-com-obra-superpowers-tree-main-skills-using-git-worktrees": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-06-09 06:00:50",
+      "updatedAt": "2026-06-09 06:00:50"
+    },
+    "github-com-obra-superpowers-tree-main-skills-subagent-driven-development": {
+      "downloads": 31,
+      "lastDownloadAt": "2026-06-20 18:52:54",
+      "updatedAt": "2026-06-20 18:52:54"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-tabular-review-lawvable": {
+      "downloads": 38,
+      "lastDownloadAt": "2026-06-21 12:24:23",
+      "updatedAt": "2026-06-21 12:24:23"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-skill-creator-anthropic": {
+      "downloads": 73,
+      "lastDownloadAt": "2026-06-20 06:50:39",
+      "updatedAt": "2026-06-20 06:50:39"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-nutrition-analyzer": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-20 10:43:01",
+      "updatedAt": "2026-06-20 10:43:01"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-oral-health-analyzer": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-04-28 14:49:32",
+      "updatedAt": "2026-04-28 14:49:32"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-skin-health-analyzer": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-04-28 14:06:31",
+      "updatedAt": "2026-04-28 14:06:31"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-sleep-analyzer": {
+      "downloads": 30,
+      "lastDownloadAt": "2026-06-26 04:26:37",
+      "updatedAt": "2026-06-26 04:26:37"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-weightloss-analyzer": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-05-21 00:35:04",
+      "updatedAt": "2026-05-21 00:35:04"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-goal-analyzer": {
+      "downloads": 28,
+      "lastDownloadAt": "2026-06-20 18:52:59",
+      "updatedAt": "2026-06-20 18:52:59"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-voice-extractor": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-03 17:37:09",
+      "updatedAt": "2026-06-03 17:37:09"
+    },
+    "github-com-trailofbits-skills-tree-main-plugins-static-analysis-skills-semgrep": {
+      "downloads": 29,
+      "lastDownloadAt": "2026-06-20 06:51:13",
+      "updatedAt": "2026-06-20 06:51:13"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-layout": {
+      "downloads": 47,
+      "lastDownloadAt": "2026-06-26 06:02:41",
+      "updatedAt": "2026-06-26 06:02:41"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-evolution": {
+      "downloads": 224,
+      "lastDownloadAt": "2026-06-25 18:23:52",
+      "updatedAt": "2026-06-25 18:23:52"
+    },
+    "github-com-vercel-labs-agent-skills-tree-main-skills-react-native-skills": {
+      "downloads": 201,
+      "lastDownloadAt": "2026-06-25 03:05:34",
+      "updatedAt": "2026-06-25 03:05:34"
+    },
+    "github-com-vercel-labs-agent-skills-tree-main-skills-react-best-practices": {
+      "downloads": 89,
+      "lastDownloadAt": "2026-06-24 00:03:54",
+      "updatedAt": "2026-06-24 00:03:54"
+    },
+    "github-com-zscole-model-hierarchy-skill-tree-main": {
+      "downloads": 593,
+      "lastDownloadAt": "2026-06-25 18:26:42",
+      "updatedAt": "2026-06-25 18:26:42"
+    },
+    "github-com-anthropics-skills-tree-main-skills-xlsx": {
+      "downloads": 150,
+      "lastDownloadAt": "2026-06-26 08:18:57",
+      "updatedAt": "2026-06-26 08:18:57"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-form-cro": {
+      "downloads": 110,
+      "lastDownloadAt": "2026-06-23 13:57:16",
+      "updatedAt": "2026-06-23 13:57:16"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-plotly": {
+      "downloads": 15,
+      "lastDownloadAt": "2026-06-24 14:39:26",
+      "updatedAt": "2026-06-24 14:39:26"
+    },
+    "github-com-ibelick-ui-skills-tree-main-skills-fixing-accessibility": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-09 04:34:18",
+      "updatedAt": "2026-06-09 04:34:18"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-rest-api": {
+      "downloads": 30,
+      "lastDownloadAt": "2026-06-20 06:51:08",
+      "updatedAt": "2026-06-20 06:51:08"
+    },
+    "github-com-lookyilook-test-repo-5914": {
+      "downloads": 326,
+      "lastDownloadAt": "2026-06-26 02:52:12",
+      "updatedAt": "2026-06-26 02:52:12"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-paid-ads": {
+      "downloads": 118,
+      "lastDownloadAt": "2026-06-20 06:51:54",
+      "updatedAt": "2026-06-20 06:51:54"
+    },
+    "github-com-remotion-dev-skills-tree-main": {
+      "downloads": 108,
+      "lastDownloadAt": "2026-06-21 06:16:16",
+      "updatedAt": "2026-06-21 06:16:16"
+    },
+    "github-com-vercel-labs-agent-skills-tree-main-skills-web-design-guidelines": {
+      "downloads": 92,
+      "lastDownloadAt": "2026-06-25 14:23:33",
+      "updatedAt": "2026-06-25 14:23:33"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-abilities-api": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-19 03:35:52",
+      "updatedAt": "2026-06-19 03:35:52"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-block-development": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-19 03:35:55",
+      "updatedAt": "2026-06-19 03:35:55"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-block-themes": {
+      "downloads": 15,
+      "lastDownloadAt": "2026-06-19 03:35:54",
+      "updatedAt": "2026-06-19 03:35:54"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-interactivity-api": {
+      "downloads": 19,
+      "lastDownloadAt": "2026-06-20 06:51:39",
+      "updatedAt": "2026-06-20 06:51:39"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-performance": {
+      "downloads": 21,
+      "lastDownloadAt": "2026-06-20 06:51:35",
+      "updatedAt": "2026-06-20 06:51:35"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-phpstan": {
+      "downloads": 22,
+      "lastDownloadAt": "2026-06-20 06:51:31",
+      "updatedAt": "2026-06-20 06:51:31"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-playground": {
+      "downloads": 27,
+      "lastDownloadAt": "2026-06-23 07:21:25",
+      "updatedAt": "2026-06-23 07:21:25"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-plugin-development": {
+      "downloads": 32,
+      "lastDownloadAt": "2026-06-20 06:51:06",
+      "updatedAt": "2026-06-20 06:51:06"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-project-triage": {
+      "downloads": 23,
+      "lastDownloadAt": "2026-06-20 06:51:30",
+      "updatedAt": "2026-06-20 06:51:30"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wp-wpcli-and-ops": {
+      "downloads": 24,
+      "lastDownloadAt": "2026-06-20 06:51:22",
+      "updatedAt": "2026-06-20 06:51:22"
+    },
+    "github-com-wordpress-agent-skills-tree-trunk-skills-wpds": {
+      "downloads": 28,
+      "lastDownloadAt": "2026-06-20 06:51:13",
+      "updatedAt": "2026-06-20 06:51:13"
+    },
+    "github-com-vercel-labs-next-skills-tree-main-skills-next-cache-components": {
+      "downloads": 29,
+      "lastDownloadAt": "2026-06-24 10:07:41",
+      "updatedAt": "2026-06-24 10:07:41"
+    },
+    "github-com-vercel-labs-next-skills-tree-main-skills-next-upgrade": {
+      "downloads": 24,
+      "lastDownloadAt": "2026-06-20 06:51:23",
+      "updatedAt": "2026-06-20 06:51:23"
+    },
+    "github-com-transloadit-skills-tree-main-skills-transloadit": {
+      "downloads": 17,
+      "lastDownloadAt": "2026-06-19 03:36:07",
+      "updatedAt": "2026-06-19 03:36:07"
+    },
+    "github-com-trailofbits-skills-tree-main-plugins-burpsuite-project-parser-skills": {
+      "downloads": 149,
+      "lastDownloadAt": "2026-06-25 03:05:47",
+      "updatedAt": "2026-06-25 03:05:47"
+    },
+    "github-com-trailofbits-skills-tree-main-plugins-dwarf-expert-skills-dwarf-expert": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-26 06:02:42",
+      "updatedAt": "2026-06-26 06:02:42"
+    },
+    "github-com-stripe-ai-tree-main-skills-upgrade-stripe": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-19 00:59:24",
+      "updatedAt": "2026-06-19 00:59:24"
+    },
+    "github-com-ehmo-platform-design-skills-tree-main-skills-android": {
+      "downloads": 84,
+      "lastDownloadAt": "2026-06-23 22:17:53",
+      "updatedAt": "2026-06-23 22:17:53"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-ui-mobile": {
+      "downloads": 17,
+      "lastDownloadAt": "2026-06-21 20:24:29",
+      "updatedAt": "2026-06-21 20:24:29"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-android-kotlin": {
+      "downloads": 19,
+      "lastDownloadAt": "2026-06-21 20:22:23",
+      "updatedAt": "2026-06-21 20:22:23"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-android-java": {
+      "downloads": 19,
+      "lastDownloadAt": "2026-06-23 19:16:17",
+      "updatedAt": "2026-06-23 19:16:17"
+    },
+    "github-com-expo-skills-tree-main-plugins-expo-deployment-skills-expo-deployment": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-05-20 14:07:22",
+      "updatedAt": "2026-05-20 14:07:22"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-platform": {
+      "downloads": 141,
+      "lastDownloadAt": "2026-06-25 03:05:57",
+      "updatedAt": "2026-06-25 03:05:57"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-mcp-tools-expert": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-20 00:18:40",
+      "updatedAt": "2026-05-20 00:18:40"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-free-tool-strategy": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-05-20 00:17:33",
+      "updatedAt": "2026-05-20 00:17:33"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-project-tooling": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-05-20 00:18:29",
+      "updatedAt": "2026-05-20 00:18:29"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-tool-builder": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-17 18:10:10",
+      "updatedAt": "2026-06-17 18:10:10"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-deployment": {
+      "downloads": 31,
+      "lastDownloadAt": "2026-06-20 06:51:08",
+      "updatedAt": "2026-06-20 06:51:08"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-15-rag-faiss": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 14:01:30",
+      "updatedAt": "2026-05-20 14:01:30"
+    },
+    "github-com-zxkane-aws-skills-tree-main-plugins-aws-cdk-skills-aws-cdk-development": {
+      "downloads": 58,
+      "lastDownloadAt": "2026-06-26 02:44:12",
+      "updatedAt": "2026-06-26 02:44:12"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-widgets": {
+      "downloads": 186,
+      "lastDownloadAt": "2026-06-26 06:02:41",
+      "updatedAt": "2026-06-26 06:02:41"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-molykit": {
+      "downloads": 47,
+      "lastDownloadAt": "2026-06-20 06:52:12",
+      "updatedAt": "2026-06-20 06:52:12"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-robius-app-architecture": {
+      "downloads": 68,
+      "lastDownloadAt": "2026-06-20 06:52:04",
+      "updatedAt": "2026-06-20 06:52:04"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-router": {
+      "downloads": 67,
+      "lastDownloadAt": "2026-06-25 19:36:26",
+      "updatedAt": "2026-06-25 19:36:26"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-reference": {
+      "downloads": 53,
+      "lastDownloadAt": "2026-06-25 03:08:39",
+      "updatedAt": "2026-06-25 03:08:39"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-font": {
+      "downloads": 55,
+      "lastDownloadAt": "2026-06-25 15:05:15",
+      "updatedAt": "2026-06-25 15:05:15"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-14-agents-crewai": {
+      "downloads": 63,
+      "lastDownloadAt": "2026-06-22 15:55:02",
+      "updatedAt": "2026-06-22 15:55:02"
+    },
+    "github-com-shpigford-skills-tree-main-screenshots": {
+      "downloads": 21,
+      "lastDownloadAt": "2026-06-20 06:51:35",
+      "updatedAt": "2026-06-20 06:51:35"
+    },
+    "github-com-sanity-io-agent-toolkit-tree-main-skills-seo-aeo-best-practices": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-09 15:12:32",
+      "updatedAt": "2026-06-09 15:12:32"
+    },
+    "github-com-sanity-io-agent-toolkit-tree-main-skills-sanity-best-practices": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-01 23:24:48",
+      "updatedAt": "2026-06-01 23:24:48"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-producthunt": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-19 03:38:18",
+      "updatedAt": "2026-06-19 03:38:18"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-domain-hunter": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-19 03:38:25",
+      "updatedAt": "2026-06-19 03:38:25"
+    },
+    "github-com-rameerez-claude-code-startup-skills-tree-main-skills-download-video": {
+      "downloads": 74,
+      "lastDownloadAt": "2026-06-24 14:40:39",
+      "updatedAt": "2026-06-24 14:40:39"
+    },
+    "github-com-rameerez-claude-code-startup-skills-tree-main-skills-transcribe-video": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-05-31 16:09:55",
+      "updatedAt": "2026-05-31 16:09:55"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-soul-guardian": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-04 10:32:24",
+      "updatedAt": "2026-06-04 10:32:24"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-openclaw-audit-watchdog": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-19 03:38:39",
+      "updatedAt": "2026-06-19 03:38:39"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-clawtributor": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-19 03:38:42",
+      "updatedAt": "2026-06-19 03:38:42"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-clawsec-suite": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-19 20:13:45",
+      "updatedAt": "2026-06-19 20:13:45"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-clawsec-feed": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-31 03:33:08",
+      "updatedAt": "2026-05-31 03:33:08"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-clawsec-clawhub-checker": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-19 20:13:51",
+      "updatedAt": "2026-06-19 20:13:51"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-tech-resume-optimizer": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-06-19 12:20:05",
+      "updatedAt": "2026-06-19 12:20:05"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-salary-negotiation-prep": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-18 23:03:42",
+      "updatedAt": "2026-06-18 23:03:42"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-06-post-training-verl": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-19 20:14:15",
+      "updatedAt": "2026-06-19 20:14:15"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-03-fine-tuning-unsloth": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-05-31 03:36:33",
+      "updatedAt": "2026-05-31 03:36:33"
+    },
+    "github-com-paramchoudhary-resumeskills-tree-main-skills-creative-portfolio-resume": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-16 12:51:48",
+      "updatedAt": "2026-06-16 12:51:48"
+    },
+    "github-com-anthropics-skills-tree-main-skills-skill-creator": {
+      "downloads": 87,
+      "lastDownloadAt": "2026-06-24 00:53:44",
+      "updatedAt": "2026-06-24 00:53:44"
+    },
+    "github-com-anthropics-skills-tree-main-skills-pdf": {
+      "downloads": 23,
+      "lastDownloadAt": "2026-06-20 06:51:30",
+      "updatedAt": "2026-06-20 06:51:30"
+    },
+    "github-com-anthropics-skills-tree-main-skills-docx": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-11 13:50:20",
+      "updatedAt": "2026-06-11 13:50:20"
+    },
+    "github-com-anthropics-skills-tree-main-skills-mcp-builder": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-20 05:59:38",
+      "updatedAt": "2026-06-20 05:59:38"
+    },
+    "github-com-anthropics-skills-tree-main-skills-pptx": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-20 16:54:15",
+      "updatedAt": "2026-06-20 16:54:15"
+    },
+    "github-com-anthropics-skills-tree-main-skills-internal-comms": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-04-23 23:02:25",
+      "updatedAt": "2026-04-23 23:02:25"
+    },
+    "github-com-anthropics-skills-tree-main-skills-doc-coauthoring": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-20 16:54:25",
+      "updatedAt": "2026-06-20 16:54:25"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-develop-web-game": {
+      "downloads": 417,
+      "lastDownloadAt": "2026-06-25 18:23:44",
+      "updatedAt": "2026-06-25 18:23:44"
+    },
+    "github-com-zxkane-aws-skills-tree-main-plugins-aws-common-skills-aws-mcp-setup": {
+      "downloads": 52,
+      "lastDownloadAt": "2026-06-20 01:02:07",
+      "updatedAt": "2026-06-20 01:02:07"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-de-ai-ify": {
+      "downloads": 37,
+      "lastDownloadAt": "2026-06-26 08:18:32",
+      "updatedAt": "2026-06-26 08:18:32"
+    },
+    "github-com-blader-humanizer-tree-main": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-25 19:46:04",
+      "updatedAt": "2026-06-25 19:46:04"
+    },
+    "github-com-francyjglisboa-agent-skill-creator": {
+      "downloads": 463,
+      "lastDownloadAt": "2026-06-26 08:07:00",
+      "updatedAt": "2026-06-26 08:07:00"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-content": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-20 00:18:44",
+      "updatedAt": "2026-05-20 00:18:44"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-geo": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-24 05:57:53",
+      "updatedAt": "2026-06-24 05:57:53"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-site-architecture": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-17 09:04:46",
+      "updatedAt": "2026-05-17 09:04:46"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-ai-seo": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-24 05:57:39",
+      "updatedAt": "2026-06-24 05:57:39"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-content-strategy": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-04-28 14:10:19",
+      "updatedAt": "2026-04-28 14:10:19"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-schema-markup": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-18 05:06:49",
+      "updatedAt": "2026-05-18 05:06:49"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-15-rag-qdrant": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-05-31 16:09:24",
+      "updatedAt": "2026-05-31 16:09:24"
+    },
+    "github-com-jthack-ffuf-claude-skill-tree-main-ffuf-skill": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 00:20:54",
+      "updatedAt": "2026-05-20 00:20:54"
+    },
+    "github-com-firecrawl-firecrawl-claude-plugin-tree-main-skills-firecrawl-cli": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-20 02:04:51",
+      "updatedAt": "2026-06-20 02:04:51"
+    },
+    "github-com-google-labs-code-stitch-skills-tree-main-skills-react-components": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-05-20 00:14:49",
+      "updatedAt": "2026-05-20 00:14:49"
+    },
+    "github-com-op7418-nanobanana-ppt-skills-tree-main": {
+      "downloads": 336,
+      "lastDownloadAt": "2026-06-25 18:23:48",
+      "updatedAt": "2026-06-25 18:23:48"
+    },
+    "github-com-zarazhangrui-frontend-slides-tree-main": {
+      "downloads": 28,
+      "lastDownloadAt": "2026-06-22 02:27:32",
+      "updatedAt": "2026-06-22 02:27:32"
+    },
+    "github-com-firecrawl-cli-tree-main-skills-firecrawl-cli": {
+      "downloads": 39,
+      "lastDownloadAt": "2026-06-25 15:13:15",
+      "updatedAt": "2026-06-25 15:13:15"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-strategic-planning": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-05-30 05:46:58",
+      "updatedAt": "2026-05-30 05:46:58"
+    },
+    "github-com-obra-superpowers-tree-main-skills-test-driven-development": {
+      "downloads": 13,
+      "lastDownloadAt": "2026-06-26 05:12:11",
+      "updatedAt": "2026-06-26 05:12:11"
+    },
+    "github-com-obra-superpowers-tree-main-skills-systematic-debugging": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-26 05:12:12",
+      "updatedAt": "2026-06-26 05:12:12"
+    },
+    "github-com-obra-superpowers-tree-main-skills-requesting-code-review": {
+      "downloads": 15,
+      "lastDownloadAt": "2026-06-25 23:01:25",
+      "updatedAt": "2026-06-25 23:01:25"
+    },
+    "github-com-obra-superpowers-tree-main-skills-receiving-code-review": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-17 23:45:51",
+      "updatedAt": "2026-06-17 23:45:51"
+    },
+    "github-com-obra-superpowers-tree-main-skills-executing-plans": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-24 10:38:58",
+      "updatedAt": "2026-06-24 10:38:58"
+    },
+    "github-com-obra-superpowers-tree-main-skills-dispatching-parallel-agents": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-26 05:11:48",
+      "updatedAt": "2026-06-26 05:11:48"
+    },
+    "github-com-getsentry-skills-tree-main-plugins-sentry-skills-skills-find-bugs": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-25 19:35:40",
+      "updatedAt": "2026-06-25 19:35:40"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-screenshot": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-25 04:40:01",
+      "updatedAt": "2026-06-25 04:40:01"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-playwright": {
+      "downloads": 23,
+      "lastDownloadAt": "2026-06-25 03:14:54",
+      "updatedAt": "2026-06-25 03:14:54"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-robius-widget-patterns": {
+      "downloads": 78,
+      "lastDownloadAt": "2026-06-20 06:52:03",
+      "updatedAt": "2026-06-20 06:52:03"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-robius-state-management": {
+      "downloads": 63,
+      "lastDownloadAt": "2026-06-20 06:52:05",
+      "updatedAt": "2026-06-20 06:52:05"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-robius-matrix-integration": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-06-25 15:56:33",
+      "updatedAt": "2026-06-25 15:56:33"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-robius-event-action": {
+      "downloads": 56,
+      "lastDownloadAt": "2026-06-20 06:52:09",
+      "updatedAt": "2026-06-20 06:52:09"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-docx-processing-openai": {
+      "downloads": 50,
+      "lastDownloadAt": "2026-06-25 03:06:52",
+      "updatedAt": "2026-06-25 03:06:52"
+    },
+    "github-com-fvadicamo-dev-agent-skills-tree-main-skills-git-commit": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-23 13:33:24",
+      "updatedAt": "2026-05-23 13:33:24"
+    },
+    "github-com-getsentry-skills-tree-main-plugins-sentry-skills-skills-commit": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-04-26 13:46:00",
+      "updatedAt": "2026-04-26 13:46:00"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-modal": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-20 00:18:37",
+      "updatedAt": "2026-05-20 00:18:37"
+    },
+    "github-com-rameerez-claude-code-startup-skills-tree-main-skills-compress-images": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-04 09:30:39",
+      "updatedAt": "2026-06-04 09:30:39"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-animation": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-06-25 03:06:36",
+      "updatedAt": "2026-06-25 03:06:36"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-basics": {
+      "downloads": 39,
+      "lastDownloadAt": "2026-06-20 06:51:02",
+      "updatedAt": "2026-06-20 06:51:02"
+    },
+    "github-com-obra-superpowers-lab-tree-main-skills-mcp-cli": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-18 21:30:25",
+      "updatedAt": "2026-06-18 21:30:25"
+    },
+    "github-com-obra-superpowers-tree-main-skills-brainstorming": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-09 04:21:33",
+      "updatedAt": "2026-06-09 04:21:33"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-dsl": {
+      "downloads": 30,
+      "lastDownloadAt": "2026-06-20 18:16:58",
+      "updatedAt": "2026-06-20 18:16:58"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-event-action": {
+      "downloads": 34,
+      "lastDownloadAt": "2026-06-24 04:56:44",
+      "updatedAt": "2026-06-24 04:56:44"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-shaders": {
+      "downloads": 72,
+      "lastDownloadAt": "2026-06-25 15:56:08",
+      "updatedAt": "2026-06-25 15:56:08"
+    },
+    "github-com-trailofbits-skills-tree-main-plugins-static-analysis-skills-codeql": {
+      "downloads": 16,
+      "lastDownloadAt": "2026-06-14 17:06:17",
+      "updatedAt": "2026-06-14 17:06:17"
+    },
+    "github-com-zhanghandong-makepad-skills-tree-main-skills-makepad-splash": {
+      "downloads": 91,
+      "lastDownloadAt": "2026-06-25 15:55:58",
+      "updatedAt": "2026-06-25 15:55:58"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-06-post-training-simpo": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-19 20:14:27",
+      "updatedAt": "2026-06-19 20:14:27"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-security-threat-model": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-07 11:34:36",
+      "updatedAt": "2026-06-07 11:34:36"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-sentry": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-25 14:30:51",
+      "updatedAt": "2026-06-25 14:30:51"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-security-best-practices": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-06-17 18:08:02",
+      "updatedAt": "2026-06-17 18:08:02"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-openai-docs": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-25 01:51:31",
+      "updatedAt": "2026-05-25 01:51:31"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-jupyter-notebook": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-30 01:59:27",
+      "updatedAt": "2026-05-30 01:59:27"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-notion-meeting-intelligence": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-04-27 16:20:34",
+      "updatedAt": "2026-04-27 16:20:34"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-linkedin-writer": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-18 10:46:54",
+      "updatedAt": "2026-06-18 10:46:54"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-outreach-specialist": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-30 02:00:59",
+      "updatedAt": "2026-05-30 02:00:59"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-pdf-processing-openai": {
+      "downloads": 37,
+      "lastDownloadAt": "2026-06-20 16:52:00",
+      "updatedAt": "2026-06-20 16:52:00"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-10-optimization-gguf": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-15 21:50:50",
+      "updatedAt": "2026-06-15 21:50:50"
+    },
+    "github-com-microsoft-skills-tree-main-github-skills-github-issue-creator": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-31 04:16:48",
+      "updatedAt": "2026-05-31 04:16:48"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-18-multimodal-blip-2": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-26 06:43:07",
+      "updatedAt": "2026-06-26 06:43:07"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-doc": {
+      "downloads": 55,
+      "lastDownloadAt": "2026-06-24 02:10:45",
+      "updatedAt": "2026-06-24 02:10:45"
+    },
+    "github-com-1panel-dev-1panel-appstore-skills": {
+      "downloads": 145,
+      "lastDownloadAt": "2026-06-24 04:57:34",
+      "updatedAt": "2026-06-24 04:57:34"
+    },
+    "github-com-google-labs-code-stitch-skills-tree-main-skills-enhance-prompt": {
+      "downloads": 27,
+      "lastDownloadAt": "2026-06-24 15:55:45",
+      "updatedAt": "2026-06-24 15:55:45"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-ui-testing": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-06 14:17:24",
+      "updatedAt": "2026-06-06 14:17:24"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-ui-web": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-06 14:17:17",
+      "updatedAt": "2026-06-06 14:17:17"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-security-review-openai": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-21 12:25:29",
+      "updatedAt": "2026-06-21 12:25:29"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-sora": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-07 12:38:10",
+      "updatedAt": "2026-06-07 12:38:10"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-generate": {
+      "downloads": 22,
+      "lastDownloadAt": "2026-06-20 06:51:32",
+      "updatedAt": "2026-06-20 06:51:32"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-food-database-query": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-06 03:59:32",
+      "updatedAt": "2026-06-06 03:59:32"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-15-rag-pinecone": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-19 20:14:46",
+      "updatedAt": "2026-06-19 20:14:46"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-cro-optimization": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-02 17:05:49",
+      "updatedAt": "2026-05-02 17:05:49"
+    },
+    "github-com-obra-superpowers-tree-main-skills-finishing-a-development-branch": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-06-22 23:36:05",
+      "updatedAt": "2026-06-22 23:36:05"
+    },
+    "github-com-frmoretto-clarity-gate-tree-main-claude-skills-clarity-gate": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-07 11:39:05",
+      "updatedAt": "2026-06-07 11:39:05"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-go-to-market-plan": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-31 04:14:32",
+      "updatedAt": "2026-05-31 04:14:32"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-session-management": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-20 00:19:46",
+      "updatedAt": "2026-05-20 00:19:46"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-netlify-deploy": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-05 14:55:07",
+      "updatedAt": "2026-05-05 14:55:07"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-notion-research-documentation": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 05:54:16",
+      "updatedAt": "2026-05-20 05:54:16"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-outlook-emails-lawvable": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-31 04:18:17",
+      "updatedAt": "2026-05-31 04:18:17"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-nda-triage-anthropic": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-03 17:14:43",
+      "updatedAt": "2026-05-03 17:14:43"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-textures": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-03 23:36:38",
+      "updatedAt": "2026-05-03 23:36:38"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-lighting": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-20 16:55:33",
+      "updatedAt": "2026-06-20 16:55:33"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-fundamentals": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-05 01:51:39",
+      "updatedAt": "2026-06-05 01:51:39"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-geometry": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-16 03:08:45",
+      "updatedAt": "2026-06-16 03:08:45"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-interaction": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-19 23:59:37",
+      "updatedAt": "2026-06-19 23:59:37"
+    },
+    "github-com-resciencelab-opc-skills-tree-main-skills-logo-creator": {
+      "downloads": 13,
+      "lastDownloadAt": "2026-06-20 03:45:55",
+      "updatedAt": "2026-06-20 03:45:55"
+    },
+    "github-com-kkkkhazix-khazix-skills-tree-main-neat-freak": {
+      "downloads": 1382,
+      "lastDownloadAt": "2026-06-26 08:06:57",
+      "updatedAt": "2026-06-26 08:06:57"
+    },
+    "github-com-jiafenbu-dot-tsundere-dismissive-skill": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-06 06:58:16",
+      "updatedAt": "2026-05-06 06:58:16"
+    },
+    "github-com-composiohq-awesome-claude-skills-tree-master-image-enhancer": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-13 21:13:33",
+      "updatedAt": "2026-06-13 21:13:33"
+    },
+    "github-com-7278hdhsjsj-operit-rigid-development-rules": {
+      "downloads": 338,
+      "lastDownloadAt": "2026-06-25 18:23:47",
+      "updatedAt": "2026-06-25 18:23:47"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-06-post-training-slime": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-08 00:43:01",
+      "updatedAt": "2026-06-08 00:43:01"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-13-mlops-tensorboard": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-06-26 05:06:40",
+      "updatedAt": "2026-06-26 05:06:40"
+    },
+    "github-com-joannis-claude-skills-tree-main-postgres": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 00:20:12",
+      "updatedAt": "2026-05-20 00:20:12"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-model-trainer": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-15 21:56:15",
+      "updatedAt": "2026-06-15 21:56:15"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-jobs": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-15 21:56:16",
+      "updatedAt": "2026-06-15 21:56:16"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-paper-publisher": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-17 18:11:05",
+      "updatedAt": "2026-06-17 18:11:05"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-expression-syntax": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-17 13:09:55",
+      "updatedAt": "2026-06-17 13:09:55"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-code-python": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-06 13:30:21",
+      "updatedAt": "2026-06-06 13:30:21"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-node-configuration": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-15 12:42:20",
+      "updatedAt": "2026-05-15 12:42:20"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-validation-expert": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-15 12:42:14",
+      "updatedAt": "2026-05-15 12:42:14"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-workflow-patterns": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-05-23 20:53:14",
+      "updatedAt": "2026-05-23 20:53:14"
+    },
+    "github-com-ehmo-platform-design-skills-tree-main-skills-ios": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-25 14:24:12",
+      "updatedAt": "2026-06-25 14:24:12"
+    },
+    "github-com-cloudflare-skills-tree-main-skills-agents-sdk": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 00:21:04",
+      "updatedAt": "2026-05-20 00:21:04"
+    },
+    "github-com-conorluddy-ios-simulator-skill-tree-main-ios-simulator-skill": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-07 15:53:51",
+      "updatedAt": "2026-06-07 15:53:51"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-ai-discoverability-audit": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-20 09:46:12",
+      "updatedAt": "2026-06-20 09:46:12"
+    },
+    "github-com-avdlee-swiftui-agent-skill-tree-main-swiftui-expert-skill": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 00:21:09",
+      "updatedAt": "2026-05-20 00:21:09"
+    },
+    "github-com-callstackincubator-agent-skills-tree-main-skills-github": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-08 14:00:46",
+      "updatedAt": "2026-06-08 14:00:46"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-xlsx-processing-manus": {
+      "downloads": 14,
+      "lastDownloadAt": "2026-06-20 16:53:52",
+      "updatedAt": "2026-06-20 16:53:52"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-xlsx-processing-openai": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-31 04:17:36",
+      "updatedAt": "2026-05-31 04:17:36"
+    },
+    "github-com-926199617-automatic-file-viewer": {
+      "downloads": 1790,
+      "lastDownloadAt": "2026-05-28 11:55:06",
+      "updatedAt": "2026-05-28 11:55:06"
+    },
+    "github-com-gokapso-agent-skills-tree-master-skills-automate-whatsapp": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-16 18:11:10",
+      "updatedAt": "2026-06-16 18:11:10"
+    },
+    "github-com-fuqun616-eng-wechat-girlfriend-skill": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-05-08 16:24:39",
+      "updatedAt": "2026-05-08 16:24:39"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-gemini-review": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-25 04:06:08",
+      "updatedAt": "2026-05-25 04:06:08"
+    },
+    "github-com-google-gemini-gemini-skills-tree-main-skills-gemini-api-dev": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-25 04:09:33",
+      "updatedAt": "2026-05-25 04:09:33"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-ai-models": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-15 21:59:13",
+      "updatedAt": "2026-06-15 21:59:13"
+    },
+    "github-com-sanjay3290-ai-skills-tree-main-skills-deep-research": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-18 12:48:09",
+      "updatedAt": "2026-06-18 12:48:09"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-code-review": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-18 03:50:39",
+      "updatedAt": "2026-06-18 03:50:39"
+    },
+    "github-com-anthropics-skills-tree-main-skills-theme-factory": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-20 05:59:23",
+      "updatedAt": "2026-06-20 05:59:23"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-credentials": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-15 21:58:54",
+      "updatedAt": "2026-06-15 21:58:54"
+    },
+    "github-com-wrsmith108-varlock-claude-skill-tree-main-skills-varlock": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-10 22:34:14",
+      "updatedAt": "2026-05-10 22:34:14"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-shap": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-09 15:02:21",
+      "updatedAt": "2026-05-09 15:02:21"
+    },
+    "github-com-scarletkc-vexor-tree-main-plugins-vexor-skills-vexor-cli": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-10 13:07:45",
+      "updatedAt": "2026-05-10 13:07:45"
+    },
+    "github-com-cloudflare-skills-tree-main-skills-web-perf": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-10 22:36:23",
+      "updatedAt": "2026-05-10 22:36:23"
+    },
+    "github-com-p4nda0s-reverse-skills": {
+      "downloads": 84,
+      "lastDownloadAt": "2026-05-15 17:51:31",
+      "updatedAt": "2026-05-15 17:51:31"
+    },
+    "github-com-gkeyes-lsposed-module-update-skill": {
+      "downloads": 581,
+      "lastDownloadAt": "2026-06-26 08:10:45",
+      "updatedAt": "2026-06-26 08:10:45"
+    },
+    "github-com-linxstayrs-operitforge-tree-main-skills-ob-arrogant-cat": {
+      "downloads": 381,
+      "lastDownloadAt": "2026-06-26 03:15:11",
+      "updatedAt": "2026-06-26 03:15:11"
+    },
+    "github-com-linxstayrs-operitforge-tree-main-skills-ob-auto-dream": {
+      "downloads": 244,
+      "lastDownloadAt": "2026-06-26 01:23:42",
+      "updatedAt": "2026-06-26 01:23:42"
+    },
+    "github-com-fvadicamo-dev-agent-skills-tree-main-skills-creating-skills": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-21 06:17:48",
+      "updatedAt": "2026-06-21 06:17:48"
+    },
+    "github-com-gmh5225-awesome-game-security": {
+      "downloads": 18,
+      "lastDownloadAt": "2026-05-15 14:44:29",
+      "updatedAt": "2026-05-15 14:44:29"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-10-optimization-awq": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-26 05:07:36",
+      "updatedAt": "2026-06-26 05:07:36"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-competitor-intel": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-06-09 14:51:29",
+      "updatedAt": "2026-06-09 14:51:29"
+    },
+    "github-com-anthropics-skills-tree-main-skills-frontend-design": {
+      "downloads": 50,
+      "lastDownloadAt": "2026-06-25 14:24:24",
+      "updatedAt": "2026-06-25 14:24:24"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-llm-patterns": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-15 21:58:28",
+      "updatedAt": "2026-06-15 21:58:28"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-14-agents-langchain": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-05-30 01:55:17",
+      "updatedAt": "2026-05-30 01:55:17"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-10-optimization-hqq": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-20 14:01:10",
+      "updatedAt": "2026-05-20 14:01:10"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-18-multimodal-llava": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-26 06:43:00",
+      "updatedAt": "2026-06-26 06:43:00"
+    },
+    "github-com-ibelick-ui-skills-tree-main-skills-baseline-ui": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-07 15:53:43",
+      "updatedAt": "2026-06-07 15:53:43"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-vercel-deploy": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-06-20 16:54:05",
+      "updatedAt": "2026-06-20 16:54:05"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-plan": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-18 05:06:53",
+      "updatedAt": "2026-05-18 05:06:53"
+    },
+    "github-com-ibelick-ui-skills-tree-main-skills-fixing-motion-performance": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-21 09:50:18",
+      "updatedAt": "2026-06-21 09:50:18"
+    },
+    "github-com-anthropics-skills-tree-main-skills-web-artifacts-builder": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-22 08:05:58",
+      "updatedAt": "2026-06-22 08:05:58"
+    },
+    "github-com-anthropics-skills-tree-main-skills-webapp-testing": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-13 02:05:59",
+      "updatedAt": "2026-06-13 02:05:59"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-yeet": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-05-31 04:11:30",
+      "updatedAt": "2026-05-31 04:11:30"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-render-deploy": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-20 03:46:08",
+      "updatedAt": "2026-06-20 03:46:08"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-gh-fix-ci": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-31 04:13:23",
+      "updatedAt": "2026-05-31 04:13:23"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-imagegen": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-20 03:46:13",
+      "updatedAt": "2026-06-20 03:46:13"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-gh-address-comments": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-05-31 04:13:25",
+      "updatedAt": "2026-05-31 04:13:25"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-figma-implement-design": {
+      "downloads": 8,
+      "lastDownloadAt": "2026-06-07 11:35:06",
+      "updatedAt": "2026-06-07 11:35:06"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-figma": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-05-31 04:13:32",
+      "updatedAt": "2026-05-31 04:13:32"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-viral-hook-creator": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-18 10:46:55",
+      "updatedAt": "2026-06-18 10:46:55"
+    },
+    "github-com-obra-superpowers-lab-tree-main-skills-slack-messaging": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-09 04:22:23",
+      "updatedAt": "2026-06-09 04:22:23"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-trackio": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-15 21:56:10",
+      "updatedAt": "2026-06-15 21:56:10"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-evaluation": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-15 21:56:18",
+      "updatedAt": "2026-06-15 21:56:18"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-cli": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-15 22:00:29",
+      "updatedAt": "2026-06-15 22:00:29"
+    },
+    "github-com-huggingface-skills-tree-main-skills-hugging-face-datasets": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-15 21:56:19",
+      "updatedAt": "2026-06-15 21:56:19"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-commit-hygiene": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-18 11:00:05",
+      "updatedAt": "2026-06-18 11:00:05"
+    },
+    "github-com-composiohq-awesome-claude-skills-tree-master-changelog-generator": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-17 13:10:20",
+      "updatedAt": "2026-06-17 13:10:20"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-security-ownership-map": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-18 10:47:05",
+      "updatedAt": "2026-06-18 10:47:05"
+    },
+    "github-com-google-labs-code-stitch-skills-tree-main-skills-stitch-loop": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-07 11:36:53",
+      "updatedAt": "2026-06-07 11:36:53"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-workspace": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:13:18",
+      "updatedAt": "2026-05-20 00:13:18"
+    },
+    "github-com-google-labs-code-stitch-skills-tree-main-skills-shadcn-ui": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-06-17 17:41:50",
+      "updatedAt": "2026-06-17 17:41:50"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-ticket-craft": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:14:23",
+      "updatedAt": "2026-05-20 00:14:23"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-team-coordination": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:14:24",
+      "updatedAt": "2026-05-20 00:14:24"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-code-deduplication": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-15 21:58:45",
+      "updatedAt": "2026-06-15 21:58:45"
+    },
+    "github-com-google-labs-code-stitch-skills-tree-main-skills-remotion": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-20 14:29:22",
+      "updatedAt": "2026-06-20 14:29:22"
+    },
+    "github-com-openai-skills-tree-main-skills-curated-speech": {
+      "downloads": 6,
+      "lastDownloadAt": "2026-05-27 11:25:41",
+      "updatedAt": "2026-05-27 11:25:41"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-skill-creator-openai": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-31 04:17:56",
+      "updatedAt": "2026-05-31 04:17:56"
+    },
+    "github-com-fvadicamo-dev-agent-skills-tree-main-skills-github-pr-review": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:01",
+      "updatedAt": "2026-05-20 00:27:01"
+    },
+    "github-com-fvadicamo-dev-agent-skills-tree-main-skills-github-pr-creation": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:03",
+      "updatedAt": "2026-05-20 00:27:03"
+    },
+    "github-com-fvadicamo-dev-agent-skills-tree-main-skills-github-pr-merge": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:04",
+      "updatedAt": "2026-05-20 00:27:04"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-upscale": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-18 02:43:10",
+      "updatedAt": "2026-06-18 02:43:10"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-image-edit": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:10",
+      "updatedAt": "2026-05-20 00:27:10"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-workflow": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:10",
+      "updatedAt": "2026-05-20 00:27:10"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-platform": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:11",
+      "updatedAt": "2026-05-20 00:27:11"
+    },
+    "github-com-ehmo-platform-design-skills-tree-main-skills-web": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-25 14:23:43",
+      "updatedAt": "2026-06-25 14:23:43"
+    },
+    "github-com-coreyhaines31-marketingskills-tree-main-skills-social-content": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 00:27:24",
+      "updatedAt": "2026-05-20 00:27:24"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-18-multimodal-clip": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-26 06:43:13",
+      "updatedAt": "2026-06-26 06:43:13"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-pricing-strategist": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-30 02:00:21",
+      "updatedAt": "2026-05-30 02:00:21"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-03-fine-tuning-axolotl": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-19 20:15:49",
+      "updatedAt": "2026-06-19 20:15:49"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-14-agents-autogpt": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-26 05:07:40",
+      "updatedAt": "2026-06-26 05:07:40"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-supabase-python": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 21:48:25",
+      "updatedAt": "2026-05-20 21:48:25"
+    },
+    "github-com-gokapso-agent-skills-tree-master-skills-integrate-whatsapp": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-20 22:20:21",
+      "updatedAt": "2026-05-20 22:20:21"
+    },
+    "github-com-gokapso-agent-skills-tree-master-skills-observe-whatsapp": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-20 22:19:44",
+      "updatedAt": "2026-05-20 22:19:44"
+    },
+    "github-com-do-do026-operit-flower-skill": {
+      "downloads": 117,
+      "lastDownloadAt": "2026-06-26 02:52:30",
+      "updatedAt": "2026-06-26 02:52:30"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-technical": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-22 01:42:42",
+      "updatedAt": "2026-05-22 01:42:42"
+    },
+    "github-com-prompt-security-clawsec-tree-main-skills-claw-release": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-04 18:05:01",
+      "updatedAt": "2026-06-04 18:05:01"
+    },
+    "github-com-fal-ai-community-skills-tree-main-skills-claude-ai-fal-audio": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-06-20 13:21:07",
+      "updatedAt": "2026-06-20 13:21:07"
+    },
+    "github-com-lawvable-awesome-legal-skills-tree-main-skills-compliance-anthropic": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-31 04:19:01",
+      "updatedAt": "2026-05-31 04:19:01"
+    },
+    "github-com-shadowpr0-security-bluebook-builder-tree-main": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-22 01:42:54",
+      "updatedAt": "2026-05-22 01:42:54"
+    },
+    "github-com-microsoft-skills-tree-main-github-skills-podcast-generation": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-22 09:15:20",
+      "updatedAt": "2026-05-22 09:15:20"
+    },
+    "github-com-komal-skynet-claude-skill-homeassistant-tree-main": {
+      "downloads": 7,
+      "lastDownloadAt": "2026-06-16 13:25:36",
+      "updatedAt": "2026-06-16 13:25:36"
+    },
+    "github-com-yanjun62-operit-spinner-verbs": {
+      "downloads": 183,
+      "lastDownloadAt": "2026-06-26 02:44:06",
+      "updatedAt": "2026-06-26 02:44:06"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-flutter": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-02 06:20:56",
+      "updatedAt": "2026-06-02 06:20:56"
+    },
+    "github-com-obra-superpowers-lab-tree-main-skills-finding-duplicate-functions": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-09 04:21:40",
+      "updatedAt": "2026-06-09 04:21:40"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-20-ml-paper-writing": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-06 13:59:26",
+      "updatedAt": "2026-06-06 13:59:26"
+    },
+    "github-com-anthropics-skills-tree-main-skills-canvas-design": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-20 05:59:05",
+      "updatedAt": "2026-06-20 05:59:05"
+    },
+    "github-com-kikiba0152-character-card-converter-alskills": {
+      "downloads": 501,
+      "lastDownloadAt": "2026-06-26 08:40:00",
+      "updatedAt": "2026-06-26 08:40:00"
+    },
+    "github-com-aas-ee-open-websearch": {
+      "downloads": 289,
+      "lastDownloadAt": "2026-06-25 18:23:50",
+      "updatedAt": "2026-06-25 18:23:50"
+    },
+    "github-com-shpigford-skills-tree-main-readme": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-15 21:59:38",
+      "updatedAt": "2026-06-15 21:59:38"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-postprocessing": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-29 20:05:57",
+      "updatedAt": "2026-05-29 20:05:57"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-x-writer": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-18 10:47:01",
+      "updatedAt": "2026-06-18 10:47:01"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-product-hunt-launch-plan": {
+      "downloads": 28,
+      "lastDownloadAt": "2026-06-26 03:27:35",
+      "updatedAt": "2026-06-26 03:27:35"
+    },
+    "github-com-ognjengt-founder-skills-tree-main-skills-lead-magnet-generator": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-18 10:46:50",
+      "updatedAt": "2026-06-18 10:46:50"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-codex-review": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-13 15:30:08",
+      "updatedAt": "2026-06-13 15:30:08"
+    },
+    "github-com-dyyxxhh-flight-search": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-22 01:53:49",
+      "updatedAt": "2026-06-22 01:53:49"
+    },
+    "github-com-orchestra-research-ai-research-skills-tree-main-03-fine-tuning-peft": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-31 04:05:46",
+      "updatedAt": "2026-05-31 04:05:46"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-iterative-development": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-02 05:17:39",
+      "updatedAt": "2026-06-02 05:17:39"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-react-web": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-02 06:33:50",
+      "updatedAt": "2026-06-02 06:33:50"
+    },
+    "github-com-wwe13309359042-spec-animated-engine": {
+      "downloads": 6293,
+      "lastDownloadAt": "2026-06-26 08:40:12",
+      "updatedAt": "2026-06-26 08:40:12"
+    },
+    "github-com-cloudai-x-threejs-skills-tree-main-skills-threejs-animation": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-03 13:15:40",
+      "updatedAt": "2026-06-03 13:15:40"
+    },
+    "github-com-op7418-youtube-clipper-skill-tree-main": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-18 02:43:16",
+      "updatedAt": "2026-06-18 02:43:16"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-social-card-gen": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-04 09:31:04",
+      "updatedAt": "2026-06-04 09:31:04"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-skills-seo-audit": {
+      "downloads": 4,
+      "lastDownloadAt": "2026-06-18 11:00:03",
+      "updatedAt": "2026-06-18 11:00:03"
+    },
+    "github-com-agricidaniel-claude-seo-tree-main-seo": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-04 18:05:38",
+      "updatedAt": "2026-06-04 18:05:38"
+    },
+    "github-com-seanzor-claude-speed-reader-tree-main-claude-skills-speed": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-06 11:59:26",
+      "updatedAt": "2026-06-06 11:59:26"
+    },
+    "github-com-czlonkowski-n8n-skills-tree-main-skills-n8n-code-javascript": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-06 13:29:53",
+      "updatedAt": "2026-06-06 13:29:53"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-agentic-development": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-06 13:30:07",
+      "updatedAt": "2026-06-06 13:30:07"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-pymc": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-08 00:23:25",
+      "updatedAt": "2026-06-08 00:23:25"
+    },
+    "github-com-perkfly-ex-skill": {
+      "downloads": 115,
+      "lastDownloadAt": "2026-06-26 03:27:22",
+      "updatedAt": "2026-06-26 03:27:22"
+    },
+    "github-com-ibelick-ui-skills-tree-main-skills-fixing-metadata": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-09 04:34:28",
+      "updatedAt": "2026-06-09 04:34:28"
+    },
+    "github-com-pleaseprompto-notebooklm-skill-tree-master": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-09 14:20:57",
+      "updatedAt": "2026-06-09 14:20:57"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-emergency-card": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-09 18:01:06",
+      "updatedAt": "2026-06-09 18:01:06"
+    },
+    "github-com-yubo199601-eng-github-skill-forge": {
+      "downloads": 519,
+      "lastDownloadAt": "2026-06-26 08:42:09",
+      "updatedAt": "2026-06-26 08:42:09"
+    },
+    "github-com-leilaomi-operit-coding-skills": {
+      "downloads": 927,
+      "lastDownloadAt": "2026-06-26 08:24:12",
+      "updatedAt": "2026-06-26 08:24:12"
+    },
+    "github-com-anysearch-ai-anysearch-skill": {
+      "downloads": 193,
+      "lastDownloadAt": "2026-06-26 03:27:19",
+      "updatedAt": "2026-06-26 03:27:19"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-plan-my-day": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:57:41",
+      "updatedAt": "2026-06-15 21:57:41"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-python": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:58:16",
+      "updatedAt": "2026-06-15 21:58:16"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-nodejs-backend": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:58:23",
+      "updatedAt": "2026-06-15 21:58:23"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-medusa": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:58:25",
+      "updatedAt": "2026-06-15 21:58:25"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-database-schema": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:58:39",
+      "updatedAt": "2026-06-15 21:58:39"
+    },
+    "github-com-robzolkos-skill-rails-upgrade-tree-master": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-15 21:59:52",
+      "updatedAt": "2026-06-15 21:59:52"
+    },
+    "github-com-janewas-chem-skill-operit": {
+      "downloads": 129,
+      "lastDownloadAt": "2026-06-26 03:26:23",
+      "updatedAt": "2026-06-26 03:26:23"
+    },
+    "github-com-alchaincyf-nuwa-skill": {
+      "downloads": 199,
+      "lastDownloadAt": "2026-06-26 06:43:16",
+      "updatedAt": "2026-06-26 06:43:16"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-matlab": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-16 18:10:29",
+      "updatedAt": "2026-06-16 18:10:29"
+    },
+    "github-com-shadowpr0-beautiful-prose-tree-main": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-06-17 13:10:26",
+      "updatedAt": "2026-06-17 13:10:26"
+    },
+    "github-com-composiohq-awesome-claude-skills-tree-master-content-research-writer": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-17 13:09:58",
+      "updatedAt": "2026-06-17 13:09:58"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-agent-teams": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-17 13:10:30",
+      "updatedAt": "2026-06-17 13:10:30"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-base": {
+      "downloads": 3,
+      "lastDownloadAt": "2026-06-18 11:00:05",
+      "updatedAt": "2026-06-18 11:00:05"
+    },
+    "github-com-brianrwagner-ai-marketing-skills-tree-main-content-idea-generator": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-18 10:45:10",
+      "updatedAt": "2026-06-18 10:45:10"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-klaviyo": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-18 10:45:15",
+      "updatedAt": "2026-06-18 10:45:15"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-reddit-api": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-18 10:45:16",
+      "updatedAt": "2026-06-18 10:45:16"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-pytdc": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-18 10:46:25",
+      "updatedAt": "2026-06-18 10:46:25"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-rdkit": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-18 10:46:29",
+      "updatedAt": "2026-06-18 10:46:29"
+    },
+    "github-com-alinaqi-claude-bootstrap-tree-main-skills-web-content": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-20 09:46:12",
+      "updatedAt": "2026-06-20 09:46:12"
+    },
+    "github-com-huifer-claude-ally-health-tree-main-claude-skills-fitness-analyzer": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-20 10:43:40",
+      "updatedAt": "2026-06-20 10:43:40"
+    },
+    "github-com-do-do026-ember-memory-blob-main-memory-hygiene-2026-06-15-v2-5-0-md": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-21 08:10:58",
+      "updatedAt": "2026-06-21 08:10:58"
+    },
+    "github-com-getsentry-skills-tree-main-plugins-sentry-skills-skills-create-pr": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-21 06:17:45",
+      "updatedAt": "2026-06-21 06:17:45"
+    },
+    "github-com-better-auth-skills-tree-main-better-auth-create-auth": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-21 06:17:45",
+      "updatedAt": "2026-06-21 06:17:45"
+    },
+    "github-com-hatecandy-batteryalert": {
+      "downloads": 56,
+      "lastDownloadAt": "2026-06-26 08:39:19",
+      "updatedAt": "2026-06-26 08:39:19"
+    },
+    "github-com-rimagination-bili-note": {
+      "downloads": 34,
+      "lastDownloadAt": "2026-06-26 08:24:18",
+      "updatedAt": "2026-06-26 08:24:18"
+    },
+    "github-com-ehmo-platform-design-skills-tree-main-skills-watchos": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-25 14:23:52",
+      "updatedAt": "2026-06-25 14:23:52"
+    },
+    "github-com-k-dense-ai-claude-scientific-skills-tree-main-scientific-skills-qiskit": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-26 05:09:06",
+      "updatedAt": "2026-06-26 05:09:06"
+    }
+  }
+}

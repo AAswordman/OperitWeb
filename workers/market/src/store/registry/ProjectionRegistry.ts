@@ -20,8 +20,8 @@ interface ProjectionConfig {
 const PROJECTIONS: Record<string, ProjectionConfig> = {
   manifest: { requiredScope: [], key: () => "market/v2/manifest.json", render: renderManifest },
   "list.page": { requiredScope: ["list", "sort", "page"], key: (scope: Record<string, string>) => {
-    const listHash = scope.list ? scopeHash(scope.list) : "all";
-    return `market/v2/lists/${listHash}/sort-${scope.sort ?? "updated"}/page-${scope.page ?? "1"}.json`;
+    const listKey = readableListKey(scope.list);
+    return `market/v2/lists/${listKey}/${scope.sort ?? "updated"}/page-${scope.page ?? "1"}.json`;
   }, render: renderListPage },
   "entry.shard": { requiredScope: [], key: (scope: Record<string, string>) => {
     const shard = (scope.shard || (scope.entryId ? scopeHash(scope.entryId).substring(0, 2) : '')).toLowerCase();
@@ -113,6 +113,24 @@ function stableValue(value: unknown): string {
     return JSON.stringify(value, Object.keys(value as Record<string, unknown>).sort());
   }
   return String(value);
+}
+
+function readableListKey(rawList: string | undefined): string {
+  if (!rawList || rawList === "{}") return "all";
+  try {
+    const list = JSON.parse(rawList) as { type?: string; categoryId?: string; featured?: string };
+    const parts: string[] = [];
+    if (list.featured) parts.push("featured", safePathPart(list.featured));
+    if (list.type) parts.push("type", safePathPart(list.type));
+    if (list.categoryId) parts.push("category", safePathPart(list.categoryId));
+    return parts.length > 0 ? parts.join("/") : "all";
+  } catch {
+    return `scope-${scopeHash(rawList)}`;
+  }
+}
+
+function safePathPart(value: string): string {
+  return value.trim().toLowerCase().replace(/[^a-z0-9._-]+/g, "-").replace(/^-+|-+$/g, "") || "unknown";
 }
 
 export { scopeHash } from "./hash.js";

@@ -131,7 +131,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
 
 export function publishArtifactMutation(input: ArtifactPublishInput): MarketMutation {
   const time = input.createdAt || isoNow();
-  const entryId = makeEntryId(input.type, { version: input.version, kind: 'artifact' });
+  const entryId = makeEntryId(input.type, { owner: input.projectKey, version: input.version, kind: 'artifact' });
   const versionId = makeVersionId(entryId, input.version);
   const projectId = makeProjectId(entryId, input.version);
 
@@ -171,6 +171,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
       value: { id: projectId, entryId, projectKey: input.projectKey, rootNodeId: input.rootNodeId, createdAt: time, updatedAt: time },
     },
   ];
+  const assetIds: string[] = [];
 
   for (const node of input.nodes || []) {
     const id = makeArtifactNodeId(projectId, node.nodeKey);
@@ -182,6 +183,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
 
   for (const asset of input.assets || []) {
     const id = `asset-${slug(entryId)}-${slug(asset.name || asset.assetName || asset.url)}`;
+    assetIds.push(id);
     objects.push({
       kind: 'Asset', operation: 'create', id,
       value: { id, versionId, kind: asset.kind, url: asset.url, sha256: asset.sha256, createdAt: time },
@@ -199,6 +201,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },
       { projection: 'entry.versions', scope: { entryId } },
+      ...assetIds.map((assetId) => ({ projection: 'asset.detail' as const, scope: { assetId } })),
       { projection: 'private.publisherShard', scope: { authorId: input.publisherId } },
       { projection: 'private.publisherEntry', scope: { authorId: input.publisherId, entryId } },
     ],

@@ -9,7 +9,8 @@
  * - keep legacy format versions as *_legacy_issue_v1
  * - build artifact project/node/edge tables in FK-safe order
  * - split repo plugin author (repo owner) from publisher (issue user)
- * - never import legacy comments/reactions
+ * - import v1 download/like statistics once as v2 D1 baseline
+ * - never import legacy comments
  */
 
 import fs from 'fs';
@@ -25,6 +26,8 @@ const DB_PATH = path.join(OUTPUT_DIR, 'local_market.db');
 const SQL_PATH = path.join(OUTPUT_DIR, 'import_batch.sql');
 const REPORT_PATH = path.join(OUTPUT_DIR, 'migration-report.json');
 const OWNER_CACHE_PATH = path.join(OUTPUT_DIR, 'owner_cache.json');
+const LEGACY_STATS_DIR = path.join(OUTPUT_DIR, 'legacy-stats');
+const STATIC_BASE = 'https://static.operit.app';
 
 const PUBLIC_LABEL = {
   script: 'script-artifact',
@@ -84,10 +87,22 @@ const SQL_EXPORT_ORDER = [
   ['repo_plugin_versions', 'id, version_id, ref_type, ref_name, commit_sha, subdir, manifest_path, install_config, created_at, updated_at'],
   ['market_assets', 'id, version_id, kind, url, gh_owner, gh_repo, gh_release_tag, asset_name, sha256, size_bytes, content_type, created_at'],
   ['market_curations', 'id, list_key, entry_id, position, note, starts_at, ends_at, created_at, updated_at'],
+  ['market_entry_stats', 'entry_id, type, legacy_downloads, legacy_likes, cf_downloads, cf_likes, downloads_total, likes_total, last_download_at, last_like_at, updated_at'],
+  ['market_reaction_counts', 'id, entry_id, reaction, gh_count, cf_count, total_count, updated_at'],
 ];
 
 function slug(v) {
   return String(v || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'unknown';
+}
+
+function normalizeLegacyStatKey(value) {
+  const normalized = String(value || '')
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '');
+  return normalized || 'artifact';
 }
 
 function isoNow() {
@@ -110,6 +125,19 @@ function parseRepoUrl(url) {
   const m = String(url).match(/github\.com\/([^/]+)\/([^/\s#?]+)(?:\/(?:tree|blob)\/([^/]+)\/(.*))?/i);
   if (!m) return null;
   return { owner: m[1], repo: m[2].replace(/\.git$/i, ''), ref: m[3] || '', subdir: (m[4] || '').replace(/^\/+|\/+$/g, '') };
+}
+
+function canonicalizeMarketSource(raw) {
+  const value = String(raw || '').trim();
+  if (!value) return '';
+  try {
+    const uri = new URL(value);
+    const host = String(uri.hostname || '').replace(/^www\./i, '').trim();
+    const pathPart = String(uri.pathname || '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '').trim();
+    return [host, pathPart].filter(Boolean).join('/');
+  } catch {
+    return value.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\.git$/i, '').replace(/^\/+|\/+$/g, '').trim();
+  }
 }
 
 function normalizeRepoSourceUrl(url) {
@@ -164,6 +192,88 @@ function cleanDetail(value) {
   return String(value || '').replace(/["']/g, '').replace(/\r\n/g, '\n').trim();
 }
 
+function normalizeDetailText(value) {
+  return cleanDetail(value)
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/\n{3,}/g, '\n\n')
+    .replace(/^\s*---+\s*$/gm, '')
+    .trim();
+}
+
+function headingText(line) {
+  return String(line || '').replace(/^#{1,6}\s+/, '').trim().toLowerCase();
+}
+
+function isHeadingLine(line) {
+  return /^#{1,6}\s+/.test(String(line || '').trim());
+}
+
+function splitMarkdownSections(markdown) {
+  const sections = [];
+  let current = { heading: '', rawHeading: '', lines: [] };
+  for (const line of String(markdown || '').split(/\n/)) {
+    if (isHeadingLine(line)) {
+      sections.push(current);
+      current = { heading: headingText(line), rawHeading: line.replace(/^#{1,6}\s+/, '').trim(), lines: [] };
+    } else {
+      current.lines.push(line);
+    }
+  }
+  sections.push(current);
+  return sections.map((section) => ({ heading: section.heading, rawHeading: section.rawHeading, text: normalizeDetailText(section.lines.join('\n')) }));
+}
+
+function sectionAfterHeading(markdown, matcher) {
+  const sections = splitMarkdownSections(markdown);
+  const found = sections.find((section) => matcher(section.heading) && section.text);
+  return found?.text || '';
+}
+
+function removeRepoTemplateSections(markdown) {
+  const stop = /^(🔗\s*)?(仓库信息|repository info|repository)$|^(⚡\s*)?(快速安装|quick install)$|^(📦\s*)?(安装方式|installation)$|^方式[一二三]|^method\s+\d|^(🛠️\s*)?(技术信息|technical info)$|^(✅\s*)?已验证$|^(⚠️\s*)?注意事项$|^installation$/i;
+  const kept = splitMarkdownSections(markdown)
+    .filter((section) => {
+      if (!section.heading) return Boolean(section.text);
+      return !stop.test(section.heading);
+    })
+    .map((section) => section.rawHeading ? `## ${section.rawHeading}\n\n${section.text}` : section.text)
+    .filter(Boolean);
+  return normalizeDetailText(kept.join('\n\n'));
+}
+
+function cleanArtifactDetail(entry, headingName) {
+  const source = normalizeDetailText(entry.detail || '');
+  const primary = sectionAfterHeading(source, (heading) => heading === headingName);
+  if (primary) return primary;
+  const projectDescription = normalizeDetailText(entry.data?.projectDescription || '');
+  if (projectDescription) return projectDescription;
+  const marker = source.search(/^##\s+(Project Cluster|Artifact|Metadata)\s*$/im);
+  const beforeMeta = marker >= 0 ? source.slice(0, marker) : source;
+  return normalizeDetailText(beforeMeta.replace(new RegExp(`^##\\s+${headingName}\\s*\\n+`, 'i'), '')) || cleanDetail(entry.description || entry.title || '');
+}
+
+function cleanSkillDetail(entry) {
+  const source = normalizeDetailText(entry.detail || '');
+  const extracted = removeRepoTemplateSections(source);
+  return stripLeadingInfoHeading(extracted, /^(📋\s*)?(skill 信息|skill info)$/i) || cleanDetail(entry.description || entry.title || '');
+}
+
+function cleanMcpDetail(entry) {
+  const source = normalizeDetailText(entry.detail || '');
+  const extracted = removeRepoTemplateSections(source);
+  return stripLeadingInfoHeading(extracted, /^(📋\s*)?(插件信息|plugin info)$/i) || cleanDetail(entry.description || entry.title || '');
+}
+
+function stripLeadingInfoHeading(text, headingPattern) {
+  let value = normalizeDetailText(text);
+  const sections = splitMarkdownSections(value);
+  if (sections.length >= 2 && !sections[0].text && headingPattern.test(sections[1].heading)) {
+    sections.splice(0, 2, { heading: '', rawHeading: '', text: sections[1].text });
+    value = normalizeDetailText(sections.map((section) => section.rawHeading ? `## ${section.rawHeading}\n\n${section.text}` : section.text).filter(Boolean).join('\n\n'));
+  }
+  return value.replace(/^\*\*(描述|description):\*\*\s*/im, '').trim();
+}
+
 function hashId(prefix, value) {
   return `${prefix}-${crypto.createHash('sha1').update(String(value)).digest('hex').slice(0, 16)}`;
 }
@@ -188,7 +298,11 @@ function getDescription(entry) {
 }
 
 function getDetail(entry) {
-  return cleanDetail(entry.detail || entry.description || entry.data?.projectDescription || entry.data?.description || entry.title || '');
+  if (entry.type === 'script') return cleanArtifactDetail(entry, 'script');
+  if (entry.type === 'package') return cleanArtifactDetail(entry, 'package');
+  if (entry.type === 'skill') return cleanSkillDetail(entry);
+  if (entry.type === 'mcp') return cleanMcpDetail(entry);
+  return cleanDetail(entry.description || entry.title || '');
 }
 
 function guessCategory(entry) {
@@ -435,10 +549,85 @@ function makeGroupKey(entry) {
 }
 
 function makeProjectEntryKey(entry) {
-  if (entry.data.kind === 'artifact') return slug(entry.data.projectId);
+  if (entry.data.kind === 'artifact') return normalizeLegacyStatKey(entry.data.projectId);
   const repo = parseRepoUrl(entry.data.repoUrl);
   if (!repo) return `issue-${entry.number}`;
   return repo.subdir ? `github-com-${slug(repo.owner)}-${slug(repo.repo)}-${slug(repo.subdir)}` : `github-com-${slug(repo.owner)}-${slug(repo.repo)}`;
+}
+
+function legacyStatCandidatesForEntry(entry, entryId) {
+  const candidates = new Set();
+  const add = (value) => {
+    const normalized = normalizeLegacyStatKey(value);
+    if (normalized && normalized !== 'artifact') candidates.add(normalized);
+  };
+  add(entryId);
+  add(makeProjectEntryKey(entry));
+  if (entry.data?.kind === 'artifact') {
+    add(entry.data.projectId);
+    add(entry.data.normalizedId);
+    add(entry.data.runtimePackageId);
+    add(entry.data.assetName);
+    add(entry.title);
+  } else if (entry.data?.kind === 'repo') {
+    add(canonicalizeMarketSource(entry.data.repoUrl));
+    const repo = parseRepoUrl(entry.data.repoUrl);
+    if (repo) {
+      add(`${repo.owner}/${repo.repo}${repo.subdir ? `/${repo.subdir}` : ''}`);
+      add(`github-com-${repo.owner}-${repo.repo}${repo.subdir ? `-${repo.subdir}` : ''}`);
+    }
+    add(entry.title);
+  }
+  return candidates;
+}
+
+function pickLegacyStats(statsMap, candidates) {
+  let best = { downloads: 0, likes: 0, lastDownloadAt: null, updatedAt: null };
+  for (const key of candidates) {
+    const found = statsMap.get(key);
+    if (!found) continue;
+    if (Number(found.downloads || 0) > Number(best.downloads || 0) || Number(found.likes || 0) > Number(best.likes || 0)) best = found;
+  }
+  return best;
+}
+
+async function loadLegacyStatsByType(types) {
+  const result = new Map();
+  for (const type of types) result.set(type, await loadLegacyStats(type));
+  return result;
+}
+
+async function loadLegacyStats(type) {
+  const localPath = path.join(LEGACY_STATS_DIR, `${type}.json`);
+  let json = null;
+  if (fs.existsSync(localPath)) {
+    json = JSON.parse(fs.readFileSync(localPath, 'utf8'));
+  } else {
+    const url = `${STATIC_BASE}/market-stats/stats/${encodeURIComponent(type)}.json`;
+    const response = await fetch(url);
+    if (!response.ok) throw new Error(`Failed to fetch v1 stats baseline: ${url} -> ${response.status}`);
+    json = await response.json();
+    fs.mkdirSync(LEGACY_STATS_DIR, { recursive: true });
+    fs.writeFileSync(localPath, `${JSON.stringify(json, null, 2)}\n`, 'utf8');
+  }
+  const items = json && typeof json === 'object' && !Array.isArray(json) && json.items && typeof json.items === 'object' ? json.items : {};
+  const map = new Map();
+  for (const [rawId, value] of Object.entries(items)) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) continue;
+    map.set(normalizeLegacyStatKey(rawId), {
+      downloads: toFiniteInt(value.downloads),
+      likes: toFiniteInt(value.likes),
+      lastDownloadAt: typeof value.lastDownloadAt === 'string' ? value.lastDownloadAt : null,
+      updatedAt: typeof value.updatedAt === 'string' ? value.updatedAt : null,
+    });
+  }
+  console.log(`Legacy stats baseline ${type}: ${map.size}`);
+  return map;
+}
+
+function toFiniteInt(value) {
+  const number = Number(value || 0);
+  return Number.isFinite(number) ? Math.max(0, Math.round(number)) : 0;
 }
 
 async function main() {
@@ -475,6 +664,7 @@ async function main() {
   console.log(`Valid parsed rows: ${filtered.length} (skipped ${skipped.length})`);
 
   const ownerCache = await loadOwnerCache(filtered);
+  const legacyStatsByType = await loadLegacyStatsByType([...new Set(filtered.map((entry) => entry.type))].sort());
   const authorMap = new Map();
   for (const entry of filtered) {
     addAuthor(authorMap, entry.user_id, entry.user_login, entry.user_avatar);
@@ -533,6 +723,21 @@ async function main() {
       `INSERT OR IGNORE INTO market_entries (id, type, title, description, detail, author_id, publisher_id, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [entryId, first.type, cleanText(display.title, 200), getDescription(display), getDetail(display), authorDbId, publisherId, categoryId, entryState, first.created_at || now, display.updated_at || first.updated_at || now, entryState === 'approved' ? publishedAt : null]
     );
+
+    const legacyStats = pickLegacyStats(legacyStatsByType.get(first.type) || new Map(), legacyStatCandidatesForEntry(display, entryId));
+    if (legacyStats.downloads > 0 || legacyStats.likes > 0) {
+      const statsUpdatedAt = legacyStats.updatedAt || legacyStats.lastDownloadAt || now;
+      run(db,
+        `INSERT OR REPLACE INTO market_entry_stats (entry_id, type, legacy_downloads, legacy_likes, cf_downloads, cf_likes, downloads_total, likes_total, last_download_at, last_like_at, updated_at) VALUES (?, ?, ?, ?, 0, 0, ?, ?, ?, NULL, ?)`,
+        [entryId, first.type, legacyStats.downloads, legacyStats.likes, legacyStats.downloads, legacyStats.likes, legacyStats.lastDownloadAt || null, statsUpdatedAt]
+      );
+      if (legacyStats.likes > 0) {
+        run(db,
+          `INSERT OR REPLACE INTO market_reaction_counts (id, entry_id, reaction, gh_count, cf_count, total_count, updated_at) VALUES (?, ?, '+1', ?, 0, ?, ?)`,
+          [`reaction-${entryId}-+1`, entryId, legacyStats.likes, legacyStats.likes, statsUpdatedAt]
+        );
+      }
+    }
 
     const allEntryReasons = new Set();
     for (const entry of entries) {
@@ -658,7 +863,6 @@ async function main() {
 function buildReport(db, extra) {
   const tableCounts = Object.fromEntries(SQL_EXPORT_ORDER.map(([table]) => [table, scalar(db, `SELECT COUNT(*) FROM ${table}`)]));
   tableCounts.market_comments = scalar(db, 'SELECT COUNT(*) FROM market_comments');
-  tableCounts.market_reaction_counts = scalar(db, 'SELECT COUNT(*) FROM market_reaction_counts');
   return {
     migratedAt: extra.now,
     rawRows: extra.rawRows,

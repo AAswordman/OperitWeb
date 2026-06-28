@@ -3,13 +3,39 @@ import { createR2Backend } from './backend/R2Backend.js';
 import { createObjectRegistry } from './registry/ObjectRegistry.js';
 import { createProjectionRegistry } from './registry/ProjectionRegistry.js';
 import { validateMutation } from './model/MarketMutation.js';
-import type { D1Backend, MarketEnv, MarketMutation, MarketStore, ProjectionPlan, R2Backend, UsageStats } from '../types.js';
+import { isoNow } from '../shared.js';
+import type { D1Backend, JsonObject, MarketEnv, MarketMutation, MarketStore, ProjectionPlan, R2Backend, UsageStats, V2AnalyticsAggregateInput } from '../types.js';
 
 export function createMarketStore(env: MarketEnv): MarketStore {
   const d1: D1Backend = env.d1Backend ?? createD1Backend(requireDb(env));
   const r2: R2Backend = env.r2Backend ?? createR2Backend(requireBucket(env));
   const objectRegistry = env.objectRegistry ?? createObjectRegistry();
   const projectionRegistry = env.projectionRegistry ?? createProjectionRegistry();
+
+  async function materializeProjection(projectionPlan: ProjectionPlan) {
+    const before = usageOf(d1, r2, env);
+    const scope = projectionRegistry.normalizeScope(projectionPlan.projection, projectionPlan.scope);
+    const result: { written: string[] } = await projectionRegistry.render({ d1, r2 }, { ...projectionPlan, scope, ...(projectionPlan.pageSize !== undefined ? { pageSize: projectionPlan.pageSize } : {}) });
+    const scopeKey = projectionRegistry.scopeKeyOf(scope);
+    await d1.deleteDirty(projectionPlan.projection, scopeKey);
+    return {
+      ok: true as const,
+      projection: projectionPlan.projection,
+      scope,
+      written: result.written,
+      clearedDirty: [scopeKey],
+      stats: diffUsage(before, usageOf(d1, r2, env)),
+    };
+  }
+
+  async function materializeEntryAssets(entryId: string) {
+    let materialized = 0;
+    for (const asset of await d1.listAssets(entryId)) {
+      await materializeProjection({ projection: 'asset.detail', scope: { assetId: String(asset.id || '') } });
+      materialized++;
+    }
+    return { ok: true as const, materialized };
+  }
 
   return {
     d1,
@@ -49,25 +75,104 @@ export function createMarketStore(env: MarketEnv): MarketStore {
     },
 
     async materialize(projectionPlan: ProjectionPlan) {
-      const before = usageOf(d1, r2, env);
-      const scope = projectionRegistry.normalizeScope(projectionPlan.projection, projectionPlan.scope);
-      const result: { written: string[] } = await projectionRegistry.render({ d1, r2 }, { ...projectionPlan, scope });
-      const scopeKey = projectionRegistry.scopeKeyOf(scope);
-      await d1.deleteDirty(projectionPlan.projection, scopeKey);
-      return {
-        ok: true as const,
-        projection: projectionPlan.projection,
-        scope,
-        written: result.written,
-        clearedDirty: [scopeKey],
-        stats: diffUsage(before, usageOf(d1, r2, env)),
-      };
+      return materializeProjection(projectionPlan);
+    },
+
+    async materializeEntryAssets(entryId: string) {
+      return materializeEntryAssets(entryId);
+    },
+
+    async materializeEntryAssetsByEntryVersionDirty(entryId: string) {
+      return materializeEntryAssets(entryId);
     },
 
     async readProjection(projectionPlan: ProjectionPlan) {
       const scope = projectionRegistry.normalizeScope(projectionPlan.projection, projectionPlan.scope);
       projectionRegistry.assertAllowed(projectionPlan.projection, scope);
       return r2.readJson(projectionRegistry.keyOf(projectionPlan.projection, scope));
+    },
+
+    async getMeta(key: string) {
+      return d1.getMeta(key);
+    },
+
+    async setMeta(key: string, value: string) {
+      return d1.setMeta(key, value);
+    },
+
+    async listDirty(limit = 100) {
+      return d1.listDirty(limit);
+    },
+
+    async deleteDirty(projection, scopeKey) {
+      await d1.deleteDirty(projection, scopeKey);
+    },
+
+    async loadBuildSnapshot() {
+      return d1.loadBuildSnapshot();
+    },
+
+    async aggregateV2Analytics(input: V2AnalyticsAggregateInput): Promise<JsonObject> {
+      if (input.rows.length === 0) {
+        await d1.setMeta('v2_analytics_aggregate_cursor', input.windowEnd);
+        return { ok: true, aggregated: 0, source: input.source, windowStart: input.windowStart, windowEnd: input.windowEnd };
+      }
+
+      const now = isoNow();
+      let downloads = 0;
+      let likes = 0;
+      const touchedEntryIds = new Set<string>();
+      const touchedTypes = new Set<string>();
+
+      for (const row of input.rows) {
+        const event = String(row.event || '').trim();
+        const type = String(row.type || '').trim();
+        const entryId = String(row.entryId || '').trim();
+        if (!entryId || !type) continue;
+        const total = toWeightedCount(row.total, row.sampleInterval);
+        if (total <= 0) continue;
+        const lastAt = normalizeOptionalTimestamp(row.lastAt) || input.windowEnd;
+        const downloadDelta = event === 'download' ? total : 0;
+        const likeDelta = event === 'like' ? total : 0;
+
+        await d1.incrementEntryStats({
+          entryId, type, downloadDelta, likeDelta,
+          lastDownloadAt: downloadDelta > 0 ? lastAt : null,
+          lastLikeAt: likeDelta > 0 ? lastAt : null,
+          updatedAt: now,
+        });
+
+        if (likeDelta > 0) {
+          const current = await d1.getEntryStats(entryId);
+          await d1.aggregateReaction({
+            id: `reaction-${entryId}-+1`,
+            entryId,
+            reaction: '+1',
+            ghCount: Number(current?.legacy_likes || 0),
+            cfCount: Number(current?.cf_likes || 0),
+            totalCount: Number(current?.likes_total || 0),
+            updatedAt: now,
+          });
+        }
+
+        downloads += downloadDelta;
+        likes += likeDelta;
+        touchedEntryIds.add(entryId);
+        touchedTypes.add(type);
+      }
+
+      await d1.recordAnalyticsAggregateWindow({ id: `v2-${input.windowStart}-${input.windowEnd}`, windowStart: input.windowStart, windowEnd: input.windowEnd, downloads, likes, createdAt: now });
+      await d1.setMeta('v2_analytics_aggregate_cursor', input.windowEnd);
+
+      for (const entryId of touchedEntryIds) {
+        await d1.upsertDirty('entry.shard', projectionRegistry.scopeKeyOf(projectionRegistry.normalizeScope('entry.shard', { entryId })), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+      }
+      await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: {}, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+      for (const type of touchedTypes) {
+        await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+      }
+
+      return { ok: true, aggregated: input.rows.length, downloads, likes, entries: touchedEntryIds.size, source: input.source, windowStart: input.windowStart, windowEnd: input.windowEnd };
     },
 
     async scanDirty(limit = 100) {
@@ -83,6 +188,20 @@ export function createMarketStore(env: MarketEnv): MarketStore {
       return usageOf(d1, r2, env);
     },
   };
+}
+
+function toWeightedCount(value: unknown, sampleInterval: unknown): number {
+  const numericValue = Number(String(value || '0'));
+  const numericSampleInterval = Number(String(sampleInterval || '1'));
+  if (!Number.isFinite(numericValue) || !Number.isFinite(numericSampleInterval)) return 0;
+  return Math.max(0, Math.round(numericValue * numericSampleInterval));
+}
+
+function normalizeOptionalTimestamp(value: unknown): string | null {
+  const raw = String(value || '').trim();
+  if (!raw) return null;
+  const parsed = Date.parse(raw);
+  return Number.isFinite(parsed) ? new Date(parsed).toISOString() : null;
 }
 
 function requireDb(env: MarketEnv) {

@@ -35,7 +35,7 @@ const GuideHubPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
       }
     : {
         title: 'User Guide',
-        desc: 'Choose between the legacy docs, the new-docs placeholder, and the plugin tutorial. The legacy docs remain the main complete manual for now.',
+        desc: 'Technical documentation and the plugin usage guide.',
         cards: [
           {
             title: 'Legacy Docs',

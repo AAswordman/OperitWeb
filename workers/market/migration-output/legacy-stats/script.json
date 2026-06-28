@@ -1,0 +1,490 @@
+{
+  "updatedAt": "2026-06-28T12:00:48.880Z",
+  "items": {
+    "artifact": {
+      "downloads": 444,
+      "lastDownloadAt": "2026-06-26 08:02:42",
+      "updatedAt": "2026-06-26 08:02:42"
+    },
+    "baidu-image-search": {
+      "downloads": 197,
+      "lastDownloadAt": "2026-06-26 05:09:02",
+      "updatedAt": "2026-06-26 05:09:02"
+    },
+    "bilibili-tools": {
+      "downloads": 511,
+      "lastDownloadAt": "2026-06-26 08:31:37",
+      "updatedAt": "2026-06-26 08:31:37"
+    },
+    "qweather": {
+      "downloads": 252,
+      "lastDownloadAt": "2026-06-26 08:37:04",
+      "updatedAt": "2026-06-26 08:37:04"
+    },
+    "music-studio": {
+      "downloads": 347,
+      "lastDownloadAt": "2026-06-25 22:50:25",
+      "updatedAt": "2026-06-25 22:50:25"
+    },
+    "multi-search-pro": {
+      "downloads": 252,
+      "lastDownloadAt": "2026-06-25 22:50:22",
+      "updatedAt": "2026-06-25 22:50:22"
+    },
+    "show-local-image": {
+      "downloads": 33,
+      "lastDownloadAt": "2026-04-28 17:51:13",
+      "updatedAt": "2026-04-28 17:51:13"
+    },
+    "bignumbercalculator": {
+      "downloads": 221,
+      "lastDownloadAt": "2026-06-26 02:37:45",
+      "updatedAt": "2026-06-26 02:37:45"
+    },
+    "universal-draw": {
+      "downloads": 380,
+      "lastDownloadAt": "2026-06-26 08:04:43",
+      "updatedAt": "2026-06-26 08:04:43"
+    },
+    "android-dev-agent": {
+      "downloads": 1504,
+      "lastDownloadAt": "2026-06-26 08:24:38",
+      "updatedAt": "2026-06-26 08:24:38"
+    },
+    "system-tools-pro": {
+      "downloads": 505,
+      "lastDownloadAt": "2026-06-26 08:04:16",
+      "updatedAt": "2026-06-26 08:04:16"
+    },
+    "douyin-parser": {
+      "downloads": 304,
+      "lastDownloadAt": "2026-06-25 22:50:05",
+      "updatedAt": "2026-06-25 22:50:05"
+    },
+    "media-display": {
+      "downloads": 482,
+      "lastDownloadAt": "2026-06-26 08:35:57",
+      "updatedAt": "2026-06-26 08:35:57"
+    },
+    "yandex-search": {
+      "downloads": 253,
+      "lastDownloadAt": "2026-06-25 22:47:58",
+      "updatedAt": "2026-06-25 22:47:58"
+    },
+    "spiderdev": {
+      "downloads": 47,
+      "lastDownloadAt": "2026-05-02 01:43:49",
+      "updatedAt": "2026-05-02 01:43:49"
+    },
+    "weather-alert": {
+      "downloads": 206,
+      "lastDownloadAt": "2026-06-26 00:03:00",
+      "updatedAt": "2026-06-26 00:03:00"
+    },
+    "wechat-claude-bridge": {
+      "downloads": 271,
+      "lastDownloadAt": "2026-06-23 13:54:13",
+      "updatedAt": "2026-06-23 13:54:13"
+    },
+    "chatdiarylogger": {
+      "downloads": 192,
+      "lastDownloadAt": "2026-06-23 11:15:47",
+      "updatedAt": "2026-06-23 11:15:47"
+    },
+    "password-vault": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-05-02 10:22:37",
+      "updatedAt": "2026-05-02 10:22:37"
+    },
+    "chat-permission-filter": {
+      "downloads": 281,
+      "lastDownloadAt": "2026-06-26 08:36:53",
+      "updatedAt": "2026-06-26 08:36:53"
+    },
+    "agentworld": {
+      "downloads": 346,
+      "lastDownloadAt": "2026-06-25 21:10:45",
+      "updatedAt": "2026-06-25 21:10:45"
+    },
+    "tasker": {
+      "downloads": 107,
+      "lastDownloadAt": "2026-06-20 13:41:13",
+      "updatedAt": "2026-06-20 13:41:13"
+    },
+    "vflow-trigger": {
+      "downloads": 77,
+      "lastDownloadAt": "2026-06-20 11:31:41",
+      "updatedAt": "2026-06-20 11:31:41"
+    },
+    "pdf-vision-parser": {
+      "downloads": 120,
+      "lastDownloadAt": "2026-06-26 00:31:06",
+      "updatedAt": "2026-06-26 00:31:06"
+    },
+    "hex-editor": {
+      "downloads": 128,
+      "lastDownloadAt": "2026-06-26 07:08:54",
+      "updatedAt": "2026-06-26 07:08:54"
+    },
+    "netdiag-box": {
+      "downloads": 164,
+      "lastDownloadAt": "2026-06-26 02:39:04",
+      "updatedAt": "2026-06-26 02:39:04"
+    },
+    "multi-video-summarizer-js": {
+      "downloads": 227,
+      "lastDownloadAt": "2026-06-25 22:48:53",
+      "updatedAt": "2026-06-25 22:48:53"
+    },
+    "qrcode-generator": {
+      "downloads": 117,
+      "lastDownloadAt": "2026-06-25 22:48:50",
+      "updatedAt": "2026-06-25 22:48:50"
+    },
+    "academic-search": {
+      "downloads": 40,
+      "lastDownloadAt": "2026-05-11 10:27:03",
+      "updatedAt": "2026-05-11 10:27:03"
+    },
+    "sunomusic": {
+      "downloads": 33,
+      "lastDownloadAt": "2026-05-12 15:36:10",
+      "updatedAt": "2026-05-12 15:36:10"
+    },
+    "com-operit-wanzhi-wechat": {
+      "downloads": 235,
+      "lastDownloadAt": "2026-06-25 22:44:49",
+      "updatedAt": "2026-06-25 22:44:49"
+    },
+    "metaso": {
+      "downloads": 31,
+      "lastDownloadAt": "2026-05-12 15:36:11",
+      "updatedAt": "2026-05-12 15:36:11"
+    },
+    "tianpuyue-music": {
+      "downloads": 11,
+      "lastDownloadAt": "2026-05-12 15:36:12",
+      "updatedAt": "2026-05-12 15:36:12"
+    },
+    "apk-direct-installer": {
+      "downloads": 460,
+      "lastDownloadAt": "2026-06-26 08:35:24",
+      "updatedAt": "2026-06-26 08:35:24"
+    },
+    "goofish-search": {
+      "downloads": 142,
+      "lastDownloadAt": "2026-06-25 22:48:30",
+      "updatedAt": "2026-06-25 22:48:30"
+    },
+    "deepseek-tui": {
+      "downloads": 9,
+      "lastDownloadAt": "2026-05-11 10:26:54",
+      "updatedAt": "2026-05-11 10:26:54"
+    },
+    "wechat-bridge-v2": {
+      "downloads": 169,
+      "lastDownloadAt": "2026-06-26 03:39:35",
+      "updatedAt": "2026-06-26 03:39:35"
+    },
+    "mygo-searcher": {
+      "downloads": 78,
+      "lastDownloadAt": "2026-06-26 00:31:01",
+      "updatedAt": "2026-06-26 00:31:01"
+    },
+    "github-enhanced": {
+      "downloads": 208,
+      "lastDownloadAt": "2026-06-26 05:21:11",
+      "updatedAt": "2026-06-26 05:21:11"
+    },
+    "zero-termux-toolkit": {
+      "downloads": 618,
+      "lastDownloadAt": "2026-06-26 08:04:02",
+      "updatedAt": "2026-06-26 08:04:02"
+    },
+    "jadx-toolkit": {
+      "downloads": 537,
+      "lastDownloadAt": "2026-06-26 08:41:38",
+      "updatedAt": "2026-06-26 08:41:38"
+    },
+    "plugin-backup-manager": {
+      "downloads": 165,
+      "lastDownloadAt": "2026-06-25 22:48:04",
+      "updatedAt": "2026-06-25 22:48:04"
+    },
+    "pexels-search": {
+      "downloads": 75,
+      "lastDownloadAt": "2026-06-26 00:30:59",
+      "updatedAt": "2026-06-26 00:30:59"
+    },
+    "reversi-game": {
+      "downloads": 2,
+      "lastDownloadAt": "2026-05-14 22:12:12",
+      "updatedAt": "2026-05-14 22:12:12"
+    },
+    "tts-toolkit": {
+      "downloads": 113,
+      "lastDownloadAt": "2026-06-25 11:09:32",
+      "updatedAt": "2026-06-25 11:09:32"
+    },
+    "internet-doc-learner": {
+      "downloads": 150,
+      "lastDownloadAt": "2026-06-26 05:09:02",
+      "updatedAt": "2026-06-26 05:09:02"
+    },
+    "sub-agent-manager": {
+      "downloads": 267,
+      "lastDownloadAt": "2026-06-26 08:37:45",
+      "updatedAt": "2026-06-26 08:37:45"
+    },
+    "operit-webdav-sync": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-06-18 05:16:46",
+      "updatedAt": "2026-06-18 05:16:46"
+    },
+    "haze-bar": {
+      "downloads": 218,
+      "lastDownloadAt": "2026-06-26 05:08:30",
+      "updatedAt": "2026-06-26 05:08:30"
+    },
+    "hyperframes-lite": {
+      "downloads": 77,
+      "lastDownloadAt": "2026-06-25 22:46:52",
+      "updatedAt": "2026-06-25 22:46:52"
+    },
+    "amap-mcp-server": {
+      "downloads": 112,
+      "lastDownloadAt": "2026-06-26 00:30:46",
+      "updatedAt": "2026-06-26 00:30:46"
+    },
+    "gitee": {
+      "downloads": 82,
+      "lastDownloadAt": "2026-06-25 22:46:48",
+      "updatedAt": "2026-06-25 22:46:48"
+    },
+    "secretary": {
+      "downloads": 123,
+      "lastDownloadAt": "2026-06-26 05:38:00",
+      "updatedAt": "2026-06-26 05:38:00"
+    },
+    "chara-safe-editor": {
+      "downloads": 95,
+      "lastDownloadAt": "2026-06-25 07:51:20",
+      "updatedAt": "2026-06-25 07:51:20"
+    },
+    "volcano-draw": {
+      "downloads": 87,
+      "lastDownloadAt": "2026-06-26 02:24:46",
+      "updatedAt": "2026-06-26 02:24:46"
+    },
+    "sensenova-draw": {
+      "downloads": 67,
+      "lastDownloadAt": "2026-06-26 00:30:39",
+      "updatedAt": "2026-06-26 00:30:39"
+    },
+    "math-canvas": {
+      "downloads": 105,
+      "lastDownloadAt": "2026-06-26 02:41:27",
+      "updatedAt": "2026-06-26 02:41:27"
+    },
+    "autojs6-runner": {
+      "downloads": 132,
+      "lastDownloadAt": "2026-06-25 22:46:26",
+      "updatedAt": "2026-06-25 22:46:26"
+    },
+    "magisk-module-builder": {
+      "downloads": 206,
+      "lastDownloadAt": "2026-06-26 05:58:40",
+      "updatedAt": "2026-06-26 05:58:40"
+    },
+    "mimo-video-async-batch": {
+      "downloads": 80,
+      "lastDownloadAt": "2026-06-25 22:45:19",
+      "updatedAt": "2026-06-25 22:45:19"
+    },
+    "mimo-video-async": {
+      "downloads": 50,
+      "lastDownloadAt": "2026-06-24 12:36:07",
+      "updatedAt": "2026-06-24 12:36:07"
+    },
+    "semble": {
+      "downloads": 110,
+      "lastDownloadAt": "2026-06-25 22:46:08",
+      "updatedAt": "2026-06-25 22:46:08"
+    },
+    "mimo-video": {
+      "downloads": 37,
+      "lastDownloadAt": "2026-06-22 00:36:23",
+      "updatedAt": "2026-06-22 00:36:23"
+    },
+    "custom-draw": {
+      "downloads": 153,
+      "lastDownloadAt": "2026-06-26 04:24:49",
+      "updatedAt": "2026-06-26 04:24:49"
+    },
+    "shizuku-manager": {
+      "downloads": 301,
+      "lastDownloadAt": "2026-06-26 03:28:32",
+      "updatedAt": "2026-06-26 03:28:32"
+    },
+    "netease-music": {
+      "downloads": 109,
+      "lastDownloadAt": "2026-06-26 03:16:32",
+      "updatedAt": "2026-06-26 03:16:32"
+    },
+    "minimax-api": {
+      "downloads": 104,
+      "lastDownloadAt": "2026-06-26 01:36:53",
+      "updatedAt": "2026-06-26 01:36:53"
+    },
+    "direct-gl-mediacodec": {
+      "downloads": 207,
+      "lastDownloadAt": "2026-06-26 08:41:16",
+      "updatedAt": "2026-06-26 08:41:16"
+    },
+    "clipboard-utils": {
+      "downloads": 218,
+      "lastDownloadAt": "2026-06-26 08:26:17",
+      "updatedAt": "2026-06-26 08:26:17"
+    },
+    "token-compressor": {
+      "downloads": 198,
+      "lastDownloadAt": "2026-06-26 08:37:30",
+      "updatedAt": "2026-06-26 08:37:30"
+    },
+    "qr-generator": {
+      "downloads": 70,
+      "lastDownloadAt": "2026-06-26 00:30:32",
+      "updatedAt": "2026-06-26 00:30:32"
+    },
+    "cr-deck-builder": {
+      "downloads": 10,
+      "lastDownloadAt": "2026-06-20 11:55:51",
+      "updatedAt": "2026-06-20 11:55:51"
+    },
+    "zhihu-search": {
+      "downloads": 140,
+      "lastDownloadAt": "2026-06-26 08:21:11",
+      "updatedAt": "2026-06-26 08:21:11"
+    },
+    "bocha-search": {
+      "downloads": 53,
+      "lastDownloadAt": "2026-06-25 22:44:17",
+      "updatedAt": "2026-06-25 22:44:17"
+    },
+    "clash-royale": {
+      "downloads": 12,
+      "lastDownloadAt": "2026-06-21 10:28:40",
+      "updatedAt": "2026-06-21 10:28:40"
+    },
+    "statistics-tools": {
+      "downloads": 52,
+      "lastDownloadAt": "2026-06-25 22:44:15",
+      "updatedAt": "2026-06-25 22:44:15"
+    },
+    "script-dev-toolkit": {
+      "downloads": 60,
+      "lastDownloadAt": "2026-06-07 03:49:25",
+      "updatedAt": "2026-06-07 03:49:25"
+    },
+    "deep-research-agent-v3-2-v4": {
+      "downloads": 72,
+      "lastDownloadAt": "2026-06-07 00:01:04",
+      "updatedAt": "2026-06-07 00:01:04"
+    },
+    "ncmapi": {
+      "downloads": 204,
+      "lastDownloadAt": "2026-06-26 06:33:24",
+      "updatedAt": "2026-06-26 06:33:24"
+    },
+    "token-extractor": {
+      "downloads": 148,
+      "lastDownloadAt": "2026-06-26 06:33:00",
+      "updatedAt": "2026-06-26 06:33:00"
+    },
+    "agnes-image-toolkit": {
+      "downloads": 131,
+      "lastDownloadAt": "2026-06-26 07:05:39",
+      "updatedAt": "2026-06-26 07:05:39"
+    },
+    "ubuntu-config": {
+      "downloads": 138,
+      "lastDownloadAt": "2026-06-26 02:25:29",
+      "updatedAt": "2026-06-26 02:25:29"
+    },
+    "multi-api-draw": {
+      "downloads": 61,
+      "lastDownloadAt": "2026-06-26 04:24:17",
+      "updatedAt": "2026-06-26 04:24:17"
+    },
+    "ac-remote": {
+      "downloads": 45,
+      "lastDownloadAt": "2026-06-26 06:32:20",
+      "updatedAt": "2026-06-26 06:32:20"
+    },
+    "apk-build-toolkit-indep": {
+      "downloads": 209,
+      "lastDownloadAt": "2026-06-26 08:39:36",
+      "updatedAt": "2026-06-26 08:39:36"
+    },
+    "apk-direct-install-tool": {
+      "downloads": 127,
+      "lastDownloadAt": "2026-06-26 08:40:24",
+      "updatedAt": "2026-06-26 08:40:24"
+    },
+    "dodovoice": {
+      "downloads": 119,
+      "lastDownloadAt": "2026-06-26 08:06:10",
+      "updatedAt": "2026-06-26 08:06:10"
+    },
+    "pp-ocrv6": {
+      "downloads": 57,
+      "lastDownloadAt": "2026-06-26 02:04:24",
+      "updatedAt": "2026-06-26 02:04:24"
+    },
+    "qqmusic": {
+      "downloads": 75,
+      "lastDownloadAt": "2026-06-25 22:43:21",
+      "updatedAt": "2026-06-25 22:43:21"
+    },
+    "vibrator-control": {
+      "downloads": 81,
+      "lastDownloadAt": "2026-06-26 02:03:31",
+      "updatedAt": "2026-06-26 02:03:31"
+    },
+    "skill-recommender": {
+      "downloads": 158,
+      "lastDownloadAt": "2026-06-26 08:22:01",
+      "updatedAt": "2026-06-26 08:22:01"
+    },
+    "cleansweep": {
+      "downloads": 110,
+      "lastDownloadAt": "2026-06-26 05:03:25",
+      "updatedAt": "2026-06-26 05:03:25"
+    },
+    "linux-bridge": {
+      "downloads": 52,
+      "lastDownloadAt": "2026-06-26 01:05:42",
+      "updatedAt": "2026-06-26 01:05:42"
+    },
+    "axmanger-module-generator": {
+      "downloads": 37,
+      "lastDownloadAt": "2026-06-26 08:21:24",
+      "updatedAt": "2026-06-26 08:21:24"
+    },
+    "agentsmail": {
+      "downloads": 17,
+      "lastDownloadAt": "2026-06-21 23:47:42",
+      "updatedAt": "2026-06-21 23:47:42"
+    },
+    "moonshot-search": {
+      "downloads": 20,
+      "lastDownloadAt": "2026-06-25 22:42:23",
+      "updatedAt": "2026-06-25 22:42:23"
+    },
+    "test": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-06-27 11:57:53",
+      "updatedAt": "2026-06-27 11:57:53"
+    }
+  }
+}

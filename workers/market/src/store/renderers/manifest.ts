@@ -17,7 +17,6 @@ export async function renderManifest({ d1, r2, projectionRegistry }: RendererCon
       type: rowText(f, 'type'),
       name: rowText(f, 'name'),
       publishable: rowBool(f, 'publishable'),
-      legacyImportable: rowBool(f, 'legacy_importable'),
     })),
     categories: categories.map((c) => ({ id: rowText(c, 'id'), name: rowText(c, 'name'), ...(rowOptionalText(c, 'description') !== undefined ? { description: rowText(c, 'description') } : {}) })),
     states: states.map((s) => ({ code: rowText(s, 'code'), publicListed: rowBool(s, 'public_listed') })),

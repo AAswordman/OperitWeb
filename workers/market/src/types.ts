@@ -39,6 +39,10 @@ export interface MarketEnv {
   r2?: R2BucketLike;
   MARKET_STATS_BUCKET?: R2BucketLike;
   MARKET_ANALYTICS?: AnalyticsLike;
+  MARKET_ANALYTICS_ACCOUNT_ID?: string;
+  MARKET_ANALYTICS_API_TOKEN?: string;
+  MARKET_ANALYTICS_DATASET?: string;
+  CLOUDFLARE_API_TOKEN?: string;
   MARKET_SESSION_SECRET?: string;
   // operit-api admin auth
   OPERIT_OWNER_TOKEN?: string;
@@ -160,14 +164,19 @@ export interface D1Backend {
   createRepoSource(value: Record<string, unknown>): Promise<unknown>;
   createRepoVersion(value: Record<string, unknown>): Promise<unknown>;
   updateRepoSource(id: string, patch: Record<string, unknown>): Promise<unknown>;
+  getRepoVersion(versionId: string): Promise<Row | null>;
   createReviewReason(value: Record<string, unknown>): Promise<unknown>;
   createCuration(value: Record<string, unknown>): Promise<unknown>;
   hideCuration(id: string, patch: Record<string, unknown>): Promise<unknown>;
   aggregateReaction(value: Record<string, unknown>): Promise<unknown>;
+  upsertEntryStats(value: Record<string, unknown>): Promise<unknown>;
+  incrementEntryStats(value: Record<string, unknown>): Promise<unknown>;
+  recordAnalyticsAggregateWindow(value: Record<string, unknown>): Promise<unknown>;
   createAsset(value: Record<string, unknown>): Promise<unknown>;
   createArtifactProject(value: Record<string, unknown>): Promise<unknown>;
   createArtifactNode(value: Record<string, unknown>): Promise<unknown>;
   getEntry(entryId: string): Promise<Row | null>;
+  getAuthor(authorId: string): Promise<Row | null>;
   getComment(commentId: string): Promise<Row | null>;
   getRepoSpecByEntry(entryId: string): Promise<Row | null>;
   getCategories(): Promise<Row[]>;
@@ -176,17 +185,20 @@ export interface D1Backend {
   getStateCodes(): Promise<Row[]>;
   listPublisherEntries(publisherId: string): Promise<Row[]>;
   listShardPublisherEntries(shard: string): Promise<Row[]>;
-  listShardPublisherEntries(shard: string): Promise<Row[]>;
-  listShardPublisherEntries(shard: string): Promise<Row[]>;
+  listReviewEntries(stateCode: string | undefined, limit: number, offset: number): Promise<Row[]>;
   listAllEntries(): Promise<Row[]>;
   listVersionsForEntry(entryId: string): Promise<Row[]>;
+  listVersionsForArtifactProjectKey(projectKey: string): Promise<Row[]>;
   getArtifactProject(entryId: string): Promise<Row | null>;
   listArtifactNodes(projectId: string): Promise<Row[]>;
   listAssets(entryId: string): Promise<Row[]>;
+  getAssetWithEntry(assetId: string): Promise<Row | null>;
   getReactionCounts(entryId: string): Promise<Row[]>;
+  getEntryStats(entryId: string): Promise<Row | null>;
   listCurations(listKey: string): Promise<Row[]>;
   listActiveComments(entryId: string, page: number, pageSize: number): Promise<Row[]>;
   countActiveComments(entryId: string): Promise<number>;
+  countActiveCommentsBefore(entryId: string, createdAt: string, commentId: string): Promise<number>;
   writeMutationLog(value: Record<string, unknown>): Promise<unknown>;
   upsertDirty(projection: string, scopeKey: string, reason: string, mutationId: string, updatedAt: string): Promise<unknown>;
   deleteDirty(projection: string, scopeKey: string): Promise<unknown>;
@@ -202,15 +214,34 @@ export interface BuildSnapshot {
   entries: Row[];
   versions: Row[];
   repos: Row[];
+  repoVersions: Row[];
   artifactProjects: Row[];
   artifactNodes: Row[];
   assets: Row[];
   reactions: Row[];
+  entryStats: Row[];
   categories: Row[];
   types: Row[];
   formatVersions: Row[];
   stateCodes: Row[];
   curations: Row[];
+  authors: Row[];
+}
+
+export interface V2AnalyticsAggregateRow {
+  event: string;
+  type: string;
+  entryId: string;
+  total: number;
+  sampleInterval: number;
+  lastAt: string;
+}
+
+export interface V2AnalyticsAggregateInput {
+  windowStart: string;
+  windowEnd: string;
+  source: string;
+  rows: V2AnalyticsAggregateRow[];
 }
 
 export interface R2Backend {
@@ -249,7 +280,15 @@ export interface MarketStore {
   projectionRegistry: ProjectionRegistry;
   apply(input: MarketMutation): Promise<{ ok: true; mutationId: string; reason: string; objects: number; events: string[]; dirty: { projection: ProjectionName; scope: ProjectionScope; key: string }[]; stats: UsageStats; materialization: { mode: 'async'; estimatedDelaySeconds: number } }>;
   materialize(projectionPlan: ProjectionPlan): Promise<{ ok: true; projection: ProjectionName; scope: ProjectionScope; written: string[]; clearedDirty: string[]; stats: UsageStats }>;
+  materializeEntryAssets(entryId: string): Promise<{ ok: true; materialized: number }>;
+  materializeEntryAssetsByEntryVersionDirty(entryId: string): Promise<{ ok: true; materialized: number }>;
   readProjection(projectionPlan: ProjectionPlan): Promise<JsonValue | null>;
+  getMeta(key: string): Promise<{ value: string; updated_at: string } | undefined>;
+  setMeta(key: string, value: string): Promise<void>;
+  listDirty(limit?: number): Promise<Row[]>;
+  deleteDirty(projection: ProjectionName, scopeKey: string): Promise<void>;
+  loadBuildSnapshot(): Promise<BuildSnapshot>;
+  aggregateV2Analytics(input: V2AnalyticsAggregateInput): Promise<JsonObject>;
   scanDirty(limit?: number): Promise<{ key: string }[]>;
   repair(): Promise<{ ok: true; repaired: number; stats: UsageStats }>;
   usage(): UsageStats;

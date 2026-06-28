@@ -102,6 +102,69 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         value.totalCount ?? (Number(value.ghCount || 0) + Number(value.cfCount || 0)), value.updatedAt,
       ]);
     },
+    async upsertEntryStats(value) {
+      stats.writes++;
+      const legacyDownloads = numberParam(value.legacyDownloads);
+      const legacyLikes = numberParam(value.legacyLikes);
+      const cfDownloads = numberParam(value.cfDownloads);
+      const cfLikes = numberParam(value.cfLikes);
+      return run(db, `
+        INSERT INTO market_entry_stats (
+          entry_id, type, legacy_downloads, legacy_likes, cf_downloads, cf_likes,
+          downloads_total, likes_total, last_download_at, last_like_at, updated_at
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(entry_id) DO UPDATE SET
+          type = excluded.type,
+          legacy_downloads = excluded.legacy_downloads,
+          legacy_likes = excluded.legacy_likes,
+          cf_downloads = excluded.cf_downloads,
+          cf_likes = excluded.cf_likes,
+          downloads_total = excluded.downloads_total,
+          likes_total = excluded.likes_total,
+          last_download_at = excluded.last_download_at,
+          last_like_at = excluded.last_like_at,
+          updated_at = excluded.updated_at
+      `, [
+        value.entryId, value.type, legacyDownloads, legacyLikes, cfDownloads, cfLikes,
+        legacyDownloads + cfDownloads, legacyLikes + cfLikes,
+        value.lastDownloadAt ?? null, value.lastLikeAt ?? null, value.updatedAt,
+      ]);
+    },
+    async incrementEntryStats(value) {
+      stats.writes++;
+      const downloadDelta = numberParam(value.downloadDelta);
+      const likeDelta = numberParam(value.likeDelta);
+      return run(db, `
+        INSERT INTO market_entry_stats (
+          entry_id, type, legacy_downloads, legacy_likes, cf_downloads, cf_likes,
+          downloads_total, likes_total, last_download_at, last_like_at, updated_at
+        ) VALUES (?, ?, 0, 0, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(entry_id) DO UPDATE SET
+          type = excluded.type,
+          cf_downloads = market_entry_stats.cf_downloads + excluded.cf_downloads,
+          cf_likes = market_entry_stats.cf_likes + excluded.cf_likes,
+          downloads_total = market_entry_stats.legacy_downloads + market_entry_stats.cf_downloads + excluded.cf_downloads,
+          likes_total = market_entry_stats.legacy_likes + market_entry_stats.cf_likes + excluded.cf_likes,
+          last_download_at = CASE
+            WHEN excluded.last_download_at IS NOT NULL
+             AND (market_entry_stats.last_download_at IS NULL OR excluded.last_download_at > market_entry_stats.last_download_at)
+            THEN excluded.last_download_at ELSE market_entry_stats.last_download_at END,
+          last_like_at = CASE
+            WHEN excluded.last_like_at IS NOT NULL
+             AND (market_entry_stats.last_like_at IS NULL OR excluded.last_like_at > market_entry_stats.last_like_at)
+            THEN excluded.last_like_at ELSE market_entry_stats.last_like_at END,
+          updated_at = excluded.updated_at
+      `, [
+        value.entryId, value.type, downloadDelta, likeDelta, downloadDelta, likeDelta,
+        value.lastDownloadAt ?? null, value.lastLikeAt ?? null, value.updatedAt,
+      ]);
+    },
+    async recordAnalyticsAggregateWindow(value) {
+      stats.writes++;
+      return run(db, 'INSERT OR IGNORE INTO market_analytics_aggregate_windows (id, window_start, window_end, downloads, likes, created_at) VALUES (?, ?, ?, ?, ?, ?)', [
+        value.id, value.windowStart, value.windowEnd, numberParam(value.downloads), numberParam(value.likes), value.createdAt,
+      ]);
+    },
     async createAsset(value) {
       stats.writes++;
       return run(db, 'INSERT OR IGNORE INTO market_assets (id, version_id, kind, url, sha256, created_at) VALUES (?, ?, ?, ?, ?, ?)', [
@@ -127,6 +190,10 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_entries WHERE id = ?';
       return readRow(sql, await first(db, sql, [entryId]));
     },
+    async getAuthor(authorId) {
+      const sql = 'SELECT id, github_id, github_login, owner_avatar FROM market_authors WHERE id = ?';
+      return readRow(sql, await first(db, sql, [authorId]));
+    },
     async getComment(commentId) {
       const sql = 'SELECT * FROM market_comments WHERE id = ?';
       return readRow(sql, await first(db, sql, [commentId]));
@@ -134,6 +201,10 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     async getRepoSpecByEntry(entryId) {
       const sql = 'SELECT * FROM repo_plugin_specs WHERE entry_id = ?';
       return readRow(sql, await first(db, sql, [entryId]));
+    },
+    async getRepoVersion(versionId) {
+      const sql = 'SELECT * FROM repo_plugin_versions WHERE version_id = ?';
+      return readRow(sql, await first(db, sql, [versionId]));
     },
     async getCategories() {
       const sql = 'SELECT * FROM market_categories ORDER BY sort_order';
@@ -159,6 +230,17 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_entries WHERE lower(substr(publisher_id,1,2)) = ? ORDER BY updated_at DESC';
       return readRows(sql, await all(db, sql, [shard]));
     },
+    async listReviewEntries(stateCode, limit, offset) {
+      const pageSize = Math.max(1, Math.min(Number(limit) || 50, 100));
+      const start = Math.max(0, Number(offset) || 0);
+      const base = `SELECT e.*, a.github_login AS author_login, a.owner_avatar AS author_avatar, p.github_login AS publisher_login, p.owner_avatar AS publisher_avatar FROM market_entries e LEFT JOIN market_authors a ON a.id = e.author_id LEFT JOIN market_authors p ON p.id = e.publisher_id`;
+      if (stateCode) {
+        const sql = `${base} WHERE e.state_code = ? ORDER BY e.updated_at DESC LIMIT ? OFFSET ?`;
+        return readRows(sql, await all(db, sql, [stateCode, pageSize, start]));
+      }
+      const sql = `${base} WHERE e.state_code NOT IN ('approved','withdrawn') ORDER BY e.updated_at DESC LIMIT ? OFFSET ?`;
+      return readRows(sql, await all(db, sql, [pageSize, start]));
+    },
     async listAllEntries() {
       const sql = 'SELECT * FROM market_entries ORDER BY updated_at DESC';
       return readRows(sql, await all(db, sql, []));
@@ -167,21 +249,33 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_versions WHERE entry_id = ?';
       return readRows(sql, await all(db, sql, [entryId]));
     },
+    async listVersionsForArtifactProjectKey(projectKey) {
+      const sql = 'SELECT v.* FROM market_versions v JOIN artifact_projects p ON p.entry_id = v.entry_id WHERE p.project_key = ?';
+      return readRows(sql, await all(db, sql, [projectKey]));
+    },
     async getArtifactProject(entryId) {
       const sql = 'SELECT * FROM artifact_projects WHERE entry_id = ?';
       return readRow(sql, await first(db, sql, [entryId]));
     },
     async listArtifactNodes(projectId) {
-      const sql = 'SELECT * FROM artifact_nodes WHERE project_id = ?';
+      const sql = 'SELECT * FROM artifact_nodes WHERE project_id = ? ORDER BY sort_order ASC, created_at ASC, id ASC';
       return readRows(sql, await all(db, sql, [projectId]));
     },
     async listAssets(entryId) {
       const sql = 'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id WHERE v.entry_id = ?';
       return readRows(sql, await all(db, sql, [entryId]));
     },
+    async getAssetWithEntry(assetId) {
+      const sql = 'SELECT a.*, v.entry_id, v.state_code AS version_state_code, e.type, e.state_code AS entry_state_code FROM market_assets a JOIN market_versions v ON v.id = a.version_id JOIN market_entries e ON e.id = v.entry_id WHERE a.id = ?';
+      return readRow(sql, await first(db, sql, [assetId]));
+    },
     async getReactionCounts(entryId) {
       const sql = 'SELECT * FROM market_reaction_counts WHERE entry_id = ?';
       return readRows(sql, await all(db, sql, [entryId]));
+    },
+    async getEntryStats(entryId) {
+      const sql = 'SELECT * FROM market_entry_stats WHERE entry_id = ?';
+      return readRow(sql, await first(db, sql, [entryId]));
     },
     async listCurations(listKey) {
       const sql = 'SELECT * FROM market_curations WHERE list_key = ? ORDER BY position ASC';
@@ -196,6 +290,12 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT COUNT(*) AS count FROM market_comments WHERE entry_id = ? AND status = ?';
       const row = await first(db, sql, [entryId, 'active']);
       stats.reads += 1; // COUNT scan
+      return Number(row?.count || 0);
+    },
+    async countActiveCommentsBefore(entryId, createdAt, commentId) {
+      const sql = "SELECT COUNT(*) AS count FROM market_comments WHERE entry_id = ? AND status = ? AND (created_at < ? OR (created_at = ? AND id < ?))";
+      const row = await first(db, sql, [entryId, 'active', createdAt, createdAt, commentId]);
+      stats.reads += 1;
       return Number(row?.count || 0);
     },
 
@@ -255,26 +355,34 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       await db.prepare('INSERT OR REPLACE INTO market_meta (key, value, updated_at) VALUES (?, ?, ?)').bind(key, value, now).run();
     },
     async loadBuildSnapshot() {
-      const [entries, versions, repos, artifactProjects, artifactNodes, assets, reactions,
-        categories, types, formatVersions, stateCodes, curations] = await Promise.all([
+      const [entries, versions, repos, repoVersions, artifactProjects, artifactNodes, assets, reactions, entryStats,
+        categories, types, formatVersions, stateCodes, curations, authors] = await Promise.all([
         all(db, 'SELECT * FROM market_entries', []),
         all(db, 'SELECT * FROM market_versions', []),
         all(db, 'SELECT * FROM repo_plugin_specs', []),
+        all(db, 'SELECT * FROM repo_plugin_versions', []),
         all(db, 'SELECT * FROM artifact_projects', []),
         all(db, 'SELECT * FROM artifact_nodes', []),
         all(db, 'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id', []),
         all(db, 'SELECT * FROM market_reaction_counts', []),
+        all(db, 'SELECT * FROM market_entry_stats', []),
         all(db, 'SELECT * FROM market_categories ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_types ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_format_versions ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_state_codes ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_curations', []),
+        all(db, 'SELECT id, github_id, github_login, owner_avatar FROM market_authors', []),
       ]);
-      const totalReads = entries.length + versions.length + repos.length + artifactProjects.length + artifactNodes.length + assets.length + reactions.length + categories.length + types.length + formatVersions.length + stateCodes.length + curations.length;
+      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + artifactNodes.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + curations.length + authors.length;
       stats.reads += totalReads;
-      return { entries, versions, repos, artifactProjects, artifactNodes, assets, reactions, categories, types, formatVersions, stateCodes, curations };
+      return { entries, versions, repos, repoVersions, artifactProjects, artifactNodes, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, curations, authors };
     },
   };
+}
+
+function numberParam(value: unknown): number {
+  const numeric = Number(value || 0);
+  return Number.isFinite(numeric) ? numeric : 0;
 }
 
 async function run(db: D1DatabaseLike, sql: string, params: SqlParam[]): Promise<unknown> {

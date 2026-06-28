@@ -133,12 +133,15 @@ function toParsedEntry(type, issue, parsed) {
   const body = String(issue.body || '');
   const description = String(parsed.description || parsed.projectDescription || parsed.name || issue.title || '').trim();
   const data = type === 'script' || type === 'package' ? normalizeArtifactData(parsed) : normalizeRepoData(parsed);
+  const detail = type === 'skill' || type === 'mcp'
+    ? description
+    : body.replace(/<!--[\s\S]*?-->/g, '').trim();
   return {
     number: issue.number,
     type,
     title: String(parsed.projectDisplayName || parsed.name || issue.title || '').trim(),
     description,
-    detail: body.replace(/<!--[\s\S]*?-->/g, '').trim(),
+    detail,
     category: labels.find((l) => l.startsWith('category:'))?.replace('category:', '') || parsed.category || '',
     user_id: issue.user?.id || 0,
     user_login: issue.user?.login || '',

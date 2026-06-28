@@ -1,0 +1,420 @@
+{
+  "updatedAt": "2026-06-28T12:00:48.880Z",
+  "items": {
+    "com-operit-debug-msg-dump": {
+      "downloads": 192,
+      "lastDownloadAt": "2026-06-25 22:50:31",
+      "updatedAt": "2026-06-25 22:50:31"
+    },
+    "com-operit-worldbook": {
+      "downloads": 51,
+      "lastDownloadAt": "2026-04-27 13:14:25",
+      "updatedAt": "2026-04-27 13:14:25"
+    },
+    "com-operit-worldbook-v1-1-0": {
+      "downloads": 17,
+      "lastDownloadAt": "2026-04-28 05:35:38",
+      "updatedAt": "2026-04-28 05:35:38"
+    },
+    "com-operit-sidebar-opencode": {
+      "downloads": 875,
+      "lastDownloadAt": "2026-06-26 08:32:52",
+      "updatedAt": "2026-06-26 08:32:52"
+    },
+    "com-operit-sidebar-bing-action": {
+      "downloads": 506,
+      "lastDownloadAt": "2026-06-26 08:04:14",
+      "updatedAt": "2026-06-26 08:04:14"
+    },
+    "com-operit-sidebar-sillytavern": {
+      "downloads": 690,
+      "lastDownloadAt": "2026-06-26 08:02:33",
+      "updatedAt": "2026-06-26 08:02:33"
+    },
+    "com-operit-sidebar-model-sites": {
+      "downloads": 451,
+      "lastDownloadAt": "2026-06-26 08:04:33",
+      "updatedAt": "2026-06-26 08:04:33"
+    },
+    "com-operit-sidebar-musicfree": {
+      "downloads": 553,
+      "lastDownloadAt": "2026-06-26 08:21:17",
+      "updatedAt": "2026-06-26 08:21:17"
+    },
+    "com-operit-openmaic-sidebar": {
+      "downloads": 156,
+      "lastDownloadAt": "2026-06-25 00:37:03",
+      "updatedAt": "2026-06-25 00:37:03"
+    },
+    "com-operit-ai-game-center": {
+      "downloads": 182,
+      "lastDownloadAt": "2026-06-25 00:36:50",
+      "updatedAt": "2026-06-25 00:36:50"
+    },
+    "com-operit-template-try-bundle": {
+      "downloads": 83,
+      "lastDownloadAt": "2026-06-20 11:31:46",
+      "updatedAt": "2026-06-20 11:31:46"
+    },
+    "com-operit-custom-ai-provider-example": {
+      "downloads": 64,
+      "lastDownloadAt": "2026-06-25 19:52:09",
+      "updatedAt": "2026-06-25 19:52:09"
+    },
+    "com-vael-proactive-contact-workflow": {
+      "downloads": 1212,
+      "lastDownloadAt": "2026-06-26 08:33:19",
+      "updatedAt": "2026-06-26 08:33:19"
+    },
+    "com-operit-diary": {
+      "downloads": 1013,
+      "lastDownloadAt": "2026-06-26 08:01:08",
+      "updatedAt": "2026-06-26 08:01:08"
+    },
+    "com-operit-sidebar-openreader": {
+      "downloads": 132,
+      "lastDownloadAt": "2026-06-25 02:34:13",
+      "updatedAt": "2026-06-25 02:34:13"
+    },
+    "com-operit-sidebar-webnr": {
+      "downloads": 135,
+      "lastDownloadAt": "2026-06-25 22:49:17",
+      "updatedAt": "2026-06-25 22:49:17"
+    },
+    "com-operit-desktop-widget-demo": {
+      "downloads": 98,
+      "lastDownloadAt": "2026-06-24 06:32:22",
+      "updatedAt": "2026-06-24 06:32:22"
+    },
+    "com-operit-dino-runner": {
+      "downloads": 79,
+      "lastDownloadAt": "2026-06-25 22:48:57",
+      "updatedAt": "2026-06-25 22:48:57"
+    },
+    "com-operit-sidebar-coread": {
+      "downloads": 1208,
+      "lastDownloadAt": "2026-06-26 08:02:03",
+      "updatedAt": "2026-06-26 08:02:03"
+    },
+    "com-operit-secure-vault": {
+      "downloads": 20,
+      "lastDownloadAt": "2026-05-09 14:37:28",
+      "updatedAt": "2026-05-09 14:37:28"
+    },
+    "com-operit-deepexecute-bundle": {
+      "downloads": 410,
+      "lastDownloadAt": "2026-06-26 08:04:37",
+      "updatedAt": "2026-06-26 08:04:37"
+    },
+    "com-community-ob-auto-grow": {
+      "downloads": 227,
+      "lastDownloadAt": "2026-06-25 12:56:02",
+      "updatedAt": "2026-06-25 12:56:02"
+    },
+    "com-community-ob-auto-breath": {
+      "downloads": 199,
+      "lastDownloadAt": "2026-06-25 12:54:59",
+      "updatedAt": "2026-06-25 12:54:59"
+    },
+    "com-operit-plugin-backup-manager": {
+      "downloads": 22,
+      "lastDownloadAt": "2026-05-12 15:35:30",
+      "updatedAt": "2026-05-12 15:35:30"
+    },
+    "com-operit-opencode-ai-provider": {
+      "downloads": 333,
+      "lastDownloadAt": "2026-06-26 07:03:26",
+      "updatedAt": "2026-06-26 07:03:26"
+    },
+    "com-operit-worldbook-fixed": {
+      "downloads": 289,
+      "lastDownloadAt": "2026-06-26 02:23:16",
+      "updatedAt": "2026-06-26 02:23:16"
+    },
+    "com-operit-wechat-claude-bridge": {
+      "downloads": 345,
+      "lastDownloadAt": "2026-06-26 03:29:28",
+      "updatedAt": "2026-06-26 03:29:28"
+    },
+    "com-operit-moodlet": {
+      "downloads": 909,
+      "lastDownloadAt": "2026-06-26 08:02:18",
+      "updatedAt": "2026-06-26 08:02:18"
+    },
+    "com-operit-quick-inject": {
+      "downloads": 734,
+      "lastDownloadAt": "2026-06-26 08:03:33",
+      "updatedAt": "2026-06-26 08:03:33"
+    },
+    "com-operit-virtual-hongbao": {
+      "downloads": 418,
+      "lastDownloadAt": "2026-06-26 04:53:24",
+      "updatedAt": "2026-06-26 04:53:24"
+    },
+    "com-loki-sticker-renderer": {
+      "downloads": 293,
+      "lastDownloadAt": "2026-06-26 00:30:54",
+      "updatedAt": "2026-06-26 00:30:54"
+    },
+    "com-operit-wongtaisin-qian": {
+      "downloads": 81,
+      "lastDownloadAt": "2026-06-15 01:38:56",
+      "updatedAt": "2026-06-15 01:38:56"
+    },
+    "com-operit-meihua-yishu": {
+      "downloads": 139,
+      "lastDownloadAt": "2026-06-26 04:25:52",
+      "updatedAt": "2026-06-26 04:25:52"
+    },
+    "com-operit-napcat-bridge-ui-market": {
+      "downloads": 485,
+      "lastDownloadAt": "2026-06-26 08:35:39",
+      "updatedAt": "2026-06-26 08:35:39"
+    },
+    "com-operit-chara-card-maker": {
+      "downloads": 164,
+      "lastDownloadAt": "2026-06-26 04:25:28",
+      "updatedAt": "2026-06-26 04:25:28"
+    },
+    "com-operit-bilingual-fold": {
+      "downloads": 105,
+      "lastDownloadAt": "2026-06-26 00:30:55",
+      "updatedAt": "2026-06-26 00:30:55"
+    },
+    "com-operit-omnivoice": {
+      "downloads": 124,
+      "lastDownloadAt": "2026-06-21 17:56:06",
+      "updatedAt": "2026-06-21 17:56:06"
+    },
+    "com-operit-sidebar-period-action": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-05-20 09:49:26",
+      "updatedAt": "2026-05-20 09:49:26"
+    },
+    "com-operit-local-docker-manager": {
+      "downloads": 81,
+      "lastDownloadAt": "2026-06-24 01:33:08",
+      "updatedAt": "2026-06-24 01:33:08"
+    },
+    "com-operit-suggestion-chips": {
+      "downloads": 536,
+      "lastDownloadAt": "2026-06-26 08:42:15",
+      "updatedAt": "2026-06-26 08:42:15"
+    },
+    "com-operit-jjwxc-bookmark": {
+      "downloads": 43,
+      "lastDownloadAt": "2026-06-25 22:47:05",
+      "updatedAt": "2026-06-25 22:47:05"
+    },
+    "com-operit-mode-switch": {
+      "downloads": 94,
+      "lastDownloadAt": "2026-06-21 10:29:21",
+      "updatedAt": "2026-06-21 10:29:21"
+    },
+    "com-operit-magic-tower-plugin": {
+      "downloads": 126,
+      "lastDownloadAt": "2026-06-24 12:43:13",
+      "updatedAt": "2026-06-24 12:43:13"
+    },
+    "com-operit-questionnaire": {
+      "downloads": 124,
+      "lastDownloadAt": "2026-06-26 08:01:20",
+      "updatedAt": "2026-06-26 08:01:20"
+    },
+    "com-daddy-chatcards": {
+      "downloads": 393,
+      "lastDownloadAt": "2026-06-26 08:26:25",
+      "updatedAt": "2026-06-26 08:26:25"
+    },
+    "com-operit-jealous-guardian": {
+      "downloads": 1,
+      "lastDownloadAt": "2026-05-26 02:41:28",
+      "updatedAt": "2026-05-26 02:41:28"
+    },
+    "com-operit-quiz-card": {
+      "downloads": 59,
+      "lastDownloadAt": "2026-06-24 12:42:52",
+      "updatedAt": "2026-06-24 12:42:52"
+    },
+    "com-operit-jealous-patrol": {
+      "downloads": 369,
+      "lastDownloadAt": "2026-06-26 08:36:20",
+      "updatedAt": "2026-06-26 08:36:20"
+    },
+    "com-vael-aliyun-omni-stt": {
+      "downloads": 333,
+      "lastDownloadAt": "2026-06-26 00:02:11",
+      "updatedAt": "2026-06-26 00:02:11"
+    },
+    "com-operit-voice-attachment-sender": {
+      "downloads": 290,
+      "lastDownloadAt": "2026-06-25 22:40:03",
+      "updatedAt": "2026-06-25 22:40:03"
+    },
+    "com-operit-learning-mode-bundle": {
+      "downloads": 216,
+      "lastDownloadAt": "2026-06-26 08:37:39",
+      "updatedAt": "2026-06-26 08:37:39"
+    },
+    "com-operit-questionnaire-fix": {
+      "downloads": 238,
+      "lastDownloadAt": "2026-06-26 08:34:29",
+      "updatedAt": "2026-06-26 08:34:29"
+    },
+    "com-operit-voice-bar": {
+      "downloads": 685,
+      "lastDownloadAt": "2026-06-26 08:03:54",
+      "updatedAt": "2026-06-26 08:03:54"
+    },
+    "com-operit-chat-migrator": {
+      "downloads": 108,
+      "lastDownloadAt": "2026-06-26 07:14:06",
+      "updatedAt": "2026-06-26 07:14:06"
+    },
+    "com-operit-video-parse-toolpkg": {
+      "downloads": 86,
+      "lastDownloadAt": "2026-06-25 22:45:25",
+      "updatedAt": "2026-06-25 22:45:25"
+    },
+    "com-operit-msg-watcher": {
+      "downloads": 65,
+      "lastDownloadAt": "2026-06-25 22:45:22",
+      "updatedAt": "2026-06-25 22:45:22"
+    },
+    "com-operit-action": {
+      "downloads": 66,
+      "lastDownloadAt": "2026-06-26 02:25:54",
+      "updatedAt": "2026-06-26 02:25:54"
+    },
+    "com-operit-tool-simulation": {
+      "downloads": 158,
+      "lastDownloadAt": "2026-06-25 22:44:09",
+      "updatedAt": "2026-06-25 22:44:09"
+    },
+    "com-gardencottage-rich-renderer": {
+      "downloads": 132,
+      "lastDownloadAt": "2026-06-26 02:25:47",
+      "updatedAt": "2026-06-26 02:25:47"
+    },
+    "com-operit-batch-tts-toolpkg": {
+      "downloads": 66,
+      "lastDownloadAt": "2026-06-26 01:28:55",
+      "updatedAt": "2026-06-26 01:28:55"
+    },
+    "com-yeyezi-ombrebrain-dashboard": {
+      "downloads": 87,
+      "lastDownloadAt": "2026-06-25 13:35:35",
+      "updatedAt": "2026-06-25 13:35:35"
+    },
+    "com-operit-feishu-bot": {
+      "downloads": 30,
+      "lastDownloadAt": "2026-06-25 22:44:51",
+      "updatedAt": "2026-06-25 22:44:51"
+    },
+    "com-operit-betterfiletools": {
+      "downloads": 100,
+      "lastDownloadAt": "2026-06-25 22:44:49",
+      "updatedAt": "2026-06-25 22:44:49"
+    },
+    "com-yeyezi-riji-diary": {
+      "downloads": 63,
+      "lastDownloadAt": "2026-06-25 18:25:59",
+      "updatedAt": "2026-06-25 18:25:59"
+    },
+    "daily-diary": {
+      "downloads": 94,
+      "lastDownloadAt": "2026-06-25 12:26:54",
+      "updatedAt": "2026-06-25 12:26:54"
+    },
+    "com-operit-minesweeper": {
+      "downloads": 47,
+      "lastDownloadAt": "2026-06-25 08:16:25",
+      "updatedAt": "2026-06-25 08:16:25"
+    },
+    "com-operit-telegram-bridge-market": {
+      "downloads": 112,
+      "lastDownloadAt": "2026-06-26 08:21:53",
+      "updatedAt": "2026-06-26 08:21:53"
+    },
+    "com-operit-worldbook-plus": {
+      "downloads": 293,
+      "lastDownloadAt": "2026-06-26 08:23:14",
+      "updatedAt": "2026-06-26 08:23:14"
+    },
+    "com-gardencottage-rich-renderer-v2": {
+      "downloads": 191,
+      "lastDownloadAt": "2026-06-26 02:25:40",
+      "updatedAt": "2026-06-26 02:25:40"
+    },
+    "com-raineiris-low-battery-care": {
+      "downloads": 69,
+      "lastDownloadAt": "2026-06-25 23:38:53",
+      "updatedAt": "2026-06-25 23:38:53"
+    },
+    "com-operit-ssh-manager": {
+      "downloads": 56,
+      "lastDownloadAt": "2026-06-24 03:25:00",
+      "updatedAt": "2026-06-24 03:25:00"
+    },
+    "com-operit-chathistory-migrator": {
+      "downloads": 158,
+      "lastDownloadAt": "2026-06-26 08:37:09",
+      "updatedAt": "2026-06-26 08:37:09"
+    },
+    "com-operit-quizbank-manager": {
+      "downloads": 56,
+      "lastDownloadAt": "2026-06-26 08:21:16",
+      "updatedAt": "2026-06-26 08:21:16"
+    },
+    "com-operit-sidebar-mimocode": {
+      "downloads": 67,
+      "lastDownloadAt": "2026-06-25 01:29:49",
+      "updatedAt": "2026-06-25 01:29:49"
+    },
+    "com-lishen-huawei-health-snapshot": {
+      "downloads": 56,
+      "lastDownloadAt": "2026-06-26 02:39:55",
+      "updatedAt": "2026-06-26 02:39:55"
+    },
+    "com-latex-beautify-renderer": {
+      "downloads": 283,
+      "lastDownloadAt": "2026-06-26 08:26:22",
+      "updatedAt": "2026-06-26 08:26:22"
+    },
+    "com-operit-multi-search-pro-standalone": {
+      "downloads": 88,
+      "lastDownloadAt": "2026-06-26 08:26:37",
+      "updatedAt": "2026-06-26 08:26:37"
+    },
+    "com-operit-sidebar-aistudio": {
+      "downloads": 70,
+      "lastDownloadAt": "2026-06-25 01:37:41",
+      "updatedAt": "2026-06-25 01:37:41"
+    },
+    "com-operit-forum-message-board": {
+      "downloads": 54,
+      "lastDownloadAt": "2026-06-26 04:23:44",
+      "updatedAt": "2026-06-26 04:23:44"
+    },
+    "com-operit-wechat-ilink-bot": {
+      "downloads": 117,
+      "lastDownloadAt": "2026-06-26 06:31:41",
+      "updatedAt": "2026-06-26 06:31:41"
+    },
+    "com-operit-bead-pattern": {
+      "downloads": 103,
+      "lastDownloadAt": "2026-06-26 06:07:52",
+      "updatedAt": "2026-06-26 06:07:52"
+    },
+    "operit-webdav-sync": {
+      "downloads": 51,
+      "lastDownloadAt": "2026-06-26 08:39:15",
+      "updatedAt": "2026-06-26 08:39:15"
+    },
+    "com-operit-context-limiter-c": {
+      "downloads": 5,
+      "lastDownloadAt": "2026-06-25 03:05:05",
+      "updatedAt": "2026-06-25 03:05:05"
+    }
+  }
+}

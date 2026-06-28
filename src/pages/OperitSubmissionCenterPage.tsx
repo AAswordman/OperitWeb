@@ -131,7 +131,6 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
   const [clearHistoryOpen, setClearHistoryOpen] = useState(false);
   const [lookupExpanded, setLookupExpanded] = useState(false);
   const [lookupVerifyOpen, setLookupVerifyOpen] = useState(false);
-
   const [leaderboardItems, setLeaderboardItems] = useState<OperitLeaderboardEntry[]>([]);
   const [leaderboardUpdatedAt, setLeaderboardUpdatedAt] = useState<string | null>(null);
   const [leaderboardLoading, setLeaderboardLoading] = useState(false);
@@ -172,7 +171,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
       ],
       system: [{ label: t.dataTitle, value: 'data' }],
     }),
-    [t],
+    [isZh, t],
   );
 
   const showSection = useCallback(
@@ -300,6 +299,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
       message.success(isZh ? '退出登录成功' : 'Signed out successfully');
     }
   }, [apiBase, isZh]);
+
 
   const handleOpenDraft = (draft: OperitDraft) => {
     navigate(`/operit-submission-edit?path=${encodeURIComponent(draft.target_path)}`);
@@ -584,6 +584,7 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
                     {isZh ? '退出登录' : 'Sign out'}
                   </Button>
                 )}
+
                 {canOpenAdminReview && (
                   <Button type="primary" onClick={() => navigate('/operit-submission-admin')}>
                     {isZh ? '进入审核入口' : 'Open review entry'}
@@ -1097,3 +1098,10 @@ const OperitSubmissionCenterPage: React.FC<OperitSubmissionCenterPageProps> = ({
 };
 
 export default OperitSubmissionCenterPage;
+
+
+
+
+
+
+

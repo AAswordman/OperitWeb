@@ -1,4 +1,4 @@
-import {  assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
+import { assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
   MarketError,
@@ -34,6 +34,8 @@ interface EntryRoutes {
   reviewApprove(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewReject(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject>;
+  reviewEntries(request: Request, env: MarketEnv): Promise<JsonObject>;
+  reviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
   curationSet(request: Request, env: MarketEnv): Promise<JsonObject>;
 }
 
@@ -43,7 +45,7 @@ interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo
 interface ArtifactVersionBody { projectId?: string; nodeId?: string; rootNodeId?: string; runtimePackageId?: string }
 
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, curationSet: handleCurationSet };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -100,6 +102,10 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
 
 async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
   const artifact = await validateArtifactVersion(env, session, body);
+  await assertVersionGreaterThanExisting(
+    versionInput.version,
+    await store.d1.listVersionsForArtifactProjectKey(artifact.projectId),
+  );
   const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), publisherId: publisher.id, authorId: publisher.id, ...versionInput, projectKey: artifact.projectId, rootNodeId: artifact.rootNodeId, nodes: [{ nodeKey: artifact.nodeId, ...(artifact.runtimePackageId !== undefined ? { runtimePackageId: artifact.runtimePackageId } : {}) }], assets: [artifact.asset] });
   const applied = await store.apply(mutation);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
@@ -122,6 +128,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Only the publisher can add versions', 403);
   const body = await readBody(request);
   const versionInput = requireVersionInput(asRecord(body.version));
+  await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
   const objects: MarketMutation['objects'] = [{ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } }];
   if (isRepoType(text(entry.type))) {
@@ -142,7 +149,19 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
   const session = await requireSession(request, env);
   const store = requireStore(env);
   const authorId = `gh_${session.github_id}`;
-  return { ok: true, entries: (await store.readProjection({ projection: 'private.publisherShard', scope: { authorId } })) as JsonObject };
+  const shard = await store.readProjection({ projection: 'private.publisherShard', scope: { authorId } });
+  const shardObject = asRecord(shard);
+  const authorBucket = asRecord(asRecord(shardObject.authors)[authorId]);
+  return {
+    ok: true,
+    entries: {
+      ok: true,
+      marketVersion: Number(shardObject.marketVersion || 2),
+      ...(optionalString(shardObject.generatedAt) ? { generatedAt: optionalString(shardObject.generatedAt) } : {}),
+      shard: optionalString(shardObject.shard) || '',
+      entries: Array.isArray(authorBucket.entries) ? authorBucket.entries : [],
+    },
+  };
 }
 
 async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -150,6 +169,38 @@ async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<Js
   const store = requireStore(env);
   const entryId = extractIdFromPath(request.url, '/entries/', '/');
   return { ok: true, item: (await store.readProjection({ projection: 'private.publisherEntry', scope: { authorId: `gh_${session.github_id}`, entryId } })) as JsonObject };
+}
+
+async function handleReviewEntries(request: Request, env: MarketEnv): Promise<JsonObject> {
+  await requireAdminToken(request, env);
+  const store = requireStore(env);
+  const url = new URL(request.url);
+  const stateCode = optionalString(url.searchParams.get('stateCode'));
+  const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || '50'), 1), 100);
+  const offset = Math.max(Number(url.searchParams.get('offset') || '0'), 0);
+  const rows = await store.d1.listReviewEntries(stateCode, limit, offset);
+  return { ok: true, limit, offset, items: rows.map(entrySummary) };
+}
+
+async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
+  await requireAdminToken(request, env);
+  const store = requireStore(env);
+  const entryId = extractIdFromPath(request.url, '/admin/review/entries/', '');
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const versions = await store.d1.listVersionsForEntry(entryId);
+  const repoSource = await store.d1.getRepoSpecByEntry(entryId);
+  const artifactProject = await store.d1.getArtifactProject(entryId);
+  const artifactNodes = artifactProject ? await store.d1.listArtifactNodes(text(artifactProject.id)) : [];
+  const assets = await store.d1.listAssets(entryId);
+  return {
+    ok: true,
+    item: entryDetail(entry),
+    versions: versions.map(versionDetail),
+    ...(repoSource ? { repoSource: rowObject(repoSource) } : {}),
+    ...(artifactProject ? { artifactProject: rowObject(artifactProject), artifactNodes: artifactNodes.map(rowObject) } : {}),
+    assets: assets.map(rowObject),
+  };
 }
 
 async function handleReviewApprove(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -160,6 +211,7 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const versionId = optionalString(body.versionId);
   const actorId = admin.username;
   const applied = await store.apply(reviewApproveEntry({ entryId, actorId, ...(versionId !== undefined ? { versionId } : {}) }));
+  await store.materializeEntryAssets(entryId);
   const entry = await store.d1.getEntry(entryId);
   if (entry) notifyReview(store.d1, entry, 'review_approved', actorId).catch(() => {});
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
@@ -198,8 +250,9 @@ async function handleCurationSet(request: Request, env: MarketEnv): Promise<Json
   const entryId = requireString(body.entryId, 'entryId');
   const listKey = requireString(body.listKey, 'listKey');
   const position = Number(body.position ?? 0);
+  const operation = optionalString(body.operation) === 'hide' ? 'hide' : undefined;
   const actorId = admin.username;
-  const applied = await store.apply(curationUpdate({ entryId, actorId, listKey, position }));
+  const applied = await store.apply(curationUpdate({ entryId, actorId, listKey, position, ...(operation ? { operation } : {}) }));
   return { ok: true, entryId, listKey, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -227,6 +280,75 @@ function requireMarketType(type: unknown): string {
   const value = String(type || '').toLowerCase().trim();
   if (!['script', 'package', 'skill', 'mcp'].includes(value)) throw new MarketError('validation_failed', `Invalid type: ${value}`);
   return value;
+}
+function entrySummary(entry: Row): JsonObject {
+  return {
+    id: text(entry.id),
+    type: text(entry.type),
+    title: text(entry.title),
+    description: text(entry.description),
+    authorId: text(entry.author_id),
+    publisherId: text(entry.publisher_id),
+    author: { id: text(entry.author_id), login: text(entry.author_login), avatar: text(entry.author_avatar) },
+    publisher: { id: text(entry.publisher_id), login: text(entry.publisher_login), avatar: text(entry.publisher_avatar) },
+    categoryId: text(entry.category_id),
+    stateCode: text(entry.state_code),
+    createdAt: text(entry.created_at),
+    updatedAt: text(entry.updated_at),
+    publishedAt: text(entry.published_at),
+  };
+}
+function entryDetail(entry: Row): JsonObject {
+  return { ...entrySummary(entry), detail: text(entry.detail) };
+}
+function versionDetail(version: Row): JsonObject {
+  return {
+    id: text(version.id),
+    entryId: text(version.entry_id),
+    version: text(version.version),
+    formatVer: text(version.format_ver),
+    minAppVer: text(version.min_app_ver),
+    maxAppVer: text(version.max_app_ver),
+    stateCode: text(version.state_code),
+    changelog: text(version.changelog),
+    createdAt: text(version.created_at),
+    updatedAt: text(version.updated_at),
+    publishedAt: text(version.published_at),
+  };
+}
+function rowObject(row: Row): JsonObject {
+  const out: JsonObject = {};
+  for (const [key, value] of Object.entries(row)) out[key] = value;
+  return out;
+}
+async function assertVersionGreaterThanExisting(nextVersion: string, existingVersions: Row[]): Promise<void> {
+  const latest = existingVersions
+    .map((row) => text(row.version))
+    .filter(Boolean)
+    .sort(compareVersions)
+    .at(-1);
+  if (latest && compareVersions(nextVersion, latest) <= 0) {
+    throw new MarketError('version_conflict', `Version ${nextVersion} must be greater than existing version ${latest}`, 409);
+  }
+}
+function compareVersions(left: string, right: string): number {
+  const a = parseVersion(left);
+  const b = parseVersion(right);
+  const length = Math.max(a.parts.length, b.parts.length);
+  for (let index = 0; index < length; index++) {
+    const diff = (a.parts[index] ?? 0) - (b.parts[index] ?? 0);
+    if (diff !== 0) return diff;
+  }
+  if (a.suffix === b.suffix) return 0;
+  if (!a.suffix) return 1;
+  if (!b.suffix) return -1;
+  return a.suffix.localeCompare(b.suffix);
+}
+function parseVersion(value: string): { parts: number[]; suffix: string } {
+  const normalized = String(value || '').trim().replace(/^[vV]/, '');
+  const [core = '', suffix = ''] = normalized.split(/[-+]/, 2);
+  const parts = core.split('.').map((part) => Number.parseInt(part, 10)).map((part) => Number.isFinite(part) ? part : 0);
+  return { parts, suffix };
 }
 function requireVersionInput(input: Record<string, unknown>): VersionInput {
   return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}) };

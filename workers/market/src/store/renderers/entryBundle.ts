@@ -7,31 +7,51 @@ export { buildEntryItem } from './entryBundle.inc.js';
 
 export interface EntryItem {
   type: string; id: string; title: string; description: string; detail?: string; authorId: string; publisherId: string; categoryId?: string; stateCode: string; createdAt: string; updatedAt: string; publishedAt?: string;
+  author?: { id: string; login: string; avatar: string };
+  publisher?: { id: string; login: string; avatar: string };
   source?: { kind: string; url: string };
-  artifact?: { projectId: string; rootNodeId?: string; runtimePkg?: string; nodes: { id: string; nodeKey: string; runtimePkg?: string; versionId?: string }[] };
+  artifact?: { projectId: string; rootNodeId?: string; runtimePkg?: string; nodes: { id: string; nodeKey: string; runtimePkg?: string; versionId?: string; version?: string; parentNodeIds: string[] }[] };
   assets?: { id: string; versionId: string; kind: string; url: string; sha256: string; assetName?: string }[];
-  latestVersion?: { id: string; version: string; formatVer: string; minAppVer: string; maxAppVer?: string; publishedAt?: string };
+  latestVersion?: { id: string; version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; publishedAt?: string };
   reactions?: { reaction: string; total: number }[];
+  downloads?: number;
+  downloadCount?: number;
+  stats?: { downloads: number; likes: number; lastDownloadAt?: string | null; updatedAt?: string | null };
+}
+
+export interface LegacyMarketStats {
+  downloads: number;
+  likes: number;
+  lastDownloadAt?: string | null;
+  lastLikeAt?: string | null;
+  updatedAt?: string | null;
 }
 
 export interface BuildSnapshotIndex {
   reposByEntryId: Map<string, Row>;
+  repoVersionsByVersionId: Map<string, Row>;
   artifactProjectByEntryId: Map<string, Row>;
   artifactNodesByProjectId: Map<string, Row[]>;
   assetsByEntryId: Map<string, Row[]>;
   approvedVersionsByEntryId: Map<string, Row[]>;
   reactionsByEntryId: Map<string, Row[]>;
+  entryStatsByEntryId: Map<string, LegacyMarketStats>;
+  authorsByNumber: Map<number, Row>;
 }
 
 export function createBuildSnapshotIndex(snap: BuildSnapshot): BuildSnapshotIndex {
   const reposByEntryId = new Map<string, Row>();
   for (const row of snap.repos) reposByEntryId.set(rowText(row, 'entry_id'), row);
 
+  const repoVersionsByVersionId = new Map<string, Row>();
+  for (const row of snap.repoVersions) repoVersionsByVersionId.set(rowText(row, 'version_id'), row);
+
   const artifactProjectByEntryId = new Map<string, Row>();
   for (const row of snap.artifactProjects) artifactProjectByEntryId.set(rowText(row, 'entry_id'), row);
 
   const artifactNodesByProjectId = new Map<string, Row[]>();
   for (const row of snap.artifactNodes) appendToMap(artifactNodesByProjectId, rowText(row, 'project_id'), row);
+  for (const list of artifactNodesByProjectId.values()) list.sort(compareArtifactNodes);
 
   const versionEntryIds = new Map<string, string>();
   const approvedVersionsByEntryId = new Map<string, Row[]>();
@@ -53,7 +73,26 @@ export function createBuildSnapshotIndex(snap: BuildSnapshot): BuildSnapshotInde
   const reactionsByEntryId = new Map<string, Row[]>();
   for (const row of snap.reactions) appendToMap(reactionsByEntryId, rowText(row, 'entry_id'), row);
 
-  return { reposByEntryId, artifactProjectByEntryId, artifactNodesByProjectId, assetsByEntryId, approvedVersionsByEntryId, reactionsByEntryId };
+  const entryStatsByEntryId = new Map<string, LegacyMarketStats>();
+  for (const row of snap.entryStats ?? []) {
+    const entryId = rowText(row, 'entry_id');
+    if (!entryId) continue;
+    entryStatsByEntryId.set(entryId, {
+      downloads: Number(row.downloads_total || 0),
+      likes: Number(row.likes_total || 0),
+      lastDownloadAt: rowOptionalText(row, 'last_download_at') ?? null,
+      lastLikeAt: rowOptionalText(row, 'last_like_at') ?? null,
+      updatedAt: rowOptionalText(row, 'updated_at') ?? null,
+    });
+  }
+
+  const authorsByNumber = new Map<number, Row>();
+  for (const row of snap.authors ?? []) {
+    const num = Number(row.github_id);
+    if (!isNaN(num)) authorsByNumber.set(num, row);
+  }
+
+  return { reposByEntryId, repoVersionsByVersionId, artifactProjectByEntryId, artifactNodesByProjectId, assetsByEntryId, approvedVersionsByEntryId, reactionsByEntryId, entryStatsByEntryId, authorsByNumber };
 }
 
 export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: BuildSnapshotIndex): EntryItem {
@@ -74,15 +113,14 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
     const project = index ? index.artifactProjectByEntryId.get(entryId) : snap.artifactProjects.find((p) => rowText(p, 'entry_id') === entryId);
     if (project) {
       const projId = rowText(project, 'id');
+      const versionsById = new Map<string, Row>();
+      for (const v of snap.versions) versionsById.set(rowText(v, 'id'), v);
+      const nodeRows = index ? (index.artifactNodesByProjectId.get(projId) ?? []) : snap.artifactNodes.filter((n) => rowText(n, 'project_id') === projId);
       item.artifact = {
         projectId: rowText(project, 'project_key'),
-        ...(rowOptionalText(project, 'root_node_id') ? { rootNodeId: rowText(project, 'root_node_id') } : {}),
+        rootNodeId: linearArtifactNodes(nodeRows, versionsById)[0]?.id ?? rowOptionalText(project, 'root_node_id') ?? '',
         ...(rowOptionalText(project, 'runtime_pkg') ? { runtimePkg: rowText(project, 'runtime_pkg') } : {}),
-        nodes: (index ? (index.artifactNodesByProjectId.get(projId) ?? []) : snap.artifactNodes.filter((n) => rowText(n, 'project_id') === projId)).map((n) => ({
-          id: rowText(n, 'id'), nodeKey: rowText(n, 'node_key'),
-          ...(rowOptionalText(n, 'runtime_pkg') ? { runtimePkg: rowText(n, 'runtime_pkg') } : {}),
-          ...(rowOptionalText(n, 'version_id') ? { versionId: rowText(n, 'version_id') } : {}),
-        })),
+        nodes: linearArtifactNodes(nodeRows, versionsById),
       };
     }
     item.assets = (index ? (index.assetsByEntryId.get(entryId) ?? []) : snap.assets.filter((a) => {
@@ -99,15 +137,72 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
       .sort((a, b) => rowText(b, 'published_at').localeCompare(rowText(a, 'published_at')));
   const latest = versions[0];
   if (latest) {
+    const repoVersion = isRepoType(type) && index ? index.repoVersionsByVersionId.get(rowText(latest, 'id')) : undefined;
     item.latestVersion = {
       id: rowText(latest, 'id'), version: rowText(latest, 'version'), formatVer: rowText(latest, 'format_ver'), minAppVer: rowText(latest, 'min_app_ver'),
       ...(rowOptionalText(latest, 'max_app_ver') ? { maxAppVer: rowText(latest, 'max_app_ver') } : {}),
+      ...(rowOptionalText(latest, 'changelog') ? { changelog: rowText(latest, 'changelog') } : {}),
+      ...(repoVersion && rowOptionalText(repoVersion, 'install_config') ? { installConfig: rowText(repoVersion, 'install_config') } : {}),
       ...(rowOptionalText(latest, 'published_at') ? { publishedAt: rowText(latest, 'published_at') } : {}),
     };
   }
   item.reactions = (index ? (index.reactionsByEntryId.get(entryId) ?? []) : snap.reactions.filter((r) => rowText(r, 'entry_id') === entryId))
     .map((r) => ({ reaction: rowText(r, 'reaction'), total: Number(r.total_count || 0) }));
+  const reactionsLikeTotal = item.reactions
+    .filter((r) => r.reaction === '+1' || r.reaction.toLowerCase() === 'like')
+    .reduce((sum, r) => sum + Number(r.total || 0), 0);
+  const entryStats = index?.entryStatsByEntryId.get(entryId);
+  const downloads = Number(entryStats?.downloads || 0);
+  const likes = Number(entryStats?.likes ?? reactionsLikeTotal);
+  item.downloads = downloads;
+  item.downloadCount = downloads;
+  item.stats = {
+    downloads,
+    likes,
+    ...(entryStats?.lastDownloadAt ? { lastDownloadAt: entryStats.lastDownloadAt } : {}),
+    ...(entryStats?.updatedAt ? { updatedAt: entryStats.updatedAt } : {}),
+  };
+
+  // append author/publisher display info from snapshot authors list (match on github_id number)
+  if (index) {
+    const authorDigits = item.authorId ? Number(item.authorId.replace(/^gh_/, '')) : NaN;
+    const publisherDigits = item.publisherId ? Number(item.publisherId.replace(/^gh_/, '')) : NaN;
+    if (!isNaN(authorDigits)) {
+      const author = index.authorsByNumber.get(authorDigits);
+      if (author) item.author = { id: item.authorId, login: rowText(author, 'github_login'), avatar: rowText(author, 'owner_avatar') };
+    }
+    if (!isNaN(publisherDigits)) {
+      const publisher = index.authorsByNumber.get(publisherDigits);
+      if (publisher) item.publisher = { id: item.publisherId, login: rowText(publisher, 'github_login'), avatar: rowText(publisher, 'owner_avatar') };
+    }
+  }
+
   return item;
+}
+
+function compareArtifactNodes(a: Row, b: Row): number {
+  const sortA = Number(a.sort_order ?? 0);
+  const sortB = Number(b.sort_order ?? 0);
+  if (sortA !== sortB) return sortA - sortB;
+  const created = rowText(a, 'created_at').localeCompare(rowText(b, 'created_at'));
+  if (created !== 0) return created;
+  return rowText(a, 'id').localeCompare(rowText(b, 'id'));
+}
+
+function linearArtifactNodes(rows: Row[], versionsById: Map<string, Row>): { id: string; nodeKey: string; runtimePkg?: string; versionId?: string; version?: string; parentNodeIds: string[] }[] {
+  const sorted = [...rows].sort(compareArtifactNodes);
+  return sorted.map((node, index) => {
+    const vid = rowOptionalText(node, 'version_id');
+    const verRow = vid ? versionsById.get(vid) : undefined;
+    return {
+      id: rowText(node, 'id'),
+      nodeKey: rowText(node, 'node_key'),
+      ...(rowOptionalText(node, 'runtime_pkg') ? { runtimePkg: rowText(node, 'runtime_pkg') } : {}),
+      ...(vid ? { versionId: vid } : {}),
+      ...(verRow && rowOptionalText(verRow, 'version') ? { version: rowText(verRow, 'version') } : {}),
+      parentNodeIds: index === 0 ? [] : [rowText(sorted[index - 1]!, 'id')],
+    };
+  });
 }
 
 function appendToMap(map: Map<string, Row[]>, key: string, row: Row): void {

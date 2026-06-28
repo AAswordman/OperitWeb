@@ -93,10 +93,23 @@ function validate(sqlite, r2, buildResult) {
 
   const listKeys = r2.keys.filter((key) => key.startsWith('market/v2/lists/')).sort();
   assertCheck(checks, 'list pages written', listKeys.length > 0, listKeys.length);
-  const updatedPage1Key = listKeys.find((key) => key.includes('sort-updated/page-1.json'));
+  assertCheck(checks, 'all list uses readable key', listKeys.some((key) => key === 'market/v2/lists/all/updated/page-1.json'), listKeys.slice(0, 5));
+  assertCheck(checks, 'no hashed all list key', !listKeys.some((key) => key.includes('/5465b825/')), listKeys.filter((key) => key.includes('/5465b825/')).slice(0, 5));
+  const updatedPage1Key = listKeys.find((key) => key === 'market/v2/lists/all/updated/page-1.json');
   assertCheck(checks, 'updated list page exists', Boolean(updatedPage1Key), updatedPage1Key);
   const updatedPage1 = requireJson(r2, updatedPage1Key);
+  assertCheck(checks, 'list pageSize 100', updatedPage1.pageSize === 100, updatedPage1.pageSize);
+  assertCheck(checks, 'updated page item count', updatedPage1.items?.length === Math.min(100, approvedCount), updatedPage1.items?.length);
   assertCheck(checks, 'updated list total', updatedPage1.total === approvedCount, `${updatedPage1.total}/${approvedCount}`);
+  for (const type of ['skill', 'mcp']) {
+    const typeCount = scalar(sqlite, `SELECT COUNT(*) FROM market_entries WHERE state_code = 'approved' AND type = '${type}'`);
+    const key = `market/v2/lists/type/${type}/updated/page-1.json`;
+    const page = requireJson(r2, key);
+    assertCheck(checks, `${type} list exists`, Boolean(page), key);
+    assertCheck(checks, `${type} list total`, page.total === typeCount, `${page.total}/${typeCount}`);
+    assertCheck(checks, `${type} list pageSize 100`, page.pageSize === 100, page.pageSize);
+    assertCheck(checks, `${type} list not empty`, page.items?.length === Math.min(100, typeCount), page.items?.length);
+  }
 
   const allItems = listKeys.flatMap((key) => requireJson(r2, key).items || []);
   assertCheck(checks, 'description <=100', allItems.every((item) => String(item.description || '').length <= 100), badItems(allItems, (item) => String(item.description || '').length > 100));
