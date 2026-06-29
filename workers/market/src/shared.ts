@@ -61,7 +61,6 @@ export function slug(value: string): string { return String(value).toLowerCase()
 export function makeEntryId(type: string, data: { owner?: string; repo?: string; subdir?: string; version?: string; kind?: string }): string { return `${type}-${slug([data.owner, data.repo, data.subdir, data.kind, data.version].filter(Boolean).join('-'))}`; }
 export function makeVersionId(entryId: string, version: string): string { return `${entryId}-v-${slug(version)}`; }
 export function makeProjectId(entryId: string, version: string): string { return `project-${slug(entryId)}-${slug(version)}`; }
-export function makeArtifactNodeId(projectId: string, nodeKey: string): string { return `node-${slug(projectId)}-${slug(nodeKey)}`; }
 
 export function normalizeGithubRepoUrl(rawUrl: unknown): { owner: string; repo: string } {
   const text = requireString(rawUrl, 'source.url').replace(/\.git$/i, '');

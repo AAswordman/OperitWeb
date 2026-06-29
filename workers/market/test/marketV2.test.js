@@ -112,8 +112,6 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
       formatVer: 'script',
       minAppVer: '1.2.0',
       projectId,
-      nodeId: `node-${version}`,
-      rootNodeId: `node-${version}`,
       runtimePackageId: projectId,
     },
     asset: {

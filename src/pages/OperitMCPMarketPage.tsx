@@ -149,7 +149,6 @@ const uiText = {
     formatVersion: '格式版本',
     appVersion: '应用版本',
     projectId: '项目 ID',
-    rootNodeId: '根节点 ID',
     runtimePackage: '运行包',
     assets: '资产',
     description: '简介',
@@ -181,7 +180,6 @@ const uiText = {
     formatVersion: 'Format',
     appVersion: 'App version',
     projectId: 'Project ID',
-    rootNodeId: 'Root node',
     runtimePackage: 'Runtime package',
     assets: 'Assets',
     description: 'Summary',
@@ -523,11 +521,8 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 {selectedEntry.artifact?.projectId && (
                   <Descriptions.Item label={t.projectId}>{selectedEntry.artifact.projectId}</Descriptions.Item>
                 )}
-                {selectedEntry.artifact?.rootNodeId && (
-                  <Descriptions.Item label={t.rootNodeId}>{selectedEntry.artifact.rootNodeId}</Descriptions.Item>
-                )}
-                {selectedEntry.artifact?.runtimePkg && (
-                  <Descriptions.Item label={t.runtimePackage}>{selectedEntry.artifact.runtimePkg}</Descriptions.Item>
+                {(selectedEntry.latestVersion?.runtimePackageId || selectedEntry.artifact?.runtimePkg) && (
+                  <Descriptions.Item label={t.runtimePackage}>{selectedEntry.latestVersion?.runtimePackageId || selectedEntry.artifact?.runtimePkg}</Descriptions.Item>
                 )}
                 {selectedSourceUrl && (
                   <Descriptions.Item label={t.source}>

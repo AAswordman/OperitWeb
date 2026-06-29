@@ -119,6 +119,7 @@ CREATE TABLE IF NOT EXISTS market_versions (
   created_at      TEXT NOT NULL,
   updated_at      TEXT NOT NULL,
   published_at    TEXT,
+  runtime_pkg     TEXT,
   FOREIGN KEY(entry_id) REFERENCES market_entries(id) ON DELETE CASCADE,
   FOREIGN KEY(format_ver) REFERENCES market_format_versions(id),
   FOREIGN KEY(state_code) REFERENCES market_state_codes(code),
@@ -143,30 +144,13 @@ CREATE TABLE IF NOT EXISTS artifact_projects (
   entry_id        TEXT NOT NULL UNIQUE,
   project_key     TEXT NOT NULL,
   runtime_pkg     TEXT,
-  root_node_id    TEXT,
   created_at      TEXT NOT NULL,
   updated_at      TEXT NOT NULL,
-  FOREIGN KEY(entry_id) REFERENCES market_entries(id) ON DELETE CASCADE,
-  FOREIGN KEY(root_node_id) REFERENCES artifact_nodes(id)
+  FOREIGN KEY(entry_id) REFERENCES market_entries(id) ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX IF NOT EXISTS idx_artifact_project_key ON artifact_projects(project_key);
 
--- 5.2.12 artifact_nodes
-CREATE TABLE IF NOT EXISTS artifact_nodes (
-  id              TEXT PRIMARY KEY,
-  project_id      TEXT NOT NULL,
-  version_id      TEXT,
-  node_key        TEXT NOT NULL,
-  runtime_pkg     TEXT,
-  display_name    TEXT,
-  description     TEXT,
-  sort_order      INTEGER NOT NULL DEFAULT 0,
-  created_at      TEXT NOT NULL,
-  updated_at      TEXT NOT NULL,
-  FOREIGN KEY(project_id) REFERENCES artifact_projects(id) ON DELETE CASCADE,
-  FOREIGN KEY(version_id) REFERENCES market_versions(id)
-);
-CREATE UNIQUE INDEX IF NOT EXISTS idx_nodes_project_node ON artifact_nodes(project_id, node_key);
+-- 5.2.12 artifact nodes removed: artifact install versions are represented by market_versions + market_assets.
 
 -- 5.2.14 repo_plugin_specs
 CREATE TABLE IF NOT EXISTS repo_plugin_specs (

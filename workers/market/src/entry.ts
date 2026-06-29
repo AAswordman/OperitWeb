@@ -39,10 +39,10 @@ interface EntryRoutes {
   curationSet(request: Request, env: MarketEnv): Promise<JsonObject>;
 }
 
-interface VersionInput { version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string }
+interface VersionInput { version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string; runtimePackageId?: string }
 interface RepoVersionBody { refType: string; refName: string; manifestPath?: string; installConfig?: string; subdir?: string }
-interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; nodeId?: string; rootNodeId?: string; runtimePackageId?: string }
-interface ArtifactVersionBody { projectId?: string; nodeId?: string; rootNodeId?: string; runtimePackageId?: string }
+interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; runtimePackageId?: string }
+interface ArtifactVersionBody { projectId?: string; runtimePackageId?: string }
 
 export function createEntryRoutes(): EntryRoutes {
   return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, curationSet: handleCurationSet };
@@ -106,7 +106,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
     versionInput.version,
     await store.d1.listVersionsForArtifactProjectKey(artifact.projectId),
   );
-  const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), publisherId: publisher.id, authorId: publisher.id, ...versionInput, projectKey: artifact.projectId, rootNodeId: artifact.rootNodeId, nodes: [{ nodeKey: artifact.nodeId, ...(artifact.runtimePackageId !== undefined ? { runtimePackageId: artifact.runtimePackageId } : {}) }], assets: [artifact.asset] });
+  const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
   const applied = await store.apply(mutation);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
@@ -127,10 +127,16 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Only the publisher can add versions', 403);
   const body = await readBody(request);
-  const versionInput = requireVersionInput(asRecord(body.version));
+  let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
-  const objects: MarketMutation['objects'] = [{ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } }];
+  const objects: MarketMutation['objects'] = [];
+  if (isArtifactType(text(entry.type))) {
+    const artifact = await validateArtifactVersion(env, session, body);
+    versionInput = { ...versionInput, runtimePackageId: artifact.runtimePackageId };
+    objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
+  }
+  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
   if (isRepoType(text(entry.type))) {
     const spec = await store.d1.getRepoSpecByEntry(entryId);
     if (!spec) throw new MarketError('state_invalid', 'Repo source not found');
@@ -149,9 +155,11 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
   const session = await requireSession(request, env);
   const store = requireStore(env);
   const authorId = `gh_${session.github_id}`;
+  const type = new URL(request.url).searchParams.get('type')?.trim().toLowerCase() || '';
   const shard = await store.readProjection({ projection: 'private.publisherShard', scope: { authorId } });
   const shardObject = asRecord(shard);
   const authorBucket = asRecord(asRecord(shardObject.authors)[authorId]);
+  const entries = Array.isArray(authorBucket.entries) ? authorBucket.entries : [];
   return {
     ok: true,
     entries: {
@@ -159,7 +167,7 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
       marketVersion: Number(shardObject.marketVersion || 2),
       ...(optionalString(shardObject.generatedAt) ? { generatedAt: optionalString(shardObject.generatedAt) } : {}),
       shard: optionalString(shardObject.shard) || '',
-      entries: Array.isArray(authorBucket.entries) ? authorBucket.entries : [],
+      entries: type ? entries.filter((entry) => asRecord(entry).type === type) : entries,
     },
   };
 }
@@ -191,14 +199,13 @@ async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promis
   const versions = await store.d1.listVersionsForEntry(entryId);
   const repoSource = await store.d1.getRepoSpecByEntry(entryId);
   const artifactProject = await store.d1.getArtifactProject(entryId);
-  const artifactNodes = artifactProject ? await store.d1.listArtifactNodes(text(artifactProject.id)) : [];
   const assets = await store.d1.listAssets(entryId);
   return {
     ok: true,
     item: entryDetail(entry),
     versions: versions.map(versionDetail),
     ...(repoSource ? { repoSource: rowObject(repoSource) } : {}),
-    ...(artifactProject ? { artifactProject: rowObject(artifactProject), artifactNodes: artifactNodes.map(rowObject) } : {}),
+    ...(artifactProject ? { artifactProject: rowObject(artifactProject) } : {}),
     assets: assets.map(rowObject),
   };
 }
@@ -351,9 +358,9 @@ function parseVersion(value: string): { parts: number[]; suffix: string } {
   return { parts, suffix };
 }
 function requireVersionInput(input: Record<string, unknown>): VersionInput {
-  return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}) };
+  return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}) };
 }
-async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; nodeId: string; rootNodeId: string; runtimePackageId?: string; asset: { kind: string; url: string; sha256: string; assetName: string } }> {
+async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; runtimePackageId: string; asset: { kind: string; url: string; sha256: string; assetName: string } }> {
   const v = asRecord(body.version) as ArtifactVersionBody;
   const a = asRecord(body.asset) as unknown as ArtifactAssetBody;
   const asset = { kind: requireString(a.kind, 'asset.kind'), url: requireString(a.url, 'asset.url'), ghOwner: requireString(a.ghOwner, 'asset.ghOwner'), ghRepo: requireString(a.ghRepo, 'asset.ghRepo'), ghReleaseTag: requireString(a.ghReleaseTag, 'asset.ghReleaseTag'), assetName: requireString(a.assetName, 'asset.assetName'), sha256: requireSha256(a.sha256) };
@@ -366,7 +373,7 @@ async function validateArtifactVersion(env: MarketEnv, session: MarketSession, b
   const proof = verifyToken(PROOF_PREFIX, proofToken, env.MARKET_SESSION_SECRET || '') as Record<string, unknown>;
   if (Number(proof.exp || 0) <= nowSeconds()) throw new MarketError('proof_expired', 'Release proof expired');
   if (Number(proof.github_id) !== session.github_id) throw new MarketError('proof_invalid', 'Release proof github_id mismatch');
-  return { projectId: requireString(v.projectId || a.projectId, 'version.projectId'), nodeId: requireString(v.nodeId || a.nodeId, 'version.nodeId'), rootNodeId: requireString(v.rootNodeId || a.rootNodeId, 'version.rootNodeId'), ...(v.runtimePackageId !== undefined ? { runtimePackageId: String(v.runtimePackageId) } : {}), asset };
+  return { projectId: requireString(v.projectId || a.projectId, 'version.projectId'), runtimePackageId: requireString(v.runtimePackageId || a.runtimePackageId, 'version.runtimePackageId'), asset };
 }
 function extractProofFromBody(body: string): string { return /<!--\s*operit-market-proof\s*([\s\S]*?)\s*-->/i.exec(body)?.[1]?.trim() || ''; }
 async function getRepo(env: MarketEnv, owner: string, repo: string): Promise<GitHubRepoInfo> { return (env.mockGitHubGetRepo || realGitHubGetRepo)(owner, repo, env); }

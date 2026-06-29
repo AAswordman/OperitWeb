@@ -96,6 +96,7 @@ interface ReviewVersion {
   formatVer: string;
   minAppVer?: string;
   maxAppVer?: string;
+  runtimePackageId?: string;
   stateCode: string;
   changelog?: string;
   createdAt?: string;
@@ -109,7 +110,6 @@ interface ReviewEntryDetail {
   versions: ReviewVersion[];
   repoSource?: Record<string, unknown>;
   artifactProject?: Record<string, unknown>;
-  artifactNodes?: Record<string, unknown>[];
   assets?: Record<string, unknown>[];
 }
 
@@ -338,102 +338,30 @@ function shortText(value: string, fallback: string): string {
   return text || fallback;
 }
 
-function baseVersionOf(version: string): string {
-  return version.replace(/(?:\+|-)?legacy\.\d+$/i, '').replace(/[+.-]+$/g, '');
-}
-
 function versionSortValue(version: ReviewVersion): string {
   return version.publishedAt || version.updatedAt || version.createdAt || version.version;
 }
 
-interface VersionGraphRow {
-  version: ReviewVersion;
-  depth: number;
-  hasChildren: boolean;
-  isLast: boolean;
-  ancestorLast: boolean[];
-  laneColor: string;
-}
-
-const VERSION_GRAPH_COLORS = ['#2f81f7', '#a371f7', '#f778ba', '#3fb950', '#d29922', '#56d4dd'];
-
-function buildVersionGraphRows(versions: ReviewVersion[]): VersionGraphRow[] {
-  const sorted = [...versions].sort((a, b) => versionSortValue(b).localeCompare(versionSortValue(a)));
-  const byVersion = new Map(sorted.map(version => [version.version, version]));
-  const childrenByBase = new Map<string, ReviewVersion[]>();
-  const roots: ReviewVersion[] = [];
-
-  for (const version of sorted) {
-    const base = baseVersionOf(version.version);
-    if (base && base !== version.version && byVersion.has(base)) {
-      const children = childrenByBase.get(base) || [];
-      children.push(version);
-      childrenByBase.set(base, children);
-    } else {
-      roots.push(version);
-    }
-  }
-
-  const rows: VersionGraphRow[] = [];
-  const visit = (version: ReviewVersion, depth: number, isLast: boolean, ancestorLast: boolean[]) => {
-    const children = childrenByBase.get(version.version) || [];
-    rows.push({
-      version,
-      depth,
-      hasChildren: children.length > 0,
-      isLast,
-      ancestorLast,
-      laneColor: VERSION_GRAPH_COLORS[depth % VERSION_GRAPH_COLORS.length],
-    });
-    children.forEach((child, index) => visit(child, depth + 1, index === children.length - 1, [...ancestorLast, isLast]));
-  };
-  roots.forEach((root, index) => visit(root, 0, index === roots.length - 1, []));
-  return rows;
-}
-
-function renderVersionGraph(versions: ReviewVersion[], language: 'zh' | 'en'): React.ReactNode {
-  const rows = buildVersionGraphRows(versions);
+function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en'): React.ReactNode {
+  const rows = [...versions].sort((a, b) => versionSortValue(b).localeCompare(versionSortValue(a)));
   return (
     <div className="operit-market-review-version-graph">
-      {rows.map(row => (
-        <div key={row.version.id} className="operit-market-review-version-row">
-          <div className="operit-market-review-version-lanes" style={{ width: 40 + row.depth * 22 }}>
-            {row.ancestorLast.map((isLast, index) => (
-              <span
-                key={`${row.version.id}-lane-${index}`}
-                className={isLast ? 'operit-market-review-version-lane is-empty' : 'operit-market-review-version-lane'}
-                style={{ left: index * 22 + 12, backgroundColor: VERSION_GRAPH_COLORS[index % VERSION_GRAPH_COLORS.length] }}
-              />
-            ))}
-            {row.depth > 0 ? (
-              <span
-                className="operit-market-review-version-branch"
-                style={{
-                  left: (row.depth - 1) * 22 + 12,
-                  width: 22,
-                  borderColor: row.laneColor,
-                }}
-              />
-            ) : null}
-            <span
-              className={row.isLast ? 'operit-market-review-version-stem is-last' : 'operit-market-review-version-stem'}
-              style={{ left: row.depth * 22 + 12, backgroundColor: row.laneColor }}
-            />
-            <span
-              className={row.hasChildren ? 'operit-market-review-version-dot has-children' : 'operit-market-review-version-dot'}
-              style={{ left: row.depth * 22 + 6, borderColor: row.laneColor, color: row.laneColor }}
-            />
+      {rows.map(version => (
+        <div key={version.id} className="operit-market-review-version-row">
+          <div className="operit-market-review-version-lanes" style={{ width: 28 }}>
+            <span className="operit-market-review-version-dot" />
           </div>
           <div className="operit-market-review-version-content">
             <Space wrap size={[8, 4]}>
-              <Text strong>{row.version.version}</Text>
-              <Text type="secondary">{row.version.formatVer}</Text>
-              <Text type="secondary">min {row.version.minAppVer}</Text>
-              {row.version.maxAppVer ? <Text type="secondary">max {row.version.maxAppVer}</Text> : null}
-              <Tag color={stateColor(row.version.stateCode)}>{getReviewStateLabel(row.version.stateCode, language)}</Tag>
-              <Text type="secondary">{formatDateTime(row.version.publishedAt)}</Text>
+              <Text strong>{version.version}</Text>
+              <Text type="secondary">{version.formatVer}</Text>
+              <Text type="secondary">min {version.minAppVer}</Text>
+              {version.maxAppVer ? <Text type="secondary">max {version.maxAppVer}</Text> : null}
+              {version.runtimePackageId ? <Text type="secondary">runtime {version.runtimePackageId}</Text> : null}
+              <Tag color={stateColor(version.stateCode)}>{getReviewStateLabel(version.stateCode, language)}</Tag>
+              <Text type="secondary">{formatDateTime(version.publishedAt)}</Text>
             </Space>
-            {row.version.changelog ? <Paragraph type="secondary" className="operit-market-review-version-changelog">{row.version.changelog}</Paragraph> : null}
+            {version.changelog ? <Paragraph type="secondary" className="operit-market-review-version-changelog">{version.changelog}</Paragraph> : null}
           </div>
         </div>
       ))}
@@ -463,25 +391,14 @@ function renderRepoSource(source: Record<string, unknown>): React.ReactNode {
   );
 }
 
-function renderArtifactInfo(project?: Record<string, unknown>, nodes?: Record<string, unknown>[]): React.ReactNode {
-  const visibleNodes = nodes || [];
+function renderArtifactInfo(project?: Record<string, unknown>): React.ReactNode {
   return (
     <Space direction="vertical" size={12} style={{ width: '100%' }}>
       {project ? (
         <Descriptions column={1} size="small" bordered>
           {displayValue(project.project_key || project.projectId) ? <Descriptions.Item label="Project">{displayValue(project.project_key || project.projectId)}</Descriptions.Item> : null}
-          {displayValue(project.root_node_id || project.rootNodeId) ? <Descriptions.Item label="Root">{displayValue(project.root_node_id || project.rootNodeId)}</Descriptions.Item> : null}
           {displayValue(project.runtime_pkg || project.runtimePkg) ? <Descriptions.Item label="Runtime">{displayValue(project.runtime_pkg || project.runtimePkg)}</Descriptions.Item> : null}
         </Descriptions>
-      ) : null}
-      {visibleNodes.length > 0 ? (
-        <Space wrap>
-          {visibleNodes.map((node, index) => {
-            const id = displayValue(node.id || node.node_id || node.nodeId) || `node-${index + 1}`;
-            const label = displayValue(node.node_key || node.nodeKey) || id;
-            return <Tag key={`${id}-${index}`} color="blue">{label}</Tag>;
-          })}
-        </Space>
       ) : null}
     </Space>
   );
@@ -1029,16 +946,16 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               </Card>
 
               <Card size="small" title={t.versions}>
-                {renderVersionGraph(detail.versions || [], language)}
+                {renderVersionList(detail.versions || [], language)}
               </Card>
 
               {detail.repoSource ? (
                 <Card size="small" title={t.sourceInfo}>{renderRepoSource(detail.repoSource)}</Card>
               ) : null}
 
-              {detail.artifactProject || (detail.artifactNodes && detail.artifactNodes.length > 0) ? (
+              {detail.artifactProject ? (
                 <Card size="small" title={t.artifactInfo}>
-                  {renderArtifactInfo(detail.artifactProject || undefined, detail.artifactNodes || [])}
+                  {renderArtifactInfo(detail.artifactProject || undefined)}
                 </Card>
               ) : null}
 

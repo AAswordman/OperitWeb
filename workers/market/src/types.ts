@@ -99,7 +99,7 @@ export interface MarketActor { authorId: string; role: ActorRole | string }
 
 export type MarketObjectKind =
   | 'Author' | 'Entry' | 'Version' | 'RepoSource' | 'RepoVersion'
-  | 'ArtifactProject' | 'ArtifactNode' | 'Asset' | 'Comment'
+  | 'ArtifactProject' | 'Asset' | 'Comment'
   | 'ReactionStat' | 'Curation' | 'ReviewReason';
 
 export type MarketObjectOperation = 'create' | 'update' | 'hide' | 'withdraw' | 'approve' | 'reject' | 'request_changes' | 'aggregate';
@@ -174,7 +174,6 @@ export interface D1Backend {
   recordAnalyticsAggregateWindow(value: Record<string, unknown>): Promise<unknown>;
   createAsset(value: Record<string, unknown>): Promise<unknown>;
   createArtifactProject(value: Record<string, unknown>): Promise<unknown>;
-  createArtifactNode(value: Record<string, unknown>): Promise<unknown>;
   getEntry(entryId: string): Promise<Row | null>;
   getAuthor(authorId: string): Promise<Row | null>;
   getComment(commentId: string): Promise<Row | null>;
@@ -190,7 +189,6 @@ export interface D1Backend {
   listVersionsForEntry(entryId: string): Promise<Row[]>;
   listVersionsForArtifactProjectKey(projectKey: string): Promise<Row[]>;
   getArtifactProject(entryId: string): Promise<Row | null>;
-  listArtifactNodes(projectId: string): Promise<Row[]>;
   listAssets(entryId: string): Promise<Row[]>;
   getAssetWithEntry(assetId: string): Promise<Row | null>;
   getReactionCounts(entryId: string): Promise<Row[]>;
@@ -216,7 +214,6 @@ export interface BuildSnapshot {
   repos: Row[];
   repoVersions: Row[];
   artifactProjects: Row[];
-  artifactNodes: Row[];
   assets: Row[];
   reactions: Row[];
   entryStats: Row[];

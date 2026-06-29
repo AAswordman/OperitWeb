@@ -1,4 +1,4 @@
-import {  isoNow, makeArtifactNodeId, makeEntryId, makeProjectId, makeVersionId, slug } from '../shared.js';
+import {  isoNow, makeEntryId, makeProjectId, makeVersionId, slug } from '../shared.js';
 import type { MarketMutation } from '../types.js';
 
 interface RepoPublishInput {
@@ -25,7 +25,6 @@ interface RepoPublishInput {
   createdAt?: string;
 }
 
-interface ArtifactNodeInput { nodeKey: string; runtimePackageId?: string }
 interface ArtifactAssetInput { kind: string; url: string; sha256: string; name?: string; assetName?: string }
 interface ArtifactPublishInput {
   type: string;
@@ -40,8 +39,7 @@ interface ArtifactPublishInput {
   maxAppVer?: string;
   changelog?: string;
   projectKey: string;
-  rootNodeId: string;
-  nodes?: ArtifactNodeInput[];
+  runtimePackageId: string;
   assets?: ArtifactAssetInput[];
   createdAt?: string;
 }
@@ -160,6 +158,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         formatVer: input.formatVer,
         minAppVer: input.minAppVer,
         ...(input.maxAppVer !== undefined ? { maxAppVer: input.maxAppVer } : {}),
+        runtimePkg: input.runtimePackageId,
         stateCode: 'pending',
         ...(input.changelog !== undefined ? { changelog: input.changelog } : {}),
         createdAt: time,
@@ -168,25 +167,17 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
     },
     {
       kind: 'ArtifactProject', operation: 'create', id: projectId,
-      value: { id: projectId, entryId, projectKey: input.projectKey, rootNodeId: input.rootNodeId, createdAt: time, updatedAt: time },
+      value: { id: projectId, entryId, projectKey: input.projectKey, runtimePkg: input.runtimePackageId, createdAt: time, updatedAt: time },
     },
   ];
   const assetIds: string[] = [];
-
-  for (const node of input.nodes || []) {
-    const id = makeArtifactNodeId(projectId, node.nodeKey);
-    objects.push({
-      kind: 'ArtifactNode', operation: 'create', id,
-      value: { id, projectId, versionId, nodeKey: node.nodeKey, ...(node.runtimePackageId !== undefined ? { runtimePackageId: node.runtimePackageId } : {}), createdAt: time, updatedAt: time },
-    });
-  }
 
   for (const asset of input.assets || []) {
     const id = `asset-${slug(entryId)}-${slug(asset.name || asset.assetName || asset.url)}`;
     assetIds.push(id);
     objects.push({
       kind: 'Asset', operation: 'create', id,
-      value: { id, versionId, kind: asset.kind, url: asset.url, sha256: asset.sha256, createdAt: time },
+      value: { id, versionId, kind: asset.kind, url: asset.url, sha256: asset.sha256, ...(asset.assetName !== undefined ? { assetName: asset.assetName } : {}), createdAt: time },
     });
   }
 

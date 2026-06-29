@@ -8,8 +8,7 @@ const OBJECTS: Record<string, { operations: Set<string>; createFields?: Set<stri
   RepoSource: { operations: new Set(['create', 'update']), createFields: fields('id entryId sourceUrl createdAt updatedAt'), updateFields: fields('updatedAt') },
   RepoVersion: { operations: new Set(['create', 'update']), createFields: fields('id versionId refType refName commitSha subdir manifestPath installConfig createdAt updatedAt') },
   Asset: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id versionId kind url sha256 createdAt') },
-  ArtifactProject: { operations: new Set(['create', 'update']), createFields: fields('id entryId projectKey runtimePkg rootNodeId createdAt updatedAt') },
-  ArtifactNode: { operations: new Set(['create', 'update']), createFields: fields('id projectId versionId nodeKey runtimePackageId createdAt updatedAt') },
+  ArtifactProject: { operations: new Set(['create', 'update']), createFields: fields('id entryId projectKey runtimePkg createdAt updatedAt') },
   Comment: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id entryId parentId authorId body source status createdAt updatedAt'), updateFields: fields('body status updatedAt') },
   ReactionStat: { operations: new Set(['aggregate']), aggregateFields: fields('id entryId reaction ghCount cfCount totalCount updatedAt') },
   Curation: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id entryId listKey position note startsAt endsAt createdAt updatedAt'), updateFields: fields('position note startsAt endsAt updatedAt') },
@@ -36,7 +35,6 @@ export function createObjectRegistry(): ObjectRegistry {
         case 'RepoVersion': return backend.createRepoVersion({ id: change.id, ...(change.value || {}) });
         case 'Asset': return backend.createAsset({ id: change.id, ...(change.value || {}) });
         case 'ArtifactProject': return backend.createArtifactProject({ id: change.id, ...(change.value || {}) });
-        case 'ArtifactNode': return backend.createArtifactNode({ id: change.id, ...(change.value || {}) });
         case 'ReviewReason': return backend.createReviewReason({ id: change.id, ...(change.value || {}) });
         case 'Curation': return change.operation === 'hide' ? backend.hideCuration(change.id, change.patch || {}) : backend.createCuration({ id: change.id, ...(change.value || {}) });
         case 'ReactionStat': return backend.aggregateReaction({ id: change.id, ...(change.value || {}) });

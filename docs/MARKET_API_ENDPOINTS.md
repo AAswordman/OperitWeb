@@ -6,7 +6,7 @@
 
 | 域名 | 用途 | 经过 Worker |
 | --- | --- | --- |
-| `https://static.operit.app` | v2 公开静态读取（列表、分片、manifest、评论页、版本列表） | 否，直连 R2 |
+| `https://static.operit.app` | v2 公开静态读取（列表、entry 分片、manifest、评论页） | 否，直连 R2 |
 | `https://api.operit.app` | v2 鉴权、发布、评论写入、点赞、通知、下载统计、审核管理；v1 旧接口 | 是 |
 
 客户端禁止通过 `api.operit.app` 读取静态资源。静态资源一律走 `static.operit.app`，不消耗 Worker 额度。
@@ -76,6 +76,8 @@ GET /market/v2/lists/all/{sort}/page-{page}.json
 
 `sort`：`updated` | `likes` | `featured`，页大小 `100`。
 
+列表页的 `items[]` 与 entry 分片的 `entriesById[id]` 使用同一套完整 entry payload；客户端从列表打开详情或 artifact 版本弹窗时，不应再请求 entry 分片。
+
 ### 按类型列表
 
 ```http
@@ -114,13 +116,7 @@ GET /market/v2/entries/{shard}.json
 
 返回 `entriesById` map，用于从作者页、通知等场景按 id 查 entry。
 
-Repo 类 entry（`skill` / `mcp`）的 `latestVersion.installConfig` 保存该版本的安装配置；`changelog` 只表示版本更新说明。
-
-### Entry 版本列表
-
-```http
-GET /market/v2/entries/{entryId}/versions.json
-```
+列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。
 
 ### 评论分页
 

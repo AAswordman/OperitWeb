@@ -1,0 +1,2439 @@
+[
+  {
+    "results": [
+      {
+        "version_id": "package-auto-memory-v-1-0-0",
+        "asset_name": "auto-memory-v1.0.0-398cd9c2.toolpkg",
+        "project_runtime_pkg": "auto_memory"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-6-0",
+        "asset_name": "com-community-ob-auto-breath-v1.6.0-7ffa6407.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-5-1",
+        "asset_name": "com-community-ob-auto-breath-v1.5.1-115a2992.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-4-1",
+        "asset_name": "com-community-ob-auto-breath-v1.4.1-faaa575e.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-4-0",
+        "asset_name": "com-community-ob-auto-breath-v1.4.0-274cc5b2.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-3-1",
+        "asset_name": "com-community-ob-auto-breath-v1.3.1-34ea8a79.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-3-0",
+        "asset_name": "com-community-ob-auto-breath-v1.3.0-2fe26d1b.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-2-0",
+        "asset_name": "com-community-ob-auto-breath-v1.2.0-ddcdb407.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-1-0",
+        "asset_name": "com-community-ob-auto-breath-v1.1.0-78fbe48c.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-0-0-legacy-45",
+        "asset_name": "com-community-ob-auto-breath-v1.0.0-3e6a7941.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-0-0",
+        "asset_name": "com-community-ob-auto-breath-v1.0.0-490dd0cd.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-breath-v-1-5-0",
+        "asset_name": "com-community-ob-auto-breath-v1.5.0-36199bc3.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_breath"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-6-1",
+        "asset_name": "com-community-ob-auto-grow-v1.6.1-22e68aff.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-6-0",
+        "asset_name": "com-community-ob-auto-grow-v1.6.0-05bfd096.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-5-0",
+        "asset_name": "com-community-ob-auto-grow-v1.5.0-f94f70c6.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-4-1",
+        "asset_name": "com-community-ob-auto-grow-v1.4.1-94935b64.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-4-0",
+        "asset_name": "com-community-ob-auto-grow-v1.4.0-62aa523a.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-2-0-legacy-65",
+        "asset_name": "com-community-ob-auto-grow-v1.2.0-71316b22.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-1-0",
+        "asset_name": "com-community-ob-auto-grow-v1.1.0-26b89881.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-0-0",
+        "asset_name": "com-community-ob-auto-grow-v1.0.0-f04b0e1a.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-community-ob-auto-grow-v-1-2-0",
+        "asset_name": "com-community-ob-auto-grow-v1.2.0-98dec134.toolpkg",
+        "project_runtime_pkg": "com.community.ob_auto_grow"
+      },
+      {
+        "version_id": "package-com-daddy-chatcards-v-0-3-36",
+        "asset_name": "com-daddy-chatcards-v0.3.36-c8848917.toolpkg",
+        "project_runtime_pkg": "com.daddy.chatcards"
+      },
+      {
+        "version_id": "package-com-daddy-chatcards-v-0-1-0",
+        "asset_name": "com-daddy-chatcards-v0.1.0-b5c12db5.toolpkg",
+        "project_runtime_pkg": "com.daddy.chatcards"
+      },
+      {
+        "version_id": "package-com-daddy-chatcards-v-0-3-37",
+        "asset_name": "com-daddy-chatcards-v0.3.37-cb858561.toolpkg",
+        "project_runtime_pkg": "com.daddy.chatcards"
+      },
+      {
+        "version_id": "package-com-gardencottage-rich-renderer-v-1-0-0",
+        "asset_name": "com-gardencottage-rich-renderer-v1.0.0-4ed3f15b.toolpkg",
+        "project_runtime_pkg": "com.gardencottage.rich_renderer"
+      },
+      {
+        "version_id": "package-com-gardencottage-rich-renderer-v2-v-2-0-0",
+        "asset_name": "com-gardencottage-rich-renderer-v2-v2.0.0-a0f469f2.toolpkg",
+        "project_runtime_pkg": "com.gardencottage.rich_renderer_v2"
+      },
+      {
+        "version_id": "package-com-latex-beautify-renderer-v-1-0",
+        "asset_name": "com-latex-beautify-renderer-v1.0-ce99ec31.toolpkg",
+        "project_runtime_pkg": "com.latex.beautify.renderer"
+      },
+      {
+        "version_id": "package-com-lishen-huawei-health-snapshot-v-0-1-0",
+        "asset_name": "com-lishen-huawei-health-snapshot-v0.1.0-9687ab23.toolpkg",
+        "project_runtime_pkg": "com.lishen.huawei_health_snapshot"
+      },
+      {
+        "version_id": "package-com-loki-sticker-renderer-v-0-7-2",
+        "asset_name": "com-loki-sticker-renderer-v0.7.2-3bc7e632.toolpkg",
+        "project_runtime_pkg": "com.loki.sticker_renderer"
+      },
+      {
+        "version_id": "package-com-loki-sticker-renderer-v-0-7-0",
+        "asset_name": "com.loki.sticker_renderer-0.7.0.toolpkg",
+        "project_runtime_pkg": "com.loki.sticker_renderer"
+      },
+      {
+        "version_id": "package-com-monica-minimax-music-pro-v-1-0-0",
+        "asset_name": "com-monica-minimax-music-pro-v1.0.0-570a8232.toolpkg",
+        "project_runtime_pkg": "com.monica.minimax_music_pro"
+      },
+      {
+        "version_id": "package-com-monica-minimax-voice-bar-v-1-0-0",
+        "asset_name": "com-monica-minimax-voice-bar-v1.0.0-4addb53b.toolpkg",
+        "project_runtime_pkg": "com.monica.minimax_voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-action-v-1-0-0",
+        "asset_name": "com-operit-action-v1.0.0-221dc198.toolpkg",
+        "project_runtime_pkg": "com.operit.action"
+      },
+      {
+        "version_id": "package-com-operit-ai-game-center-v-1-0-0-legacy-20",
+        "asset_name": "com-operit-ai-game-center-v1.0.0-460f1ba8.toolpkg",
+        "project_runtime_pkg": "com.operit.ai_game_center"
+      },
+      {
+        "version_id": "package-com-operit-ai-game-center-v-1-0-0",
+        "asset_name": "com-operit-ai-game-center-v1.0.0-6ce0b479.toolpkg",
+        "project_runtime_pkg": "com.operit.ai_game_center"
+      },
+      {
+        "version_id": "package-com-operit-ai-workflow-suite-v-0-1-0",
+        "asset_name": "com-operit-ai-workflow-suite-v0.1.0-3da04924.toolpkg",
+        "project_runtime_pkg": "com.operit.ai_workflow_suite"
+      },
+      {
+        "version_id": "package-com-operit-auto-learning-ai-bundle-v-1-0-0",
+        "asset_name": "com-operit-auto-learning-ai-bundle-v1.0.0-33e41f35.toolpkg",
+        "project_runtime_pkg": "com.operit.auto_learning_ai_bundle"
+      },
+      {
+        "version_id": "package-com-operit-batch-tts-toolpkg-v-1-1-0",
+        "asset_name": "com-operit-batch-tts-toolpkg-v1.1.0-793ef866.toolpkg",
+        "project_runtime_pkg": "com.operit.batch_tts_toolpkg"
+      },
+      {
+        "version_id": "package-com-operit-bead-pattern-v-1-2-0",
+        "asset_name": "com-operit-bead-pattern-v1.2.0-a6c63867.toolpkg",
+        "project_runtime_pkg": "com.operit.bead_pattern"
+      },
+      {
+        "version_id": "package-com-operit-bead-pattern-v-1-1-0",
+        "asset_name": "com-operit-bead-pattern-v1.1.0-5b7fc3b7.toolpkg",
+        "project_runtime_pkg": "com.operit.bead_pattern"
+      },
+      {
+        "version_id": "package-com-operit-bead-pattern-v-1-0-0",
+        "asset_name": "com-operit-bead-pattern-v1.0.0-ce1d2afc.toolpkg",
+        "project_runtime_pkg": "com.operit.bead_pattern"
+      },
+      {
+        "version_id": "package-com-operit-betterfiletools-v-1-0-0-legacy-169",
+        "asset_name": "com-operit-betterfiletools-v1.0.0-93991a92.toolpkg",
+        "project_runtime_pkg": "com.operit.betterfiletools"
+      },
+      {
+        "version_id": "package-com-operit-betterfiletools-v-1-0-0",
+        "asset_name": "com-operit-betterfiletools-v1.0.0-48b2217a.toolpkg",
+        "project_runtime_pkg": "com.operit.betterfiletools"
+      },
+      {
+        "version_id": "package-com-operit-bilingual-fold-v-0-1-0",
+        "asset_name": "com.operit.bilingual_fold-0.1.0.toolpkg",
+        "project_runtime_pkg": "com.operit.bilingual_fold"
+      },
+      {
+        "version_id": "package-com-operit-chara-card-maker-v-1-0-0",
+        "asset_name": "com-operit-chara-card-maker-v1.0.0-48091130.toolpkg",
+        "project_runtime_pkg": "com.operit.chara_card_maker"
+      },
+      {
+        "version_id": "package-com-operit-chat-migrator-v-2-3-0",
+        "asset_name": "com-operit-chat-migrator-v2.3.0-05ccc252.toolpkg",
+        "project_runtime_pkg": "com.operit.chat_migrator"
+      },
+      {
+        "version_id": "package-com-operit-chat-migrator-v-2-1-0",
+        "asset_name": "com-operit-chat-migrator-v2.1.0-ac870c25.toolpkg",
+        "project_runtime_pkg": "com.operit.chat_migrator"
+      },
+      {
+        "version_id": "package-com-operit-chathistory-migrator-v-1-1-0",
+        "asset_name": "com-operit-chathistory-migrator-v1.1.0-718c35b3.toolpkg",
+        "project_runtime_pkg": "com.operit.chathistory_migrator"
+      },
+      {
+        "version_id": "package-com-operit-chathistory-migrator-v-1-0-0-legacy-219",
+        "asset_name": "com-operit-chathistory-migrator-v1.0.0-cb21896a.toolpkg",
+        "project_runtime_pkg": "com.operit.chathistory_migrator"
+      },
+      {
+        "version_id": "package-com-operit-chathistory-migrator-v-1-0-0",
+        "asset_name": "com-operit-chathistory-migrator-v1.0.0-074535f1.toolpkg",
+        "project_runtime_pkg": "com.operit.chathistory_migrator"
+      },
+      {
+        "version_id": "package-com-operit-context-limiter-c-v-2-0-0",
+        "asset_name": "com-operit-context-limiter-c-v2.0.0-e86cc050.toolpkg",
+        "project_runtime_pkg": "com.operit.context_limiter_c"
+      },
+      {
+        "version_id": "package-com-operit-context-limiter-pro-v-3-2-1",
+        "asset_name": "com-operit-context-limiter-pro-v3.2.1-5c168133.toolpkg",
+        "project_runtime_pkg": "com.operit.context_limiter_pro"
+      },
+      {
+        "version_id": "package-com-operit-context-limiter-pro-v-3-3-0",
+        "asset_name": "com-operit-context-limiter-pro-v3.3.0-b7fe9b93.toolpkg",
+        "project_runtime_pkg": "com.operit.context_limiter_pro"
+      },
+      {
+        "version_id": "package-com-operit-conversation-lock-v-0-2-0",
+        "asset_name": "com-operit-conversation-lock-v0.2.0-f08f52f1.toolpkg",
+        "project_runtime_pkg": "com.operit.conversation_lock"
+      },
+      {
+        "version_id": "package-com-operit-custom-ai-provider-example-v-0-1-0",
+        "asset_name": "com-operit-custom-ai-provider-example-v0.1.0-53d490f7.toolpkg",
+        "project_runtime_pkg": "com.operit.custom_ai_provider_example"
+      },
+      {
+        "version_id": "package-com-operit-custom-prompt-v-0-1-0",
+        "asset_name": "com-operit-custom-prompt-v0.1.0-50d69bc3.toolpkg",
+        "project_runtime_pkg": "com.operit.custom_prompt"
+      },
+      {
+        "version_id": "package-com-operit-deepexecute-bundle-v-0-3-0",
+        "asset_name": "com-operit-deepexecute-bundle-v0.3.0-5995877a.toolpkg",
+        "project_runtime_pkg": "com.operit.deepexecute_bundle"
+      },
+      {
+        "version_id": "package-com-operit-desktop-widget-demo-v-0-1-0",
+        "asset_name": "com-operit-desktop-widget-demo-v0.1.0-76f5647e.toolpkg",
+        "project_runtime_pkg": "com.operit.desktop_widget_demo"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-3-legacy-225",
+        "asset_name": "com-operit-diary-v2.3.3-ff26713d.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-3-legacy-224",
+        "asset_name": "com-operit-diary-v2.3.3-4ccd3943.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-3-legacy-223",
+        "asset_name": "com-operit-diary-v2.3.3-2d296f8d.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-2",
+        "asset_name": "com-operit-diary-v2.3.2-65eeb51f.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-0",
+        "asset_name": "com-operit-diary-v2.3.0-2d76f143.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-2-0",
+        "asset_name": "com-operit-diary-v2.2.0-1c737d2b.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-1-2",
+        "asset_name": "com-operit-diary-v2.1.2-ccd62cdd.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-1-1",
+        "asset_name": "com-operit-diary-v2.1.1-c2f1389f.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-1-0-2",
+        "asset_name": "com-operit-diary-v1.0.2-069a3b5a.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-1-0-0-legacy-30",
+        "asset_name": "com-operit-diary-v1.0.0-5ec4fe87.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-1-0-0",
+        "asset_name": "com-operit-diary-v1.0.0-eb11c5d5.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-diary-v-2-3-3",
+        "asset_name": "com-operit-diary-v2.3.3-1c310802.toolpkg",
+        "project_runtime_pkg": "com.operit.diary"
+      },
+      {
+        "version_id": "package-com-operit-dick-helper-sidebar-v-0-1-0",
+        "asset_name": "com-operit-dick-helper-sidebar-v0.1.0-37af4e5f.toolpkg",
+        "project_runtime_pkg": "com.operit.dick_helper_sidebar"
+      },
+      {
+        "version_id": "package-com-operit-dino-runner-v-0-1-0",
+        "asset_name": "com-operit-dino-runner-v0.1.0-8d06f85d.toolpkg",
+        "project_runtime_pkg": "com.operit.dino_runner"
+      },
+      {
+        "version_id": "package-com-operit-feishu-bot-v-0-1-1",
+        "asset_name": "com-operit-feishu-bot-v0.1.1-e599db95.toolpkg",
+        "project_runtime_pkg": "com.operit.feishu_bot"
+      },
+      {
+        "version_id": "package-com-operit-feishu-bot-v-0-1-0",
+        "asset_name": "com-operit-feishu-bot-v0.1.0-51b280f6.toolpkg",
+        "project_runtime_pkg": "com.operit.feishu_bot"
+      },
+      {
+        "version_id": "package-com-operit-forum-message-board-v-0-1-0",
+        "asset_name": "com-operit-forum-message-board-v0.1.0-7c83f3ea.toolpkg",
+        "project_runtime_pkg": "com.operit.forum_message_board"
+      },
+      {
+        "version_id": "package-com-operit-forum-message-board-v-0-1-1-legacy-261",
+        "asset_name": "com-operit-forum-message-board-v0.1.1-e067dba1.toolpkg",
+        "project_runtime_pkg": "com.operit.forum_message_board"
+      },
+      {
+        "version_id": "package-com-operit-forum-message-board-v-0-1-1",
+        "asset_name": "com-operit-forum-message-board-v0.1.1-886ff90b.toolpkg",
+        "project_runtime_pkg": "com.operit.forum_message_board"
+      },
+      {
+        "version_id": "package-com-operit-forum-message-board-v-0-2-0",
+        "asset_name": "com-operit-forum-message-board-v0.2.0-ef3641ce.toolpkg",
+        "project_runtime_pkg": "com.operit.forum_message_board"
+      },
+      {
+        "version_id": "package-com-operit-jealous-guardian-v-1-0-0",
+        "asset_name": "com-operit-jealous-guardian-v1.0.0-68eb751b.toolpkg",
+        "project_runtime_pkg": "com.operit.jealous_guardian"
+      },
+      {
+        "version_id": "package-com-operit-jealous-patrol-v-2-0-0",
+        "asset_name": "com-operit-jealous-patrol-v2.0.0-3741281b.toolpkg",
+        "project_runtime_pkg": "com.operit.jealous_patrol"
+      },
+      {
+        "version_id": "package-com-operit-jealous-patrol-v-1-0-0",
+        "asset_name": "com-operit-jealous-patrol-v1.0.0-311d7cb4.toolpkg",
+        "project_runtime_pkg": "com.operit.jealous_patrol"
+      },
+      {
+        "version_id": "package-com-operit-jjwxc-bookmark-v-1-0-0-legacy-110",
+        "asset_name": "com-operit-jjwxc-bookmark-v1.0.0-ceee93b1.toolpkg",
+        "project_runtime_pkg": "com.operit.jjwxc_bookmark"
+      },
+      {
+        "version_id": "package-com-operit-jjwxc-bookmark-v-1-0-0",
+        "asset_name": "com-operit-jjwxc-bookmark-v1.0.0-3388b314.toolpkg",
+        "project_runtime_pkg": "com.operit.jjwxc_bookmark"
+      },
+      {
+        "version_id": "package-com-operit-jjwxc-bookmark-v-1-0-0-legacy-108",
+        "asset_name": "com-operit-jjwxc-bookmark-v1.0.0-a89087d6.toolpkg",
+        "project_runtime_pkg": "com.operit.jjwxc_bookmark"
+      },
+      {
+        "version_id": "package-com-operit-learning-mode-bundle-v-1-0-1",
+        "asset_name": "com-operit-learning-mode-bundle-v1.0.1-f4d0d104.toolpkg",
+        "project_runtime_pkg": "com.operit.learning_mode_bundle"
+      },
+      {
+        "version_id": "package-com-operit-local-docker-manager-v-0-1-0",
+        "asset_name": "com-operit-local-docker-manager-v0.1.0-32be8b05.toolpkg",
+        "project_runtime_pkg": "com.operit.local_docker_manager"
+      },
+      {
+        "version_id": "package-com-operit-magic-tower-plugin-v-1-0-0",
+        "asset_name": "com-operit-magic-tower-plugin-v1.0.0-2a40f6fc.toolpkg",
+        "project_runtime_pkg": "com.operit.magic_tower_plugin"
+      },
+      {
+        "version_id": "package-com-operit-meihua-yishu-v-2-0-0",
+        "asset_name": "com-operit-meihua-yishu-v2.0.0-b2144e0f.toolpkg",
+        "project_runtime_pkg": "com.operit.meihua_yishu"
+      },
+      {
+        "version_id": "package-com-operit-memory-system-v-1-0-0",
+        "asset_name": "com-operit-memory-system-v1.0.0-8faac8df.toolpkg",
+        "project_runtime_pkg": "com.operit.memory_system"
+      },
+      {
+        "version_id": "package-com-operit-minesweeper-v-1-0-0",
+        "asset_name": "com-operit-minesweeper-v1.0.0-994acaa8.toolpkg",
+        "project_runtime_pkg": "com.operit.minesweeper"
+      },
+      {
+        "version_id": "package-com-operit-mode-switch-v-3-0-0",
+        "asset_name": "com-operit-mode-switch-v3.0.0-8eeeb737.toolpkg",
+        "project_runtime_pkg": "com.operit.mode_switch"
+      },
+      {
+        "version_id": "package-com-operit-mode-switch-v-2-0-0",
+        "asset_name": "com-operit-mode-switch-v2.0.0-e2871500.toolpkg",
+        "project_runtime_pkg": "com.operit.mode_switch"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-5-0",
+        "asset_name": "com-operit-moodlet-v0.5.0-7638bd8e.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-4-0",
+        "asset_name": "com-operit-moodlet-v0.4.0-968b5fc8.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-3-0-legacy-88",
+        "asset_name": "com-operit-moodlet-v0.3.0-c0ac49cc.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-3-0",
+        "asset_name": "com-operit-moodlet-v0.3.0-c5065551.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-2-0",
+        "asset_name": "com-operit-moodlet-v0.2.0-9a50df71.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-moodlet-v-0-1-0",
+        "asset_name": "com-operit-moodlet-v0.1.0-b34cf81e.toolpkg",
+        "project_runtime_pkg": "com.operit.moodlet"
+      },
+      {
+        "version_id": "package-com-operit-msg-watcher-v-1-0-0-legacy-138",
+        "asset_name": "com-operit-msg-watcher-v1.0.0-c8aa83ee.toolpkg",
+        "project_runtime_pkg": "com.operit.msg_watcher"
+      },
+      {
+        "version_id": "package-com-operit-msg-watcher-v-1-0-0-legacy-29",
+        "asset_name": "com-operit-msg-watcher-v1.0.0-ef92832a.toolpkg",
+        "project_runtime_pkg": "com.operit.msg_watcher"
+      },
+      {
+        "version_id": "package-com-operit-msg-watcher-v-1-0-0",
+        "asset_name": "com-operit-msg-watcher-v1.0.0-59de317c.toolpkg",
+        "project_runtime_pkg": "com.operit.msg_watcher"
+      },
+      {
+        "version_id": "package-com-operit-multi-search-pro-standalone-v-1-0-4",
+        "asset_name": "com-operit-multi-search-pro-standalone-v1.0.4-9d6d3167.toolpkg",
+        "project_runtime_pkg": "com.operit.multi_search_pro_standalone"
+      },
+      {
+        "version_id": "package-com-operit-napcat-bridge-ui-market-v-2-0-legacy-103",
+        "asset_name": "com-operit-napcat-bridge-ui-market-v2.0-bc693101.toolpkg",
+        "project_runtime_pkg": "com.operit.napcat_bridge_ui_market"
+      },
+      {
+        "version_id": "package-com-operit-napcat-bridge-ui-market-v-1-1",
+        "asset_name": "com-operit-napcat-bridge-ui-market-v1.1-e64ff3d1.toolpkg",
+        "project_runtime_pkg": "com.operit.napcat_bridge_ui_market"
+      },
+      {
+        "version_id": "package-com-operit-napcat-bridge-ui-market-v-1-0",
+        "asset_name": "com-operit-napcat-bridge-ui-market-v1.0-3bfaf565.toolpkg",
+        "project_runtime_pkg": "com.operit.napcat_bridge_ui_market"
+      },
+      {
+        "version_id": "package-com-operit-napcat-bridge-ui-market-v-2-0",
+        "asset_name": "com-operit-napcat-bridge-ui-market-v2.0-19ecde6d.toolpkg",
+        "project_runtime_pkg": "com.operit.napcat_bridge_ui_market"
+      },
+      {
+        "version_id": "package-com-operit-napcat-bridge-ui-market-v-0-3-0-market",
+        "asset_name": "com-operit-napcat-bridge-ui-market-v0.3.0-market-2a0ae384.toolpkg",
+        "project_runtime_pkg": "com.operit.napcat_bridge_ui_market"
+      },
+      {
+        "version_id": "package-com-operit-omnivoice-v-1-0-0",
+        "asset_name": "com-operit-omnivoice-v1.0.0-b0cb7239.toolpkg",
+        "project_runtime_pkg": "com.operit.omnivoice"
+      },
+      {
+        "version_id": "package-com-operit-opencode-ai-provider-v-0-5-7",
+        "asset_name": "com-operit-opencode-ai-provider-v0.5.7-50a18195.toolpkg",
+        "project_runtime_pkg": "com.operit.opencode_ai_provider"
+      },
+      {
+        "version_id": "package-com-operit-opencode-ai-provider-v-0-5-6",
+        "asset_name": "com-operit-opencode-ai-provider-v0.5.6-bb13b75c.toolpkg",
+        "project_runtime_pkg": "com.operit.opencode_ai_provider"
+      },
+      {
+        "version_id": "package-com-operit-opencode-ai-provider-v-0-1-0",
+        "asset_name": "com-operit-opencode-ai-provider-v0.1.0-e0cb7d80.toolpkg",
+        "project_runtime_pkg": "com.operit.opencode_ai_provider"
+      },
+      {
+        "version_id": "package-com-operit-plugin-backup-manager-v-0-2-0",
+        "asset_name": "com-operit-plugin-backup-manager-v0.2.0-e04fd8f1.toolpkg",
+        "project_runtime_pkg": "com.operit.plugin_backup_manager"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-v-0-1-0",
+        "asset_name": "com-operit-questionnaire-v0.1.0-396c8ead.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-5-2",
+        "asset_name": "com-operit-questionnaire-fix-v1.5.2-b2b41a58.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-5-1",
+        "asset_name": "com-operit-questionnaire-fix-v1.5.1-7185c947.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-5-0-legacy-233",
+        "asset_name": "com-operit-questionnaire-fix-v1.5.0-baf3dcd6.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-4-3",
+        "asset_name": "com-operit-questionnaire-fix-v1.4.3-ee68fe3c.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-4-2",
+        "asset_name": "com-operit-questionnaire-fix-v1.4.2-0739ed04.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-4-0-legacy-177",
+        "asset_name": "com-operit-questionnaire-fix-v1.4.0-f6847a74.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-0-1-2",
+        "asset_name": "com-operit-questionnaire-fix-v0.1.2-ae527d1f.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-4-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.4.0-b993e745.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-3-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.3.0-2bd86e78.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-2-1",
+        "asset_name": "com-operit-questionnaire-fix-v1.2.1-f32e4133.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-2-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.2.0-14ac4ee7.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-1-0-legacy-137",
+        "asset_name": "com-operit-questionnaire-fix-v1.1.0-c87ccc5c.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-0-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.0.0-83736c0f.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-0-1-1",
+        "asset_name": "com-operit-questionnaire-fix-v0.1.1-a536f062.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-5-3",
+        "asset_name": "com-operit-questionnaire-fix-v1.5.3-e7ca7929.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-1-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.1.0-590ae60a.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-1-0-legacy-135",
+        "asset_name": "com-operit-questionnaire-fix-v1.1.0-baf71c30.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-1-0-legacy-136",
+        "asset_name": "com-operit-questionnaire-fix-v1.1.0-abe49fd1.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-questionnaire-fix-v-1-5-0",
+        "asset_name": "com-operit-questionnaire-fix-v1.5.0-6b93664a.toolpkg",
+        "project_runtime_pkg": "com.operit.questionnaire.fix"
+      },
+      {
+        "version_id": "package-com-operit-quick-inject-v-5-2-0",
+        "asset_name": "com-operit-quick-inject-v5.2.0-24f45012.toolpkg",
+        "project_runtime_pkg": "com.operit.quick_inject"
+      },
+      {
+        "version_id": "package-com-operit-quick-inject-v-5-0-0",
+        "asset_name": "com-operit-quick-inject-v5.0.0-4809a425.toolpkg",
+        "project_runtime_pkg": "com.operit.quick_inject"
+      },
+      {
+        "version_id": "package-com-operit-quick-inject-v-3-4-6",
+        "asset_name": "com-operit-quick-inject-v3.4.6-2e397194.toolpkg",
+        "project_runtime_pkg": "com.operit.quick_inject"
+      },
+      {
+        "version_id": "package-com-operit-quiz-card-v-1-0-0",
+        "asset_name": "com-operit-quiz-card-v1.0.0-4323892c.toolpkg",
+        "project_runtime_pkg": "com.operit.quiz_card"
+      },
+      {
+        "version_id": "package-com-operit-quizbank-manager-v-1-6-1",
+        "asset_name": "com-operit-quizbank-manager-v1.6.1-5f0b87d8.toolpkg",
+        "project_runtime_pkg": "com.operit.quizbank-manager"
+      },
+      {
+        "version_id": "package-com-operit-quizbank-manager-v-1-6-0",
+        "asset_name": "com-operit-quizbank-manager-v1.6.0-1b16b024.toolpkg",
+        "project_runtime_pkg": "com.operit.quizbank-manager"
+      },
+      {
+        "version_id": "package-com-operit-secure-vault-v-1-0-0",
+        "asset_name": "com-operit-secure-vault-v1.0.0-8b9ccf36.toolpkg",
+        "project_runtime_pkg": "com.operit.secure_vault"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-aistudio-v-1-0-0",
+        "asset_name": "com-operit-sidebar-aistudio-v1.0.0-1d1e568f.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_aistudio"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-6-0",
+        "asset_name": "com-operit-sidebar-coread-v1.6.0-ed8aadc5.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-5-0",
+        "asset_name": "com-operit-sidebar-coread-v1.5.0-b146e91b.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-4-0",
+        "asset_name": "com-operit-sidebar-coread-v1.4.0-1f2848ff.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-3-0",
+        "asset_name": "com-operit-sidebar-coread-v1.3.0-865ef0c7.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-0-2",
+        "asset_name": "com-operit-sidebar-coread-v1.0.2-0b4909e3.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-2-0",
+        "asset_name": "com-operit-sidebar-coread-v1.2.0-a45fd6cb.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-1-0",
+        "asset_name": "com-operit-sidebar-coread-v1.1.0-acaa64a5.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-coread-v-1-0-0",
+        "asset_name": "com-operit-sidebar-coread-v1.0.0-caa140dc.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_coread"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-mimocode-v-0-1-0",
+        "asset_name": "com-operit-sidebar-mimocode-v0.1.0-6bee0377.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_mimocode"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-4-4",
+        "asset_name": "com-operit-sidebar-musicfree-v0.4.4-3d36deeb.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-4-3",
+        "asset_name": "com-operit-sidebar-musicfree-v0.4.3-c4992b8a.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-3-0",
+        "asset_name": "com-operit-sidebar-musicfree-v0.3.0-d388f65e.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-2-0",
+        "asset_name": "com-operit-sidebar-musicfree-v0.2.0-1df4a7bb.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-4-5",
+        "asset_name": "com-operit-sidebar-musicfree-v0.4.5-4eaca777.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-2-0-legacy-62",
+        "asset_name": "com-operit-sidebar-musicfree-v0.2.0-f421302f.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-musicfree-v-0-2-0-legacy-209",
+        "asset_name": "com-operit-sidebar-musicfree-v0.2.0-d8b7e3ef.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_musicfree"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-opencode-v-0-1-2",
+        "asset_name": "com-operit-sidebar-opencode-v0.1.2-5b777e44.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_opencode"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-opencode-v-0-1-1",
+        "asset_name": "com-operit-sidebar-opencode-v0.1.1-d27ae64c.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_opencode"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-openreader-v-0-2-0",
+        "asset_name": "com-operit-sidebar-openreader-v0.2.0-e2a37305.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_openreader"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-openreader-v-0-1-2",
+        "asset_name": "com-operit-sidebar-openreader-v0.1.2-1bf8b98f.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_openreader"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-openreader-v-0-1-0",
+        "asset_name": "com-operit-sidebar-openreader-v0.1.0-d78e990a.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_openreader"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-period-action-v-0-1-0",
+        "asset_name": "com-operit-sidebar-period-action-v0.1.0-cf762698.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_period_action"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-sillytavern-v-0-1-0-legacy-120",
+        "asset_name": "com-operit-sidebar-sillytavern-v0.1.0-b587e5b8.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_sillytavern"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-sillytavern-v-0-1-0",
+        "asset_name": "com-operit-sidebar-sillytavern-v0.1.0-e98403e3.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_sillytavern"
+      },
+      {
+        "version_id": "package-com-operit-sidebar-webnr-v-1-0-0",
+        "asset_name": "com-operit-sidebar-webnr-v1.0.0-12601bf8.toolpkg",
+        "project_runtime_pkg": "com.operit.sidebar_webnr"
+      },
+      {
+        "version_id": "package-com-operit-smart-ui-agent-bundle-v-1-0-0",
+        "asset_name": "com-operit-smart-ui-agent-bundle-v1.0.0-c77f6751.toolpkg",
+        "project_runtime_pkg": "com.operit.smart_ui_agent_bundle"
+      },
+      {
+        "version_id": "package-com-operit-ssh-manager-v-0-1-0",
+        "asset_name": "com-operit-ssh-manager-v0.1.0-c135cd10.toolpkg",
+        "project_runtime_pkg": "com.operit.ssh_manager"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-3-0-legacy-248",
+        "asset_name": "com-operit-suggestion-chips-v0.3.0-56b06d6b.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-3-0",
+        "asset_name": "com-operit-suggestion-chips-v0.3.0-f6c29ad8.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-2-0",
+        "asset_name": "com-operit-suggestion-chips-v0.2.0-c3602dee.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-1-1",
+        "asset_name": "com-operit-suggestion-chips-v0.1.1-2bac3e7a.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-1-0",
+        "asset_name": "com-operit-suggestion-chips-v0.1.0-f6c5358f.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-3-0-legacy-272",
+        "asset_name": "com-operit-suggestion-chips-v0.3.0-e182c713.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-suggestion-chips-v-0-3-6",
+        "asset_name": "com-operit-suggestion-chips-v0.3.6-75937ec2.toolpkg",
+        "project_runtime_pkg": "com.operit.suggestion_chips"
+      },
+      {
+        "version_id": "package-com-operit-telegram-bridge-market-v-0-1-0-legacy-253",
+        "asset_name": "com-operit-telegram-bridge-market-v0.1.0-147b48a4.toolpkg",
+        "project_runtime_pkg": "com.operit.telegram_bridge_market"
+      },
+      {
+        "version_id": "package-com-operit-telegram-bridge-market-v-0-1-0",
+        "asset_name": "com-operit-telegram-bridge-market-v0.1.0-181d190d.toolpkg",
+        "project_runtime_pkg": "com.operit.telegram_bridge_market"
+      },
+      {
+        "version_id": "package-com-operit-template-try-bundle-v-0-1-0",
+        "asset_name": "com-operit-template-try-bundle-v0.1.0-e07c02e7.toolpkg",
+        "project_runtime_pkg": "com.operit.template_try_bundle"
+      },
+      {
+        "version_id": "package-com-operit-template-try-bundle-v-1-0",
+        "asset_name": "com-operit-template-try-bundle-v1.0-a6213d86.toolpkg",
+        "project_runtime_pkg": "com.operit.template_try_bundle"
+      },
+      {
+        "version_id": "package-com-operit-template-try-bundle-v-1-0-legacy-23",
+        "asset_name": "com-operit-template-try-bundle-v1.0-19878900.toolpkg",
+        "project_runtime_pkg": "com.operit.template_try_bundle"
+      },
+      {
+        "version_id": "package-com-operit-todo-board-tutorial-bundle-v-0-2-0",
+        "asset_name": "com-operit-todo-board-tutorial-bundle-v0.2.0-0cb8637a.toolpkg",
+        "project_runtime_pkg": "com.operit.todo_board_tutorial_bundle"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-2-2",
+        "asset_name": "com-operit-tool-simulation-v2.2.2-1b36e2b4.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-2-1",
+        "asset_name": "com-operit-tool-simulation-v2.2.1-ec15fc9e.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-2-0",
+        "asset_name": "com-operit-tool-simulation-v2.2.0-301336de.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-1-0-legacy-161",
+        "asset_name": "com-operit-tool-simulation-v2.1.0-75285145.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-0-0",
+        "asset_name": "com-operit-tool-simulation-v2.0.0-39942616.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-1-0-0",
+        "asset_name": "com-operit-tool-simulation-v1.0.0-09aac68f.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-tool-simulation-v-2-1-0",
+        "asset_name": "com-operit-tool-simulation-v2.1.0-ebeb4789.toolpkg",
+        "project_runtime_pkg": "com.operit.tool_simulation"
+      },
+      {
+        "version_id": "package-com-operit-uiverse-toolkit-v-1-0-0",
+        "asset_name": "com-operit-uiverse-toolkit-v1.0.0-2ca05b28.toolpkg",
+        "project_runtime_pkg": "com.operit.uiverse_toolkit"
+      },
+      {
+        "version_id": "package-com-operit-uiverse-toolkit-v-1-0-0-legacy-127",
+        "asset_name": "com-operit-uiverse-toolkit-v1.0.0-4d67953e.toolpkg",
+        "project_runtime_pkg": "com.operit.uiverse_toolkit"
+      },
+      {
+        "version_id": "package-com-operit-video-parse-toolpkg-v-1-0-0",
+        "asset_name": "com-operit-video-parse-toolpkg-v1.0.0-23737f0c.toolpkg",
+        "project_runtime_pkg": "com.operit.video_parse_toolpkg"
+      },
+      {
+        "version_id": "package-com-operit-virtual-hongbao-v-0-2-0",
+        "asset_name": "com-operit-virtual-hongbao-v0.2.0-e8b247f4.toolpkg",
+        "project_runtime_pkg": "com.operit.virtual_hongbao"
+      },
+      {
+        "version_id": "package-com-operit-voice-attachment-sender-v-0-2-1",
+        "asset_name": "com-operit-voice-attachment-sender-v0.2.1-7460bdef.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_attachment_sender"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-4-legacy-263",
+        "asset_name": "com-operit-voice-bar-v1.4-c54c30b7.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-4",
+        "asset_name": "com-operit-voice-bar-v1.4-4245653c.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-3",
+        "asset_name": "com-operit-voice-bar-v1.3-a5bce4af.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-2",
+        "asset_name": "com-operit-voice-bar-v1.2-bab92c84.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-0-1-2-market-minimax-legacy-251",
+        "asset_name": "com-operit-voice-bar-v0.1.2-market-minimax-b6462601.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-0-1-2-market-minimax-legacy-160",
+        "asset_name": "com-operit-voice-bar-v0.1.2-market-minimax-1b66461d.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-0-1-2-market-minimax",
+        "asset_name": "com-operit-voice-bar-v0.1.2-market-minimax-470c5b64.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-1",
+        "asset_name": "com-operit-voice-bar-v1.1-b89af1be.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-1-0",
+        "asset_name": "com-operit-voice-bar-v1.0-f0e9ff93.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-0-1-2-market-minimax-legacy-249",
+        "asset_name": "com-operit-voice-bar-v0.1.2-market-minimax-ae3589c9.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-voice-bar-v-0-1-2-market-minimax-legacy-250",
+        "asset_name": "com-operit-voice-bar-v0.1.2-market-minimax-8a6b896f.toolpkg",
+        "project_runtime_pkg": "com.operit.voice_bar"
+      },
+      {
+        "version_id": "package-com-operit-wechat-claude-bridge-v-2-2-0-1-legacy-155",
+        "asset_name": "com-operit-wechat-claude-bridge-v2.2.0.1-7b509d72.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_claude_bridge"
+      },
+      {
+        "version_id": "package-com-operit-wechat-claude-bridge-v-2-2-2",
+        "asset_name": "com-operit-wechat-claude-bridge-v2.2.2-c531ab50.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_claude_bridge"
+      },
+      {
+        "version_id": "package-com-operit-wechat-claude-bridge-v-2-1-0",
+        "asset_name": "com-operit-wechat-claude-bridge-v2.1.0-b81b66f9.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_claude_bridge"
+      },
+      {
+        "version_id": "package-com-operit-wechat-claude-bridge-v-2-2-0-1",
+        "asset_name": "com-operit-wechat-claude-bridge-v2.2.0.1-df7a735e.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_claude_bridge"
+      },
+      {
+        "version_id": "package-com-operit-wechat-ilink-bot-v-2-3-0",
+        "asset_name": "com-operit-wechat-ilink-bot-v2.3.0-96c472a3.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_ilink_bot"
+      },
+      {
+        "version_id": "package-com-operit-wechat-ilink-bot-v-2-3-1",
+        "asset_name": "com-operit-wechat-ilink-bot-v2.3.1-a5dc69c4.toolpkg",
+        "project_runtime_pkg": "com.operit.wechat_ilink_bot"
+      },
+      {
+        "version_id": "package-com-operit-wongtaisin-qian-v-1-0-0",
+        "asset_name": "com-operit-wongtaisin-qian-v1.0.0-5e3042b0.toolpkg",
+        "project_runtime_pkg": "com.operit.wongtaisin_qian"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-v-1-1-0",
+        "asset_name": "com-operit-worldbook-v1.1.0-4a9be093.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-fixed-v-1-1-0",
+        "asset_name": "com-operit-worldbook-fixed-v1.1.0-ac4f8603.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook.fixed"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-plus-v-1-1-1",
+        "asset_name": "com-operit-worldbook-plus-v1.1.1-1bd211c4.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook_plus"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-plus-v-1-1-0-legacy-204",
+        "asset_name": "com-operit-worldbook-plus-v1.1.0-68199be3.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook_plus"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-plus-v-1-1-0",
+        "asset_name": "com-operit-worldbook-plus-v1.1.0-4f0685df.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook_plus"
+      },
+      {
+        "version_id": "package-com-operit-worldbook-plus-v-1-3-0",
+        "asset_name": "com-operit-worldbook-plus-v1.3.0-c97df0aa.toolpkg",
+        "project_runtime_pkg": "com.operit.worldbook_plus"
+      },
+      {
+        "version_id": "package-com-qitong-linux-qtssh-v-1-4-0",
+        "asset_name": "com-qitong-linux-qtssh-v1.4.0-eb47183f.toolpkg",
+        "project_runtime_pkg": "com.qitong.linux_qtssh"
+      },
+      {
+        "version_id": "package-com-raineiris-low-battery-care-v-1-0-0",
+        "asset_name": "com-raineiris-low-battery-care-v1.0.0-0550c767.toolpkg",
+        "project_runtime_pkg": "com.raineiris.low_battery_care"
+      },
+      {
+        "version_id": "package-com-user-memos-inject-v-1-0",
+        "asset_name": "com-user-memos-inject-v1.0-727b5062.toolpkg",
+        "project_runtime_pkg": "com.user.memos_inject"
+      },
+      {
+        "version_id": "package-com-user-memos-inject-v-1-0-0",
+        "asset_name": "com-user-memos-inject-v1.0.0-a0eb6c7d.toolpkg",
+        "project_runtime_pkg": "com.user.memos_inject"
+      },
+      {
+        "version_id": "package-com-vael-aliyun-omni-stt-v-1-0",
+        "asset_name": "com-vael-aliyun-omni-stt-v1.0-bbe0a918.toolpkg",
+        "project_runtime_pkg": "com.vael.aliyun_omni_stt"
+      },
+      {
+        "version_id": "package-com-vael-proactive-contact-workflow-v-1-0-3",
+        "asset_name": "com-vael-proactive-contact-workflow-v1.0.3-dee71cc1.toolpkg",
+        "project_runtime_pkg": "com.vael.proactive_contact_workflow"
+      },
+      {
+        "version_id": "package-com-vael-proactive-contact-workflow-v-1-0-0",
+        "asset_name": "com-vael-proactive-contact-workflow-v1.0.0-83237891.toolpkg",
+        "project_runtime_pkg": "com.vael.proactive_contact_workflow"
+      },
+      {
+        "version_id": "package-com-yeyezi-ombrebrain-dashboard-v-0-1-1",
+        "asset_name": "com-yeyezi-ombrebrain-dashboard-v0.1.1-2efef60e.toolpkg",
+        "project_runtime_pkg": "com.yeyezi.ombrebrain_dashboard"
+      },
+      {
+        "version_id": "package-com-yeyezi-ombrebrain-dashboard-v-0-1-0",
+        "asset_name": "com-yeyezi-ombrebrain-dashboard-v0.1.0-534d6f64.toolpkg",
+        "project_runtime_pkg": "com.yeyezi.ombrebrain_dashboard"
+      },
+      {
+        "version_id": "package-com-yeyezi-riji-diary-v-0-1-3",
+        "asset_name": "com-yeyezi-riji-diary-v0.1.3-834b30f5.toolpkg",
+        "project_runtime_pkg": "com.yeyezi.riji_diary"
+      },
+      {
+        "version_id": "package-com-yeyezi-riji-diary-v-0-1-2",
+        "asset_name": "com-yeyezi-riji-diary-v0.1.2-98ad00fe.toolpkg",
+        "project_runtime_pkg": "com.yeyezi.riji_diary"
+      },
+      {
+        "version_id": "package-com-youyi-soundprint-v-0-1-0",
+        "asset_name": "com-youyi-soundprint-v0.1.0-73ff1ad9.toolpkg",
+        "project_runtime_pkg": "com.youyi.soundprint"
+      },
+      {
+        "version_id": "package-daily-diary-v-1-0-0",
+        "asset_name": "daily-diary-v1.0.0-f1f7ccc4.toolpkg",
+        "project_runtime_pkg": "daily_diary"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-10",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.10-10d49410.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-11",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.11-2cb65592.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-12",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.12-9d4811f7.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-29",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.29-414e99da.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-29-legacy-187",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.29-762f6082.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-29-legacy-188",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.29-613e7106.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-2-9",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.2.9-757fbb43.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-3-0",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.3.0-8e8b1232.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-3-1",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.3.1-82da17e4.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-2-v4-v-3-3-1-legacy-191",
+        "asset_name": "deep-research-agent-v3-2-v4-v3.3.1-ce56c02c.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-3-4-0",
+        "asset_name": "deep-research-agent-v3-4-v3.4.0-33e59a80.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-3-4-0-legacy-193",
+        "asset_name": "deep-research-agent-v3-4-v3.4.0-63d244d0.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-3-4-0-legacy-194",
+        "asset_name": "deep-research-agent-v3-4-v3.4.0-651e24de.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-3-4-0-legacy-195",
+        "asset_name": "deep-research-agent-v3-4-v3.4.0-a54f341e.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-3-4-0-legacy-196",
+        "asset_name": "deep-research-agent-v3-4-v3.4.0-48c62b62.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deep-research-agent-v3-4-v-4-4-2",
+        "asset_name": "deep-research-agent-v3-4-v4.4.2-cae6ac1b.toolpkg",
+        "project_runtime_pkg": "deep_research_agent_v3_4"
+      },
+      {
+        "version_id": "package-deepsight-v-4-4-2",
+        "asset_name": "deepsight-v4.4.2-64037755.toolpkg",
+        "project_runtime_pkg": "deepsight"
+      },
+      {
+        "version_id": "package-deepsight-v-4-4-2-legacy-203",
+        "asset_name": "deepsight-v4.4.2-22bac03f.toolpkg",
+        "project_runtime_pkg": "deepsight"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1-legacy-213",
+        "asset_name": "deepsight-v450-v4.5.1-4a04c712.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1",
+        "asset_name": "deepsight-v450-v4.5.1-e334d1dd.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1-legacy-206",
+        "asset_name": "deepsight-v450-v4.5.1-e4542126.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1-legacy-207",
+        "asset_name": "deepsight-v450-v4.5.1-cbe1ae81.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1-legacy-208",
+        "asset_name": "deepsight-v450-v4.5.1-78e698e7.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-deepsight-v450-v-4-5-1-legacy-212",
+        "asset_name": "deepsight-v450-v4.5.1-639e7e61.toolpkg",
+        "project_runtime_pkg": "deepsight_v450"
+      },
+      {
+        "version_id": "package-io-github-operit-human-chat-v-1-0-0",
+        "asset_name": "io-github-operit-human-chat-v1.0.0-0b774c0b.toolpkg",
+        "project_runtime_pkg": "io.github.operit.human_chat"
+      },
+      {
+        "version_id": "package-operit-webdav-sync-v-0-6-0",
+        "asset_name": "operit-webdav-sync-v0.6.0-2a9c2dbf.toolpkg",
+        "project_runtime_pkg": "operit_webdav_sync"
+      },
+      {
+        "version_id": "package-operit-webdav-sync-v-0-3-0",
+        "asset_name": "operit-webdav-sync-v0.3.0-d2fe8600.toolpkg",
+        "project_runtime_pkg": "operit_webdav_sync"
+      },
+      {
+        "version_id": "package-operit-webdav-sync-v-0-2-0",
+        "asset_name": "operit-webdav-sync-v0.2.0-da9d53d6.toolpkg",
+        "project_runtime_pkg": "operit_webdav_sync"
+      },
+      {
+        "version_id": "package-unknown-v-1-0-0-legacy-13",
+        "asset_name": "com-operit-openmaic-sidebar-v1.0.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-0-1-0-legacy-12",
+        "asset_name": "com-operit-sidebar-musicfree-v0.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-0-1-0-legacy-10",
+        "asset_name": "com-operit-sidebar-model-sites-v0.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-0-1-0-legacy-9",
+        "asset_name": "com-operit-sidebar-bing-action-v0.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-0-1-0-legacy-8",
+        "asset_name": "com-operit-sidebar-sillytavern-v0.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-0-1-0",
+        "asset_name": "com-operit-sidebar-opencode-v0.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-1-0-legacy-4",
+        "asset_name": "com-operit-worldbook-v1-1-0-v1.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-0-0",
+        "asset_name": "com-operit-debug-msg-dump-v1.0.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-1-0",
+        "asset_name": "com-operit-worldbook-v1.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-1-0-legacy-3",
+        "asset_name": "com-operit-worldbook-v1.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-1-0-legacy-5",
+        "asset_name": "com-operit-worldbook-v1-1-0-v1.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "package-unknown-v-1-1-0-legacy-6",
+        "asset_name": "com-operit-worldbook-v1-1-0-v1.1.0.toolpkg",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-ac-remote-v-1-0-0",
+        "asset_name": "ac-remote-v1.0.0-c24471da.js",
+        "project_runtime_pkg": "ac_remote"
+      },
+      {
+        "version_id": "script-academic-search-v-1-0-0",
+        "asset_name": "academic-search-v1.0.0-dd1af15f.js",
+        "project_runtime_pkg": "academic-search"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-3-1",
+        "asset_name": "agent-orchestrator-v1.3.1-e5d7dfcf.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-0-0",
+        "asset_name": "agent-orchestrator-v1.0.0-b01034c4.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-1-0",
+        "asset_name": "agent-orchestrator-v1.1.0-fb8d4555.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-2-0",
+        "asset_name": "agent-orchestrator-v1.2.0-5943f004.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-2-1",
+        "asset_name": "agent-orchestrator-v1.2.1-7e1b8a83.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agent-orchestrator-v-1-3-0",
+        "asset_name": "agent-orchestrator-v1.3.0-9cccb679.js",
+        "project_runtime_pkg": "agent_orchestrator"
+      },
+      {
+        "version_id": "script-agentsmail-v-1-0-0",
+        "asset_name": "agentsmail-v1.0.0-050a5025.js",
+        "project_runtime_pkg": "agentsmail"
+      },
+      {
+        "version_id": "script-agentsmail-v-1-1-0",
+        "asset_name": "agentsmail-v1.1.0-a780afd2.js",
+        "project_runtime_pkg": "agentsmail"
+      },
+      {
+        "version_id": "script-agentsmail-v-1-2-0",
+        "asset_name": "agentsmail-v1.2.0-455586fb.js",
+        "project_runtime_pkg": "agentsmail"
+      },
+      {
+        "version_id": "script-agentworld-v-2-0-1-legacy-144",
+        "asset_name": "agentworld-v2.0.1-06b20193.js",
+        "project_runtime_pkg": "AgentWorld"
+      },
+      {
+        "version_id": "script-agentworld-v-2-0-0",
+        "asset_name": "agentworld-v2.0.0-8c10ac8c.js",
+        "project_runtime_pkg": "AgentWorld"
+      },
+      {
+        "version_id": "script-agentworld-v-1-0-0",
+        "asset_name": "agentworld-v1.0.0-3739a53c.js",
+        "project_runtime_pkg": "AgentWorld"
+      },
+      {
+        "version_id": "script-agentworld-v-2-0-1",
+        "asset_name": "agentworld-v2.0.1-a4e2ae2a.js",
+        "project_runtime_pkg": "AgentWorld"
+      },
+      {
+        "version_id": "script-agnes-image-toolkit-v-1-0-0",
+        "asset_name": "agnes-image-toolkit-v1.0.0-4d8ce621.js",
+        "project_runtime_pkg": "agnes_image_toolkit"
+      },
+      {
+        "version_id": "script-agnes-video-v-1-0-0",
+        "asset_name": "agnes-video-v1.0.0-d729d839.js",
+        "project_runtime_pkg": "agnes_video"
+      },
+      {
+        "version_id": "script-amap-mcp-server-v-1-0-0",
+        "asset_name": "amap-mcp-server-v1.0.0-4d796b6b.js",
+        "project_runtime_pkg": "amap_mcp_server"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-0-legacy-152",
+        "asset_name": "android-dev-agent-v1.0.0-4e79192d.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-0-legacy-104",
+        "asset_name": "android-dev-agent-v1.0.0-3da4ccc0.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-0-legacy-66",
+        "asset_name": "android-dev-agent-v1.0.0-a38290c8.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-2",
+        "asset_name": "android-dev-agent-v1.0.2-7c80abb1.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-2-0",
+        "asset_name": "android-dev-agent-v1.2.0-5110648f.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-4-5",
+        "asset_name": "android-dev-agent-v1.4.5-7fb87d6a.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-0-legacy-190",
+        "asset_name": "android-dev-agent-v1.0.0-94734b9c.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-android-dev-agent-v-1-0-0",
+        "asset_name": "android-dev-agent-v1.0.0-5b09845e.js",
+        "project_runtime_pkg": "android_dev_agent"
+      },
+      {
+        "version_id": "script-anti-not-but-v-1-0-0",
+        "asset_name": "anti-not-but-v1.0.0-5ccf15c3.js",
+        "project_runtime_pkg": "anti_not_but"
+      },
+      {
+        "version_id": "script-apk-build-toolkit-indep-v-1-1-0",
+        "asset_name": "apk-build-toolkit-indep-v1.1.0-bee3df21.js",
+        "project_runtime_pkg": "apk_build_toolkit_indep"
+      },
+      {
+        "version_id": "script-apk-build-toolkit-indep-v-1-0-0",
+        "asset_name": "apk-build-toolkit-indep-v1.0.0-daff1276.js",
+        "project_runtime_pkg": "apk_build_toolkit_indep"
+      },
+      {
+        "version_id": "script-apk-direct-install-tool-v-1-0-0",
+        "asset_name": "apk-direct-install-tool-v1.0.0-9bde5402.js",
+        "project_runtime_pkg": "apk_direct_install_tool"
+      },
+      {
+        "version_id": "script-apk-direct-installer-v-1-0-1",
+        "asset_name": "apk-direct-installer-v1.0.1-f13bff57.js",
+        "project_runtime_pkg": "apk_direct_installer"
+      },
+      {
+        "version_id": "script-apk-direct-installer-v-1-0-0-legacy-86",
+        "asset_name": "apk-direct-installer-v1.0.0-7a40cee6.js",
+        "project_runtime_pkg": "apk_direct_installer"
+      },
+      {
+        "version_id": "script-apk-direct-installer-v-1-0-0",
+        "asset_name": "apk-direct-installer-v1.0.0-cc4a46dc.js",
+        "project_runtime_pkg": "apk_direct_installer"
+      },
+      {
+        "version_id": "script-auto-learning-ai-v-1-0-0",
+        "asset_name": "auto-learning-ai-v1.0.0-9310779b.js",
+        "project_runtime_pkg": "auto_learning_ai"
+      },
+      {
+        "version_id": "script-auto-learning-ai-v-1-0-0-legacy-68",
+        "asset_name": "auto-learning-ai-v1.0.0-f2dbabe9.js",
+        "project_runtime_pkg": "auto_learning_ai"
+      },
+      {
+        "version_id": "script-auto-learning-ai-v-1-0-0-legacy-71",
+        "asset_name": "auto-learning-ai-v1.0.0-772b1c25.js",
+        "project_runtime_pkg": "auto_learning_ai"
+      },
+      {
+        "version_id": "script-auto-learning-ai-v-1-0-0-legacy-76",
+        "asset_name": "auto-learning-ai-v1.0.0-a8aa98a8.js",
+        "project_runtime_pkg": "auto_learning_ai"
+      },
+      {
+        "version_id": "script-autojs6-runner-v-1-0-0",
+        "asset_name": "autojs6-runner-v1.0.0-7c21a790.js",
+        "project_runtime_pkg": "autojs6_runner"
+      },
+      {
+        "version_id": "script-autoreverser-v-1-0-0",
+        "asset_name": "autoreverser-v1.0.0-7c677e8c.js",
+        "project_runtime_pkg": "autoreverser"
+      },
+      {
+        "version_id": "script-axmanger-module-generator-v-1-0-0",
+        "asset_name": "axmanger-module-generator-v1.0.0-d3a49e66.js",
+        "project_runtime_pkg": "axmanger_module_generator"
+      },
+      {
+        "version_id": "script-baidu-image-search-v-1-0-1",
+        "asset_name": "baidu-image-search-v1.0.1-e95bac22.js",
+        "project_runtime_pkg": "baidu_image_search"
+      },
+      {
+        "version_id": "script-bocha-search-v-1-0-1",
+        "asset_name": "bocha-search-v1.0.1-87a5e67a.js",
+        "project_runtime_pkg": "bocha_search"
+      },
+      {
+        "version_id": "script-bocha-search-v-1-0-0-legacy-140",
+        "asset_name": "bocha-search-v1.0.0-f5734e9f.js",
+        "project_runtime_pkg": "bocha_search"
+      },
+      {
+        "version_id": "script-bocha-search-v-1-0-0",
+        "asset_name": "bocha-search-v1.0.0-82369bf8.js",
+        "project_runtime_pkg": "bocha_search"
+      },
+      {
+        "version_id": "script-chara-safe-editor-v-1-0-0",
+        "asset_name": "chara-safe-editor-v1.0.0-0e9bca9e.js",
+        "project_runtime_pkg": "chara_safe_editor"
+      },
+      {
+        "version_id": "script-chat-permission-filter-v-1-0-0",
+        "asset_name": "chat-permission-filter-v1.0.0-2e4fe971.js",
+        "project_runtime_pkg": "chat_permission_filter"
+      },
+      {
+        "version_id": "script-chatdiarylogger-v-1-2-1-legacy-31",
+        "asset_name": "chatdiarylogger-v1.2.1-81326281.js",
+        "project_runtime_pkg": "ChatDiaryLogger"
+      },
+      {
+        "version_id": "script-chatdiarylogger-v-1-2-1",
+        "asset_name": "chatdiarylogger-v1.2.1-ac795993.js",
+        "project_runtime_pkg": "ChatDiaryLogger"
+      },
+      {
+        "version_id": "script-chatdiarylogger-v-1-2-0",
+        "asset_name": "chatdiarylogger-v1.2.0-de2626ad.js",
+        "project_runtime_pkg": "ChatDiaryLogger"
+      },
+      {
+        "version_id": "script-clash-royale-v-1-0-0",
+        "asset_name": "clash-royale-v1.0.0-a215fa14.js",
+        "project_runtime_pkg": "clash_royale"
+      },
+      {
+        "version_id": "script-claude-code-v-1-0-0-legacy-213",
+        "asset_name": "claude-code-v1.0.0-297fc1af.js",
+        "project_runtime_pkg": "claude-code"
+      },
+      {
+        "version_id": "script-claude-code-v-1-0-0",
+        "asset_name": "claude-code-v1.0.0-bf14b55c.js",
+        "project_runtime_pkg": "claude-code"
+      },
+      {
+        "version_id": "script-cleansweep-v-1-0-0",
+        "asset_name": "cleansweep-v1.0.0-4d0bd285.js",
+        "project_runtime_pkg": "CleanSweep"
+      },
+      {
+        "version_id": "script-clipboard-utils-v-1-0-2",
+        "asset_name": "clipboard-utils-v1.0.2-addd871d.js",
+        "project_runtime_pkg": "clipboard_utils"
+      },
+      {
+        "version_id": "script-clipboard-utils-v-1-0-0",
+        "asset_name": "clipboard-utils-v1.0.0-f1f192d8.js",
+        "project_runtime_pkg": "clipboard_utils"
+      },
+      {
+        "version_id": "script-com-operit-thought-cascade-v-1-0-0",
+        "asset_name": "com-operit-thought-cascade-v1.0.0-b7d72691.js",
+        "project_runtime_pkg": "com.operit.thought_cascade"
+      },
+      {
+        "version_id": "script-com-operit-wanzhi-wechat-v-5-2-0",
+        "asset_name": "com-operit-wanzhi-wechat-v5.2.0-2ee6a6b7.js",
+        "project_runtime_pkg": "com.operit.wanzhi_wechat"
+      },
+      {
+        "version_id": "script-com-operit-wanzhi-wechat-v-5-1-0",
+        "asset_name": "com-operit-wanzhi-wechat-v5.1.0-65248c2d.js",
+        "project_runtime_pkg": "com.operit.wanzhi_wechat"
+      },
+      {
+        "version_id": "script-com-operit-wanzhi-wechat-v-4-1-0",
+        "asset_name": "com-operit-wanzhi-wechat-v4.1.0-78e15f71.js",
+        "project_runtime_pkg": "com.operit.wanzhi_wechat"
+      },
+      {
+        "version_id": "script-cr-deck-builder-v-1-0-0",
+        "asset_name": "cr-deck-builder-v1.0.0-c5072ed5.js",
+        "project_runtime_pkg": "cr_deck_builder"
+      },
+      {
+        "version_id": "script-custom-draw-v-1-0-1",
+        "asset_name": "custom-draw-v1.0.1-e069fcb9.js",
+        "project_runtime_pkg": "custom_draw"
+      },
+      {
+        "version_id": "script-custom-draw-v-1-0-0",
+        "asset_name": "custom-draw-v1.0.0-1a243312.js",
+        "project_runtime_pkg": "custom_draw"
+      },
+      {
+        "version_id": "script-deep-research-agent-v3-2-v4-v-1-0-0",
+        "asset_name": "deep-research-agent-v3-2-v4-v1.0.0-f7dd6bbb.js",
+        "project_runtime_pkg": "deep_research_agent_v3_2_v4"
+      },
+      {
+        "version_id": "script-deepseek-tui-v-1-0-0",
+        "asset_name": "deepseek-tui-v1.0.0-4acc9cb1.js",
+        "project_runtime_pkg": "deepseek_tui"
+      },
+      {
+        "version_id": "script-deepseek-utils-v-1-0-0",
+        "asset_name": "deepseek-utils-v1.0.0-71a12e98.js",
+        "project_runtime_pkg": "deepseek_utils"
+      },
+      {
+        "version_id": "script-deepseek-web-v-1-0-0",
+        "asset_name": "deepseek-web-v1.0.0-68386d71.js",
+        "project_runtime_pkg": "deepseek_web"
+      },
+      {
+        "version_id": "script-direct-gl-mediacodec-v-1-2-0",
+        "asset_name": "direct-gl-mediacodec-v1.2.0-c525600c.js",
+        "project_runtime_pkg": "direct_gl_mediacodec"
+      },
+      {
+        "version_id": "script-direct-gl-mediacodec-v-1-1-0",
+        "asset_name": "direct-gl-mediacodec-v1.1.0-15c5df71.js",
+        "project_runtime_pkg": "direct_gl_mediacodec"
+      },
+      {
+        "version_id": "script-direct-gl-mediacodec-v-1-0-0-legacy-125",
+        "asset_name": "direct-gl-mediacodec-v1.0.0-3fdd94f7.js",
+        "project_runtime_pkg": "direct_gl_mediacodec"
+      },
+      {
+        "version_id": "script-direct-gl-mediacodec-v-1-0-0",
+        "asset_name": "direct-gl-mediacodec-v1.0.0-81744172.js",
+        "project_runtime_pkg": "direct_gl_mediacodec"
+      },
+      {
+        "version_id": "script-direct-gl-mediacodec-v-1-0-0-legacy-124",
+        "asset_name": "direct-gl-mediacodec-v1.0.0-3afac385.js",
+        "project_runtime_pkg": "direct_gl_mediacodec"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-2-legacy-201",
+        "asset_name": "dodovoice-v1.0.2-e5a8d735.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-1",
+        "asset_name": "dodovoice-v1.0.1-59afbb77.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-0-legacy-171",
+        "asset_name": "dodovoice-v1.0.0-558edd60.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-0",
+        "asset_name": "dodovoice-v1.0.0-8a516999.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-2",
+        "asset_name": "dodovoice-v1.0.2-d1c59605.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-2-legacy-199",
+        "asset_name": "dodovoice-v1.0.2-a63a4b81.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-dodovoice-v-1-0-2-legacy-200",
+        "asset_name": "dodovoice-v1.0.2-a156709b.js",
+        "project_runtime_pkg": "DodoVoice"
+      },
+      {
+        "version_id": "script-festival-blessing-v-1-0-0",
+        "asset_name": "festival-blessing-v1.0.0-90df2d99.js",
+        "project_runtime_pkg": "festival_blessing"
+      },
+      {
+        "version_id": "script-gitee-v-0-1-0",
+        "asset_name": "gitee-v0.1.0-1763129f.js",
+        "project_runtime_pkg": "gitee"
+      },
+      {
+        "version_id": "script-github-enhanced-v-1-0-0",
+        "asset_name": "github-enhanced-v1.0.0-c0a209f7.js",
+        "project_runtime_pkg": "github_enhanced"
+      },
+      {
+        "version_id": "script-goofish-search-v-1-0-0",
+        "asset_name": "goofish-search-v1.0.0-b9f950d7.js",
+        "project_runtime_pkg": "goofish_search"
+      },
+      {
+        "version_id": "script-haze-bar-v-1-0-0",
+        "asset_name": "haze-bar-v1.0.0-e3f7c03d.js",
+        "project_runtime_pkg": "haze_bar"
+      },
+      {
+        "version_id": "script-hex-editor-v-1-0-0",
+        "asset_name": "hex-editor-v1.0.0-27a7e5dc.js",
+        "project_runtime_pkg": "hex_editor"
+      },
+      {
+        "version_id": "script-http-launcher-v-1-0-0",
+        "asset_name": "http-launcher-v1.0.0-425b5241.js",
+        "project_runtime_pkg": "http_launcher"
+      },
+      {
+        "version_id": "script-hyperframes-lite-v-2-0-0",
+        "asset_name": "hyperframes-lite-v2.0.0-7ce9fa0d.js",
+        "project_runtime_pkg": "hyperframes_lite"
+      },
+      {
+        "version_id": "script-hyperframes-lite-v-1-2-0",
+        "asset_name": "hyperframes-lite-v1.2.0-5fe7b6d5.js",
+        "project_runtime_pkg": "hyperframes_lite"
+      },
+      {
+        "version_id": "script-hyperframes-lite-v-1-1-0",
+        "asset_name": "hyperframes-lite-v1.1.0-2d12ebf7.js",
+        "project_runtime_pkg": "hyperframes_lite"
+      },
+      {
+        "version_id": "script-hyperframes-lite-v-1-0-0",
+        "asset_name": "hyperframes-lite-v1.0.0-358d3687.js",
+        "project_runtime_pkg": "hyperframes_lite"
+      },
+      {
+        "version_id": "script-internet-doc-learner-v-1-0-0",
+        "asset_name": "internet-doc-learner-v1.0.0-62411444.js",
+        "project_runtime_pkg": "internet_doc_learner"
+      },
+      {
+        "version_id": "script-jadx-toolkit-v-1-0-2",
+        "asset_name": "jadx-toolkit-v1.0.2-998153f8.js",
+        "project_runtime_pkg": "jadx_toolkit"
+      },
+      {
+        "version_id": "script-jadx-toolkit-v-1-0-0",
+        "asset_name": "jadx-toolkit-v1.0.0-61a9419a.js",
+        "project_runtime_pkg": "jadx_toolkit"
+      },
+      {
+        "version_id": "script-jadx-toolkit-v-1-0-1",
+        "asset_name": "jadx-toolkit-v1.0.1-ccb22ee5.js",
+        "project_runtime_pkg": "jadx_toolkit"
+      },
+      {
+        "version_id": "script-linux-bridge-v-2-1-0",
+        "asset_name": "linux-bridge-v2.1.0-8245bf31.js",
+        "project_runtime_pkg": "linux_bridge"
+      },
+      {
+        "version_id": "script-linux-bridge-v-1-0-0",
+        "asset_name": "linux-bridge-v1.0.0-ed9f4cce.js",
+        "project_runtime_pkg": "linux_bridge"
+      },
+      {
+        "version_id": "script-linux-bridge-v-2-3-0",
+        "asset_name": "linux-bridge-v2.3.0-4c3e625f.js",
+        "project_runtime_pkg": "linux_bridge"
+      },
+      {
+        "version_id": "script-magisk-module-builder-v-1-1-0",
+        "asset_name": "magisk-module-builder-v1.1.0-dffc831d.js",
+        "project_runtime_pkg": "magisk_module_builder"
+      },
+      {
+        "version_id": "script-magisk-module-builder-v-1-0-2",
+        "asset_name": "magisk-module-builder-v1.0.2-6b0805a9.js",
+        "project_runtime_pkg": "magisk_module_builder"
+      },
+      {
+        "version_id": "script-magisk-module-builder-v-1-0-0",
+        "asset_name": "magisk-module-builder-v1.0.0-34cf060b.js",
+        "project_runtime_pkg": "magisk_module_builder"
+      },
+      {
+        "version_id": "script-magisk-module-builder-v-1-0-3-legacy-173",
+        "asset_name": "magisk-module-builder-v1.0.3-a1034444.js",
+        "project_runtime_pkg": "magisk_module_builder"
+      },
+      {
+        "version_id": "script-magisk-module-builder-v-1-0-3",
+        "asset_name": "magisk-module-builder-v1.0.3-c352f830.js",
+        "project_runtime_pkg": "magisk_module_builder"
+      },
+      {
+        "version_id": "script-math-canvas-v-1-0-0",
+        "asset_name": "math-canvas-v1.0.0-833612f6.js",
+        "project_runtime_pkg": "math_canvas"
+      },
+      {
+        "version_id": "script-media-display-v-1-1-0",
+        "asset_name": "media-display-v1.1.0-bac41d75.js",
+        "project_runtime_pkg": "media_display"
+      },
+      {
+        "version_id": "script-metaso-v-1-0-0",
+        "asset_name": "metaso-v1.0.0-1f7004ce.js",
+        "project_runtime_pkg": "metaso"
+      },
+      {
+        "version_id": "script-mimo-video-v-1-0-0",
+        "asset_name": "mimo-video-v1.0.0-46ac46cd.js",
+        "project_runtime_pkg": "mimo_video"
+      },
+      {
+        "version_id": "script-mimo-video-async-v-1-0-0",
+        "asset_name": "mimo-video-async-v1.0.0-4fb88cd3.js",
+        "project_runtime_pkg": "mimo_video_async"
+      },
+      {
+        "version_id": "script-mimo-video-async-batch-v-1-2-0",
+        "asset_name": "mimo-video-async-batch-v1.2.0-1c5bf8a2.js",
+        "project_runtime_pkg": "mimo_video_async_batch"
+      },
+      {
+        "version_id": "script-mimo-video-async-batch-v-1-1-0",
+        "asset_name": "mimo-video-async-batch-v1.1.0-34994538.js",
+        "project_runtime_pkg": "mimo_video_async_batch"
+      },
+      {
+        "version_id": "script-mimo-video-async-batch-v-1-0-0",
+        "asset_name": "mimo-video-async-batch-v1.0.0-b39460e5.js",
+        "project_runtime_pkg": "mimo_video_async_batch"
+      },
+      {
+        "version_id": "script-minimax-api-v-1-0-0",
+        "asset_name": "minimax-api-v1.0.0-595f678b.js",
+        "project_runtime_pkg": "minimax_api"
+      },
+      {
+        "version_id": "script-minimax-music-v-1-0-0",
+        "asset_name": "minimax-music-v1.0.0-c2f36b3a.js",
+        "project_runtime_pkg": "minimax_music"
+      },
+      {
+        "version_id": "script-minimax-tts-v-1-0-0",
+        "asset_name": "minimax-tts-v1.0.0-740b925e.js",
+        "project_runtime_pkg": "minimax_tts"
+      },
+      {
+        "version_id": "script-moonshot-search-v-1-0-0",
+        "asset_name": "moonshot-search-v1.0.0-bc8b9ff3.js",
+        "project_runtime_pkg": "moonshot_search"
+      },
+      {
+        "version_id": "script-msg-analyzer-v-1-0-0",
+        "asset_name": "msg-analyzer-v1.0.0-c95b4c45.js",
+        "project_runtime_pkg": "msg_analyzer"
+      },
+      {
+        "version_id": "script-multi-api-draw-v-1-0-0",
+        "asset_name": "multi-api-draw-v1.0.0-d4f9a292.js",
+        "project_runtime_pkg": "multi_api_draw"
+      },
+      {
+        "version_id": "script-multi-video-summarizer-js-v-1-0-0",
+        "asset_name": "multi-video-summarizer-js-v1.0.0-e5777353.js",
+        "project_runtime_pkg": "multi_video_summarizer_js"
+      },
+      {
+        "version_id": "script-mygo-searcher-v-1-0-0",
+        "asset_name": "mygo-searcher-v1.0.0-f8ccccb8.js",
+        "project_runtime_pkg": "mygo_searcher"
+      },
+      {
+        "version_id": "script-ncmapi-v-1-0-0",
+        "asset_name": "ncmapi-v1.0.0-c7c7787b.js",
+        "project_runtime_pkg": "ncmapi"
+      },
+      {
+        "version_id": "script-netdiag-box-v-1-0-0",
+        "asset_name": "netdiag-box-v1.0.0-f33e1e0d.js",
+        "project_runtime_pkg": "netdiag_box"
+      },
+      {
+        "version_id": "script-netease-music-v-1-0-0",
+        "asset_name": "netease-music-v1.0.0-a395d8fc.js",
+        "project_runtime_pkg": "netease_music"
+      },
+      {
+        "version_id": "script-operit-webdav-sync-v-1-0-0",
+        "asset_name": "operit-webdav-sync-v1.0.0-f7486aa6.js",
+        "project_runtime_pkg": "operit_webdav_sync"
+      },
+      {
+        "version_id": "script-password-vault-v-1-0-0",
+        "asset_name": "password-vault-v1.0.0-0a1de790.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-password-vault-v-1-0-1",
+        "asset_name": "password-vault-v1.0.1-a801bb4c.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-password-vault-v-1-0-1-legacy-42",
+        "asset_name": "password-vault-v1.0.1-79470473.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-password-vault-v-1-1-0",
+        "asset_name": "password-vault-v1.1.0-8857ca9b.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-password-vault-v-1-0-1-legacy-40",
+        "asset_name": "password-vault-v1.0.1-76167cb8.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-password-vault-v-1-1-1",
+        "asset_name": "password-vault-v1.1.1-be310994.js",
+        "project_runtime_pkg": "password_vault"
+      },
+      {
+        "version_id": "script-pdf-vision-parser-v-1-0-0",
+        "asset_name": "pdf-vision-parser-v1.0.0-abda8eb4.js",
+        "project_runtime_pkg": "pdf_vision_parser"
+      },
+      {
+        "version_id": "script-period-tracker-v-1-0-0",
+        "asset_name": "period-tracker-v1.0.0-fffaa2ea.js",
+        "project_runtime_pkg": "period_tracker"
+      },
+      {
+        "version_id": "script-pexels-search-v-1-0-0",
+        "asset_name": "pexels-search-v1.0.0-ca3d210e.js",
+        "project_runtime_pkg": "pexels_search"
+      },
+      {
+        "version_id": "script-phoenix-tool-layer-v-1-0-0",
+        "asset_name": "phoenix-tool-layer-v1.0.0-28f36731.js",
+        "project_runtime_pkg": "phoenix_tool_layer"
+      },
+      {
+        "version_id": "script-plugin-backup-manager-v-1-0-0",
+        "asset_name": "plugin-backup-manager-v1.0.0-c8b36358.js",
+        "project_runtime_pkg": "plugin_backup_manager"
+      },
+      {
+        "version_id": "script-pp-ocrv6-v-1-0-0-legacy-179",
+        "asset_name": "pp-ocrv6-v1.0.0-c3e709f9.js",
+        "project_runtime_pkg": "pp_ocrv6"
+      },
+      {
+        "version_id": "script-pp-ocrv6-v-1-0-0",
+        "asset_name": "pp-ocrv6-v1.0.0-45e4f680.js",
+        "project_runtime_pkg": "pp_ocrv6"
+      },
+      {
+        "version_id": "script-qqmusic-v-1-0-0",
+        "asset_name": "qqmusic-v1.0.0-b43ab477.js",
+        "project_runtime_pkg": "qqmusic"
+      },
+      {
+        "version_id": "script-qr-generator-v-1-0-0-legacy-135",
+        "asset_name": "qr-generator-v1.0.0-a35294de.js",
+        "project_runtime_pkg": "qr_generator"
+      },
+      {
+        "version_id": "script-qr-generator-v-1-0-0",
+        "asset_name": "qr-generator-v1.0.0-6a36728e.js",
+        "project_runtime_pkg": "qr_generator"
+      },
+      {
+        "version_id": "script-qrcode-generator-v-1-0-0",
+        "asset_name": "qrcode-generator-v1.0.0-ddbd36e0.js",
+        "project_runtime_pkg": "qrcode_generator"
+      },
+      {
+        "version_id": "script-query-memory-wrapper-v-1-0-0",
+        "asset_name": "query-memory-wrapper-v1.0.0-e215a01e.js",
+        "project_runtime_pkg": "query_memory_wrapper"
+      },
+      {
+        "version_id": "script-qweather-v-1-2-4-legacy-34",
+        "asset_name": "qweather-v1.2.4-4cf49757.js",
+        "project_runtime_pkg": "qweather"
+      },
+      {
+        "version_id": "script-qweather-v-1-2-3",
+        "asset_name": "qweather-v1.2.3-662a0e98.js",
+        "project_runtime_pkg": "qweather"
+      },
+      {
+        "version_id": "script-qweather-v-1-2-4",
+        "asset_name": "qweather-v1.2.4-3cb31512.js",
+        "project_runtime_pkg": "qweather"
+      },
+      {
+        "version_id": "script-radical-mode-v-1-0-0",
+        "asset_name": "radical-mode-v1.0.0-e834fbc7.js",
+        "project_runtime_pkg": "radical_mode"
+      },
+      {
+        "version_id": "script-regional-charm-v-1-0-0-legacy-36",
+        "asset_name": "regional-charm-v1.0.0-ca594cda.js",
+        "project_runtime_pkg": "regional_charm"
+      },
+      {
+        "version_id": "script-regional-charm-v-1-0-0",
+        "asset_name": "regional-charm-v1.0.0-e54f2ec4.js",
+        "project_runtime_pkg": "regional_charm"
+      },
+      {
+        "version_id": "script-reversi-game-v-1-0-0",
+        "asset_name": "reversi-game-v1.0.0-ef4028e2.js",
+        "project_runtime_pkg": "reversi_game"
+      },
+      {
+        "version_id": "script-sandboxpackage-dev-v-1-0-0",
+        "asset_name": "sandboxpackage-dev-v1.0.0-59a99ab0.js",
+        "project_runtime_pkg": "sandboxpackage_dev"
+      },
+      {
+        "version_id": "script-scenario-manager-v-1-0-0",
+        "asset_name": "scenario-manager-v1.0.0-84665ccd.js",
+        "project_runtime_pkg": "scenario_manager"
+      },
+      {
+        "version_id": "script-script-dev-toolkit-v-1-0-0-legacy-150",
+        "asset_name": "script-dev-toolkit-v1.0.0-75275285.js",
+        "project_runtime_pkg": "script_dev_toolkit"
+      },
+      {
+        "version_id": "script-script-dev-toolkit-v-1-0-0",
+        "asset_name": "script-dev-toolkit-v1.0.0-ab0db4a1.js",
+        "project_runtime_pkg": "script_dev_toolkit"
+      },
+      {
+        "version_id": "script-script-dev-toolkit-v-1-0-0-legacy-149",
+        "asset_name": "script-dev-toolkit-v1.0.0-7b1d17e8.js",
+        "project_runtime_pkg": "script_dev_toolkit"
+      },
+      {
+        "version_id": "script-secretary-v-1-11-0",
+        "asset_name": "secretary-v1.11.0-e2b09374.js",
+        "project_runtime_pkg": "secretary"
+      },
+      {
+        "version_id": "script-self-evolution-analyzer-v-1-0-0",
+        "asset_name": "self-evolution-analyzer-v1.0.0-ddda3bc4.js",
+        "project_runtime_pkg": "self_evolution_analyzer"
+      },
+      {
+        "version_id": "script-semble-v-1-0-0-legacy-117",
+        "asset_name": "semble-v1.0.0-53918fd3.js",
+        "project_runtime_pkg": "semble"
+      },
+      {
+        "version_id": "script-semble-v-1-0-0",
+        "asset_name": "semble-v1.0.0-8657292e.js",
+        "project_runtime_pkg": "semble"
+      },
+      {
+        "version_id": "script-sensenova-draw-v-1-0-0",
+        "asset_name": "sensenova-draw-v1.0.0-7b82a822.js",
+        "project_runtime_pkg": "sensenova_draw"
+      },
+      {
+        "version_id": "script-shizuku-manager-v-2-0-0",
+        "asset_name": "shizuku-manager-v2.0.0-271b1c42.js",
+        "project_runtime_pkg": "shizuku_manager"
+      },
+      {
+        "version_id": "script-shizuku-manager-v-1-0-0",
+        "asset_name": "shizuku-manager-v1.0.0-2b72858e.js",
+        "project_runtime_pkg": "shizuku_manager"
+      },
+      {
+        "version_id": "script-shizuku-shell-next-v-1-0-0",
+        "asset_name": "shizuku-shell-next-v1.0.0-4491d18f.js",
+        "project_runtime_pkg": "shizuku_shell_next"
+      },
+      {
+        "version_id": "script-skill-recommender-v-1-0-0",
+        "asset_name": "skill-recommender-v1.0.0-52cc130d.js",
+        "project_runtime_pkg": "skill_recommender"
+      },
+      {
+        "version_id": "script-statistics-tools-v-1-0-0",
+        "asset_name": "statistics-tools-v1.0.0-0f1c44f2.js",
+        "project_runtime_pkg": "statistics_tools"
+      },
+      {
+        "version_id": "script-sub-agent-manager-v-1-0-0-legacy-98",
+        "asset_name": "sub-agent-manager-v1.0.0-1fff7b64.js",
+        "project_runtime_pkg": "sub_agent_manager"
+      },
+      {
+        "version_id": "script-sub-agent-manager-v-1-0-0-legacy-96",
+        "asset_name": "sub-agent-manager-v1.0.0-150c7cd1.js",
+        "project_runtime_pkg": "sub_agent_manager"
+      },
+      {
+        "version_id": "script-sub-agent-manager-v-1-0-0-legacy-95",
+        "asset_name": "sub-agent-manager-v1.0.0-d0162822.js",
+        "project_runtime_pkg": "sub_agent_manager"
+      },
+      {
+        "version_id": "script-sub-agent-manager-v-1-0-0",
+        "asset_name": "sub-agent-manager-v1.0.0-73dd873f.js",
+        "project_runtime_pkg": "sub_agent_manager"
+      },
+      {
+        "version_id": "script-sub-agent-manager-v-1-0-0-legacy-94",
+        "asset_name": "sub-agent-manager-v1.0.0-e71f58a4.js",
+        "project_runtime_pkg": "sub_agent_manager"
+      },
+      {
+        "version_id": "script-sunomusic-v-1-0-0",
+        "asset_name": "sunomusic-v1.0.0-7e572805.js",
+        "project_runtime_pkg": "sunomusic"
+      },
+      {
+        "version_id": "script-tasker-v-1-0-0",
+        "asset_name": "tasker-v1.0.0-085b2e70.js",
+        "project_runtime_pkg": "tasker"
+      },
+      {
+        "version_id": "script-tianpuyue-music-v-1-0-0",
+        "asset_name": "tianpuyue-music-v1.0.0-0cbfe9fe.js",
+        "project_runtime_pkg": "tianpuyue_music"
+      },
+      {
+        "version_id": "script-token-compressor-v-2-6-0",
+        "asset_name": "token-compressor-v2.6.0-04aa257e.js",
+        "project_runtime_pkg": "token_compressor"
+      },
+      {
+        "version_id": "script-token-extractor-v-1-0-0",
+        "asset_name": "token-extractor-v1.0.0-5da76163.js",
+        "project_runtime_pkg": "token_extractor"
+      },
+      {
+        "version_id": "script-tts-mp3-v-1-0-0",
+        "asset_name": "tts-mp3-v1.0.0-e2bd033d.js",
+        "project_runtime_pkg": "TTS_mp3"
+      },
+      {
+        "version_id": "script-tts-toolkit-v-1-0-0",
+        "asset_name": "tts-toolkit-v1.0.0-a5361f37.js",
+        "project_runtime_pkg": "tts_toolkit"
+      },
+      {
+        "version_id": "script-ubuntu-config-v-1-0-3",
+        "asset_name": "ubuntu-config-v1.0.3-7a531e0b.js",
+        "project_runtime_pkg": "ubuntu_config"
+      },
+      {
+        "version_id": "script-ubuntu-config-v-1-0-0",
+        "asset_name": "ubuntu-config-v1.0.0-4a4714b7.js",
+        "project_runtime_pkg": "ubuntu_config"
+      },
+      {
+        "version_id": "script-universal-draw-v-1-1-0",
+        "asset_name": "universal-draw-v1.1.0-1ad55b26.js",
+        "project_runtime_pkg": "universal_draw"
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-23",
+        "asset_name": "wechat-claude-bridge-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-13-0",
+        "asset_name": "spiderdev-v1.13.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-20",
+        "asset_name": "yandex-search-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-2-0-0",
+        "asset_name": "media-display-v2.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-18",
+        "asset_name": "douyin-parser-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-17",
+        "asset_name": "system-tools-pro-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-16",
+        "asset_name": "universal-draw-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-15",
+        "asset_name": "android-dev-agent-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-14",
+        "asset_name": "bignumbercalculator-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-1-legacy-11",
+        "asset_name": "multi-search-pro-v1.0.1.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-1-0",
+        "asset_name": "music-studio-v1.1.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-2-2",
+        "asset_name": "qweather-v1.2.2.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-1",
+        "asset_name": "bilibili-tools-v1.0.1.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-5",
+        "asset_name": "artifact-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-4",
+        "asset_name": "baidu-image-search-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0",
+        "asset_name": "simple-http-2-0-tool-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-10",
+        "asset_name": "system-tools-pro-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-12",
+        "asset_name": "show-local-image-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-13",
+        "asset_name": "media-display-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-2",
+        "asset_name": "android-dev-agent-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-3",
+        "asset_name": "baidu-image-search-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-unknown-v-1-0-0-legacy-8",
+        "asset_name": "music-studio-v1.0.0.js",
+        "project_runtime_pkg": null
+      },
+      {
+        "version_id": "script-vflow-trigger-v-1-0-0",
+        "asset_name": "vflow-trigger-v1.0.0-dffeba59.js",
+        "project_runtime_pkg": "vflow_trigger"
+      },
+      {
+        "version_id": "script-vibrator-control-v-1-0-0",
+        "asset_name": "vibrator-control-v1.0.0-68dc2ea7.js",
+        "project_runtime_pkg": "vibrator_control"
+      },
+      {
+        "version_id": "script-volcano-draw-v-1-0-0",
+        "asset_name": "volcano-draw-v1.0.0-8121ca1e.js",
+        "project_runtime_pkg": "volcano_draw"
+      },
+      {
+        "version_id": "script-weather-alert-v-1-0-0",
+        "asset_name": "weather-alert-v1.0.0-cb550e6b.js",
+        "project_runtime_pkg": "weather_alert"
+      },
+      {
+        "version_id": "script-wechat-bridge-v2-v-1-0-0",
+        "asset_name": "wechat-bridge-v2-v1.0.0-ef7ccc48.js",
+        "project_runtime_pkg": "wechat_bridge_v2"
+      },
+      {
+        "version_id": "script-yandex-search-v-1-0-2",
+        "asset_name": "yandex-search-v1.0.2-c79ea806.js",
+        "project_runtime_pkg": "yandex_search"
+      },
+      {
+        "version_id": "script-yandex-search-v-1-0-0",
+        "asset_name": "yandex-search-v1.0.0-796b7ee0.js",
+        "project_runtime_pkg": "yandex_search"
+      },
+      {
+        "version_id": "script-zero-termux-toolkit-v-1-0-2",
+        "asset_name": "zero-termux-toolkit-v1.0.2-11b928c1.js",
+        "project_runtime_pkg": "zero_termux_toolkit"
+      },
+      {
+        "version_id": "script-zero-termux-toolkit-v-1-0-1",
+        "asset_name": "zero-termux-toolkit-v1.0.1-c0d7fbf1.js",
+        "project_runtime_pkg": "zero_termux_toolkit"
+      },
+      {
+        "version_id": "script-zero-termux-toolkit-v-1-0-0-legacy-80",
+        "asset_name": "zero-termux-toolkit-v1.0.0-1c8c17c3.js",
+        "project_runtime_pkg": "zero_termux_toolkit"
+      },
+      {
+        "version_id": "script-zero-termux-toolkit-v-1-0-0",
+        "asset_name": "zero-termux-toolkit-v1.0.0-d71b2c3b.js",
+        "project_runtime_pkg": "zero_termux_toolkit"
+      },
+      {
+        "version_id": "script-zero-termux-toolkit-v-1-0-4",
+        "asset_name": "zero-termux-toolkit-v1.0.4-f0a5b903.js",
+        "project_runtime_pkg": "zero_termux_toolkit"
+      },
+      {
+        "version_id": "script-zhihu-search-v-1-0-2",
+        "asset_name": "zhihu-search-v1.0.2-6e9d2dc7.js",
+        "project_runtime_pkg": "zhihu_search"
+      },
+      {
+        "version_id": "script-zhihu-search-v-1-0-1",
+        "asset_name": "zhihu-search-v1.0.1-b06a7bf7.js",
+        "project_runtime_pkg": "zhihu_search"
+      },
+      {
+        "version_id": "script-zhihu-search-v-1-0-0-legacy-141",
+        "asset_name": "zhihu-search-v1.0.0-117b8e22.js",
+        "project_runtime_pkg": "zhihu_search"
+      },
+      {
+        "version_id": "script-zhihu-search-v-1-0-0",
+        "asset_name": "zhihu-search-v1.0.0-0f55f7c3.js",
+        "project_runtime_pkg": "zhihu_search"
+      }
+    ],
+    "success": true,
+    "meta": {
+      "served_by": "v3-prod",
+      "served_by_region": "APAC",
+      "served_by_colo": "SIN",
+      "served_by_primary": true,
+      "timings": {
+        "sql_duration_ms": 4.7938
+      },
+      "duration": 4.7938,
+      "changes": 0,
+      "last_row_id": 0,
+      "changed_db": false,
+      "size_after": 5693440,
+      "rows_read": 2840,
+      "rows_written": 0,
+      "total_attempts": 1
+    }
+  }
+]

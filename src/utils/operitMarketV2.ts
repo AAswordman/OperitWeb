@@ -44,23 +44,29 @@ export interface MarketV2Entry {
   };
   artifact?: {
     projectId?: string;
-    rootNodeId?: string;
     runtimePkg?: string;
-    nodes?: Array<{
-      id?: string;
-      nodeKey?: string;
-      runtimePkg?: string;
-      versionId?: string;
-      parentNodeIds?: string[];
-    }>;
   };
   assets?: MarketV2Asset[];
+  versions?: Array<{
+    id?: string;
+    version?: string;
+    formatVer?: string;
+    minAppVer?: string;
+    maxAppVer?: string;
+    changelog?: string;
+    installConfig?: string;
+    runtimePackageId?: string;
+    publishedAt?: string;
+  }>;
   latestVersion?: {
     id?: string;
     version?: string;
     formatVer?: string;
     minAppVer?: string;
     maxAppVer?: string;
+    changelog?: string;
+    installConfig?: string;
+    runtimePackageId?: string;
     publishedAt?: string;
   };
   reactions?: Array<{ reaction: string; total: number }>;

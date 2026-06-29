@@ -51,9 +51,9 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createVersion(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, min_app_ver, max_app_ver, state_code, changelog, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, min_app_ver, max_app_ver, state_code, changelog, created_at, updated_at, published_at, runtime_pkg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
         value.id, value.entryId, value.version, value.formatVer, value.minAppVer, value.maxAppVer || null,
-        value.stateCode || 'pending', value.changelog || null, value.createdAt, value.updatedAt, value.publishedAt || null,
+        value.stateCode || 'pending', value.changelog || null, value.createdAt, value.updatedAt, value.publishedAt || null, value.runtimePkg || value.runtimePackageId || null,
       ]);
     },
     async updateVersion(id, patch) {
@@ -167,20 +167,14 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createAsset(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_assets (id, version_id, kind, url, sha256, created_at) VALUES (?, ?, ?, ?, ?, ?)', [
-        value.id, value.versionId, value.kind, value.url, value.sha256, value.createdAt,
+      return run(db, 'INSERT OR IGNORE INTO market_assets (id, version_id, kind, url, sha256, asset_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
+        value.id, value.versionId, value.kind, value.url, value.sha256, value.assetName || value.name || null, value.createdAt,
       ]);
     },
     async createArtifactProject(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO artifact_projects (id, entry_id, project_key, runtime_pkg, root_node_id, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
-        value.id, value.entryId, value.projectKey, value.runtimePkg || null, value.rootNodeId || null, value.createdAt, value.updatedAt,
-      ]);
-    },
-    async createArtifactNode(value) {
-      stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO artifact_nodes (id, project_id, version_id, node_key, runtime_pkg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
-        value.id, value.projectId, value.versionId || null, value.nodeKey, value.runtimePackageId || null, value.createdAt, value.updatedAt,
+      return run(db, 'INSERT OR IGNORE INTO artifact_projects (id, entry_id, project_key, runtime_pkg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [
+        value.id, value.entryId, value.projectKey, value.runtimePkg || null, value.createdAt, value.updatedAt,
       ]);
     },
 
@@ -256,10 +250,6 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     async getArtifactProject(entryId) {
       const sql = 'SELECT * FROM artifact_projects WHERE entry_id = ?';
       return readRow(sql, await first(db, sql, [entryId]));
-    },
-    async listArtifactNodes(projectId) {
-      const sql = 'SELECT * FROM artifact_nodes WHERE project_id = ? ORDER BY sort_order ASC, created_at ASC, id ASC';
-      return readRows(sql, await all(db, sql, [projectId]));
     },
     async listAssets(entryId) {
       const sql = 'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id WHERE v.entry_id = ?';
@@ -355,14 +345,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       await db.prepare('INSERT OR REPLACE INTO market_meta (key, value, updated_at) VALUES (?, ?, ?)').bind(key, value, now).run();
     },
     async loadBuildSnapshot() {
-      const [entries, versions, repos, repoVersions, artifactProjects, artifactNodes, assets, reactions, entryStats,
+      const [entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats,
         categories, types, formatVersions, stateCodes, curations, authors] = await Promise.all([
         all(db, 'SELECT * FROM market_entries', []),
         all(db, 'SELECT * FROM market_versions', []),
         all(db, 'SELECT * FROM repo_plugin_specs', []),
         all(db, 'SELECT * FROM repo_plugin_versions', []),
         all(db, 'SELECT * FROM artifact_projects', []),
-        all(db, 'SELECT * FROM artifact_nodes', []),
         all(db, 'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id', []),
         all(db, 'SELECT * FROM market_reaction_counts', []),
         all(db, 'SELECT * FROM market_entry_stats', []),
@@ -373,9 +362,9 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         all(db, 'SELECT * FROM market_curations', []),
         all(db, 'SELECT id, github_id, github_login, owner_avatar FROM market_authors', []),
       ]);
-      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + artifactNodes.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + curations.length + authors.length;
+      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + curations.length + authors.length;
       stats.reads += totalReads;
-      return { entries, versions, repos, repoVersions, artifactProjects, artifactNodes, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, curations, authors };
+      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, curations, authors };
     },
   };
 }

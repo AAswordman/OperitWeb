@@ -1,0 +1,201 @@
+{
+  "ok": true,
+  "generatedAt": "2026-06-29T08:56:55.296Z",
+  "r2ObjectCount": 845,
+  "materialized": 845,
+  "publicCount": 1174,
+  "keySummary": {
+    "manifest": 1,
+    "entryShards": 237,
+    "lists": 173,
+    "privatePublisherShards": 114
+  },
+  "sample": {
+    "id": "package-com-operit-jealous-patrol",
+    "shard": "a7",
+    "title": "🍋 吃醋巡检（市场）",
+    "descriptionLength": 82,
+    "detailLength": 119,
+    "type": "package"
+  },
+  "checks": [
+    {
+      "name": "manifest marketVersion",
+      "pass": true,
+      "detail": 2
+    },
+    {
+      "name": "manifest types",
+      "pass": true,
+      "detail": 4
+    },
+    {
+      "name": "manifest categories",
+      "pass": true,
+      "detail": 11
+    },
+    {
+      "name": "entry shard count",
+      "pass": true,
+      "detail": "237/237"
+    },
+    {
+      "name": "list pages written",
+      "pass": true,
+      "detail": 173
+    },
+    {
+      "name": "all list uses readable key",
+      "pass": true,
+      "detail": [
+        "market/v2/lists/all/featured/page-1.json",
+        "market/v2/lists/all/likes/page-1.json",
+        "market/v2/lists/all/likes/page-10.json",
+        "market/v2/lists/all/likes/page-11.json",
+        "market/v2/lists/all/likes/page-12.json"
+      ]
+    },
+    {
+      "name": "no hashed all list key",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "updated list page exists",
+      "pass": true,
+      "detail": "market/v2/lists/all/updated/page-1.json"
+    },
+    {
+      "name": "list pageSize 100",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "name": "updated page item count",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "name": "updated list total",
+      "pass": true,
+      "detail": "1174/1174"
+    },
+    {
+      "name": "skill list exists",
+      "pass": true,
+      "detail": "market/v2/lists/type/skill/updated/page-1.json"
+    },
+    {
+      "name": "skill list total",
+      "pass": true,
+      "detail": "975/975"
+    },
+    {
+      "name": "skill list pageSize 100",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "name": "skill list not empty",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "name": "mcp list exists",
+      "pass": true,
+      "detail": "market/v2/lists/type/mcp/updated/page-1.json"
+    },
+    {
+      "name": "mcp list total",
+      "pass": true,
+      "detail": "33/33"
+    },
+    {
+      "name": "mcp list pageSize 100",
+      "pass": true,
+      "detail": 100
+    },
+    {
+      "name": "mcp list not empty",
+      "pass": true,
+      "detail": 33
+    },
+    {
+      "name": "description <=100",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "detail present",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "latestVersion present",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "repo entries have source",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "artifact entries have assets",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "artifact versions have runtimePackageId",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "artifact latestVersion has runtimePackageId",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "public json has no artifact nodes",
+      "pass": true,
+      "detail": []
+    },
+    {
+      "name": "sample exists in entry shard",
+      "pass": true,
+      "detail": {
+        "sample": "package-com-operit-jealous-patrol",
+        "shard": "a7"
+      }
+    },
+    {
+      "name": "sample shard detail matches list",
+      "pass": true,
+      "detail": "package-com-operit-jealous-patrol"
+    },
+    {
+      "name": "sample shard embeds versions",
+      "pass": true,
+      "detail": {
+        "sample": "package-com-operit-jealous-patrol",
+        "versions": 2
+      }
+    },
+    {
+      "name": "no one-file-per-entry detail files",
+      "pass": true,
+      "detail": []
+    }
+  ],
+  "r2Dir": "C:\\Users\\12809\\AppData\\Local\\Temp\\operit-market-r2-verify-1782723414132",
+  "upload": {
+    "ok": true,
+    "bucket": "operit-market-stats-static",
+    "prefix": "",
+    "mode": "worker",
+    "concurrency": 16,
+    "objects": 845,
+    "bytes": 20090704,
+    "elapsedMs": 41406
+  }
+}
