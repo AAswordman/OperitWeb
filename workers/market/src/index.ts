@@ -75,7 +75,6 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv): Prom
   if (pathname === '/market/v2/admin/review/entries' && request.method === 'GET') return entries.reviewEntries(request, storeEnv);
   if (pathname.startsWith('/market/v2/admin/review/entries/') && request.method === 'GET') return entries.reviewEntryDetail(request, storeEnv);
   if (pathname === '/market/v2/my/entries' && request.method === 'GET') return entries.myEntries(request, storeEnv);
-  if (pathname.startsWith('/market/v2/my/entries/') && request.method === 'GET') return entries.myEntryDetail(request, storeEnv);
   if (pathname.includes('/entries/') && request.method === 'PATCH') return entries.updateEntry(request, storeEnv);
   if (pathname.includes('/entries/') && request.method === 'DELETE') return entries.deleteEntry(request, storeEnv);
   if (pathname.includes('/versions/') && request.method === 'DELETE') return entries.deleteVersion(request, storeEnv);

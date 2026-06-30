@@ -5,7 +5,7 @@ import { renderListPage } from "../renderers/listPage.js";
 import { renderEntryVersions } from "../renderers/entryVersions.js";
 import { renderEntryShard } from "../renderers/entryShard.js";
 import { renderAssetDetail } from "../renderers/assetDetail.js";
-import { renderPrivateAuthorEntries, renderPrivateAuthorEntry } from "../renderers/privateAuthor.js";
+import { renderPrivateAuthorEntries } from "../renderers/privateAuthor.js";
 import { scopeHash } from "./hash.js";
 import type { ProjectionName, ProjectionRegistry, ProjectionScope, ProjectionPlan, RendererContext, D1Backend, R2Backend } from "../../types.js";
 
@@ -36,7 +36,6 @@ const PROJECTIONS: Record<string, ProjectionConfig> = {
   },
   "asset.detail": { requiredScope: ["assetId"], key: (scope: Record<string, string>) => `market/v2/assets/${scope.assetId}.json`, render: renderAssetDetail },
   "private.publisherShard": { requiredScope: ["authorId"], key: (scope: Record<string, string>) => { const authId = scope.authorId || ""; const shard = authId ? scopeHash(authId).substring(0, 2) : (scope.shard || "00"); return `market/v2/private/publishers/${shard}.json`; }, render: renderPrivateAuthorEntries },
-  "private.publisherEntry": { requiredScope: ["authorId", "entryId"], key: (scope: Record<string, string>) => `market/v2/private/publishers/${scope.authorId ?? "unknown"}/${scope.entryId ?? "unknown"}.json`, render: renderPrivateAuthorEntry },
 };
 
 export function createProjectionRegistry(): ProjectionRegistry {

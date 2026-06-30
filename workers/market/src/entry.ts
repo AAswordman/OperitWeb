@@ -30,7 +30,6 @@ interface EntryRoutes {
   deleteEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
   deleteVersion(request: Request, env: MarketEnv): Promise<JsonObject>;
   myEntries(request: Request, env: MarketEnv): Promise<JsonObject>;
-  myEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewApprove(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewReject(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -46,7 +45,7 @@ interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo
 interface ArtifactVersionBody { projectId?: string; runtimePackageId?: string }
 
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, curationSet: handleCurationSet };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -135,7 +134,6 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },
       { projection: 'private.publisherShard', scope: { authorId: publisher.id } },
-      { projection: 'private.publisherEntry', scope: { authorId: publisher.id, entryId } },
     ],
   });
   const updated = await store.d1.getEntry(entryId);
@@ -206,13 +204,6 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
       entries: type ? entries.filter((entry) => asRecord(entry).type === type) : entries,
     },
   };
-}
-
-async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
-  const session = await requireSession(request, env);
-  const store = requireStore(env);
-  const entryId = extractIdFromPath(request.url, '/entries/', '/');
-  return { ok: true, item: (await store.readProjection({ projection: 'private.publisherEntry', scope: { authorId: `gh_${session.github_id}`, entryId } })) as JsonObject };
 }
 
 async function handleReviewEntries(request: Request, env: MarketEnv): Promise<JsonObject> {

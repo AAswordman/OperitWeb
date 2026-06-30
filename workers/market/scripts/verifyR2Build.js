@@ -90,6 +90,7 @@ async function main() {
       bucket: args.bucket,
       concurrency: args.concurrency,
       prefix: args.prefix,
+      onlyPrefix: args.onlyPrefix,
       uploaderUrl: args.uploaderUrl,
     });
   }
@@ -208,6 +209,7 @@ function parseArgs(argv) {
     bucket: DEFAULT_BUCKET,
     concurrency: 64,
     prefix: '',
+    onlyPrefix: '',
     uploaderUrl: '',
   };
   for (let index = 0; index < argv.length; index++) {
@@ -217,6 +219,7 @@ function parseArgs(argv) {
     else if (arg === '--bucket') parsed.bucket = requireValue(argv, ++index, arg);
     else if (arg === '--concurrency') parsed.concurrency = Math.max(1, Number(requireValue(argv, ++index, arg)));
     else if (arg === '--prefix') parsed.prefix = trimSlashes(requireValue(argv, ++index, arg));
+    else if (arg === '--only-prefix') parsed.onlyPrefix = trimSlashes(requireValue(argv, ++index, arg));
     else if (arg === '--uploader-url') parsed.uploaderUrl = requireValue(argv, ++index, arg).replace(/\/+$/g, '');
     else if (arg === '--help' || arg === '-h') {
       console.log([
@@ -228,6 +231,7 @@ function parseArgs(argv) {
         `  --account-id <id>        Cloudflare account id (default: ${DEFAULT_ACCOUNT_ID})`,
         '  --concurrency <n>        Parallel uploads (default: 64)',
         '  --prefix <path>          Optional object key prefix',
+        '  --only-prefix <path>     Upload only local objects whose key starts with this prefix',
         '  --uploader-url <url>      Upload through a temporary Worker instead of R2 S3 API',
       ].join('\n'));
       process.exit(0);
@@ -254,10 +258,11 @@ async function uploadDirectoryToR2(rootDir, options) {
     const relative = path.relative(rootDir, file).split(path.sep).join('/');
     return {
       file,
+      relative,
       key: options.prefix ? `${options.prefix}/${relative}` : relative,
       size: fs.statSync(file).size,
     };
-  });
+  }).filter((item) => !options.onlyPrefix || item.relative === options.onlyPrefix || item.relative.startsWith(`${options.onlyPrefix}/`));
   const startedAt = Date.now();
   let uploaded = 0;
   let bytes = 0;
@@ -265,7 +270,7 @@ async function uploadDirectoryToR2(rootDir, options) {
   const uploadToken = options.uploaderUrl ? readUploaderToken() : '';
   const credentials = options.uploaderUrl ? null : readR2Credentials();
   const mode = options.uploaderUrl ? 'worker' : 's3';
-  console.log(`Uploading ${files.length} objects to R2 bucket ${options.bucket} with ${mode} concurrency=${options.concurrency}...`);
+  console.log(`Uploading ${files.length} objects to R2 bucket ${options.bucket} with ${mode} concurrency=${options.concurrency}${options.onlyPrefix ? ` onlyPrefix=${options.onlyPrefix}` : ''}...`);
 
   await runPool(files, options.concurrency, async (item) => {
     try {
@@ -307,6 +312,7 @@ async function uploadDirectoryToR2(rootDir, options) {
     ok: true,
     bucket: options.bucket,
     prefix: options.prefix,
+    onlyPrefix: options.onlyPrefix,
     mode,
     concurrency: options.concurrency,
     objects: uploaded,

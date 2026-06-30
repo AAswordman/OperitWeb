@@ -19,16 +19,6 @@ export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, proje
   return { written: [key] };
 }
 
-export async function renderPrivateAuthorEntry({ d1, r2, projectionPlan, projectionRegistry }: RendererContext): Promise<{ written: string[] }> {
-  const authorId = projectionPlan.scope.authorId || "";
-  const entryId = projectionPlan.scope.entryId || "";
-  const key = projectionRegistry.keyOf("private.publisherEntry", { authorId, entryId });
-  const entry = await d1.getEntry(entryId);
-  if (!entry || rowText(entry, "publisher_id") !== authorId) return { written: [] };
-  await r2.writeJson(key, { ok: true, marketVersion: 2, generatedAt: isoNow(), entryId, versions: await d1.listVersionsForEntry(entryId) });
-  return { written: [key] };
-}
-
 function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]): { entry: Row; relation: "owner" | "contributor" }[] {
   const byId = new Map<string, { entry: Row; relation: "owner" | "contributor" }>();
   for (const entry of owned) {

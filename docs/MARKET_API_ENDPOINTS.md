@@ -169,6 +169,85 @@ Authorization: Bearer <market_session>
 
 请求体只允许修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。其中 `allowPublicUpdates` 只有最初发布者可改。该接口不允许修改条目归属或历史版本发布者。
 
+提交成功后，Worker 会将 entry 状态改为 `pending`，该条目需要重新审核；审核通过前不会作为公开条目进入公开列表和公开 entry 分片。
+
+响应：
+
+```json
+{
+  "ok": true,
+  "item": {
+    "id": "...",
+    "stateCode": "pending"
+  },
+  "stats": {}
+}
+```
+
+### 发布新版本
+
+```http
+POST https://api.operit.app/market/v2/entries/{entryId}/versions
+Authorization: Bearer <market_session>
+```
+
+当 entry 的 `allowPublicUpdates=true` 时，任意登录用户都可以为该 entry 提交新版本；关闭时只有最初 `publisher` 可以提交。新版本号必须大于该 entry 已有版本号，否则返回 `version_conflict`。新版本初始状态为 `pending`，审核通过后才会进入公开 entry 的 `versions[]` 和 `latestVersion`。
+
+Repo 类（`skill` / `mcp`）请求体：
+
+```json
+{
+  "version": {
+    "version": "1.1.0",
+    "formatVer": "mcp_v2",
+    "minAppVer": "1.2.0",
+    "maxAppVer": "2.0.0",
+    "changelog": "..."
+  },
+  "repoVersion": {
+    "refType": "tag",
+    "refName": "v1.1.0",
+    "installConfig": "{...}"
+  }
+}
+```
+
+Artifact 类（`script` / `package`）请求体：
+
+```json
+{
+  "version": {
+    "version": "1.1.0",
+    "formatVer": "script_v2",
+    "minAppVer": "1.2.0",
+    "maxAppVer": "2.0.0",
+    "changelog": "...",
+    "projectId": "...",
+    "runtimePackageId": "..."
+  },
+  "asset": {
+    "kind": "github_release_asset",
+    "url": "https://github.com/owner/repo/releases/download/v1.1.0/file.zip",
+    "ghOwner": "owner",
+    "ghRepo": "repo",
+    "ghReleaseTag": "v1.1.0",
+    "assetName": "file.zip",
+    "sha256": "..."
+  }
+}
+```
+
+响应：
+
+```json
+{
+  "ok": true,
+  "entryId": "...",
+  "versionId": "...",
+  "stats": {}
+}
+```
+
 ### 撤回 / 重新提交
 
 ```http

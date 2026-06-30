@@ -119,8 +119,7 @@ export type ProjectionName =
   | 'entry.versions'
   | 'comments.page'
   | 'asset.detail'
-  | 'private.publisherShard'
-  | 'private.publisherEntry';
+  | 'private.publisherShard';
 
 export interface ProjectionScope {
   entryId?: string;
