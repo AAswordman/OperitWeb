@@ -14,7 +14,12 @@ export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, proje
   const authors = current && typeof current === "object" && !Array.isArray(current) && current.authors && typeof current.authors === "object" && !Array.isArray(current.authors)
     ? { ...(current.authors as Record<string, unknown>) }
     : {};
-  authors[authorId] = { entries: entries.map(({ entry, relation }) => toPublisherEntrySummary(entry, relation)) };
+  const summaries = [];
+  for (const { entry, relation } of entries) {
+    const reasonCodes = (await d1.listEntryReasons(rowText(entry, "id"))).map((reason) => rowText(reason, "reason_code")).filter(Boolean);
+    summaries.push(toPublisherEntrySummary(entry, relation, reasonCodes));
+  }
+  authors[authorId] = { entries: summaries };
   await r2.writeJson(key, { ok: true, marketVersion: 2, generatedAt: isoNow(), shard, authors });
   return { written: [key] };
 }
@@ -36,8 +41,8 @@ function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]):
   return Array.from(byId.values()).sort((a, b) => rowText(b.entry, "updated_at").localeCompare(rowText(a.entry, "updated_at")));
 }
 
-function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor"): Record<string, string> {
-  return {
+function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor", reasonCodes: string[]): Record<string, unknown> {
+  const summary: Record<string, unknown> = {
     id: rowText(entry, "id"),
     title: rowText(entry, "title"),
     type: rowText(entry, "type"),
@@ -46,4 +51,6 @@ function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor"):
     categoryId: rowText(entry, "category_id"),
     updatedAt: rowText(entry, "updated_at"),
   };
+  if (reasonCodes.length > 0) summary.reasonCodes = reasonCodes;
+  return summary;
 }

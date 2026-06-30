@@ -307,7 +307,7 @@ GET /market/v2/private/publishers/{shard}.json
   "authors": {
     "gh_1001": {
       "entries": [
-        { "id": "...", "title": "...", "type": "mcp", "relation": "owner", "stateCode": "pending", "categoryId": "...", "updatedAt": "..." }
+        { "id": "...", "title": "...", "type": "mcp", "relation": "owner", "stateCode": "changes_requested", "categoryId": "...", "updatedAt": "...", "reasonCodes": ["metadata-incomplete"] }
       ]
     }
   }
@@ -315,6 +315,8 @@ GET /market/v2/private/publishers/{shard}.json
 ```
 
 `/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
+
+`reasonCodes` 只在条目存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
 
 ### 通知
 
@@ -324,6 +326,37 @@ Authorization: Bearer <market_session>
 ```
 
 read/unread 由客户端本地维护。
+
+响应体：
+
+```json
+{
+  "ok": true,
+  "items": [
+    {
+      "id": "notif-1719687600000-abc123",
+      "kind": "review_approved",
+      "entryId": "mcp-example-plugin",
+      "commentId": null,
+      "actorId": "owner",
+      "title": "\"Example Plugin\" approved",
+      "body": "Your plugin \"Example Plugin\" was approved by a reviewer.",
+      "createdAt": "2026-06-30T13:16:20.847Z"
+    }
+  ]
+}
+```
+
+`kind` 枚举：`comment_new` | `comment_reply` | `review_approved` | `review_rejected` | `review_changes` | `entry_curated`
+
+| kind | 触发场景 | 接收者 |
+| --- | --- | --- |
+| `comment_new` | 有人在你的 entry 下发表了新评论 | entry 发布者 |
+| `comment_reply` | 有人回复了你的评论 | 被回复的评论作者 |
+| `review_approved` | 审核台通过了你的 entry | entry 发布者 |
+| `review_rejected` | 审核台拒绝了你的 entry | entry 发布者 |
+| `review_changes` | 审核台要求修改 entry | entry 发布者 |
+| `entry_curated` | entry 被列入精选 | entry 发布者 |
 
 ## v2 管理接口（走 api.operit.app）
 

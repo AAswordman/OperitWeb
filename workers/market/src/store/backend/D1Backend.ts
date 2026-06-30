@@ -217,6 +217,10 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_state_codes ORDER BY sort_order';
       return readRows(sql, await all(db, sql, []));
     },
+    async listEntryReasons(entryId) {
+      const sql = 'SELECT reason_code FROM market_entry_reasons WHERE entry_id = ? ORDER BY reason_code';
+      return readRows(sql, await all(db, sql, [entryId]));
+    },
     async listPublisherEntries(publisherId) {
       const sql = 'SELECT * FROM market_entries WHERE publisher_id = ? ORDER BY updated_at DESC';
       return readRows(sql, await all(db, sql, [publisherId]));
@@ -351,7 +355,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async loadBuildSnapshot() {
       const [entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats,
-        categories, types, formatVersions, stateCodes, curations, authors] = await Promise.all([
+        categories, types, formatVersions, stateCodes, entryReasons, versionReasons, curations, authors] = await Promise.all([
         all(db, 'SELECT * FROM market_entries', []),
         all(db, 'SELECT * FROM market_versions', []),
         all(db, 'SELECT * FROM repo_plugin_specs', []),
@@ -364,12 +368,14 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         all(db, 'SELECT * FROM market_types ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_format_versions ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_state_codes ORDER BY sort_order', []),
+        all(db, 'SELECT * FROM market_entry_reasons', []),
+        all(db, 'SELECT * FROM market_version_reasons', []),
         all(db, 'SELECT * FROM market_curations', []),
         all(db, 'SELECT id, github_id, github_login, owner_avatar FROM market_authors', []),
       ]);
-      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + curations.length + authors.length;
+      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + entryReasons.length + versionReasons.length + curations.length + authors.length;
       stats.reads += totalReads;
-      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, curations, authors };
+      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, entryReasons, versionReasons, curations, authors };
     },
   };
 }

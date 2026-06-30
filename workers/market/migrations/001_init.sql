@@ -377,7 +377,6 @@ CREATE TABLE IF NOT EXISTS market_notifications (
   created_at  TEXT NOT NULL,
   FOREIGN KEY(recipient) REFERENCES market_authors(id),
   FOREIGN KEY(entry_id) REFERENCES market_entries(id),
-  FOREIGN KEY(comment_id) REFERENCES market_comments(id),
-  FOREIGN KEY(actor_id) REFERENCES market_authors(id)
+  FOREIGN KEY(comment_id) REFERENCES market_comments(id)
 );
 CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON market_notifications(recipient, created_at DESC);

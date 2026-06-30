@@ -2,7 +2,7 @@
 // Both backends persist to temp directories on disk, not just memory.
 
 import { mkdirSync, readFileSync, readdirSync, rmSync, statSync, unlinkSync, writeFileSync } from 'fs';
-import { join } from 'path';
+import { dirname, join } from 'path';
 import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
 import initSqlJs from 'sql.js';
@@ -86,7 +86,6 @@ export class FileR2 {
 
 export async function createFileSqlite(schemaPath) {
   const SQL = await initSqlJs();
-  const schema = readFileSync(schemaPath, 'utf8');
   const dbPath = join(tmpdir(), `operit-market-test-d1-${randomBytes(6).toString('hex')}.sqlite`);
 
   let sqlite;
@@ -95,7 +94,7 @@ export async function createFileSqlite(schemaPath) {
     sqlite = new SQL.Database(new Uint8Array(buffer));
   } catch {
     sqlite = new SQL.Database();
-    sqlite.run(schema);
+    for (const sql of loadSchemas(schemaPath)) sqlite.run(sql);
     saveToDisk(sqlite, dbPath);
   }
 
@@ -106,6 +105,15 @@ export async function createFileSqlite(schemaPath) {
     destroy() { try { rmSync(dbPath); } catch { /* ok */ } },
   };
   return db;
+}
+
+function loadSchemas(schemaPath) {
+  if (!schemaPath.endsWith('001_init.sql')) return [readFileSync(schemaPath, 'utf8')];
+  const dir = dirname(schemaPath);
+  return readdirSync(dir)
+    .filter((name) => /^\d+_.+\.sql$/i.test(name))
+    .sort()
+    .map((name) => readFileSync(join(dir, name), 'utf8'));
 }
 
 class SqlJsStmt {

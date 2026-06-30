@@ -1,4 +1,5 @@
 import { assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
+import { githubApiFetch } from './github.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
   MarketError,
@@ -96,6 +97,7 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   const installConfig = optionalString(repoBody.installConfig);
   const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: `gh_${repo.ownerId}`, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
   const applied = await store.apply(mutation);
+  await materializePrivatePublisherShards(store, [publisher.id]);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -107,6 +109,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
   );
   const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
   const applied = await store.apply(mutation);
+  await materializePrivatePublisherShards(store, [publisher.id]);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -136,6 +139,7 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
       { projection: 'private.publisherShard', scope: { authorId: publisher.id } },
     ],
   });
+  await materializePrivatePublisherShards(store, [publisher.id]);
   const updated = await store.d1.getEntry(entryId);
   return { ok: true, item: updated ? entryDetail(updated) : { id: entryId }, stats: applied.stats as unknown as JsonObject };
 }
@@ -182,6 +186,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     [originalPublisherId, publisher.id],
   );
   const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects });
+  await materializePrivatePublisherShards(store, [originalPublisherId, publisher.id]);
   return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -247,7 +252,10 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const applied = await store.apply(reviewApproveEntry({ entryId, actorId, ...(versionId !== undefined ? { versionId } : {}) }));
   await store.materializeEntryAssets(entryId);
   const entry = await store.d1.getEntry(entryId);
-  if (entry) notifyReview(store.d1, entry, 'review_approved', actorId).catch(() => {});
+  if (entry) {
+    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+    await notifyReview(store.d1, entry, 'review_approved', actorId);
+  }
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -260,7 +268,10 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const actorId = admin.username;
   const applied = await store.apply(reviewRejectEntry({ entryId, actorId, ...(reasonCode !== undefined ? { reasonCode } : {}) }));
   const entry = await store.d1.getEntry(entryId);
-  if (entry) notifyReview(store.d1, entry, 'review_rejected', actorId).catch(() => {});
+  if (entry) {
+    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+    await notifyReview(store.d1, entry, 'review_rejected', actorId);
+  }
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -273,7 +284,10 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const actorId = admin.username;
   const applied = await store.apply(reviewRequestChangesEntry({ entryId, actorId, ...(reasonCode !== undefined ? { reasonCode } : {}) }));
   const entry = await store.d1.getEntry(entryId);
-  if (entry) notifyReview(store.d1, entry, 'review_changes', actorId).catch(() => {});
+  if (entry) {
+    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+    await notifyReview(store.d1, entry, 'review_changes', actorId);
+  }
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -303,6 +317,7 @@ async function applyEntryState(env: MarketEnv, request: Request, entryId: string
     [publisher.id, ...versionPublisherIds],
   );
   const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects: [{ kind: 'Entry', operation: 'update', id: entryId, patch: { stateCode, updatedAt: new Date().toISOString() } }], effects });
+  await materializePrivatePublisherShards(store, [publisher.id, ...versionPublisherIds]);
   return { ok: true, entryId, stateCode, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -314,6 +329,21 @@ function withPrivatePublisherShardEffects(effects: MarketMutation['effects'], au
     effects.push({ projection: 'private.publisherShard', scope: { authorId } });
   }
   return effects;
+}
+
+async function privatePublisherAuthorIdsForEntry(store: MarketStore, entry: Row): Promise<string[]> {
+  const entryId = text(entry.id);
+  const versions = entryId ? await store.d1.listVersionsForEntry(entryId) : [];
+  return [text(entry.publisher_id), ...versions.map((version) => text(version.publisher_id))];
+}
+
+async function materializePrivatePublisherShards(store: MarketStore, authorIds: string[]): Promise<void> {
+  const seen = new Set<string>();
+  for (const authorId of authorIds) {
+    if (!authorId || seen.has(authorId)) continue;
+    seen.add(authorId);
+    await store.materialize({ projection: 'private.publisherShard', scope: { authorId } });
+  }
 }
 
 async function applyVersionState(env: MarketEnv, request: Request, versionId: string, stateCode: string, reason: string): Promise<JsonObject> {
@@ -432,15 +462,16 @@ async function validateArtifactVersion(env: MarketEnv, session: MarketSession, b
   const proof = verifyToken(PROOF_PREFIX, proofToken, env.MARKET_SESSION_SECRET || '') as Record<string, unknown>;
   if (Number(proof.exp || 0) <= nowSeconds()) throw new MarketError('proof_expired', 'Release proof expired');
   if (Number(proof.github_id) !== session.github_id) throw new MarketError('proof_invalid', 'Release proof github_id mismatch');
+  if (String(proof.owner || '') !== asset.ghOwner || String(proof.repo || '') !== asset.ghRepo || String(proof.releaseTag || '') !== asset.ghReleaseTag || String(proof.assetName || '') !== asset.assetName || String(proof.sha256 || '') !== asset.sha256) throw new MarketError('proof_invalid', 'Release proof payload mismatch');
   return { projectId: requireString(v.projectId || a.projectId, 'version.projectId'), runtimePackageId: requireString(v.runtimePackageId || a.runtimePackageId, 'version.runtimePackageId'), asset };
 }
 function extractProofFromBody(body: string): string { return /<!--\s*operit-market-proof\s*([\s\S]*?)\s*-->/i.exec(body)?.[1]?.trim() || ''; }
 async function getRepo(env: MarketEnv, owner: string, repo: string): Promise<GitHubRepoInfo> { return (env.mockGitHubGetRepo || realGitHubGetRepo)(owner, repo, env); }
 async function resolveRef(env: MarketEnv, owner: string, repo: string, refType: string, refName: string): Promise<string> { return (env.mockGitHubResolveRef || realGitHubResolveRef)(owner, repo, refType, refName, env); }
-async function realGitHubGetRepo(owner: string, repo: string, _env: MarketEnv): Promise<GitHubRepoInfo> { const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`); if (!response.ok) throw new MarketError('validation_failed', 'GitHub repo is not accessible'); const data = await response.json() as { owner?: { id?: number; login?: string; avatar_url?: string }; private?: boolean }; return { ownerId: Number(data.owner?.id || 0), ownerLogin: String(data.owner?.login || ''), ...(data.owner?.avatar_url !== undefined ? { ownerAvatar: data.owner.avatar_url } : {}), isPublic: !data.private }; }
-async function realGitHubResolveRef(owner: string, repo: string, refType: string, refName: string, _env: MarketEnv): Promise<string> { if (refType === 'commit') return refName; const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/git/${refType === 'tag' ? 'ref/tags' : 'refs/heads'}/${refName}`); if (!response.ok) throw new MarketError('validation_failed', 'GitHub ref cannot be resolved'); const data = await response.json() as { object?: { sha?: string } }; return requireString(data.object?.sha, 'commitSha'); }
-async function realGitHubGetAsset(owner: string, repo: string, tag: string, assetName: string, _env: MarketEnv): Promise<{ sha256?: string }> { const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { assets?: { name?: string; sha256?: string }[] }; const sha256 = data.assets?.find((asset) => asset.name === assetName)?.sha256; return sha256 !== undefined ? { sha256 } : {}; }
-async function realGitHubGetRelease(owner: string, repo: string, tag: string, _env: MarketEnv): Promise<{ body: string }> { const response = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { body?: string }; return { body: data.body || '' }; }
+async function realGitHubGetRepo(owner: string, repo: string, env: MarketEnv): Promise<GitHubRepoInfo> { const response = await githubApiFetch(`/repos/${owner}/${repo}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub repo is not accessible'); const data = await response.json() as { owner?: { id?: number; login?: string; avatar_url?: string }; private?: boolean }; return { ownerId: Number(data.owner?.id || 0), ownerLogin: String(data.owner?.login || ''), ...(data.owner?.avatar_url !== undefined ? { ownerAvatar: data.owner.avatar_url } : {}), isPublic: !data.private }; }
+async function realGitHubResolveRef(owner: string, repo: string, refType: string, refName: string, env: MarketEnv): Promise<string> { if (refType === 'commit') return refName; const response = await githubApiFetch(`/repos/${owner}/${repo}/git/${refType === 'tag' ? 'ref/tags' : 'refs/heads'}/${refName}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub ref cannot be resolved'); const data = await response.json() as { object?: { sha?: string } }; return requireString(data.object?.sha, 'commitSha'); }
+async function realGitHubGetAsset(owner: string, repo: string, tag: string, assetName: string, env: MarketEnv): Promise<{ sha256?: string }> { const response = await githubApiFetch(`/repos/${owner}/${repo}/releases/tags/${tag}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { assets?: { name?: string; sha256?: string; digest?: string }[] }; const asset = data.assets?.find((item) => item.name === assetName); const digest = asset?.digest?.startsWith('sha256:') ? asset.digest.slice('sha256:'.length) : undefined; const sha256 = asset?.sha256 || digest; return sha256 !== undefined ? { sha256 } : {}; }
+async function realGitHubGetRelease(owner: string, repo: string, tag: string, env: MarketEnv): Promise<{ body: string }> { const response = await githubApiFetch(`/repos/${owner}/${repo}/releases/tags/${tag}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { body?: string }; return { body: data.body || '' }; }
 function requireDb(env: MarketEnv) { if (!env.db) throw new MarketError('server_error', 'D1 database is not configured', 500); return env.db; }
 function asRecord(value: unknown): Record<string, unknown> { return isRecord(value) ? value : {}; }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }

@@ -158,7 +158,16 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
   // publisher shards (256, skip empty)
   const t3 = Date.now();
   const publisherWriteStart = r2.stats.recentWrites.length;
-  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string }> }>>();
+  const entryReasonCodes = new Map<string, string[]>();
+  for (const reason of snap.entryReasons) {
+    const entryId = rowText(reason, 'entry_id');
+    const reasonCode = rowText(reason, 'reason_code');
+    if (!entryId || !reasonCode) continue;
+    const codes = entryReasonCodes.get(entryId) ?? [];
+    codes.push(reasonCode);
+    entryReasonCodes.set(entryId, codes);
+  }
+  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[] }> }>>();
   for (let i = 0; i < PUBLISHER_SHARDS; i++) publisherShards.set(i.toString(16).padStart(2, '0'), {});
   const entriesByIdForPublishers = new Map<string, Row>();
   for (const entry of snap.entries) {
@@ -168,6 +177,8 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const shard = publisherShardOf(authorId);
     const authors = publisherShards.get(shard)!;
     const bucket = authors[authorId] ?? { entries: [] };
+    const entryId = rowText(entry, 'id');
+    const reasonCodes = entryReasonCodes.get(entryId) ?? [];
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
@@ -176,6 +187,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       stateCode: rowText(entry, 'state_code'),
       categoryId: rowText(entry, 'category_id'),
       updatedAt: rowText(entry, 'updated_at'),
+      ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     authors[authorId] = bucket;
   }
@@ -190,6 +202,8 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       authors[authorId] = bucket;
       continue;
     }
+    const entryId = rowText(entry, 'id');
+    const reasonCodes = entryReasonCodes.get(entryId) ?? [];
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
@@ -198,6 +212,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       stateCode: rowText(entry, 'state_code'),
       categoryId: rowText(entry, 'category_id'),
       updatedAt: rowText(entry, 'updated_at'),
+      ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     authors[authorId] = bucket;

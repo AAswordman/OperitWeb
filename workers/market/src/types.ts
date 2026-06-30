@@ -44,6 +44,15 @@ export interface MarketEnv {
   MARKET_ANALYTICS_DATASET?: string;
   CLOUDFLARE_API_TOKEN?: string;
   MARKET_SESSION_SECRET?: string;
+  GITHUB_TOKEN?: string;
+  OPERIT_GITHUB_TOKEN?: string;
+  GITHUB_APP_ID?: string;
+  OPERIT_GITHUB_APP_ID?: string;
+  GITHUB_APP_PEM?: string;
+  GITHUB_PRIVATE_KEY?: string;
+  OPERIT_GITHUB_PRIVATE_KEY?: string;
+  GITHUB_INSTALLATION_ID?: string;
+  OPERIT_GITHUB_INSTALLATION_ID?: string;
   // operit-api admin auth
   OPERIT_OWNER_TOKEN?: string;
   OPERIT_ADMIN_TOKEN?: string;
@@ -181,6 +190,7 @@ export interface D1Backend {
   getTypes(): Promise<Row[]>;
   getFormatVersions(): Promise<Row[]>;
   getStateCodes(): Promise<Row[]>;
+  listEntryReasons(entryId: string): Promise<Row[]>;
   listPublisherEntries(publisherId: string): Promise<Row[]>;
   listVersionPublisherEntries(publisherId: string): Promise<Row[]>;
   listShardPublisherEntries(shard: string): Promise<Row[]>;
@@ -221,6 +231,8 @@ export interface BuildSnapshot {
   types: Row[];
   formatVersions: Row[];
   stateCodes: Row[];
+  entryReasons: Row[];
+  versionReasons: Row[];
   curations: Row[];
   authors: Row[];
 }

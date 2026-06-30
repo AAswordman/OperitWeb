@@ -370,6 +370,92 @@ test('my entries private shard keeps hash-collided authors isolated', async () =
   afterTest(ctx);
 });
 
+test('my entries reflect publish review and resubmit without waiting for full build', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'immediate-management');
+  const myReq = () => makeRequest(`http://api/market/v2/my/entries`, 'GET', undefined, pubSession);
+
+  let myEntries = await entryRoutes.myEntries(myReq(), env);
+  assert.deepEqual(myEntries.entries.entries.map((entry) => entry.id), [pub.entryId]);
+  assert.equal(myEntries.entries.entries[0].relation, 'owner');
+  assert.equal(myEntries.entries.entries[0].stateCode, 'pending');
+
+  await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, reasonCode: 'quality-too-low' }), env);
+  myEntries = await entryRoutes.myEntries(myReq(), env);
+  assert.equal(myEntries.entries.entries[0].stateCode, 'rejected');
+
+  await entryRoutes.resubmitEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}/resubmit`, 'POST', {}, pubSession), env);
+  myEntries = await entryRoutes.myEntries(myReq(), env);
+  assert.equal(myEntries.entries.entries[0].stateCode, 'pending');
+
+  afterTest(ctx);
+});
+
+test('review notification is durable before review response returns', async () => {
+  const ctx = await makeEnv();
+  const { env, store } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createInteractRoutes } = await import('../dist/interact.js');
+  const entryRoutes = createEntryRoutes();
+  const interact = createInteractRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const originalCreateNotification = store.d1.createNotification.bind(store.d1);
+  store.d1.createNotification = async (value) => {
+    await new Promise((resolve) => setTimeout(resolve, 30));
+    return originalCreateNotification(value);
+  };
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'review-notification');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const notifications = await interact.listNotifications(makeRequest(`http://api/market/v2/notifications?limit=20&offset=0`, 'GET', undefined, pubSession), env);
+  assert.equal(notifications.items.length, 1);
+  assert.equal(notifications.items[0].kind, 'review_approved');
+  assert.equal(notifications.items[0].entryId, pub.entryId);
+
+  afterTest(ctx);
+});
+
+test('comment notification creates new comment and reply notifications', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createInteractRoutes } = await import('../dist/interact.js');
+  const entryRoutes = createEntryRoutes();
+  const interact = createInteractRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pub1Session, 'comment-notif-test');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  // pub2 adds a comment on pub1's entry
+  await interact.addComment(makeRequest(`http://api/market/v2/entries/${pub.entryId}/comments`, 'POST', { body: 'Comment from pub2' }, pub2Session), env);
+
+  // pub1 (entry publisher) should see comment_new
+  let notifs = await interact.listNotifications(makeRequest(`http://api/market/v2/notifications?limit=20&offset=0`, 'GET', undefined, pub1Session), env);
+  const commentNew = notifs.items.find((n) => n.kind === 'comment_new');
+  assert.ok(commentNew, 'pub1 should have a comment_new notification');
+  const commentId = commentNew.commentId;
+  assert.ok(commentId);
+
+  // pub1 replies to pub2's comment
+  await interact.addComment(makeRequest(`http://api/market/v2/entries/${pub.entryId}/comments`, 'POST', { body: 'Reply from pub1', parentId: commentId }, pub1Session), env);
+
+  // pub2 should now see comment_reply
+  notifs = await interact.listNotifications(makeRequest(`http://api/market/v2/notifications?limit=20&offset=0`, 'GET', undefined, pub2Session), env);
+  const commentReply = notifs.items.find((n) => n.kind === 'comment_reply');
+  assert.ok(commentReply, 'pub2 should have a comment_reply notification');
+  assert.equal(commentReply.entryId, pub.entryId);
+
+  afterTest(ctx);
+});
+
 test('R2 entry shards expose direct entry lookup bundles', async () => {
   const ctx = await makeEnv();
   const { env, r2 } = ctx;
@@ -530,13 +616,19 @@ test('download analytics deduplicates same asset client per day', async () => {
   await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
   await createBuildRoutes().buildR2(env);
   const assetId = rows(db, 'SELECT id FROM market_assets WHERE version_id = ?', [pub.versionId])[0].id;
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response('asset-bytes', { status: 200, headers: { 'content-type': 'application/zip' } });
 
-  let req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
-  await interact.downloadAsset(req, env);
-  req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
-  await interact.downloadAsset(req, env);
-  req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.2', 'user-agent': 'test-agent' });
-  await interact.downloadAsset(req, env);
+  try {
+    let req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
+    await interact.downloadAsset(req, env);
+    req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
+    await interact.downloadAsset(req, env);
+    req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.2', 'user-agent': 'test-agent' });
+    await interact.downloadAsset(req, env);
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
 
   assert.equal(env.MARKET_ANALYTICS.events.length, 3);
 

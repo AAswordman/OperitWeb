@@ -47,8 +47,7 @@ async function addComment(request: Request, env: MarketEnv): Promise<JsonObject>
   const applied = await store.apply(commentCreateMutation({ comment, actorId: author.id }));
   const total = await store.d1.countActiveComments(entryId);
   await materializeCommentPageRange(store, entryId, 1, Math.max(1, Math.ceil(total / COMMENT_PAGE_SIZE)));
-  // Send notification (fire-and-forget, don't block response)
-  notifyCommentCreated(store.d1, entry, { id: comment.id, authorId: author.id, parentId: comment.parentId as string | null | undefined, body: comment.body }).catch(() => {});
+  await notifyCommentCreated(store.d1, entry, { id: comment.id, authorId: author.id, parentId: comment.parentId as string | null | undefined, body: comment.body });
   return { ok: true, commentId: comment.id, stats: applied.stats as unknown as JsonObject };
 }
 
