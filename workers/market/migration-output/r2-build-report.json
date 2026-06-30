@@ -1,14 +1,14 @@
 {
   "ok": true,
-  "generatedAt": "2026-06-29T08:56:55.296Z",
-  "r2ObjectCount": 845,
-  "materialized": 845,
-  "publicCount": 1174,
+  "generatedAt": "2026-06-30T06:12:36.363Z",
+  "r2ObjectCount": 934,
+  "materialized": 934,
+  "publicCount": 1187,
   "keySummary": {
     "manifest": 1,
     "entryShards": 237,
-    "lists": 173,
-    "privatePublisherShards": 114
+    "lists": 258,
+    "privatePublisherShards": 113
   },
   "sample": {
     "id": "package-com-operit-jealous-patrol",
@@ -42,17 +42,17 @@
     {
       "name": "list pages written",
       "pass": true,
-      "detail": 173
+      "detail": 258
     },
     {
       "name": "all list uses readable key",
       "pass": true,
       "detail": [
-        "market/v2/lists/all/featured/page-1.json",
-        "market/v2/lists/all/likes/page-1.json",
-        "market/v2/lists/all/likes/page-10.json",
-        "market/v2/lists/all/likes/page-11.json",
-        "market/v2/lists/all/likes/page-12.json"
+        "market/v2/lists/all/downloads/page-1.json",
+        "market/v2/lists/all/downloads/page-10.json",
+        "market/v2/lists/all/downloads/page-11.json",
+        "market/v2/lists/all/downloads/page-12.json",
+        "market/v2/lists/all/downloads/page-2.json"
       ]
     },
     {
@@ -64,6 +64,33 @@
       "name": "updated list page exists",
       "pass": true,
       "detail": "market/v2/lists/all/updated/page-1.json"
+    },
+    {
+      "name": "likes list page exists",
+      "pass": true,
+      "detail": [
+        "market/v2/lists/all/likes/page-1.json",
+        "market/v2/lists/all/likes/page-10.json",
+        "market/v2/lists/all/likes/page-11.json",
+        "market/v2/lists/all/likes/page-12.json",
+        "market/v2/lists/all/likes/page-2.json"
+      ]
+    },
+    {
+      "name": "downloads list page exists",
+      "pass": true,
+      "detail": [
+        "market/v2/lists/all/downloads/page-1.json",
+        "market/v2/lists/all/downloads/page-10.json",
+        "market/v2/lists/all/downloads/page-11.json",
+        "market/v2/lists/all/downloads/page-12.json",
+        "market/v2/lists/all/downloads/page-2.json"
+      ]
+    },
+    {
+      "name": "no featured list pages",
+      "pass": true,
+      "detail": []
     },
     {
       "name": "list pageSize 100",
@@ -78,7 +105,7 @@
     {
       "name": "updated list total",
       "pass": true,
-      "detail": "1174/1174"
+      "detail": "1187/1187"
     },
     {
       "name": "skill list exists",
@@ -141,6 +168,11 @@
       "detail": []
     },
     {
+      "name": "featured field present",
+      "pass": true,
+      "detail": []
+    },
+    {
       "name": "artifact entries have assets",
       "pass": true,
       "detail": []
@@ -187,15 +219,15 @@
       "detail": []
     }
   ],
-  "r2Dir": "C:\\Users\\12809\\AppData\\Local\\Temp\\operit-market-r2-verify-1782723414132",
+  "r2Dir": "C:\\Users\\12809\\AppData\\Local\\Temp\\operit-market-r2-verify-1782799954877",
   "upload": {
     "ok": true,
     "bucket": "operit-market-stats-static",
     "prefix": "",
     "mode": "worker",
-    "concurrency": 16,
-    "objects": 845,
-    "bytes": 20090704,
-    "elapsedMs": 41406
+    "concurrency": 32,
+    "objects": 934,
+    "bytes": 36433787,
+    "elapsedMs": 53918
   }
 }

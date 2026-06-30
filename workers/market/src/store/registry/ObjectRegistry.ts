@@ -3,10 +3,10 @@ import type { D1Backend, MarketObjectChange, ObjectRegistry } from '../../types.
 
 const OBJECTS: Record<string, { operations: Set<string>; createFields?: Set<string>; updateFields?: Set<string>; aggregateFields?: Set<string> }> = {
   Author: { operations: new Set(['create', 'update', 'hide']) },
-  Entry: { operations: new Set(['create', 'update', 'withdraw', 'approve', 'reject', 'request_changes']), createFields: fields('id type title description detail authorId publisherId categoryId stateCode createdAt updatedAt publishedAt'), updateFields: fields('title description detail categoryId stateCode publishedAt updatedAt') },
-  Version: { operations: new Set(['create', 'update', 'approve', 'reject', 'request_changes']), createFields: fields('id entryId version formatVer minAppVer maxAppVer stateCode changelog createdAt updatedAt publishedAt'), updateFields: fields('stateCode changelog publishedAt updatedAt') },
+  Entry: { operations: new Set(['create', 'update', 'withdraw', 'approve', 'reject', 'request_changes']), createFields: fields('id type title description detail authorId publisherId allowPublicUpdates categoryId stateCode createdAt updatedAt publishedAt'), updateFields: fields('title description detail categoryId allowPublicUpdates stateCode publishedAt updatedAt') },
+  Version: { operations: new Set(['create', 'update', 'approve', 'reject', 'request_changes']), createFields: fields('id entryId version formatVer publisherId minAppVer maxAppVer stateCode changelog createdAt updatedAt publishedAt runtimePkg runtimePackageId'), updateFields: fields('stateCode changelog publishedAt updatedAt') },
   RepoSource: { operations: new Set(['create', 'update']), createFields: fields('id entryId sourceUrl createdAt updatedAt'), updateFields: fields('updatedAt') },
-  RepoVersion: { operations: new Set(['create', 'update']), createFields: fields('id versionId refType refName commitSha subdir manifestPath installConfig createdAt updatedAt') },
+  RepoVersion: { operations: new Set(['create', 'update']), createFields: fields('id versionId refType refName commitSha installConfig createdAt updatedAt') },
   Asset: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id versionId kind url sha256 createdAt') },
   ArtifactProject: { operations: new Set(['create', 'update']), createFields: fields('id entryId projectKey runtimePkg createdAt updatedAt') },
   Comment: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id entryId parentId authorId body source status createdAt updatedAt'), updateFields: fields('body status updatedAt') },

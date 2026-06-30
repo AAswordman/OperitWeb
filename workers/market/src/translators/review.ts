@@ -96,6 +96,9 @@ export function curationUpdate({ entryId, actorId, listKey, position, operation 
       kind: 'Curation', operation: operation || 'create', id: `curation-${entryId}`,
       value: { id: `curation-${entryId}`, entryId, listKey, position, createdAt: time, updatedAt: time },
     }],
-    effects: [{ projection: 'list.page', scope: { list: { featured: listKey }, sort: 'manual', page: 1 } }],
+    effects: [
+      { projection: 'entry.shard', scope: { entryId } },
+      { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
+    ],
   };
 }

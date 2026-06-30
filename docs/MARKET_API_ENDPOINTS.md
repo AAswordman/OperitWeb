@@ -74,7 +74,9 @@ GET /market/v2/manifest.json
 GET /market/v2/lists/all/{sort}/page-{page}.json
 ```
 
-`sort`：`updated` | `likes` | `featured`，页大小 `100`。
+`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
+
+精选不再作为服务端列表或排序。R2 entry payload 内输出 `featured: boolean`，客户端默认开启“精选”本地筛选；用户关闭精选筛选后，仍使用同一套 `updated` / `likes` / `downloads` 静态列表。
 
 列表页的 `items[]` 与 entry 分片的 `entriesById[id]` 使用同一套完整 entry payload；客户端从列表打开详情或 artifact 版本弹窗时，不应再请求 entry 分片。
 
@@ -84,7 +86,7 @@ GET /market/v2/lists/all/{sort}/page-{page}.json
 GET /market/v2/lists/type/{type}/{sort}/page-{page}.json
 ```
 
-`type`：`skill` | `mcp` | `package` | `script`。`sort`：`updated` | `likes`，页大小 `100`。
+`type`：`skill` | `mcp` | `package` | `script`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
 
 客户端按 tab 浏览时应使用该接口，不应读取全市场列表后本地过滤。
 
@@ -94,7 +96,7 @@ GET /market/v2/lists/type/{type}/{sort}/page-{page}.json
 GET /market/v2/lists/category/{categoryId}/{sort}/page-{page}.json
 ```
 
-`categoryId` 来自 `/market/v2/manifest.json` 的 `categories[].id`。`sort`：`updated` | `likes`，页大小 `100`。
+`categoryId` 来自 `/market/v2/manifest.json` 的 `categories[].id`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
 
 ### 按类型 + 分类列表
 
@@ -102,7 +104,7 @@ GET /market/v2/lists/category/{categoryId}/{sort}/page-{page}.json
 GET /market/v2/lists/type/{type}/category/{categoryId}/{sort}/page-{page}.json
 ```
 
-`type`：`skill` | `mcp` | `package` | `script`。`categoryId` 来自 manifest。`sort`：`updated` | `likes`，页大小 `100`。
+`type`：`skill` | `mcp` | `package` | `script`。`categoryId` 来自 manifest。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
 
 客户端进入某个分类的单独界面后，类型筛选应使用该接口，不应读取分类全量后本地过滤。
 
@@ -116,7 +118,7 @@ GET /market/v2/entries/{shard}.json
 
 返回 `entriesById` map，用于从作者页、通知等场景按 id 查 entry。
 
-列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。
+列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
 
 ### 评论分页
 
@@ -135,12 +137,37 @@ POST https://api.operit.app/market/v2/publish
 Authorization: Bearer <market_session>
 ```
 
+Repo 类（`skill` / `mcp`）提交完整可安装定位：
+
+```json
+{
+  "type": "mcp",
+  "title": "...",
+  "description": "...",
+  "categoryId": "search_research",
+  "allowPublicUpdates": true,
+  "source": { "kind": "github_repo", "url": "https://github.com/owner/repo/tree/main/path" },
+  "repoVersion": { "refType": "branch", "refName": "main", "installConfig": "{...}" },
+  "version": { "version": "1.0.0", "formatVer": "mcp_v2", "minAppVer": "1.2.0" }
+}
+```
+
+`source.url` 是唯一安装定位来源，允许 GitHub repo / tree / blob / raw URL；不再存在 `subdir` 字段。Worker 用 `repoVersion.refType/refName` 解析并保存内部 `commitSha`，客户端不提交 `commitSha`。
+
+Repo 类条目必须能公开访问并确认 GitHub repo owner；仓库不可访问、owner 无法确认或 source 已失效时直接拒绝，返回/记录 `repository-unreachable`，不能进入公开 R2。
+
+`allowPublicUpdates` 默认 `true`。开启时，任意登录用户都可以通过 `/entries/{entryId}/versions` 为该条目提交新版本；关闭时只有最初 `publisher` 可以提交新版本。只有最初 `publisher` 可以通过 `PATCH /entries/{entryId}` 修改该开关。
+
+条目归属始终属于 `market_entries.publisher_id` 代表的最初发布者。多人协作署名不另建贡献表，而是由 `versions[].publisher` 派生：每个 version 必须记录实际发布者，客户端和 R2 build 从同一 entry 的版本发布者去重生成贡献者展示。
+
 ### 编辑 Entry
 
 ```http
 PATCH https://api.operit.app/market/v2/entries/{entryId}
 Authorization: Bearer <market_session>
 ```
+
+请求体只允许修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。其中 `allowPublicUpdates` 只有最初发布者可改。该接口不允许修改条目归属或历史版本发布者。
 
 ### 撤回 / 重新提交
 
@@ -176,7 +203,7 @@ Authorization: Bearer <market_session>
 GET https://api.operit.app/market/v2/assets/{assetId}/download
 ```
 
-读取资产详情，写入下载事件，302 跳转到真实 URL。不需要登录。下载事件携带由 IP + User-Agent + salt 生成的匿名 `actorHash` 和 UTC 日桶；公开下载量按 `assetId + actorHash + dayBucket` 去重聚合，不在下载入口写 D1。
+读取资产详情，写入下载事件，并由 Worker 代理真实资产流。不需要登录。Worker 对 GitHub release/raw 等白名单上游使用 Cloudflare `fetch` 边缘缓存（`cacheEverything + cacheTtl`），客户端不直接跟随 GitHub 302。下载事件携带由 IP + User-Agent + salt 生成的匿名 `actorHash` 和 UTC 日桶；公开下载量按 `assetId + actorHash + dayBucket` 去重聚合，不在下载入口写 D1。
 
 ### 用户已发布条目
 
@@ -201,14 +228,14 @@ GET /market/v2/private/publishers/{shard}.json
   "authors": {
     "gh_1001": {
       "entries": [
-        { "id": "...", "title": "...", "type": "mcp", "stateCode": "pending", "categoryId": "...", "updatedAt": "..." }
+        { "id": "...", "title": "...", "type": "mcp", "relation": "owner", "stateCode": "pending", "categoryId": "...", "updatedAt": "..." }
       ]
     }
   }
 }
 ```
 
-`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目。
+`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
 
 ### 通知
 

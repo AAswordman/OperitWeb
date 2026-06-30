@@ -7,12 +7,14 @@ export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, proje
   const authorId = projectionPlan.scope.authorId || "";
   const shard = shardOf(authorId);
   const key = projectionRegistry.keyOf("private.publisherShard", { shard });
-  const entries = await d1.listPublisherEntries(authorId);
+  const owned = await d1.listPublisherEntries(authorId);
+  const contributed = await d1.listVersionPublisherEntries(authorId);
+  const entries = mergeAuthorEntries(authorId, owned, contributed);
   const current = await r2.readJson(key);
   const authors = current && typeof current === "object" && !Array.isArray(current) && current.authors && typeof current.authors === "object" && !Array.isArray(current.authors)
     ? { ...(current.authors as Record<string, unknown>) }
     : {};
-  authors[authorId] = { entries: entries.map(toPublisherEntrySummary) };
+  authors[authorId] = { entries: entries.map(({ entry, relation }) => toPublisherEntrySummary(entry, relation)) };
   await r2.writeJson(key, { ok: true, marketVersion: 2, generatedAt: isoNow(), shard, authors });
   return { written: [key] };
 }
@@ -27,11 +29,29 @@ export async function renderPrivateAuthorEntry({ d1, r2, projectionPlan, project
   return { written: [key] };
 }
 
-function toPublisherEntrySummary(entry: Row): Record<string, string> {
+function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]): { entry: Row; relation: "owner" | "contributor" }[] {
+  const byId = new Map<string, { entry: Row; relation: "owner" | "contributor" }>();
+  for (const entry of owned) {
+    const entryId = rowText(entry, "id");
+    if (entryId) byId.set(entryId, { entry, relation: "owner" });
+  }
+  for (const entry of contributed) {
+    const entryId = rowText(entry, "id");
+    if (!entryId || byId.has(entryId)) continue;
+    byId.set(entryId, {
+      entry,
+      relation: rowText(entry, "publisher_id") === authorId ? "owner" : "contributor",
+    });
+  }
+  return Array.from(byId.values()).sort((a, b) => rowText(b.entry, "updated_at").localeCompare(rowText(a.entry, "updated_at")));
+}
+
+function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor"): Record<string, string> {
   return {
     id: rowText(entry, "id"),
     title: rowText(entry, "title"),
     type: rowText(entry, "type"),
+    relation,
     stateCode: rowText(entry, "state_code"),
     categoryId: rowText(entry, "category_id"),
     updatedAt: rowText(entry, "updated_at"),

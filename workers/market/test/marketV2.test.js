@@ -81,7 +81,7 @@ async function publishMcp(entryRoutes, env, session, repo = 'example-mcp') {
   const req = makeRequest('http://api/market/v2/publish', 'POST', {
     type: 'mcp', title: 'Test MCP', description: 'Desc', categoryId: 'search_research',
     source: { kind: 'github_repo', url: `https://github.com/pub1/${repo}` },
-    repoVersion: { refType: 'tag', refName: 'v1.0.0', manifestPath: 'mcp.json', installConfig: '{}' },
+    repoVersion: { refType: 'tag', refName: 'v1.0.0', installConfig: '{}' },
     version: { version: '1.0.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
   }, session);
   return entryRoutes.publish(req, env);
@@ -139,7 +139,7 @@ test('publish repo plugin requires formatVer, binds commit', async () => {
   let req = makeRequest('http://api/market/v2/publish', 'POST', {
     type: 'mcp', title: 'Test', description: 'Desc', categoryId: 'search_research',
     source: { kind: 'github_repo', url: 'https://github.com/pub1/example-mcp' },
-    repoVersion: { refType: 'tag', refName: 'v1.0.0', manifestPath: 'mcp.json', installConfig: '{}' },
+    repoVersion: { refType: 'tag', refName: 'v1.0.0', installConfig: '{}' },
     version: { version: '1.0.0', minAppVer: '1.2.0' },
   }, session);
   await assert.rejects(() => entryRoutes.publish(req, env), /formatVer is required/);
@@ -147,7 +147,7 @@ test('publish repo plugin requires formatVer, binds commit', async () => {
   req = makeRequest('http://api/market/v2/publish', 'POST', {
     type: 'mcp', title: 'Test MCP', description: 'Desc', categoryId: 'search_research',
     source: { kind: 'github_repo', url: 'https://github.com/pub1/example-mcp' },
-    repoVersion: { refType: 'tag', refName: 'v1.0.0', manifestPath: 'mcp.json', installConfig: '{}' },
+    repoVersion: { refType: 'tag', refName: 'v1.0.0', installConfig: '{}' },
     version: { version: '1.0.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
   }, session);
   const result = await entryRoutes.publish(req, env);
@@ -258,7 +258,7 @@ test('new version keeps old approved latest until review passes', async () => {
   const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
     entryId: pub.entryId,
     version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
-    repoVersion: { refType: 'tag', refName: 'v1.1.0', manifestPath: 'mcp.json', installConfig: '{}' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
   }, pubSession);
   const v2 = await entryRoutes.newVersion(req, env);
   assert.ok(v2.ok);
@@ -282,7 +282,7 @@ test('new repo version must be greater than current highest version', async () =
   const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
     entryId: pub.entryId,
     version: { version: '1.0.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
-    repoVersion: { refType: 'tag', refName: 'v1.0.0', manifestPath: 'mcp.json', installConfig: '{}' },
+    repoVersion: { refType: 'tag', refName: 'v1.0.0', installConfig: '{}' },
   }, pubSession);
   await assert.rejects(() => entryRoutes.newVersion(req, env), /must be greater than existing version/);
   afterTest(ctx);

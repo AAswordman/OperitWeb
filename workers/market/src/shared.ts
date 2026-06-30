@@ -58,18 +58,29 @@ export function isoNow(): string { return new Date().toISOString(); }
 export function nowSeconds(): number { return Math.floor(Date.now() / 1000); }
 
 export function slug(value: string): string { return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item'; }
-export function makeEntryId(type: string, data: { owner?: string; repo?: string; subdir?: string; version?: string; kind?: string }): string { return `${type}-${slug([data.owner, data.repo, data.subdir, data.kind, data.version].filter(Boolean).join('-'))}`; }
+export function makeEntryId(type: string, data: { owner?: string; repo?: string; source?: string; version?: string; kind?: string }): string { return `${type}-${slug([data.source, data.owner, data.repo, data.kind, data.version].filter(Boolean).join('-'))}`; }
 export function makeVersionId(entryId: string, version: string): string { return `${entryId}-v-${slug(version)}`; }
 export function makeProjectId(entryId: string, version: string): string { return `project-${slug(entryId)}-${slug(version)}`; }
 
-export function normalizeGithubRepoUrl(rawUrl: unknown): { owner: string; repo: string } {
-  const text = requireString(rawUrl, 'source.url').replace(/\.git$/i, '');
+export function normalizeGithubRepoUrl(rawUrl: unknown): { owner: string; repo: string; url: string } {
+  const text = requireString(rawUrl, 'source.url');
   let url: URL;
   try { url = new URL(text); } catch { throw new MarketError('validation_failed', 'Invalid GitHub repo URL'); }
-  if (url.hostname.toLowerCase() !== 'github.com') throw new MarketError('validation_failed', 'Only github.com repo URLs are supported');
-  const [owner, repo] = url.pathname.split('/').filter(Boolean);
-  if (!owner || !repo) throw new MarketError('validation_failed', 'GitHub repo URL must include owner and repo');
-  return { owner, repo };
+  const host = url.hostname.toLowerCase();
+  const segments = url.pathname.split('/').filter(Boolean);
+  if (host === 'github.com') {
+    const [owner, repoRaw, ...rest] = segments;
+    const repo = repoRaw?.replace(/\.git$/i, '') || '';
+    if (!owner || !repo) throw new MarketError('validation_failed', 'GitHub repo URL must include owner and repo');
+    return { owner, repo, url: `https://github.com/${owner}/${repo}${rest.length ? `/${rest.join('/')}` : ''}` };
+  }
+  if (host === 'raw.githubusercontent.com') {
+    const [owner, repoRaw, ...rest] = segments;
+    const repo = repoRaw?.replace(/\.git$/i, '') || '';
+    if (!owner || !repo || rest.length < 2) throw new MarketError('validation_failed', 'Raw GitHub URL must include owner, repo, ref, and path');
+    return { owner, repo, url: `https://raw.githubusercontent.com/${owner}/${repo}/${rest.join('/')}` };
+  }
+  throw new MarketError('validation_failed', 'Only GitHub source URLs are supported');
 }
 
 export function normalizeRefType(value: unknown): 'tag' | 'branch' | 'commit' {

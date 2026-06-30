@@ -116,6 +116,9 @@ function validate(sqlite, r2, buildResult) {
   assertCheck(checks, 'no hashed all list key', !listKeys.some((key) => key.includes('/5465b825/')), listKeys.filter((key) => key.includes('/5465b825/')).slice(0, 5));
   const updatedPage1Key = listKeys.find((key) => key === 'market/v2/lists/all/updated/page-1.json');
   assertCheck(checks, 'updated list page exists', Boolean(updatedPage1Key), updatedPage1Key);
+  assertCheck(checks, 'likes list page exists', listKeys.some((key) => key === 'market/v2/lists/all/likes/page-1.json'), listKeys.filter((key) => key.includes('/likes/')).slice(0, 5));
+  assertCheck(checks, 'downloads list page exists', listKeys.some((key) => key === 'market/v2/lists/all/downloads/page-1.json'), listKeys.filter((key) => key.includes('/downloads/')).slice(0, 5));
+  assertCheck(checks, 'no featured list pages', !listKeys.some((key) => key.includes('/featured/')), listKeys.filter((key) => key.includes('/featured/')).slice(0, 5));
   const updatedPage1 = requireJson(r2, updatedPage1Key);
   assertCheck(checks, 'list pageSize 100', updatedPage1.pageSize === 100, updatedPage1.pageSize);
   assertCheck(checks, 'updated page item count', updatedPage1.items?.length === Math.min(100, approvedCount), updatedPage1.items?.length);
@@ -135,6 +138,7 @@ function validate(sqlite, r2, buildResult) {
   assertCheck(checks, 'detail present', allItems.every((item) => typeof item.detail === 'string' && item.detail.length > 0), badItems(allItems, (item) => !item.detail));
   assertCheck(checks, 'latestVersion present', allItems.every((item) => item.latestVersion), badItems(allItems, (item) => !item.latestVersion));
   assertCheck(checks, 'repo entries have source', allItems.every((item) => !['skill', 'mcp'].includes(item.type) || item.source?.url), badItems(allItems, (item) => ['skill', 'mcp'].includes(item.type) && !item.source?.url));
+  assertCheck(checks, 'featured field present', allItems.every((item) => typeof item.featured === 'boolean'), badItems(allItems, (item) => typeof item.featured !== 'boolean'));
   assertCheck(checks, 'artifact entries have assets', allItems.every((item) => !['script', 'package'].includes(item.type) || (item.artifact && item.assets?.length)), badItems(allItems, (item) => ['script', 'package'].includes(item.type) && !(item.artifact && item.assets?.length)));
   assertCheck(checks, 'artifact versions have runtimePackageId', allItems.every((item) => !['script', 'package'].includes(item.type) || (item.versions || []).every((version) => version.runtimePackageId)), badItems(allItems, (item) => ['script', 'package'].includes(item.type) && (item.versions || []).some((version) => !version.runtimePackageId)));
   assertCheck(checks, 'artifact latestVersion has runtimePackageId', allItems.every((item) => !['script', 'package'].includes(item.type) || item.latestVersion?.runtimePackageId), badItems(allItems, (item) => ['script', 'package'].includes(item.type) && !item.latestVersion?.runtimePackageId));

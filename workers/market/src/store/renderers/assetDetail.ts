@@ -19,6 +19,7 @@ export async function renderAssetDetail({ d1, r2, projectionPlan, projectionRegi
       kind: rowText(asset, 'kind'),
       url: rowText(asset, 'url'),
       sha256: rowText(asset, 'sha256'),
+      assetName: rowText(asset, 'asset_name'),
     },
   });
   return { written: [key] };

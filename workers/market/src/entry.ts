@@ -40,7 +40,8 @@ interface EntryRoutes {
 }
 
 interface VersionInput { version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string; runtimePackageId?: string }
-interface RepoVersionBody { refType: string; refName: string; manifestPath?: string; installConfig?: string; subdir?: string }
+interface EntryUpdateInput { title?: string; description?: string; detail?: string; categoryId?: string; allowPublicUpdates?: boolean }
+interface RepoVersionBody { refType: string; refName: string; installConfig?: string }
 interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; runtimePackageId?: string }
 interface ArtifactVersionBody { projectId?: string; runtimePackageId?: string }
 
@@ -68,9 +69,10 @@ async function handlePublish(request: Request, env: MarketEnv): Promise<JsonObje
   const title = requireString(body.title, 'title');
   const description = requireString(body.description, 'description');
   const categoryId = optionalString(body.categoryId);
+  const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates) ?? true;
   const versionInput = requireVersionInput(asRecord(body.version));
-  if (isRepoType(type)) return publishRepoEntry(env, store, publisher, type, title, description, categoryId, versionInput, body);
-  if (isArtifactType(type)) return publishArtifactEntry(env, store, session, publisher, type, title, description, categoryId, versionInput, body);
+  if (isRepoType(type)) return publishRepoEntry(env, store, publisher, type, title, description, categoryId, allowPublicUpdates, versionInput, body);
+  if (isArtifactType(type)) return publishArtifactEntry(env, store, session, publisher, type, title, description, categoryId, allowPublicUpdates, versionInput, body);
   throw new MarketError('validation_failed', `Unsupported type: ${type}`);
 }
 
@@ -83,7 +85,7 @@ async function handlePublishProof(request: Request, env: MarketEnv): Promise<Jso
   return { ok: true, proof: signToken(PROOF_PREFIX, payload, secret) };
 }
 
-async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
+async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
   const sourceBody = asRecord(body.source);
   const repoBody = asRecord(body.repoVersion);
   const source = normalizeGithubRepoUrl(sourceBody.url);
@@ -92,26 +94,53 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   const repo = await getRepo(env, source.owner, source.repo);
   if (!repo.isPublic) throw new MarketError('validation_failed', 'GitHub repo must be public');
   const commitSha = await resolveRef(env, source.owner, source.repo, refType, refName);
-  const subdir = optionalString(repoBody.subdir);
-  const manifestPath = optionalString(repoBody.manifestPath);
   const installConfig = optionalString(repoBody.installConfig);
-  const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), publisherId: publisher.id, authorId: `gh_${repo.ownerId}`, repoOwner: source.owner, repoName: source.repo, sourceUrl: `https://github.com/${source.owner}/${source.repo}`, refType, refName, ...(subdir !== undefined ? { subdir } : {}), ...(manifestPath !== undefined ? { manifestPath } : {}), ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
+  const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: `gh_${repo.ownerId}`, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
   const applied = await store.apply(mutation);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
-async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
+async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
   const artifact = await validateArtifactVersion(env, session, body);
   await assertVersionGreaterThanExisting(
     versionInput.version,
     await store.d1.listVersionsForArtifactProjectKey(artifact.projectId),
   );
-  const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
+  const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
   const applied = await store.apply(mutation);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
-async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<JsonObject> { return applyEntryState(env, request, extractIdFromPath(request.url, '/entries/', ''), 'pending', 'entry.updated'); }
+async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const session = await requireSession(request, env);
+  const store = requireStore(env);
+  const publisher = await upsertAuthorFromSession(requireDb(env), session);
+  const entryId = extractIdFromPath(request.url, '/entries/', '');
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata', 403);
+  const update = parseEntryUpdateInput(await readBody(request));
+  const patch = {
+    ...update,
+    stateCode: 'pending',
+    updatedAt: new Date().toISOString(),
+  };
+  const applied = await store.apply({
+    type: 'mutation',
+    id: `mut-entry.updated-${entryId}-${Date.now()}`,
+    actor: { authorId: publisher.id, role: 'publisher' },
+    reason: 'entry.updated',
+    objects: [{ kind: 'Entry', operation: 'update', id: entryId, patch }],
+    effects: [
+      { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
+      { projection: 'entry.shard', scope: { entryId } },
+      { projection: 'private.publisherShard', scope: { authorId: publisher.id } },
+      { projection: 'private.publisherEntry', scope: { authorId: publisher.id, entryId } },
+    ],
+  });
+  const updated = await store.d1.getEntry(entryId);
+  return { ok: true, item: updated ? entryDetail(updated) : { id: entryId }, stats: applied.stats as unknown as JsonObject };
+}
 async function handleResubmitEntry(request: Request, env: MarketEnv): Promise<JsonObject> { return applyEntryState(env, request, extractIdFromPath(request.url, '/entries/', '/resubmit'), 'pending', 'entry.resubmitted'); }
 async function handleDeleteEntry(request: Request, env: MarketEnv): Promise<JsonObject> { return applyEntryState(env, request, extractIdFromPath(request.url, '/entries/', ''), 'withdrawn', 'entry.withdrawn'); }
 async function handleResubmitVersion(request: Request, env: MarketEnv): Promise<JsonObject> { return applyVersionState(env, request, extractIdFromPath(request.url, '/versions/', '/resubmit'), 'pending', 'version.resubmitted'); }
@@ -125,7 +154,10 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const entryId = extractIdFromPath(request.url, '/entries/', '/versions');
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
-  if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Only the publisher can add versions', 403);
+  const originalPublisherId = text(entry.publisher_id);
+  if (originalPublisherId !== publisher.id && !bool(entry.allow_public_updates, true)) {
+    throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
+  }
   const body = await readBody(request);
   let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
@@ -136,7 +168,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     versionInput = { ...versionInput, runtimePackageId: artifact.runtimePackageId };
     objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
   }
-  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
+  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
   if (isRepoType(text(entry.type))) {
     const spec = await store.d1.getRepoSpecByEntry(entryId);
     if (!spec) throw new MarketError('state_invalid', 'Repo source not found');
@@ -145,9 +177,13 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     const refType = normalizeRefType(repoBody.refType);
     const refName = requireString(repoBody.refName, 'repoVersion.refName');
     const commitSha = await resolveRef(env, source.owner, source.repo, refType, refName);
-    objects.push({ kind: 'RepoVersion' as const, operation: 'create' as const, id: `repo-version-${versionId}`, value: { id: `repo-version-${versionId}`, versionId, refType, refName, commitSha, subdir: optionalString(repoBody.subdir), manifestPath: optionalString(repoBody.manifestPath), installConfig: optionalString(repoBody.installConfig), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
+    objects.push({ kind: 'RepoVersion' as const, operation: 'create' as const, id: `repo-version-${versionId}`, value: { id: `repo-version-${versionId}`, versionId, refType, refName, commitSha, installConfig: optionalString(repoBody.installConfig), createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
   }
-  const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects: [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }] });
+  const effects = withPrivatePublisherShardEffects(
+    [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }],
+    [originalPublisherId, publisher.id],
+  );
+  const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects });
   return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -270,8 +306,23 @@ async function applyEntryState(env: MarketEnv, request: Request, entryId: string
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Not your entry', 403);
-  const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects: [{ kind: 'Entry', operation: 'update', id: entryId, patch: { stateCode, updatedAt: new Date().toISOString() } }], effects: [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }] });
+  const versionPublisherIds = (await store.d1.listVersionsForEntry(entryId)).map((version) => text(version.publisher_id));
+  const effects = withPrivatePublisherShardEffects(
+    [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }],
+    [publisher.id, ...versionPublisherIds],
+  );
+  const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects: [{ kind: 'Entry', operation: 'update', id: entryId, patch: { stateCode, updatedAt: new Date().toISOString() } }], effects });
   return { ok: true, entryId, stateCode, stats: applied.stats as unknown as JsonObject };
+}
+
+function withPrivatePublisherShardEffects(effects: MarketMutation['effects'], authorIds: string[]): MarketMutation['effects'] {
+  const seen = new Set<string>();
+  for (const authorId of authorIds) {
+    if (!authorId || seen.has(authorId)) continue;
+    seen.add(authorId);
+    effects.push({ projection: 'private.publisherShard', scope: { authorId } });
+  }
+  return effects;
 }
 
 async function applyVersionState(env: MarketEnv, request: Request, versionId: string, stateCode: string, reason: string): Promise<JsonObject> {
@@ -296,6 +347,7 @@ function entrySummary(entry: Row): JsonObject {
     description: text(entry.description),
     authorId: text(entry.author_id),
     publisherId: text(entry.publisher_id),
+    allowPublicUpdates: bool(entry.allow_public_updates, true),
     author: { id: text(entry.author_id), login: text(entry.author_login), avatar: text(entry.author_avatar) },
     publisher: { id: text(entry.publisher_id), login: text(entry.publisher_login), avatar: text(entry.publisher_avatar) },
     categoryId: text(entry.category_id),
@@ -314,6 +366,7 @@ function versionDetail(version: Row): JsonObject {
     entryId: text(version.entry_id),
     version: text(version.version),
     formatVer: text(version.format_ver),
+    publisherId: text(version.publisher_id),
     minAppVer: text(version.min_app_ver),
     maxAppVer: text(version.max_app_ver),
     stateCode: text(version.state_code),
@@ -322,6 +375,21 @@ function versionDetail(version: Row): JsonObject {
     updatedAt: text(version.updated_at),
     publishedAt: text(version.published_at),
   };
+}
+
+function parseEntryUpdateInput(body: Record<string, unknown>): EntryUpdateInput {
+  const update: EntryUpdateInput = {};
+  const title = optionalString(body.title);
+  const description = optionalString(body.description);
+  const detail = optionalString(body.detail);
+  const categoryId = optionalString(body.categoryId);
+  const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates);
+  if (title !== undefined) update.title = title;
+  if (description !== undefined) update.description = description;
+  if (detail !== undefined) update.detail = detail;
+  if (categoryId !== undefined) update.categoryId = categoryId;
+  if (allowPublicUpdates !== undefined) update.allowPublicUpdates = allowPublicUpdates;
+  return update;
 }
 function rowObject(row: Row): JsonObject {
   const out: JsonObject = {};
@@ -387,3 +455,15 @@ function asRecord(value: unknown): Record<string, unknown> { return isRecord(val
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }
 function optionalString(value: unknown): string | undefined { const text = String(value ?? '').trim(); return text ? text : undefined; }
 function text(value: Row[string] | undefined): string { return value === undefined || value === null ? '' : String(value); }
+function optionalBoolean(value: unknown): boolean | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number' && (value === 0 || value === 1)) return value === 1;
+  throw new MarketError('validation_failed', 'Boolean fields must be boolean or 0/1');
+}
+function bool(value: Row[string] | undefined, defaultValue = false): boolean {
+  if (value === undefined || value === null) return defaultValue;
+  if (typeof value === 'boolean') return value;
+  if (typeof value === 'number' && (value === 0 || value === 1)) return value === 1;
+  return defaultValue;
+}

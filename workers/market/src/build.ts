@@ -3,7 +3,7 @@ import { buildEntryFromSnapshot, createBuildSnapshotIndex } from './store/render
 import type { BuildSnapshot, MarketEnv, MarketStore, ProjectionPlan, R2WriteStat, Row } from './types.js';
 import { rowBool, rowText, rowOptionalText } from './store/renderers/row.js';
 
-const SORTS = ['updated', 'likes'] as const;
+const SORTS = ['updated', 'likes', 'downloads'] as const;
 type SortKey = typeof SORTS[number];
 const PUBLISHER_SHARDS = 256;
 const ENTRY_SHARDS = 256;
@@ -96,20 +96,9 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
   if (listDirty.length > 0) {
     const snap = await store.loadBuildSnapshot();
     const index = createBuildSnapshotIndex(snap);
-    const featuredDirty = listDirty.filter(({ scopeKey }) => scopeKey.includes('featured'));
-    const regularDirty = listDirty.filter(({ scopeKey }) => !scopeKey.includes('featured'));
-    if (featuredDirty.length > 0) {
-      await buildFeaturedPage(snap, index, r2, registry);
-      for (const { projection, scopeKey } of featuredDirty) {
-        await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
-      }
-      count++;
-    }
-    if (regularDirty.length > 0) {
-      count += await buildAllListPages(snap, index, r2, registry);
-      for (const { projection, scopeKey } of regularDirty) {
-        await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
-      }
+    count += await buildAllListPages(snap, index, r2, registry);
+    for (const { projection, scopeKey } of listDirty) {
+      await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
     }
   }
 
@@ -169,9 +158,11 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
   // publisher shards (256, skip empty)
   const t3 = Date.now();
   const publisherWriteStart = r2.stats.recentWrites.length;
-  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; stateCode: string; categoryId: string; updatedAt: string }> }>>();
+  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string }> }>>();
   for (let i = 0; i < PUBLISHER_SHARDS; i++) publisherShards.set(i.toString(16).padStart(2, '0'), {});
+  const entriesByIdForPublishers = new Map<string, Row>();
   for (const entry of snap.entries) {
+    entriesByIdForPublishers.set(rowText(entry, 'id'), entry);
     const authorId = rowText(entry, 'publisher_id');
     if (!authorId) continue;
     const shard = publisherShardOf(authorId);
@@ -181,10 +172,34 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
       type: rowText(entry, 'type'),
+      relation: 'owner',
       stateCode: rowText(entry, 'state_code'),
       categoryId: rowText(entry, 'category_id'),
       updatedAt: rowText(entry, 'updated_at'),
     });
+    authors[authorId] = bucket;
+  }
+  for (const version of snap.versions) {
+    const authorId = rowText(version, 'publisher_id');
+    const entry = entriesByIdForPublishers.get(rowText(version, 'entry_id'));
+    if (!authorId || !entry || rowText(entry, 'publisher_id') === authorId) continue;
+    const shard = publisherShardOf(authorId);
+    const authors = publisherShards.get(shard)!;
+    const bucket = authors[authorId] ?? { entries: [] };
+    if (bucket.entries.some((item) => item.id === rowText(entry, 'id'))) {
+      authors[authorId] = bucket;
+      continue;
+    }
+    bucket.entries.push({
+      id: rowText(entry, 'id'),
+      title: rowText(entry, 'title'),
+      type: rowText(entry, 'type'),
+      relation: 'contributor',
+      stateCode: rowText(entry, 'state_code'),
+      categoryId: rowText(entry, 'category_id'),
+      updatedAt: rowText(entry, 'updated_at'),
+    });
+    bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     authors[authorId] = bucket;
   }
   let pubW = 0, pubS = 0;
@@ -243,6 +258,7 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
   const pageSize = 100;
   let count = 0;
   const reactionTotals = reactionTotalsByEntry(snap, index);
+  const downloadsByEntry = downloadsByEntryId(index);
   const listScopes = buildListScopes(snap);
 
   const sortFns: Record<SortKey, (a: Row, b: Row) => number> = {
@@ -251,6 +267,11 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
       const aLikes = reactionTotals.get(rowText(a, 'id')) ?? 0;
       const bLikes = reactionTotals.get(rowText(b, 'id')) ?? 0;
       return bLikes - aLikes || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+    },
+    downloads: (a, b) => {
+      const aDownloads = downloadsByEntry.get(rowText(a, 'id')) ?? 0;
+      const bDownloads = downloadsByEntry.get(rowText(b, 'id')) ?? 0;
+      return bDownloads - aDownloads || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
     },
   };
 
@@ -276,33 +297,7 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
     }
   }
 
-  // featured: only produce one page containing every curated entry, sorted by position
-  if (await buildFeaturedPage(snap, index, r2, registry)) count++;
-
   return count;
-}
-
-async function buildFeaturedPage(snap: BuildSnapshot, index: ReturnType<typeof createBuildSnapshotIndex>, r2: MarketStore['r2'], registry: MarketStore['projectionRegistry']): Promise<boolean> {
-  const curated = new Map<string, number>();
-  for (const row of snap.curations) {
-    const listKey = rowText(row, 'list_key');
-    const entryId = rowText(row, 'entry_id');
-    if (listKey !== 'featured' || !entryId) continue;
-    curated.set(entryId, Number(row.position ?? 9999));
-  }
-  if (curated.size === 0) return false;
-
-  const items = snap.entries
-    .filter((entry) => rowText(entry, 'state_code') === 'approved' && curated.has(rowText(entry, 'id')))
-    .sort((a, b) => (curated.get(rowText(a, 'id')) ?? 9999) - (curated.get(rowText(b, 'id')) ?? 9999))
-    .map((entry) => buildEntryFromSnapshot(entry, snap, index));
-
-  const key = registry.keyOf('list.page', { list: {}, sort: 'featured', page: 1 });
-  await r2.writeJson(key, {
-    ok: true, marketVersion: 2, generatedAt: isoNow(),
-    list: { featured: 'featured' }, sort: 'featured', page: 1, pageSize: items.length, total: items.length, items,
-  });
-  return true;
 }
 
 async function rebuildEntry(env: MarketEnv, entryId: string): Promise<{ ok: true; materialized: number }> {
@@ -360,6 +355,14 @@ function reactionTotalsByEntry(snap: BuildSnapshot, index: ReturnType<typeof cre
   const result = new Map<string, number>();
   for (const [entryId, stats] of index.entryStatsByEntryId) {
     result.set(entryId, Number(stats.likes || 0));
+  }
+  return result;
+}
+
+function downloadsByEntryId(index: ReturnType<typeof createBuildSnapshotIndex>): Map<string, number> {
+  const result = new Map<string, number>();
+  for (const [entryId, stats] of index.entryStatsByEntryId) {
+    result.set(entryId, Number(stats.downloads || 0));
   }
   return result;
 }

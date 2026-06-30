@@ -168,8 +168,10 @@ export function createMarketStore(env: MarketEnv): MarketStore {
         await d1.upsertDirty('entry.shard', projectionRegistry.scopeKeyOf(projectionRegistry.normalizeScope('entry.shard', { entryId })), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
       }
       await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: {}, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+      await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: {}, sort: 'downloads', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
       for (const type of touchedTypes) {
         await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+        await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'downloads', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
       }
 
       return { ok: true, aggregated: input.rows.length, downloads, likes, entries: touchedEntryIds.size, source: input.source, windowStart: input.windowStart, windowEnd: input.windowEnd };

@@ -19,7 +19,6 @@ import {
   MARKET_V2_PAGE_SIZE,
   fetchMarketV2Json,
   marketV2DownloadUrl,
-  marketV2EntryShard,
   marketV2StaticUrl,
   type MarketSort,
   type MarketV2Entry,
@@ -39,8 +38,6 @@ interface OperitMCPMarketPageProps {
 
 const SORTS: MarketSort[] = ['updated', 'likes', 'featured'];
 const FILTERS: MarketFilter[] = ['all', 'script', 'package', 'skill', 'mcp'];
-
-const scopeHash = (text: string): string => marketV2EntryShard(text);
 
 const parsePageFromQuery = (value: string | null): number => {
   const page = Number(value || 1);
@@ -207,8 +204,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
   const [error, setError] = useState<string | null>(null);
   const [searchText, setSearchText] = useState('');
   const [selectedEntry, setSelectedEntry] = useState<MarketV2Entry | null>(null);
-  const [detailLoading, setDetailLoading] = useState(false);
-  const [detailError, setDetailError] = useState<string | null>(null);
 
   const setQuery = useCallback((next: { page?: number; sort?: MarketSort; filter?: MarketFilter }) => {
     const params = new URLSearchParams(searchParams);
@@ -280,30 +275,12 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
     return Array.from({ length: end - start + 1 }, (_item, index) => start + index);
   }, [page, totalPages]);
 
-  const openDetail = useCallback(async (entry: MarketV2Entry) => {
+  const openDetail = useCallback((entry: MarketV2Entry) => {
     setSelectedEntry(entry);
-    setDetailError(null);
-    setDetailLoading(true);
-    try {
-      const shard = scopeHash(entry.id);
-      const data = await fetchMarketV2Json<{ entriesById?: Record<string, MarketV2Entry> }>(
-        marketV2StaticUrl(`entries/${shard}.json`),
-      );
-      const fresh = data.entriesById?.[entry.id];
-      if (fresh) {
-        setSelectedEntry(normalizeEntry(fresh));
-      }
-    } catch (err) {
-      setDetailError((err as Error).message || t.loadError);
-    } finally {
-      setDetailLoading(false);
-    }
-  }, [t.loadError]);
+  }, []);
 
   const closeDetail = useCallback(() => {
     setSelectedEntry(null);
-    setDetailError(null);
-    setDetailLoading(false);
   }, []);
 
   const selectedAssetId = selectedEntry ? firstAssetId(selectedEntry) : '';
@@ -491,16 +468,6 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                   </Button>
                 )}
               </Space>
-
-              {detailError && <Alert type="warning" showIcon message={t.loadError} description={detailError} />}
-              {detailLoading && (
-                <Card className="market-loading-card">
-                  <Space size="middle" style={{ width: '100%', justifyContent: 'center' }}>
-                    <Spin />
-                    <Text>{t.loading}</Text>
-                  </Space>
-                </Card>
-              )}
 
               <Descriptions column={1} size="small" bordered>
                 <Descriptions.Item label="ID">{selectedEntry.id}</Descriptions.Item>

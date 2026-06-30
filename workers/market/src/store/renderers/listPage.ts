@@ -13,16 +13,21 @@ export async function renderListPage({ d1, r2, projectionPlan, projectionRegistr
   let entries: Row[] = (await d1.listAllEntries()).filter((e) => rowText(e, 'state_code') === 'approved');
   if (list.type) entries = entries.filter((e) => rowText(e, 'type') === list.type);
   if (list.categoryId) entries = entries.filter((e) => rowText(e, 'category_id') === list.categoryId);
-  if (sort === 'likes') {
-    const likesByEntryId = new Map<string, number>();
+  if (sort === 'likes' || sort === 'downloads') {
+    const statsByEntryId = new Map<string, { likes: number; downloads: number }>();
     for (const entry of entries) {
       const stats = await d1.getEntryStats(rowText(entry, 'id'));
-      likesByEntryId.set(rowText(entry, 'id'), Number(stats?.likes_total || 0));
+      statsByEntryId.set(rowText(entry, 'id'), {
+        likes: Number(stats?.likes_total || 0),
+        downloads: Number(stats?.downloads_total || 0),
+      });
     }
     entries.sort((a, b) => {
-      const aLikes = likesByEntryId.get(rowText(a, 'id')) ?? 0;
-      const bLikes = likesByEntryId.get(rowText(b, 'id')) ?? 0;
-      return bLikes - aLikes || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+      const aStats = statsByEntryId.get(rowText(a, 'id'));
+      const bStats = statsByEntryId.get(rowText(b, 'id'));
+      const aValue = sort === 'likes' ? (aStats?.likes ?? 0) : (aStats?.downloads ?? 0);
+      const bValue = sort === 'likes' ? (bStats?.likes ?? 0) : (bStats?.downloads ?? 0);
+      return bValue - aValue || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
     });
   } else {
     entries.sort((a, b) => rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at')));

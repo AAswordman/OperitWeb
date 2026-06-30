@@ -8,15 +8,12 @@ interface RepoPublishInput {
   categoryId?: string;
   publisherId: string;
   authorId: string;
-  repoOwner: string;
-  repoName: string;
   sourceUrl: string;
   refType: string;
   refName: string;
-  subdir?: string;
-  manifestPath?: string;
   installConfig?: string;
   commitSha: string;
+  allowPublicUpdates?: boolean;
   version: string;
   formatVer: string;
   minAppVer: string;
@@ -40,13 +37,14 @@ interface ArtifactPublishInput {
   changelog?: string;
   projectKey: string;
   runtimePackageId: string;
+  allowPublicUpdates?: boolean;
   assets?: ArtifactAssetInput[];
   createdAt?: string;
 }
 
 export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
   const time = input.createdAt || isoNow();
-  const entryId = makeEntryId(input.type, { owner: input.repoOwner, repo: input.repoName, ...(input.subdir !== undefined ? { subdir: input.subdir } : {}) });
+  const entryId = makeEntryId(input.type, { source: input.sourceUrl });
   const versionId = makeVersionId(entryId, input.version);
   const specId = `repo-spec-${slug(entryId)}`;
 
@@ -62,6 +60,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         description: input.description,
         authorId: input.authorId,
         publisherId: input.publisherId,
+        allowPublicUpdates: input.allowPublicUpdates ?? true,
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
         stateCode: 'pending',
         createdAt: time,
@@ -77,6 +76,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         entryId,
         version: input.version,
         formatVer: input.formatVer,
+        publisherId: input.publisherId,
         minAppVer: input.minAppVer,
         ...(input.maxAppVer !== undefined ? { maxAppVer: input.maxAppVer } : {}),
         stateCode: 'pending',
@@ -101,8 +101,6 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         refType: input.refType,
         refName: input.refName,
         commitSha: input.commitSha,
-        ...(input.subdir !== undefined ? { subdir: input.subdir } : {}),
-        ...(input.manifestPath !== undefined ? { manifestPath: input.manifestPath } : {}),
         ...(input.installConfig !== undefined ? { installConfig: input.installConfig } : {}),
         createdAt: time,
         updatedAt: time,
@@ -143,6 +141,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         description: input.description,
         authorId: input.authorId,
         publisherId: input.publisherId,
+        allowPublicUpdates: input.allowPublicUpdates ?? true,
         ...(input.categoryId !== undefined ? { categoryId: input.categoryId } : {}),
         stateCode: 'pending',
         createdAt: time,
@@ -156,6 +155,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         entryId,
         version: input.version,
         formatVer: input.formatVer,
+        publisherId: input.publisherId,
         minAppVer: input.minAppVer,
         ...(input.maxAppVer !== undefined ? { maxAppVer: input.maxAppVer } : {}),
         runtimePkg: input.runtimePackageId,

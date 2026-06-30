@@ -1,5 +1,5 @@
 import { assertAuthorActive, requireSession, upsertAuthorFromSession } from './auth.js';
-import { MarketError, extractIdFromPath, requireString, sha256Sync } from './shared.js';
+import { MarketError, extractIdFromPath, requireString, sha256Sync, validateAllowedUrlHost } from './shared.js';
 import { commentCreateMutation, commentHideMutation, commentUpdateMutation } from './translators/comment.js';
 import { notifyCommentCreated } from './translators/notify.js';
 import type { JsonObject, MarketEnv, MarketStore } from './types.js';
@@ -9,6 +9,7 @@ const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4';
 const V2_ANALYTICS_CURSOR_META = 'v2_analytics_aggregate_cursor';
 const V2_ANALYTICS_DELAY_MS = 5 * 60 * 1000;
 const V2_ANALYTICS_DEFAULT_LOOKBACK_MS = 24 * 60 * 60 * 1000;
+const ASSET_DOWNLOAD_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 export function createInteractRoutes(): {
   addComment(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -124,13 +125,64 @@ async function downloadAsset(request: Request, env: MarketEnv): Promise<Response
   const assetId = extractIdFromPath(request.url, '/assets/', '/download');
   const detail = await store.readProjection({ projection: 'asset.detail', scope: { assetId } });
   if (!detail || typeof detail !== 'object' || Array.isArray(detail)) throw new MarketError('not_found', 'Asset not found', 404);
-  const item = (detail as { item?: { url?: string; entryId?: string; type?: string } }).item;
-  if (!item?.url) throw new MarketError('not_found', 'Asset not found', 404);
+  const item = (detail as { item?: { url?: string; entryId?: string; type?: string; sha256?: string; assetName?: string } }).item;
+  const assetUrl = item?.url;
+  if (!assetUrl) throw new MarketError('not_found', 'Asset not found', 404);
   if (!item.entryId || !item.type) throw new MarketError('not_found', 'Asset not found', 404);
+  validateAllowedUrlHost(assetUrl);
   const dayBucket = utcDayBucket();
   const actorHash = await hashForAnalytics(`download:${assetId}:${clientFingerprint(request, env)}`);
   env.MARKET_ANALYTICS?.writeDataPoint?.({ blobs: ['v2', 'download', item.type, item.entryId, assetId, actorHash, dayBucket], doubles: [1, Date.now()], indexes: [item.entryId] });
-  return Response.redirect(item.url, 302);
+  return proxyAssetDownload(request, assetId, { url: assetUrl, sha256: item.sha256, assetName: item.assetName });
+}
+
+async function proxyAssetDownload(request: Request, assetId: string, item: { url: string; sha256?: string; assetName?: string }): Promise<Response> {
+  const upstreamUrl = new URL(item.url);
+  const requestHeaders = new Headers();
+  const range = request.headers.get('range');
+  if (range) requestHeaders.set('range', range);
+  requestHeaders.set('accept', request.headers.get('accept') || '*/*');
+  const upstreamRequest = new Request(upstreamUrl.toString(), {
+    method: 'GET',
+    headers: requestHeaders,
+    cf: {
+      cacheEverything: true,
+      cacheTtl: ASSET_DOWNLOAD_CACHE_TTL_SECONDS,
+    },
+  } as RequestInit);
+  const upstream = await fetch(upstreamRequest);
+  if (!upstream.ok && upstream.status !== 206) {
+    throw new MarketError('download_failed', `Asset upstream returned ${upstream.status}`, 502);
+  }
+
+  const headers = new Headers(upstream.headers);
+  headers.set('cache-control', `public, max-age=${ASSET_DOWNLOAD_CACHE_TTL_SECONDS}, immutable`);
+  headers.set('access-control-allow-origin', '*');
+  headers.set('cross-origin-resource-policy', 'cross-origin');
+  headers.set('x-operit-market-asset-id', assetId);
+  if (item.sha256) headers.set('x-operit-market-sha256', item.sha256);
+  const filename = safeDownloadFilename(item.assetName || filenameFromUrl(upstreamUrl) || `${assetId}.zip`);
+  headers.set('content-disposition', `attachment; filename="${filename}"; filename*=UTF-8''${encodeRFC5987Value(filename)}`);
+  headers.delete('set-cookie');
+
+  return new Response(upstream.body, {
+    status: upstream.status,
+    statusText: upstream.statusText,
+    headers,
+  });
+}
+
+function filenameFromUrl(url: URL): string {
+  const segment = url.pathname.split('/').filter(Boolean).pop() || '';
+  return decodeURIComponent(segment);
+}
+
+function safeDownloadFilename(value: string): string {
+  return value.replace(/[\\/"\r\n]/g, '_').trim() || 'download.bin';
+}
+
+function encodeRFC5987Value(value: string): string {
+  return encodeURIComponent(value).replace(/['()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
 }
 
 async function aggregateV2Analytics(env: MarketEnv): Promise<JsonObject> {

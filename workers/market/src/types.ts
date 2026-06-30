@@ -183,6 +183,7 @@ export interface D1Backend {
   getFormatVersions(): Promise<Row[]>;
   getStateCodes(): Promise<Row[]>;
   listPublisherEntries(publisherId: string): Promise<Row[]>;
+  listVersionPublisherEntries(publisherId: string): Promise<Row[]>;
   listShardPublisherEntries(shard: string): Promise<Row[]>;
   listReviewEntries(stateCode: string | undefined, limit: number, offset: number): Promise<Row[]>;
   listAllEntries(): Promise<Row[]>;

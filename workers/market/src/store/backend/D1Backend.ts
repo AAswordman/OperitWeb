@@ -37,22 +37,23 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createEntry(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_entries (id, type, title, description, detail, author_id, publisher_id, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+      return run(db, 'INSERT OR IGNORE INTO market_entries (id, type, title, description, detail, author_id, publisher_id, allow_public_updates, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
         value.id, value.type, value.title, value.description, value.detail || '', value.authorId, value.publisherId,
-        value.categoryId || null, value.stateCode || 'pending', value.createdAt, value.updatedAt, value.publishedAt || null,
+        boolParam(value.allowPublicUpdates, true), value.categoryId || null, value.stateCode || 'pending', value.createdAt, value.updatedAt, value.publishedAt || null,
       ]);
     },
     async updateEntry(id, patch) {
       stats.writes++;
-      await run(db, `UPDATE market_entries SET title = COALESCE(?, title), description = COALESCE(?, description), detail = COALESCE(?, detail), category_id = COALESCE(?, category_id), state_code = COALESCE(?, state_code), published_at = COALESCE(?, published_at), updated_at = ? WHERE id = ?`, [
+      await run(db, `UPDATE market_entries SET title = COALESCE(?, title), description = COALESCE(?, description), detail = COALESCE(?, detail), category_id = COALESCE(?, category_id), allow_public_updates = COALESCE(?, allow_public_updates), state_code = COALESCE(?, state_code), published_at = COALESCE(?, published_at), updated_at = ? WHERE id = ?`, [
         patch.title ?? null, patch.description ?? null, patch.detail ?? null, patch.categoryId ?? null,
+        patch.allowPublicUpdates === undefined ? null : boolParam(patch.allowPublicUpdates, true),
         patch.stateCode ?? null, patch.publishedAt ?? null, patch.updatedAt, id,
       ]);
     },
     async createVersion(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, min_app_ver, max_app_ver, state_code, changelog, created_at, updated_at, published_at, runtime_pkg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
-        value.id, value.entryId, value.version, value.formatVer, value.minAppVer, value.maxAppVer || null,
+      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, publisher_id, min_app_ver, max_app_ver, state_code, changelog, created_at, updated_at, published_at, runtime_pkg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+        value.id, value.entryId, value.version, value.formatVer, value.publisherId || null, value.minAppVer, value.maxAppVer || null,
         value.stateCode || 'pending', value.changelog || null, value.createdAt, value.updatedAt, value.publishedAt || null, value.runtimePkg || value.runtimePackageId || null,
       ]);
     },
@@ -70,9 +71,9 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createRepoVersion(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO repo_plugin_versions (id, version_id, ref_type, ref_name, commit_sha, subdir, manifest_path, install_config, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+      return run(db, 'INSERT OR IGNORE INTO repo_plugin_versions (id, version_id, ref_type, ref_name, commit_sha, install_config, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)', [
         value.id, value.versionId, value.refType, value.refName, value.commitSha,
-        value.subdir || null, value.manifestPath || null, value.installConfig || null, value.createdAt, value.updatedAt,
+        value.installConfig || null, value.createdAt, value.updatedAt,
       ]);
     },
     async updateRepoSource(id, patch) {
@@ -218,6 +219,10 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async listPublisherEntries(publisherId) {
       const sql = 'SELECT * FROM market_entries WHERE publisher_id = ? ORDER BY updated_at DESC';
+      return readRows(sql, await all(db, sql, [publisherId]));
+    },
+    async listVersionPublisherEntries(publisherId) {
+      const sql = 'SELECT DISTINCT e.* FROM market_entries e JOIN market_versions v ON v.entry_id = e.id WHERE v.publisher_id = ? ORDER BY e.updated_at DESC';
       return readRows(sql, await all(db, sql, [publisherId]));
     },
     async listShardPublisherEntries(shard) {
@@ -372,6 +377,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
 function numberParam(value: unknown): number {
   const numeric = Number(value || 0);
   return Number.isFinite(numeric) ? numeric : 0;
+}
+
+function boolParam(value: unknown, defaultValue = false): number {
+  if (value === undefined || value === null) return defaultValue ? 1 : 0;
+  if (typeof value === 'boolean') return value ? 1 : 0;
+  if (typeof value === 'number' && (value === 0 || value === 1)) return value;
+  throw new MarketError('validation_failed', 'Boolean fields must be boolean or 0/1');
 }
 
 async function run(db: D1DatabaseLike, sql: string, params: SqlParam[]): Promise<unknown> {

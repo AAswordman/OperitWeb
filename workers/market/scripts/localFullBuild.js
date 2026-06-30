@@ -75,7 +75,7 @@ console.log(`R2 files: ${files.count}, total size: ${(files.size / 1024).toFixed
 const manifest = r2.readJson("market/v2/manifest.json");
 console.log(`Manifest: ${manifest.generatedAt}, types=${manifest.types.length}, categories=${manifest.categories.length}`);
 
-for (const sort of ["updated", "likes", "featured"]) {
+for (const sort of ["updated", "likes", "downloads"]) {
   const listKey = `market/v2/lists/all/${sort}/page-1.json`;
   try {
     const list = r2.readJson(listKey);
@@ -86,4 +86,3 @@ for (const sort of ["updated", "likes", "featured"]) {
 }
 
 console.log(`R2 dir: ${r2.dir}`);
-
