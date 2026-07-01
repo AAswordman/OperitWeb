@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "latestVersion": 4,
-  "latestFile": "/announcements/history/2026-03-22-project-update-guide-v4.json",
-  "updatedAt": "2026-03-22T00:00:00+08:00",
+  "latestVersion": 5,
+  "latestFile": "/announcements/history/2026-07-01-market-migration-v2-v1.json",
+  "updatedAt": "2026-07-01T00:00:00+08:00",
   "notes": "For GitHub Pages, fetch this endpoint with a cache-busting query string."
 }
