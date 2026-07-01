@@ -152,6 +152,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { FileR2, createFileSqlite, rows } from './helpers.js';
 import { createMarketStore } from '../dist/store/MarketStore.js';
+import { incrementalBuild } from '../dist/build.js';
 import { commentCreateMutation } from '../dist/translators/comment.js';
 import { publishRepoMutation } from '../dist/translators/publish.js';
 import { reviewApproveEntry } from '../dist/translators/review.js';
@@ -369,6 +370,79 @@ test('stress: viral entry — 10K users reading comments on 1 entry', async () =
   console.log('\n' + JSON.stringify(report, null, 2));
 
   assert.ok(totalGets < 10000000);
+  r2.destroy();
+  db.destroy();
+});
+
+test('stress: timed dirty settlement — list.page dirty rebuild cost', async () => {
+  const TOTAL_ENTRIES = Number(process.env.MARKET_TIMING_ENTRIES || 300);
+  const CATEGORIES = ['search_research', 'dev_code', 'automation_workflow', 'docs_knowledge', 'media_content', 'chat_communication', 'integration_api', 'system_data', 'business_productivity', 'life_entertainment'];
+  const TYPES = ['mcp', 'skill'];
+
+  const db = await createFileSqlite('migrations/001_init.sql');
+  const r2 = new FileR2();
+  const store = createMarketStore({ db, MARKET_STATS_BUCKET: r2 });
+
+  seedAuthor(db, 1, 'pub');
+  seedAuthor(db, 9999, 'admin');
+
+  for (let i = 0; i < TOTAL_ENTRIES; i++) {
+    const type = TYPES[i % TYPES.length];
+    const categoryId = CATEGORIES[i % CATEGORIES.length];
+    await store.apply(publishRepoMutation({
+      type,
+      title: `Timing ${i}`,
+      description: `Timing entry ${i}`,
+      categoryId,
+      publisherId: 'gh_1',
+      authorId: 'gh_1',
+      repoOwner: 'timing',
+      repoName: `repo-${i}`,
+      sourceUrl: `https://github.com/timing/repo-${i}`,
+      refType: 'commit',
+      refName: 'main',
+      commitSha: `timing-${i}`,
+      version: '1.0.0',
+      formatVer: `${type}_v2`,
+      minAppVer: '1.0.0',
+    }));
+  }
+
+  const entries = rows(db, 'SELECT id FROM market_entries', []);
+  for (const entry of entries) {
+    await store.apply(reviewApproveEntry({ entryId: entry.id, actorId: 'gh_admin', versionId: `${entry.id}-v-1-0-0` }));
+  }
+
+  await store.d1.upsertDirty(
+    'list.page',
+    store.projectionRegistry.scopeKeyOf({ list: {}, sort: 'updated', page: 1 }),
+    'timing.list_dirty',
+    `timing-${Date.now()}`,
+    NOW,
+  );
+
+  const before = { ...store.usage() };
+  const putBefore = r2.stats.puts;
+  const started = performance.now();
+  const result = await incrementalBuild({ store });
+  const elapsedMs = Math.round(performance.now() - started);
+  const after = store.usage();
+
+  const report = {
+    scenario: 'dirty settlement list.page timing',
+    entries: TOTAL_ENTRIES,
+    categories: CATEGORIES.length,
+    types: TYPES.length,
+    result,
+    elapsedMs,
+    ops: diff(after, before),
+    r2Puts: r2.stats.puts - putBefore,
+  };
+
+  console.log('\n' + JSON.stringify(report, null, 2));
+
+  assert.ok(result.materialized > 0);
+
   r2.destroy();
   db.destroy();
 });

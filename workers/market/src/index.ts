@@ -52,7 +52,6 @@ export default {
     await createInteractRoutes().aggregateV2Analytics(storeEnv);
     await fullBuildIfNeeded(storeEnv);
     await incrementalBuild(storeEnv);
-    await v1.handleScheduled(env);
   },
 };
 

@@ -161,6 +161,11 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
   }
   const body = await readBody(request);
+  const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
+  const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
+  if (hasEntryPatch && originalPublisherId !== publisher.id) {
+    throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata with a new version', 403);
+  }
   let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
@@ -170,7 +175,11 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     versionInput = { ...versionInput, runtimePackageId: artifact.runtimePackageId };
     objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
   }
-  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, stateCode: 'pending', createdAt: new Date().toISOString(), updatedAt: new Date().toISOString() } });
+  const now = new Date().toISOString();
+  if (hasEntryPatch) {
+    objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { ...entryPatchInput, stateCode: 'pending', updatedAt: now } });
+  }
+  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, stateCode: 'pending', createdAt: now, updatedAt: now } });
   if (isRepoType(text(entry.type))) {
     const spec = await store.d1.getRepoSpecByEntry(entryId);
     if (!spec) throw new MarketError('state_invalid', 'Repo source not found');

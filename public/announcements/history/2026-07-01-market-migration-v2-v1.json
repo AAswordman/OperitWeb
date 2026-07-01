@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "id": "market-migration-v2-2026-07",
+  "version": 1,
+  "enabled": true,
+  "type": "modal",
+  "priority": "high",
+  "countdownSec": 5,
+  "target": {
+    "minAppVersionCode": 0,
+    "maxAppVersionCode": null,
+    "channels": ["stable", "beta"],
+    "locale": "all"
+  },
+  "schedule": {
+    "startAt": "2026-07-01T00:00:00+08:00",
+    "endAt": null
+  },
+  "content": {
+    "defaultLocale": "zh-CN",
+    "locales": {
+      "zh-CN": {
+        "title": "插件市场维护通知",
+        "body": "由于插件市场迁移维护，2025年6月25日至6月31日期间投稿的插件数据未同步。\n\n请在这段时间内投稿过的开发者，将客户端更新至最新版本后重新投稿。\n\n造成不便，敬请谅解。",
+        "acknowledge": "我知道了"
+      },
+      "en-US": {
+        "title": "Plugin Market Maintenance Notice",
+        "body": "Due to plugin market migration, plugins submitted between June 25 and June 31 were not synced.\n\nIf you submitted a plugin during this period, please update to the latest client version and resubmit.\n\nWe apologize for the inconvenience.",
+        "acknowledge": "Got it"
+      }
+    }
+  },
+  "meta": {
+    "updatedAt": "2026-07-01T00:00:00+08:00",
+    "source": "https://operit.aaswordsman.org/announcements/history/2026-07-01-market-migration-v2-v1.json"
+  }
+}

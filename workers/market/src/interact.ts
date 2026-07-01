@@ -206,22 +206,6 @@ async function loadV2AnalyticsRows(env: MarketEnv, store: MarketStore): Promise<
 
   const dataset = getAnalyticsDatasetName(env);
   const rows = await queryAnalyticsRows(env, `
-    WITH unique_events AS (
-      SELECT
-        blob2 AS event,
-        blob3 AS type,
-        blob4 AS entryId,
-        COALESCE(NULLIF(blob6, ''), concat('legacy:', blob2, ':', blob4, ':', toString(timestamp))) AS actorHash,
-        COALESCE(NULLIF(blob7, ''), toString(toDate(timestamp))) AS dayBucket,
-        MAX(timestamp) AS lastAt,
-        MAX(_sample_interval) AS sampleInterval
-      FROM ${dataset}
-      WHERE blob1 = 'v2'
-        AND blob2 IN ('download', 'like')
-        AND timestamp > ${quoteSqlString(windowStart)}
-        AND timestamp <= ${quoteSqlString(windowEnd)}
-      GROUP BY blob2, blob3, blob4, actorHash, dayBucket
-    )
     SELECT
       event,
       type,
@@ -229,7 +213,24 @@ async function loadV2AnalyticsRows(env: MarketEnv, store: MarketStore): Promise<
       SUM(sampleInterval) AS total,
       1 AS sampleInterval,
       MAX(lastAt) AS lastAt
-    FROM unique_events
+    FROM (
+      SELECT
+        blob2 AS event,
+        blob3 AS type,
+        blob4 AS entryId,
+        blob6 AS actorHash,
+        blob7 AS dayBucket,
+        MAX(timestamp) AS lastAt,
+        MAX(_sample_interval) AS sampleInterval
+      FROM ${dataset}
+      WHERE blob1 = 'v2'
+        AND blob2 IN ('download', 'like')
+        AND blob6 != ''
+        AND blob7 != ''
+        AND timestamp > ${analyticsDateTimeLiteral(windowStart)}
+        AND timestamp <= ${analyticsDateTimeLiteral(windowEnd)}
+      GROUP BY blob2, blob3, blob4, actorHash, dayBucket
+    )
     GROUP BY event, type, entryId
   `);
   return {
@@ -332,6 +333,12 @@ async function queryAnalyticsRows(env: MarketEnv, query: string): Promise<Record
     throw new Error(`Analytics query failed: ${message}`);
   }
   return Array.isArray(payload?.data) ? payload.data : [];
+}
+
+function analyticsDateTimeLiteral(value: string): string {
+  const date = new Date(value);
+  if (!Number.isFinite(date.getTime())) throw new Error(`Invalid analytics DateTime: ${value}`);
+  return `toDateTime(${quoteSqlString(date.toISOString().slice(0, 19).replace('T', ' '))})`;
 }
 
 function quoteSqlString(value: string): string {

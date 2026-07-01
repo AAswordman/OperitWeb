@@ -193,10 +193,16 @@ Authorization: Bearer <market_session>
 
 当 entry 的 `allowPublicUpdates=true` 时，任意登录用户都可以为该 entry 提交新版本；关闭时只有最初 `publisher` 可以提交。新版本号必须大于该 entry 已有版本号，否则返回 `version_conflict`。新版本初始状态为 `pending`，审核通过后才会进入公开 entry 的 `versions[]` 和 `latestVersion`。
 
+请求体可选携带 `entry` patch，用于在发布新版本时同步更新 entry 级元信息。`entry` 只允许包含 `title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`，且只有最初 `publisher` 可以携带；贡献者只能提交版本级内容，不能修改 entry 元信息。携带 `entry` patch 时，Worker 会将 entry 状态改为 `pending` 并随新版本一起重新审核。
+
 Repo 类（`skill` / `mcp`）请求体：
 
 ```json
 {
+  "entry": {
+    "description": "...",
+    "detail": "..."
+  },
   "version": {
     "version": "1.1.0",
     "formatVer": "mcp_v2",
@@ -216,6 +222,10 @@ Artifact 类（`script` / `package`）请求体：
 
 ```json
 {
+  "entry": {
+    "description": "...",
+    "detail": "..."
+  },
   "version": {
     "version": "1.1.0",
     "formatVer": "script_v2",
