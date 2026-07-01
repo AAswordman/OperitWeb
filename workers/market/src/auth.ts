@@ -57,11 +57,20 @@ export async function requireSession(request: Request, env: MarketEnv): Promise<
 }
 
 export async function upsertAuthorFromSession(db: D1DatabaseLike, session: MarketSession): Promise<MarketAuthor> {
-  const id = authorIdFromGithubId(session.github_id);
+  return upsertAuthorFromGithubOwner(db, {
+    githubId: Number(session.github_id),
+    login: requireString(session.github_login, 'github_login'),
+    avatar: String(session.avatar_url || ''),
+  });
+}
+
+export async function upsertAuthorFromGithubOwner(db: D1DatabaseLike, owner: { githubId: number; login: string; avatar?: string }): Promise<MarketAuthor> {
+  if (!Number.isFinite(owner.githubId) || owner.githubId <= 0) throw new MarketError('validation_failed', 'GitHub owner id is required');
+  const id = authorIdFromGithubId(owner.githubId);
   const now = isoNow();
-  const githubId = Number(session.github_id);
-  const login = requireString(session.github_login, 'github_login');
-  const avatar = String(session.avatar_url || '');
+  const githubId = Number(owner.githubId);
+  const login = requireString(owner.login, 'github_login');
+  const avatar = String(owner.avatar || '');
   const existing = await first(db, 'SELECT id FROM market_authors WHERE id = ?', [id]);
   if (existing) {
     await run(db, 'UPDATE market_authors SET github_login = ?, owner_avatar = ?, updated_at = ? WHERE id = ?', [login, avatar, now, id]);

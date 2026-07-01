@@ -1,4 +1,4 @@
-import { assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
+import { assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromGithubOwner, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
 import { githubApiFetch } from './github.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
@@ -93,9 +93,10 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   const refName = requireString(repoBody.refName, 'repoVersion.refName');
   const repo = await getRepo(env, source.owner, source.repo);
   if (!repo.isPublic) throw new MarketError('validation_failed', 'GitHub repo must be public');
+  const repoOwner = await upsertAuthorFromGithubOwner(requireDb(env), { githubId: repo.ownerId, login: repo.ownerLogin, avatar: repo.ownerAvatar });
   const commitSha = await resolveRef(env, source.owner, source.repo, refType, refName);
   const installConfig = optionalString(repoBody.installConfig);
-  const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: `gh_${repo.ownerId}`, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
+  const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
   const applied = await store.apply(mutation);
   await materializePrivatePublisherShards(store, [publisher.id]);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };

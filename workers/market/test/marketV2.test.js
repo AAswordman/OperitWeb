@@ -129,6 +129,25 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
 
 // ---- Tests ----
 
+test('publish repo plugin upserts repository owner author', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  env.mockGitHubGetRepo = async () => ({ ownerId: 3001, ownerLogin: 'minimax-ai', ownerAvatar: 'https://avatar.example/minimax.png', isPublic: true });
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const result = await publishMcp(entryRoutes, env, session, 'foreign-owner-skill');
+
+  assert.ok(result.ok);
+  const entryRow = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [result.entryId])[0];
+  assert.equal(entryRow.author_id, 'gh_3001');
+  assert.equal(entryRow.publisher_id, 'gh_1001');
+  const author = rows(db, 'SELECT * FROM market_authors WHERE id = ?', ['gh_3001'])[0];
+  assert.equal(author.github_login, 'minimax-ai');
+  afterTest(ctx);
+});
+
 test('publish repo plugin requires formatVer, binds commit', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
