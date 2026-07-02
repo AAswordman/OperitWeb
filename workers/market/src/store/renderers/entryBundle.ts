@@ -54,11 +54,15 @@ export function createBuildSnapshotIndex(snap: BuildSnapshot): BuildSnapshotInde
 
 
   const versionEntryIds = new Map<string, string>();
+  const approvedVersionIds = new Set<string>();
   const approvedVersionsByEntryId = new Map<string, Row[]>();
   for (const row of snap.versions) {
     const entryId = rowText(row, 'entry_id');
     versionEntryIds.set(rowText(row, 'id'), entryId);
-    if (rowText(row, 'state_code') === 'approved') appendToMap(approvedVersionsByEntryId, entryId, row);
+    if (rowText(row, 'state_code') === 'approved') {
+      approvedVersionIds.add(rowText(row, 'id'));
+      appendToMap(approvedVersionsByEntryId, entryId, row);
+    }
   }
   for (const list of approvedVersionsByEntryId.values()) {
     list.sort((a, b) => rowText(b, 'published_at').localeCompare(rowText(a, 'published_at')));
@@ -66,7 +70,9 @@ export function createBuildSnapshotIndex(snap: BuildSnapshot): BuildSnapshotInde
 
   const assetsByEntryId = new Map<string, Row[]>();
   for (const row of snap.assets) {
-    const entryId = versionEntryIds.get(rowText(row, 'version_id'));
+    const versionId = rowText(row, 'version_id');
+    if (!approvedVersionIds.has(versionId)) continue;
+    const entryId = versionEntryIds.get(versionId);
     if (entryId) appendToMap(assetsByEntryId, entryId, row);
   }
 
@@ -128,7 +134,7 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
     }
     item.assets = (index ? (index.assetsByEntryId.get(entryId) ?? []) : snap.assets.filter((a) => {
       const version = snap.versions.find((vv) => rowText(vv, 'id') === rowText(a, 'version_id'));
-      return version && rowText(version, 'entry_id') === entryId;
+      return version && rowText(version, 'entry_id') === entryId && rowText(version, 'state_code') === 'approved';
     })).map((a) => ({
       id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'),
       ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}),

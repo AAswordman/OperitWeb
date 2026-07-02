@@ -87,6 +87,15 @@ async function publishMcp(entryRoutes, env, session, repo = 'example-mcp') {
   return entryRoutes.publish(req, env);
 }
 
+async function submitMcpVersion(entryRoutes, env, session, entryId, version) {
+  const req = makeRequest(`http://api/market/v2/entries/${entryId}/versions`, 'POST', {
+    entryId,
+    version: { version, formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    repoVersion: { refType: 'tag', refName: `v${version}`, installConfig: '{}' },
+  }, session);
+  return entryRoutes.newVersion(req, env);
+}
+
 async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0', projectId = 'script.test.artifact') {
   const releaseTag = `script-test-v${version}`;
   const assetName = `script-test-${version}.zip`;
@@ -238,12 +247,14 @@ test('admin approve entry makes it publicly listed, reject with reason code', as
   let entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [entryId])[0];
   assert.equal(entry.state_code, 'approved');
 
-  const pub2 = await publishMcp(entryRoutes, env, pubSession);
-  req = makeAdminRequest(`http://api/market/v2/entries/${pub2.entryId}/review/reject`, 'POST', { entryId: pub2.entryId, reasonCode: 'quality-too-low' });
+  const pub2 = await publishMcp(entryRoutes, env, pubSession, 'review-reject-with-reason');
+  req = makeAdminRequest(`http://api/market/v2/entries/${pub2.entryId}/review/reject`, 'POST', { entryId: pub2.entryId, versionId: pub2.versionId, reasonCode: 'quality-too-low' });
   const rejectResult = await entryRoutes.reviewReject(req, env);
   assert.ok(rejectResult.ok);
   entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub2.entryId])[0];
+  const rejectedVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub2.versionId])[0];
   assert.equal(entry.state_code, 'rejected');
+  assert.equal(rejectedVersion.state_code, 'rejected');
   const reasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub2.entryId]);
   assert.equal(reasons.length, 1);
   afterTest(ctx);
@@ -290,6 +301,150 @@ test('new version keeps old approved latest until review passes', async () => {
   afterTest(ctx);
 });
 
+test('rejecting new version keeps entry approved and old version approved', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'reject-new-version-only');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
+    entryId: pub.entryId,
+    version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
+  }, pubSession);
+  const v2 = await entryRoutes.newVersion(req, env);
+  assert.ok(v2.ok);
+
+  await entryRoutes.reviewReject(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: v2.versionId, reasonCode: 'quality-too-low' }),
+    env,
+  );
+
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
+  const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  const entryReasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub.entryId]);
+  const versionReasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [v2.versionId]);
+
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(oldVersion.state_code, 'approved');
+  assert.equal(newVersion.state_code, 'rejected');
+  assert.equal(entryReasons.length, 0);
+  assert.equal(versionReasons.length, 1);
+
+  afterTest(ctx);
+});
+
+test('reviewing concurrent versions targets the selected version only', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pub1Session, 'concurrent-version-review');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const v11 = await submitMcpVersion(entryRoutes, env, pub1Session, pub.entryId, '1.1.0');
+  const v12 = await submitMcpVersion(entryRoutes, env, pub2Session, pub.entryId, '1.2.0');
+
+  await assert.rejects(
+    () => entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/not-${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v11.versionId }), env),
+    /entryId must match path/,
+  );
+
+  await assert.rejects(
+    () => entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId }), env),
+    /versionId/,
+  );
+
+  await entryRoutes.reviewReject(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: v11.versionId, reasonCode: 'quality-too-low' }),
+    env,
+  );
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v12.versionId }),
+    env,
+  );
+
+  let entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  let versions = Object.fromEntries(rows(db, 'SELECT * FROM market_versions WHERE entry_id = ?', [pub.entryId]).map((version) => [version.id, version]));
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(versions[pub.versionId].state_code, 'approved');
+  assert.equal(versions[v11.versionId].state_code, 'rejected');
+  assert.equal(versions[v12.versionId].state_code, 'approved');
+
+  const v13 = await submitMcpVersion(entryRoutes, env, pub1Session, pub.entryId, '1.3.0');
+  const v14 = await submitMcpVersion(entryRoutes, env, pub2Session, pub.entryId, '1.4.0');
+  await entryRoutes.reviewReject(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: v13.versionId, reasonCode: 'quality-too-low' }),
+    env,
+  );
+  await entryRoutes.reviewReject(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: v14.versionId, reasonCode: 'policy-violation' }),
+    env,
+  );
+  entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  versions = Object.fromEntries(rows(db, 'SELECT * FROM market_versions WHERE entry_id = ?', [pub.entryId]).map((version) => [version.id, version]));
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(versions[v13.versionId].state_code, 'rejected');
+  assert.equal(versions[v14.versionId].state_code, 'rejected');
+
+  const v15 = await submitMcpVersion(entryRoutes, env, pub1Session, pub.entryId, '1.5.0');
+  const v16 = await submitMcpVersion(entryRoutes, env, pub2Session, pub.entryId, '1.6.0');
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v15.versionId }),
+    env,
+  );
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v16.versionId }),
+    env,
+  );
+  entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  versions = Object.fromEntries(rows(db, 'SELECT * FROM market_versions WHERE entry_id = ?', [pub.entryId]).map((version) => [version.id, version]));
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(versions[v15.versionId].state_code, 'approved');
+  assert.equal(versions[v16.versionId].state_code, 'approved');
+
+  afterTest(ctx);
+});
+
+test('requesting changes for new version keeps approved entry public', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'changes-new-version-only');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  const v2 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.1.0');
+
+  await entryRoutes.reviewRequestChanges(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/changes`, 'POST', { entryId: pub.entryId, versionId: v2.versionId, reasonCode: 'metadata-incomplete' }),
+    env,
+  );
+
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
+  const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  const entryReasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub.entryId]);
+  const versionReasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [v2.versionId]);
+
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(oldVersion.state_code, 'approved');
+  assert.equal(newVersion.state_code, 'changes_requested');
+  assert.equal(entryReasons.length, 0);
+  assert.equal(versionReasons.length, 1);
+
+  afterTest(ctx);
+});
+
 test('new repo version must be greater than current highest version', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
@@ -330,7 +485,7 @@ test('resubmit entry changes state back to pending', async () => {
   const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
 
   const pub = await publishMcp(entryRoutes, env, pubSession);
-  await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, reasonCode: 'quality-too-low' }), env);
+  await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: pub.versionId, reasonCode: 'quality-too-low' }), env);
 
   const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/resubmit`, 'POST', {}, pubSession);
   const result = await entryRoutes.resubmitEntry(req, env);
@@ -404,7 +559,7 @@ test('my entries reflect publish review and resubmit without waiting for full bu
   assert.equal(myEntries.entries.entries[0].relation, 'owner');
   assert.equal(myEntries.entries.entries[0].stateCode, 'pending');
 
-  await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, reasonCode: 'quality-too-low' }), env);
+  await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: pub.versionId, reasonCode: 'quality-too-low' }), env);
   myEntries = await entryRoutes.myEntries(myReq(), env);
   assert.equal(myEntries.entries.entries[0].stateCode, 'rejected');
 

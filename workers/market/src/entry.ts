@@ -17,7 +17,7 @@ import {
   verifyToken,
 } from './shared.js';
 import { publishArtifactMutation, publishRepoMutation } from './translators/publish.js';
-import { curationUpdate, reviewApproveEntry, reviewRejectEntry, reviewRequestChangesEntry } from './translators/review.js';
+import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
 import { notifyReview } from './translators/notify.js';
 import type { GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
 
@@ -256,16 +256,19 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const admin = await requireAdminToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
-  const entryId = requireString(body.entryId, 'entryId');
-  const versionId = optionalString(body.versionId);
+  const entryId = requireReviewEntryId(request, body, '/review/approve');
+  const versionId = requireString(body.versionId, 'versionId');
   const actorId = admin.username;
-  const applied = await store.apply(reviewApproveEntry({ entryId, actorId, ...(versionId !== undefined ? { versionId } : {}) }));
-  await store.materializeEntryAssets(entryId);
   const entry = await store.d1.getEntry(entryId);
-  if (entry) {
-    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
-    await notifyReview(store.d1, entry, 'review_approved', actorId);
-  }
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const applied = await store.apply(reviewVersionOnly
+    ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId })
+    : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId }));
+  await store.materializeEntryAssets(entryId);
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await notifyReview(store.d1, entry, 'review_approved', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -273,15 +276,19 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const admin = await requireAdminToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
-  const entryId = requireString(body.entryId, 'entryId');
-  const reasonCode = optionalString(body.reasonCode);
+  const entryId = requireReviewEntryId(request, body, '/review/reject');
+  const versionId = requireString(body.versionId, 'versionId');
+  const reasonCode = requireString(body.reasonCode, 'reasonCode');
   const actorId = admin.username;
-  const applied = await store.apply(reviewRejectEntry({ entryId, actorId, ...(reasonCode !== undefined ? { reasonCode } : {}) }));
   const entry = await store.d1.getEntry(entryId);
-  if (entry) {
-    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
-    await notifyReview(store.d1, entry, 'review_rejected', actorId);
-  }
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const applied = await store.apply(reviewVersionOnly
+    ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
+    : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await notifyReview(store.d1, entry, 'review_rejected', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -289,15 +296,19 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const admin = await requireAdminToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
-  const entryId = requireString(body.entryId, 'entryId');
-  const reasonCode = optionalString(body.reasonCode);
+  const entryId = requireReviewEntryId(request, body, '/review/changes');
+  const versionId = requireString(body.versionId, 'versionId');
+  const reasonCode = requireString(body.reasonCode, 'reasonCode');
   const actorId = admin.username;
-  const applied = await store.apply(reviewRequestChangesEntry({ entryId, actorId, ...(reasonCode !== undefined ? { reasonCode } : {}) }));
   const entry = await store.d1.getEntry(entryId);
-  if (entry) {
-    await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
-    await notifyReview(store.d1, entry, 'review_changes', actorId);
-  }
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const applied = await store.apply(reviewVersionOnly
+    ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
+    : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await notifyReview(store.d1, entry, 'review_changes', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -345,6 +356,26 @@ async function privatePublisherAuthorIdsForEntry(store: MarketStore, entry: Row)
   const entryId = text(entry.id);
   const versions = entryId ? await store.d1.listVersionsForEntry(entryId) : [];
   return [text(entry.publisher_id), ...versions.map((version) => text(version.publisher_id))];
+}
+
+async function resolveReviewVersionId(store: MarketStore, entryId: string, versionId: string): Promise<string> {
+  const versions = await store.d1.listVersionsForEntry(entryId);
+  if (versions.length === 0) throw new MarketError('state_invalid', 'Entry has no versions', 409);
+  if (!versions.some((version) => text(version.id) === versionId)) throw new MarketError('not_found', 'Version not found for entry', 404);
+  return versionId;
+}
+
+function requireReviewEntryId(request: Request, body: Record<string, unknown>, actionPath: string): string {
+  const pathEntryId = extractIdFromPath(request.url, '/entries/', actionPath);
+  const bodyEntryId = requireString(body.entryId, 'entryId');
+  if (!pathEntryId) throw new MarketError('validation_failed', 'entryId is required in path', 400);
+  if (pathEntryId !== bodyEntryId) throw new MarketError('validation_failed', 'entryId must match path', 400);
+  return bodyEntryId;
+}
+
+async function hasApprovedVersion(store: MarketStore, entryId: string): Promise<boolean> {
+  const versions = await store.d1.listVersionsForEntry(entryId);
+  return versions.some((version) => text(version.state_code) === 'approved');
 }
 
 async function materializePrivatePublisherShards(store: MarketStore, authorIds: string[]): Promise<void> {

@@ -10,7 +10,13 @@ export async function renderListPage({ d1, r2, projectionPlan, projectionRegistr
   const sort = scope.sort || 'updated';
   const list = scope.list || {};
   const key = projectionRegistry.keyOf('list.page', scope);
-  let entries: Row[] = (await d1.listAllEntries()).filter((e) => rowText(e, 'state_code') === 'approved');
+  const approvedEntries: Row[] = [];
+  for (const entry of await d1.listAllEntries()) {
+    if (rowText(entry, 'state_code') !== 'approved') continue;
+    const versions = await d1.listVersionsForEntry(rowText(entry, 'id'));
+    if (versions.some((version: Row) => rowText(version, 'state_code') === 'approved')) approvedEntries.push(entry);
+  }
+  let entries = approvedEntries;
   if (list.type) entries = entries.filter((e) => rowText(e, 'type') === list.type);
   if (list.categoryId) entries = entries.filter((e) => rowText(e, 'category_id') === list.categoryId);
   if (sort === 'likes' || sort === 'downloads') {

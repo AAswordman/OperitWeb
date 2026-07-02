@@ -116,6 +116,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
   console.log('[build] indexSnapshot:', Date.now() - tIndex, 'ms');
   const registry = store.projectionRegistry;
   const r2 = store.r2;
+  const publicEntryIds = publicEntryIdSet(index);
   let count = 0;
 
   // manifest
@@ -140,6 +141,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
   for (let i = 0; i < ENTRY_SHARDS; i++) entryShards.set(i.toString(16).padStart(2, '0'), []);
   for (const entry of snap.entries) {
     if (rowText(entry, 'state_code') !== 'approved') continue;
+    if (!publicEntryIds.has(rowText(entry, 'id'))) continue;
     const shard = entryShardOf(rowText(entry, 'id'));
     entryShards.get(shard)!.push(entry);
   }
@@ -275,6 +277,7 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
   const reactionTotals = reactionTotalsByEntry(snap, index);
   const downloadsByEntry = downloadsByEntryId(index);
   const listScopes = buildListScopes(snap);
+  const publicEntryIds = publicEntryIdSet(index);
 
   const sortFns: Record<SortKey, (a: Row, b: Row) => number> = {
     updated: (a, b) => rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at')),
@@ -294,6 +297,7 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
     for (const sort of SORTS) {
     const approved = snap.entries
       .filter((e) => rowText(e, 'state_code') === 'approved')
+      .filter((entry) => publicEntryIds.has(rowText(entry, 'id')))
       .filter((entry) => !list.type || rowText(entry, 'type') === list.type)
       .filter((entry) => !list.categoryId || rowText(entry, 'category_id') === list.categoryId)
       .sort(sortFns[sort]);
@@ -313,6 +317,10 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
   }
 
   return count;
+}
+
+function publicEntryIdSet(index: ReturnType<typeof createBuildSnapshotIndex>): Set<string> {
+  return new Set(index.approvedVersionsByEntryId.keys());
 }
 
 async function rebuildEntry(env: MarketEnv, entryId: string): Promise<{ ok: true; materialized: number }> {

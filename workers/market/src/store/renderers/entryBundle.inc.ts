@@ -14,14 +14,17 @@ export async function buildEntryItem(d1: RendererContext['d1'], entry: Row): Pro
   if (publisher) item.publisher = { id: item.publisherId, login: rowText(publisher, 'github_login'), avatar: rowText(publisher, 'owner_avatar') };
 
   if (isRepoType(type)) { const spec = await d1.getRepoSpecByEntry(item.id); if (spec) item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') }; }
+  const versions = (await d1.listVersionsForEntry(item.id)).filter((v: Row) => rowText(v, 'state_code') === 'approved').sort((a: Row, b: Row) => rowText(b, 'published_at').localeCompare(rowText(a, 'published_at')));
+  const approvedVersionIds = new Set(versions.map((version: Row) => rowText(version, 'id')));
   if (isArtifactType(type)) {
     const project = await d1.getArtifactProject(item.id);
     if (project) {
       item.artifact = { projectId: rowText(project, 'project_key'), ...(rowOptionalText(project, 'runtime_pkg') ? { runtimePkg: rowText(project, 'runtime_pkg') } : {}) };
     }
-    item.assets = (await d1.listAssets(item.id)).map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
+    item.assets = (await d1.listAssets(item.id))
+      .filter((a: Row) => approvedVersionIds.has(rowText(a, 'version_id')))
+      .map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
   }
-  const versions = (await d1.listVersionsForEntry(item.id)).filter((v: Row) => rowText(v, 'state_code') === 'approved').sort((a: Row, b: Row) => rowText(b, 'published_at').localeCompare(rowText(a, 'published_at')));
   const latest = versions[0];
   item.contributors = buildContributors(await Promise.all(versions.map(async (version: Row) => {
     const publisherId = rowOptionalText(version, 'publisher_id') ? rowText(version, 'publisher_id') : '';

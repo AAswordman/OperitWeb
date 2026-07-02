@@ -17,7 +17,7 @@ export async function renderEntryShard({ d1, r2, projectionPlan, projectionRegis
     const current = await r2.readJson(key);
     const entriesById = readEntriesById(current);
     const entry = await d1.getEntry(entryId);
-    if (entry && rowText(entry, 'state_code') === 'approved' && entryShardOf(rowText(entry, 'id')) === shard) {
+    if (entry && rowText(entry, 'state_code') === 'approved' && entryShardOf(rowText(entry, 'id')) === shard && await hasApprovedVersion(d1, entryId)) {
       entriesById[entryId] = await buildEntryItem(d1, entry);
     } else {
       delete entriesById[entryId];
@@ -31,10 +31,16 @@ export async function renderEntryShard({ d1, r2, projectionPlan, projectionRegis
     .filter((entry: Row) => entryShardOf(rowText(entry, 'id')) === shard);
   const entriesById: Record<string, unknown> = {};
   for (const entry of rows) {
+    if (!await hasApprovedVersion(d1, rowText(entry, 'id'))) continue;
     entriesById[rowText(entry, 'id')] = await buildEntryItem(d1, entry);
   }
   await r2.writeJson(key, { ok: true, marketVersion: 2, generatedAt: isoNow(), shard, entriesById });
   return { written: [key] };
+}
+
+async function hasApprovedVersion(d1: RendererContext['d1'], entryId: string): Promise<boolean> {
+  const versions = await d1.listVersionsForEntry(entryId);
+  return versions.some((version: Row) => rowText(version, 'state_code') === 'approved');
 }
 
 function readEntriesById(value: JsonValue | null): Record<string, unknown> {

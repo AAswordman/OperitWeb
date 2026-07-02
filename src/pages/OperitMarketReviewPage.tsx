@@ -134,6 +134,14 @@ interface MarketReviewRow {
   source: 'review' | 'published';
 }
 
+interface VersionActionConfig {
+  target: MarketReviewRow;
+  approve: string;
+  changes: string;
+  reject: string;
+  openActionModal: (action: MarketReviewAction, row: MarketReviewRow, versionId?: string) => void;
+}
+
 type ReviewFilter = ReviewState | 'all';
 type FeaturedFilter = 'all' | 'featured' | 'normal';
 type SourceFilter = 'all' | 'review' | 'published';
@@ -207,6 +215,7 @@ const TEXT = {
     actionCancel: '取消',
     actionSuccess: '操作已提交。',
     reasonRequired: '打回或拒绝必须选择原因码。',
+    versionRequired: '请在版本列表中选择具体版本进行审核。',
     noReason: '无原因码',
     publishedHint: '已上架列表来自 R2 静态产物；审核操作仍走管理员 API。',
   },
@@ -259,6 +268,7 @@ const TEXT = {
     actionCancel: 'Cancel',
     actionSuccess: 'Action submitted.',
     reasonRequired: 'A reason code is required for changes or rejection.',
+    versionRequired: 'Select a specific version in the version list before reviewing.',
     noReason: 'No reason',
     publishedHint: 'Published list is loaded from R2 static output; review actions still use admin API.',
   },
@@ -342,7 +352,7 @@ function versionSortValue(version: ReviewVersion): string {
   return version.publishedAt || version.updatedAt || version.createdAt || version.version;
 }
 
-function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en'): React.ReactNode {
+function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', actions?: VersionActionConfig): React.ReactNode {
   const rows = [...versions].sort((a, b) => versionSortValue(b).localeCompare(versionSortValue(a)));
   return (
     <div className="operit-market-review-version-graph">
@@ -360,6 +370,13 @@ function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en'): Re
               {version.runtimePackageId ? <Text type="secondary">runtime {version.runtimePackageId}</Text> : null}
               <Tag color={stateColor(version.stateCode)}>{getReviewStateLabel(version.stateCode, language)}</Tag>
               <Text type="secondary">{formatDateTime(version.publishedAt)}</Text>
+              {actions && version.stateCode !== 'approved' ? (
+                <>
+                  <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => actions.openActionModal('approve', actions.target, version.id)}>{actions.approve}</Button>
+                  <Button size="small" icon={<EditOutlined />} onClick={() => actions.openActionModal('changes_requested', actions.target, version.id)}>{actions.changes}</Button>
+                  <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => actions.openActionModal('reject', actions.target, version.id)}>{actions.reject}</Button>
+                </>
+              ) : null}
             </Space>
             {version.changelog ? <Paragraph type="secondary" className="operit-market-review-version-changelog">{version.changelog}</Paragraph> : null}
           </div>
@@ -449,6 +466,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [actionOpen, setActionOpen] = useState(false);
   const [actionType, setActionType] = useState<MarketReviewAction>('approve');
   const [actionTarget, setActionTarget] = useState<MarketReviewRow | null>(null);
+  const [actionVersionId, setActionVersionId] = useState<string | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
   const [actionSubmitting, setActionSubmitting] = useState(false);
 
@@ -603,15 +621,20 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     }
   }, [adminToken, handleUnauthorized, t.loadFailed]);
 
-  const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow) => {
+  const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow, versionId?: string) => {
     setActionType(action);
     setActionTarget(row);
+    setActionVersionId(versionId || null);
     setSelectedReasonCodes([]);
     setActionOpen(true);
   }, []);
 
   const submitAction = useCallback(async () => {
     if (!actionTarget) return;
+    if (actionType !== 'set_featured' && actionType !== 'unset_featured' && !actionVersionId) {
+      message.warning(t.versionRequired);
+      return;
+    }
     if ((actionType === 'changes_requested' || actionType === 'reject') && selectedReasonCodes.length === 0) {
       message.warning(t.reasonRequired);
       return;
@@ -634,7 +657,11 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         await fetchMarketV2Json(marketV2ApiUrl(`entries/${encodeURIComponent(actionTarget.id)}/review/${endpoint}`), {
           method: 'POST',
           headers: buildMarketV2AdminHeaders(adminToken),
-          body: JSON.stringify({ entryId: actionTarget.id, reasonCode: selectedReasonCodes[0] }),
+          body: JSON.stringify({
+            entryId: actionTarget.id,
+            ...(actionVersionId ? { versionId: actionVersionId } : {}),
+            reasonCode: selectedReasonCodes[0],
+          }),
         });
       }
       message.success(t.actionSuccess);
@@ -648,7 +675,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     } finally {
       setActionSubmitting(false);
     }
-  }, [actionTarget, actionType, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired]);
+  }, [actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired]);
 
   const logout = useCallback(async () => {
     localStorage.removeItem(STORAGE.adminToken);
@@ -660,13 +687,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const renderRowActions = useCallback((record: MarketReviewRow) => (
     <Space wrap className="operit-market-review-row-actions">
       <Button size="small" icon={<EyeOutlined />} onClick={() => void loadDetail(record)}>{t.detail}</Button>
-      {record.stateCode !== 'approved' ? (
-        <>
-          <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', record)}>{t.approve}</Button>
-          <Button size="small" icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', record)}>{t.changes}</Button>
-          <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', record)}>{t.reject}</Button>
-        </>
-      ) : (
+      {record.stateCode === 'approved' ? (
         <Button
           size="small"
           icon={<StarFilled />}
@@ -674,9 +695,9 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         >
           {record.featured ? t.unsetFeatured : t.setFeatured}
         </Button>
-      )}
+      ) : null}
     </Space>
-  ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured]);
+  ), [loadDetail, openActionModal, t.detail, t.setFeatured, t.unsetFeatured]);
 
   const columns = useMemo<ColumnsType<MarketReviewRow>>(() => [
     {
@@ -874,20 +895,14 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           onClose={() => setDetailOpen(false)}
           extra={detailFallback ? (
             <Space wrap className="operit-market-review-drawer-actions">
-              {detailFallback.stateCode !== 'approved' ? (
-                <>
-                  <Button type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', detailFallback)}>{t.approve}</Button>
-                  <Button icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', detailFallback)}>{t.changes}</Button>
-                  <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailFallback)}>{t.reject}</Button>
-                </>
-              ) : (
+              {detailFallback.stateCode === 'approved' ? (
                 <Button
                   icon={<StarFilled />}
                   onClick={() => openActionModal(detailFallback.featured ? 'unset_featured' : 'set_featured', detailFallback)}
                 >
                   {detailFallback.featured ? t.unsetFeatured : t.setFeatured}
                 </Button>
-              )}
+              ) : null}
             </Space>
           ) : null}
         >
@@ -946,7 +961,13 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               </Card>
 
               <Card size="small" title={t.versions}>
-                {renderVersionList(detail.versions || [], language)}
+                {renderVersionList(detail.versions || [], language, detailFallback ? {
+                  target: detailFallback,
+                  approve: t.approve,
+                  changes: t.changes,
+                  reject: t.reject,
+                  openActionModal,
+                } : undefined)}
               </Card>
 
               {detail.repoSource ? (
@@ -981,7 +1002,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 type="info"
                 showIcon
                 message={`${t.actionTarget}: ${actionTarget.title || actionTarget.id}`}
-                description={`${getMarketTypeLabel(actionTarget.type, language)} / ${getReviewStateLabel(actionTarget.stateCode, language)} / ${actionTarget.id}`}
+                description={`${getMarketTypeLabel(actionTarget.type, language)} / ${getReviewStateLabel(actionTarget.stateCode, language)} / ${actionVersionId || actionTarget.id}`}
               />
             ) : null}
             {actionType === 'changes_requested' || actionType === 'reject' ? (

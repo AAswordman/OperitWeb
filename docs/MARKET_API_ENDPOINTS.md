@@ -379,6 +379,26 @@ Authorization: Bearer <admin_token>
 
 `action`：`approve` | `reject` | `changes`
 
+请求体：
+
+```json
+{
+  "entryId": "...",
+  "versionId": "...",
+  "reasonCode": "quality-too-low"
+}
+```
+
+`entryId` 与路径中的 `{entryId}` 必须一致；`versionId` 必填，且必须属于当前 entry。`reject` / `changes` 必须携带 `reasonCode`，取值来自 `market_reason_codes.code`。
+
+审核动作以 version 为明确目标：
+
+- 首发审核：entry 尚未公开，且没有公开 approved version 时，`approve` / `reject` / `changes` 同时更新 entry 与目标 version。
+- 已上架簇的新版本审核：entry 当前为 `approved`，且已存在 approved version 时，`approve` / `reject` / `changes` 只更新目标 version，entry 保持 `approved`。
+- 同一 entry 下存在多个待审 version 时，审核台必须分别提交对应 `versionId`；后端不接受缺少 `versionId` 的审核请求。
+
+公开 R2 列表、entry 分片和资产详情只展示 `entry.state_code = approved` 且至少存在一个 `market_versions.state_code = approved` 的内容；公开 `versions[]`、`latestVersion` 和 `assets[]` 只来自 approved version。
+
 ### 精选
 
 ```http
