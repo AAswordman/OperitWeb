@@ -87,6 +87,7 @@ interface ReviewEntrySummary {
   createdAt: string;
   updatedAt: string;
   publishedAt?: string;
+  version?: ReviewVersion;
 }
 
 interface ReviewVersion {
@@ -94,6 +95,8 @@ interface ReviewVersion {
   entryId?: string;
   version: string;
   formatVer: string;
+  publisherId?: string;
+  publisher?: { id?: string; login?: string; avatar?: string };
   minAppVer?: string;
   maxAppVer?: string;
   runtimePackageId?: string;
@@ -130,6 +133,13 @@ interface MarketReviewRow {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  version?: ReviewVersion;
+  versionId?: string;
+  versionLabel?: string;
+  versionStateCode?: ReviewState | string;
+  versionPublisherId?: string;
+  versionPublisherLogin?: string;
+  versionPublisherAvatar?: string;
   featured: boolean;
   source: 'review' | 'published';
 }
@@ -317,6 +327,14 @@ function asReviewState(value: string): ReviewState | string {
 function normalizeEntry(entry: ReviewEntrySummary | MarketV2Entry, source: 'review' | 'published', featuredIds: Set<string>): MarketReviewRow {
   const author = 'author' in entry ? entry.author : undefined;
   const publisher = 'publisher' in entry ? entry.publisher : undefined;
+  const version = 'version' in entry ? entry.version : undefined;
+  const versionPublisher = version?.publisher;
+  const stateCode = source === 'review'
+    ? asReviewState(String(version?.stateCode || entry.stateCode || 'pending'))
+    : asReviewState(String(entry.stateCode || 'approved'));
+  const updatedAt = source === 'review'
+    ? String(version?.updatedAt || entry.updatedAt)
+    : String(entry.updatedAt);
   return {
     id: String(entry.id),
     type: String(entry.type) as MarketType,
@@ -330,10 +348,17 @@ function normalizeEntry(entry: ReviewEntrySummary | MarketV2Entry, source: 'revi
     publisherLogin: publisher?.login || '',
     publisherAvatar: publisher?.avatar || '',
     categoryId: String(entry.categoryId),
-    stateCode: asReviewState(String(entry.stateCode || (source === 'published' ? 'approved' : 'pending'))),
+    stateCode,
     createdAt: String(entry.createdAt),
-    updatedAt: String(entry.updatedAt),
+    updatedAt,
     publishedAt: 'publishedAt' in entry ? String(entry.publishedAt) : '',
+    version,
+    versionId: version?.id,
+    versionLabel: version?.version,
+    versionStateCode: version?.stateCode,
+    versionPublisherId: version?.publisherId,
+    versionPublisherLogin: versionPublisher?.login || '',
+    versionPublisherAvatar: versionPublisher?.avatar || '',
     featured: featuredIds.has(String(entry.id)),
     source,
   };
@@ -561,7 +586,10 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     const byId = new Map<string, MarketReviewRow>();
     for (const row of publishedRows) byId.set(row.id, normalizeEntry(row, 'published', featuredIds));
     for (const row of featuredRows) byId.set(row.id, { ...normalizeEntry(row, 'published', featuredIds), featured: true });
-    for (const row of reviewRows) byId.set(row.id, normalizeEntry(row, 'review', featuredIds));
+    for (const row of reviewRows) {
+      const normalized = normalizeEntry(row, 'review', featuredIds);
+      byId.set(`${normalized.id}::${normalized.versionId || ''}`, normalized);
+    }
     return Array.from(byId.values()).sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
   }, [featuredIds, featuredRows, publishedRows, reviewRows]);
 
@@ -575,7 +603,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       if (featuredFilter === 'normal' && row.featured) return false;
       if (sourceFilter !== 'all' && row.source !== sourceFilter) return false;
       if (!query) return true;
-      return [row.id, row.title, row.description, row.authorLogin, row.publisherLogin, row.categoryId, row.stateCode, row.type]
+      return [row.id, row.versionId, row.versionLabel, row.title, row.description, row.authorLogin, row.publisherLogin, row.versionPublisherLogin, row.categoryId, row.stateCode, row.type]
         .some(value => String(value).toLowerCase().includes(query));
     });
   }, [categoryFilter, featuredFilter, marketFilter, reviewFilter, rows, search, sourceFilter]);
@@ -624,7 +652,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow, versionId?: string) => {
     setActionType(action);
     setActionTarget(row);
-    setActionVersionId(versionId || null);
+    setActionVersionId(versionId || row.versionId || null);
     setSelectedReasonCodes([]);
     setActionOpen(true);
   }, []);
@@ -687,6 +715,13 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const renderRowActions = useCallback((record: MarketReviewRow) => (
     <Space wrap className="operit-market-review-row-actions">
       <Button size="small" icon={<EyeOutlined />} onClick={() => void loadDetail(record)}>{t.detail}</Button>
+      {record.source === 'review' && record.versionId ? (
+        <>
+          <Button size="small" type="primary" icon={<CheckCircleOutlined />} onClick={() => openActionModal('approve', record, record.versionId)}>{t.approve}</Button>
+          <Button size="small" icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', record, record.versionId)}>{t.changes}</Button>
+          <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', record, record.versionId)}>{t.reject}</Button>
+        </>
+      ) : null}
       {record.stateCode === 'approved' ? (
         <Button
           size="small"
@@ -697,7 +732,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         </Button>
       ) : null}
     </Space>
-  ), [loadDetail, openActionModal, t.detail, t.setFeatured, t.unsetFeatured]);
+  ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured]);
 
   const columns = useMemo<ColumnsType<MarketReviewRow>>(() => [
     {
@@ -719,6 +754,11 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
             <Tag color={record.source === 'review' ? 'purple' : 'green'}>{record.source === 'review' ? t.reviewQueue : t.publishedList}</Tag>
           </Space>
           <Text type="secondary" copyable={{ text: record.id }}>{record.id}</Text>
+          {record.versionId ? (
+            <Text type="secondary" copyable={{ text: record.versionId }}>
+              version {record.versionLabel || record.versionId}
+            </Text>
+          ) : null}
           <Paragraph className="operit-market-review-excerpt" type="secondary">
             {shortText(record.description, '-')}
           </Paragraph>
@@ -738,7 +778,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       render: (categoryId: string) => categoryLabel(categoryId),
     },
     {
-      title: '作者 / 发布者',
+      title: '作者 / 发布者 / 版本发布者',
       width: 230,
       render: (_value, record) => (
         <Space direction="vertical" size={2}>
@@ -750,6 +790,12 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
             <Avatar size={22} icon={!record.publisherAvatar ? <UserOutlined /> : undefined} src={record.publisherAvatar || undefined} />
             <Text type="secondary">{record.publisherLogin}</Text>
           </Space>
+          {record.versionPublisherId ? (
+            <Space size={6}>
+              <Avatar size={22} icon={!record.versionPublisherAvatar ? <UserOutlined /> : undefined} src={record.versionPublisherAvatar || undefined} />
+              <Text type="secondary">{record.versionPublisherLogin || record.versionPublisherId}</Text>
+            </Space>
+          ) : null}
         </Space>
       ),
     },
@@ -839,7 +885,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           <Card title={`${t.reviewListTitle} (${filteredRows.length}/${rows.length})`}>
             <div className="operit-market-review-table-wrap">
               <Table
-                rowKey="id"
+                rowKey={record => record.source === 'review' ? `${record.id}::${record.versionId || ''}` : record.id}
                 loading={loading}
                 columns={columns}
                 dataSource={filteredRows}
@@ -853,7 +899,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               ) : filteredRows.length === 0 ? (
                 <div className="operit-market-review-mobile-empty">{t.empty}</div>
               ) : filteredRows.map(record => (
-                <Card key={record.id} size="small" className="operit-market-review-mobile-card">
+                <Card key={record.source === 'review' ? `${record.id}::${record.versionId || ''}` : record.id} size="small" className="operit-market-review-mobile-card">
                   <Space direction="vertical" size="small" style={{ width: '100%' }}>
                     <div className="operit-market-review-mobile-card-head">
                       <Space wrap size={[6, 4]}>
@@ -865,6 +911,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                     </div>
                     <div className="operit-market-review-mobile-title">{shortText(record.title, record.id)}</div>
                     <Text className="operit-market-review-mobile-id" type="secondary" copyable={{ text: record.id }}>{record.id}</Text>
+                    {record.versionId ? <Text className="operit-market-review-mobile-id" type="secondary" copyable={{ text: record.versionId }}>version {record.versionLabel || record.versionId}</Text> : null}
                     <Paragraph className="operit-market-review-excerpt" type="secondary">{shortText(record.description, '-')}</Paragraph>
                     <div className="operit-market-review-mobile-meta">
                       <div>{t.category}: {categoryLabel(record.categoryId)}</div>

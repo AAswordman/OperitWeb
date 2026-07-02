@@ -82,8 +82,8 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createReviewReason(value) {
       stats.writes++;
-      if (value.versionId) return run(db, 'INSERT OR IGNORE INTO market_version_reasons (version_id, reason_code, created_at) VALUES (?, ?, ?)', [value.versionId, value.reasonCode, value.createdAt]);
-      return run(db, 'INSERT OR IGNORE INTO market_entry_reasons (entry_id, reason_code, created_at) VALUES (?, ?, ?)', [value.entryId, value.reasonCode, value.createdAt]);
+      if (!value.versionId) throw new MarketError('validation_failed', 'Review reason requires versionId');
+      return run(db, 'INSERT OR IGNORE INTO market_version_reasons (version_id, reason_code, created_at) VALUES (?, ?, ?)', [value.versionId, value.reasonCode, value.createdAt]);
     },
     async createCuration(value) {
       stats.writes++;
@@ -217,9 +217,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_state_codes ORDER BY sort_order';
       return readRows(sql, await all(db, sql, []));
     },
-    async listEntryReasons(entryId) {
-      const sql = 'SELECT reason_code FROM market_entry_reasons WHERE entry_id = ? ORDER BY reason_code';
-      return readRows(sql, await all(db, sql, [entryId]));
+    async listVersionReasons(versionId) {
+      const sql = 'SELECT reason_code FROM market_version_reasons WHERE version_id = ? ORDER BY reason_code';
+      return readRows(sql, await all(db, sql, [versionId]));
+    },
+    async listAuthorEntryVersions(authorId, entryId) {
+      const sql = 'SELECT * FROM market_versions WHERE publisher_id = ? AND entry_id = ? ORDER BY updated_at DESC, created_at DESC';
+      return readRows(sql, await all(db, sql, [authorId, entryId]));
     },
     async listPublisherEntries(publisherId) {
       const sql = 'SELECT * FROM market_entries WHERE publisher_id = ? ORDER BY updated_at DESC';
@@ -233,15 +237,29 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const sql = 'SELECT * FROM market_entries WHERE lower(substr(publisher_id,1,2)) = ? ORDER BY updated_at DESC';
       return readRows(sql, await all(db, sql, [shard]));
     },
-    async listReviewEntries(stateCode, limit, offset) {
+    async listReviewVersions(stateCode, limit, offset) {
       const pageSize = Math.max(1, Math.min(Number(limit) || 50, 100));
       const start = Math.max(0, Number(offset) || 0);
-      const base = `SELECT e.*, a.github_login AS author_login, a.owner_avatar AS author_avatar, p.github_login AS publisher_login, p.owner_avatar AS publisher_avatar FROM market_entries e LEFT JOIN market_authors a ON a.id = e.author_id LEFT JOIN market_authors p ON p.id = e.publisher_id`;
+      const base = `SELECT
+          e.id, e.type, e.title, e.description, e.detail, e.author_id, e.publisher_id, e.allow_public_updates,
+          e.category_id, e.state_code, e.created_at, e.updated_at, e.published_at,
+          v.id AS version_id, v.version, v.format_ver, v.publisher_id AS version_publisher_id,
+          v.min_app_ver, v.max_app_ver, v.runtime_pkg, v.state_code AS version_state_code,
+          v.changelog, v.created_at AS version_created_at, v.updated_at AS version_updated_at,
+          v.published_at AS version_published_at,
+          a.github_login AS author_login, a.owner_avatar AS author_avatar,
+          p.github_login AS publisher_login, p.owner_avatar AS publisher_avatar,
+          vp.github_login AS version_publisher_login, vp.owner_avatar AS version_publisher_avatar
+        FROM market_versions v
+        JOIN market_entries e ON e.id = v.entry_id
+        LEFT JOIN market_authors a ON a.id = e.author_id
+        LEFT JOIN market_authors p ON p.id = e.publisher_id
+        LEFT JOIN market_authors vp ON vp.id = v.publisher_id`;
       if (stateCode) {
-        const sql = `${base} WHERE e.state_code = ? ORDER BY e.updated_at DESC LIMIT ? OFFSET ?`;
+        const sql = `${base} WHERE v.state_code = ? ORDER BY v.updated_at DESC LIMIT ? OFFSET ?`;
         return readRows(sql, await all(db, sql, [stateCode, pageSize, start]));
       }
-      const sql = `${base} WHERE e.state_code NOT IN ('approved','withdrawn') ORDER BY e.updated_at DESC LIMIT ? OFFSET ?`;
+      const sql = `${base} WHERE v.state_code NOT IN ('approved','withdrawn') ORDER BY v.updated_at DESC LIMIT ? OFFSET ?`;
       return readRows(sql, await all(db, sql, [pageSize, start]));
     },
     async listAllEntries() {
@@ -355,7 +373,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async loadBuildSnapshot() {
       const [entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats,
-        categories, types, formatVersions, stateCodes, entryReasons, versionReasons, curations, authors] = await Promise.all([
+        categories, types, formatVersions, stateCodes, versionReasons, curations, authors] = await Promise.all([
         all(db, 'SELECT * FROM market_entries', []),
         all(db, 'SELECT * FROM market_versions', []),
         all(db, 'SELECT * FROM repo_plugin_specs', []),
@@ -368,14 +386,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         all(db, 'SELECT * FROM market_types ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_format_versions ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_state_codes ORDER BY sort_order', []),
-        all(db, 'SELECT * FROM market_entry_reasons', []),
         all(db, 'SELECT * FROM market_version_reasons', []),
         all(db, 'SELECT * FROM market_curations', []),
         all(db, 'SELECT id, github_id, github_login, owner_avatar FROM market_authors', []),
       ]);
-      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + entryReasons.length + versionReasons.length + curations.length + authors.length;
+      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + versionReasons.length + curations.length + authors.length;
       stats.reads += totalReads;
-      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, entryReasons, versionReasons, curations, authors };
+      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, versionReasons, curations, authors };
     },
   };
 }

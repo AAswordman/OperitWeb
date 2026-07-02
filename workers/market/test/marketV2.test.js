@@ -200,17 +200,22 @@ test('admin review queue lists all non-public review states', async () => {
   const approved = await publishMcp(entryRoutes, env, pubSession, 'review-approved');
   const withdrawn = await publishMcp(entryRoutes, env, pubSession, 'review-withdrawn');
   await db.prepare("UPDATE market_entries SET state_code = ? WHERE id = ?").bind('changes_requested', changes.entryId).run();
+  await db.prepare("UPDATE market_versions SET state_code = ? WHERE id = ?").bind('changes_requested', changes.versionId).run();
   await db.prepare("UPDATE market_entries SET state_code = ? WHERE id = ?").bind('rejected', rejected.entryId).run();
+  await db.prepare("UPDATE market_versions SET state_code = ? WHERE id = ?").bind('rejected', rejected.versionId).run();
   await db.prepare("UPDATE market_entries SET state_code = ? WHERE id = ?").bind('approved', approved.entryId).run();
+  await db.prepare("UPDATE market_versions SET state_code = ? WHERE id = ?").bind('approved', approved.versionId).run();
   await db.prepare("UPDATE market_entries SET state_code = ? WHERE id = ?").bind('withdrawn', withdrawn.entryId).run();
+  await db.prepare("UPDATE market_versions SET state_code = ? WHERE id = ?").bind('withdrawn', withdrawn.versionId).run();
 
   const result = await entryRoutes.reviewEntries(makeAdminRequest('http://api/market/v2/admin/review/entries', 'GET'), env);
   const ids = result.items.map((item) => item.id);
+  const versionIds = result.items.map((item) => item.version.id);
   assert.ok(ids.includes(pending.entryId));
   assert.ok(ids.includes(changes.entryId));
   assert.ok(ids.includes(rejected.entryId));
-  assert.ok(!ids.includes(approved.entryId));
-  assert.ok(!ids.includes(withdrawn.entryId));
+  assert.ok(!versionIds.includes(approved.versionId));
+  assert.ok(!versionIds.includes(withdrawn.versionId));
   afterTest(ctx);
 });
 
@@ -255,7 +260,7 @@ test('admin approve entry makes it publicly listed, reject with reason code', as
   const rejectedVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub2.versionId])[0];
   assert.equal(entry.state_code, 'rejected');
   assert.equal(rejectedVersion.state_code, 'rejected');
-  const reasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub2.entryId]);
+  const reasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [pub2.versionId]);
   assert.equal(reasons.length, 1);
   afterTest(ctx);
 });
@@ -327,13 +332,11 @@ test('rejecting new version keeps entry approved and old version approved', asyn
   const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
   const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
   const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
-  const entryReasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub.entryId]);
   const versionReasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [v2.versionId]);
 
   assert.equal(entry.state_code, 'approved');
   assert.equal(oldVersion.state_code, 'approved');
   assert.equal(newVersion.state_code, 'rejected');
-  assert.equal(entryReasons.length, 0);
   assert.equal(versionReasons.length, 1);
 
   afterTest(ctx);
@@ -433,13 +436,11 @@ test('requesting changes for new version keeps approved entry public', async () 
   const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
   const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
   const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
-  const entryReasons = rows(db, 'SELECT * FROM market_entry_reasons WHERE entry_id = ?', [pub.entryId]);
   const versionReasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [v2.versionId]);
 
   assert.equal(entry.state_code, 'approved');
   assert.equal(oldVersion.state_code, 'approved');
   assert.equal(newVersion.state_code, 'changes_requested');
-  assert.equal(entryReasons.length, 0);
   assert.equal(versionReasons.length, 1);
 
   afterTest(ctx);
@@ -491,7 +492,9 @@ test('resubmit entry changes state back to pending', async () => {
   const result = await entryRoutes.resubmitEntry(req, env);
   assert.ok(result.ok);
   const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const version = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
   assert.equal(entry.state_code, 'pending');
+  assert.equal(version.state_code, 'pending');
   afterTest(ctx);
 });
 

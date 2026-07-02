@@ -16,8 +16,12 @@ export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, proje
     : {};
   const summaries = [];
   for (const { entry, relation } of entries) {
-    const reasonCodes = (await d1.listEntryReasons(rowText(entry, "id"))).map((reason) => rowText(reason, "reason_code")).filter(Boolean);
-    summaries.push(toPublisherEntrySummary(entry, relation, reasonCodes));
+    const versions = await d1.listAuthorEntryVersions(authorId, rowText(entry, "id"));
+    const latestVersion = versions[0];
+    const reasonCodes = latestVersion
+      ? (await d1.listVersionReasons(rowText(latestVersion, "id"))).map((reason) => rowText(reason, "reason_code")).filter(Boolean)
+      : [];
+    summaries.push(toPublisherEntrySummary(entry, relation, latestVersion, reasonCodes));
   }
   authors[authorId] = { entries: summaries };
   await r2.writeJson(key, { ok: true, marketVersion: 2, generatedAt: isoNow(), shard, authors });
@@ -41,15 +45,15 @@ function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]):
   return Array.from(byId.values()).sort((a, b) => rowText(b.entry, "updated_at").localeCompare(rowText(a.entry, "updated_at")));
 }
 
-function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor", reasonCodes: string[]): Record<string, unknown> {
+function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor", latestVersion: Row | undefined, reasonCodes: string[]): Record<string, unknown> {
   const summary: Record<string, unknown> = {
     id: rowText(entry, "id"),
     title: rowText(entry, "title"),
     type: rowText(entry, "type"),
     relation,
-    stateCode: rowText(entry, "state_code"),
+    stateCode: latestVersion ? rowText(latestVersion, "state_code") : rowText(entry, "state_code"),
     categoryId: rowText(entry, "category_id"),
-    updatedAt: rowText(entry, "updated_at"),
+    updatedAt: latestVersion ? rowText(latestVersion, "updated_at") : rowText(entry, "updated_at"),
   };
   if (reasonCodes.length > 0) summary.reasonCodes = reasonCodes;
   return summary;

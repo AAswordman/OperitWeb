@@ -324,9 +324,9 @@ GET /market/v2/private/publishers/{shard}.json
 }
 ```
 
-`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
+`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
 
-`reasonCodes` 只在条目存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
+`reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
 
 ### 通知
 
@@ -432,6 +432,25 @@ Authorization: Bearer <admin_token>
 GET https://api.operit.app/market/v2/admin/review/entries?stateCode={code}&limit=50&offset=0
 Authorization: Bearer <admin_token>
 ```
+
+返回 `items[]` 是待审核 version 行，每行携带 entry 摘要和目标 `version`：
+
+```json
+{
+  "id": "entry-id",
+  "title": "...",
+  "stateCode": "approved",
+  "version": {
+    "id": "version-id",
+    "entryId": "entry-id",
+    "version": "1.2.0",
+    "stateCode": "pending",
+    "publisherId": "gh_1001"
+  }
+}
+```
+
+`stateCode` 查询参数筛选的是 `market_versions.state_code`。未传时返回所有非 `approved`、非 `withdrawn` 的 version。审核台必须用 `version.id` 提交审核动作；同一 entry 有多个待审 version 时会返回多行。
 
 ## v2 定时任务
 

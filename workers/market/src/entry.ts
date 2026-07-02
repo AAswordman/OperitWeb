@@ -228,8 +228,8 @@ async function handleReviewEntries(request: Request, env: MarketEnv): Promise<Js
   const stateCode = optionalString(url.searchParams.get('stateCode'));
   const limit = Math.min(Math.max(Number(url.searchParams.get('limit') || '50'), 1), 100);
   const offset = Math.max(Number(url.searchParams.get('offset') || '0'), 0);
-  const rows = await store.d1.listReviewEntries(stateCode, limit, offset);
-  return { ok: true, limit, offset, items: rows.map(entrySummary) };
+  const rows = await store.d1.listReviewVersions(stateCode, limit, offset);
+  return { ok: true, limit, offset, items: rows.map(reviewVersionSummary) };
 }
 
 async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -332,12 +332,23 @@ async function applyEntryState(env: MarketEnv, request: Request, entryId: string
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Not your entry', 403);
-  const versionPublisherIds = (await store.d1.listVersionsForEntry(entryId)).map((version) => text(version.publisher_id));
+  const versions = await store.d1.listVersionsForEntry(entryId);
+  const versionPublisherIds = versions.map((version) => text(version.publisher_id));
+  const time = new Date().toISOString();
+  const objects: MarketMutation['objects'] = [{ kind: 'Entry', operation: 'update', id: entryId, patch: { stateCode, updatedAt: time } }];
+  if (reason === 'entry.resubmitted') {
+    const ownVersions = versions
+      .filter((version) => text(version.publisher_id) === publisher.id)
+      .sort((a, b) => (text(b.updated_at) || text(b.created_at) || text(b.id)).localeCompare(text(a.updated_at) || text(a.created_at) || text(a.id)));
+    const latestOwnVersion = ownVersions[0];
+    if (!latestOwnVersion) throw new MarketError('state_invalid', 'Entry has no version for current publisher', 409);
+    objects.push({ kind: 'Version', operation: 'update', id: text(latestOwnVersion.id), patch: { stateCode, updatedAt: time } });
+  }
   const effects = withPrivatePublisherShardEffects(
     [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }],
     [publisher.id, ...versionPublisherIds],
   );
-  const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects: [{ kind: 'Entry', operation: 'update', id: entryId, patch: { stateCode, updatedAt: new Date().toISOString() } }], effects });
+  const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects, effects });
   await materializePrivatePublisherShards(store, [publisher.id, ...versionPublisherIds]);
   return { ok: true, entryId, stateCode, stats: applied.stats as unknown as JsonObject };
 }
@@ -417,6 +428,40 @@ function entrySummary(entry: Row): JsonObject {
     createdAt: text(entry.created_at),
     updatedAt: text(entry.updated_at),
     publishedAt: text(entry.published_at),
+  };
+}
+function reviewVersionSummary(row: Row): JsonObject {
+  return {
+    id: text(row.id),
+    type: text(row.type),
+    title: text(row.title),
+    description: text(row.description),
+    authorId: text(row.author_id),
+    publisherId: text(row.publisher_id),
+    allowPublicUpdates: bool(row.allow_public_updates, true),
+    author: { id: text(row.author_id), login: text(row.author_login), avatar: text(row.author_avatar) },
+    publisher: { id: text(row.publisher_id), login: text(row.publisher_login), avatar: text(row.publisher_avatar) },
+    categoryId: text(row.category_id),
+    stateCode: text(row.state_code),
+    createdAt: text(row.created_at),
+    updatedAt: text(row.updated_at),
+    publishedAt: text(row.published_at),
+    version: {
+      id: text(row.version_id),
+      entryId: text(row.id),
+      version: text(row.version),
+      formatVer: text(row.format_ver),
+      publisherId: text(row.version_publisher_id),
+      publisher: { id: text(row.version_publisher_id), login: text(row.version_publisher_login), avatar: text(row.version_publisher_avatar) },
+      minAppVer: text(row.min_app_ver),
+      maxAppVer: text(row.max_app_ver),
+      runtimePackageId: text(row.runtime_pkg),
+      stateCode: text(row.version_state_code),
+      changelog: text(row.changelog),
+      createdAt: text(row.version_created_at),
+      updatedAt: text(row.version_updated_at),
+      publishedAt: text(row.version_published_at),
+    },
   };
 }
 function entryDetail(entry: Row): JsonObject {

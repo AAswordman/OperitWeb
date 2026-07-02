@@ -217,10 +217,6 @@ function rejectUnreachableRepoEntries() {
   `)) {
     exec(`UPDATE market_entries SET state_code = 'rejected', updated_at = ? WHERE id = ?`, [now, entry.entry_id]);
     exec(`UPDATE market_versions SET state_code = 'rejected', updated_at = ? WHERE entry_id = ?`, [now, entry.entry_id]);
-    exec(`
-      INSERT OR IGNORE INTO market_entry_reasons (entry_id, reason_code, created_at)
-      VALUES (?, 'repository-unreachable', ?)
-    `, [entry.entry_id, now]);
     for (const version of rows('SELECT id FROM market_versions WHERE entry_id = ?', [entry.entry_id])) {
       exec(`
         INSERT OR IGNORE INTO market_version_reasons (version_id, reason_code, created_at)

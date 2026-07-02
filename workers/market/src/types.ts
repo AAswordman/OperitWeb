@@ -190,11 +190,12 @@ export interface D1Backend {
   getTypes(): Promise<Row[]>;
   getFormatVersions(): Promise<Row[]>;
   getStateCodes(): Promise<Row[]>;
-  listEntryReasons(entryId: string): Promise<Row[]>;
+  listVersionReasons(versionId: string): Promise<Row[]>;
+  listAuthorEntryVersions(authorId: string, entryId: string): Promise<Row[]>;
   listPublisherEntries(publisherId: string): Promise<Row[]>;
   listVersionPublisherEntries(publisherId: string): Promise<Row[]>;
   listShardPublisherEntries(shard: string): Promise<Row[]>;
-  listReviewEntries(stateCode: string | undefined, limit: number, offset: number): Promise<Row[]>;
+  listReviewVersions(stateCode: string | undefined, limit: number, offset: number): Promise<Row[]>;
   listAllEntries(): Promise<Row[]>;
   listVersionsForEntry(entryId: string): Promise<Row[]>;
   listVersionsForArtifactProjectKey(projectKey: string): Promise<Row[]>;
@@ -231,7 +232,6 @@ export interface BuildSnapshot {
   types: Row[];
   formatVersions: Row[];
   stateCodes: Row[];
-  entryReasons: Row[];
   versionReasons: Row[];
   curations: Row[];
   authors: Row[];

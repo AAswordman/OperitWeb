@@ -3,7 +3,7 @@ import type { MarketMutation, MarketObjectOperation } from '../types.js';
 
 interface ReviewEntryInput { entryId: string; actorId: string; versionId?: string; publishedAt?: string }
 interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string }
-interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId?: string }
+interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId: string }
 interface ReviewVersionReasonInput extends ReviewReasonInput { versionId: string }
 interface CurationInput { entryId: string; actorId: string; listKey: string; position: number; operation?: Extract<MarketObjectOperation, 'create' | 'update' | 'hide'> }
 
@@ -60,16 +60,14 @@ export function reviewRejectEntry({ entryId, actorId, reasonCode, versionId }: R
     kind: 'Entry', operation: 'reject', id: entryId,
     patch: { stateCode: 'rejected', updatedAt: time },
   }];
-  if (versionId !== undefined) {
-    objects.push({
-      kind: 'Version', operation: 'reject', id: versionId,
-      patch: { stateCode: 'rejected', updatedAt: time },
-    });
-  }
+  objects.push({
+    kind: 'Version', operation: 'reject', id: versionId,
+    patch: { stateCode: 'rejected', updatedAt: time },
+  });
   if (reasonCode !== undefined) {
     objects.push({
-      kind: 'ReviewReason', operation: 'create', id: `reason-entry-${entryId}-${reasonCode}`,
-      value: { entryId, reasonCode, createdAt: time },
+      kind: 'ReviewReason', operation: 'create', id: `reason-version-${versionId}-${reasonCode}`,
+      value: { versionId, reasonCode, createdAt: time },
     });
   }
   return {
@@ -120,16 +118,14 @@ export function reviewRequestChangesEntry({ entryId, actorId, reasonCode, versio
     kind: 'Entry', operation: 'request_changes', id: entryId,
     patch: { stateCode: 'changes_requested', updatedAt: time },
   }];
-  if (versionId !== undefined) {
-    objects.push({
-      kind: 'Version', operation: 'request_changes', id: versionId,
-      patch: { stateCode: 'changes_requested', updatedAt: time },
-    });
-  }
+  objects.push({
+    kind: 'Version', operation: 'request_changes', id: versionId,
+    patch: { stateCode: 'changes_requested', updatedAt: time },
+  });
   if (reasonCode !== undefined) {
     objects.push({
-      kind: 'ReviewReason', operation: 'create', id: `reason-entry-${entryId}-${reasonCode}`,
-      value: { entryId, reasonCode, createdAt: time },
+      kind: 'ReviewReason', operation: 'create', id: `reason-version-${versionId}-${reasonCode}`,
+      value: { versionId, reasonCode, createdAt: time },
     });
   }
   return {

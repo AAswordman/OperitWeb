@@ -307,30 +307,6 @@ CREATE TABLE market_reason_codes (
 - `scope=author_block` 的原因码用于作者封禁。
 - 旧 Issue label 只写 `legacy_label`；非 legacy 原因码可以为空。
 
-#### `market_entry_reasons`
-
-条目当前原因码关系表。一个条目可以有多个原因码。
-
-```sql
-CREATE TABLE market_entry_reasons (
-  entry_id     TEXT NOT NULL,
-  reason_code  TEXT NOT NULL,
-  created_at   TEXT NOT NULL,
-  PRIMARY KEY(entry_id, reason_code),
-  FOREIGN KEY(entry_id) REFERENCES market_entries(id),
-  FOREIGN KEY(reason_code) REFERENCES market_reason_codes(code)
-);
-
-CREATE INDEX idx_entry_reasons_reason ON market_entry_reasons(reason_code);
-```
-
-规则：
-
-- `state_code` 表达条目当前市场状态；`market_entry_reasons` 表达审核原因。
-- `changes_requested` 和 `rejected` 可以挂多个原因码。
-- `pending`、`approved` 和 `withdrawn` 默认不挂原因码；审核或作者撤回到这些状态时清空原因码。
-- 一次性迁移脚本把 `reason:*` labels 导入 `market_entry_reasons` / `market_version_reasons`。
-
 #### `market_authors`
 
 作者表。作者是市场的一等对象，不重复塞在每条 entry 里。
@@ -453,7 +429,7 @@ CREATE INDEX idx_versions_public ON market_versions(entry_id, state_code, publis
 
 #### `market_version_reasons`
 
-版本当前原因码关系表。条目元信息问题挂 `market_entry_reasons`；版本包、安装配置、兼容范围、下载资产、repo 快照问题挂这里。
+版本当前原因码关系表。审核打回/拒绝原因全部挂到具体 version；entry 只保留整体生命周期状态，不保存原因码。
 
 ```sql
 CREATE TABLE market_version_reasons (
@@ -470,9 +446,10 @@ CREATE INDEX idx_version_reasons_reason ON market_version_reasons(reason_code);
 
 规则：
 
-- 新版本审核打回或拒绝时，原因写 `market_version_reasons`，不污染 entry。
+- 首发审核打回或拒绝时，entry 和目标 version 的 `state_code` 同步变更，原因只写 `market_version_reasons`。
+- 已公开 entry 的新版本审核打回或拒绝时，只更新目标 version，entry 保持 `approved`，原因写 `market_version_reasons`。
 - 版本审核通过或重新提交为 `pending` 时，清空该 version 的原因码。
-- 旧 Issue 迁移时如果原因明显指向安装包/安装配置/资产/repo 内容，写 `market_version_reasons`；否则写 `market_entry_reasons`。无法判断时优先写 entry 原因，避免丢失旧审核语义。
+- 旧 Issue 迁移只写 `market_version_reasons`。无法安全定位到唯一失败 version 的历史 entry reason 不自动迁移，人工确认后再处理。
 
 #### `artifact_projects`
 

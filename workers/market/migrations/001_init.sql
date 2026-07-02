@@ -54,17 +54,7 @@ CREATE TABLE IF NOT EXISTS market_reason_codes (
   sort_order        INTEGER NOT NULL DEFAULT 0
 );
 
--- 5.2.6 market_entry_reasons
-CREATE TABLE IF NOT EXISTS market_entry_reasons (
-  entry_id    TEXT NOT NULL,
-  reason_code TEXT NOT NULL,
-  created_at  TEXT NOT NULL,
-  PRIMARY KEY(entry_id, reason_code),
-  FOREIGN KEY(entry_id) REFERENCES market_entries(id) ON DELETE CASCADE,
-  FOREIGN KEY(reason_code) REFERENCES market_reason_codes(code)
-);
-
--- 5.2.7 market_authors
+-- 5.2.6 market_authors
 CREATE TABLE IF NOT EXISTS market_authors (
   id                  TEXT PRIMARY KEY,
   github_id           INTEGER NOT NULL UNIQUE,

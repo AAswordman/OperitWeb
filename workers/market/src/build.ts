@@ -160,18 +160,19 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
   // publisher shards (256, skip empty)
   const t3 = Date.now();
   const publisherWriteStart = r2.stats.recentWrites.length;
-  const entryReasonCodes = new Map<string, string[]>();
-  for (const reason of snap.entryReasons) {
-    const entryId = rowText(reason, 'entry_id');
+  const versionReasonCodes = new Map<string, string[]>();
+  for (const reason of snap.versionReasons) {
+    const versionId = rowText(reason, 'version_id');
     const reasonCode = rowText(reason, 'reason_code');
-    if (!entryId || !reasonCode) continue;
-    const codes = entryReasonCodes.get(entryId) ?? [];
+    if (!versionId || !reasonCode) continue;
+    const codes = versionReasonCodes.get(versionId) ?? [];
     codes.push(reasonCode);
-    entryReasonCodes.set(entryId, codes);
+    versionReasonCodes.set(versionId, codes);
   }
   const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[] }> }>>();
   for (let i = 0; i < PUBLISHER_SHARDS; i++) publisherShards.set(i.toString(16).padStart(2, '0'), {});
   const entriesByIdForPublishers = new Map<string, Row>();
+  const latestVersionByAuthorEntry = latestVersionsByAuthorEntry(snap.versions);
   for (const entry of snap.entries) {
     entriesByIdForPublishers.set(rowText(entry, 'id'), entry);
     const authorId = rowText(entry, 'publisher_id');
@@ -180,15 +181,16 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const authors = publisherShards.get(shard)!;
     const bucket = authors[authorId] ?? { entries: [] };
     const entryId = rowText(entry, 'id');
-    const reasonCodes = entryReasonCodes.get(entryId) ?? [];
+    const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
+    const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
       type: rowText(entry, 'type'),
       relation: 'owner',
-      stateCode: rowText(entry, 'state_code'),
+      stateCode: latestVersion ? rowText(latestVersion, 'state_code') : rowText(entry, 'state_code'),
       categoryId: rowText(entry, 'category_id'),
-      updatedAt: rowText(entry, 'updated_at'),
+      updatedAt: latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at'),
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     authors[authorId] = bucket;
@@ -205,15 +207,16 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       continue;
     }
     const entryId = rowText(entry, 'id');
-    const reasonCodes = entryReasonCodes.get(entryId) ?? [];
+    const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
+    const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
       type: rowText(entry, 'type'),
       relation: 'contributor',
-      stateCode: rowText(entry, 'state_code'),
+      stateCode: latestVersion ? rowText(latestVersion, 'state_code') : rowText(entry, 'state_code'),
       categoryId: rowText(entry, 'category_id'),
-      updatedAt: rowText(entry, 'updated_at'),
+      updatedAt: latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at'),
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
@@ -410,6 +413,27 @@ function entryShardOf(entryId: string): string {
 
 function publisherShardOf(authorId: string): string {
   return scopeHash(authorId).substring(0, 2).toLowerCase();
+}
+
+function latestVersionsByAuthorEntry(versions: Row[]): Map<string, Row> {
+  const result = new Map<string, Row>();
+  for (const version of versions) {
+    const authorId = rowText(version, 'publisher_id');
+    const entryId = rowText(version, 'entry_id');
+    if (!authorId || !entryId) continue;
+    const key = authorEntryKey(authorId, entryId);
+    const current = result.get(key);
+    if (!current || versionSortValue(version).localeCompare(versionSortValue(current)) > 0) result.set(key, version);
+  }
+  return result;
+}
+
+function authorEntryKey(authorId: string, entryId: string): string {
+  return `${authorId}\u0000${entryId}`;
+}
+
+function versionSortValue(version: Row): string {
+  return rowText(version, 'updated_at') || rowText(version, 'created_at') || rowText(version, 'id');
 }
 
 export function scopeHash(text: string): string {
