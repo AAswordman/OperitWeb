@@ -819,6 +819,41 @@ test('download analytics deduplicates same asset client per day', async () => {
   afterTest(ctx);
 });
 
+test('analytics aggregate records existing entries and ignores missing entry ids', async () => {
+  const ctx = await makeEnv();
+  const { env, db, store } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession);
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const aggResult = await store.aggregateV2Analytics({
+    windowStart: '2026-07-02T00:00:00.000Z',
+    windowEnd: '2026-07-02T01:00:00.000Z',
+    source: 'test',
+    rows: [
+      { event: 'download', type: 'mcp', entryId: pub.entryId, total: 2, sampleInterval: 1, lastAt: '2026-07-02T00:30:00.000Z' },
+      { event: 'download', type: 'package', entryId: 'package-artifact', total: 6, sampleInterval: 1, lastAt: '2026-07-02T00:40:00.000Z' },
+    ],
+  });
+
+  assert.ok(aggResult.ok);
+  assert.equal(aggResult.downloads, 2);
+  assert.equal(aggResult.skippedMissingEntries, 1);
+  assert.deepEqual(aggResult.skippedEntryIds, ['package-artifact']);
+
+  const existingStats = rows(db, 'SELECT * FROM market_entry_stats WHERE entry_id = ?', [pub.entryId]);
+  assert.equal(existingStats.length, 1);
+  assert.equal(existingStats[0].downloads_total, 2);
+  assert.equal(rows(db, 'SELECT * FROM market_entry_stats WHERE entry_id = ?', ['package-artifact']).length, 0);
+
+  const cursor = rows(db, "SELECT value FROM market_meta WHERE key = 'v2_analytics_aggregate_cursor'");
+  assert.equal(cursor[0].value, '2026-07-02T01:00:00.000Z');
+  afterTest(ctx);
+});
+
 test('usage stats track D1+R2 operations for free limit estimation', async () => {
   const ctx = await makeEnv();
   const { env, store } = ctx;

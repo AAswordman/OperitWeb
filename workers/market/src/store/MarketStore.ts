@@ -121,8 +121,10 @@ export function createMarketStore(env: MarketEnv): MarketStore {
       const now = isoNow();
       let downloads = 0;
       let likes = 0;
+      let skippedMissingEntries = 0;
       const touchedEntryIds = new Set<string>();
       const touchedTypes = new Set<string>();
+      const skippedEntryIds = new Set<string>();
 
       for (const row of input.rows) {
         const event = String(row.event || '').trim();
@@ -134,6 +136,12 @@ export function createMarketStore(env: MarketEnv): MarketStore {
         const lastAt = normalizeOptionalTimestamp(row.lastAt) || input.windowEnd;
         const downloadDelta = event === 'download' ? total : 0;
         const likeDelta = event === 'like' ? total : 0;
+        const entry = await d1.getEntry(entryId);
+        if (!entry) {
+          skippedMissingEntries++;
+          skippedEntryIds.add(entryId);
+          continue;
+        }
 
         await d1.incrementEntryStats({
           entryId, type, downloadDelta, likeDelta,
@@ -174,7 +182,18 @@ export function createMarketStore(env: MarketEnv): MarketStore {
         await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'downloads', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
       }
 
-      return { ok: true, aggregated: input.rows.length, downloads, likes, entries: touchedEntryIds.size, source: input.source, windowStart: input.windowStart, windowEnd: input.windowEnd };
+      return {
+        ok: true,
+        aggregated: input.rows.length,
+        skippedMissingEntries,
+        skippedEntryIds: [...skippedEntryIds].sort(),
+        downloads,
+        likes,
+        entries: touchedEntryIds.size,
+        source: input.source,
+        windowStart: input.windowStart,
+        windowEnd: input.windowEnd,
+      };
     },
 
     async scanDirty(limit = 100) {

@@ -1,4 +1,5 @@
 import { handleAuthGithub, requireAdminToken } from './auth.js';
+import { createAgentRoutes } from './agent.js';
 import { createBuildRoutes, fullBuildIfNeeded, incrementalBuild } from './build.js';
 import { createEntryRoutes } from './entry.js';
 import { createInteractRoutes } from './interact.js';
@@ -7,9 +8,35 @@ import { createV1Routes } from './old.js';
 import { createMarketStore } from './store/MarketStore.js';
 import type { JsonObject, MarketEnv } from './types.js';
 
-interface ScheduledControllerLike {}
+interface ScheduledControllerLike {
+  cron?: string;
+  scheduledTime?: number;
+}
 interface ExecutionContextLike {}
 
+type CronLogStep = {
+  name: string;
+  startedAt: string;
+  finishedAt?: string;
+  ok?: boolean;
+  durationMs?: number;
+  result?: unknown;
+  error?: { name: string; message: string; stack?: string };
+};
+
+type CronLog = {
+  ok: boolean;
+  cron: string;
+  scheduledTime: number | null;
+  startedAt: string;
+  finishedAt?: string;
+  durationMs?: number;
+  steps: CronLogStep[];
+  error?: { name: string; message: string; stack?: string };
+};
+
+
+const agent = createAgentRoutes();
 const v1 = createV1Routes();
 
 function ensureStore(env: MarketEnv): MarketEnv {
@@ -31,6 +58,10 @@ export default {
       const url = new URL(request.url);
       const pathname = url.pathname;
 
+      if (pathname.startsWith('/market-stats/agent/')) {
+        return agent.handleAgentRequest(pathname, request, env);
+      }
+
       if (pathname.startsWith('/market/v2/')) {
         const result = await routeV2(pathname, request, env);
         const response = result instanceof Response ? result : jsonResponse(result);
@@ -47,13 +78,74 @@ export default {
     }
   },
 
-  async scheduled(_controller: ScheduledControllerLike, env: MarketEnv, _ctx: ExecutionContextLike): Promise<void> {
+  async scheduled(controller: ScheduledControllerLike, env: MarketEnv, _ctx: ExecutionContextLike): Promise<void> {
+    const log: CronLog = {
+      ok: false,
+      cron: controller.cron || '',
+      scheduledTime: typeof controller.scheduledTime === 'number' ? controller.scheduledTime : null,
+      startedAt: new Date().toISOString(),
+      steps: [],
+    };
+    const started = Date.now();
     const storeEnv = ensureStore(env);
-    await createInteractRoutes().aggregateV2Analytics(storeEnv);
-    await fullBuildIfNeeded(storeEnv);
-    await incrementalBuild(storeEnv);
+    const interact = createInteractRoutes();
+    try {
+      await recordCronStep(log, 'aggregateV2Analytics', () => interact.aggregateV2Analytics(storeEnv));
+      await recordCronStep(log, 'fullBuildIfNeeded', () => fullBuildIfNeeded(storeEnv));
+      await recordCronStep(log, 'incrementalBuild', () => incrementalBuild(storeEnv));
+      log.ok = true;
+    } catch (error) {
+      log.error = serializeError(error);
+      throw error;
+    } finally {
+      log.finishedAt = new Date().toISOString();
+      log.durationMs = Date.now() - started;
+      await writeCronLog(env, log);
+    }
   },
 };
+
+async function recordCronStep<T>(log: CronLog, name: string, run: () => Promise<T>): Promise<T> {
+  const step: CronLogStep = { name, startedAt: new Date().toISOString() };
+  const started = Date.now();
+  log.steps.push(step);
+  try {
+    const result = await run();
+    step.ok = true;
+    step.result = result;
+    return result;
+  } catch (error) {
+    step.ok = false;
+    step.error = serializeError(error);
+    throw error;
+  } finally {
+    step.finishedAt = new Date().toISOString();
+    step.durationMs = Date.now() - started;
+  }
+}
+
+async function writeCronLog(env: MarketEnv, log: CronLog): Promise<void> {
+  const bucket = env.MARKET_STATS_BUCKET;
+  if (!bucket) throw new Error('MARKET_STATS_BUCKET binding is not configured');
+  const body = JSON.stringify(log, null, 2);
+  await bucket.put('market/v2/debug/cron/latest.json', body, { httpMetadata: { contentType: 'application/json' } });
+  await bucket.put(`market/v2/debug/cron/${safeLogTimestamp(log.startedAt)}.json`, body, { httpMetadata: { contentType: 'application/json' } });
+}
+
+function serializeError(error: unknown): { name: string; message: string; stack?: string } {
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+      ...(error.stack ? { stack: error.stack } : {}),
+    };
+  }
+  return { name: 'NonError', message: String(error) };
+}
+
+function safeLogTimestamp(value: string): string {
+  return value.replace(/[^0-9A-Za-z._-]+/g, '-');
+}
 
 async function routeV2(pathname: string, request: Request, env: MarketEnv): Promise<Response | JsonObject> {
   const entries = createEntryRoutes();
