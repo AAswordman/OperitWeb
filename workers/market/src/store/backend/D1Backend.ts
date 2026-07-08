@@ -174,7 +174,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createArtifactProject(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO artifact_projects (id, entry_id, project_key, runtime_pkg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [
+      return run(db, 'INSERT INTO artifact_projects (id, entry_id, project_key, runtime_pkg, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)', [
         value.id, value.entryId, value.projectKey, value.runtimePkg || null, value.createdAt, value.updatedAt,
       ]);
     },

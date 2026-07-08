@@ -96,14 +96,17 @@ async function submitMcpVersion(entryRoutes, env, session, entryId, version) {
   return entryRoutes.newVersion(req, env);
 }
 
-async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0', projectId = 'script.test.artifact') {
+async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0', projectId = 'script.test.artifact', metadata = {}) {
   const releaseTag = `script-test-v${version}`;
   const assetName = `script-test-${version}.zip`;
   const now = Math.floor(Date.now() / 1000);
+  const githubId = metadata.githubId ?? GITHUB_ID_PUBLISHER;
+  const owner = metadata.owner ?? 'pub1';
+  const repo = metadata.repo ?? 'OperitForge';
   const proof = signToken(PROOF_PREFIX, {
-    github_id: GITHUB_ID_PUBLISHER,
-    owner: 'pub1',
-    repo: 'OperitForge',
+    github_id: githubId,
+    owner,
+    repo,
     releaseTag,
     assetName,
     sha256: SHA_A,
@@ -113,9 +116,11 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
   env.mockGitHubGetRelease = async () => ({ body: `<!-- operit-market-proof ${proof} -->` });
   const req = makeRequest('http://api/market/v2/publish', 'POST', {
     type: 'script',
-    title: 'Test Script',
-    description: 'Desc',
-    categoryId: 'automation',
+    title: metadata.title ?? 'Test Script',
+    description: metadata.description ?? 'Desc',
+    detail: metadata.detail ?? '',
+    categoryId: metadata.categoryId ?? 'automation',
+    allowPublicUpdates: metadata.allowPublicUpdates ?? true,
     version: {
       version,
       formatVer: 'script',
@@ -125,9 +130,9 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
     },
     asset: {
       kind: 'script',
-      url: `https://github.com/pub1/OperitForge/releases/download/${releaseTag}/${assetName}`,
-      ghOwner: 'pub1',
-      ghRepo: 'OperitForge',
+      url: `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
+      ghOwner: owner,
+      ghRepo: repo,
       ghReleaseTag: releaseTag,
       assetName,
       sha256: SHA_A,
@@ -446,6 +451,44 @@ test('requesting changes for new version keeps approved entry public', async () 
   afterTest(ctx);
 });
 
+test('contributor can patch repo entry metadata when public updates are enabled', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pub1Session, 'community-entry-patch');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
+    entry: {
+      title: 'Community MCP',
+      description: 'Community summary',
+      detail: 'Community detail',
+      categoryId: 'automation',
+      allowPublicUpdates: false,
+    },
+    version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
+  }, pub2Session);
+  const v2 = await entryRoutes.newVersion(req, env);
+
+  assert.ok(v2.ok);
+  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const version = rows(db, 'SELECT publisher_id, state_code FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  assert.equal(entry.title, 'Community MCP');
+  assert.equal(entry.description, 'Community summary');
+  assert.equal(entry.detail, 'Community detail');
+  assert.equal(entry.category_id, 'automation');
+  assert.equal(entry.allow_public_updates, 0);
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(version.publisher_id, 'gh_2001');
+  assert.equal(version.state_code, 'pending');
+  afterTest(ctx);
+});
+
 test('new repo version must be greater than current highest version', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
@@ -475,6 +518,158 @@ test('artifact publish must be greater than existing project version', async () 
     () => publishScriptArtifact(entryRoutes, env, pubSession, '1.5.0', 'script.test.artifact'),
     /must be greater than existing version/,
   );
+  afterTest(ctx);
+});
+
+test('artifact publish reusing project updates owner entry metadata', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const first = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', 'script.test.artifact', {
+    title: 'Old Script',
+    description: 'Old summary',
+    detail: 'Old detail',
+    categoryId: 'automation',
+    allowPublicUpdates: true,
+  });
+  const second = await publishScriptArtifact(entryRoutes, env, pubSession, '1.1.0', 'script.test.artifact', {
+    title: 'New Script',
+    description: 'New summary',
+    detail: 'New detail',
+    categoryId: 'search_research',
+    allowPublicUpdates: false,
+  });
+
+  assert.equal(second.entryId, first.entryId);
+  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  assert.equal(entry.title, 'New Script');
+  assert.equal(entry.description, 'New summary');
+  assert.equal(entry.detail, 'New detail');
+  assert.equal(entry.category_id, 'search_research');
+  assert.equal(entry.allow_public_updates, 0);
+  assert.equal(entry.state_code, 'pending');
+  const versions = rows(db, 'SELECT id FROM market_versions WHERE entry_id = ? ORDER BY version', [first.entryId]);
+  assert.equal(versions.length, 2);
+  afterTest(ctx);
+});
+
+test('artifact publish reusing approved project does not move entry back to pending', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const first = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', 'script.approved.artifact', {
+    title: 'Approved Script',
+    description: 'Approved summary',
+    detail: 'Approved detail',
+    categoryId: 'automation',
+    allowPublicUpdates: true,
+  });
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }),
+    env,
+  );
+
+  const second = await publishScriptArtifact(entryRoutes, env, pubSession, '1.1.0', 'script.approved.artifact', {
+    title: 'Updated Script',
+    description: 'Updated summary',
+    detail: 'Updated detail',
+    categoryId: 'search_research',
+    allowPublicUpdates: false,
+  });
+
+  assert.equal(second.entryId, first.entryId);
+  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  const newVersion = rows(db, 'SELECT state_code FROM market_versions WHERE id = ?', [second.versionId])[0];
+  assert.equal(entry.title, 'Updated Script');
+  assert.equal(entry.description, 'Updated summary');
+  assert.equal(entry.detail, 'Updated detail');
+  assert.equal(entry.category_id, 'search_research');
+  assert.equal(entry.allow_public_updates, 0);
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(newVersion.state_code, 'pending');
+  afterTest(ctx);
+});
+
+test('contributor can patch artifact entry metadata when public updates are enabled', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const first = await publishScriptArtifact(entryRoutes, env, pub1Session, '1.0.0', 'script.community.artifact', {
+    title: 'Original Script',
+    description: 'Original summary',
+    detail: 'Original detail',
+    categoryId: 'automation',
+    allowPublicUpdates: true,
+  });
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }),
+    env,
+  );
+
+  const version = '1.1.0';
+  const releaseTag = `script-test-v${version}`;
+  const assetName = `script-test-${version}.zip`;
+  const proof = signToken(PROOF_PREFIX, {
+    github_id: GITHUB_ID_PUBLISHER2,
+    owner: 'pub2',
+    repo: 'OperitForge',
+    releaseTag,
+    assetName,
+    sha256: SHA_A,
+    exp: Math.floor(Date.now() / 1000) + 3600,
+    nonce: `test-${version}`,
+  }, SECRET);
+  env.mockGitHubGetRelease = async () => ({ body: `<!-- operit-market-proof ${proof} -->` });
+
+  const req = makeRequest(`http://api/market/v2/entries/${first.entryId}/versions`, 'POST', {
+    entry: {
+      title: 'Community Script',
+      description: 'Community summary',
+      detail: 'Community detail',
+      categoryId: 'search_research',
+      allowPublicUpdates: false,
+    },
+    version: {
+      version,
+      formatVer: 'script',
+      minAppVer: '1.2.0',
+      projectId: 'script.community.artifact',
+      runtimePackageId: 'script.community.artifact',
+    },
+    asset: {
+      kind: 'script',
+      url: `https://github.com/pub2/OperitForge/releases/download/${releaseTag}/${assetName}`,
+      ghOwner: 'pub2',
+      ghRepo: 'OperitForge',
+      ghReleaseTag: releaseTag,
+      assetName,
+      sha256: SHA_A,
+    },
+  }, pub2Session);
+  const second = await entryRoutes.newVersion(req, env);
+
+  assert.ok(second.ok);
+  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  const newVersion = rows(db, 'SELECT publisher_id, state_code, runtime_pkg FROM market_versions WHERE id = ?', [second.versionId])[0];
+  assert.equal(entry.title, 'Community Script');
+  assert.equal(entry.description, 'Community summary');
+  assert.equal(entry.detail, 'Community detail');
+  assert.equal(entry.category_id, 'search_research');
+  assert.equal(entry.allow_public_updates, 0);
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(newVersion.publisher_id, 'gh_2001');
+  assert.equal(newVersion.state_code, 'pending');
+  assert.equal(newVersion.runtime_pkg, 'script.community.artifact');
   afterTest(ctx);
 });
 

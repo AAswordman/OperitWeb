@@ -13,6 +13,7 @@ import {
   requireSha256,
   requireString,
   signToken,
+  slug,
   validateAllowedUrlHost,
   verifyToken,
 } from './shared.js';
@@ -68,11 +69,12 @@ async function handlePublish(request: Request, env: MarketEnv): Promise<JsonObje
   const type = requireMarketType(body.type);
   const title = requireString(body.title, 'title');
   const description = requireString(body.description, 'description');
+  const detail = optionalString(body.detail);
   const categoryId = optionalString(body.categoryId);
   const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates) ?? true;
   const versionInput = requireVersionInput(asRecord(body.version));
-  if (isRepoType(type)) return publishRepoEntry(env, store, publisher, type, title, description, categoryId, allowPublicUpdates, versionInput, body);
-  if (isArtifactType(type)) return publishArtifactEntry(env, store, session, publisher, type, title, description, categoryId, allowPublicUpdates, versionInput, body);
+  if (isRepoType(type)) return publishRepoEntry(env, store, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body);
+  if (isArtifactType(type)) return publishArtifactEntry(env, store, session, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body);
   throw new MarketError('validation_failed', `Unsupported type: ${type}`);
 }
 
@@ -85,7 +87,7 @@ async function handlePublishProof(request: Request, env: MarketEnv): Promise<Jso
   return { ok: true, proof: signToken(PROOF_PREFIX, payload, secret) };
 }
 
-async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
+async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: MarketAuthor, type: string, title: string, description: string, detail: string | undefined, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
   const sourceBody = asRecord(body.source);
   const repoBody = asRecord(body.repoVersion);
   const source = normalizeGithubRepoUrl(sourceBody.url);
@@ -96,19 +98,84 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   const repoOwner = await upsertAuthorFromGithubOwner(requireDb(env), { githubId: repo.ownerId, login: repo.ownerLogin, avatar: repo.ownerAvatar });
   const commitSha = await resolveRef(env, source.owner, source.repo, refType, refName);
   const installConfig = optionalString(repoBody.installConfig);
-  const mutation = publishRepoMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
+  const mutation = publishRepoMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
   const applied = await store.apply(mutation);
   await materializePrivatePublisherShards(store, [publisher.id]);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
-async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
+async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, detail: string | undefined, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
   const artifact = await validateArtifactVersion(env, session, body);
+  const projectVersions = await store.d1.listVersionsForArtifactProjectKey(artifact.projectId);
   await assertVersionGreaterThanExisting(
     versionInput.version,
-    await store.d1.listVersionsForArtifactProjectKey(artifact.projectId),
+    projectVersions,
   );
-  const mutation = publishArtifactMutation({ type, title, description, ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
+  const existingVersion = projectVersions[0];
+  if (existingVersion) {
+    const entryId = text(existingVersion.entry_id);
+    const entry = await store.d1.getEntry(entryId);
+    if (!entry) throw new MarketError('state_invalid', 'Artifact project entry not found');
+    const originalPublisherId = text(entry.publisher_id);
+    if (originalPublisherId !== publisher.id && !bool(entry.allow_public_updates, true)) {
+      throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
+    }
+    const now = new Date().toISOString();
+    const versionId = `${entryId}-v-${slug(versionInput.version)}`;
+    const assetId = `asset-${versionId}-${slug(artifact.asset.assetName)}`;
+    const objects: MarketMutation['objects'] = [
+      {
+        kind: 'Version',
+        operation: 'create',
+        id: versionId,
+        value: {
+          id: versionId,
+          entryId,
+          ...versionInput,
+          runtimePackageId: artifact.runtimePackageId,
+          publisherId: publisher.id,
+          stateCode: 'pending',
+          createdAt: now,
+          updatedAt: now,
+        },
+      },
+      {
+        kind: 'Asset',
+        operation: 'create',
+        id: assetId,
+        value: {
+          id: assetId,
+          versionId,
+          kind: artifact.asset.kind,
+          url: artifact.asset.url,
+          sha256: artifact.asset.sha256,
+          assetName: artifact.asset.assetName,
+          createdAt: now,
+        },
+      },
+    ];
+    objects.push({
+      kind: 'Entry',
+      operation: 'update',
+      id: entryId,
+      patch: {
+        title,
+        description,
+        ...(detail !== undefined ? { detail } : {}),
+        ...(categoryId !== undefined ? { categoryId } : {}),
+        allowPublicUpdates,
+        updatedAt: now,
+      },
+    });
+    const effects = withPrivatePublisherShardEffects(
+      [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }, { projection: 'asset.detail', scope: { assetId } }],
+      [originalPublisherId, publisher.id],
+    );
+    const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects });
+    await materializePrivatePublisherShards(store, [originalPublisherId, publisher.id]);
+    return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
+  }
+  const mutation = publishArtifactMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
   const applied = await store.apply(mutation);
   await materializePrivatePublisherShards(store, [publisher.id]);
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
@@ -125,7 +192,6 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
   const update = parseEntryUpdateInput(await readBody(request));
   const patch = {
     ...update,
-    stateCode: 'pending',
     updatedAt: new Date().toISOString(),
   };
   const applied = await store.apply({
@@ -164,9 +230,6 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const body = await readBody(request);
   const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
   const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
-  if (hasEntryPatch && originalPublisherId !== publisher.id) {
-    throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata with a new version', 403);
-  }
   let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
@@ -178,7 +241,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   }
   const now = new Date().toISOString();
   if (hasEntryPatch) {
-    objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { ...entryPatchInput, stateCode: 'pending', updatedAt: now } });
+    objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { ...entryPatchInput, updatedAt: now } });
   }
   objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, stateCode: 'pending', createdAt: now, updatedAt: now } });
   if (isRepoType(text(entry.type))) {

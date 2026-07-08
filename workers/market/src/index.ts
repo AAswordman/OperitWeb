@@ -90,9 +90,9 @@ export default {
     const storeEnv = ensureStore(env);
     const interact = createInteractRoutes();
     try {
-      await recordCronStep(log, 'aggregateV2Analytics', () => interact.aggregateV2Analytics(storeEnv));
-      await recordCronStep(log, 'fullBuildIfNeeded', () => fullBuildIfNeeded(storeEnv));
-      await recordCronStep(log, 'incrementalBuild', () => incrementalBuild(storeEnv));
+      await recordCronStep(log, 'aggregateV2Analytics', () => interact.aggregateV2Analytics(storeEnv), env);
+      await recordCronStep(log, 'fullBuildIfNeeded', () => fullBuildIfNeeded(storeEnv), env);
+      await recordCronStep(log, 'incrementalBuild', () => incrementalBuild(storeEnv), env);
       log.ok = true;
     } catch (error) {
       log.error = serializeError(error);
@@ -105,7 +105,7 @@ export default {
   },
 };
 
-async function recordCronStep<T>(log: CronLog, name: string, run: () => Promise<T>): Promise<T> {
+async function recordCronStep<T>(log: CronLog, name: string, run: () => Promise<T>, env?: MarketEnv): Promise<T> {
   const step: CronLogStep = { name, startedAt: new Date().toISOString() };
   const started = Date.now();
   log.steps.push(step);
@@ -121,6 +121,9 @@ async function recordCronStep<T>(log: CronLog, name: string, run: () => Promise<
   } finally {
     step.finishedAt = new Date().toISOString();
     step.durationMs = Date.now() - started;
+    if (env) {
+      void writeCronLog(env, log).catch(() => {});
+    }
   }
 }
 
@@ -179,6 +182,11 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv): Prom
     await requireAdminToken(request, env);
     return build.buildR2(storeEnv);
   }
+  if (pathname === '/market/v2/admin/incremental-build' && request.method === 'POST') {
+    await requireAdminToken(request, env);
+    return incrementalBuild(storeEnv);
+  }
+
   if (pathname === '/market/v2/admin/v1-rebuild' && request.method === 'POST') {
     await requireAdminToken(request, env);
     await v1.handleScheduled(env);

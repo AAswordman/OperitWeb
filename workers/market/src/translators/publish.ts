@@ -5,6 +5,7 @@ interface RepoPublishInput {
   type: string;
   title: string;
   description: string;
+  detail?: string;
   categoryId?: string;
   publisherId: string;
   authorId: string;
@@ -27,6 +28,7 @@ interface ArtifactPublishInput {
   type: string;
   title: string;
   description: string;
+  detail?: string;
   categoryId?: string;
   publisherId: string;
   authorId: string;
@@ -58,6 +60,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         type: input.type,
         title: input.title,
         description: input.description,
+        detail: input.detail || '',
         authorId: input.authorId,
         publisherId: input.publisherId,
         allowPublicUpdates: input.allowPublicUpdates ?? true,
@@ -138,6 +141,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         type: input.type,
         title: input.title,
         description: input.description,
+        detail: input.detail || '',
         authorId: input.authorId,
         publisherId: input.publisherId,
         allowPublicUpdates: input.allowPublicUpdates ?? true,

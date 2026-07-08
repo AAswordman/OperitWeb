@@ -82,9 +82,19 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
     await store.deleteDirty('entry.versions', registry.scopeKeyOf({ entryId }));
   }
 
-  for (const plan of entryShardPlans.values()) {
-    await store.materialize(plan);
-    count++;
+  if (entryShardPlans.size > 0) {
+    const snap = await store.loadBuildSnapshot();
+    const index = createBuildSnapshotIndex(snap);
+    const shards = new Set<string>();
+    for (const plan of entryShardPlans.values()) {
+      const scope = registry.normalizeScope('entry.shard', plan.scope);
+      shards.add(text(scope.shard));
+    }
+    count += await buildEntryShards(snap, index, r2, registry, shards);
+    for (const row of dirtyRows) {
+      if (text(row.projection) !== 'entry.shard') continue;
+      await store.deleteDirty('entry.shard', text(row.scope_key));
+    }
   }
 
   for (const { plan, scopeKey } of directPlans) {
@@ -96,7 +106,71 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
   if (listDirty.length > 0) {
     const snap = await store.loadBuildSnapshot();
     const index = createBuildSnapshotIndex(snap);
-    count += await buildAllListPages(snap, index, r2, registry);
+    // Only rebuild the list+sort combinations that have dirty entries, across all their pages
+    const neededScopes = new Set<string>();
+    const neededSorts = new Set<string>();
+    for (const { scopeKey } of listDirty) {
+      const scope = parseScopeKey(scopeKey);
+      let list: { type?: string; categoryId?: string } | undefined;
+      try { list = scope.list ? JSON.parse(scope.list) : undefined; } catch { /* ignore */ }
+      const sort = scope.sort;
+      if (sort) neededSorts.add(sort);
+      if (list !== undefined) {
+        neededScopes.add(JSON.stringify(list, Object.keys(list).sort()));
+      } else if (scope.listRaw) {
+        neededScopes.add(scope.listRaw);
+      }
+    }
+    // If no specific list scope could be parsed, fall back to all scopes
+    if (neededScopes.size === 0 && neededSorts.size === 0) {
+      count += await buildAllListPages(snap, index, r2, registry);
+    } else {
+      const scopesToBuild = neededScopes.size > 0
+        ? [...neededScopes].map((s) => JSON.parse(s) as { type?: string; categoryId?: string })
+        : buildListScopes(snap);
+      const sortsToBuild = neededSorts.size > 0
+        ? [...neededSorts].filter((s): s is SortKey => (SORTS as readonly string[]).includes(s))
+        : [...SORTS];
+      const pageSize = 100;
+      const publicEntryIds = publicEntryIdSet(index);
+      const reactionTotals = reactionTotalsByEntry(snap, index);
+      const downloadsByEntry = downloadsByEntryId(index);
+      const sortFns: Record<SortKey, (a: Row, b: Row) => number> = {
+        updated: (a, b) => rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at')),
+        likes: (a, b) => {
+          const aLikes = reactionTotals.get(rowText(a, 'id')) ?? 0;
+          const bLikes = reactionTotals.get(rowText(b, 'id')) ?? 0;
+          return bLikes - aLikes || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+        },
+        downloads: (a, b) => {
+          const aDownloads = downloadsByEntry.get(rowText(a, 'id')) ?? 0;
+          const bDownloads = downloadsByEntry.get(rowText(b, 'id')) ?? 0;
+          return bDownloads - aDownloads || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+        },
+      };
+      for (const list of scopesToBuild) {
+        for (const sort of sortsToBuild) {
+          if (!(SORTS as readonly string[]).includes(sort)) continue;
+          const approved = snap.entries
+            .filter((e) => rowText(e, 'state_code') === 'approved')
+            .filter((entry) => publicEntryIds.has(rowText(entry, 'id')))
+            .filter((entry) => !list.type || rowText(entry, 'type') === list.type)
+            .filter((entry) => !list.categoryId || rowText(entry, 'category_id') === list.categoryId)
+            .sort(sortFns[sort]);
+          const totalPages = Math.ceil(approved.length / pageSize);
+          for (let page = 1; page <= totalPages; page++) {
+            const slice = approved.slice((page - 1) * pageSize, page * pageSize);
+            const items = slice.map((entry) => buildEntryFromSnapshot(entry, snap, index));
+            const key = registry.keyOf('list.page', { list, sort, page });
+            await r2.writeJson(key, {
+              ok: true, marketVersion: 2, generatedAt: isoNow(),
+              list, sort, page, pageSize, total: approved.length, items,
+            });
+            count++;
+          }
+        }
+      }
+    }
     for (const { projection, scopeKey } of listDirty) {
       await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
     }
@@ -319,6 +393,37 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
     }
   }
 
+  return count;
+}
+
+async function buildEntryShards(
+  snap: BuildSnapshot,
+  index: ReturnType<typeof createBuildSnapshotIndex>,
+  r2: MarketStore['r2'],
+  registry: MarketStore['projectionRegistry'],
+  shards: Set<string>,
+): Promise<number> {
+  const publicEntryIds = publicEntryIdSet(index);
+  const entriesByShard = new Map<string, Row[]>();
+  for (const shard of shards) entriesByShard.set(shard, []);
+  for (const entry of snap.entries) {
+    if (rowText(entry, 'state_code') !== 'approved') continue;
+    const entryId = rowText(entry, 'id');
+    if (!publicEntryIds.has(entryId)) continue;
+    const shard = entryShardOf(entryId);
+    const rows = entriesByShard.get(shard);
+    if (rows) rows.push(entry);
+  }
+
+  let count = 0;
+  for (const [shard, entries] of entriesByShard) {
+    const entriesById: Record<string, unknown> = {};
+    for (const entry of entries) entriesById[rowText(entry, 'id')] = buildEntryFromSnapshot(entry, snap, index);
+    await r2.writeJson(registry.keyOf('entry.shard', { shard }), {
+      ok: true, marketVersion: 2, generatedAt: isoNow(), shard, entriesById,
+    });
+    count++;
+  }
   return count;
 }
 
