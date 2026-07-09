@@ -325,7 +325,7 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
-  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId })
     : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId }));
@@ -346,7 +346,7 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
-  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
     : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
@@ -366,7 +366,7 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
-  const reviewVersionOnly = text(entry.state_code) === 'approved' && await hasApprovedVersion(store, entryId);
+  const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
     : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
@@ -450,6 +450,13 @@ function requireReviewEntryId(request: Request, body: Record<string, unknown>, a
 async function hasApprovedVersion(store: MarketStore, entryId: string): Promise<boolean> {
   const versions = await store.d1.listVersionsForEntry(entryId);
   return versions.some((version) => text(version.state_code) === 'approved');
+}
+
+function shouldReviewVersionOnly(body: Record<string, unknown>, entry: Row, hasApproved: boolean): boolean {
+  const scope = String(body.scope ?? body.reviewScope ?? '').trim().toLowerCase();
+  if (scope === 'entry') return false;
+  if (scope === 'version') return true;
+  return text(entry.state_code) === 'approved' && hasApproved;
 }
 
 async function materializePrivatePublisherShards(store: MarketStore, authorIds: string[]): Promise<void> {

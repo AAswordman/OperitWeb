@@ -149,13 +149,14 @@ interface VersionActionConfig {
   approve: string;
   changes: string;
   reject: string;
-  openActionModal: (action: MarketReviewAction, row: MarketReviewRow, versionId?: string) => void;
+  openActionModal: (action: MarketReviewAction, row: MarketReviewRow, versionId?: string, scope?: MarketReviewScope) => void;
 }
 
 type ReviewFilter = ReviewState | 'all';
 type FeaturedFilter = 'all' | 'featured' | 'normal';
 type SourceFilter = 'all' | 'review' | 'published';
 type MarketReviewAction = 'approve' | 'changes_requested' | 'reject' | 'set_featured' | 'unset_featured';
+type MarketReviewScope = 'entry' | 'version';
 
 const STORAGE = {
   adminToken: 'operit_submission_admin_token',
@@ -324,10 +325,35 @@ function asReviewState(value: string): ReviewState | string {
   return value || 'pending';
 }
 
+function normalizeVersion(version: ReviewEntrySummary['version'] | MarketV2Entry['latestVersion'] | undefined, entryId: string, fallbackState: string): ReviewVersion | undefined {
+  if (!version?.id) return undefined;
+  const source = version as Partial<ReviewVersion>;
+  return {
+    id: String(version.id),
+    entryId,
+    version: String(version.version || ''),
+    formatVer: String(version.formatVer || ''),
+    publisherId: source.publisherId,
+    publisher: source.publisher,
+    minAppVer: version.minAppVer,
+    maxAppVer: version.maxAppVer,
+    runtimePackageId: version.runtimePackageId,
+    stateCode: source.stateCode || fallbackState,
+    changelog: version.changelog,
+    createdAt: source.createdAt,
+    updatedAt: source.updatedAt,
+    publishedAt: version.publishedAt,
+  };
+}
+
 function normalizeEntry(entry: ReviewEntrySummary | MarketV2Entry, source: 'review' | 'published', featuredIds: Set<string>): MarketReviewRow {
   const author = 'author' in entry ? entry.author : undefined;
   const publisher = 'publisher' in entry ? entry.publisher : undefined;
-  const version = 'version' in entry ? entry.version : undefined;
+  const version = normalizeVersion(
+    'version' in entry ? entry.version : 'latestVersion' in entry ? entry.latestVersion : undefined,
+    String(entry.id),
+    String(entry.stateCode || 'approved'),
+  );
   const versionPublisher = version?.publisher;
   const stateCode = source === 'review'
     ? asReviewState(String(version?.stateCode || entry.stateCode || 'pending'))
@@ -490,6 +516,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [detailFallback, setDetailFallback] = useState<MarketReviewRow | null>(null);
   const [actionOpen, setActionOpen] = useState(false);
   const [actionType, setActionType] = useState<MarketReviewAction>('approve');
+  const [actionScope, setActionScope] = useState<MarketReviewScope>('version');
   const [actionTarget, setActionTarget] = useState<MarketReviewRow | null>(null);
   const [actionVersionId, setActionVersionId] = useState<string | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
@@ -649,8 +676,10 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     }
   }, [adminToken, handleUnauthorized, t.loadFailed]);
 
-  const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow, versionId?: string) => {
+  const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow, versionId?: string, scope?: MarketReviewScope) => {
     setActionType(action);
+    const nextScope = scope || (row.source === 'published' && (action === 'changes_requested' || action === 'reject') ? 'entry' : 'version');
+    setActionScope(nextScope);
     setActionTarget(row);
     setActionVersionId(versionId || row.versionId || null);
     setSelectedReasonCodes([]);
@@ -688,6 +717,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           body: JSON.stringify({
             entryId: actionTarget.id,
             ...(actionVersionId ? { versionId: actionVersionId } : {}),
+            scope: actionScope,
             reasonCode: selectedReasonCodes[0],
           }),
         });
@@ -703,7 +733,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     } finally {
       setActionSubmitting(false);
     }
-  }, [actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired]);
+  }, [actionScope, actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired, t.versionRequired]);
 
   const logout = useCallback(async () => {
     localStorage.removeItem(STORAGE.adminToken);
@@ -723,13 +753,17 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         </>
       ) : null}
       {record.stateCode === 'approved' ? (
-        <Button
-          size="small"
-          icon={<StarFilled />}
-          onClick={() => openActionModal(record.featured ? 'unset_featured' : 'set_featured', record)}
-        >
-          {record.featured ? t.unsetFeatured : t.setFeatured}
-        </Button>
+        <>
+          <Button size="small" icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', record, record.versionId, 'entry')}>{t.changes}</Button>
+          <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', record, record.versionId, 'entry')}>{t.reject}</Button>
+          <Button
+            size="small"
+            icon={<StarFilled />}
+            onClick={() => openActionModal(record.featured ? 'unset_featured' : 'set_featured', record)}
+          >
+            {record.featured ? t.unsetFeatured : t.setFeatured}
+          </Button>
+        </>
       ) : null}
     </Space>
   ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured]);
@@ -943,12 +977,16 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           extra={detailFallback ? (
             <Space wrap className="operit-market-review-drawer-actions">
               {detailFallback.stateCode === 'approved' ? (
-                <Button
-                  icon={<StarFilled />}
-                  onClick={() => openActionModal(detailFallback.featured ? 'unset_featured' : 'set_featured', detailFallback)}
-                >
-                  {detailFallback.featured ? t.unsetFeatured : t.setFeatured}
-                </Button>
+                <>
+                  <Button icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', detailFallback, detailFallback.versionId, 'entry')}>{t.changes}</Button>
+                  <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailFallback, detailFallback.versionId, 'entry')}>{t.reject}</Button>
+                  <Button
+                    icon={<StarFilled />}
+                    onClick={() => openActionModal(detailFallback.featured ? 'unset_featured' : 'set_featured', detailFallback)}
+                  >
+                    {detailFallback.featured ? t.unsetFeatured : t.setFeatured}
+                  </Button>
+                </>
               ) : null}
             </Space>
           ) : null}
