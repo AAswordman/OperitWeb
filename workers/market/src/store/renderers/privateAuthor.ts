@@ -46,14 +46,21 @@ function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]):
 }
 
 function toPublisherEntrySummary(entry: Row, relation: "owner" | "contributor", latestVersion: Row | undefined, reasonCodes: string[]): Record<string, unknown> {
+  const entryStateCode = rowText(entry, "state_code");
+  const stateCode = entryStateCode === "withdrawn"
+    ? entryStateCode
+    : latestVersion ? rowText(latestVersion, "state_code") : entryStateCode;
+  const updatedAt = entryStateCode === "withdrawn"
+    ? rowText(entry, "updated_at")
+    : latestVersion ? rowText(latestVersion, "updated_at") : rowText(entry, "updated_at");
   const summary: Record<string, unknown> = {
     id: rowText(entry, "id"),
     title: rowText(entry, "title"),
     type: rowText(entry, "type"),
     relation,
-    stateCode: latestVersion ? rowText(latestVersion, "state_code") : rowText(entry, "state_code"),
+    stateCode,
     categoryId: rowText(entry, "category_id"),
-    updatedAt: latestVersion ? rowText(latestVersion, "updated_at") : rowText(entry, "updated_at"),
+    updatedAt,
   };
   if (reasonCodes.length > 0) summary.reasonCodes = reasonCodes;
   return summary;

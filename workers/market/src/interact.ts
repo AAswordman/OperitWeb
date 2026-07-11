@@ -9,7 +9,6 @@ const CLOUDFLARE_API_BASE = 'https://api.cloudflare.com/client/v4';
 const V2_ANALYTICS_CURSOR_META = 'v2_analytics_aggregate_cursor';
 const V2_ANALYTICS_DELAY_MS = 5 * 60 * 1000;
 const V2_ANALYTICS_DEFAULT_LOOKBACK_MS = 24 * 60 * 60 * 1000;
-const ASSET_DOWNLOAD_CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
 
 export function createInteractRoutes(): {
   addComment(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -132,56 +131,21 @@ async function downloadAsset(request: Request, env: MarketEnv): Promise<Response
   const dayBucket = utcDayBucket();
   const actorHash = await hashForAnalytics(`download:${assetId}:${clientFingerprint(request, env)}`);
   env.MARKET_ANALYTICS?.writeDataPoint?.({ blobs: ['v2', 'download', item.type, item.entryId, assetId, actorHash, dayBucket], doubles: [1, Date.now()], indexes: [item.entryId] });
-  return proxyAssetDownload(request, assetId, { url: assetUrl, sha256: item.sha256, assetName: item.assetName });
+  return redirectAssetDownload(assetId, { url: assetUrl, sha256: item.sha256, assetName: item.assetName });
 }
 
-async function proxyAssetDownload(request: Request, assetId: string, item: { url: string; sha256?: string; assetName?: string }): Promise<Response> {
-  const upstreamUrl = new URL(item.url);
-  const requestHeaders = new Headers();
-  const range = request.headers.get('range');
-  if (range) requestHeaders.set('range', range);
-  requestHeaders.set('accept', request.headers.get('accept') || '*/*');
-  const upstreamRequest = new Request(upstreamUrl.toString(), {
-    method: 'GET',
-    headers: requestHeaders,
-    cf: {
-      cacheEverything: true,
-      cacheTtl: ASSET_DOWNLOAD_CACHE_TTL_SECONDS,
-    },
-  } as RequestInit);
-  const upstream = await fetch(upstreamRequest);
-  if (!upstream.ok && upstream.status !== 206) {
-    throw new MarketError('download_failed', `Asset upstream returned ${upstream.status}`, 502);
-  }
-
-  const headers = new Headers(upstream.headers);
-  headers.set('cache-control', `public, max-age=${ASSET_DOWNLOAD_CACHE_TTL_SECONDS}, immutable`);
-  headers.set('access-control-allow-origin', '*');
-  headers.set('cross-origin-resource-policy', 'cross-origin');
+function redirectAssetDownload(assetId: string, item: { url: string; sha256?: string; assetName?: string }): Response {
+  const headers = new Headers({
+    location: item.url,
+    'cache-control': 'no-store',
+    'access-control-allow-origin': '*',
+    'cross-origin-resource-policy': 'cross-origin',
+  });
   headers.set('x-operit-market-asset-id', assetId);
   if (item.sha256) headers.set('x-operit-market-sha256', item.sha256);
-  const filename = safeDownloadFilename(item.assetName || filenameFromUrl(upstreamUrl) || `${assetId}.zip`);
-  headers.set('content-disposition', `attachment; filename="${filename}"; filename*=UTF-8''${encodeRFC5987Value(filename)}`);
-  headers.delete('set-cookie');
+  if (item.assetName) headers.set('x-operit-market-asset-name', item.assetName);
 
-  return new Response(upstream.body, {
-    status: upstream.status,
-    statusText: upstream.statusText,
-    headers,
-  });
-}
-
-function filenameFromUrl(url: URL): string {
-  const segment = url.pathname.split('/').filter(Boolean).pop() || '';
-  return decodeURIComponent(segment);
-}
-
-function safeDownloadFilename(value: string): string {
-  return value.replace(/[\\/"\r\n]/g, '_').trim() || 'download.bin';
-}
-
-function encodeRFC5987Value(value: string): string {
-  return encodeURIComponent(value).replace(/['()*]/g, (char) => `%${char.charCodeAt(0).toString(16).toUpperCase()}`);
+  return new Response(null, { status: 302, headers });
 }
 
 async function aggregateV2Analytics(env: MarketEnv): Promise<JsonObject> {

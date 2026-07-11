@@ -714,6 +714,55 @@ test('delete entry removes from public listing and D1', async () => {
   afterTest(ctx);
 });
 
+test('my entries show withdrawn entry state after entry withdrawal', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'withdrawn-private-state');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}`, 'DELETE', {}, pubSession), env);
+  const myEntries = await entryRoutes.myEntries(makeRequest(`http://api/market/v2/my/entries`, 'GET', undefined, pubSession), env);
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const version = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
+
+  assert.equal(entry.state_code, 'withdrawn');
+  assert.equal(version.state_code, 'approved');
+  assert.equal(myEntries.entries.entries[0].stateCode, 'withdrawn');
+  afterTest(ctx);
+});
+
+test('approving new version restores withdrawn entry to approved', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'withdrawn-approved-again');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}`, 'DELETE', {}, pubSession), env);
+
+  const v2 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.1.0');
+  let myEntries = await entryRoutes.myEntries(makeRequest(`http://api/market/v2/my/entries`, 'GET', undefined, pubSession), env);
+  assert.equal(myEntries.entries.entries[0].stateCode, 'withdrawn');
+
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v2.versionId }), env);
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
+  const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  myEntries = await entryRoutes.myEntries(makeRequest(`http://api/market/v2/my/entries`, 'GET', undefined, pubSession), env);
+
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(oldVersion.state_code, 'approved');
+  assert.equal(newVersion.state_code, 'approved');
+  assert.equal(myEntries.entries.entries[0].stateCode, 'approved');
+  afterTest(ctx);
+});
+
 test('my entries private shard keeps hash-collided authors isolated', async () => {
   const ctx = await makeEnv();
   const { env, r2 } = ctx;
@@ -987,21 +1036,33 @@ test('download analytics deduplicates same asset client per day', async () => {
   const pub = await publishScriptArtifact(entryRoutes, env, pubSession);
   await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
   await createBuildRoutes().buildR2(env);
-  const assetId = rows(db, 'SELECT id FROM market_assets WHERE version_id = ?', [pub.versionId])[0].id;
+  const asset = rows(db, 'SELECT id, url FROM market_assets WHERE version_id = ?', [pub.versionId])[0];
+  const assetId = asset.id;
   const originalFetch = globalThis.fetch;
-  globalThis.fetch = async () => new Response('asset-bytes', { status: 200, headers: { 'content-type': 'application/zip' } });
+  let upstreamFetches = 0;
+  globalThis.fetch = async () => {
+    upstreamFetches++;
+    throw new Error('download endpoint should redirect without proxying upstream');
+  };
 
   try {
     let req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
-    await interact.downloadAsset(req, env);
+    let response = await interact.downloadAsset(req, env);
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get('location'), asset.url);
     req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.1', 'user-agent': 'test-agent' });
-    await interact.downloadAsset(req, env);
+    response = await interact.downloadAsset(req, env);
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get('location'), asset.url);
     req = makeRequest(`http://api/market/v2/assets/${assetId}/download`, 'GET', undefined, undefined, { 'cf-connecting-ip': '203.0.113.2', 'user-agent': 'test-agent' });
-    await interact.downloadAsset(req, env);
+    response = await interact.downloadAsset(req, env);
+    assert.equal(response.status, 302);
+    assert.equal(response.headers.get('location'), asset.url);
   } finally {
     globalThis.fetch = originalFetch;
   }
 
+  assert.equal(upstreamFetches, 0);
   assert.equal(env.MARKET_ANALYTICS.events.length, 3);
 
   const aggResult = await interact.aggregateV2Analytics(env);

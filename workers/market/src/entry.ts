@@ -325,7 +325,9 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
-  const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
+  const reviewVersionOnly = text(entry.state_code) === 'withdrawn'
+    ? false
+    : shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId })
     : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId }));
