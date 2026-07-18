@@ -74,12 +74,16 @@ async function deleteComment(request: Request, env: MarketEnv): Promise<JsonObje
   const commentId = extractIdFromPath(request.url, '/comments/', '');
   const comment = await store.d1.getComment(commentId);
   if (!comment) throw new MarketError('not_found', 'Comment not found', 404);
-  if (String(comment.author_id) !== author.id) throw new MarketError('unauthorized', 'Not your comment', 403);
   const entryId = String(comment.entry_id);
+  if (String(comment.author_id) !== author.id) {
+    const entry = await store.d1.getEntry(entryId);
+    if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+    if (String(entry.publisher_id) !== author.id) throw new MarketError('unauthorized', 'Not your comment', 403);
+  }
   const page = await commentPageOf(store, comment);
   const totalBefore = await store.d1.countActiveComments(entryId);
   const lastPageBefore = Math.max(1, Math.ceil(totalBefore / COMMENT_PAGE_SIZE));
-  const applied = await store.apply(commentHideMutation({ commentId, entryId: String(comment.entry_id), actorId: author.id }));
+  const applied = await store.apply(commentHideMutation({ commentId, entryId, actorId: author.id }));
   await materializeCommentPageRange(store, entryId, 1, Math.max(page, lastPageBefore));
   return { ok: true, stats: applied.stats as unknown as JsonObject };
 }

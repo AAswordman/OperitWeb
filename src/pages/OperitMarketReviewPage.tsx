@@ -516,7 +516,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [detailFallback, setDetailFallback] = useState<MarketReviewRow | null>(null);
   const [actionOpen, setActionOpen] = useState(false);
   const [actionType, setActionType] = useState<MarketReviewAction>('approve');
-  const [actionScope, setActionScope] = useState<MarketReviewScope>('version');
+  const [actionScope, setActionScope] = useState<MarketReviewScope | undefined>(undefined);
   const [actionTarget, setActionTarget] = useState<MarketReviewRow | null>(null);
   const [actionVersionId, setActionVersionId] = useState<string | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
@@ -678,8 +678,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
 
   const openActionModal = useCallback((action: MarketReviewAction, row: MarketReviewRow, versionId?: string, scope?: MarketReviewScope) => {
     setActionType(action);
-    const nextScope = scope || (row.source === 'published' && (action === 'changes_requested' || action === 'reject') ? 'entry' : 'version');
-    setActionScope(nextScope);
+    setActionScope(scope);
     setActionTarget(row);
     setActionVersionId(versionId || row.versionId || null);
     setSelectedReasonCodes([]);
@@ -717,7 +716,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
           body: JSON.stringify({
             entryId: actionTarget.id,
             ...(actionVersionId ? { versionId: actionVersionId } : {}),
-            scope: actionScope,
+            ...(actionScope ? { scope: actionScope } : {}),
             reasonCode: selectedReasonCodes[0],
           }),
         });

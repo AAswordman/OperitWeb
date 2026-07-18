@@ -457,7 +457,6 @@ async function hasApprovedVersion(store: MarketStore, entryId: string): Promise<
 function shouldReviewVersionOnly(body: Record<string, unknown>, entry: Row, hasApproved: boolean): boolean {
   const scope = String(body.scope ?? body.reviewScope ?? '').trim().toLowerCase();
   if (scope === 'entry') return false;
-  if (scope === 'version') return true;
   return text(entry.state_code) === 'approved' && hasApproved;
 }
 

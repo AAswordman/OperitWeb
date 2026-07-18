@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "third-party-plugin-sales-warning-2026-07-18",
+  "version": 6,
+  "enabled": true,
+  "type": "modal",
+  "priority": "high",
+  "countdownSec": 5,
+  "target": {
+    "minAppVersionCode": 0,
+    "maxAppVersionCode": null,
+    "channels": ["stable", "beta"],
+    "locale": "all"
+  },
+  "schedule": {
+    "startAt": "2026-07-18T00:00:00+08:00",
+    "endAt": null
+  },
+  "content": {
+    "defaultLocale": "zh-CN",
+    "locales": {
+      "zh-CN": {
+        "title": "公告",
+        "body": "今日，我们发现部分商家在第三方渠道售卖低劣插件，更有甚者直接将软件已有功能包装为付费项目进行虚假宣传，或倒卖插件市场中的免费插件，骗取用户钱财。\n\n在此明确一点：Operit 及插件市场内的所有免费插件都是审核人员审核过，均可直接使用，无需向任何人付费。第三方插件未经官方审核，信息安全无法保障，任何在第三方渠道出现的收费售卖，均非官方行为，请大家擦亮眼睛，谨慎购买。",
+        "acknowledge": "我知道了"
+      }
+    }
+  },
+  "meta": {
+    "updatedAt": "2026-07-18T00:00:00+08:00",
+    "source": "https://operit.aaswordsman.org/announcements/history/2026-07-18-third-party-plugin-sales-warning-v6.json"
+  }
+}

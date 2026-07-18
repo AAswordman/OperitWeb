@@ -34,7 +34,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           { slug: '10-tool-mcp', label: '10. 工具：MCP' },
           { slug: '11-tool-skill', label: '11. 工具：SKILL' },
           { slug: '12-workspace-basics', label: '12. 工作区基础' },
-          { slug: '13-data-backup', label: '13. 数据备份' },
+          { slug: '13-data-backup', label: '13. 记忆库' },
           { slug: '14-waifu-mode', label: '14. WAIFU模式' },
           { slug: '15-statistics', label: '15. 统计' },
         ]

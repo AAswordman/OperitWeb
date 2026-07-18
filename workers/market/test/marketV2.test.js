@@ -270,6 +270,30 @@ test('admin approve entry makes it publicly listed, reject with reason code', as
   afterTest(ctx);
 });
 
+test('first approval approves entry even if request incorrectly asks for version scope', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'first-approve-version-scope');
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+      entryId: pub.entryId,
+      versionId: pub.versionId,
+      scope: 'version',
+    }),
+    env,
+  );
+
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const version = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(version.state_code, 'approved');
+  afterTest(ctx);
+});
+
 test('non-admin cannot review', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
@@ -982,6 +1006,35 @@ test('comments materialize affected R2 pages after create edit and delete', asyn
   assert.equal(compactedPage1.items.at(-1).body, 'Edited last comment');
   assert.equal(compactedPage2.total, 50);
   assert.equal(compactedPage2.items.length, 0);
+  afterTest(ctx);
+});
+
+test('entry publisher can delete comments on owned entry', async () => {
+  const ctx = await makeEnv();
+  const { env, db, r2 } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createInteractRoutes } = await import('../dist/interact.js');
+  const entryRoutes = createEntryRoutes();
+  const interact = createInteractRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const commenterSession = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+  const otherSession = createSession(3001, 'pub3');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession);
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const created = await interact.addComment(makeRequest(`http://api/market/v2/entries/${pub.entryId}/comments`, 'POST', { body: 'Owner should be able to remove this' }, commenterSession), env);
+  await assert.rejects(
+    () => interact.deleteComment(makeRequest(`http://api/market/v2/comments/${created.commentId}`, 'DELETE', {}, otherSession), env),
+    (error) => error instanceof MarketError && error.code === 'unauthorized' && error.status === 403
+  );
+
+  await interact.deleteComment(makeRequest(`http://api/market/v2/comments/${created.commentId}`, 'DELETE', {}, pubSession), env);
+  const commentRow = rows(db, 'SELECT status FROM market_comments WHERE id = ?', [created.commentId])[0];
+  assert.equal(commentRow.status, 'deleted');
+  const page = r2.readJson(`market/v2/comments/${pub.entryId}/page-1.json`);
+  assert.equal(page.total, 0);
+  assert.equal(page.items.length, 0);
   afterTest(ctx);
 });
 
