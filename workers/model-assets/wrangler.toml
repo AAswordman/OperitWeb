@@ -1,0 +1,13 @@
+name = "operit-model-assets"
+main = "src/index.js"
+compatibility_date = "2026-06-25"
+account_id = "c667bf70582c5ceceda8d3d183ad8e3b"
+workers_dev = true
+
+[[routes]]
+pattern = "models.operit.app"
+custom_domain = true
+
+[[r2_buckets]]
+binding = "OPERIT_MODEL_ASSETS"
+bucket_name = "operit-model-assets"
