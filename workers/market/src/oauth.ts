@@ -387,7 +387,7 @@ function optionalJsonNumber(value: JsonValue | undefined, name: string): number 
   return value;
 }
 
-function isJsonRecord(value: JsonValue): value is { [key: string]: JsonValue } {
+function isJsonRecord(value: JsonValue | undefined): value is { [key: string]: JsonValue } {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
