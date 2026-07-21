@@ -23,7 +23,7 @@ interface RepoPublishInput {
   createdAt?: string;
 }
 
-interface ArtifactAssetInput { kind: string; url: string; sha256: string; name?: string; assetName?: string }
+interface ArtifactAssetInput { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; sha256: string; name?: string; assetName?: string }
 interface ArtifactPublishInput {
   type: string;
   title: string;
@@ -180,7 +180,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
     assetIds.push(id);
     objects.push({
       kind: 'Asset', operation: 'create', id,
-      value: { id, versionId, kind: asset.kind, url: asset.url, sha256: asset.sha256, ...(asset.assetName !== undefined ? { assetName: asset.assetName } : {}), createdAt: time },
+      value: { id, versionId, kind: asset.kind, url: asset.url, ghOwner: asset.ghOwner, ghRepo: asset.ghRepo, ghReleaseTag: asset.ghReleaseTag, sha256: asset.sha256, ...(asset.assetName !== undefined ? { assetName: asset.assetName } : {}), createdAt: time },
     });
   }
 

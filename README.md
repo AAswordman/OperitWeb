@@ -97,6 +97,15 @@ pnpm dev
 
 注意：GitHub Pages 不支持像 Cloudflare Pages `_headers` 那样自定义响应头，缓存控制建议在客户端完成（query 参数 + 本地过期策略）。
 
+## 插件拒绝列表（静态 JSON）
+
+Android 客户端还会在拉取公告时同步拉取插件拒绝列表，用于阻止已知风险插件文件被导入。该列表同样是纯静态文件，不经过市场 Worker：
+
+- 最新入口：`https://operit.aaswordsman.org/plugin-denylist/latest.json`
+- 版本化内容：`https://operit.aaswordsman.org/plugin-denylist/history/*.json`
+
+格式、发布步骤和 SHA-256 计算范围见 [docs/PLUGIN_DENYLIST.md](docs/PLUGIN_DENYLIST.md)。首次发布的列表为空；只有经明确审核批准的文件 SHA-256 才能加入。
+
 ## 开发提示
 
 - 如果你新增了新的文档页面，请确保路由（`src/App.tsx`）与文档文件路径对应

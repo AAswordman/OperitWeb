@@ -10,6 +10,13 @@
 - 你想先写一个能跑的脚本工具，再逐步升级到 `TypeScript` 和 `ToolPkg`。
 - 你已经看过 `examples/quick_start.ts`，但还没完全理解 `Tools`、`complete(...)`、`exports`、`types` 目录之间的关系。
 
+## 先选对起点
+
+- 应用内 AI 协作开发
+  先安装或更新 `SandboxPackage_DEV`。实际项目在 `/sdcard/Download/Operit/dev_package/`，类型与参考资料由 Skill 安装脚本同步。本教程可用于理解格式和 API，但不要把主仓克隆与 ADB 命令当成前置条件。
+- 独立插件仓库或 Operit 源码贡献
+  本教程的仓库结构、`examples/` 和 `tools/` 调试章节直接适用。发布到市场时可直接上传本地包，也可引用作者 GitHub Release；是否为每个插件维护单独仓库由作者自行决定。
+
 ## 为什么这里要把 `examples/types` 放到中心位置
 
 如果你只看示例代码，很容易形成“能抄能跑，但不知道宿主到底提供了什么”的状态。  

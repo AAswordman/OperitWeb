@@ -7,7 +7,7 @@ const OBJECTS: Record<string, { operations: Set<string>; createFields?: Set<stri
   Version: { operations: new Set(['create', 'update', 'approve', 'reject', 'request_changes']), createFields: fields('id entryId version formatVer publisherId minAppVer maxAppVer stateCode changelog createdAt updatedAt publishedAt runtimePkg runtimePackageId'), updateFields: fields('stateCode changelog publishedAt updatedAt') },
   RepoSource: { operations: new Set(['create', 'update']), createFields: fields('id entryId sourceUrl createdAt updatedAt'), updateFields: fields('updatedAt') },
   RepoVersion: { operations: new Set(['create', 'update']), createFields: fields('id versionId refType refName commitSha installConfig createdAt updatedAt') },
-  Asset: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id versionId kind url sha256 assetName createdAt') },
+  Asset: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id versionId kind url ghOwner ghRepo ghReleaseTag sha256 assetName createdAt') },
   ArtifactProject: { operations: new Set(['create', 'update']), createFields: fields('id entryId projectKey runtimePkg createdAt updatedAt') },
   Comment: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id entryId parentId authorId body source status createdAt updatedAt'), updateFields: fields('body status updatedAt') },
   ReactionStat: { operations: new Set(['aggregate']), aggregateFields: fields('id entryId reaction ghCount cfCount totalCount updatedAt') },

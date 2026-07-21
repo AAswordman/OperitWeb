@@ -14,13 +14,11 @@ import {
   requireString,
   signToken,
   slug,
-  validateAllowedUrlHost,
-  verifyToken,
 } from './shared.js';
 import { publishArtifactMutation, publishRepoMutation } from './translators/publish.js';
 import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
 import { notifyReview } from './translators/notify.js';
-import type { GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
+import type { GitHubReleaseInfo, GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
 
 interface EntryRoutes {
   publish(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -83,7 +81,16 @@ async function handlePublishProof(request: Request, env: MarketEnv): Promise<Jso
   const body = await readBody(request);
   const secret = env.MARKET_SESSION_SECRET;
   if (!secret) throw new MarketError('server_error', 'Secret not configured', 500);
-  const payload = { github_id: session.github_id, owner: requireString(body.owner, 'owner'), repo: requireString(body.repo, 'repo'), releaseTag: requireString(body.releaseTag, 'releaseTag'), assetName: requireString(body.assetName, 'assetName'), sha256: requireSha256(body.sha256), exp: nowSeconds() + DEFAULT_PROOF_TTL_SECONDS, nonce: `proof-${Math.random().toString(36).slice(2, 10)}` };
+  const payload = {
+    github_id: session.github_id,
+    owner: requireString(body.owner, 'owner'),
+    repo: requireString(body.repo, 'repo'),
+    releaseTag: requireString(body.releaseTag, 'releaseTag'),
+    assetName: requireString(body.assetName, 'assetName'),
+    sha256: requireSha256(body.sha256),
+    exp: nowSeconds() + DEFAULT_PROOF_TTL_SECONDS,
+    nonce: `proof-${Math.random().toString(36).slice(2, 10)}`,
+  };
   return { ok: true, proof: signToken(PROOF_PREFIX, payload, secret) };
 }
 
@@ -148,6 +155,9 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
           versionId,
           kind: artifact.asset.kind,
           url: artifact.asset.url,
+          ghOwner: artifact.asset.ghOwner,
+          ghRepo: artifact.asset.ghRepo,
+          ghReleaseTag: artifact.asset.ghReleaseTag,
           sha256: artifact.asset.sha256,
           assetName: artifact.asset.assetName,
           createdAt: now,
@@ -237,7 +247,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   if (isArtifactType(text(entry.type))) {
     const artifact = await validateArtifactVersion(env, session, body);
     versionInput = { ...versionInput, runtimePackageId: artifact.runtimePackageId };
-    objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
+    objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, ghOwner: artifact.asset.ghOwner, ghRepo: artifact.asset.ghRepo, ghReleaseTag: artifact.asset.ghReleaseTag, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
   }
   const now = new Date().toISOString();
   if (hasEntryPatch) {
@@ -606,29 +616,59 @@ function parseVersion(value: string): { parts: number[]; suffix: string } {
 function requireVersionInput(input: Record<string, unknown>): VersionInput {
   return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}) };
 }
-async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; runtimePackageId: string; asset: { kind: string; url: string; sha256: string; assetName: string } }> {
+async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; runtimePackageId: string; asset: { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; sha256: string; assetName: string } }> {
   const v = asRecord(body.version) as ArtifactVersionBody;
   const a = asRecord(body.asset) as unknown as ArtifactAssetBody;
-  const asset = { kind: requireString(a.kind, 'asset.kind'), url: requireString(a.url, 'asset.url'), ghOwner: requireString(a.ghOwner, 'asset.ghOwner'), ghRepo: requireString(a.ghRepo, 'asset.ghRepo'), ghReleaseTag: requireString(a.ghReleaseTag, 'asset.ghReleaseTag'), assetName: requireString(a.assetName, 'asset.assetName'), sha256: requireSha256(a.sha256) };
-  validateAllowedUrlHost(asset.url);
-  const assetInfo = await (env.mockGitHubGetAsset || realGitHubGetAsset)(asset.ghOwner, asset.ghRepo, asset.ghReleaseTag, asset.assetName, env);
-  if (assetInfo.sha256 && assetInfo.sha256 !== asset.sha256) throw new MarketError('proof_invalid', 'Asset sha256 does not match GitHub release metadata');
-  const release = await (env.mockGitHubGetRelease || realGitHubGetRelease)(asset.ghOwner, asset.ghRepo, asset.ghReleaseTag, env);
-  const proofToken = extractProofFromBody(release.body);
-  if (!proofToken) throw new MarketError('proof_missing', 'Release proof block is missing');
-  const proof = verifyToken(PROOF_PREFIX, proofToken, env.MARKET_SESSION_SECRET || '') as Record<string, unknown>;
-  if (Number(proof.exp || 0) <= nowSeconds()) throw new MarketError('proof_expired', 'Release proof expired');
-  if (Number(proof.github_id) !== session.github_id) throw new MarketError('proof_invalid', 'Release proof github_id mismatch');
-  if (String(proof.owner || '') !== asset.ghOwner || String(proof.repo || '') !== asset.ghRepo || String(proof.releaseTag || '') !== asset.ghReleaseTag || String(proof.assetName || '') !== asset.assetName || String(proof.sha256 || '') !== asset.sha256) throw new MarketError('proof_invalid', 'Release proof payload mismatch');
-  return { projectId: requireString(v.projectId || a.projectId, 'version.projectId'), runtimePackageId: requireString(v.runtimePackageId || a.runtimePackageId, 'version.runtimePackageId'), asset };
+  const asset = { kind: requireString(a.kind, 'asset.kind'), ghOwner: requireString(a.ghOwner, 'asset.ghOwner'), ghRepo: requireString(a.ghRepo, 'asset.ghRepo'), ghReleaseTag: requireString(a.ghReleaseTag, 'asset.ghReleaseTag'), assetName: requireString(a.assetName, 'asset.assetName'), sha256: requireSha256(a.sha256) };
+  const release = await getGitHubRelease(env, asset.ghOwner, asset.ghRepo, asset.ghReleaseTag);
+  if (release.authorId !== session.github_id) {
+    throw new MarketError('unauthorized', 'GitHub release must be created by the current market publisher', 403);
+  }
+  const githubAsset = release.assets.find((candidate) => candidate.name === asset.assetName);
+  if (!githubAsset) {
+    throw new MarketError('validation_failed', 'GitHub release asset not found');
+  }
+  if (githubAsset.sha256 && githubAsset.sha256.toLowerCase() !== asset.sha256.toLowerCase()) {
+    throw new MarketError('validation_failed', 'Asset sha256 does not match GitHub release metadata');
+  }
+  return {
+    projectId: requireString(v.projectId || a.projectId, 'version.projectId'),
+    runtimePackageId: requireString(v.runtimePackageId || a.runtimePackageId, 'version.runtimePackageId'),
+    asset: {
+      kind: asset.kind,
+      url: githubAsset.browserDownloadUrl,
+      ghOwner: asset.ghOwner,
+      ghRepo: asset.ghRepo,
+      ghReleaseTag: asset.ghReleaseTag,
+      sha256: asset.sha256,
+      assetName: asset.assetName,
+    },
+  };
 }
-function extractProofFromBody(body: string): string { return /<!--\s*operit-market-proof\s*([\s\S]*?)\s*-->/i.exec(body)?.[1]?.trim() || ''; }
 async function getRepo(env: MarketEnv, owner: string, repo: string): Promise<GitHubRepoInfo> { return (env.mockGitHubGetRepo || realGitHubGetRepo)(owner, repo, env); }
+async function getGitHubRelease(env: MarketEnv, owner: string, repo: string, tag: string): Promise<GitHubReleaseInfo> { return (env.mockGitHubGetRelease || realGitHubGetRelease)(owner, repo, tag, env); }
 async function resolveRef(env: MarketEnv, owner: string, repo: string, refType: string, refName: string): Promise<string> { return (env.mockGitHubResolveRef || realGitHubResolveRef)(owner, repo, refType, refName, env); }
 async function realGitHubGetRepo(owner: string, repo: string, env: MarketEnv): Promise<GitHubRepoInfo> { const response = await githubApiFetch(`/repos/${owner}/${repo}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub repo is not accessible'); const data = await response.json() as { owner?: { id?: number; login?: string; avatar_url?: string }; private?: boolean }; return { ownerId: Number(data.owner?.id || 0), ownerLogin: String(data.owner?.login || ''), ...(data.owner?.avatar_url !== undefined ? { ownerAvatar: data.owner.avatar_url } : {}), isPublic: !data.private }; }
 async function realGitHubResolveRef(owner: string, repo: string, refType: string, refName: string, env: MarketEnv): Promise<string> { if (refType === 'commit') return refName; const response = await githubApiFetch(`/repos/${owner}/${repo}/git/${refType === 'tag' ? 'ref/tags' : 'refs/heads'}/${refName}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub ref cannot be resolved'); const data = await response.json() as { object?: { sha?: string } }; return requireString(data.object?.sha, 'commitSha'); }
-async function realGitHubGetAsset(owner: string, repo: string, tag: string, assetName: string, env: MarketEnv): Promise<{ sha256?: string }> { const response = await githubApiFetch(`/repos/${owner}/${repo}/releases/tags/${tag}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { assets?: { name?: string; sha256?: string; digest?: string }[] }; const asset = data.assets?.find((item) => item.name === assetName); const digest = asset?.digest?.startsWith('sha256:') ? asset.digest.slice('sha256:'.length) : undefined; const sha256 = asset?.sha256 || digest; return sha256 !== undefined ? { sha256 } : {}; }
-async function realGitHubGetRelease(owner: string, repo: string, tag: string, env: MarketEnv): Promise<{ body: string }> { const response = await githubApiFetch(`/repos/${owner}/${repo}/releases/tags/${tag}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found'); const data = await response.json() as { body?: string }; return { body: data.body || '' }; }
+async function realGitHubGetRelease(owner: string, repo: string, tag: string, env: MarketEnv): Promise<GitHubReleaseInfo> {
+  const response = await githubApiFetch(`/repos/${owner}/${repo}/releases/tags/${tag}`, env);
+  if (!response.ok) throw new MarketError('validation_failed', 'GitHub release not found');
+  const data = await response.json() as {
+    author?: { id?: number };
+    assets?: { name?: string; browser_download_url?: string; sha256?: string; digest?: string }[];
+  };
+  return {
+    authorId: Number(data.author?.id || 0),
+    assets: (data.assets || []).flatMap((asset) => {
+      const name = String(asset.name || '').trim();
+      const browserDownloadUrl = String(asset.browser_download_url || '').trim();
+      if (!name || !browserDownloadUrl) return [];
+      const digest = asset.digest?.startsWith('sha256:') ? asset.digest.slice('sha256:'.length) : undefined;
+      const sha256 = asset.sha256 || digest;
+      return [{ name, browserDownloadUrl, ...(sha256 ? { sha256 } : {}) }];
+    }),
+  };
+}
 function requireDb(env: MarketEnv) { if (!env.db) throw new MarketError('server_error', 'D1 database is not configured', 500); return env.db; }
 function asRecord(value: unknown): Record<string, unknown> { return isRecord(value) ? value : {}; }
 function isRecord(value: unknown): value is Record<string, unknown> { return typeof value === 'object' && value !== null && !Array.isArray(value); }

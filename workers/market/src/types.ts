@@ -44,6 +44,9 @@ export interface MarketEnv {
   MARKET_ANALYTICS_DATASET?: string;
   CLOUDFLARE_API_TOKEN?: string;
   MARKET_SESSION_SECRET?: string;
+  OPERIT_GITHUB_OAUTH_CLIENT_ID?: string;
+  OPERIT_GITHUB_OAUTH_CLIENT_SECRET?: string;
+  OPERIT_GITHUB_OAUTH_TRANSACTION_KEY?: string;
   GITHUB_TOKEN?: string;
   OPERIT_GITHUB_TOKEN?: string;
   GITHUB_APP_ID?: string;
@@ -67,12 +70,13 @@ export interface MarketEnv {
   mockGitHubGetUser?: (token: string, env: MarketEnv) => Promise<GitHubUser>;
   mockGitHubGetRepo?: (owner: string, repo: string, env: MarketEnv) => Promise<GitHubRepoInfo>;
   mockGitHubResolveRef?: (owner: string, repo: string, refType: string, refName: string, env: MarketEnv) => Promise<string>;
-  mockGitHubGetAsset?: (owner: string, repo: string, tag: string, assetName: string, env: MarketEnv) => Promise<{ sha256?: string }>;
-  mockGitHubGetRelease?: (owner: string, repo: string, tag: string, env: MarketEnv) => Promise<{ body: string }>;
+  mockGitHubGetRelease?: (owner: string, repo: string, tag: string, env: MarketEnv) => Promise<GitHubReleaseInfo>;
 }
 
 export interface GitHubUser { id: number; login: string; avatar_url?: string }
 export interface GitHubRepoInfo { ownerId: number; ownerLogin: string; ownerAvatar?: string; isPublic: boolean }
+export interface GitHubReleaseAssetInfo { name: string; browserDownloadUrl: string; sha256?: string }
+export interface GitHubReleaseInfo { authorId: number; assets: GitHubReleaseAssetInfo[] }
 
 export interface UsageStats {
   d1Reads: number;

@@ -1,4 +1,5 @@
 import { handleAuthGithub, requireAdminToken } from './auth.js';
+import { handleGitHubOAuthCallback, handleGitHubOAuthConsume, handleGitHubOAuthStart } from './oauth.js';
 import { createAgentRoutes } from './agent.js';
 import { createBuildRoutes, fullBuildIfNeeded, incrementalBuild } from './build.js';
 import { createEntryRoutes } from './entry.js';
@@ -60,6 +61,12 @@ export default {
 
       if (pathname.startsWith('/market-stats/agent/')) {
         return agent.handleAgentRequest(pathname, request, env);
+      }
+
+      if (pathname.startsWith('/oauth/github/')) {
+        const result = await routeGitHubOAuth(pathname, request, env);
+        const response = result instanceof Response ? result : jsonResponse(result);
+        return withHeaders(response, cors);
       }
 
       if (pathname.startsWith('/market/v2/')) {
@@ -192,5 +199,13 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv): Prom
     await v1.handleScheduled(env);
     return { ok: true, message: 'v1 R2 regeneration triggered' };
   }
+  throw new MarketError('not_found', 'Not found', 404);
+}
+
+async function routeGitHubOAuth(pathname: string, request: Request, env: MarketEnv): Promise<Response | JsonObject> {
+  const oauthEnv = ensureStore(env);
+  if (pathname === '/oauth/github/start' && request.method === 'POST') return handleGitHubOAuthStart(request, oauthEnv);
+  if (pathname === '/oauth/github/callback' && request.method === 'GET') return handleGitHubOAuthCallback(request, oauthEnv);
+  if (pathname === '/oauth/github/consume' && request.method === 'POST') return handleGitHubOAuthConsume(request, oauthEnv);
   throw new MarketError('not_found', 'Not found', 404);
 }

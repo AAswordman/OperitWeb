@@ -23,7 +23,7 @@ export async function buildEntryItem(d1: RendererContext['d1'], entry: Row): Pro
     }
     item.assets = (await d1.listAssets(item.id))
       .filter((a: Row) => approvedVersionIds.has(rowText(a, 'version_id')))
-      .map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
+      .map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), ...(rowOptionalText(a, 'gh_owner') ? { ghOwner: rowText(a, 'gh_owner') } : {}), ...(rowOptionalText(a, 'gh_repo') ? { ghRepo: rowText(a, 'gh_repo') } : {}), ...(rowOptionalText(a, 'gh_release_tag') ? { ghReleaseTag: rowText(a, 'gh_release_tag') } : {}), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
   }
   const latest = versions[0];
   item.contributors = buildContributors(await Promise.all(versions.map(async (version: Row) => {

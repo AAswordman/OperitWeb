@@ -168,8 +168,8 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createAsset(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_assets (id, version_id, kind, url, sha256, asset_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [
-        value.id, value.versionId, value.kind, value.url, value.sha256, value.assetName || value.name || null, value.createdAt,
+      return run(db, 'INSERT OR IGNORE INTO market_assets (id, version_id, kind, url, gh_owner, gh_repo, gh_release_tag, sha256, asset_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+        value.id, value.versionId, value.kind, value.url, value.ghOwner, value.ghRepo, value.ghReleaseTag, value.sha256, value.assetName || value.name || null, value.createdAt,
       ]);
     },
     async createArtifactProject(value) {

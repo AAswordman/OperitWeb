@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "export-pdf": "node generate-pdfs.mjs",
+    "validate:plugin-denylist": "node scripts/validate-plugin-denylist.mjs",
     "test:market-v2": "node --test workers/market/v2/test/*.test.js"
   },
   "dependencies": {

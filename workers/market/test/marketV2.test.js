@@ -6,7 +6,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
-import { MarketError, signToken, SESSION_PREFIX, PROOF_PREFIX } from '../dist/shared.js';
+import { MarketError, PROOF_PREFIX, SESSION_PREFIX, signToken, verifyToken } from '../dist/shared.js';
 import { createMarketStore } from '../dist/store/MarketStore.js';
 import { FileR2, createFileSqlite, rows } from './helpers.js';
 
@@ -35,8 +35,7 @@ async function makeEnv() {
     },
     mockGitHubGetRepo: async () => ({ ownerId: GITHUB_ID_PUBLISHER, ownerLogin: 'pub1', ownerAvatar: '', isPublic: true }),
     mockGitHubResolveRef: async () => 'resolved-commit-sha',
-    mockGitHubGetAsset: async () => ({ sha256: SHA_A }),
-    mockGitHubGetRelease: async () => ({ body: '' }),
+    mockGitHubGetRelease: async () => ({ authorId: GITHUB_ID_PUBLISHER, assets: [] }),
   };
   return { env, db, r2, store };
 }
@@ -63,6 +62,34 @@ function makeAdminRequest(url, method, body) {
     body: body ? JSON.stringify(body) : undefined,
   });
 }
+
+test('publish proof remains available for old artifact publisher clients', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const response = await entryRoutes.publishProof(
+    makeRequest('http://api/market/v2/publish/proof', 'POST', {
+      owner: 'pub1',
+      repo: 'OperitForge',
+      releaseTag: 'script-test-v1.0.0',
+      assetName: 'script-test-1.0.0.zip',
+      sha256: SHA_A,
+    }, session),
+    env,
+  );
+
+  assert.equal(response.ok, true);
+  const proof = verifyToken(PROOF_PREFIX, response.proof, SECRET);
+  assert.equal(proof.github_id, GITHUB_ID_PUBLISHER);
+  assert.equal(proof.owner, 'pub1');
+  assert.equal(proof.repo, 'OperitForge');
+  assert.equal(proof.releaseTag, 'script-test-v1.0.0');
+  assert.equal(proof.assetName, 'script-test-1.0.0.zip');
+  assert.equal(proof.sha256, SHA_A);
+  afterTest(ctx);
+});
 
 function scopeHash(text) {
   let hash = 2166136261;
@@ -99,21 +126,14 @@ async function submitMcpVersion(entryRoutes, env, session, entryId, version) {
 async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0', projectId = 'script.test.artifact', metadata = {}) {
   const releaseTag = `script-test-v${version}`;
   const assetName = `script-test-${version}.zip`;
-  const now = Math.floor(Date.now() / 1000);
   const githubId = metadata.githubId ?? GITHUB_ID_PUBLISHER;
   const owner = metadata.owner ?? 'pub1';
   const repo = metadata.repo ?? 'OperitForge';
-  const proof = signToken(PROOF_PREFIX, {
-    github_id: githubId,
-    owner,
-    repo,
-    releaseTag,
-    assetName,
-    sha256: SHA_A,
-    exp: now + 3600,
-    nonce: `test-${version}`,
-  }, SECRET);
-  env.mockGitHubGetRelease = async () => ({ body: `<!-- operit-market-proof ${proof} -->` });
+  const canonicalUrl = metadata.canonicalUrl ?? `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`;
+  env.mockGitHubGetRelease = async () => ({
+    authorId: githubId,
+    assets: [{ name: assetName, browserDownloadUrl: canonicalUrl, sha256: SHA_A }],
+  });
   const req = makeRequest('http://api/market/v2/publish', 'POST', {
     type: 'script',
     title: metadata.title ?? 'Test Script',
@@ -130,7 +150,7 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
     },
     asset: {
       kind: 'script',
-      url: `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
+      url: metadata.submittedUrl ?? `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
       ghOwner: owner,
       ghRepo: repo,
       ghReleaseTag: releaseTag,
@@ -140,6 +160,56 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
   }, session);
   return entryRoutes.publish(req, env);
 }
+
+test('artifact publish accepts a release created by the current publisher without a proof marker', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const published = await publishScriptArtifact(entryRoutes, env, session);
+
+  assert.ok(published.ok);
+  const asset = rows(db, 'SELECT url, gh_owner, gh_repo, gh_release_tag FROM market_assets WHERE version_id = ?', [published.versionId])[0];
+  assert.equal(asset.url, 'https://github.com/pub1/OperitForge/releases/download/script-test-v1.0.0/script-test-1.0.0.zip');
+  assert.equal(asset.gh_owner, 'pub1');
+  assert.equal(asset.gh_repo, 'OperitForge');
+  assert.equal(asset.gh_release_tag, 'script-test-v1.0.0');
+  afterTest(ctx);
+});
+
+test('artifact publish rejects a release created by another GitHub account', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  await assert.rejects(
+    () => publishScriptArtifact(entryRoutes, env, session, '1.0.0', 'script.foreign.release', { githubId: GITHUB_ID_PUBLISHER2 }),
+    /GitHub release must be created by the current market publisher/,
+  );
+  afterTest(ctx);
+});
+
+test('artifact publish uses GitHub canonical asset URL instead of the submitted URL', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const canonicalUrl = 'https://github.com/pub1/OperitForge/releases/download/script-test-v1.0.0/script-test-1.0.0.zip';
+
+  const published = await publishScriptArtifact(entryRoutes, env, session, '1.0.0', 'script.canonical.url', {
+    canonicalUrl,
+    submittedUrl: 'https://github.com/pub1/OperitForge/releases/download/other/wrong.zip',
+  });
+
+  const asset = rows(db, 'SELECT url FROM market_assets WHERE version_id = ?', [published.versionId])[0];
+  assert.equal(asset.url, canonicalUrl);
+  afterTest(ctx);
+});
 
 // ---- Tests ----
 
@@ -643,17 +713,14 @@ test('contributor can patch artifact entry metadata when public updates are enab
   const version = '1.1.0';
   const releaseTag = `script-test-v${version}`;
   const assetName = `script-test-${version}.zip`;
-  const proof = signToken(PROOF_PREFIX, {
-    github_id: GITHUB_ID_PUBLISHER2,
-    owner: 'pub2',
-    repo: 'OperitForge',
-    releaseTag,
-    assetName,
-    sha256: SHA_A,
-    exp: Math.floor(Date.now() / 1000) + 3600,
-    nonce: `test-${version}`,
-  }, SECRET);
-  env.mockGitHubGetRelease = async () => ({ body: `<!-- operit-market-proof ${proof} -->` });
+  env.mockGitHubGetRelease = async () => ({
+    authorId: GITHUB_ID_PUBLISHER2,
+    assets: [{
+      name: assetName,
+      browserDownloadUrl: `https://github.com/pub2/OperitForge/releases/download/${releaseTag}/${assetName}`,
+      sha256: SHA_A,
+    }],
+  });
 
   const req = makeRequest(`http://api/market/v2/entries/${first.entryId}/versions`, 'POST', {
     entry: {

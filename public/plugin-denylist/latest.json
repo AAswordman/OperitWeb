@@ -1,0 +1,7 @@
+{
+  "schemaVersion": 1,
+  "latestVersion": 1,
+  "latestFile": "/plugin-denylist/history/2026-07-20-plugin-denylist-v1.json",
+  "updatedAt": "2026-07-20T00:00:00+08:00",
+  "notes": "For GitHub Pages, fetch this endpoint with a cache-busting query string."
+}
