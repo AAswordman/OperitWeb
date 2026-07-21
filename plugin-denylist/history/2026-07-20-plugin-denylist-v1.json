@@ -1,0 +1,9 @@
+{
+  "schemaVersion": 1,
+  "version": 1,
+  "updatedAt": "2026-07-20T00:00:00+08:00",
+  "hashAlgorithm": "sha256",
+  "match": "raw_file_bytes",
+  "action": "reject_import",
+  "entries": []
+}
