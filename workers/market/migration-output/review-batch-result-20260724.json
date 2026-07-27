@@ -1,0 +1,146 @@
+{
+  "at": "2026-07-24T05:31:14.319Z",
+  "results": [
+    {
+      "title": "碎碎念",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+      "status": 200,
+      "ok": true,
+      "note": "原作者后续版本，资产齐全",
+      "resp": true
+    },
+    {
+      "title": "碎碎念",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+      "status": 200,
+      "ok": true,
+      "note": "原作者后续版本，资产齐全",
+      "resp": true
+    },
+    {
+      "title": "碎碎念",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+      "status": 200,
+      "ok": true,
+      "note": "原作者后续版本，资产齐全",
+      "resp": true
+    },
+    {
+      "title": "此间·生活状态与陪伴记录",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-6",
+      "status": 200,
+      "ok": true,
+      "note": "原作者后续版本",
+      "resp": true
+    },
+    {
+      "title": "一起听",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-com-operit-community-netease-companion-artifact-0-2-13-v-0-2-13",
+      "status": 200,
+      "ok": true,
+      "note": "首发，功能描述清晰且有 toolpkg",
+      "resp": true
+    },
+    {
+      "title": "AI主动查岗-截图+拉回+锁软件随机触发",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "高权限但行为声明清楚，按规范可通过",
+      "resp": true
+    },
+    {
+      "title": "简易视频生成✅",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "package-com-operit-ezsay-gen-artifact-1-7-0-v-1-7-0",
+      "status": 200,
+      "ok": true,
+      "note": "首发，有 toolpkg 且描述一致",
+      "resp": true
+    },
+    {
+      "title": "病娇情绪引擎",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "script-yandere-engine-artifact-1-0-0-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "脚本有效，情绪管理联动，无破坏性",
+      "resp": true
+    },
+    {
+      "title": "🔒 动态锁·检测前台",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+      "status": 200,
+      "ok": true,
+      "note": "高权限锁应用但说明清楚，含解锁工具",
+      "resp": true
+    },
+    {
+      "title": "🔒 动态锁·检测前台",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+      "status": 200,
+      "ok": true,
+      "note": "与 1.1.0 同内容，行为可理解",
+      "resp": true
+    },
+    {
+      "title": "通知",
+      "action": "approve",
+      "reasonCode": "",
+      "versionId": "script-cuosheng-xiao-tongzhi-artifact-1-0-0-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "脚本有效，前台检测+通知",
+      "resp": true
+    },
+    {
+      "title": "GSAP MCP",
+      "action": "changes",
+      "reasonCode": "repository-content-invalid",
+      "versionId": "mcp-https-github-com-greensock-gsap-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "源指向 greensock/GSAP 官方动画库，不是 MCP 服务",
+      "resp": true
+    },
+    {
+      "title": "AI想你",
+      "action": "reject",
+      "reasonCode": "entry-unusable",
+      "versionId": "skill-https-github-com-aaa-zsl-media-display-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "无资产，详情只是节点设计说明，不是可安装 skill",
+      "resp": true
+    },
+    {
+      "title": "AI人性化聊天",
+      "action": "changes",
+      "reasonCode": "repository-content-invalid",
+      "versionId": "mcp-https-github-com-aaa-zsl-media-display-v-1-0-0",
+      "status": 200,
+      "ok": true,
+      "note": "仓库仅 README，描述是 Python 聊天示例，不是 MCP",
+      "resp": true
+    }
+  ],
+  "remainingPending": 0
+}

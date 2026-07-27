@@ -35,6 +35,23 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         patch.body ?? null, patch.status ?? null, patch.updatedAt, id,
       ]);
     },
+    async updateAuthor(id, patch) {
+      stats.writes++;
+      return run(db, `UPDATE market_authors SET
+          status = COALESCE(?, status),
+          blocked_reason_code = COALESCE(?, blocked_reason_code),
+          blocked_at = COALESCE(?, blocked_at),
+          blocked_by = COALESCE(?, blocked_by),
+          updated_at = ?
+        WHERE id = ?`, [
+        patch.status ?? null,
+        patch.blockedReasonCode ?? null,
+        patch.blockedAt ?? null,
+        patch.blockedBy ?? null,
+        patch.updatedAt,
+        id,
+      ]);
+    },
     async createEntry(value) {
       stats.writes++;
       return run(db, 'INSERT OR IGNORE INTO market_entries (id, type, title, description, detail, author_id, publisher_id, allow_public_updates, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
@@ -52,9 +69,9 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async createVersion(value) {
       stats.writes++;
-      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, publisher_id, min_app_ver, max_app_ver, state_code, changelog, created_at, updated_at, published_at, runtime_pkg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
+      return run(db, 'INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, publisher_id, min_app_ver, max_app_ver, state_code, changelog, entry_patch, created_at, updated_at, published_at, runtime_pkg) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
         value.id, value.entryId, value.version, value.formatVer, value.publisherId || null, value.minAppVer, value.maxAppVer || null,
-        value.stateCode || 'pending', value.changelog || null, value.createdAt, value.updatedAt, value.publishedAt || null, value.runtimePkg || value.runtimePackageId || null,
+        value.stateCode || 'pending', value.changelog || null, value.entryPatch || null, value.createdAt, value.updatedAt, value.publishedAt || null, value.runtimePkg || value.runtimePackageId || null,
       ]);
     },
     async updateVersion(id, patch) {
@@ -186,7 +203,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       return readRow(sql, await first(db, sql, [entryId]));
     },
     async getAuthor(authorId) {
-      const sql = 'SELECT id, github_id, github_login, owner_avatar FROM market_authors WHERE id = ?';
+      const sql = 'SELECT id, github_id, github_login, owner_avatar, status, blocked_reason_code, blocked_at, blocked_by FROM market_authors WHERE id = ?';
       return readRow(sql, await first(db, sql, [authorId]));
     },
     async getComment(commentId) {
@@ -245,7 +262,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
           e.category_id, e.state_code, e.created_at, e.updated_at, e.published_at,
           v.id AS version_id, v.version, v.format_ver, v.publisher_id AS version_publisher_id,
           v.min_app_ver, v.max_app_ver, v.runtime_pkg, v.state_code AS version_state_code,
-          v.changelog, v.created_at AS version_created_at, v.updated_at AS version_updated_at,
+          v.changelog, v.entry_patch, v.created_at AS version_created_at, v.updated_at AS version_updated_at,
           v.published_at AS version_published_at,
           a.github_login AS author_login, a.owner_avatar AS author_avatar,
           p.github_login AS publisher_login, p.owner_avatar AS publisher_avatar,

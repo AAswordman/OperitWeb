@@ -1,0 +1,13 @@
+{
+  "generatedAt": "2026-07-23T15:25:49.612Z",
+  "dbPath": "./migration-output/local_market.db",
+  "r2Dir": "C:\\Users\\12809\\AppData\\Local\\Temp\\operit-market-test-r2-fb6142a31693",
+  "result": {
+    "ok": true,
+    "materialized": 1040
+  },
+  "fileStats": {
+    "count": 1040,
+    "size": 37941561
+  }
+}

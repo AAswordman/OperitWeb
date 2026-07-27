@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "pnpm build && node --test test/*.test.js"
+    "test": "pnpm build && node --test test/*.test.js",
+    "deploy": "node ../worker_submit.mjs market"
   },
   "devDependencies": {
     "typescript": "~5.8.3"

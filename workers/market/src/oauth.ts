@@ -1,14 +1,17 @@
 import { MarketError } from './shared.js';
-import type { D1DatabaseLike, JsonObject, JsonValue, MarketEnv, Row } from './types.js';
+import type { D1DatabaseLike, JsonValue, MarketEnv, Row } from './types.js';
 
 const GITHUB_AUTHORIZE_URL = 'https://github.com/login/oauth/authorize';
 const GITHUB_ACCESS_TOKEN_URL = 'https://github.com/login/oauth/access_token';
 const GITHUB_USER_URL = 'https://api.github.com/user';
 const GITHUB_CALLBACK_URL = 'https://api.operit.app/oauth/github/callback';
+const COMPLETION_PATH = '/oauth/github/complete';
 const GITHUB_SCOPE = 'notifications public_repo user:email read:user';
 const TRANSACTION_TTL_MS = 5 * 60 * 1000;
 const TRANSACTION_RATE_LIMIT_WINDOW_MS = 60 * 1000;
 const TRANSACTION_RATE_LIMIT_MAX = 10;
+const LOOPBACK_MIN_PORT = 1024;
+const LOOPBACK_MAX_PORT = 65535;
 
 type GitHubOAuthTransactionRow = Row & {
   id: string;
@@ -18,6 +21,7 @@ type GitHubOAuthTransactionRow = Row & {
   status: string;
   encrypted_payload: string | null;
   payload_iv: string | null;
+  completion_redirect_uri: string | null;
   expires_at: number;
   created_at: number;
 };
@@ -47,15 +51,11 @@ export type GitHubOAuthStartResponse = {
   transactionId: string;
   deliveryCredential: string;
   authorizationUrl: string;
+  completionRedirectUri: string;
   expiresAt: number;
 };
 
-export type GitHubOAuthConsumePendingResponse = {
-  ok: true;
-  status: 'pending';
-};
-
-export type GitHubOAuthConsumeCompleteResponse = {
+export type GitHubOAuthClaimResponse = {
   ok: true;
   status: 'complete';
   accessToken: string;
@@ -72,6 +72,7 @@ export async function handleGitHubOAuthStart(
 ): Promise<GitHubOAuthStartResponse> {
   const db = requireOAuthDatabase(env);
   const now = Date.now();
+  const completionRedirectUri = await readCompletionRedirectUri(request);
   const ipHash = await hashClientIp(request, env);
   await cleanExpiredTransactions(db, now);
   await enforceTransactionRateLimit(db, ipHash, now);
@@ -84,14 +85,15 @@ export async function handleGitHubOAuthStart(
 
   await db.prepare(
     'INSERT INTO github_oauth_transactions (' +
-      'id, state, delivery_secret_hash, code_verifier, status, expires_at, created_at, client_ip_hash' +
-    ') VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      'id, state, delivery_secret_hash, code_verifier, status, completion_redirect_uri, expires_at, created_at, client_ip_hash' +
+    ') VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
   ).bind(
     transactionId,
     state,
     await sha256Base64Url(deliveryCredential),
     codeVerifier,
-    'pending',
+    'awaiting_callback',
+    completionRedirectUri,
     expiresAt,
     now,
     ipHash,
@@ -110,6 +112,7 @@ export async function handleGitHubOAuthStart(
     transactionId,
     deliveryCredential,
     authorizationUrl: authorizationUrl.toString(),
+    completionRedirectUri,
     expiresAt,
   };
 }
@@ -130,14 +133,14 @@ export async function handleGitHubOAuthCallback(
 
   const authorizationError = url.searchParams.get('error');
   if (authorizationError) {
-    await markTransactionDenied(db, transaction.id);
-    return callbackPage('GitHub login was cancelled', 'Return to Operit to continue.', 200);
+    await deleteTransaction(db, transaction.id);
+    return completionRedirect(transaction, { status: 'denied', error: sanitizeCompletionCode(authorizationError) });
   }
 
   const code = url.searchParams.get('code');
   if (!code) return callbackPage('GitHub login could not be completed', 'The authorization response did not include a code.', 400);
 
-  if (transaction.status !== 'pending') {
+  if (transaction.status !== 'awaiting_callback') {
     return callbackPage('GitHub login is already complete', 'Return to Operit to continue.', 200);
   }
 
@@ -147,23 +150,23 @@ export async function handleGitHubOAuthCallback(
     const completed = await db.prepare(
       'UPDATE github_oauth_transactions SET status = ?, encrypted_payload = ?, payload_iv = ?, completed_at = ? ' +
         'WHERE id = ? AND status = ? AND expires_at > ? RETURNING id',
-    ).bind('authorized', encrypted.ciphertext, encrypted.iv, Date.now(), transaction.id, 'pending', Date.now()).first<Row>();
+    ).bind('authorized', encrypted.ciphertext, encrypted.iv, Date.now(), transaction.id, 'awaiting_callback', Date.now()).first<Row>();
     if (!completed) throw new MarketError('oauth_transaction_expired', 'OAuth transaction expired', 410);
-    return callbackPage('GitHub login complete', 'Return to Operit to finish signing in.', 200);
+    return completionRedirect(transaction, { status: 'complete' });
   } catch (error) {
     console.error('GitHub OAuth callback failed', error);
     if (error instanceof MarketError && error.code === 'oauth_transaction_expired') {
       return callbackPage('GitHub login expired', 'Return to Operit and start the login again.', 410);
     }
-    await markTransactionDenied(db, transaction.id);
-    return callbackPage('GitHub login could not be completed', 'Return to Operit and try again.', 502);
+    await deleteTransaction(db, transaction.id);
+    return completionRedirect(transaction, { status: 'error', error: 'github_oauth_exchange_failed' });
   }
 }
 
-export async function handleGitHubOAuthConsume(
+export async function handleGitHubOAuthClaim(
   request: Request,
   env: MarketEnv,
-): Promise<GitHubOAuthConsumePendingResponse | GitHubOAuthConsumeCompleteResponse> {
+): Promise<GitHubOAuthClaimResponse> {
   const payload: Record<string, JsonValue> = await request.json();
   const transactionId = requireJsonString(payload.transactionId, 'transactionId');
   const deliveryCredential = requireJsonString(payload.deliveryCredential, 'deliveryCredential');
@@ -172,7 +175,7 @@ export async function handleGitHubOAuthConsume(
   const credentialHash = await sha256Base64Url(deliveryCredential);
 
   const transaction = await db.prepare(
-    'SELECT id, state, delivery_secret_hash, code_verifier, status, encrypted_payload, payload_iv, expires_at, created_at ' +
+    'SELECT id, state, delivery_secret_hash, code_verifier, status, encrypted_payload, payload_iv, completion_redirect_uri, expires_at, created_at ' +
       'FROM github_oauth_transactions WHERE id = ? AND delivery_secret_hash = ? LIMIT 1',
   ).bind(transactionId, credentialHash).first<GitHubOAuthTransactionRow>();
 
@@ -181,25 +184,20 @@ export async function handleGitHubOAuthConsume(
     await db.prepare('DELETE FROM github_oauth_transactions WHERE id = ?').bind(transaction.id).run();
     throw new MarketError('oauth_transaction_expired', 'OAuth transaction expired', 410);
   }
-  if (transaction.status === 'pending') return { ok: true, status: 'pending' };
-  if (transaction.status === 'denied') {
-    await db.prepare('DELETE FROM github_oauth_transactions WHERE id = ?').bind(transaction.id).run();
-    throw new MarketError('oauth_authorization_denied', 'GitHub authorization was denied', 400);
-  }
   if (transaction.status !== 'authorized' || !transaction.encrypted_payload || !transaction.payload_iv) {
     throw new MarketError('oauth_transaction_invalid', 'OAuth transaction is invalid', 409);
   }
 
-  const consumed = await db.prepare(
+  const claimed = await db.prepare(
     'DELETE FROM github_oauth_transactions ' +
       'WHERE id = ? AND delivery_secret_hash = ? AND status = ? AND expires_at > ? ' +
       'RETURNING encrypted_payload, payload_iv',
   ).bind(transaction.id, credentialHash, 'authorized', now).first<GitHubOAuthTransactionRow>();
-  if (!consumed?.encrypted_payload || !consumed.payload_iv) {
-    throw new MarketError('oauth_transaction_consumed', 'OAuth transaction has already been consumed', 409);
+  if (!claimed?.encrypted_payload || !claimed.payload_iv) {
+    throw new MarketError('oauth_transaction_claimed', 'OAuth transaction has already been claimed', 409);
   }
 
-  const tokenPayload = await decryptPayload(consumed.encrypted_payload, consumed.payload_iv, env);
+  const tokenPayload = await decryptPayload(claimed.encrypted_payload, claimed.payload_iv, env);
   return {
     ok: true,
     status: 'complete',
@@ -210,6 +208,18 @@ export async function handleGitHubOAuthConsume(
     refreshToken: tokenPayload.refreshToken,
     user: tokenPayload.user,
   };
+}
+
+export function handleGitHubOAuthComplete(request: Request): Response {
+  const url = new URL(request.url);
+  const status = url.searchParams.get('status');
+  if (status === 'complete') {
+    return callbackPage('GitHub login complete', 'Return to Operit to finish signing in.', 200);
+  }
+  if (status === 'denied') {
+    return callbackPage('GitHub login was cancelled', 'Return to Operit to continue.', 200);
+  }
+  return callbackPage('GitHub login could not be completed', 'Return to Operit and try again.', 502);
 }
 
 function requireOAuthDatabase(env: MarketEnv): D1DatabaseLike {
@@ -304,13 +314,13 @@ async function enforceTransactionRateLimit(db: D1DatabaseLike, ipHash: string | 
 
 async function findTransactionByState(db: D1DatabaseLike, state: string): Promise<GitHubOAuthTransactionRow | null> {
   return db.prepare(
-    'SELECT id, state, delivery_secret_hash, code_verifier, status, encrypted_payload, payload_iv, expires_at, created_at ' +
+    'SELECT id, state, delivery_secret_hash, code_verifier, status, encrypted_payload, payload_iv, completion_redirect_uri, expires_at, created_at ' +
       'FROM github_oauth_transactions WHERE state = ? LIMIT 1',
   ).bind(state).first<GitHubOAuthTransactionRow>();
 }
 
-async function markTransactionDenied(db: D1DatabaseLike, id: string): Promise<void> {
-  await db.prepare('UPDATE github_oauth_transactions SET status = ? WHERE id = ? AND status = ?').bind('denied', id, 'pending').run();
+async function deleteTransaction(db: D1DatabaseLike, id: string): Promise<void> {
+  await db.prepare('DELETE FROM github_oauth_transactions WHERE id = ?').bind(id).run();
 }
 
 async function hashClientIp(request: Request, env: MarketEnv): Promise<string | null> {
@@ -410,6 +420,69 @@ function base64UrlToBytes(value: string): Uint8Array {
   const padded = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '=');
   const binary = atob(padded);
   return Uint8Array.from(binary, character => character.charCodeAt(0));
+}
+
+async function readCompletionRedirectUri(request: Request): Promise<string> {
+  const body = await request.text();
+  let payload: Record<string, JsonValue>;
+  try {
+    const decoded = JSON.parse(body);
+    if (!isJsonRecord(decoded)) throw new Error('start body must be a JSON object');
+    payload = decoded;
+  } catch {
+    throw new MarketError('validation_failed', 'OAuth start body must be a JSON object', 400);
+  }
+  const raw = requireJsonString(payload.completionRedirectUri, 'completionRedirectUri');
+  return normalizeCompletionRedirectUri(raw);
+}
+
+function normalizeCompletionRedirectUri(raw: string): string {
+  let url: URL;
+  try {
+    url = new URL(raw);
+  } catch {
+    throw new MarketError('validation_failed', 'completionRedirectUri is invalid', 400);
+  }
+  if (url.protocol === 'https:' && url.host === 'api.operit.app' && url.pathname === COMPLETION_PATH && url.search === '' && url.hash === '') {
+    return url.toString();
+  }
+  const loopbackHost = url.hostname === '127.0.0.1' || url.hostname === 'localhost';
+  const port = Number(url.port);
+  if (
+    url.protocol === 'http:' &&
+    loopbackHost &&
+    Number.isInteger(port) &&
+    port >= LOOPBACK_MIN_PORT &&
+    port <= LOOPBACK_MAX_PORT &&
+    url.pathname === COMPLETION_PATH &&
+    url.username === '' &&
+    url.password === '' &&
+    url.search === '' &&
+    url.hash === ''
+  ) {
+    return url.toString();
+  }
+  throw new MarketError('validation_failed', 'completionRedirectUri is not allowed', 400);
+}
+
+function completionRedirect(transaction: GitHubOAuthTransactionRow, params: Record<string, string>): Response {
+  const completionRedirectUri = transaction.completion_redirect_uri;
+  if (!completionRedirectUri) throw new MarketError('oauth_transaction_invalid', 'OAuth completion redirect is missing', 409);
+  const url = new URL(completionRedirectUri);
+  url.searchParams.set('transactionId', transaction.id);
+  for (const [key, value] of Object.entries(params)) url.searchParams.set(key, value);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: url.toString(),
+      'referrer-policy': 'no-referrer',
+      'cache-control': 'no-store',
+    },
+  });
+}
+
+function sanitizeCompletionCode(value: string): string {
+  return value.replace(/[^0-9A-Za-z._-]+/g, '_').slice(0, 64);
 }
 
 function callbackPage(title: string, message: string, status: number): Response {

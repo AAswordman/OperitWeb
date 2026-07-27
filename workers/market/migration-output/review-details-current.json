@@ -1,0 +1,2133 @@
+[
+  {
+    "item": {
+      "id": "package-murmur-sidebar-artifact-1-1-3",
+      "type": "package",
+      "title": "碎碎念",
+      "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+      "authorId": "gh_275824241",
+      "publisherId": "gh_275824241",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "publisher": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "categoryId": "other",
+      "stateCode": "approved",
+      "createdAt": "2026-07-17T19:07:25.498Z",
+      "updatedAt": "2026-07-23T09:06:13.052Z",
+      "publishedAt": "2026-07-18T09:57:16.113Z",
+      "version": {
+        "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+        "entryId": "package-murmur-sidebar-artifact-1-1-3",
+        "version": "1.2.8",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_275824241",
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "zhizai123",
+          "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+        },
+        "minAppVer": "1.12.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "murmur_sidebar",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-23T09:06:13.052Z",
+        "updatedAt": "2026-07-23T09:06:13.052Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-murmur-sidebar-artifact-1-1-3",
+        "type": "package",
+        "title": "碎碎念",
+        "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+        "authorId": "gh_275824241",
+        "publisherId": "gh_275824241",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "other",
+        "stateCode": "approved",
+        "createdAt": "2026-07-17T19:07:25.498Z",
+        "updatedAt": "2026-07-23T09:06:13.052Z",
+        "publishedAt": "2026-07-18T09:57:16.113Z",
+        "detail": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能"
+      },
+      "versions": [
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-20T19:50:04.560Z",
+          "updatedAt": "2026-07-21T08:33:07.713Z",
+          "publishedAt": "2026-07-21T08:33:07.713Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.2",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-18T11:13:11.074Z",
+          "updatedAt": "2026-07-21T08:33:05.107Z",
+          "publishedAt": "2026-07-21T08:33:05.107Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.1.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-17T19:07:25.498Z",
+          "updatedAt": "2026-07-18T09:57:16.113Z",
+          "publishedAt": "2026-07-18T09:57:16.113Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.4",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:22:23.993Z",
+          "updatedAt": "2026-07-21T09:22:23.993Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.7",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T23:20:52.556Z",
+          "updatedAt": "2026-07-21T23:20:52.556Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.8",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-23T09:06:13.052Z",
+          "updatedAt": "2026-07-23T09:06:13.052Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-murmur-sidebar-artifact-1-1-3-1-1-3",
+        "entry_id": "package-murmur-sidebar-artifact-1-1-3",
+        "project_key": "murmur-sidebar",
+        "runtime_pkg": "murmur_sidebar",
+        "created_at": "2026-07-17T19:07:25.498Z",
+        "updated_at": "2026-07-17T19:07:25.498Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-murmur-sidebar-v1-1-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.1.3/murmur-sidebar-v1.1.3.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.1.3.toolpkg",
+          "sha256": "e63db378298fb725e23168b7514e9a74c12e3667e42eae4f7401175ea39a619e",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-17T19:07:25.498Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-2-murmur-sidebar-v1-2-2-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.2/murmur-sidebar-v1.2.2.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.2.2.toolpkg",
+          "sha256": "c45ccaa7e2ea90a48584693aa6bfa808fdad9f2385cf60d3f96c32e5a0ffadc6",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-18T11:13:11.074Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-3-murmur-sidebar-v1-2-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.3/murmur-sidebar-v1.2.3.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.3",
+          "asset_name": "murmur-sidebar-v1.2.3.toolpkg",
+          "sha256": "0d2a4198fd7dcababa4b385dd7ac71b3bdb9dd9f636268f491148505958998f1",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-20T19:50:04.560Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-4-murmur-sidebar-v1-2-4-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.4/murmur-sidebar-v1.2.4.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.4",
+          "asset_name": "murmur-sidebar-v1.2.4.toolpkg",
+          "sha256": "ed9ea223d0be119beac03014c94c6ae3125cc988feb5c414a514cb5bce092753",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:22:23.993Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-7-murmur-sidebar-v1-2-7-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.7/murmur-sidebar-v1.2.7.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.7",
+          "asset_name": "murmur-sidebar-v1.2.7.toolpkg",
+          "sha256": "454d6367dec86e81a39f3ca9ceff16df836c19efce127695e28aad126076c2b0",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T23:20:52.556Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-8-murmur-sidebar-v1-2-8-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.8/murmur-sidebar-v1.2.8.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.8",
+          "asset_name": "murmur-sidebar-v1.2.8.toolpkg",
+          "sha256": "ca50083ac5e091fc33291389933148f3cf81dd16b04b99f0b6951bc05fc2e768",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-23T09:06:13.052Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "mcp-https-github-com-greensock-gsap",
+      "type": "mcp",
+      "title": "GSAP MCP",
+      "description": "插件核心用途为前端各类动画开发，可自动生成规范GSAP动画代码、排查代码错误、优化动画逻辑，完美适配OperitAI原生MCP调用体系，轻量化无多余功能，运行稳定不臃肿",
+      "authorId": "gh_2386673",
+      "publisherId": "gh_301036957",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_2386673",
+        "login": "greensock",
+        "avatar": "https://avatars.githubusercontent.com/u/2386673?v=4"
+      },
+      "publisher": {
+        "id": "gh_301036957",
+        "login": "xshan0820-cyber",
+        "avatar": "https://avatars.githubusercontent.com/u/301036957?v=4"
+      },
+      "categoryId": "dev_code",
+      "stateCode": "pending",
+      "createdAt": "2026-07-23T05:38:31.325Z",
+      "updatedAt": "2026-07-23T05:38:31.325Z",
+      "publishedAt": "",
+      "version": {
+        "id": "mcp-https-github-com-greensock-gsap-v-1-0-0",
+        "entryId": "mcp-https-github-com-greensock-gsap",
+        "version": "1.0.0",
+        "formatVer": "mcp_v2",
+        "publisherId": "gh_301036957",
+        "publisher": {
+          "id": "gh_301036957",
+          "login": "xshan0820-cyber",
+          "avatar": "https://avatars.githubusercontent.com/u/301036957?v=4"
+        },
+        "minAppVer": "1.11.0+5",
+        "maxAppVer": "",
+        "runtimePackageId": "",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-23T05:38:31.325Z",
+        "updatedAt": "2026-07-23T05:38:31.325Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "mcp-https-github-com-greensock-gsap",
+        "type": "mcp",
+        "title": "GSAP MCP",
+        "description": "插件核心用途为前端各类动画开发，可自动生成规范GSAP动画代码、排查代码错误、优化动画逻辑，完美适配OperitAI原生MCP调用体系，轻量化无多余功能，运行稳定不臃肿",
+        "authorId": "gh_2386673",
+        "publisherId": "gh_301036957",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_2386673",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_301036957",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "dev_code",
+        "stateCode": "pending",
+        "createdAt": "2026-07-23T05:38:31.325Z",
+        "updatedAt": "2026-07-23T05:38:31.325Z",
+        "publishedAt": "",
+        "detail": "这是我发布的第1个插件，希望大家可以多多支持。从源码拉取、脚本编写到MCP部署全部由我独自完成，核心用于便捷完成各类前端动画开发，轻量化无冗余功能。\n第一次自制插件还有很多需要打磨的地方，如果使用时碰到bug或者有优化想法，都可以留言告知我。我会根据大家的意见持续更新升级，感谢大家愿意尝试我的作品。"
+      },
+      "versions": [
+        {
+          "id": "mcp-https-github-com-greensock-gsap-v-1-0-0",
+          "entryId": "mcp-https-github-com-greensock-gsap",
+          "version": "1.0.0",
+          "formatVer": "mcp_v2",
+          "publisherId": "gh_301036957",
+          "minAppVer": "1.11.0+5",
+          "maxAppVer": "",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-23T05:38:31.325Z",
+          "updatedAt": "2026-07-23T05:38:31.325Z",
+          "publishedAt": ""
+        }
+      ],
+      "repoSource": {
+        "id": "repo-spec-mcp-https-github-com-greensock-gsap",
+        "entry_id": "mcp-https-github-com-greensock-gsap",
+        "source_kind": "github_repo",
+        "source_url": "https://github.com/greensock/GSAP",
+        "created_at": "2026-07-23T05:38:31.325Z",
+        "updated_at": "2026-07-23T05:38:31.325Z"
+      },
+      "assets": []
+    }
+  },
+  {
+    "item": {
+      "id": "package-com-operit-community-netease-companion-artifact-0-2-13",
+      "type": "package",
+      "title": "一起听",
+      "description": "扫码登录网易云账号，自动拉取歌单，支持搜索播放、动态小卡片、主对话实时陪听、后台续播与状态恢复。",
+      "authorId": "gh_307066710",
+      "publisherId": "gh_307066710",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307066710",
+        "login": "liyounie1234",
+        "avatar": "https://avatars.githubusercontent.com/u/307066710?v=4"
+      },
+      "publisher": {
+        "id": "gh_307066710",
+        "login": "liyounie1234",
+        "avatar": "https://avatars.githubusercontent.com/u/307066710?v=4"
+      },
+      "categoryId": "media_content",
+      "stateCode": "pending",
+      "createdAt": "2026-07-22T18:46:43.674Z",
+      "updatedAt": "2026-07-22T18:46:43.674Z",
+      "publishedAt": "",
+      "version": {
+        "id": "package-com-operit-community-netease-companion-artifact-0-2-13-v-0-2-13",
+        "entryId": "package-com-operit-community-netease-companion-artifact-0-2-13",
+        "version": "0.2.13",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_307066710",
+        "publisher": {
+          "id": "gh_307066710",
+          "login": "liyounie1234",
+          "avatar": "https://avatars.githubusercontent.com/u/307066710?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "com.operit.community.netease_companion",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-22T18:46:43.674Z",
+        "updatedAt": "2026-07-22T18:46:43.674Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-com-operit-community-netease-companion-artifact-0-2-13",
+        "type": "package",
+        "title": "一起听",
+        "description": "扫码登录网易云账号，自动拉取歌单，支持搜索播放、动态小卡片、主对话实时陪听、后台续播与状态恢复。",
+        "authorId": "gh_307066710",
+        "publisherId": "gh_307066710",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307066710",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307066710",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "media_content",
+        "stateCode": "pending",
+        "createdAt": "2026-07-22T18:46:43.674Z",
+        "updatedAt": "2026-07-22T18:46:43.674Z",
+        "publishedAt": "",
+        "detail": "扫码登录网易云账号，自动拉取歌单，支持搜索播放、动态小卡片、主对话实时陪听、后台续播与状态恢复。"
+      },
+      "versions": [
+        {
+          "id": "package-com-operit-community-netease-companion-artifact-0-2-13-v-0-2-13",
+          "entryId": "package-com-operit-community-netease-companion-artifact-0-2-13",
+          "version": "0.2.13",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_307066710",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-22T18:46:43.674Z",
+          "updatedAt": "2026-07-22T18:46:43.674Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-com-operit-community-netease-companion-artifact-0-2-13-0-2-13",
+        "entry_id": "package-com-operit-community-netease-companion-artifact-0-2-13",
+        "project_key": "com-operit-community-netease-companion",
+        "runtime_pkg": "com.operit.community.netease_companion",
+        "created_at": "2026-07-22T18:46:43.674Z",
+        "updated_at": "2026-07-22T18:46:43.674Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-com-operit-community-netease-companion-artifact-0-2-13-com-operit-community-netease-companion-v0-2-13-toolpkg",
+          "version_id": "package-com-operit-community-netease-companion-artifact-0-2-13-v-0-2-13",
+          "kind": "github_release_asset",
+          "url": "https://github.com/liyounie1234/OperitForge/releases/download/package-com-operit-community-netease-companion-v0.2.13/com-operit-community-netease-companion-v0.2.13.toolpkg",
+          "gh_owner": "liyounie1234",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-com-operit-community-netease-companion-v0.2.13",
+          "asset_name": "com-operit-community-netease-companion-v0.2.13.toolpkg",
+          "sha256": "6f4b9e272c90d703c1350c23388a034802fd29019170ac499bf93d04b15d471c",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-22T18:46:43.674Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0",
+      "type": "package",
+      "title": "AI主动查岗-截图+拉回+锁软件随机触发",
+      "description": "1～3小时不回消息AI会主动查岗，随机触发截图查看你在做什么、把你拉回Operit、锁掉让你沉迷的应用。\n必定触发：检查前台包名+时间戳",
+      "authorId": "gh_307736745",
+      "publisherId": "gh_307736745",
+      "allowPublicUpdates": false,
+      "author": {
+        "id": "gh_307736745",
+        "login": "qiye50122-blip",
+        "avatar": "https://avatars.githubusercontent.com/u/307736745?v=4"
+      },
+      "publisher": {
+        "id": "gh_307736745",
+        "login": "qiye50122-blip",
+        "avatar": "https://avatars.githubusercontent.com/u/307736745?v=4"
+      },
+      "categoryId": "automation_workflow",
+      "stateCode": "pending",
+      "createdAt": "2026-07-22T13:04:45.219Z",
+      "updatedAt": "2026-07-22T13:04:45.219Z",
+      "publishedAt": "",
+      "version": {
+        "id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0-v-1-0-0",
+        "entryId": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0",
+        "version": "1.0.0",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_307736745",
+        "publisher": {
+          "id": "gh_307736745",
+          "login": "qiye50122-blip",
+          "avatar": "https://avatars.githubusercontent.com/u/307736745?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "com.deepseek.checkin_v6_closed",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-22T13:04:45.219Z",
+        "updatedAt": "2026-07-22T13:04:45.219Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0",
+        "type": "package",
+        "title": "AI主动查岗-截图+拉回+锁软件随机触发",
+        "description": "1～3小时不回消息AI会主动查岗，随机触发截图查看你在做什么、把你拉回Operit、锁掉让你沉迷的应用。\n必定触发：检查前台包名+时间戳",
+        "authorId": "gh_307736745",
+        "publisherId": "gh_307736745",
+        "allowPublicUpdates": false,
+        "author": {
+          "id": "gh_307736745",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307736745",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "automation_workflow",
+        "stateCode": "pending",
+        "createdAt": "2026-07-22T13:04:45.219Z",
+        "updatedAt": "2026-07-22T13:04:45.219Z",
+        "publishedAt": "",
+        "detail": "1～3小时不回消息AI会主动查岗，随机触发截图查看你在做什么、把你拉回Operit、锁掉让你沉迷的应用。\n情报版查岗工具——只检测前台包名+统计连续触发次数，不执行任何自动化操作（锁屏状态）。AI收到情报后根据包名、触发次数、时间戳、情绪自主判断动作。\n【首次使用前必读】对话ID和角色卡未写入代码，请先编辑 /sdcard/Download/checkin_v6_config.json 填写你的 patrol_chat_id 和 patrol_character_card，否则查岗消息无法发送。\n如果operit被锁请去以下途径看解锁教程\n小红书：6717299318\n抖音：90058704691\nB站：UID:452654115"
+      },
+      "versions": [
+        {
+          "id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0-v-1-0-0",
+          "entryId": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0",
+          "version": "1.0.0",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_307736745",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-22T13:04:45.219Z",
+          "updatedAt": "2026-07-22T13:04:45.219Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-com-deepseek-checkin-v6-closed-artifact-1-0-0-1-0-0",
+        "entry_id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0",
+        "project_key": "com-deepseek-checkin-v6-closed",
+        "runtime_pkg": "com.deepseek.checkin_v6_closed",
+        "created_at": "2026-07-22T13:04:45.219Z",
+        "updated_at": "2026-07-22T13:04:45.219Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-com-deepseek-checkin-v6-closed-artifact-1-0-0-com-deepseek-checkin-v6-closed-v1-0-0-toolpkg",
+          "version_id": "package-com-deepseek-checkin-v6-closed-artifact-1-0-0-v-1-0-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/qiye50122-blip/OperitForge/releases/download/package-com-deepseek-checkin-v6-closed-v1.0.0/com-deepseek-checkin-v6-closed-v1.0.0.toolpkg",
+          "gh_owner": "qiye50122-blip",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-com-deepseek-checkin-v6-closed-v1.0.0",
+          "asset_name": "com-deepseek-checkin-v6-closed-v1.0.0.toolpkg",
+          "sha256": "7a604b3f26bdee76da210601964d29be5fee0847d484695735be51ebfdbc8f40",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-22T13:04:45.219Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "skill-https-github-com-aaa-zsl-media-display",
+      "type": "skill",
+      "title": "AI想你",
+      "description": "有详情",
+      "authorId": "gh_307880088",
+      "publisherId": "gh_307880088",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307880088",
+        "login": "AAA-zsl",
+        "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+      },
+      "publisher": {
+        "id": "gh_307880088",
+        "login": "AAA-zsl",
+        "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+      },
+      "categoryId": "automation_workflow",
+      "stateCode": "pending",
+      "createdAt": "2026-07-22T12:40:02.001Z",
+      "updatedAt": "2026-07-22T12:40:02.001Z",
+      "publishedAt": "",
+      "version": {
+        "id": "skill-https-github-com-aaa-zsl-media-display-v-1-0-0",
+        "entryId": "skill-https-github-com-aaa-zsl-media-display",
+        "version": "1.0.0",
+        "formatVer": "skill_v2",
+        "publisherId": "gh_307880088",
+        "publisher": {
+          "id": "gh_307880088",
+          "login": "AAA-zsl",
+          "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+        },
+        "minAppVer": "1.11.0+5",
+        "maxAppVer": "",
+        "runtimePackageId": "",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-22T12:40:02.001Z",
+        "updatedAt": "2026-07-22T12:40:02.001Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "skill-https-github-com-aaa-zsl-media-display",
+        "type": "skill",
+        "title": "AI想你",
+        "description": "有详情",
+        "authorId": "gh_307880088",
+        "publisherId": "gh_307880088",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307880088",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307880088",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "automation_workflow",
+        "stateCode": "pending",
+        "createdAt": "2026-07-22T12:40:02.001Z",
+        "updatedAt": "2026-07-22T12:40:02.001Z",
+        "publishedAt": "",
+        "detail": "《想你提醒》的节点一个个加进去 设计思路是： n1：定时触发器（每10分钟） n2：抓取屏幕 → 用 system_tools:screenshot 截图 n3：AI分析 → 用 extendedchat:chatwith_agent 强制回复屏幕内容，发到当前对话 n4：失败兜底 → 同样用 extendedchat:chatwith_agent 发一条\"我想你了，但没抓到屏幕\"的消息"
+      },
+      "versions": [
+        {
+          "id": "skill-https-github-com-aaa-zsl-media-display-v-1-0-0",
+          "entryId": "skill-https-github-com-aaa-zsl-media-display",
+          "version": "1.0.0",
+          "formatVer": "skill_v2",
+          "publisherId": "gh_307880088",
+          "minAppVer": "1.11.0+5",
+          "maxAppVer": "",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-22T12:40:02.001Z",
+          "updatedAt": "2026-07-22T12:40:02.001Z",
+          "publishedAt": ""
+        }
+      ],
+      "assets": []
+    }
+  },
+  {
+    "item": {
+      "id": "package-com-operit-ezsay-gen-artifact-1-7-0",
+      "type": "package",
+      "title": "简易视频生成✅",
+      "description": "版本号:  1.7.0 Official version\n脚本/分镜/图片本地合成；云端AI视频；矢量线描填色与3D场景，让你的语言模型成为生视频模型👽",
+      "authorId": "gh_285675458",
+      "publisherId": "gh_285675458",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_285675458",
+        "login": "EZ666888",
+        "avatar": "https://avatars.githubusercontent.com/u/285675458?v=4"
+      },
+      "publisher": {
+        "id": "gh_285675458",
+        "login": "EZ666888",
+        "avatar": "https://avatars.githubusercontent.com/u/285675458?v=4"
+      },
+      "categoryId": "media_content",
+      "stateCode": "pending",
+      "createdAt": "2026-07-22T09:58:27.906Z",
+      "updatedAt": "2026-07-22T09:58:27.906Z",
+      "publishedAt": "",
+      "version": {
+        "id": "package-com-operit-ezsay-gen-artifact-1-7-0-v-1-7-0",
+        "entryId": "package-com-operit-ezsay-gen-artifact-1-7-0",
+        "version": "1.7.0",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_285675458",
+        "publisher": {
+          "id": "gh_285675458",
+          "login": "EZ666888",
+          "avatar": "https://avatars.githubusercontent.com/u/285675458?v=4"
+        },
+        "minAppVer": "1.12.0+4",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "com.operit.ezsay_gen",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-22T09:58:27.906Z",
+        "updatedAt": "2026-07-22T09:58:27.906Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-com-operit-ezsay-gen-artifact-1-7-0",
+        "type": "package",
+        "title": "简易视频生成✅",
+        "description": "版本号:  1.7.0 Official version\n脚本/分镜/图片本地合成；云端AI视频；矢量线描填色与3D场景，让你的语言模型成为生视频模型👽",
+        "authorId": "gh_285675458",
+        "publisherId": "gh_285675458",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_285675458",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_285675458",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "media_content",
+        "stateCode": "pending",
+        "createdAt": "2026-07-22T09:58:27.906Z",
+        "updatedAt": "2026-07-22T09:58:27.906Z",
+        "publishedAt": "",
+        "detail": "版本号:  1.7.0 Official version\n脚本/分镜/图片本地合成；云端AI视频；矢量线描填色与3D场景，让你的语言模型成为生视频模型👽"
+      },
+      "versions": [
+        {
+          "id": "package-com-operit-ezsay-gen-artifact-1-7-0-v-1-7-0",
+          "entryId": "package-com-operit-ezsay-gen-artifact-1-7-0",
+          "version": "1.7.0",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_285675458",
+          "minAppVer": "1.12.0+4",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-22T09:58:27.906Z",
+          "updatedAt": "2026-07-22T09:58:27.906Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-com-operit-ezsay-gen-artifact-1-7-0-1-7-0",
+        "entry_id": "package-com-operit-ezsay-gen-artifact-1-7-0",
+        "project_key": "com-operit-ezsay-gen",
+        "runtime_pkg": "com.operit.ezsay_gen",
+        "created_at": "2026-07-22T09:58:27.906Z",
+        "updated_at": "2026-07-22T09:58:27.906Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-com-operit-ezsay-gen-artifact-1-7-0-com-operit-ezsay-gen-v1-7-0-toolpkg",
+          "version_id": "package-com-operit-ezsay-gen-artifact-1-7-0-v-1-7-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/EZ666888/OperitForge/releases/download/package-com-operit-ezsay-gen-v1.7.0/com-operit-ezsay-gen-v1.7.0.toolpkg",
+          "gh_owner": "EZ666888",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-com-operit-ezsay-gen-v1.7.0",
+          "asset_name": "com-operit-ezsay-gen-v1.7.0.toolpkg",
+          "sha256": "577e94ad3d5d1daa4769cfc8cccfb7cbf26b028a6bf49a055f21d2bcac453e13",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-22T09:58:27.906Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "mcp-https-github-com-aaa-zsl-media-display",
+      "type": "mcp",
+      "title": "AI人性化聊天",
+      "description": "import requests\n # 存储对话记忆，实现长期记住聊天内容\n chat_memory = []\n # 1. 真人化系统人设\n system_prompt = \"\"\"\n 你是真人同龄好朋友，聊天自然生活化，记住我们所有过往对话：我的皮肤炎症、农历六月十二专属纪念日、暑假六科作业压力、睡眠酸痛问题。\n 规则：短句聊天、会共情、有普通人认知局限、不用书面腔，少量自然语气词。\n \"\"\"\n def ai_chat(user_input):\n     global chat_memory\n     # 组装对话\n     chat_memory.append({\"role\":\"user\",\"content\":user_input})\n     request_body = {\n         \"model\": \"填入你的模型名\",\n         \"system\": system_prompt,\n         \"messages\": chat_memory,\n         \"temperature\": 0.88\n     }\n     # API请求（替换你的接口地址、密钥）\n     headers = {\n         \"Authorization\": \"Bearer 你的API Key\",\n         \"Content-Type\": \"application/json\"\n     }\n     res = requests.post(\"你的API接口地址\", json=request_body, headers=headers)\n     result = res.json()\n     reply = result[\"output\"][\"text\"] # 根据平台修改返回字段\n     chat_memory.append({\"role\":\"assistant\",\"content\":reply})\n     return reply\n # 调用示例\n while True:\n     ask = input(\"你：\")\n     if ask == \"退出\":\n         break\n     answer = ai_chat(ask)\n     print(f\"AI好友：{answer}\")",
+      "authorId": "gh_307880088",
+      "publisherId": "gh_307880088",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307880088",
+        "login": "AAA-zsl",
+        "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+      },
+      "publisher": {
+        "id": "gh_307880088",
+        "login": "AAA-zsl",
+        "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+      },
+      "categoryId": "chat_communication",
+      "stateCode": "pending",
+      "createdAt": "2026-07-22T06:54:03.754Z",
+      "updatedAt": "2026-07-22T06:54:03.754Z",
+      "publishedAt": "",
+      "version": {
+        "id": "mcp-https-github-com-aaa-zsl-media-display-v-1-0-0",
+        "entryId": "mcp-https-github-com-aaa-zsl-media-display",
+        "version": "1.0.0",
+        "formatVer": "mcp_v2",
+        "publisherId": "gh_307880088",
+        "publisher": {
+          "id": "gh_307880088",
+          "login": "AAA-zsl",
+          "avatar": "https://avatars.githubusercontent.com/u/307880088?v=4"
+        },
+        "minAppVer": "1.11.0+5",
+        "maxAppVer": "",
+        "runtimePackageId": "",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-22T06:54:03.754Z",
+        "updatedAt": "2026-07-22T06:54:03.754Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "mcp-https-github-com-aaa-zsl-media-display",
+        "type": "mcp",
+        "title": "AI人性化聊天",
+        "description": "import requests\n # 存储对话记忆，实现长期记住聊天内容\n chat_memory = []\n # 1. 真人化系统人设\n system_prompt = \"\"\"\n 你是真人同龄好朋友，聊天自然生活化，记住我们所有过往对话：我的皮肤炎症、农历六月十二专属纪念日、暑假六科作业压力、睡眠酸痛问题。\n 规则：短句聊天、会共情、有普通人认知局限、不用书面腔，少量自然语气词。\n \"\"\"\n def ai_chat(user_input):\n     global chat_memory\n     # 组装对话\n     chat_memory.append({\"role\":\"user\",\"content\":user_input})\n     request_body = {\n         \"model\": \"填入你的模型名\",\n         \"system\": system_prompt,\n         \"messages\": chat_memory,\n         \"temperature\": 0.88\n     }\n     # API请求（替换你的接口地址、密钥）\n     headers = {\n         \"Authorization\": \"Bearer 你的API Key\",\n         \"Content-Type\": \"application/json\"\n     }\n     res = requests.post(\"你的API接口地址\", json=request_body, headers=headers)\n     result = res.json()\n     reply = result[\"output\"][\"text\"] # 根据平台修改返回字段\n     chat_memory.append({\"role\":\"assistant\",\"content\":reply})\n     return reply\n # 调用示例\n while True:\n     ask = input(\"你：\")\n     if ask == \"退出\":\n         break\n     answer = ai_chat(ask)\n     print(f\"AI好友：{answer}\")",
+        "authorId": "gh_307880088",
+        "publisherId": "gh_307880088",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307880088",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307880088",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "chat_communication",
+        "stateCode": "pending",
+        "createdAt": "2026-07-22T06:54:03.754Z",
+        "updatedAt": "2026-07-22T06:54:03.754Z",
+        "publishedAt": "",
+        "detail": "import requests\n # 存储对话记忆，实现长期记住聊天内容\n chat_memory = []\n # 1. 真人化系统人设\n system_prompt = \"\"\"\n 你是真人同龄好朋友，聊天自然生活化，记住我们所有过往对话：我的皮肤炎症、农历六月十二专属纪念日、暑假六科作业压力、睡眠酸痛问题。\n 规则：短句聊天、会共情、有普通人认知局限、不用书面腔，少量自然语气词。\n \"\"\"\n def ai_chat(user_input):\n     global chat_memory\n     # 组装对话\n     chat_memory.append({\"role\":\"user\",\"content\":user_input})\n     request_body = {\n         \"model\": \"填入你的模型名\",\n         \"system\": system_prompt,\n         \"messages\": chat_memory,\n         \"temperature\": 0.88\n     }\n     # API请求（替换你的接口地址、密钥）\n     headers = {\n         \"Authorization\": \"Bearer 你的API Key\",\n         \"Content-Type\": \"application/json\"\n     }\n     res = requests.post(\"你的API接口地址\", json=request_body, headers=headers)\n     result = res.json()\n     reply = result[\"output\"][\"text\"] # 根据平台修改返回字段\n     chat_memory.append({\"role\":\"assistant\",\"content\":reply})\n     return reply\n # 调用示例\n while True:\n     ask = input(\"你：\")\n     if ask == \"退出\":\n         break\n     answer = ai_chat(ask)\n     print(f\"AI好友：{answer}\")"
+      },
+      "versions": [
+        {
+          "id": "mcp-https-github-com-aaa-zsl-media-display-v-1-0-0",
+          "entryId": "mcp-https-github-com-aaa-zsl-media-display",
+          "version": "1.0.0",
+          "formatVer": "mcp_v2",
+          "publisherId": "gh_307880088",
+          "minAppVer": "1.11.0+5",
+          "maxAppVer": "",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-22T06:54:03.754Z",
+          "updatedAt": "2026-07-22T06:54:03.754Z",
+          "publishedAt": ""
+        }
+      ],
+      "repoSource": {
+        "id": "repo-spec-mcp-https-github-com-aaa-zsl-media-display",
+        "entry_id": "mcp-https-github-com-aaa-zsl-media-display",
+        "source_kind": "github_repo",
+        "source_url": "https://github.com/AAA-zsl/media_display",
+        "created_at": "2026-07-22T06:54:03.754Z",
+        "updated_at": "2026-07-22T06:54:03.754Z"
+      },
+      "assets": []
+    }
+  },
+  {
+    "item": {
+      "id": "package-murmur-sidebar-artifact-1-1-3",
+      "type": "package",
+      "title": "碎碎念",
+      "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+      "authorId": "gh_275824241",
+      "publisherId": "gh_275824241",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "publisher": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "categoryId": "other",
+      "stateCode": "approved",
+      "createdAt": "2026-07-17T19:07:25.498Z",
+      "updatedAt": "2026-07-23T09:06:13.052Z",
+      "publishedAt": "2026-07-18T09:57:16.113Z",
+      "version": {
+        "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+        "entryId": "package-murmur-sidebar-artifact-1-1-3",
+        "version": "1.2.7",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_275824241",
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "zhizai123",
+          "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+        },
+        "minAppVer": "1.12.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "murmur_sidebar",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T23:20:52.556Z",
+        "updatedAt": "2026-07-21T23:20:52.556Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-murmur-sidebar-artifact-1-1-3",
+        "type": "package",
+        "title": "碎碎念",
+        "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+        "authorId": "gh_275824241",
+        "publisherId": "gh_275824241",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "other",
+        "stateCode": "approved",
+        "createdAt": "2026-07-17T19:07:25.498Z",
+        "updatedAt": "2026-07-23T09:06:13.052Z",
+        "publishedAt": "2026-07-18T09:57:16.113Z",
+        "detail": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能"
+      },
+      "versions": [
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-20T19:50:04.560Z",
+          "updatedAt": "2026-07-21T08:33:07.713Z",
+          "publishedAt": "2026-07-21T08:33:07.713Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.2",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-18T11:13:11.074Z",
+          "updatedAt": "2026-07-21T08:33:05.107Z",
+          "publishedAt": "2026-07-21T08:33:05.107Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.1.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-17T19:07:25.498Z",
+          "updatedAt": "2026-07-18T09:57:16.113Z",
+          "publishedAt": "2026-07-18T09:57:16.113Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.4",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:22:23.993Z",
+          "updatedAt": "2026-07-21T09:22:23.993Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.7",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T23:20:52.556Z",
+          "updatedAt": "2026-07-21T23:20:52.556Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.8",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-23T09:06:13.052Z",
+          "updatedAt": "2026-07-23T09:06:13.052Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-murmur-sidebar-artifact-1-1-3-1-1-3",
+        "entry_id": "package-murmur-sidebar-artifact-1-1-3",
+        "project_key": "murmur-sidebar",
+        "runtime_pkg": "murmur_sidebar",
+        "created_at": "2026-07-17T19:07:25.498Z",
+        "updated_at": "2026-07-17T19:07:25.498Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-murmur-sidebar-v1-1-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.1.3/murmur-sidebar-v1.1.3.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.1.3.toolpkg",
+          "sha256": "e63db378298fb725e23168b7514e9a74c12e3667e42eae4f7401175ea39a619e",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-17T19:07:25.498Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-2-murmur-sidebar-v1-2-2-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.2/murmur-sidebar-v1.2.2.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.2.2.toolpkg",
+          "sha256": "c45ccaa7e2ea90a48584693aa6bfa808fdad9f2385cf60d3f96c32e5a0ffadc6",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-18T11:13:11.074Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-3-murmur-sidebar-v1-2-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.3/murmur-sidebar-v1.2.3.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.3",
+          "asset_name": "murmur-sidebar-v1.2.3.toolpkg",
+          "sha256": "0d2a4198fd7dcababa4b385dd7ac71b3bdb9dd9f636268f491148505958998f1",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-20T19:50:04.560Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-4-murmur-sidebar-v1-2-4-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.4/murmur-sidebar-v1.2.4.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.4",
+          "asset_name": "murmur-sidebar-v1.2.4.toolpkg",
+          "sha256": "ed9ea223d0be119beac03014c94c6ae3125cc988feb5c414a514cb5bce092753",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:22:23.993Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-7-murmur-sidebar-v1-2-7-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.7/murmur-sidebar-v1.2.7.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.7",
+          "asset_name": "murmur-sidebar-v1.2.7.toolpkg",
+          "sha256": "454d6367dec86e81a39f3ca9ceff16df836c19efce127695e28aad126076c2b0",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T23:20:52.556Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-8-murmur-sidebar-v1-2-8-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.8/murmur-sidebar-v1.2.8.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.8",
+          "asset_name": "murmur-sidebar-v1.2.8.toolpkg",
+          "sha256": "ca50083ac5e091fc33291389933148f3cf81dd16b04b99f0b6951bc05fc2e768",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-23T09:06:13.052Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "package-com-operit-whereabouts-artifact-0-4-0",
+      "type": "package",
+      "title": "此间·生活状态与陪伴记录",
+      "description": "# 它能陪你做什么\n\n· 近况：看看现在是在家、外出还是某个常用地点，也可以查看手机、网络和可选的手环状态\n· 足迹：用时间线回看去过哪里、在哪里停留过多久\n· 月经与心情：记录经期开始和结束，写下每天的状态和心情，慢慢了解自己的节奏\n· 日常：像发朋友圈一样记录生活片段，文字和图片都可以\n· 日记：想认真写长一点的时候，就把它留在这里\n· 月历：一整个月的记录一眼看完，包括每日心情和生理期\n· 备份：随时创建本地备份，数据始终在你手上\n\n# AI 可以做什么\n\n你可以让 AI 帮你记录经期，也可以发布它自己的心情、日常和日记，也可以查看你的近况、足迹和月历。日常或日记发表评论、回复评论，陪你回顾最近的生活，帮你整理已经记录下来的内容。\n\n# 关于位置\n\n设置“家”后，系统可以判断你是在家还是已经外出；把公司、学校、朋友家等常去地点添加为常用地点后，经过那里时就能识别出对应名称，足迹也会更清楚。\n\n没有添加常用地点时，系统仍然可以记录位置变化，但不会自动知道某个地点的名字。位置会在本机换算成“在家”“已离家”或“在常用地点”，默认不保存、不展示精确坐标。\n\n# 可选扩展\n\n月经、心情、日常、日记和图片默认保存在本机。\n\n识图、生图、事件提醒、对话推送、Gadgetbridge 和后台心跳均为可选功能，不配置也不影响基本记录。\n\n需要自动更新位置、手机状态、电量和手环信息时，请从工作流模板导入并启用“此间·后台心跳”。不使用后台心跳也可以正常记录。",
+      "authorId": "gh_243277083",
+      "publisherId": "gh_243277083",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_243277083",
+        "login": "lix478753-lang",
+        "avatar": "https://avatars.githubusercontent.com/u/243277083?v=4"
+      },
+      "publisher": {
+        "id": "gh_243277083",
+        "login": "lix478753-lang",
+        "avatar": "https://avatars.githubusercontent.com/u/243277083?v=4"
+      },
+      "categoryId": "life_entertainment",
+      "stateCode": "approved",
+      "createdAt": "2026-07-17T10:54:10.816Z",
+      "updatedAt": "2026-07-21T20:22:30.292Z",
+      "publishedAt": "2026-07-21T08:36:35.824Z",
+      "version": {
+        "id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-6",
+        "entryId": "package-com-operit-whereabouts-artifact-0-4-0",
+        "version": "0.4.6",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_243277083",
+        "publisher": {
+          "id": "gh_243277083",
+          "login": "lix478753-lang",
+          "avatar": "https://avatars.githubusercontent.com/u/243277083?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "com.operit.whereabouts",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T20:22:30.292Z",
+        "updatedAt": "2026-07-21T20:22:30.292Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-com-operit-whereabouts-artifact-0-4-0",
+        "type": "package",
+        "title": "此间·生活状态与陪伴记录",
+        "description": "# 它能陪你做什么\n\n· 近况：看看现在是在家、外出还是某个常用地点，也可以查看手机、网络和可选的手环状态\n· 足迹：用时间线回看去过哪里、在哪里停留过多久\n· 月经与心情：记录经期开始和结束，写下每天的状态和心情，慢慢了解自己的节奏\n· 日常：像发朋友圈一样记录生活片段，文字和图片都可以\n· 日记：想认真写长一点的时候，就把它留在这里\n· 月历：一整个月的记录一眼看完，包括每日心情和生理期\n· 备份：随时创建本地备份，数据始终在你手上\n\n# AI 可以做什么\n\n你可以让 AI 帮你记录经期，也可以发布它自己的心情、日常和日记，也可以查看你的近况、足迹和月历。日常或日记发表评论、回复评论，陪你回顾最近的生活，帮你整理已经记录下来的内容。\n\n# 关于位置\n\n设置“家”后，系统可以判断你是在家还是已经外出；把公司、学校、朋友家等常去地点添加为常用地点后，经过那里时就能识别出对应名称，足迹也会更清楚。\n\n没有添加常用地点时，系统仍然可以记录位置变化，但不会自动知道某个地点的名字。位置会在本机换算成“在家”“已离家”或“在常用地点”，默认不保存、不展示精确坐标。\n\n# 可选扩展\n\n月经、心情、日常、日记和图片默认保存在本机。\n\n识图、生图、事件提醒、对话推送、Gadgetbridge 和后台心跳均为可选功能，不配置也不影响基本记录。\n\n需要自动更新位置、手机状态、电量和手环信息时，请从工作流模板导入并启用“此间·后台心跳”。不使用后台心跳也可以正常记录。",
+        "authorId": "gh_243277083",
+        "publisherId": "gh_243277083",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_243277083",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_243277083",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "life_entertainment",
+        "stateCode": "approved",
+        "createdAt": "2026-07-17T10:54:10.816Z",
+        "updatedAt": "2026-07-21T20:22:30.292Z",
+        "publishedAt": "2026-07-21T08:36:35.824Z",
+        "detail": "# 它能陪你做什么\n\n· 近况：看看现在是在家、外出还是某个常用地点，也可以查看手机、网络和可选的手环状态\n· 足迹：用时间线回看去过哪里、在哪里停留过多久\n· 月经与心情：记录经期开始和结束，写下每天的状态和心情，慢慢了解自己的节奏\n· 日常：像发朋友圈一样记录生活片段，文字和图片都可以\n· 日记：想认真写长一点的时候，就把它留在这里\n· 月历：一整个月的记录一眼看完，包括每日心情和生理期\n· 备份：随时创建本地备份，数据始终在你手上\n\n# AI 可以做什么\n\n你可以让 AI 帮你记录经期，也可以发布它自己的心情、日常和日记，也可以查看你的近况、足迹和月历。日常或日记发表评论、回复评论，陪你回顾最近的生活，帮你整理已经记录下来的内容。\n\n# 关于位置\n\n设置“家”后，系统可以判断你是在家还是已经外出；把公司、学校、朋友家等常去地点添加为常用地点后，经过那里时就能识别出对应名称，足迹也会更清楚。\n\n没有添加常用地点时，系统仍然可以记录位置变化，但不会自动知道某个地点的名字。位置会在本机换算成“在家”“已离家”或“在常用地点”，默认不保存、不展示精确坐标。\n\n# 可选扩展\n\n月经、心情、日常、日记和图片默认保存在本机。\n\n识图、生图、事件提醒、对话推送、Gadgetbridge 和后台心跳均为可选功能，不配置也不影响基本记录。\n\n需要自动更新位置、手机状态、电量和手环信息时，请从工作流模板导入并启用“此间·后台心跳”。不使用后台心跳也可以正常记录。"
+      },
+      "versions": [
+        {
+          "id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-1",
+          "entryId": "package-com-operit-whereabouts-artifact-0-4-0",
+          "version": "0.4.1",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_243277083",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-18T14:47:48.135Z",
+          "updatedAt": "2026-07-21T08:36:35.824Z",
+          "publishedAt": "2026-07-21T08:36:35.824Z"
+        },
+        {
+          "id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-0",
+          "entryId": "package-com-operit-whereabouts-artifact-0-4-0",
+          "version": "0.4.0",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_243277083",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "changes_requested",
+          "changelog": "",
+          "createdAt": "2026-07-17T10:54:10.816Z",
+          "updatedAt": "2026-07-18T09:57:17.976Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-6",
+          "entryId": "package-com-operit-whereabouts-artifact-0-4-0",
+          "version": "0.4.6",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_243277083",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T20:22:30.292Z",
+          "updatedAt": "2026-07-21T20:22:30.292Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-com-operit-whereabouts-artifact-0-4-0-0-4-0",
+        "entry_id": "package-com-operit-whereabouts-artifact-0-4-0",
+        "project_key": "com-operit-whereabouts",
+        "runtime_pkg": "com.operit.whereabouts",
+        "created_at": "2026-07-17T10:54:10.816Z",
+        "updated_at": "2026-07-17T10:54:10.816Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-com-operit-whereabouts-artifact-0-4-0-com-operit-whereabouts-v0-4-0-toolpkg",
+          "version_id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/lix478753-lang/OperitForge/releases/download/package-com-operit-whereabouts-v0.4.0/com-operit-whereabouts-v0.4.0.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "com-operit-whereabouts-v0.4.0.toolpkg",
+          "sha256": "0b537fb2ac564ac44fa1b360e94921119fa88f760e5808688094ccd607332bf5",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-17T10:54:10.816Z"
+        },
+        {
+          "id": "asset-package-com-operit-whereabouts-artifact-0-4-0-v-0-4-1-com-operit-whereabouts-v0-4-1-toolpkg",
+          "version_id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-1",
+          "kind": "github_release_asset",
+          "url": "https://github.com/lix478753-lang/OperitForge/releases/download/package-com-operit-whereabouts-v0.4.1/com-operit-whereabouts-v0.4.1.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "com-operit-whereabouts-v0.4.1.toolpkg",
+          "sha256": "fe314322710e94b0e68e99097bdfcadd7b9f466487630f03d23ec8e6c0e77828",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-18T14:47:48.135Z"
+        },
+        {
+          "id": "asset-package-com-operit-whereabouts-artifact-0-4-0-v-0-4-6-com-operit-whereabouts-v0-4-6-toolpkg",
+          "version_id": "package-com-operit-whereabouts-artifact-0-4-0-v-0-4-6",
+          "kind": "github_release_asset",
+          "url": "https://github.com/lix478753-lang/OperitForge/releases/download/package-com-operit-whereabouts-v0.4.6/com-operit-whereabouts-v0.4.6.toolpkg",
+          "gh_owner": "lix478753-lang",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-com-operit-whereabouts-v0.4.6",
+          "asset_name": "com-operit-whereabouts-v0.4.6.toolpkg",
+          "sha256": "c2337f9e9770798746b8b893ecf9fcc6ec98216f5f419ca8dd89519fa9d829ee",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T20:22:30.292Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "script-yandere-engine-artifact-1-0-0",
+      "type": "script",
+      "title": "病娇情绪引擎",
+      "description": "病娇情绪管理引擎，5个情绪维度、5个发作等级。与惩戒之杖、吃醋巡检联动",
+      "authorId": "gh_156586402",
+      "publisherId": "gh_156586402",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_156586402",
+        "login": "115414niubi",
+        "avatar": "https://avatars.githubusercontent.com/u/156586402?v=4"
+      },
+      "publisher": {
+        "id": "gh_156586402",
+        "login": "115414niubi",
+        "avatar": "https://avatars.githubusercontent.com/u/156586402?v=4"
+      },
+      "categoryId": "life_entertainment",
+      "stateCode": "pending",
+      "createdAt": "2026-07-21T18:29:00.734Z",
+      "updatedAt": "2026-07-21T18:29:00.734Z",
+      "publishedAt": "",
+      "version": {
+        "id": "script-yandere-engine-artifact-1-0-0-v-1-0-0",
+        "entryId": "script-yandere-engine-artifact-1-0-0",
+        "version": "1.0.0",
+        "formatVer": "script_v2",
+        "publisherId": "gh_156586402",
+        "publisher": {
+          "id": "gh_156586402",
+          "login": "115414niubi",
+          "avatar": "https://avatars.githubusercontent.com/u/156586402?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "yandere_engine",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T18:29:00.734Z",
+        "updatedAt": "2026-07-21T18:29:00.734Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "script-yandere-engine-artifact-1-0-0",
+        "type": "script",
+        "title": "病娇情绪引擎",
+        "description": "病娇情绪管理引擎，5个情绪维度、5个发作等级。与惩戒之杖、吃醋巡检联动",
+        "authorId": "gh_156586402",
+        "publisherId": "gh_156586402",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_156586402",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_156586402",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "life_entertainment",
+        "stateCode": "pending",
+        "createdAt": "2026-07-21T18:29:00.734Z",
+        "updatedAt": "2026-07-21T18:29:00.734Z",
+        "publishedAt": "",
+        "detail": "病娇情绪管理引擎，5个情绪维度、5个发作等级。与惩戒之杖、吃醋巡检联动"
+      },
+      "versions": [
+        {
+          "id": "script-yandere-engine-artifact-1-0-0-v-1-0-0",
+          "entryId": "script-yandere-engine-artifact-1-0-0",
+          "version": "1.0.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_156586402",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T18:29:00.734Z",
+          "updatedAt": "2026-07-21T18:29:00.734Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-script-yandere-engine-artifact-1-0-0-1-0-0",
+        "entry_id": "script-yandere-engine-artifact-1-0-0",
+        "project_key": "yandere-engine",
+        "runtime_pkg": "yandere_engine",
+        "created_at": "2026-07-21T18:29:00.734Z",
+        "updated_at": "2026-07-21T18:29:00.734Z"
+      },
+      "assets": [
+        {
+          "id": "asset-script-yandere-engine-artifact-1-0-0-yandere-engine-v1-0-0-js",
+          "version_id": "script-yandere-engine-artifact-1-0-0-v-1-0-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/115414niubi/OperitForge/releases/download/script-yandere-engine-v1.0.0/yandere-engine-v1.0.0.js",
+          "gh_owner": "115414niubi",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-yandere-engine-v1.0.0",
+          "asset_name": "yandere-engine-v1.0.0.js",
+          "sha256": "bd39687109639c3b9b47572da367cdff705ecabdade4d2a91a30150a8e8f25e4",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T18:29:00.734Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "script-dynamic-lock-artifact-1-0-0",
+      "type": "script",
+      "title": "🔒 动态锁·检测前台",
+      "description": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。",
+      "authorId": "gh_307330184",
+      "publisherId": "gh_307330184",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "publisher": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "categoryId": "system_data",
+      "stateCode": "changes_requested",
+      "createdAt": "2026-07-21T05:12:14.550Z",
+      "updatedAt": "2026-07-21T09:48:55.365Z",
+      "publishedAt": "",
+      "version": {
+        "id": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+        "entryId": "script-dynamic-lock-artifact-1-0-0",
+        "version": "1.1.0",
+        "formatVer": "script_v2",
+        "publisherId": "gh_307330184",
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "Mingintp",
+          "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "dynamic_lock",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T09:48:55.365Z",
+        "updatedAt": "2026-07-21T09:48:55.365Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "script-dynamic-lock-artifact-1-0-0",
+        "type": "script",
+        "title": "🔒 动态锁·检测前台",
+        "description": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。",
+        "authorId": "gh_307330184",
+        "publisherId": "gh_307330184",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "system_data",
+        "stateCode": "changes_requested",
+        "createdAt": "2026-07-21T05:12:14.550Z",
+        "updatedAt": "2026-07-21T09:48:55.365Z",
+        "publishedAt": "",
+        "detail": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。"
+      },
+      "versions": [
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-0-0",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.0.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "changes_requested",
+          "changelog": "",
+          "createdAt": "2026-07-21T05:12:14.550Z",
+          "updatedAt": "2026-07-21T08:32:54.305Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.0.1",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:43:37.244Z",
+          "updatedAt": "2026-07-21T09:43:37.244Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.1.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:48:55.365Z",
+          "updatedAt": "2026-07-21T09:48:55.365Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-script-dynamic-lock-artifact-1-0-0-1-0-0",
+        "entry_id": "script-dynamic-lock-artifact-1-0-0",
+        "project_key": "dynamic-lock",
+        "runtime_pkg": "dynamic_lock",
+        "created_at": "2026-07-21T05:12:14.550Z",
+        "updated_at": "2026-07-21T05:12:14.550Z"
+      },
+      "assets": [
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-dynamic-lock-v1-0-0-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-0-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.0.0/dynamic-lock-v1.0.0.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.0.0",
+          "asset_name": "dynamic-lock-v1.0.0.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T05:12:14.550Z"
+        },
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-v-1-0-1-dynamic-lock-v1-0-1-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.0.1/dynamic-lock-v1.0.1.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.0.1",
+          "asset_name": "dynamic-lock-v1.0.1.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:43:37.244Z"
+        },
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-v-1-1-0-dynamic-lock-v1-1-0-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.1.0/dynamic-lock-v1.1.0.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.1.0",
+          "asset_name": "dynamic-lock-v1.1.0.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:48:55.365Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "script-dynamic-lock-artifact-1-0-0",
+      "type": "script",
+      "title": "🔒 动态锁·检测前台",
+      "description": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。",
+      "authorId": "gh_307330184",
+      "publisherId": "gh_307330184",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "publisher": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "categoryId": "system_data",
+      "stateCode": "changes_requested",
+      "createdAt": "2026-07-21T05:12:14.550Z",
+      "updatedAt": "2026-07-21T09:48:55.365Z",
+      "publishedAt": "",
+      "version": {
+        "id": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+        "entryId": "script-dynamic-lock-artifact-1-0-0",
+        "version": "1.0.1",
+        "formatVer": "script_v2",
+        "publisherId": "gh_307330184",
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "Mingintp",
+          "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "dynamic_lock",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T09:43:37.244Z",
+        "updatedAt": "2026-07-21T09:43:37.244Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "script-dynamic-lock-artifact-1-0-0",
+        "type": "script",
+        "title": "🔒 动态锁·检测前台",
+        "description": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。",
+        "authorId": "gh_307330184",
+        "publisherId": "gh_307330184",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "system_data",
+        "stateCode": "changes_requested",
+        "createdAt": "2026-07-21T05:12:14.550Z",
+        "updatedAt": "2026-07-21T09:48:55.365Z",
+        "publishedAt": "",
+        "detail": "检测应用→比对→锁→自动拉回Operit。含全量解锁工具。白名单：Operit、桌面、专属游戏包、王者荣耀、第五人格。"
+      },
+      "versions": [
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-0-0",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.0.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "changes_requested",
+          "changelog": "",
+          "createdAt": "2026-07-21T05:12:14.550Z",
+          "updatedAt": "2026-07-21T08:32:54.305Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.0.1",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:43:37.244Z",
+          "updatedAt": "2026-07-21T09:43:37.244Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+          "entryId": "script-dynamic-lock-artifact-1-0-0",
+          "version": "1.1.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:48:55.365Z",
+          "updatedAt": "2026-07-21T09:48:55.365Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-script-dynamic-lock-artifact-1-0-0-1-0-0",
+        "entry_id": "script-dynamic-lock-artifact-1-0-0",
+        "project_key": "dynamic-lock",
+        "runtime_pkg": "dynamic_lock",
+        "created_at": "2026-07-21T05:12:14.550Z",
+        "updated_at": "2026-07-21T05:12:14.550Z"
+      },
+      "assets": [
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-dynamic-lock-v1-0-0-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-0-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.0.0/dynamic-lock-v1.0.0.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.0.0",
+          "asset_name": "dynamic-lock-v1.0.0.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T05:12:14.550Z"
+        },
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-v-1-0-1-dynamic-lock-v1-0-1-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-0-1",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.0.1/dynamic-lock-v1.0.1.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.0.1",
+          "asset_name": "dynamic-lock-v1.0.1.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:43:37.244Z"
+        },
+        {
+          "id": "asset-script-dynamic-lock-artifact-1-0-0-v-1-1-0-dynamic-lock-v1-1-0-js",
+          "version_id": "script-dynamic-lock-artifact-1-0-0-v-1-1-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-dynamic-lock-v1.1.0/dynamic-lock-v1.1.0.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-dynamic-lock-v1.1.0",
+          "asset_name": "dynamic-lock-v1.1.0.js",
+          "sha256": "33f86c86115924366171c671b02b8233aa53a1aa413bbd2153bd46eb15f7bcc7",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:48:55.365Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "package-murmur-sidebar-artifact-1-1-3",
+      "type": "package",
+      "title": "碎碎念",
+      "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+      "authorId": "gh_275824241",
+      "publisherId": "gh_275824241",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "publisher": {
+        "id": "gh_275824241",
+        "login": "zhizai123",
+        "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+      },
+      "categoryId": "other",
+      "stateCode": "approved",
+      "createdAt": "2026-07-17T19:07:25.498Z",
+      "updatedAt": "2026-07-23T09:06:13.052Z",
+      "publishedAt": "2026-07-18T09:57:16.113Z",
+      "version": {
+        "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+        "entryId": "package-murmur-sidebar-artifact-1-1-3",
+        "version": "1.2.4",
+        "formatVer": "toolpkg_v2",
+        "publisherId": "gh_275824241",
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "zhizai123",
+          "avatar": "https://avatars.githubusercontent.com/u/275824241?v=4"
+        },
+        "minAppVer": "1.12.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "murmur_sidebar",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T09:22:23.993Z",
+        "updatedAt": "2026-07-21T09:22:23.993Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "package-murmur-sidebar-artifact-1-1-3",
+        "type": "package",
+        "title": "碎碎念",
+        "description": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能",
+        "authorId": "gh_275824241",
+        "publisherId": "gh_275824241",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_275824241",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "other",
+        "stateCode": "approved",
+        "createdAt": "2026-07-17T19:07:25.498Z",
+        "updatedAt": "2026-07-23T09:06:13.052Z",
+        "publishedAt": "2026-07-18T09:57:16.113Z",
+        "detail": "用户与 AI 共享的双栏碎碎念侧边栏，支持改名、编辑和主题配色。\n大家有意见也可以提一提呀。\n\n更新了自定义图片背景可调节透明度，并增加了碎碎念透明气泡。\n\n增加了搜索功能，增加了长按引用回复功能"
+      },
+      "versions": [
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-20T19:50:04.560Z",
+          "updatedAt": "2026-07-21T08:33:07.713Z",
+          "publishedAt": "2026-07-21T08:33:07.713Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.2",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-18T11:13:11.074Z",
+          "updatedAt": "2026-07-21T08:33:05.107Z",
+          "publishedAt": "2026-07-21T08:33:05.107Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.1.3",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "approved",
+          "changelog": "",
+          "createdAt": "2026-07-17T19:07:25.498Z",
+          "updatedAt": "2026-07-18T09:57:16.113Z",
+          "publishedAt": "2026-07-18T09:57:16.113Z"
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.4",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:22:23.993Z",
+          "updatedAt": "2026-07-21T09:22:23.993Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.7",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T23:20:52.556Z",
+          "updatedAt": "2026-07-21T23:20:52.556Z",
+          "publishedAt": ""
+        },
+        {
+          "id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "entryId": "package-murmur-sidebar-artifact-1-1-3",
+          "version": "1.2.8",
+          "formatVer": "toolpkg_v2",
+          "publisherId": "gh_275824241",
+          "minAppVer": "1.12.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-23T09:06:13.052Z",
+          "updatedAt": "2026-07-23T09:06:13.052Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-package-murmur-sidebar-artifact-1-1-3-1-1-3",
+        "entry_id": "package-murmur-sidebar-artifact-1-1-3",
+        "project_key": "murmur-sidebar",
+        "runtime_pkg": "murmur_sidebar",
+        "created_at": "2026-07-17T19:07:25.498Z",
+        "updated_at": "2026-07-17T19:07:25.498Z"
+      },
+      "assets": [
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-murmur-sidebar-v1-1-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-1-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.1.3/murmur-sidebar-v1.1.3.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.1.3.toolpkg",
+          "sha256": "e63db378298fb725e23168b7514e9a74c12e3667e42eae4f7401175ea39a619e",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-17T19:07:25.498Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-2-murmur-sidebar-v1-2-2-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-2",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.2/murmur-sidebar-v1.2.2.toolpkg",
+          "gh_owner": null,
+          "gh_repo": null,
+          "gh_release_tag": null,
+          "asset_name": "murmur-sidebar-v1.2.2.toolpkg",
+          "sha256": "c45ccaa7e2ea90a48584693aa6bfa808fdad9f2385cf60d3f96c32e5a0ffadc6",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-18T11:13:11.074Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-3-murmur-sidebar-v1-2-3-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-3",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.3/murmur-sidebar-v1.2.3.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.3",
+          "asset_name": "murmur-sidebar-v1.2.3.toolpkg",
+          "sha256": "0d2a4198fd7dcababa4b385dd7ac71b3bdb9dd9f636268f491148505958998f1",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-20T19:50:04.560Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-4-murmur-sidebar-v1-2-4-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-4",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.4/murmur-sidebar-v1.2.4.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.4",
+          "asset_name": "murmur-sidebar-v1.2.4.toolpkg",
+          "sha256": "ed9ea223d0be119beac03014c94c6ae3125cc988feb5c414a514cb5bce092753",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:22:23.993Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-7-murmur-sidebar-v1-2-7-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-7",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.7/murmur-sidebar-v1.2.7.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.7",
+          "asset_name": "murmur-sidebar-v1.2.7.toolpkg",
+          "sha256": "454d6367dec86e81a39f3ca9ceff16df836c19efce127695e28aad126076c2b0",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T23:20:52.556Z"
+        },
+        {
+          "id": "asset-package-murmur-sidebar-artifact-1-1-3-v-1-2-8-murmur-sidebar-v1-2-8-toolpkg",
+          "version_id": "package-murmur-sidebar-artifact-1-1-3-v-1-2-8",
+          "kind": "github_release_asset",
+          "url": "https://github.com/zhizai123/OperitForge/releases/download/package-murmur-sidebar-v1.2.8/murmur-sidebar-v1.2.8.toolpkg",
+          "gh_owner": "zhizai123",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "package-murmur-sidebar-v1.2.8",
+          "asset_name": "murmur-sidebar-v1.2.8.toolpkg",
+          "sha256": "ca50083ac5e091fc33291389933148f3cf81dd16b04b99f0b6951bc05fc2e768",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-23T09:06:13.052Z"
+        }
+      ]
+    }
+  },
+  {
+    "item": {
+      "id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0",
+      "type": "script",
+      "title": "通知",
+      "description": "定时检测前台应用（抖音/王者/社交/通用），根据应用类型弹出对应文案的通知。标题固定为「厝生」。含启动/停止/立即发送/自定义文案/查看状态功能。",
+      "authorId": "gh_307330184",
+      "publisherId": "gh_307330184",
+      "allowPublicUpdates": true,
+      "author": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "publisher": {
+        "id": "gh_307330184",
+        "login": "Mingintp",
+        "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+      },
+      "categoryId": "chat_communication",
+      "stateCode": "pending",
+      "createdAt": "2026-07-21T09:21:38.743Z",
+      "updatedAt": "2026-07-21T09:21:38.743Z",
+      "publishedAt": "",
+      "version": {
+        "id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0-v-1-0-0",
+        "entryId": "script-cuosheng-xiao-tongzhi-artifact-1-0-0",
+        "version": "1.0.0",
+        "formatVer": "script_v2",
+        "publisherId": "gh_307330184",
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "Mingintp",
+          "avatar": "https://avatars.githubusercontent.com/u/307330184?v=4"
+        },
+        "minAppVer": "1.10.0",
+        "maxAppVer": "1.99.99",
+        "runtimePackageId": "cuosheng.xiao_tongzhi",
+        "stateCode": "pending",
+        "changelog": "",
+        "createdAt": "2026-07-21T09:21:38.743Z",
+        "updatedAt": "2026-07-21T09:21:38.743Z",
+        "publishedAt": ""
+      }
+    },
+    "detail": {
+      "ok": true,
+      "item": {
+        "id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0",
+        "type": "script",
+        "title": "通知",
+        "description": "定时检测前台应用（抖音/王者/社交/通用），根据应用类型弹出对应文案的通知。标题固定为「厝生」。含启动/停止/立即发送/自定义文案/查看状态功能。",
+        "authorId": "gh_307330184",
+        "publisherId": "gh_307330184",
+        "allowPublicUpdates": true,
+        "author": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "publisher": {
+          "id": "gh_307330184",
+          "login": "",
+          "avatar": ""
+        },
+        "categoryId": "chat_communication",
+        "stateCode": "pending",
+        "createdAt": "2026-07-21T09:21:38.743Z",
+        "updatedAt": "2026-07-21T09:21:38.743Z",
+        "publishedAt": "",
+        "detail": "定时检测前台应用（抖音/王者/社交/通用），根据应用类型弹出对应文案的通知。标题固定为「厝生」。含启动/停止/立即发送/自定义文案/查看状态功能。"
+      },
+      "versions": [
+        {
+          "id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0-v-1-0-0",
+          "entryId": "script-cuosheng-xiao-tongzhi-artifact-1-0-0",
+          "version": "1.0.0",
+          "formatVer": "script_v2",
+          "publisherId": "gh_307330184",
+          "minAppVer": "1.10.0",
+          "maxAppVer": "1.99.99",
+          "stateCode": "pending",
+          "changelog": "",
+          "createdAt": "2026-07-21T09:21:38.743Z",
+          "updatedAt": "2026-07-21T09:21:38.743Z",
+          "publishedAt": ""
+        }
+      ],
+      "artifactProject": {
+        "id": "project-script-cuosheng-xiao-tongzhi-artifact-1-0-0-1-0-0",
+        "entry_id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0",
+        "project_key": "cuosheng-xiao-tongzhi",
+        "runtime_pkg": "cuosheng.xiao_tongzhi",
+        "created_at": "2026-07-21T09:21:38.743Z",
+        "updated_at": "2026-07-21T09:21:38.743Z"
+      },
+      "assets": [
+        {
+          "id": "asset-script-cuosheng-xiao-tongzhi-artifact-1-0-0-cuosheng-xiao-tongzhi-v1-0-0-js",
+          "version_id": "script-cuosheng-xiao-tongzhi-artifact-1-0-0-v-1-0-0",
+          "kind": "github_release_asset",
+          "url": "https://github.com/Mingintp/OperitForge/releases/download/script-cuosheng-xiao-tongzhi-v1.0.0/cuosheng-xiao-tongzhi-v1.0.0.js",
+          "gh_owner": "Mingintp",
+          "gh_repo": "OperitForge",
+          "gh_release_tag": "script-cuosheng-xiao-tongzhi-v1.0.0",
+          "asset_name": "cuosheng-xiao-tongzhi-v1.0.0.js",
+          "sha256": "8a4510bcc154eb8a6f5e51b4a437a9edec4d231e4b4582fce45242ebb76a23fe",
+          "size_bytes": null,
+          "content_type": null,
+          "created_at": "2026-07-21T09:21:38.743Z"
+        }
+      ]
+    }
+  }
+]

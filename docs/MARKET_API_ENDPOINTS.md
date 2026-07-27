@@ -11,6 +11,10 @@
 
 客户端禁止通过 `api.operit.app` 读取静态资源。静态资源一律走 `static.operit.app`，不消耗 Worker 额度。
 
+`static.operit.app` 是 `operit-market-stats-static` 的 R2 自定义域名。该 bucket 的 CORS
+规则由 [`r2-cors.json`](../workers/market/r2-cors.json) 声明，并允许任意来源读取公开静态
+JSON；R2 CORS 不承担访问控制，因为对象已通过该公开域名直接提供。
+
 ## 鉴权
 
 ### v2 用户会话
@@ -43,6 +47,7 @@ Authorization: Bearer <github_access_token>
 - GitHub token 只在登录换 session 时发送给 Worker。
 - Worker 校验 GitHub 用户后签发市场 session，不保存、不打日志、不写 D1/R2/Analytics。
 - 后续发布、评论、点赞等接口使用市场 session。
+- 新版客户端先通过 `/oauth/github/*` Broker 取得 GitHub access token；该流程将 OAuth secret 和授权码交换保留在 Worker。详情见 [GitHub OAuth Broker](GITHUB_OAUTH_BROKER.md)。
 
 ### v2 管理员鉴权
 
@@ -74,7 +79,7 @@ GET /market/v2/manifest.json
 GET /market/v2/lists/all/{sort}/page-{page}.json
 ```
 
-`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
+`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小固定为 `100`。
 
 精选不再作为服务端列表或排序。R2 entry payload 内输出 `featured: boolean`，客户端默认开启“精选”本地筛选；用户关闭精选筛选后，仍使用同一套 `updated` / `likes` / `downloads` 静态列表。
 
@@ -86,7 +91,7 @@ GET /market/v2/lists/all/{sort}/page-{page}.json
 GET /market/v2/lists/type/{type}/{sort}/page-{page}.json
 ```
 
-`type`：`skill` | `mcp` | `package` | `script`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
+`type`：`skill` | `mcp` | `package` | `script`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小固定为 `100`。
 
 客户端按 tab 浏览时应使用该接口，不应读取全市场列表后本地过滤。
 
@@ -96,7 +101,7 @@ GET /market/v2/lists/type/{type}/{sort}/page-{page}.json
 GET /market/v2/lists/category/{categoryId}/{sort}/page-{page}.json
 ```
 
-`categoryId` 来自 `/market/v2/manifest.json` 的 `categories[].id`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小 `100`。
+`categoryId` 来自 `/market/v2/manifest.json` 的 `categories[].id`。`sort`：`updated` | `likes` | `downloads`，默认 `updated`，页大小固定为 `100`。
 
 ### 按类型 + 分类列表
 
@@ -156,6 +161,8 @@ Repo 类（`skill` / `mcp`）提交完整可安装定位：
 
 Repo 类条目必须能公开访问并确认 GitHub repo owner；仓库不可访问、owner 无法确认或 source 已失效时直接拒绝，返回/记录 `repository-unreachable`，不能进入公开 R2。
 
+Artifact 类提交以 `ghOwner`、`ghRepo`、`ghReleaseTag`、`assetName` 和 `sha256` 定位 Release 资产。Worker 验证 Release author 等于当前市场身份后保存 GitHub 返回的 canonical `browser_download_url`；客户端传入的 `asset.url` 不参与接受判定，也不应作为下载来源。
+
 `allowPublicUpdates` 默认 `true`。开启时，任意登录用户都可以通过 `/entries/{entryId}/versions` 为该条目提交新版本；关闭时只有最初 `publisher` 可以提交新版本。只有最初 `publisher` 可以通过 `PATCH /entries/{entryId}` 修改该开关。
 
 条目归属始终属于 `market_entries.publisher_id` 代表的最初发布者。多人协作署名不另建贡献表，而是由 `versions[].publisher` 派生：每个 version 必须记录实际发布者，客户端和 R2 build 从同一 entry 的版本发布者去重生成贡献者展示。
@@ -169,7 +176,7 @@ Authorization: Bearer <market_session>
 
 请求体只允许修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。其中 `allowPublicUpdates` 只有最初发布者可改。该接口不允许修改条目归属或历史版本发布者。
 
-提交成功后，Worker 会将 entry 状态改为 `pending`，该条目需要重新审核；审核通过前不会作为公开条目进入公开列表和公开 entry 分片。
+该接口只更新 Entry 元数据，不创建 Version，也不改变现有 Entry 状态。投影会异步刷新；已公开 Entry 的元数据更新会在下一次对应 projection materialize 后反映到公开读取层。
 
 响应：
 
@@ -178,7 +185,7 @@ Authorization: Bearer <market_session>
   "ok": true,
   "item": {
     "id": "...",
-    "stateCode": "pending"
+    "stateCode": "approved"
   },
   "stats": {}
 }
@@ -193,7 +200,7 @@ Authorization: Bearer <market_session>
 
 当 entry 的 `allowPublicUpdates=true` 时，任意登录用户都可以为该 entry 提交新版本；关闭时只有最初 `publisher` 可以提交。新版本号必须大于该 entry 已有版本号，否则返回 `version_conflict`。新版本初始状态为 `pending`，审核通过后才会进入公开 entry 的 `versions[]` 和 `latestVersion`。
 
-请求体可选携带 `entry` patch，用于在发布新版本时同步更新 entry 级元信息。`entry` 只允许包含 `title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`，且只有最初 `publisher` 可以携带；贡献者只能提交版本级内容，不能修改 entry 元信息。携带 `entry` patch 时，Worker 会将 entry 状态改为 `pending` 并随新版本一起重新审核。
+请求体可选携带 `entry` patch，用于随版本提交 Entry 级元信息。`entry` 只允许包含 `title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`，且只能由最初 `publisher` 提交。该 patch 会保存在待审 Version 上；只有该 Version 审核通过时才会写入公开 Entry。打回、拒绝和待审期间都不会修改已公开 Entry，也不会自动将 Entry 状态改为 `pending`。
 
 Repo 类（`skill` / `mcp`）请求体：
 
@@ -237,7 +244,6 @@ Artifact 类（`script` / `package`）请求体：
   },
   "asset": {
     "kind": "github_release_asset",
-    "url": "https://github.com/owner/repo/releases/download/v1.1.0/file.zip",
     "ghOwner": "owner",
     "ghRepo": "repo",
     "ghReleaseTag": "v1.1.0",
@@ -292,7 +298,7 @@ Authorization: Bearer <market_session>
 GET https://api.operit.app/market/v2/assets/{assetId}/download
 ```
 
-读取资产详情，写入下载事件，并由 Worker 代理真实资产流。不需要登录。Worker 对 GitHub release/raw 等白名单上游使用 Cloudflare `fetch` 边缘缓存（`cacheEverything + cacheTtl`），客户端不直接跟随 GitHub 302。下载事件携带由 IP + User-Agent + salt 生成的匿名 `actorHash` 和 UTC 日桶；公开下载量按 `assetId + actorHash + dayBucket` 去重聚合，不在下载入口写 D1。
+读取资产详情，写入下载事件，并以 `302` 跳转到白名单 GitHub 下载地址。不需要登录。响应携带 asset id、SHA-256 和文件名 header；Worker 不代理二进制流。下载事件携带由 IP + User-Agent + salt 生成的匿名 `actorHash` 和 UTC 日桶；公开下载量按 `assetId + actorHash + dayBucket` 去重聚合，不在下载入口写 D1。
 
 ### 用户已发布条目
 
@@ -399,6 +405,26 @@ Authorization: Bearer <admin_token>
 
 公开 R2 列表、entry 分片和资产详情只展示 `entry.state_code = approved` 且至少存在一个 `market_versions.state_code = approved` 的内容；公开 `versions[]`、`latestVersion` 和 `assets[]` 只来自 approved version。
 
+### 管理员下架并封禁作者
+
+```http
+POST https://api.operit.app/market/v2/admin/entries/{entryId}/moderation
+Authorization: Bearer <admin_token>
+```
+
+请求体：
+
+```json
+{
+  "entryId": "...",
+  "authorId": "gh_1001",
+  "action": "withdraw_and_block",
+  "reasonCode": "author-policy-violation"
+}
+```
+
+仅管理员和审核员可调用。`entryId` 必须与路径一致，`authorId` 必须与条目的最初发布者一致。操作会将该条目标为 `withdrawn`，把发布者标为 `blocked`，记录封禁原因、时间和执行人，并立即触发相关公开列表、entry 分片和作者私有条目的重建。支持的封禁原因码为 `author-spam`、`author-abuse`、`author-malicious-publish` 和 `author-policy-violation`。
+
 ### 精选
 
 ```http
@@ -456,9 +482,9 @@ Authorization: Bearer <admin_token>
 
 Worker cron：`0 */6 * * *`
 
-1. `fullBuildIfNeeded`：上次全量构建超过 30 天时触发。
-2. `incrementalBuild`：处理 D1 dirty projections。
-3. `v1.handleScheduled`：生成旧市场 v1 R2 静态文件。
+1. `aggregateV2Analytics`：聚合延迟窗口内的下载和点赞事件，并标脏相关投影。
+2. `fullBuildIfNeeded`：上次全量构建超过 30 天时触发。
+3. `incrementalBuild`：处理 D1 dirty projections。
 
 ## v1 保留接口（走 api.operit.app）
 

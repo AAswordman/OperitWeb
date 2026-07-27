@@ -27,6 +27,7 @@ import {
   LogoutOutlined,
   ReloadOutlined,
   StarFilled,
+  StopOutlined,
   UserOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
@@ -155,7 +156,7 @@ interface VersionActionConfig {
 type ReviewFilter = ReviewState | 'all';
 type FeaturedFilter = 'all' | 'featured' | 'normal';
 type SourceFilter = 'all' | 'review' | 'published';
-type MarketReviewAction = 'approve' | 'changes_requested' | 'reject' | 'set_featured' | 'unset_featured';
+type MarketReviewAction = 'approve' | 'changes_requested' | 'reject' | 'set_featured' | 'unset_featured' | 'withdraw_and_block';
 type MarketReviewScope = 'entry' | 'version';
 
 const STORAGE = {
@@ -174,6 +175,13 @@ const FALLBACK_REASONS: ReviewReasonOption[] = [
   { code: 'security-risk', label: 'security-risk', zh: '安全风险', en: 'Security risk', description_zh: '存在明显安全风险或危险行为。', description_en: 'Contains obvious security risks or dangerous behavior.' },
   { code: 'duplicate-submission', label: 'duplicate-submission', zh: '重复投稿', en: 'Duplicate submission', description_zh: '与已有条目重复。', description_en: 'Duplicates an existing entry.' },
   { code: 'policy-violation', label: 'policy-violation', zh: '违反规则', en: 'Policy violation', description_zh: '违反市场发布规则。', description_en: 'Violates market publishing rules.' },
+];
+
+const AUTHOR_BLOCK_REASONS: ReviewReasonOption[] = [
+  { code: 'author-policy-violation', label: 'author-policy-violation', zh: '版权或政策违规', en: 'Copyright or policy violation', description_zh: '存在严重的版权争议或违反市场规则。', description_en: 'A serious copyright dispute or market policy violation.' },
+  { code: 'author-malicious-publish', label: 'author-malicious-publish', zh: '恶意发布', en: 'Malicious publishing', description_zh: '蓄意发布有害、欺骗性或规避审核的内容。', description_en: 'Deliberate harmful, deceptive, or review-evasion publishing.' },
+  { code: 'author-abuse', label: 'author-abuse', zh: '滥用行为', en: 'Abuse', description_zh: '对审核或社区存在滥用行为。', description_en: 'Abusive conduct toward reviewers or the community.' },
+  { code: 'author-spam', label: 'author-spam', zh: '垃圾投稿', en: 'Spam submissions', description_zh: '重复、低质或垃圾投稿。', description_en: 'Repeated low-quality or spam submissions.' },
 ];
 
 const TEXT = {
@@ -218,6 +226,7 @@ const TEXT = {
     approve: '审核通过',
     changes: '打回修改',
     reject: '拒绝',
+    withdrawAndBlock: '下架并封禁作者',
     setFeatured: '设为精选',
     unsetFeatured: '取消精选',
     actionTarget: '操作对象',
@@ -226,6 +235,7 @@ const TEXT = {
     actionCancel: '取消',
     actionSuccess: '操作已提交。',
     reasonRequired: '打回或拒绝必须选择原因码。',
+    moderationReasonRequired: '下架并封禁作者必须选择封禁原因。',
     versionRequired: '请在版本列表中选择具体版本进行审核。',
     noReason: '无原因码',
     publishedHint: '已上架列表来自 R2 静态产物；审核操作仍走管理员 API。',
@@ -271,6 +281,7 @@ const TEXT = {
     approve: 'Approve',
     changes: 'Request changes',
     reject: 'Reject',
+    withdrawAndBlock: 'Withdraw and block author',
     setFeatured: 'Set featured',
     unsetFeatured: 'Unset featured',
     actionTarget: 'Target',
@@ -279,6 +290,7 @@ const TEXT = {
     actionCancel: 'Cancel',
     actionSuccess: 'Action submitted.',
     reasonRequired: 'A reason code is required for changes or rejection.',
+    moderationReasonRequired: 'A block reason is required to withdraw and block an author.',
     versionRequired: 'Select a specific version in the version list before reviewing.',
     noReason: 'No reason',
     publishedHint: 'Published list is loaded from R2 static output; review actions still use admin API.',
@@ -680,19 +692,19 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     setActionType(action);
     setActionScope(scope);
     setActionTarget(row);
-    setActionVersionId(versionId || row.versionId || null);
+    setActionVersionId(action === 'withdraw_and_block' ? null : versionId || row.versionId || null);
     setSelectedReasonCodes([]);
     setActionOpen(true);
   }, []);
 
   const submitAction = useCallback(async () => {
     if (!actionTarget) return;
-    if (actionType !== 'set_featured' && actionType !== 'unset_featured' && !actionVersionId) {
+    if ((actionType === 'approve' || actionType === 'changes_requested' || actionType === 'reject') && !actionVersionId) {
       message.warning(t.versionRequired);
       return;
     }
-    if ((actionType === 'changes_requested' || actionType === 'reject') && selectedReasonCodes.length === 0) {
-      message.warning(t.reasonRequired);
+    if ((actionType === 'changes_requested' || actionType === 'reject' || actionType === 'withdraw_and_block') && selectedReasonCodes.length === 0) {
+      message.warning(actionType === 'withdraw_and_block' ? t.moderationReasonRequired : t.reasonRequired);
       return;
     }
     setActionSubmitting(true);
@@ -706,6 +718,17 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
             listKey: 'featured',
             position: 1,
             ...(actionType === 'unset_featured' ? { operation: 'hide' } : {}),
+          }),
+        });
+      } else if (actionType === 'withdraw_and_block') {
+        await fetchMarketV2Json(marketV2ApiUrl(`admin/entries/${encodeURIComponent(actionTarget.id)}/moderation`), {
+          method: 'POST',
+          headers: buildMarketV2AdminHeaders(adminToken),
+          body: JSON.stringify({
+            entryId: actionTarget.id,
+            authorId: actionTarget.publisherId,
+            action: 'withdraw_and_block',
+            reasonCode: selectedReasonCodes[0],
           }),
         });
       } else {
@@ -732,7 +755,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     } finally {
       setActionSubmitting(false);
     }
-  }, [actionScope, actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.reasonRequired, t.versionRequired]);
+  }, [actionScope, actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.moderationReasonRequired, t.reasonRequired, t.versionRequired]);
 
   const logout = useCallback(async () => {
     localStorage.removeItem(STORAGE.adminToken);
@@ -755,6 +778,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         <>
           <Button size="small" icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', record, record.versionId, 'entry')}>{t.changes}</Button>
           <Button size="small" danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', record, record.versionId, 'entry')}>{t.reject}</Button>
+          <Button size="small" danger icon={<StopOutlined />} onClick={() => openActionModal('withdraw_and_block', record)}>{t.withdrawAndBlock}</Button>
           <Button
             size="small"
             icon={<StarFilled />}
@@ -765,7 +789,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
         </>
       ) : null}
     </Space>
-  ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured]);
+  ), [loadDetail, openActionModal, t.approve, t.changes, t.detail, t.reject, t.setFeatured, t.unsetFeatured, t.withdrawAndBlock]);
 
   const columns = useMemo<ColumnsType<MarketReviewRow>>(() => [
     {
@@ -850,7 +874,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   ], [categoryLabel, language, renderRowActions, t.category, t.featured, t.market, t.publishedList, t.reviewQueue, t.reviewState]);
 
   const detailItem = detail?.item;
-  const reasonOptions = FALLBACK_REASONS.map(reason => ({
+  const reasonOptions = (actionType === 'withdraw_and_block' ? AUTHOR_BLOCK_REASONS : FALLBACK_REASONS).map(reason => ({
     label: (
       <div className="operit-market-review-reason-option">
         <Text>{getReasonLabel(reason, language)}</Text>
@@ -979,6 +1003,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 <>
                   <Button icon={<EditOutlined />} onClick={() => openActionModal('changes_requested', detailFallback, detailFallback.versionId, 'entry')}>{t.changes}</Button>
                   <Button danger icon={<CloseCircleOutlined />} onClick={() => openActionModal('reject', detailFallback, detailFallback.versionId, 'entry')}>{t.reject}</Button>
+                  <Button danger icon={<StopOutlined />} onClick={() => openActionModal('withdraw_and_block', detailFallback)}>{t.withdrawAndBlock}</Button>
                   <Button
                     icon={<StarFilled />}
                     onClick={() => openActionModal(detailFallback.featured ? 'unset_featured' : 'set_featured', detailFallback)}
@@ -1089,9 +1114,9 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                 description={`${getMarketTypeLabel(actionTarget.type, language)} / ${getReviewStateLabel(actionTarget.stateCode, language)} / ${actionVersionId || actionTarget.id}`}
               />
             ) : null}
-            {actionType === 'changes_requested' || actionType === 'reject' ? (
+            {actionType === 'changes_requested' || actionType === 'reject' || actionType === 'withdraw_and_block' ? (
               <>
-                <Paragraph style={{ marginBottom: 0 }}>{t.actionReasonTitle}</Paragraph>
+                <Paragraph style={{ marginBottom: 0 }}>{actionType === 'withdraw_and_block' ? t.moderationReasonRequired : t.actionReasonTitle}</Paragraph>
                 <Checkbox.Group
                   style={{ width: '100%' }}
                   value={selectedReasonCodes}

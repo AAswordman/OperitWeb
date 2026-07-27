@@ -169,6 +169,7 @@ export interface D1Backend {
   stats: { reads: number; writes: number };
   createComment(value: Record<string, unknown>): Promise<unknown>;
   updateComment(id: string, patch: Record<string, unknown>): Promise<unknown>;
+  updateAuthor(id: string, patch: Record<string, unknown>): Promise<unknown>;
   createEntry(value: Record<string, unknown>): Promise<unknown>;
   updateEntry(id: string, patch: Record<string, unknown>): Promise<unknown>;
   createVersion(value: Record<string, unknown>): Promise<unknown>;

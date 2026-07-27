@@ -257,14 +257,21 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const entryId = rowText(entry, 'id');
     const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
     const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
+    const entryStateCode = rowText(entry, 'state_code');
+    const summaryStateCode = entryStateCode === 'withdrawn'
+      ? entryStateCode
+      : latestVersion ? rowText(latestVersion, 'state_code') : entryStateCode;
+    const summaryUpdatedAt = entryStateCode === 'withdrawn'
+      ? rowText(entry, 'updated_at')
+      : latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at');
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
       type: rowText(entry, 'type'),
       relation: 'owner',
-      stateCode: latestVersion ? rowText(latestVersion, 'state_code') : rowText(entry, 'state_code'),
+      stateCode: summaryStateCode,
       categoryId: rowText(entry, 'category_id'),
-      updatedAt: latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at'),
+      updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     authors[authorId] = bucket;
@@ -283,14 +290,21 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const entryId = rowText(entry, 'id');
     const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
     const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
+    const entryStateCode = rowText(entry, 'state_code');
+    const summaryStateCode = entryStateCode === 'withdrawn'
+      ? entryStateCode
+      : latestVersion ? rowText(latestVersion, 'state_code') : entryStateCode;
+    const summaryUpdatedAt = entryStateCode === 'withdrawn'
+      ? rowText(entry, 'updated_at')
+      : latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at');
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
       type: rowText(entry, 'type'),
       relation: 'contributor',
-      stateCode: latestVersion ? rowText(latestVersion, 'state_code') : rowText(entry, 'state_code'),
+      stateCode: summaryStateCode,
       categoryId: rowText(entry, 'category_id'),
-      updatedAt: latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at'),
+      updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
     });
     bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));

@@ -376,6 +376,54 @@ test('non-admin cannot review', async () => {
   afterTest(ctx);
 });
 
+test('admin moderation withdraws entry and blocks its publisher', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const published = await publishMcp(entryRoutes, env, session, 'moderation-withdraw-block');
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${published.entryId}/review/approve`, 'POST', {
+      entryId: published.entryId,
+      versionId: published.versionId,
+    }),
+    env,
+  );
+
+  const worker = (await import('../dist/index.js')).default;
+  const response = await worker.fetch(
+    makeAdminRequest(`http://api/market/v2/admin/entries/${published.entryId}/moderation`, 'POST', {
+      entryId: published.entryId,
+      authorId: 'gh_1001',
+      action: 'withdraw_and_block',
+      reasonCode: 'author-policy-violation',
+    }),
+    env,
+  );
+  assert.equal(response.status, 200);
+  const result = await response.json();
+  assert.equal(result.stateCode, 'withdrawn');
+  assert.equal(result.authorStatus, 'blocked');
+
+  const entry = rows(db, 'SELECT state_code FROM market_entries WHERE id = ?', [published.entryId])[0];
+  const author = rows(db, 'SELECT status, blocked_reason_code, blocked_by FROM market_authors WHERE id = ?', ['gh_1001'])[0];
+  assert.equal(entry.state_code, 'withdrawn');
+  assert.equal(author.status, 'blocked');
+  assert.equal(author.blocked_reason_code, 'author-policy-violation');
+  assert.equal(author.blocked_by, 'owner');
+  await assert.rejects(
+    () => entryRoutes.publish(makeRequest('http://api/market/v2/publish', 'POST', {
+      type: 'mcp', title: 'Blocked author', description: 'Desc', categoryId: 'search_research',
+      source: { kind: 'github_repo', url: 'https://github.com/pub1/blocked-author' },
+      repoVersion: { refType: 'tag', refName: 'v1.0.0', installConfig: '{}' },
+      version: { version: '1.0.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    }, session), env),
+    /Author is blocked/,
+  );
+  afterTest(ctx);
+});
+
 test('new version keeps old approved latest until review passes', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
@@ -545,7 +593,7 @@ test('requesting changes for new version keeps approved entry public', async () 
   afterTest(ctx);
 });
 
-test('contributor can patch repo entry metadata when public updates are enabled', async () => {
+test('contributor cannot patch repo entry metadata when public updates are enabled', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -567,19 +615,58 @@ test('contributor can patch repo entry metadata when public updates are enabled'
     version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
     repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
   }, pub2Session);
+  await assert.rejects(() => entryRoutes.newVersion(req, env), /Only the original publisher can update entry metadata/);
+  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const versions = rows(db, 'SELECT publisher_id, state_code FROM market_versions WHERE entry_id = ?', [pub.entryId]);
+  assert.equal(entry.title, 'Test MCP');
+  assert.equal(entry.description, 'Desc');
+  assert.equal(entry.detail, '');
+  assert.equal(entry.category_id, 'search_research');
+  assert.equal(entry.allow_public_updates, 1);
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(versions.length, 1);
+  afterTest(ctx);
+});
+
+test('owner repo version applies staged entry metadata only after approval', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'owner-entry-patch');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+
+  const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
+    entry: { title: 'Updated MCP', description: 'Updated summary', detail: 'Updated detail', categoryId: 'automation', allowPublicUpdates: false },
+    version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
+  }, pubSession);
   const v2 = await entryRoutes.newVersion(req, env);
 
-  assert.ok(v2.ok);
-  const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
-  const version = rows(db, 'SELECT publisher_id, state_code FROM market_versions WHERE id = ?', [v2.versionId])[0];
-  assert.equal(entry.title, 'Community MCP');
-  assert.equal(entry.description, 'Community summary');
-  assert.equal(entry.detail, 'Community detail');
+  let entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  let version = rows(db, 'SELECT publisher_id, state_code, entry_patch FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  assert.equal(entry.title, 'Test MCP');
+  assert.equal(entry.description, 'Desc');
+  assert.equal(entry.detail, '');
+  assert.equal(entry.category_id, 'search_research');
+  assert.equal(entry.allow_public_updates, 1);
+  assert.equal(entry.state_code, 'approved');
+  assert.equal(version.publisher_id, 'gh_1001');
+  assert.equal(version.state_code, 'pending');
+  assert.deepEqual(JSON.parse(version.entry_patch), { title: 'Updated MCP', description: 'Updated summary', detail: 'Updated detail', categoryId: 'automation', allowPublicUpdates: false });
+
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: v2.versionId }), env);
+  entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  version = rows(db, 'SELECT state_code FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  assert.equal(entry.title, 'Updated MCP');
+  assert.equal(entry.description, 'Updated summary');
+  assert.equal(entry.detail, 'Updated detail');
   assert.equal(entry.category_id, 'automation');
   assert.equal(entry.allow_public_updates, 0);
   assert.equal(entry.state_code, 'approved');
-  assert.equal(version.publisher_id, 'gh_2001');
-  assert.equal(version.state_code, 'pending');
+  assert.equal(version.state_code, 'approved');
   afterTest(ctx);
 });
 
@@ -639,14 +726,24 @@ test('artifact publish reusing project updates owner entry metadata', async () =
 
   assert.equal(second.entryId, first.entryId);
   const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
-  assert.equal(entry.title, 'New Script');
-  assert.equal(entry.description, 'New summary');
-  assert.equal(entry.detail, 'New detail');
-  assert.equal(entry.category_id, 'search_research');
-  assert.equal(entry.allow_public_updates, 0);
+  const secondVersion = rows(db, 'SELECT entry_patch FROM market_versions WHERE id = ?', [second.versionId])[0];
+  assert.equal(entry.title, 'Old Script');
+  assert.equal(entry.description, 'Old summary');
+  assert.equal(entry.detail, 'Old detail');
+  assert.equal(entry.category_id, 'automation');
+  assert.equal(entry.allow_public_updates, 1);
   assert.equal(entry.state_code, 'pending');
+  assert.deepEqual(JSON.parse(secondVersion.entry_patch), { title: 'New Script', description: 'New summary', detail: 'New detail', categoryId: 'search_research', allowPublicUpdates: false });
   const versions = rows(db, 'SELECT id FROM market_versions WHERE entry_id = ? ORDER BY version', [first.entryId]);
   assert.equal(versions.length, 2);
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: second.versionId }), env);
+  const approvedEntry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  assert.equal(approvedEntry.title, 'New Script');
+  assert.equal(approvedEntry.description, 'New summary');
+  assert.equal(approvedEntry.detail, 'New detail');
+  assert.equal(approvedEntry.category_id, 'search_research');
+  assert.equal(approvedEntry.allow_public_updates, 0);
+  assert.equal(approvedEntry.state_code, 'approved');
   afterTest(ctx);
 });
 
@@ -679,18 +776,27 @@ test('artifact publish reusing approved project does not move entry back to pend
 
   assert.equal(second.entryId, first.entryId);
   const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
-  const newVersion = rows(db, 'SELECT state_code FROM market_versions WHERE id = ?', [second.versionId])[0];
-  assert.equal(entry.title, 'Updated Script');
-  assert.equal(entry.description, 'Updated summary');
-  assert.equal(entry.detail, 'Updated detail');
-  assert.equal(entry.category_id, 'search_research');
-  assert.equal(entry.allow_public_updates, 0);
+  const newVersion = rows(db, 'SELECT state_code, entry_patch FROM market_versions WHERE id = ?', [second.versionId])[0];
+  assert.equal(entry.title, 'Approved Script');
+  assert.equal(entry.description, 'Approved summary');
+  assert.equal(entry.detail, 'Approved detail');
+  assert.equal(entry.category_id, 'automation');
+  assert.equal(entry.allow_public_updates, 1);
   assert.equal(entry.state_code, 'approved');
   assert.equal(newVersion.state_code, 'pending');
+  assert.deepEqual(JSON.parse(newVersion.entry_patch), { title: 'Updated Script', description: 'Updated summary', detail: 'Updated detail', categoryId: 'search_research', allowPublicUpdates: false });
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: second.versionId }), env);
+  const approvedEntry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  assert.equal(approvedEntry.title, 'Updated Script');
+  assert.equal(approvedEntry.description, 'Updated summary');
+  assert.equal(approvedEntry.detail, 'Updated detail');
+  assert.equal(approvedEntry.category_id, 'search_research');
+  assert.equal(approvedEntry.allow_public_updates, 0);
+  assert.equal(approvedEntry.state_code, 'approved');
   afterTest(ctx);
 });
 
-test('contributor can patch artifact entry metadata when public updates are enabled', async () => {
+test('contributor can submit an artifact version but cannot patch entry metadata', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -747,20 +853,85 @@ test('contributor can patch artifact entry metadata when public updates are enab
       sha256: SHA_A,
     },
   }, pub2Session);
-  const second = await entryRoutes.newVersion(req, env);
-
-  assert.ok(second.ok);
+  await assert.rejects(() => entryRoutes.newVersion(req, env), /Only the original publisher can update entry metadata/);
   const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
-  const newVersion = rows(db, 'SELECT publisher_id, state_code, runtime_pkg FROM market_versions WHERE id = ?', [second.versionId])[0];
-  assert.equal(entry.title, 'Community Script');
-  assert.equal(entry.description, 'Community summary');
-  assert.equal(entry.detail, 'Community detail');
-  assert.equal(entry.category_id, 'search_research');
-  assert.equal(entry.allow_public_updates, 0);
+  const versions = rows(db, 'SELECT publisher_id, state_code, runtime_pkg FROM market_versions WHERE entry_id = ?', [first.entryId]);
+  assert.equal(entry.title, 'Original Script');
+  assert.equal(entry.description, 'Original summary');
+  assert.equal(entry.detail, 'Original detail');
+  assert.equal(entry.category_id, 'automation');
+  assert.equal(entry.allow_public_updates, 1);
   assert.equal(entry.state_code, 'approved');
-  assert.equal(newVersion.publisher_id, 'gh_2001');
-  assert.equal(newVersion.state_code, 'pending');
-  assert.equal(newVersion.runtime_pkg, 'script.community.artifact');
+  assert.equal(versions.length, 1);
+
+  const versionOnlyReq = makeRequest(`http://api/market/v2/entries/${first.entryId}/versions`, 'POST', {
+    version: {
+      version,
+      formatVer: 'script',
+      minAppVer: '1.2.0',
+      projectId: 'script.community.artifact',
+      runtimePackageId: 'script.community.artifact',
+    },
+    asset: {
+      kind: 'script',
+      url: `https://github.com/pub2/OperitForge/releases/download/${releaseTag}/${assetName}`,
+      ghOwner: 'pub2',
+      ghRepo: 'OperitForge',
+      ghReleaseTag: releaseTag,
+      assetName,
+      sha256: SHA_A,
+    },
+  }, pub2Session);
+  const versionOnly = await entryRoutes.newVersion(versionOnlyReq, env);
+  assert.ok(versionOnly.ok);
+  const entryAfterVersionOnly = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  const submittedVersion = rows(db, 'SELECT publisher_id, state_code, runtime_pkg, entry_patch FROM market_versions WHERE id = ?', [versionOnly.versionId])[0];
+  assert.deepEqual(entryAfterVersionOnly, entry);
+  assert.equal(submittedVersion.publisher_id, 'gh_2001');
+  assert.equal(submittedVersion.state_code, 'pending');
+  assert.equal(submittedVersion.runtime_pkg, 'script.community.artifact');
+  assert.equal(submittedVersion.entry_patch, null);
+  afterTest(ctx);
+});
+
+test('contributor cannot publish artifact version for withdrawn entry project', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const first = await publishScriptArtifact(entryRoutes, env, pub1Session, '1.0.0', 'script.withdrawn.artifact', {
+    title: 'Withdrawn Script',
+    description: 'Withdrawn summary',
+    categoryId: 'automation',
+    allowPublicUpdates: true,
+  });
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }),
+    env,
+  );
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${first.entryId}`, 'DELETE', {}, pub1Session), env);
+
+  await assert.rejects(
+    () => publishScriptArtifact(entryRoutes, env, pub2Session, '1.1.0', 'script.withdrawn.artifact', {
+      githubId: GITHUB_ID_PUBLISHER2,
+      owner: 'pub2',
+      title: 'Contributor Script',
+      description: 'Contributor summary',
+      categoryId: 'search_research',
+      allowPublicUpdates: true,
+    }),
+    /Withdrawn entries can only be restored by the original publisher/,
+  );
+
+  const entry = rows(db, 'SELECT title, description, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
+  const versions = rows(db, 'SELECT * FROM market_versions WHERE entry_id = ?', [first.entryId]);
+  assert.equal(entry.title, 'Withdrawn Script');
+  assert.equal(entry.description, 'Withdrawn summary');
+  assert.equal(entry.state_code, 'withdrawn');
+  assert.equal(versions.length, 1);
   afterTest(ctx);
 });
 
@@ -826,7 +997,7 @@ test('my entries show withdrawn entry state after entry withdrawal', async () =>
   afterTest(ctx);
 });
 
-test('approving new version restores withdrawn entry to approved', async () => {
+test('approving original publisher new version restores withdrawn entry to approved', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -851,6 +1022,55 @@ test('approving new version restores withdrawn entry to approved', async () => {
   assert.equal(oldVersion.state_code, 'approved');
   assert.equal(newVersion.state_code, 'approved');
   assert.equal(myEntries.entries.entries[0].stateCode, 'approved');
+  afterTest(ctx);
+});
+
+test('contributor cannot submit new version for withdrawn entry', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pub1Session, 'withdrawn-block-contributor-submit');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}`, 'DELETE', {}, pub1Session), env);
+
+  await assert.rejects(
+    () => submitMcpVersion(entryRoutes, env, pub2Session, pub.entryId, '1.1.0'),
+    /Withdrawn entries can only be restored by the original publisher/,
+  );
+
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const versions = rows(db, 'SELECT * FROM market_versions WHERE entry_id = ?', [pub.entryId]);
+  assert.equal(entry.state_code, 'withdrawn');
+  assert.equal(versions.length, 1);
+  afterTest(ctx);
+});
+
+test('contributor pending version cannot restore withdrawn entry during review', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pub1Session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const pub2Session = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pub1Session, 'withdrawn-block-contributor-review');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  const contributorVersion = await submitMcpVersion(entryRoutes, env, pub2Session, pub.entryId, '1.1.0');
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}`, 'DELETE', {}, pub1Session), env);
+
+  await assert.rejects(
+    () => entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: contributorVersion.versionId }), env),
+    /Withdrawn entries can only be restored by approving an original publisher version/,
+  );
+
+  const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [contributorVersion.versionId])[0];
+  assert.equal(entry.state_code, 'withdrawn');
+  assert.equal(newVersion.state_code, 'pending');
   afterTest(ctx);
 });
 
@@ -879,6 +1099,26 @@ test('my entries private shard keeps hash-collided authors isolated', async () =
   const privateShard = r2.readJson(`market/v2/private/publishers/${shard}.json`);
   assert.ok(privateShard.authors.gh_1001);
   assert.ok(privateShard.authors.gh_222);
+  afterTest(ctx);
+});
+
+test('full build private shard keeps withdrawn entry state over latest approved version', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createBuildRoutes } = await import('../dist/build.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'withdrawn-full-build-management');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  await entryRoutes.deleteEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}`, 'DELETE', {}, pubSession), env);
+  await createBuildRoutes().buildR2(env);
+
+  const myEntries = await entryRoutes.myEntries(makeRequest(`http://api/market/v2/my/entries`, 'GET', undefined, pubSession), env);
+  assert.equal(myEntries.entries.entries[0].id, pub.entryId);
+  assert.equal(myEntries.entries.entries[0].stateCode, 'withdrawn');
+
   afterTest(ctx);
 });
 

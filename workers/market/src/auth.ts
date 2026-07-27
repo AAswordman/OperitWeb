@@ -71,13 +71,13 @@ export async function upsertAuthorFromGithubOwner(db: D1DatabaseLike, owner: { g
   const githubId = Number(owner.githubId);
   const login = requireString(owner.login, 'github_login');
   const avatar = String(owner.avatar || '');
-  const existing = await first(db, 'SELECT id FROM market_authors WHERE id = ?', [id]);
+  const existing = await first(db, 'SELECT id, status FROM market_authors WHERE id = ?', [id]);
   if (existing) {
     await run(db, 'UPDATE market_authors SET github_login = ?, owner_avatar = ?, updated_at = ? WHERE id = ?', [login, avatar, now, id]);
   } else {
     await run(db, 'INSERT OR IGNORE INTO market_authors (id, github_id, github_login, owner_avatar, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)', [id, githubId, login, avatar, 'active', now, now]);
   }
-  return { id, github_id: githubId, github_login: login, owner_avatar: avatar, status: 'active' };
+  return { id, github_id: githubId, github_login: login, owner_avatar: avatar, status: String(existing?.status || 'active') };
 }
 
 export function assertAuthorActive(author: MarketAuthor): void {

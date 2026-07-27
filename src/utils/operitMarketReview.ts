@@ -7,7 +7,8 @@ export type ReviewAction =
   | 'reject'
   | 'reset_pending'
   | 'set_featured'
-  | 'unset_featured';
+  | 'unset_featured'
+  | 'withdraw_and_block';
 
 export interface ReviewReasonOption {
   code: string;
@@ -40,6 +41,7 @@ export const REVIEW_ACTION_STATE_MAP: Record<ReviewAction, ReviewState> = {
   reset_pending: 'pending',
   set_featured: 'approved',
   unset_featured: 'approved',
+  withdraw_and_block: 'rejected',
 };
 
 export function getMarketTypeLabel(type: string, language: 'zh' | 'en'): string {
@@ -94,6 +96,7 @@ export function getReviewActionLabel(action: string, language: 'zh' | 'en'): str
     reset_pending: '作者重新提交',
     set_featured: '设为精选',
     unset_featured: '取消精选',
+    withdraw_and_block: '下架并封禁作者',
   };
   const mapEn: Record<string, string> = {
     approve: 'Approve',
@@ -102,6 +105,7 @@ export function getReviewActionLabel(action: string, language: 'zh' | 'en'): str
     reset_pending: 'Reset Pending',
     set_featured: 'Set Featured',
     unset_featured: 'Unset Featured',
+    withdraw_and_block: 'Withdraw and Block Author',
   };
   return (language === 'zh' ? mapZh : mapEn)[action] || action;
 }

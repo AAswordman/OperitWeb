@@ -1,17 +1,18 @@
 import { isoNow } from '../shared.js';
 import type { MarketMutation, MarketObjectOperation } from '../types.js';
 
-interface ReviewEntryInput { entryId: string; actorId: string; versionId?: string; publishedAt?: string }
-interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string }
+interface EntryPatch { title?: string; description?: string; detail?: string; categoryId?: string; allowPublicUpdates?: boolean }
+interface ReviewEntryInput { entryId: string; actorId: string; versionId?: string; publishedAt?: string; entryPatch?: EntryPatch }
+interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string; entryPatch?: EntryPatch }
 interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId: string }
 interface ReviewVersionReasonInput extends ReviewReasonInput { versionId: string }
 interface CurationInput { entryId: string; actorId: string; listKey: string; position: number; operation?: Extract<MarketObjectOperation, 'create' | 'update' | 'hide'> }
 
-export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt }: ReviewEntryInput): MarketMutation {
+export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, entryPatch }: ReviewEntryInput): MarketMutation {
   const time = publishedAt || isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Entry', operation: 'approve', id: entryId,
-    patch: { stateCode: 'approved', publishedAt: time, updatedAt: time },
+    patch: { ...entryPatch, stateCode: 'approved', publishedAt: time, updatedAt: time },
   }];
   if (versionId !== undefined) {
     objects.push({
@@ -34,18 +35,25 @@ export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt }:
   };
 }
 
-export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt }: ReviewVersionInput): MarketMutation {
+export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt, entryPatch }: ReviewVersionInput): MarketMutation {
   const time = publishedAt || isoNow();
+  const objects: MarketMutation['objects'] = [{
+    kind: 'Version', operation: 'approve', id: versionId,
+    patch: { stateCode: 'approved', publishedAt: time, updatedAt: time },
+  }];
+  if (entryPatch) {
+    objects.push({
+      kind: 'Entry', operation: 'update', id: entryId,
+      patch: { ...entryPatch, updatedAt: time },
+    });
+  }
   return {
     type: 'mutation',
     id: `mut-review-approve-version-${versionId}-${Date.now()}`,
     actor: { authorId: actorId, role: 'admin' },
     reason: 'review.version_approved',
     createdAt: time,
-    objects: [{
-      kind: 'Version', operation: 'approve', id: versionId,
-      patch: { stateCode: 'approved', publishedAt: time, updatedAt: time },
-    }],
+    objects,
     effects: [
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },

@@ -17,6 +17,7 @@ import {
 } from './shared.js';
 import { publishArtifactMutation, publishRepoMutation } from './translators/publish.js';
 import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
+import { withdrawAndBlockAuthor } from './translators/moderation.js';
 import { notifyReview } from './translators/notify.js';
 import type { GitHubReleaseInfo, GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
 
@@ -35,6 +36,7 @@ interface EntryRoutes {
   reviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewEntries(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
+  moderateEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
   curationSet(request: Request, env: MarketEnv): Promise<JsonObject>;
 }
 
@@ -44,8 +46,15 @@ interface RepoVersionBody { refType: string; refName: string; installConfig?: st
 interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; runtimePackageId?: string }
 interface ArtifactVersionBody { projectId?: string; runtimePackageId?: string }
 
+const AUTHOR_BLOCK_REASON_CODES = new Set([
+  'author-spam',
+  'author-abuse',
+  'author-malicious-publish',
+  'author-policy-violation',
+]);
+
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -124,9 +133,8 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
     const entry = await store.d1.getEntry(entryId);
     if (!entry) throw new MarketError('state_invalid', 'Artifact project entry not found');
     const originalPublisherId = text(entry.publisher_id);
-    if (originalPublisherId !== publisher.id && !bool(entry.allow_public_updates, true)) {
-      throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
-    }
+    assertCanSubmitVersionForEntry(entry, publisher.id);
+    if (originalPublisherId !== publisher.id) throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata', 403);
     const now = new Date().toISOString();
     const versionId = `${entryId}-v-${slug(versionInput.version)}`;
     const assetId = `asset-${versionId}-${slug(artifact.asset.assetName)}`;
@@ -141,6 +149,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
           ...versionInput,
           runtimePackageId: artifact.runtimePackageId,
           publisherId: publisher.id,
+          entryPatch: serializeEntryPatch({ title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates }),
           stateCode: 'pending',
           createdAt: now,
           updatedAt: now,
@@ -164,19 +173,6 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
         },
       },
     ];
-    objects.push({
-      kind: 'Entry',
-      operation: 'update',
-      id: entryId,
-      patch: {
-        title,
-        description,
-        ...(detail !== undefined ? { detail } : {}),
-        ...(categoryId !== undefined ? { categoryId } : {}),
-        allowPublicUpdates,
-        updatedAt: now,
-      },
-    });
     const effects = withPrivatePublisherShardEffects(
       [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }, { projection: 'asset.detail', scope: { assetId } }],
       [originalPublisherId, publisher.id],
@@ -195,6 +191,7 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
   const session = await requireSession(request, env);
   const store = requireStore(env);
   const publisher = await upsertAuthorFromSession(requireDb(env), session);
+  assertAuthorActive(publisher);
   const entryId = extractIdFromPath(request.url, '/entries/', '');
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
@@ -234,12 +231,11 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const originalPublisherId = text(entry.publisher_id);
-  if (originalPublisherId !== publisher.id && !bool(entry.allow_public_updates, true)) {
-    throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
-  }
+  assertCanSubmitVersionForEntry(entry, publisher.id);
   const body = await readBody(request);
   const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
   const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
+  if (hasEntryPatch && originalPublisherId !== publisher.id) throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata', 403);
   let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
@@ -250,10 +246,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
     objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, ghOwner: artifact.asset.ghOwner, ghRepo: artifact.asset.ghRepo, ghReleaseTag: artifact.asset.ghReleaseTag, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
   }
   const now = new Date().toISOString();
-  if (hasEntryPatch) {
-    objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { ...entryPatchInput, updatedAt: now } });
-  }
-  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, stateCode: 'pending', createdAt: now, updatedAt: now } });
+  objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, ...(hasEntryPatch ? { entryPatch: serializeEntryPatch(entryPatchInput) } : {}), stateCode: 'pending', createdAt: now, updatedAt: now } });
   if (isRepoType(text(entry.type))) {
     const spec = await store.d1.getRepoSpecByEntry(entryId);
     if (!spec) throw new MarketError('state_invalid', 'Repo source not found');
@@ -334,17 +327,55 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
-  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const targetVersion = await resolveReviewVersion(store, entryId, versionId);
+  assertCanApproveVersionForEntry(entry, targetVersion);
+  const targetVersionId = text(targetVersion.id);
+  const entryPatch = parseStoredEntryPatch(targetVersion);
   const reviewVersionOnly = text(entry.state_code) === 'withdrawn'
     ? false
     : shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
-    ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId })
-    : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId }));
+    ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) })
+    : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) }));
   await store.materializeEntryAssets(entryId);
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
   await notifyReview(store.d1, entry, 'review_approved', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
+}
+
+async function handleModerateEntry(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const admin = await requireAdminToken(request, env);
+  const store = requireStore(env);
+  const body = await readBody(request);
+  const entryId = extractIdFromPath(request.url, '/admin/entries/', '/moderation');
+  const bodyEntryId = requireString(body.entryId, 'entryId');
+  if (!entryId) throw new MarketError('validation_failed', 'entryId is required in path', 400);
+  if (entryId !== bodyEntryId) throw new MarketError('validation_failed', 'entryId must match path', 400);
+  const action = optionalString(body.action) || 'withdraw_and_block';
+  if (action !== 'withdraw_and_block') throw new MarketError('validation_failed', 'Unsupported moderation action', 400);
+  const reasonCode = optionalString(body.reasonCode) || 'author-policy-violation';
+  if (!AUTHOR_BLOCK_REASON_CODES.has(reasonCode)) throw new MarketError('validation_failed', 'Invalid author block reason code', 400);
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const authorId = text(entry.publisher_id) || text(entry.author_id);
+  if (!authorId) throw new MarketError('state_invalid', 'Entry has no publisher', 409);
+  const requestedAuthorId = optionalString(body.authorId);
+  if (requestedAuthorId && requestedAuthorId !== authorId) throw new MarketError('validation_failed', 'authorId does not match entry publisher', 400);
+  const author = await store.d1.getAuthor(authorId);
+  if (!author) throw new MarketError('not_found', 'Author not found', 404);
+  const time = new Date().toISOString();
+  const applied = await store.apply(withdrawAndBlockAuthor({ entryId, authorId, actorId: admin.username, reasonCode, blockedAt: time }));
+  await materializePrivatePublisherShards(store, [authorId]);
+  return {
+    ok: true,
+    action,
+    entryId,
+    authorId,
+    stateCode: 'withdrawn',
+    authorStatus: 'blocked',
+    reasonCode,
+    stats: applied.stats as unknown as JsonObject,
+  };
 }
 
 async function handleReviewReject(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -404,6 +435,7 @@ async function applyEntryState(env: MarketEnv, request: Request, entryId: string
   const session = await requireSession(request, env);
   const store = requireStore(env);
   const publisher = await upsertAuthorFromSession(requireDb(env), session);
+  assertAuthorActive(publisher);
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   if (text(entry.publisher_id) !== publisher.id) throw new MarketError('unauthorized', 'Not your entry', 403);
@@ -445,10 +477,32 @@ async function privatePublisherAuthorIdsForEntry(store: MarketStore, entry: Row)
 }
 
 async function resolveReviewVersionId(store: MarketStore, entryId: string, versionId: string): Promise<string> {
+  const version = await resolveReviewVersion(store, entryId, versionId);
+  return text(version.id);
+}
+
+async function resolveReviewVersion(store: MarketStore, entryId: string, versionId: string): Promise<Row> {
   const versions = await store.d1.listVersionsForEntry(entryId);
   if (versions.length === 0) throw new MarketError('state_invalid', 'Entry has no versions', 409);
-  if (!versions.some((version) => text(version.id) === versionId)) throw new MarketError('not_found', 'Version not found for entry', 404);
-  return versionId;
+  const version = versions.find((candidate) => text(candidate.id) === versionId);
+  if (!version) throw new MarketError('not_found', 'Version not found for entry', 404);
+  return version;
+}
+
+function assertCanSubmitVersionForEntry(entry: Row, publisherId: string): void {
+  const originalPublisherId = text(entry.publisher_id);
+  if (text(entry.state_code) === 'withdrawn' && originalPublisherId !== publisherId) {
+    throw new MarketError('unauthorized', 'Withdrawn entries can only be restored by the original publisher', 403);
+  }
+  if (originalPublisherId !== publisherId && !bool(entry.allow_public_updates, true)) {
+    throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
+  }
+}
+
+function assertCanApproveVersionForEntry(entry: Row, version: Row): void {
+  if (text(entry.state_code) !== 'withdrawn') return;
+  if (text(entry.publisher_id) === text(version.publisher_id)) return;
+  throw new MarketError('unauthorized', 'Withdrawn entries can only be restored by approving an original publisher version', 403);
 }
 
 function requireReviewEntryId(request: Request, body: Record<string, unknown>, actionPath: string): string {
@@ -512,6 +566,7 @@ function entrySummary(entry: Row): JsonObject {
   };
 }
 function reviewVersionSummary(row: Row): JsonObject {
+  const entryPatch = parseStoredEntryPatch(row);
   return {
     id: text(row.id),
     type: text(row.type),
@@ -542,6 +597,7 @@ function reviewVersionSummary(row: Row): JsonObject {
       createdAt: text(row.version_created_at),
       updatedAt: text(row.version_updated_at),
       publishedAt: text(row.version_published_at),
+      ...(entryPatch ? { entryPatch: { ...entryPatch } } : {}),
     },
   };
 }
@@ -549,6 +605,7 @@ function entryDetail(entry: Row): JsonObject {
   return { ...entrySummary(entry), detail: text(entry.detail) };
 }
 function versionDetail(version: Row): JsonObject {
+  const entryPatch = parseStoredEntryPatch(version);
   return {
     id: text(version.id),
     entryId: text(version.entry_id),
@@ -562,6 +619,7 @@ function versionDetail(version: Row): JsonObject {
     createdAt: text(version.created_at),
     updatedAt: text(version.updated_at),
     publishedAt: text(version.published_at),
+    ...(entryPatch ? { entryPatch: { ...entryPatch } } : {}),
   };
 }
 
@@ -578,6 +636,17 @@ function parseEntryUpdateInput(body: Record<string, unknown>): EntryUpdateInput 
   if (categoryId !== undefined) update.categoryId = categoryId;
   if (allowPublicUpdates !== undefined) update.allowPublicUpdates = allowPublicUpdates;
   return update;
+}
+function serializeEntryPatch(patch: EntryUpdateInput): string { return JSON.stringify(patch); }
+function parseStoredEntryPatch(version: Row): EntryUpdateInput | undefined {
+  const raw = text(version.entry_patch);
+  if (!raw) return undefined;
+  try {
+    const patch = parseEntryUpdateInput(asRecord(JSON.parse(raw)));
+    return Object.keys(patch).length > 0 ? patch : undefined;
+  } catch {
+    return undefined;
+  }
 }
 function rowObject(row: Row): JsonObject {
   const out: JsonObject = {};

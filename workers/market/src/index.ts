@@ -1,5 +1,5 @@
 import { handleAuthGithub, requireAdminToken } from './auth.js';
-import { handleGitHubOAuthCallback, handleGitHubOAuthConsume, handleGitHubOAuthStart } from './oauth.js';
+import { handleGitHubOAuthCallback, handleGitHubOAuthClaim, handleGitHubOAuthComplete, handleGitHubOAuthStart } from './oauth.js';
 import { createAgentRoutes } from './agent.js';
 import { createBuildRoutes, fullBuildIfNeeded, incrementalBuild } from './build.js';
 import { createEntryRoutes } from './entry.js';
@@ -172,6 +172,11 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv): Prom
   if (pathname.includes('/entries/') && pathname.endsWith('/review/approve') && request.method === 'POST') return entries.reviewApprove(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.endsWith('/review/reject') && request.method === 'POST') return entries.reviewReject(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.endsWith('/review/changes') && request.method === 'POST') return entries.reviewRequestChanges(request, storeEnv);
+  if (pathname.startsWith('/market/v2/admin/entries/') && pathname.endsWith('/moderation') && request.method === 'POST') {
+    const result = await entries.moderateEntry(request, storeEnv);
+    await incrementalBuild(storeEnv);
+    return result;
+  }
   if (pathname.includes('/entries/') && pathname.endsWith('/curation') && request.method === 'POST') return entries.curationSet(request, storeEnv);
   if (pathname === '/market/v2/admin/review/entries' && request.method === 'GET') return entries.reviewEntries(request, storeEnv);
   if (pathname.startsWith('/market/v2/admin/review/entries/') && request.method === 'GET') return entries.reviewEntryDetail(request, storeEnv);
@@ -206,6 +211,7 @@ async function routeGitHubOAuth(pathname: string, request: Request, env: MarketE
   const oauthEnv = ensureStore(env);
   if (pathname === '/oauth/github/start' && request.method === 'POST') return handleGitHubOAuthStart(request, oauthEnv);
   if (pathname === '/oauth/github/callback' && request.method === 'GET') return handleGitHubOAuthCallback(request, oauthEnv);
-  if (pathname === '/oauth/github/consume' && request.method === 'POST') return handleGitHubOAuthConsume(request, oauthEnv);
+  if (pathname === '/oauth/github/complete' && request.method === 'GET') return handleGitHubOAuthComplete(request);
+  if (pathname === '/oauth/github/claim' && request.method === 'POST') return handleGitHubOAuthClaim(request, oauthEnv);
   throw new MarketError('not_found', 'Not found', 404);
 }

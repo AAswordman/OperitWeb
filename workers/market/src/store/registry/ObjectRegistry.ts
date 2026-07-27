@@ -2,9 +2,9 @@ import { MarketError, isoNow } from '../../shared.js';
 import type { D1Backend, MarketObjectChange, ObjectRegistry } from '../../types.js';
 
 const OBJECTS: Record<string, { operations: Set<string>; createFields?: Set<string>; updateFields?: Set<string>; aggregateFields?: Set<string> }> = {
-  Author: { operations: new Set(['create', 'update', 'hide']) },
+  Author: { operations: new Set(['create', 'update', 'hide']), updateFields: fields('status blockedReasonCode blockedAt blockedBy updatedAt') },
   Entry: { operations: new Set(['create', 'update', 'withdraw', 'approve', 'reject', 'request_changes']), createFields: fields('id type title description detail authorId publisherId allowPublicUpdates categoryId stateCode createdAt updatedAt publishedAt'), updateFields: fields('title description detail categoryId allowPublicUpdates stateCode publishedAt updatedAt') },
-  Version: { operations: new Set(['create', 'update', 'approve', 'reject', 'request_changes']), createFields: fields('id entryId version formatVer publisherId minAppVer maxAppVer stateCode changelog createdAt updatedAt publishedAt runtimePkg runtimePackageId'), updateFields: fields('stateCode changelog publishedAt updatedAt') },
+  Version: { operations: new Set(['create', 'update', 'approve', 'reject', 'request_changes']), createFields: fields('id entryId version formatVer publisherId minAppVer maxAppVer stateCode changelog entryPatch createdAt updatedAt publishedAt runtimePkg runtimePackageId'), updateFields: fields('stateCode changelog publishedAt updatedAt') },
   RepoSource: { operations: new Set(['create', 'update']), createFields: fields('id entryId sourceUrl createdAt updatedAt'), updateFields: fields('updatedAt') },
   RepoVersion: { operations: new Set(['create', 'update']), createFields: fields('id versionId refType refName commitSha installConfig createdAt updatedAt') },
   Asset: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id versionId kind url ghOwner ghRepo ghReleaseTag sha256 assetName createdAt') },
@@ -28,6 +28,7 @@ export function createObjectRegistry(): ObjectRegistry {
     },
     async apply(change: MarketObjectChange, backend: D1Backend): Promise<unknown> {
       switch (change.kind) {
+        case 'Author': return applyAuthor(change, backend);
         case 'Comment': return applyComment(change, backend);
         case 'Entry': return applyEntry(change, backend);
         case 'Version': return applyVersion(change, backend);
@@ -42,6 +43,11 @@ export function createObjectRegistry(): ObjectRegistry {
       }
     },
   };
+}
+
+function applyAuthor(change: MarketObjectChange, backend: D1Backend): Promise<unknown> {
+  if (change.operation === 'update' || change.operation === 'hide') return backend.updateAuthor(change.id, change.patch || {});
+  throw new MarketError('validation_failed', `Unsupported Author operation: ${change.operation}`);
 }
 
 function applyComment(change: MarketObjectChange, backend: D1Backend): Promise<unknown> {
