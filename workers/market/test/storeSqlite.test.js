@@ -167,3 +167,39 @@ test('incremental build updates entry shard without loading full snapshot', asyn
   r2.destroy();
   db.destroy();
 });
+
+test('incremental build rebuilds list pages from targeted D1 snapshot', async () => {
+  const db = await createFileSqlite('migrations/001_init.sql');
+  const r2 = new FileR2();
+  const store = createMarketStore({ db, MARKET_STATS_BUCKET: r2 });
+  const now = '2026-06-25T00:00:00.000Z';
+
+  db.sqlite.run("INSERT OR IGNORE INTO market_authors (id, github_id, github_login, owner_avatar, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?)", ['gh_1', 1, 'alice', '', 'active', now, now]);
+  db.sqlite.run("INSERT OR IGNORE INTO market_entries (id, type, title, description, author_id, publisher_id, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", ['public-list-entry', 'mcp', 'Public List Entry', 'D', 'gh_1', 'gh_1', 'dev_code', 'approved', now, now, now]);
+  db.sqlite.run("INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, min_app_ver, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", ['public-list-entry-v1', 'public-list-entry', '1.0.0', 'mcp_v2', '1.0.0', 'approved', now, now, now]);
+
+  for (let i = 0; i < 80; i++) {
+    const id = `pending-${i}`;
+    db.sqlite.run("INSERT OR IGNORE INTO market_entries (id, type, title, description, author_id, publisher_id, category_id, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", [id, 'mcp', `Pending ${i}`, 'D', 'gh_1', 'gh_1', 'dev_code', 'pending', now, now, null]);
+    db.sqlite.run("INSERT OR IGNORE INTO market_versions (id, entry_id, version, format_ver, min_app_ver, state_code, created_at, updated_at, published_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", [`${id}-v1`, id, '1.0.0', 'mcp_v2', '1.0.0', 'pending', now, now, null]);
+  }
+
+  const scopeKey = store.projectionRegistry.scopeKeyOf({ list: {}, sort: 'updated', page: 1 });
+  db.sqlite.run("INSERT OR REPLACE INTO market_dirty_projections (projection, scope_key, reason, last_mutation_id, updated_at) VALUES (?, ?, ?, ?, ?)", ['list.page', scopeKey, 'test.list', 'mut-list', now]);
+
+  const { incrementalBuild } = await import('../dist/build.js');
+  const before = { ...store.usage() };
+  const result = await incrementalBuild({ store });
+  const after = store.usage();
+
+  assert.equal(result.ok, true);
+  assert.equal(result.materialized, 1);
+  assert.equal(rows(db, 'SELECT COUNT(*) AS cnt FROM market_dirty_projections')[0].cnt, 0);
+  assert.ok(after.d1Reads - before.d1Reads < 40, `list incremental should avoid full snapshot, got ${after.d1Reads - before.d1Reads} D1 reads`);
+  const page = JSON.parse(readFileSync(join(r2.dir, 'market/v2/lists/all/updated/page-1.json'), 'utf8'));
+  assert.equal(page.total, 1);
+  assert.equal(page.items[0].id, 'public-list-entry');
+
+  r2.destroy();
+  db.destroy();
+});

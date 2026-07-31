@@ -1,5 +1,5 @@
 export type MarketEntryType = 'script' | 'package' | 'skill' | 'mcp';
-export type MarketSort = 'updated' | 'likes' | 'featured';
+export type MarketSort = 'updated' | 'likes' | 'downloads';
 
 export const MARKET_V2_STATIC_BASE = 'https://static.operit.app/market/v2';
 export const MARKET_V2_API_BASE = 'https://api.operit.app/market/v2';
@@ -38,6 +38,7 @@ export interface MarketV2Entry {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  featured?: boolean;
   source?: {
     kind?: string;
     url?: string;

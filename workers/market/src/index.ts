@@ -13,7 +13,9 @@ interface ScheduledControllerLike {
   cron?: string;
   scheduledTime?: number;
 }
-interface ExecutionContextLike {}
+interface ExecutionContextLike {
+  waitUntil?: (promise: Promise<unknown>) => void;
+}
 
 type CronLogStep = {
   name: string;
@@ -52,7 +54,7 @@ function ensureStore(env: MarketEnv): MarketEnv {
 }
 
 export default {
-  async fetch(request: Request, env: MarketEnv): Promise<Response> {
+  async fetch(request: Request, env: MarketEnv, ctx: ExecutionContextLike): Promise<Response> {
     const cors = corsHeaders(request);
     if (request.method === 'OPTIONS') return new Response(null, { headers: cors });
     try {
@@ -70,7 +72,7 @@ export default {
       }
 
       if (pathname.startsWith('/market/v2/')) {
-        const result = await routeV2(pathname, request, env);
+        const result = await routeV2(pathname, request, env, ctx);
         const response = result instanceof Response ? result : jsonResponse(result);
         return withHeaders(response, cors);
       }
@@ -157,14 +159,14 @@ function safeLogTimestamp(value: string): string {
   return value.replace(/[^0-9A-Za-z._-]+/g, '-');
 }
 
-async function routeV2(pathname: string, request: Request, env: MarketEnv): Promise<Response | JsonObject> {
+async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: ExecutionContextLike): Promise<Response | JsonObject> {
   const entries = createEntryRoutes();
   const interact = createInteractRoutes();
   const build = createBuildRoutes();
   const storeEnv = ensureStore(env);
 
   if (pathname === '/market/v2/auth/github' && request.method === 'POST') return handleAuthGithub(request, env) as Promise<JsonObject>;
-  if (pathname === '/market/v2/publish' && request.method === 'POST') return entries.publish(request, storeEnv);
+  if (pathname === '/market/v2/publish' && request.method === 'POST') return entries.publish(request, storeEnv, ctx.waitUntil?.bind(ctx));
   if (pathname === '/market/v2/publish/proof' && request.method === 'POST') return entries.publishProof(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.includes('/versions') && request.method === 'POST') return entries.newVersion(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.endsWith('/resubmit') && request.method === 'POST') return entries.resubmitEntry(request, storeEnv);

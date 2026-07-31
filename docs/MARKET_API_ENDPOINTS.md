@@ -163,6 +163,15 @@ Repo 类条目必须能公开访问并确认 GitHub repo owner；仓库不可访
 
 Artifact 类提交以 `ghOwner`、`ghRepo`、`ghReleaseTag`、`assetName` 和 `sha256` 定位 Release 资产。Worker 验证 Release author 等于当前市场身份后保存 GitHub 返回的 canonical `browser_download_url`；客户端传入的 `asset.url` 不参与接受判定，也不应作为下载来源。
 
+每次发布会在响应结束后写入调试日志：
+
+```text
+GET https://static.operit.app/market/v2/debug/publish/latest.json
+GET https://static.operit.app/market/v2/debug/publish/{timestamp}-{requestId}.json
+```
+
+日志记录请求总耗时，以及 session、GitHub Release 校验、D1 mutation、publisher shard 物化等阶段耗时；不记录 Authorization header、GitHub token 或请求体内容。日志写入通过 Worker `waitUntil` 调度，不参与发布响应时间。
+
 `allowPublicUpdates` 默认 `true`。开启时，任意登录用户都可以通过 `/entries/{entryId}/versions` 为该条目提交新版本；关闭时只有最初 `publisher` 可以提交新版本。只有最初 `publisher` 可以通过 `PATCH /entries/{entryId}` 修改该开关。
 
 条目归属始终属于 `market_entries.publisher_id` 代表的最初发布者。多人协作署名不另建贡献表，而是由 `versions[].publisher` 派生：每个 version 必须记录实际发布者，客户端和 R2 build 从同一 entry 的版本发布者去重生成贡献者展示。
@@ -330,7 +339,7 @@ GET /market/v2/private/publishers/{shard}.json
 }
 ```
 
-`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
+`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
 
 `reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
 

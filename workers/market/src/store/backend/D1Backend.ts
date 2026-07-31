@@ -19,6 +19,65 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     return row;
   }
 
+  function normalizeListScopes(scopes: Array<{ type?: string; categoryId?: string }>): Array<{ type?: string; categoryId?: string }> {
+    const seen = new Set<string>();
+    const result: Array<{ type?: string; categoryId?: string }> = [];
+    for (const scope of scopes) {
+      const normalized = {
+        ...(scope.type ? { type: String(scope.type) } : {}),
+        ...(scope.categoryId ? { categoryId: String(scope.categoryId) } : {}),
+      };
+      const key = JSON.stringify(normalized, Object.keys(normalized).sort());
+      if (seen.has(key)) continue;
+      seen.add(key);
+      result.push(normalized);
+      if (!normalized.type && !normalized.categoryId) return [{}];
+    }
+    return result;
+  }
+
+  function publicListScopeWhere(scopes: Array<{ type?: string; categoryId?: string }>, params: SqlParam[]): string {
+    const normalized = normalizeListScopes(scopes);
+    if (normalized.length === 0 || normalized.some((scope) => !scope.type && !scope.categoryId)) return '';
+    const clauses: string[] = [];
+    for (const scope of normalized) {
+      const parts: string[] = [];
+      if (scope.type) {
+        parts.push('e.type = ?');
+        params.push(scope.type);
+      }
+      if (scope.categoryId) {
+        parts.push('e.category_id = ?');
+        params.push(scope.categoryId);
+      }
+      if (parts.length > 0) clauses.push(`(${parts.join(' AND ')})`);
+    }
+    return clauses.length > 0 ? ` AND (${clauses.join(' OR ')})` : '';
+  }
+
+  function compactStrings(values: unknown[]): string[] {
+    return [...new Set(values.map((value) => String(value || '')).filter(Boolean))];
+  }
+
+  async function readRowsByIds(
+    sqlBeforeIn: string,
+    ids: string[],
+    sqlAfterIn = '',
+    beforeParams: SqlParam[] = [],
+  ): Promise<Row[]> {
+    const uniqueIds = compactStrings(ids);
+    if (uniqueIds.length === 0) return [];
+    const rows: Row[] = [];
+    const chunkSize = 90;
+    for (let i = 0; i < uniqueIds.length; i += chunkSize) {
+      const chunk = uniqueIds.slice(i, i + chunkSize);
+      const placeholders = chunk.map(() => '?').join(',');
+      const sql = `${sqlBeforeIn} (${placeholders}) ${sqlAfterIn}`;
+      rows.push(...readRows(sql, await all(db, sql, [...beforeParams, ...chunk])));
+    }
+    return rows;
+  }
+
   return {
     stats,
 
@@ -273,10 +332,10 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         LEFT JOIN market_authors p ON p.id = e.publisher_id
         LEFT JOIN market_authors vp ON vp.id = v.publisher_id`;
       if (stateCode) {
-        const sql = `${base} WHERE v.state_code = ? ORDER BY v.updated_at DESC LIMIT ? OFFSET ?`;
+        const sql = `${base} WHERE v.state_code = ? ORDER BY v.updated_at DESC, v.id DESC LIMIT ? OFFSET ?`;
         return readRows(sql, await all(db, sql, [stateCode, pageSize, start]));
       }
-      const sql = `${base} WHERE v.state_code NOT IN ('approved','withdrawn') ORDER BY v.updated_at DESC LIMIT ? OFFSET ?`;
+      const sql = `${base} WHERE v.state_code NOT IN ('approved','withdrawn') ORDER BY v.updated_at DESC, v.id DESC LIMIT ? OFFSET ?`;
       return readRows(sql, await all(db, sql, [pageSize, start]));
     },
     async listAllEntries() {
@@ -357,6 +416,92 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const rows = await all(db, sql, [limit]);
       stats.reads += Math.max(rows.length, 1);
       return rows;
+    },
+
+    async listPublicListScopes() {
+      const sql = `SELECT DISTINCT e.type, e.category_id
+        FROM market_entries e
+        WHERE e.state_code = ?
+          AND EXISTS (SELECT 1 FROM market_versions v WHERE v.entry_id = e.id AND v.state_code = ?)`;
+      const rows = readRows(sql, await all(db, sql, ['approved', 'approved']));
+      const scopes: Array<{ type?: string; categoryId?: string }> = [{}];
+      const types = new Set<string>();
+      const categories = new Set<string>();
+      const typeCategories = new Set<string>();
+      for (const row of rows) {
+        const type = String(row.type || '');
+        const categoryId = String(row.category_id || '');
+        if (type) types.add(type);
+        if (categoryId) categories.add(categoryId);
+        if (type && categoryId) typeCategories.add(`${type}\u0000${categoryId}`);
+      }
+      for (const type of [...types].sort()) scopes.push({ type });
+      for (const categoryId of [...categories].sort()) scopes.push({ categoryId });
+      for (const pair of [...typeCategories].sort()) {
+        const [type, categoryId] = pair.split('\u0000');
+        if (type && categoryId) scopes.push({ type, categoryId });
+      }
+      return scopes;
+    },
+
+    async loadListBuildSnapshot(lists) {
+      const params: SqlParam[] = ['approved', 'approved'];
+      const scopeWhere = publicListScopeWhere(lists, params);
+      const entriesSql = `SELECT DISTINCT e.*
+        FROM market_entries e
+        WHERE e.state_code = ?
+          AND EXISTS (SELECT 1 FROM market_versions v WHERE v.entry_id = e.id AND v.state_code = ?)
+          ${scopeWhere}
+        ORDER BY e.updated_at DESC`;
+      const entries = readRows(entriesSql, await all(db, entriesSql, params));
+      const entryIds = compactStrings(entries.map((entry) => entry.id));
+      const versions = await readRowsByIds(
+        'SELECT * FROM market_versions WHERE state_code = ? AND entry_id IN',
+        entryIds,
+        'ORDER BY published_at DESC',
+        ['approved'],
+      );
+      const versionIds = compactStrings(versions.map((version) => version.id));
+      const repos = await readRowsByIds('SELECT * FROM repo_plugin_specs WHERE entry_id IN', entryIds);
+      const repoVersions = await readRowsByIds('SELECT * FROM repo_plugin_versions WHERE version_id IN', versionIds);
+      const artifactProjects = await readRowsByIds('SELECT * FROM artifact_projects WHERE entry_id IN', entryIds);
+      const assets = await readRowsByIds(
+        'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id WHERE v.state_code = ? AND v.entry_id IN',
+        entryIds,
+        '',
+        ['approved'],
+      );
+      const reactions = await readRowsByIds('SELECT * FROM market_reaction_counts WHERE entry_id IN', entryIds);
+      const entryStats = await readRowsByIds('SELECT * FROM market_entry_stats WHERE entry_id IN', entryIds);
+      const curations = await readRowsByIds(
+        'SELECT * FROM market_curations WHERE list_key = ? AND entry_id IN',
+        entryIds,
+        'ORDER BY position ASC',
+        ['featured'],
+      );
+      const authorIds = compactStrings([
+        ...entries.map((entry) => entry.author_id),
+        ...entries.map((entry) => entry.publisher_id),
+        ...versions.map((version) => version.publisher_id),
+      ]);
+      const authors = await readRowsByIds('SELECT id, github_id, github_login, owner_avatar FROM market_authors WHERE id IN', authorIds);
+      return {
+        entries,
+        versions,
+        repos,
+        repoVersions,
+        artifactProjects,
+        assets,
+        reactions,
+        entryStats,
+        categories: [],
+        types: [],
+        formatVersions: [],
+        stateCodes: [],
+        versionReasons: [],
+        curations,
+        authors,
+      };
     },
 
     // ---- Notifications ----

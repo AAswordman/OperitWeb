@@ -1102,6 +1102,32 @@ test('my entries private shard keeps hash-collided authors isolated', async () =
   afterTest(ctx);
 });
 
+test('entry-scoped private shard update does not rescan publisher history', async () => {
+  const ctx = await makeEnv();
+  const { env, r2, store } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const published = [];
+
+  for (let index = 0; index < 24; index++) {
+    published.push(await publishMcp(entryRoutes, env, session, `incremental-private-${index}`));
+  }
+
+  const target = published[12];
+  const readsBefore = store.d1.stats.reads;
+  await entryRoutes.updateEntry(makeRequest(`http://api/market/v2/entries/${target.entryId}`, 'PATCH', { title: 'Updated private summary' }, session), env);
+  const readsUsed = store.d1.stats.reads - readsBefore;
+
+  assert.ok(readsUsed < 10, `entry-scoped private projection must use constant reads, got ${readsUsed}`);
+  const shard = scopeHash('gh_1001').substring(0, 2);
+  const privateShard = r2.readJson(`market/v2/private/publishers/${shard}.json`);
+  const summary = privateShard.authors.gh_1001.entries.find((entry) => entry.id === target.entryId);
+  assert.equal(summary.title, 'Updated private summary');
+  assert.equal(privateShard.authors.gh_1001.entries.length, 24);
+  afterTest(ctx);
+});
+
 test('full build private shard keeps withdrawn entry state over latest approved version', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
@@ -1244,6 +1270,21 @@ test('R2 manifest exposes format version matrix and categories from disk file', 
   assert.ok(manifest.formatVersions.some((f) => f.id === 'mcp_v2' && f.publishable));
   assert.ok(manifest.categories.some((c) => c.id === 'search_research'));
   assert.ok(manifest.states.some((s) => s.code === 'approved' && s.publicListed));
+  afterTest(ctx);
+});
+
+test('R2 full build writes empty first pages for public list sorts', async () => {
+  const ctx = await makeEnv();
+  const { env, r2 } = ctx;
+  const { createBuildRoutes } = await import('../dist/build.js');
+  await createBuildRoutes().buildR2(env);
+
+  for (const sort of ['updated', 'likes', 'downloads']) {
+    const page = r2.readJson(`market/v2/lists/all/${sort}/page-1.json`);
+    assert.equal(page.marketVersion, 2);
+    assert.equal(page.total, 0);
+    assert.deepEqual(page.items, []);
+  }
   afterTest(ctx);
 });
 

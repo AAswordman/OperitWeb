@@ -217,6 +217,8 @@ export interface D1Backend {
   upsertDirty(projection: string, scopeKey: string, reason: string, mutationId: string, updatedAt: string): Promise<unknown>;
   deleteDirty(projection: string, scopeKey: string): Promise<unknown>;
   listDirty(limit: number): Promise<Row[]>;
+  listPublicListScopes(): Promise<Array<{ type?: string; categoryId?: string }>>;
+  loadListBuildSnapshot(lists: Array<{ type?: string; categoryId?: string }>): Promise<BuildSnapshot>;
   // notifications
   createNotification(value: Record<string, unknown>): Promise<unknown>;
   listNotifications(recipient: string, limit: number, offset: number, since?: string): Promise<Row[]>;

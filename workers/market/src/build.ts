@@ -66,7 +66,7 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
     } else if (projection === 'manifest') {
       directPlans.push({ plan: { projection: 'manifest', scope: {} }, scopeKey });
     } else if (projection === 'private.publisherShard') {
-      directPlans.push({ plan: { projection: 'private.publisherShard', scope: { authorId: scope.authorId || '', shard: scope.shard || publisherShardOf(scope.authorId || '') } }, scopeKey });
+      directPlans.push({ plan: { projection: 'private.publisherShard', scope: { authorId: scope.authorId || '', ...(scope.entryId ? { entryId: scope.entryId } : {}) } }, scopeKey });
     } else {
       await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
     }
@@ -104,9 +104,6 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
   }
 
   if (listDirty.length > 0) {
-    const snap = await store.loadBuildSnapshot();
-    const index = createBuildSnapshotIndex(snap);
-    // Only rebuild the list+sort combinations that have dirty entries, across all their pages
     const neededScopes = new Set<string>();
     const neededSorts = new Set<string>();
     for (const { scopeKey } of listDirty) {
@@ -121,62 +118,71 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
         neededScopes.add(scope.listRaw);
       }
     }
-    // If no specific list scope could be parsed, fall back to all scopes
-    if (neededScopes.size === 0 && neededSorts.size === 0) {
-      count += await buildAllListPages(snap, index, r2, registry);
-    } else {
-      const scopesToBuild = neededScopes.size > 0
-        ? [...neededScopes].map((s) => JSON.parse(s) as { type?: string; categoryId?: string })
-        : buildListScopes(snap);
-      const sortsToBuild = neededSorts.size > 0
-        ? [...neededSorts].filter((s): s is SortKey => (SORTS as readonly string[]).includes(s))
-        : [...SORTS];
-      const pageSize = 100;
-      const publicEntryIds = publicEntryIdSet(index);
-      const reactionTotals = reactionTotalsByEntry(snap, index);
-      const downloadsByEntry = downloadsByEntryId(index);
-      const sortFns: Record<SortKey, (a: Row, b: Row) => number> = {
-        updated: (a, b) => rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at')),
-        likes: (a, b) => {
-          const aLikes = reactionTotals.get(rowText(a, 'id')) ?? 0;
-          const bLikes = reactionTotals.get(rowText(b, 'id')) ?? 0;
-          return bLikes - aLikes || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
-        },
-        downloads: (a, b) => {
-          const aDownloads = downloadsByEntry.get(rowText(a, 'id')) ?? 0;
-          const bDownloads = downloadsByEntry.get(rowText(b, 'id')) ?? 0;
-          return bDownloads - aDownloads || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
-        },
-      };
-      for (const list of scopesToBuild) {
-        for (const sort of sortsToBuild) {
-          if (!(SORTS as readonly string[]).includes(sort)) continue;
-          const approved = snap.entries
-            .filter((e) => rowText(e, 'state_code') === 'approved')
-            .filter((entry) => publicEntryIds.has(rowText(entry, 'id')))
-            .filter((entry) => !list.type || rowText(entry, 'type') === list.type)
-            .filter((entry) => !list.categoryId || rowText(entry, 'category_id') === list.categoryId)
-            .sort(sortFns[sort]);
-          const totalPages = Math.ceil(approved.length / pageSize);
-          for (let page = 1; page <= totalPages; page++) {
-            const slice = approved.slice((page - 1) * pageSize, page * pageSize);
-            const items = slice.map((entry) => buildEntryFromSnapshot(entry, snap, index));
-            const key = registry.keyOf('list.page', { list, sort, page });
-            await r2.writeJson(key, {
-              ok: true, marketVersion: 2, generatedAt: isoNow(),
-              list, sort, page, pageSize, total: approved.length, items,
-            });
-            count++;
-          }
-        }
-      }
-    }
+    const scopesToBuild = neededScopes.size > 0
+      ? [...neededScopes].map((s) => JSON.parse(s) as { type?: string; categoryId?: string })
+      : await store.d1.listPublicListScopes();
+    const sortsToBuild = neededSorts.size > 0
+      ? [...neededSorts].filter((s): s is SortKey => (SORTS as readonly string[]).includes(s))
+      : [...SORTS];
+    count += await buildListPagesFromTargetedSnapshot(store, scopesToBuild, sortsToBuild);
     for (const { projection, scopeKey } of listDirty) {
       await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
     }
   }
 
   return { ok: true, materialized: count };
+}
+
+async function buildListPagesFromTargetedSnapshot(
+  store: MarketStore,
+  listScopes: Array<{ type?: string; categoryId?: string }>,
+  sorts: SortKey[],
+): Promise<number> {
+  if (listScopes.length === 0 || sorts.length === 0) return 0;
+  const snap = await store.d1.loadListBuildSnapshot(listScopes);
+  const index = createBuildSnapshotIndex(snap);
+  const registry = store.projectionRegistry;
+  const r2 = store.r2;
+  const pageSize = 100;
+  const publicEntryIds = publicEntryIdSet(index);
+  const reactionTotals = reactionTotalsByEntry(snap, index);
+  const downloadsByEntry = downloadsByEntryId(index);
+  const sortFns: Record<SortKey, (a: Row, b: Row) => number> = {
+    updated: (a, b) => rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at')),
+    likes: (a, b) => {
+      const aLikes = reactionTotals.get(rowText(a, 'id')) ?? 0;
+      const bLikes = reactionTotals.get(rowText(b, 'id')) ?? 0;
+      return bLikes - aLikes || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+    },
+    downloads: (a, b) => {
+      const aDownloads = downloadsByEntry.get(rowText(a, 'id')) ?? 0;
+      const bDownloads = downloadsByEntry.get(rowText(b, 'id')) ?? 0;
+      return bDownloads - aDownloads || rowText(b, 'updated_at').localeCompare(rowText(a, 'updated_at'));
+    },
+  };
+  let count = 0;
+  for (const list of listScopes) {
+    for (const sort of sorts) {
+      const approved = snap.entries
+        .filter((e) => rowText(e, 'state_code') === 'approved')
+        .filter((entry) => publicEntryIds.has(rowText(entry, 'id')))
+        .filter((entry) => !list.type || rowText(entry, 'type') === list.type)
+        .filter((entry) => !list.categoryId || rowText(entry, 'category_id') === list.categoryId)
+        .sort(sortFns[sort]);
+      const totalPages = Math.max(1, Math.ceil(approved.length / pageSize));
+      for (let page = 1; page <= totalPages; page++) {
+        const slice = approved.slice((page - 1) * pageSize, page * pageSize);
+        const items = slice.map((entry) => buildEntryFromSnapshot(entry, snap, index));
+        const key = registry.keyOf('list.page', { list, sort, page });
+        await r2.writeJson(key, {
+          ok: true, marketVersion: 2, generatedAt: isoNow(),
+          list, sort, page, pageSize, total: approved.length, items,
+        });
+        count++;
+      }
+    }
+  }
+  return count;
 }
 
 // -------- Full build --------
@@ -393,7 +399,7 @@ async function buildAllListPages(snap: BuildSnapshot, index: ReturnType<typeof c
       .filter((entry) => !list.categoryId || rowText(entry, 'category_id') === list.categoryId)
       .sort(sortFns[sort]);
 
-    const totalPages = Math.ceil(approved.length / pageSize);
+    const totalPages = Math.max(1, Math.ceil(approved.length / pageSize));
     for (let page = 1; page <= totalPages; page++) {
       const slice = approved.slice((page - 1) * pageSize, page * pageSize);
       const items = slice.map((entry) => buildEntryFromSnapshot(entry, snap, index));
@@ -454,7 +460,7 @@ async function rebuildEntry(env: MarketEnv, entryId: string): Promise<{ ok: true
   const pubShard = publisherShardOf(authorId);
   const plans: ProjectionPlan[] = [
     { projection: 'entry.shard', scope: { entryId } },
-    { projection: 'private.publisherShard', scope: { shard: pubShard, authorId } },
+    { projection: 'private.publisherShard', scope: { shard: pubShard, authorId, entryId } },
     { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
   ];
   for (const plan of plans) await store.materialize(plan);

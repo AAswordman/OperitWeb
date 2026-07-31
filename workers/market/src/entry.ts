@@ -22,7 +22,7 @@ import { notifyReview } from './translators/notify.js';
 import type { GitHubReleaseInfo, GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
 
 interface EntryRoutes {
-  publish(request: Request, env: MarketEnv): Promise<JsonObject>;
+  publish(request: Request, env: MarketEnv, waitUntil?: PublishWaitUntil): Promise<JsonObject>;
   publishProof(request: Request, env: MarketEnv): Promise<JsonObject>;
   updateEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
   newVersion(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -45,6 +45,88 @@ interface EntryUpdateInput { title?: string; description?: string; detail?: stri
 interface RepoVersionBody { refType: string; refName: string; installConfig?: string }
 interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; runtimePackageId?: string }
 interface ArtifactVersionBody { projectId?: string; runtimePackageId?: string }
+type PublishWaitUntil = (promise: Promise<unknown>) => void;
+
+type PublishTimingPhase = {
+  name: string;
+  startedAt: string;
+  durationMs: number;
+  ok: boolean;
+  error?: { name: string; message: string };
+};
+
+type PublishTimingLog = {
+  version: 1;
+  requestId: string;
+  route: '/market/v2/publish';
+  method: string;
+  startedAt: string;
+  finishedAt?: string;
+  durationMs?: number;
+  statusCode?: number;
+  outcome?: 'ok' | 'error';
+  type?: string;
+  title?: string;
+  publisherId?: string;
+  phases: PublishTimingPhase[];
+  error?: { name: string; message: string };
+};
+
+function createPublishTimingLog(request: Request): PublishTimingLog {
+  return {
+    version: 1,
+    requestId: crypto.randomUUID(),
+    route: '/market/v2/publish',
+    method: request.method,
+    startedAt: new Date().toISOString(),
+    phases: [],
+  };
+}
+
+async function measurePublishPhase<T>(log: PublishTimingLog, name: string, run: () => Promise<T>): Promise<T> {
+  const startedAt = new Date().toISOString();
+  const started = Date.now();
+  try {
+    const result = await run();
+    log.phases.push({ name, startedAt, durationMs: Date.now() - started, ok: true });
+    return result;
+  } catch (error) {
+    const serialized = serializePublishError(error);
+    log.phases.push({ name, startedAt, durationMs: Date.now() - started, ok: false, error: serialized });
+    throw error;
+  }
+}
+
+function serializePublishError(error: unknown): { name: string; message: string } {
+  return error instanceof Error ? { name: error.name, message: error.message } : { name: 'NonError', message: String(error) };
+}
+
+function finishPublishTimingLog(log: PublishTimingLog, error?: unknown): void {
+  log.finishedAt = new Date().toISOString();
+  log.durationMs = Date.parse(log.finishedAt) - Date.parse(log.startedAt);
+  log.outcome = error ? 'error' : 'ok';
+  if (error) log.error = serializePublishError(error);
+}
+
+function schedulePublishTimingLog(env: MarketEnv, log: PublishTimingLog, waitUntil?: PublishWaitUntil): void {
+  const write = writePublishTimingLog(env, log).catch((error: unknown) => {
+    console.error('[market.publish] failed to persist timing log', serializePublishError(error));
+  });
+  if (waitUntil) {
+    waitUntil(write);
+    return;
+  }
+  void write;
+}
+
+async function writePublishTimingLog(env: MarketEnv, log: PublishTimingLog): Promise<void> {
+  const bucket = env.MARKET_STATS_BUCKET;
+  if (!bucket) throw new Error('MARKET_STATS_BUCKET binding is not configured');
+  const body = JSON.stringify(log, null, 2);
+  const timestamp = log.startedAt.replace(/[^0-9A-Za-z._-]+/g, '-');
+  await bucket.put('market/v2/debug/publish/latest.json', body, { httpMetadata: { contentType: 'application/json' } });
+  await bucket.put(`market/v2/debug/publish/${timestamp}-${log.requestId}.json`, body, { httpMetadata: { contentType: 'application/json' } });
+}
 
 const AUTHOR_BLOCK_REASON_CODES = new Set([
   'author-spam',
@@ -67,22 +149,43 @@ async function readBody(request: Request): Promise<Record<string, unknown>> {
   return isRecord(value) ? value : {};
 }
 
-async function handlePublish(request: Request, env: MarketEnv): Promise<JsonObject> {
-  const session = await requireSession(request, env);
-  const store = requireStore(env);
-  const publisher = await upsertAuthorFromSession(requireDb(env), session);
-  assertAuthorActive(publisher);
-  const body = await readBody(request);
-  const type = requireMarketType(body.type);
-  const title = requireString(body.title, 'title');
-  const description = requireString(body.description, 'description');
-  const detail = optionalString(body.detail);
-  const categoryId = optionalString(body.categoryId);
-  const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates) ?? true;
-  const versionInput = requireVersionInput(asRecord(body.version));
-  if (isRepoType(type)) return publishRepoEntry(env, store, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body);
-  if (isArtifactType(type)) return publishArtifactEntry(env, store, session, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body);
-  throw new MarketError('validation_failed', `Unsupported type: ${type}`);
+async function handlePublish(request: Request, env: MarketEnv, waitUntil?: PublishWaitUntil): Promise<JsonObject> {
+  const timing = createPublishTimingLog(request);
+  try {
+    const session = await measurePublishPhase(timing, 'session.require', () => requireSession(request, env));
+    const store = requireStore(env);
+    const publisher = await measurePublishPhase(timing, 'publisher.upsert', () => upsertAuthorFromSession(requireDb(env), session));
+    assertAuthorActive(publisher);
+    timing.publisherId = publisher.id;
+    const body = await measurePublishPhase(timing, 'request.body', () => readBody(request));
+    const type = requireMarketType(body.type);
+    timing.type = type;
+    const title = requireString(body.title, 'title');
+    timing.title = title;
+    const description = requireString(body.description, 'description');
+    const detail = optionalString(body.detail);
+    const categoryId = optionalString(body.categoryId);
+    const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates) ?? true;
+    const versionInput = requireVersionInput(asRecord(body.version));
+    if (isRepoType(type)) {
+      const result = await measurePublishPhase(timing, 'publish.repo', () => publishRepoEntry(env, store, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body));
+      timing.statusCode = 200;
+      return result;
+    }
+    if (isArtifactType(type)) {
+      const result = await publishArtifactEntry(env, store, session, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body, timing);
+      timing.statusCode = 200;
+      return result;
+    }
+    throw new MarketError('validation_failed', `Unsupported type: ${type}`);
+  } catch (error) {
+    timing.statusCode = error instanceof MarketError ? error.status : 500;
+    finishPublishTimingLog(timing, error);
+    throw error;
+  } finally {
+    if (!timing.finishedAt) finishPublishTimingLog(timing);
+    schedulePublishTimingLog(env, timing, waitUntil);
+  }
 }
 
 async function handlePublishProof(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -116,17 +219,15 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   const installConfig = optionalString(repoBody.installConfig);
   const mutation = publishRepoMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
   const applied = await store.apply(mutation);
-  await materializePrivatePublisherShards(store, [publisher.id]);
-  return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
+  const entryId = String(mutation.objects[0]?.id || '');
+  await materializePrivatePublisherShards(store, [publisher.id], entryId);
+  return { ok: true, entryId, versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
-async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, detail: string | undefined, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>): Promise<JsonObject> {
-  const artifact = await validateArtifactVersion(env, session, body);
-  const projectVersions = await store.d1.listVersionsForArtifactProjectKey(artifact.projectId);
-  await assertVersionGreaterThanExisting(
-    versionInput.version,
-    projectVersions,
-  );
+async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, detail: string | undefined, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>, timing: PublishTimingLog): Promise<JsonObject> {
+  const artifact = await measurePublishPhase(timing, 'artifact.validate-github-release', () => validateArtifactVersion(env, session, body));
+  const projectVersions = await measurePublishPhase(timing, 'artifact.list-project-versions', () => store.d1.listVersionsForArtifactProjectKey(artifact.projectId));
+  await measurePublishPhase(timing, 'artifact.assert-version', () => assertVersionGreaterThanExisting(versionInput.version, projectVersions));
   const existingVersion = projectVersions[0];
   if (existingVersion) {
     const entryId = text(existingVersion.entry_id);
@@ -176,14 +277,16 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
     const effects = withPrivatePublisherShardEffects(
       [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }, { projection: 'asset.detail', scope: { assetId } }],
       [originalPublisherId, publisher.id],
+      entryId,
     );
-    const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects });
-    await materializePrivatePublisherShards(store, [originalPublisherId, publisher.id]);
+    const applied = await measurePublishPhase(timing, 'store.apply-new-version', () => store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects }));
+    await measurePublishPhase(timing, 'materialize.publisher-shard', () => materializePrivatePublisherShards(store, [originalPublisherId, publisher.id], entryId));
     return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
   }
   const mutation = publishArtifactMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
-  const applied = await store.apply(mutation);
-  await materializePrivatePublisherShards(store, [publisher.id]);
+  const applied = await measurePublishPhase(timing, 'store.apply-new-entry', () => store.apply(mutation));
+  const entryId = String(mutation.objects[0]?.id || '');
+  await measurePublishPhase(timing, 'materialize.publisher-shard', () => materializePrivatePublisherShards(store, [publisher.id], entryId));
   return { ok: true, entryId: String(mutation.objects[0]?.id || ''), versionId: String(mutation.objects[1]?.id || ''), materialization: applied.materialization as unknown as JsonObject, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -210,10 +313,10 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
     effects: [
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },
-      { projection: 'private.publisherShard', scope: { authorId: publisher.id } },
+      { projection: 'private.publisherShard', scope: { authorId: publisher.id, entryId } },
     ],
   });
-  await materializePrivatePublisherShards(store, [publisher.id]);
+  await materializePrivatePublisherShards(store, [publisher.id], entryId);
   const updated = await store.d1.getEntry(entryId);
   return { ok: true, item: updated ? entryDetail(updated) : { id: entryId }, stats: applied.stats as unknown as JsonObject };
 }
@@ -260,9 +363,10 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const effects = withPrivatePublisherShardEffects(
     [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }],
     [originalPublisherId, publisher.id],
+    entryId,
   );
   const applied = await store.apply({ type: 'mutation', id: `mut-new-version-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason: 'version.created', objects, effects });
-  await materializePrivatePublisherShards(store, [originalPublisherId, publisher.id]);
+  await materializePrivatePublisherShards(store, [originalPublisherId, publisher.id], entryId);
   return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -338,7 +442,7 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
     ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) })
     : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) }));
   await store.materializeEntryAssets(entryId);
-  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_approved', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
@@ -365,7 +469,7 @@ async function handleModerateEntry(request: Request, env: MarketEnv): Promise<Js
   if (!author) throw new MarketError('not_found', 'Author not found', 404);
   const time = new Date().toISOString();
   const applied = await store.apply(withdrawAndBlockAuthor({ entryId, authorId, actorId: admin.username, reasonCode, blockedAt: time }));
-  await materializePrivatePublisherShards(store, [authorId]);
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   return {
     ok: true,
     action,
@@ -393,7 +497,7 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const applied = await store.apply(reviewVersionOnly
     ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
     : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
-  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_rejected', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
@@ -413,7 +517,7 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const applied = await store.apply(reviewVersionOnly
     ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
     : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
-  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_changes', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
@@ -454,18 +558,19 @@ async function applyEntryState(env: MarketEnv, request: Request, entryId: string
   const effects = withPrivatePublisherShardEffects(
     [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }],
     [publisher.id, ...versionPublisherIds],
+    entryId,
   );
   const applied = await store.apply({ type: 'mutation', id: `mut-${reason}-${entryId}-${Date.now()}`, actor: { authorId: publisher.id, role: 'publisher' }, reason, objects, effects });
-  await materializePrivatePublisherShards(store, [publisher.id, ...versionPublisherIds]);
+  await materializePrivatePublisherShards(store, [publisher.id, ...versionPublisherIds], entryId);
   return { ok: true, entryId, stateCode, stats: applied.stats as unknown as JsonObject };
 }
 
-function withPrivatePublisherShardEffects(effects: MarketMutation['effects'], authorIds: string[]): MarketMutation['effects'] {
+function withPrivatePublisherShardEffects(effects: MarketMutation['effects'], authorIds: string[], entryId: string): MarketMutation['effects'] {
   const seen = new Set<string>();
   for (const authorId of authorIds) {
     if (!authorId || seen.has(authorId)) continue;
     seen.add(authorId);
-    effects.push({ projection: 'private.publisherShard', scope: { authorId } });
+    effects.push({ projection: 'private.publisherShard', scope: { authorId, entryId } });
   }
   return effects;
 }
@@ -524,12 +629,12 @@ function shouldReviewVersionOnly(body: Record<string, unknown>, entry: Row, hasA
   return text(entry.state_code) === 'approved' && hasApproved;
 }
 
-async function materializePrivatePublisherShards(store: MarketStore, authorIds: string[]): Promise<void> {
+async function materializePrivatePublisherShards(store: MarketStore, authorIds: string[], entryId: string): Promise<void> {
   const seen = new Set<string>();
   for (const authorId of authorIds) {
     if (!authorId || seen.has(authorId)) continue;
     seen.add(authorId);
-    await store.materialize({ projection: 'private.publisherShard', scope: { authorId } });
+    await store.materialize({ projection: 'private.publisherShard', scope: { authorId, entryId } });
   }
 }
 

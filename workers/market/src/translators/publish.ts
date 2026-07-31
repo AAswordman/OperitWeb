@@ -122,7 +122,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },
       { projection: 'entry.versions', scope: { entryId } },
-      { projection: 'private.publisherShard', scope: { authorId: input.publisherId } },
+      { projection: 'private.publisherShard', scope: { authorId: input.publisherId, entryId } },
     ],
   };
 }
@@ -196,7 +196,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
       { projection: 'entry.shard', scope: { entryId } },
       { projection: 'entry.versions', scope: { entryId } },
       ...assetIds.map((assetId) => ({ projection: 'asset.detail' as const, scope: { assetId } })),
-      { projection: 'private.publisherShard', scope: { authorId: input.publisherId } },
+      { projection: 'private.publisherShard', scope: { authorId: input.publisherId, entryId } },
     ],
   };
 }

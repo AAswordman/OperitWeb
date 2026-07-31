@@ -36,7 +36,7 @@ interface OperitMCPMarketPageProps {
   language: 'zh' | 'en';
 }
 
-const SORTS: MarketSort[] = ['updated', 'likes', 'featured'];
+const SORTS: MarketSort[] = ['updated', 'likes', 'downloads'];
 const FILTERS: MarketFilter[] = ['all', 'script', 'package', 'skill', 'mcp'];
 
 const parsePageFromQuery = (value: string | null): number => {
@@ -45,7 +45,7 @@ const parsePageFromQuery = (value: string | null): number => {
 };
 
 const parseSortFromQuery = (value: string | null): MarketSort => (
-  value === 'likes' || value === 'featured' || value === 'updated' ? value : 'updated'
+  value === 'likes' || value === 'downloads' || value === 'updated' ? value : 'updated'
 );
 
 const parseFilterFromQuery = (value: string | null): MarketFilter => (
@@ -81,12 +81,12 @@ const sortLabel = (sort: string, language: 'zh' | 'en'): string => {
   const zh: Record<string, string> = {
     updated: '最近更新',
     likes: '最多喜欢',
-    featured: '精选',
+    downloads: '下载最多',
   };
   const en: Record<string, string> = {
     updated: 'Updated',
     likes: 'Likes',
-    featured: 'Featured',
+    downloads: 'Downloads',
   };
   return (language === 'zh' ? zh : en)[sort] || sort;
 };

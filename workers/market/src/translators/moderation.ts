@@ -41,7 +41,7 @@ export function withdrawAndBlockAuthor({ entryId, authorId, actorId, reasonCode,
       { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
       { projection: 'entry.shard', scope: { entryId } },
       { projection: 'entry.versions', scope: { entryId } },
-      { projection: 'private.publisherShard', scope: { authorId } },
+      { projection: 'private.publisherShard', scope: { authorId, entryId } },
     ],
   };
 }

@@ -159,6 +159,8 @@ type SourceFilter = 'all' | 'review' | 'published';
 type MarketReviewAction = 'approve' | 'changes_requested' | 'reject' | 'set_featured' | 'unset_featured' | 'withdraw_and_block';
 type MarketReviewScope = 'entry' | 'version';
 
+const REVIEW_PAGE_SIZE = 100;
+
 const STORAGE = {
   adminToken: 'operit_submission_admin_token',
 };
@@ -324,6 +326,19 @@ async function fetchJson(url: string, options?: RequestInit): Promise<{ response
     data = null;
   }
   return { response, data, text };
+}
+
+async function fetchAllReviewEntries(token: string): Promise<ReviewEntrySummary[]> {
+  const items: ReviewEntrySummary[] = [];
+  for (let offset = 0; ; offset += REVIEW_PAGE_SIZE) {
+    const page = await fetchMarketV2Json<{ items?: ReviewEntrySummary[] }>(
+      marketV2ApiUrl(`admin/review/entries?limit=${REVIEW_PAGE_SIZE}&offset=${offset}`),
+      { headers: buildMarketV2AdminHeaders(token) },
+    );
+    const pageItems = page.items || [];
+    items.push(...pageItems);
+    if (pageItems.length < REVIEW_PAGE_SIZE) return items;
+  }
 }
 
 function formatDateTime(value?: string | null): string {
@@ -514,7 +529,6 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [manifest, setManifest] = useState<MarketV2Manifest | null>(null);
   const [reviewRows, setReviewRows] = useState<ReviewEntrySummary[]>([]);
   const [publishedRows, setPublishedRows] = useState<MarketV2Entry[]>([]);
-  const [featuredRows, setFeaturedRows] = useState<MarketV2Entry[]>([]);
   const [featuredIds, setFeaturedIds] = useState<Set<string>>(() => new Set());
   const [marketFilter, setMarketFilter] = useState<MarketType | 'all'>('all');
   const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all');
@@ -562,20 +576,16 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     setLoading(true);
     setError(null);
     try {
-      const [manifestData, reviewData, updatedData, featuredData] = await Promise.all([
+      const [manifestData, reviewItems, updatedData] = await Promise.all([
         fetchMarketV2Json<MarketV2Manifest>(marketV2StaticUrl('manifest.json')),
-        fetchMarketV2Json<{ ok?: boolean; items?: ReviewEntrySummary[] }>(marketV2ApiUrl('admin/review/entries?limit=100&offset=0'), {
-          headers: buildMarketV2AdminHeaders(token),
-        }),
+        fetchAllReviewEntries(token),
         fetchMarketV2Json<MarketV2ListPage>(marketV2StaticUrl('lists/all/updated/page-1.json')),
-        fetchMarketV2Json<MarketV2ListPage>(marketV2StaticUrl('lists/all/featured/page-1.json')),
       ]);
-      const featuredItems = featuredData.items || [];
+      const publishedItems = updatedData.items || [];
       setManifest(manifestData);
-      setReviewRows(reviewData.items || []);
-      setPublishedRows(updatedData.items || []);
-      setFeaturedRows(featuredItems);
-      setFeaturedIds(new Set(featuredItems.map(item => item.id)));
+      setReviewRows(reviewItems);
+      setPublishedRows(publishedItems);
+      setFeaturedIds(new Set(publishedItems.filter(item => item.featured).map(item => item.id)));
     } catch (err) {
       const messageText = (err as Error).message || t.loadFailed;
       setError(messageText);
@@ -611,9 +621,8 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     const known = new Map(categories.map(category => [category.id, category.name || category.id]));
     for (const row of reviewRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
     for (const row of publishedRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
-    for (const row of featuredRows) if (row.categoryId && !known.has(row.categoryId)) known.set(row.categoryId, row.categoryId);
     return [{ label: t.all, value: 'all' }, ...Array.from(known.entries()).map(([id, name]) => ({ label: `${name} (${id})`, value: id }))];
-  }, [featuredRows, manifest?.categories, publishedRows, reviewRows, t.all]);
+  }, [manifest?.categories, publishedRows, reviewRows, t.all]);
 
   const categoryLabel = useCallback((categoryId: string): string => {
     if (!categoryId) return '-';
@@ -624,13 +633,12 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const rows = useMemo(() => {
     const byId = new Map<string, MarketReviewRow>();
     for (const row of publishedRows) byId.set(row.id, normalizeEntry(row, 'published', featuredIds));
-    for (const row of featuredRows) byId.set(row.id, { ...normalizeEntry(row, 'published', featuredIds), featured: true });
     for (const row of reviewRows) {
       const normalized = normalizeEntry(row, 'review', featuredIds);
       byId.set(`${normalized.id}::${normalized.versionId || ''}`, normalized);
     }
     return Array.from(byId.values()).sort((a, b) => String(b.updatedAt || '').localeCompare(String(a.updatedAt || '')));
-  }, [featuredIds, featuredRows, publishedRows, reviewRows]);
+  }, [featuredIds, publishedRows, reviewRows]);
 
   const filteredRows = useMemo(() => {
     const query = search.trim().toLowerCase();
