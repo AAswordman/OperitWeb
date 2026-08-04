@@ -128,6 +128,18 @@ CREATE TABLE IF NOT EXISTS market_version_reasons (
   FOREIGN KEY(reason_code) REFERENCES market_reason_codes(code)
 );
 
+-- 5.2.10.1 market_version_review_details
+-- Reviewer-written explanation for a concrete version decision. This is private
+-- to the publisher/reviewer surface and must never be included in public lists.
+CREATE TABLE IF NOT EXISTS market_version_review_details (
+  version_id   TEXT PRIMARY KEY,
+  detail       TEXT NOT NULL,
+  reviewer_id  TEXT NOT NULL,
+  created_at   TEXT NOT NULL,
+  updated_at   TEXT NOT NULL,
+  FOREIGN KEY(version_id) REFERENCES market_versions(id) ON DELETE CASCADE
+);
+
 -- 5.2.11 artifact_projects
 CREATE TABLE IF NOT EXISTS artifact_projects (
   id              TEXT PRIMARY KEY,

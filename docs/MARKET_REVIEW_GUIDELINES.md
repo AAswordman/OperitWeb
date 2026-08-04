@@ -40,24 +40,30 @@ GET /market/v2/admin/review/entries/{entryId}
 POST /market/v2/entries/{entryId}/review/approve
 Content-Type: application/json
 
-{ "entryId": "{entryId}", "versionId": "{versionId}" }
+{ "entryId": "{entryId}", "versionId": "{versionId}", "reviewDetail": "审核通过；未发现超出声明用途的行为。" }
 ```
 
 ```http
 POST /market/v2/entries/{entryId}/review/changes
 Content-Type: application/json
 
-{ "entryId": "{entryId}", "versionId": "{versionId}", "reasonCode": "ai-hallucination" }
+{ "entryId": "{entryId}", "versionId": "{versionId}", "reasonCode": "ai-hallucination", "reviewDetail": "声明的功能未在提交内容中实现，请补充实现或修正说明。" }
 ```
 
 ```http
 POST /market/v2/entries/{entryId}/review/reject
 Content-Type: application/json
 
-{ "entryId": "{entryId}", "versionId": "{versionId}", "reasonCode": "security-risk" }
+{ "entryId": "{entryId}", "versionId": "{versionId}", "reasonCode": "security-risk", "reviewDetail": "发现与声明功能无关的数据外传逻辑，无法通过。" }
 ```
 
 `entryId` 必须与 URL 一致，且 `versionId` 必须属于该项目。`changes` 与 `reject` 必须携带原因码。已上架项目审核新版本时，操作只作用于目标版本；首次发布的审核结论同时作用于项目和目标版本。
+
+### 审核说明（`reviewDetail`）
+
+`reviewDetail` 是附在**具体版本**上的人工说明，最长 4000 个字符，支持 Markdown。审核台在打回或拒绝时要求填写；通过时可选。它会写入私有作者条目数据和管理员审核详情，不会出现在公开市场列表或公开条目中。
+
+说明只写实际发现的问题和作者可执行的修正方向；需要时可以注明受影响的文件、包内版本或联网行为。不要写入令牌、Cookie、用户数据、完整恶意载荷或其他敏感信息。
 
 ## 总则
 
@@ -115,6 +121,6 @@ Content-Type: application/json
 
 内容不可用、明显虚构、风险不可接受、恶意破坏、重复灌水或违反平台规则时拒绝。
 
-审核意见只写实际发现的问题即可，不用重复记录审核路径、版本信息或系统已经自动校验的项目；这些信息由系统留存。
+审核意见只写实际发现的问题即可，不用重复记录审核路径、版本信息或系统已经自动校验的项目；这些信息由系统留存。对打回和拒绝，请通过 `reviewDetail` 给作者留下足以修正或理解结论的具体说明。
 
 本规范优先保障用户安全和市场内容真实性，同时为真实、有用的创作保留尽可能低的审核阻力。

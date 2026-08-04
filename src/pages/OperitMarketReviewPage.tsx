@@ -106,6 +106,8 @@ interface ReviewVersion {
   createdAt?: string;
   updatedAt?: string;
   publishedAt?: string;
+  reviewDetail?: string;
+  reviewDetailUpdatedAt?: string;
 }
 
 interface ReviewEntryDetail {
@@ -233,10 +235,14 @@ const TEXT = {
     unsetFeatured: '取消精选',
     actionTarget: '操作对象',
     actionReasonTitle: '请选择原因码',
+    reviewDetailTitle: '审核说明',
+    reviewDetailOptional: '审核通过时可选；打回或拒绝时必填。',
+    reviewDetailPlaceholder: '写明实际发现的问题、涉及文件或版本，以及作者需如何修正。',
     actionSubmit: '确认提交',
     actionCancel: '取消',
     actionSuccess: '操作已提交。',
     reasonRequired: '打回或拒绝必须选择原因码。',
+    reviewDetailRequired: '打回或拒绝必须填写审核说明。',
     moderationReasonRequired: '下架并封禁作者必须选择封禁原因。',
     versionRequired: '请在版本列表中选择具体版本进行审核。',
     noReason: '无原因码',
@@ -288,10 +294,14 @@ const TEXT = {
     unsetFeatured: 'Unset featured',
     actionTarget: 'Target',
     actionReasonTitle: 'Select reason code',
+    reviewDetailTitle: 'Review detail',
+    reviewDetailOptional: 'Optional when approving; required when requesting changes or rejecting.',
+    reviewDetailPlaceholder: 'Describe the actual issue, affected file or version, and the required correction.',
     actionSubmit: 'Submit',
     actionCancel: 'Cancel',
     actionSuccess: 'Action submitted.',
     reasonRequired: 'A reason code is required for changes or rejection.',
+    reviewDetailRequired: 'A review detail is required for changes or rejection.',
     moderationReasonRequired: 'A block reason is required to withdraw and block an author.',
     versionRequired: 'Select a specific version in the version list before reviewing.',
     noReason: 'No reason',
@@ -457,6 +467,13 @@ function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', act
               ) : null}
             </Space>
             {version.changelog ? <Paragraph type="secondary" className="operit-market-review-version-changelog">{version.changelog}</Paragraph> : null}
+            {version.reviewDetail ? (
+              <div className="operit-market-review-version-changelog">
+                <Text strong>{language === 'zh' ? '审核说明' : 'Review detail'}</Text>
+                <OperitMarkdownPreview content={version.reviewDetail} />
+                {version.reviewDetailUpdatedAt ? <Text type="secondary">{formatDateTime(version.reviewDetailUpdatedAt)}</Text> : null}
+              </div>
+            ) : null}
           </div>
         </div>
       ))}
@@ -546,6 +563,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [actionTarget, setActionTarget] = useState<MarketReviewRow | null>(null);
   const [actionVersionId, setActionVersionId] = useState<string | null>(null);
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
+  const [reviewDetail, setReviewDetail] = useState('');
   const [actionSubmitting, setActionSubmitting] = useState(false);
 
   const handleUnauthorized = useCallback(() => {
@@ -702,6 +720,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     setActionTarget(row);
     setActionVersionId(action === 'withdraw_and_block' ? null : versionId || row.versionId || null);
     setSelectedReasonCodes([]);
+    setReviewDetail('');
     setActionOpen(true);
   }, []);
 
@@ -713,6 +732,10 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     }
     if ((actionType === 'changes_requested' || actionType === 'reject' || actionType === 'withdraw_and_block') && selectedReasonCodes.length === 0) {
       message.warning(actionType === 'withdraw_and_block' ? t.moderationReasonRequired : t.reasonRequired);
+      return;
+    }
+    if ((actionType === 'changes_requested' || actionType === 'reject') && !reviewDetail.trim()) {
+      message.warning(t.reviewDetailRequired);
       return;
     }
     setActionSubmitting(true);
@@ -749,6 +772,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
             ...(actionVersionId ? { versionId: actionVersionId } : {}),
             ...(actionScope ? { scope: actionScope } : {}),
             reasonCode: selectedReasonCodes[0],
+            ...(reviewDetail.trim() ? { reviewDetail: reviewDetail.trim() } : {}),
           }),
         });
       }
@@ -763,7 +787,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
     } finally {
       setActionSubmitting(false);
     }
-  }, [actionScope, actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.moderationReasonRequired, t.reasonRequired, t.versionRequired]);
+  }, [actionScope, actionTarget, actionType, actionVersionId, adminToken, handleUnauthorized, loadData, reviewDetail, selectedReasonCodes, t.actionSuccess, t.loadFailed, t.moderationReasonRequired, t.reasonRequired, t.reviewDetailRequired, t.versionRequired]);
 
   const logout = useCallback(async () => {
     localStorage.removeItem(STORAGE.adminToken);
@@ -1132,6 +1156,22 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                   onChange={values => setSelectedReasonCodes((values as string[]).slice(0, 1))}
                 />
               </>
+            ) : null}
+            {actionType === 'approve' || actionType === 'changes_requested' || actionType === 'reject' ? (
+              <div>
+                <Paragraph style={{ marginBottom: 8 }}>
+                  <Text strong>{t.reviewDetailTitle}</Text>
+                  <Text type="secondary"> · {t.reviewDetailOptional}</Text>
+                </Paragraph>
+                <Input.TextArea
+                  value={reviewDetail}
+                  onChange={event => setReviewDetail(event.target.value)}
+                  placeholder={t.reviewDetailPlaceholder}
+                  autoSize={{ minRows: 4, maxRows: 12 }}
+                  maxLength={4000}
+                  showCount
+                />
+              </div>
             ) : null}
           </Space>
         </Modal>

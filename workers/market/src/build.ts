@@ -249,7 +249,12 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     codes.push(reasonCode);
     versionReasonCodes.set(versionId, codes);
   }
-  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[] }> }>>();
+  const versionReviewDetails = new Map<string, Row>();
+  for (const detail of snap.versionReviewDetails) {
+    const versionId = rowText(detail, 'version_id');
+    if (versionId) versionReviewDetails.set(versionId, detail);
+  }
+  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[]; reviewDetail?: string; reviewDetailUpdatedAt?: string }> }>>();
   for (let i = 0; i < PUBLISHER_SHARDS; i++) publisherShards.set(i.toString(16).padStart(2, '0'), {});
   const entriesByIdForPublishers = new Map<string, Row>();
   const latestVersionByAuthorEntry = latestVersionsByAuthorEntry(snap.versions);
@@ -263,6 +268,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const entryId = rowText(entry, 'id');
     const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
     const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
+    const reviewDetail = latestVersion ? versionReviewDetails.get(rowText(latestVersion, 'id')) : undefined;
     const entryStateCode = rowText(entry, 'state_code');
     const summaryStateCode = entryStateCode === 'withdrawn'
       ? entryStateCode
@@ -279,6 +285,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       categoryId: rowText(entry, 'category_id'),
       updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
+      ...(reviewDetail && rowText(reviewDetail, 'detail') ? { reviewDetail: rowText(reviewDetail, 'detail'), reviewDetailUpdatedAt: rowText(reviewDetail, 'updated_at') } : {}),
     });
     authors[authorId] = bucket;
   }
@@ -296,6 +303,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const entryId = rowText(entry, 'id');
     const latestVersion = latestVersionByAuthorEntry.get(authorEntryKey(authorId, entryId));
     const reasonCodes = latestVersion ? versionReasonCodes.get(rowText(latestVersion, 'id')) ?? [] : [];
+    const reviewDetail = latestVersion ? versionReviewDetails.get(rowText(latestVersion, 'id')) : undefined;
     const entryStateCode = rowText(entry, 'state_code');
     const summaryStateCode = entryStateCode === 'withdrawn'
       ? entryStateCode
@@ -312,6 +320,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       categoryId: rowText(entry, 'category_id'),
       updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
+      ...(reviewDetail && rowText(reviewDetail, 'detail') ? { reviewDetail: rowText(reviewDetail, 'detail'), reviewDetailUpdatedAt: rowText(reviewDetail, 'updated_at') } : {}),
     });
     bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     authors[authorId] = bucket;

@@ -379,6 +379,17 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
   const shardObject = asRecord(shard);
   const authorBucket = asRecord(asRecord(shardObject.authors)[authorId]);
   const entries = Array.isArray(authorBucket.entries) ? authorBucket.entries : [];
+  const filteredEntries = type ? entries.filter((entry) => asRecord(entry).type === type) : entries;
+  const entriesWithListingState = await Promise.all(filteredEntries.map(async (entry) => {
+    const summary = asRecord(entry);
+    const entryId = optionalString(summary.id);
+    if (summary.stateCode !== 'approved' || !entryId) return entry;
+    const publicShard = asRecord(await store.readProjection({ projection: 'entry.shard', scope: { entryId } }));
+    const entriesById = asRecord(publicShard.entriesById);
+    return Object.prototype.hasOwnProperty.call(entriesById, entryId)
+      ? entry
+      : { ...summary, listingState: 'pending_listing' };
+  }));
   return {
     ok: true,
     entries: {
@@ -386,7 +397,7 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
       marketVersion: Number(shardObject.marketVersion || 2),
       ...(optionalString(shardObject.generatedAt) ? { generatedAt: optionalString(shardObject.generatedAt) } : {}),
       shard: optionalString(shardObject.shard) || '',
-      entries: type ? entries.filter((entry) => asRecord(entry).type === type) : entries,
+      entries: entriesWithListingState,
     },
   };
 }
@@ -409,13 +420,15 @@ async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promis
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const versions = await store.d1.listVersionsForEntry(entryId);
+  const reviewDetails = await store.d1.listVersionReviewDetails(versions.map((version) => text(version.id)));
+  const reviewDetailByVersionId = new Map(reviewDetails.map((detail) => [text(detail.version_id), detail]));
   const repoSource = await store.d1.getRepoSpecByEntry(entryId);
   const artifactProject = await store.d1.getArtifactProject(entryId);
   const assets = await store.d1.listAssets(entryId);
   return {
     ok: true,
     item: entryDetail(entry),
-    versions: versions.map(versionDetail),
+    versions: versions.map((version) => versionDetail(version, reviewDetailByVersionId.get(text(version.id)))),
     ...(repoSource ? { repoSource: rowObject(repoSource) } : {}),
     ...(artifactProject ? { artifactProject: rowObject(artifactProject) } : {}),
     assets: assets.map(rowObject),
@@ -428,6 +441,7 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   const body = await readBody(request);
   const entryId = requireReviewEntryId(request, body, '/review/approve');
   const versionId = requireString(body.versionId, 'versionId');
+  const reviewDetail = parseReviewDetail(body.reviewDetail);
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
@@ -439,8 +453,8 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
     ? false
     : shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
-    ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) })
-    : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}) }));
+    ? reviewApproveVersion({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}), ...(reviewDetail ? { reviewDetail } : {}) })
+    : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}), ...(reviewDetail ? { reviewDetail } : {}) }));
   await store.materializeEntryAssets(entryId);
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_approved', actorId);
@@ -489,14 +503,15 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const entryId = requireReviewEntryId(request, body, '/review/reject');
   const versionId = requireString(body.versionId, 'versionId');
   const reasonCode = requireString(body.reasonCode, 'reasonCode');
+  const reviewDetail = parseReviewDetail(body.reviewDetail);
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
   const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
-    ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
-    : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
+    ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) })
+    : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) }));
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_rejected', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
@@ -509,14 +524,15 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const entryId = requireReviewEntryId(request, body, '/review/changes');
   const versionId = requireString(body.versionId, 'versionId');
   const reasonCode = requireString(body.reasonCode, 'reasonCode');
+  const reviewDetail = parseReviewDetail(body.reviewDetail);
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
   const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
-    ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode })
-    : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode }));
+    ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) })
+    : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) }));
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_changes', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
@@ -709,7 +725,7 @@ function reviewVersionSummary(row: Row): JsonObject {
 function entryDetail(entry: Row): JsonObject {
   return { ...entrySummary(entry), detail: text(entry.detail) };
 }
-function versionDetail(version: Row): JsonObject {
+function versionDetail(version: Row, reviewDetail?: Row): JsonObject {
   const entryPatch = parseStoredEntryPatch(version);
   return {
     id: text(version.id),
@@ -724,8 +740,18 @@ function versionDetail(version: Row): JsonObject {
     createdAt: text(version.created_at),
     updatedAt: text(version.updated_at),
     publishedAt: text(version.published_at),
+    ...(reviewDetail && text(reviewDetail.detail) ? { reviewDetail: text(reviewDetail.detail), reviewDetailUpdatedAt: text(reviewDetail.updated_at) } : {}),
     ...(entryPatch ? { entryPatch: { ...entryPatch } } : {}),
   };
+}
+
+function parseReviewDetail(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'string') throw new MarketError('validation_failed', 'reviewDetail must be a string', 400);
+  const detail = value.trim();
+  if (!detail) return undefined;
+  if (detail.length > 4000) throw new MarketError('validation_failed', 'reviewDetail exceeds 4000 character limit', 400);
+  return detail;
 }
 
 function parseEntryUpdateInput(body: Record<string, unknown>): EntryUpdateInput {

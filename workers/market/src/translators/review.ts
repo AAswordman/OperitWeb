@@ -2,13 +2,13 @@ import { isoNow } from '../shared.js';
 import type { MarketMutation, MarketObjectOperation } from '../types.js';
 
 interface EntryPatch { title?: string; description?: string; detail?: string; categoryId?: string; allowPublicUpdates?: boolean }
-interface ReviewEntryInput { entryId: string; actorId: string; versionId?: string; publishedAt?: string; entryPatch?: EntryPatch }
-interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string; entryPatch?: EntryPatch }
-interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId: string }
+interface ReviewEntryInput { entryId: string; actorId: string; versionId?: string; publishedAt?: string; entryPatch?: EntryPatch; reviewDetail?: string }
+interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string; entryPatch?: EntryPatch; reviewDetail?: string }
+interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId: string; reviewDetail?: string }
 interface ReviewVersionReasonInput extends ReviewReasonInput { versionId: string }
 interface CurationInput { entryId: string; actorId: string; listKey: string; position: number; operation?: Extract<MarketObjectOperation, 'create' | 'update' | 'hide'> }
 
-export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, entryPatch }: ReviewEntryInput): MarketMutation {
+export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, entryPatch, reviewDetail }: ReviewEntryInput): MarketMutation {
   const time = publishedAt || isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Entry', operation: 'approve', id: entryId,
@@ -19,6 +19,7 @@ export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, e
       kind: 'Version', operation: 'approve', id: versionId,
       patch: { stateCode: 'approved', publishedAt: time, updatedAt: time },
     });
+    appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   }
   return {
     type: 'mutation',
@@ -35,7 +36,7 @@ export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, e
   };
 }
 
-export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt, entryPatch }: ReviewVersionInput): MarketMutation {
+export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt, entryPatch, reviewDetail }: ReviewVersionInput): MarketMutation {
   const time = publishedAt || isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Version', operation: 'approve', id: versionId,
@@ -47,6 +48,7 @@ export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt,
       patch: { ...entryPatch, updatedAt: time },
     });
   }
+  appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   return {
     type: 'mutation',
     id: `mut-review-approve-version-${versionId}-${Date.now()}`,
@@ -62,7 +64,7 @@ export function reviewApproveVersion({ entryId, actorId, versionId, publishedAt,
   };
 }
 
-export function reviewRejectEntry({ entryId, actorId, reasonCode, versionId }: ReviewReasonInput): MarketMutation {
+export function reviewRejectEntry({ entryId, actorId, reasonCode, versionId, reviewDetail }: ReviewReasonInput): MarketMutation {
   const time = isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Entry', operation: 'reject', id: entryId,
@@ -78,6 +80,7 @@ export function reviewRejectEntry({ entryId, actorId, reasonCode, versionId }: R
       value: { versionId, reasonCode, createdAt: time },
     });
   }
+  appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   return {
     type: 'mutation',
     id: `mut-review-reject-${entryId}-${Date.now()}`,
@@ -93,7 +96,7 @@ export function reviewRejectEntry({ entryId, actorId, reasonCode, versionId }: R
   };
 }
 
-export function reviewRejectVersion({ entryId, versionId, actorId, reasonCode }: ReviewVersionReasonInput): MarketMutation {
+export function reviewRejectVersion({ entryId, versionId, actorId, reasonCode, reviewDetail }: ReviewVersionReasonInput): MarketMutation {
   const time = isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Version', operation: 'reject', id: versionId,
@@ -105,6 +108,7 @@ export function reviewRejectVersion({ entryId, versionId, actorId, reasonCode }:
       value: { versionId, reasonCode, createdAt: time },
     });
   }
+  appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   return {
     type: 'mutation',
     id: `mut-review-reject-version-${versionId}-${Date.now()}`,
@@ -120,7 +124,7 @@ export function reviewRejectVersion({ entryId, versionId, actorId, reasonCode }:
   };
 }
 
-export function reviewRequestChangesEntry({ entryId, actorId, reasonCode, versionId }: ReviewReasonInput): MarketMutation {
+export function reviewRequestChangesEntry({ entryId, actorId, reasonCode, versionId, reviewDetail }: ReviewReasonInput): MarketMutation {
   const time = isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Entry', operation: 'request_changes', id: entryId,
@@ -136,6 +140,7 @@ export function reviewRequestChangesEntry({ entryId, actorId, reasonCode, versio
       value: { versionId, reasonCode, createdAt: time },
     });
   }
+  appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   return {
     type: 'mutation',
     id: `mut-review-changes-${entryId}-${Date.now()}`,
@@ -151,7 +156,7 @@ export function reviewRequestChangesEntry({ entryId, actorId, reasonCode, versio
   };
 }
 
-export function reviewRequestChangesVersion({ entryId, versionId, actorId, reasonCode }: ReviewVersionReasonInput): MarketMutation {
+export function reviewRequestChangesVersion({ entryId, versionId, actorId, reasonCode, reviewDetail }: ReviewVersionReasonInput): MarketMutation {
   const time = isoNow();
   const objects: MarketMutation['objects'] = [{
     kind: 'Version', operation: 'request_changes', id: versionId,
@@ -163,6 +168,7 @@ export function reviewRequestChangesVersion({ entryId, versionId, actorId, reaso
       value: { versionId, reasonCode, createdAt: time },
     });
   }
+  appendReviewDetail(objects, versionId, reviewDetail, actorId, time);
   return {
     type: 'mutation',
     id: `mut-review-changes-version-${versionId}-${Date.now()}`,
@@ -176,6 +182,14 @@ export function reviewRequestChangesVersion({ entryId, versionId, actorId, reaso
       { projection: 'entry.versions', scope: { entryId } },
     ],
   };
+}
+
+function appendReviewDetail(objects: MarketMutation['objects'], versionId: string, reviewDetail: string | undefined, actorId: string, time: string): void {
+  if (!reviewDetail) return;
+  objects.push({
+    kind: 'ReviewDetail', operation: 'create', id: `review-detail-version-${versionId}`,
+    value: { versionId, detail: reviewDetail, reviewerId: actorId, createdAt: time, updatedAt: time },
+  });
 }
 
 export function curationUpdate({ entryId, actorId, listKey, position, operation }: CurationInput): MarketMutation {

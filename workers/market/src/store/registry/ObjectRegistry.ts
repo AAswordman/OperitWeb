@@ -13,6 +13,7 @@ const OBJECTS: Record<string, { operations: Set<string>; createFields?: Set<stri
   ReactionStat: { operations: new Set(['aggregate']), aggregateFields: fields('id entryId reaction ghCount cfCount totalCount updatedAt') },
   Curation: { operations: new Set(['create', 'update', 'hide']), createFields: fields('id entryId listKey position note startsAt endsAt createdAt updatedAt'), updateFields: fields('position note startsAt endsAt updatedAt') },
   ReviewReason: { operations: new Set(['create', 'hide']), createFields: fields('id entryId versionId reasonCode createdAt'), updateFields: fields('updatedAt') },
+  ReviewDetail: { operations: new Set(['create']), createFields: fields('id versionId detail reviewerId createdAt updatedAt') },
 };
 
 export function createObjectRegistry(): ObjectRegistry {
@@ -25,6 +26,7 @@ export function createObjectRegistry(): ObjectRegistry {
       if (operation === 'aggregate') assertFields(`${kind}.aggregate`, value, config.aggregateFields || new Set<string>());
       if (operation === 'update' || operation === 'hide') assertFields(`${kind}.update`, patch, config.updateFields || new Set<string>());
       if (kind === 'Comment') validateComment(operation, value as Record<string, unknown>, patch as Record<string, unknown>);
+      if (kind === 'ReviewDetail') validateReviewDetail(operation, value as Record<string, unknown>);
     },
     async apply(change: MarketObjectChange, backend: D1Backend): Promise<unknown> {
       switch (change.kind) {
@@ -37,6 +39,7 @@ export function createObjectRegistry(): ObjectRegistry {
         case 'Asset': return backend.createAsset({ id: change.id, ...(change.value || {}) });
         case 'ArtifactProject': return backend.createArtifactProject({ id: change.id, ...(change.value || {}) });
         case 'ReviewReason': return backend.createReviewReason({ id: change.id, ...(change.value || {}) });
+        case 'ReviewDetail': return backend.upsertReviewDetail({ id: change.id, ...(change.value || {}) });
         case 'Curation': return change.operation === 'hide' ? backend.hideCuration(change.id, change.patch || {}) : backend.createCuration({ id: change.id, ...(change.value || {}) });
         case 'ReactionStat': return backend.aggregateReaction({ id: change.id, ...(change.value || {}) });
         default: throw new MarketError('not_implemented', `Object kind is not implemented: ${change.kind}`, 501);
@@ -77,6 +80,13 @@ function validateComment(operation: string, value: Record<string, unknown>, patc
     if (String(value.body).length > 5000) throw new MarketError('validation_failed', 'Comment body exceeds 5000 character limit');
   }
   if ((operation === 'update' || operation === 'hide') && patch.body !== undefined && String(patch.body).length > 5000) throw new MarketError('validation_failed', 'Comment body exceeds 5000 character limit');
+}
+function validateReviewDetail(operation: string, value: Record<string, unknown>): void {
+  if (operation !== 'create') return;
+  requireText(value.versionId, 'ReviewDetail.versionId');
+  requireText(value.reviewerId, 'ReviewDetail.reviewerId');
+  const detail = requireText(value.detail, 'ReviewDetail.detail');
+  if (detail.length > 4000) throw new MarketError('validation_failed', 'Review detail exceeds 4000 character limit');
 }
 function assertFields(label: string, payload: object, allowed: Set<string>): void { for (const field of Object.keys(payload)) if (!allowed.has(field)) throw new MarketError('validation_failed', `Field is not allowed: ${label}.${field}`); }
 function requireText(value: unknown, field: string): string { const text = String(value || '').trim(); if (!text) throw new MarketError('validation_failed', `${field} is required`); return text; }

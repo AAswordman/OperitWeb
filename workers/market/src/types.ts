@@ -113,7 +113,7 @@ export interface MarketActor { authorId: string; role: ActorRole | string }
 export type MarketObjectKind =
   | 'Author' | 'Entry' | 'Version' | 'RepoSource' | 'RepoVersion'
   | 'ArtifactProject' | 'Asset' | 'Comment'
-  | 'ReactionStat' | 'Curation' | 'ReviewReason';
+  | 'ReactionStat' | 'Curation' | 'ReviewReason' | 'ReviewDetail';
 
 export type MarketObjectOperation = 'create' | 'update' | 'hide' | 'withdraw' | 'approve' | 'reject' | 'request_changes' | 'aggregate';
 
@@ -179,6 +179,7 @@ export interface D1Backend {
   updateRepoSource(id: string, patch: Record<string, unknown>): Promise<unknown>;
   getRepoVersion(versionId: string): Promise<Row | null>;
   createReviewReason(value: Record<string, unknown>): Promise<unknown>;
+  upsertReviewDetail(value: Record<string, unknown>): Promise<unknown>;
   createCuration(value: Record<string, unknown>): Promise<unknown>;
   hideCuration(id: string, patch: Record<string, unknown>): Promise<unknown>;
   aggregateReaction(value: Record<string, unknown>): Promise<unknown>;
@@ -196,6 +197,8 @@ export interface D1Backend {
   getFormatVersions(): Promise<Row[]>;
   getStateCodes(): Promise<Row[]>;
   listVersionReasons(versionId: string): Promise<Row[]>;
+  getVersionReviewDetail(versionId: string): Promise<Row | null>;
+  listVersionReviewDetails(versionIds: string[]): Promise<Row[]>;
   listAuthorEntryVersions(authorId: string, entryId: string): Promise<Row[]>;
   listPublisherEntries(publisherId: string): Promise<Row[]>;
   listVersionPublisherEntries(publisherId: string): Promise<Row[]>;
@@ -240,6 +243,7 @@ export interface BuildSnapshot {
   formatVersions: Row[];
   stateCodes: Row[];
   versionReasons: Row[];
+  versionReviewDetails: Row[];
   curations: Row[];
   authors: Row[];
 }

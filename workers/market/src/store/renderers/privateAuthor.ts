@@ -14,6 +14,8 @@ type PublisherEntrySummary = {
   categoryId: string;
   updatedAt: string;
   reasonCodes?: string[];
+  reviewDetail?: string;
+  reviewDetailUpdatedAt?: string;
 };
 
 export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, projectionRegistry }: RendererContext): Promise<{ written: string[] }> {
@@ -64,7 +66,8 @@ async function buildAuthorEntrySummary(d1: RendererContext['d1'], authorId: stri
   const reasonCodes = latestVersion
     ? (await d1.listVersionReasons(rowText(latestVersion, 'id'))).map((reason) => rowText(reason, 'reason_code')).filter(Boolean)
     : [];
-  return toPublisherEntrySummary(entry, relation, latestVersion, reasonCodes);
+  const reviewDetail = latestVersion ? await d1.getVersionReviewDetail(rowText(latestVersion, 'id')) : null;
+  return toPublisherEntrySummary(entry, relation, latestVersion, reasonCodes, reviewDetail);
 }
 
 function readAuthorEntries(value: unknown): PublisherEntrySummary[] {
@@ -103,7 +106,7 @@ function mergeAuthorEntries(authorId: string, owned: Row[], contributed: Row[]):
   return Array.from(byId.values()).sort((a, b) => rowText(b.entry, "updated_at").localeCompare(rowText(a.entry, "updated_at")));
 }
 
-function toPublisherEntrySummary(entry: Row, relation: PublisherRelation, latestVersion: Row | undefined, reasonCodes: string[]): PublisherEntrySummary {
+function toPublisherEntrySummary(entry: Row, relation: PublisherRelation, latestVersion: Row | undefined, reasonCodes: string[], reviewDetail: Row | null): PublisherEntrySummary {
   const entryStateCode = rowText(entry, "state_code");
   const stateCode = entryStateCode === "withdrawn"
     ? entryStateCode
@@ -121,5 +124,9 @@ function toPublisherEntrySummary(entry: Row, relation: PublisherRelation, latest
     updatedAt,
   };
   if (reasonCodes.length > 0) summary.reasonCodes = reasonCodes;
+  if (reviewDetail && rowText(reviewDetail, 'detail')) {
+    summary.reviewDetail = rowText(reviewDetail, 'detail');
+    summary.reviewDetailUpdatedAt = rowText(reviewDetail, 'updated_at');
+  }
   return summary;
 }

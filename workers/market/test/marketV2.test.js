@@ -576,7 +576,12 @@ test('requesting changes for new version keeps approved entry public', async () 
   const v2 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.1.0');
 
   await entryRoutes.reviewRequestChanges(
-    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/changes`, 'POST', { entryId: pub.entryId, versionId: v2.versionId, reasonCode: 'metadata-incomplete' }),
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/changes`, 'POST', {
+      entryId: pub.entryId,
+      versionId: v2.versionId,
+      reasonCode: 'metadata-incomplete',
+      reviewDetail: '请补齐包内 manifest 的版本说明后重新提交。',
+    }),
     env,
   );
 
@@ -584,11 +589,22 @@ test('requesting changes for new version keeps approved entry public', async () 
   const oldVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
   const newVersion = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [v2.versionId])[0];
   const versionReasons = rows(db, 'SELECT * FROM market_version_reasons WHERE version_id = ?', [v2.versionId]);
+  const reviewDetails = rows(db, 'SELECT * FROM market_version_review_details WHERE version_id = ?', [v2.versionId]);
 
   assert.equal(entry.state_code, 'approved');
   assert.equal(oldVersion.state_code, 'approved');
   assert.equal(newVersion.state_code, 'changes_requested');
   assert.equal(versionReasons.length, 1);
+  assert.equal(reviewDetails[0].detail, '请补齐包内 manifest 的版本说明后重新提交。');
+
+  const detail = await entryRoutes.reviewEntryDetail(
+    makeAdminRequest(`http://api/market/v2/admin/review/entries/${pub.entryId}`, 'GET'),
+    env,
+  );
+  assert.equal(detail.versions.find((version) => version.id === v2.versionId).reviewDetail, '请补齐包内 manifest 的版本说明后重新提交。');
+
+  const mine = await entryRoutes.myEntries(makeRequest('http://api/market/v2/my/entries', 'GET', undefined, pubSession), env);
+  assert.equal(mine.entries.entries[0].reviewDetail, '请补齐包内 manifest 的版本说明后重新提交。');
 
   afterTest(ctx);
 });

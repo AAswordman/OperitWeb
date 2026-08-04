@@ -332,7 +332,7 @@ GET /market/v2/private/publishers/{shard}.json
   "authors": {
     "gh_1001": {
       "entries": [
-        { "id": "...", "title": "...", "type": "mcp", "relation": "owner", "stateCode": "changes_requested", "categoryId": "...", "updatedAt": "...", "reasonCodes": ["metadata-incomplete"] }
+        { "id": "...", "title": "...", "type": "mcp", "relation": "owner", "stateCode": "changes_requested", "categoryId": "...", "updatedAt": "...", "reasonCodes": ["metadata-incomplete"], "reviewDetail": "请补齐缺失字段后重新提交。", "reviewDetailUpdatedAt": "2026-08-04T12:00:00.000Z" }
       ]
     }
   }
@@ -342,6 +342,8 @@ GET /market/v2/private/publishers/{shard}.json
 `/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
 
 `reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
+
+`reviewDetail` 是审核人写入该作者最新 version 的具体说明，最长 4000 字符，仅出现在私有 publisher shard 和管理员审核详情；`reviewDetailUpdatedAt` 是其最后更新时刻。客户端应将说明与原因码一起展示给投稿者，且按 Markdown 渲染前做好常规内容安全处理。
 
 ### 通知
 
@@ -400,11 +402,12 @@ Authorization: Bearer <admin_token>
 {
   "entryId": "...",
   "versionId": "...",
-  "reasonCode": "quality-too-low"
+  "reasonCode": "quality-too-low",
+  "reviewDetail": "说明实际发现的问题、受影响内容和作者需采取的修正措施。"
 }
 ```
 
-`entryId` 与路径中的 `{entryId}` 必须一致；`versionId` 必填，且必须属于当前 entry。`reject` / `changes` 必须携带 `reasonCode`，取值来自 `market_reason_codes.code`。
+`entryId` 与路径中的 `{entryId}` 必须一致；`versionId` 必填，且必须属于当前 entry。`reject` / `changes` 必须携带 `reasonCode`，取值来自 `market_reason_codes.code`。`reviewDetail` 为可选字符串，去除首尾空白后最长 4000 字符；审核台在 `reject` / `changes` 时要求填写。它会存储为版本级私有审核说明，并在 `GET /market/v2/admin/review/entries/{entryId}` 的对应 `versions[]` 元素中返回为 `reviewDetail` 和 `reviewDetailUpdatedAt`。
 
 审核动作以 version 为明确目标：
 

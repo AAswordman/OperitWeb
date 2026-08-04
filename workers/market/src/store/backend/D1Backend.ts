@@ -161,6 +161,15 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       if (!value.versionId) throw new MarketError('validation_failed', 'Review reason requires versionId');
       return run(db, 'INSERT OR IGNORE INTO market_version_reasons (version_id, reason_code, created_at) VALUES (?, ?, ?)', [value.versionId, value.reasonCode, value.createdAt]);
     },
+    async upsertReviewDetail(value) {
+      stats.writes++;
+      if (!value.versionId) throw new MarketError('validation_failed', 'Review detail requires versionId');
+      return run(db, `INSERT INTO market_version_review_details (version_id, detail, reviewer_id, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?)
+        ON CONFLICT(version_id) DO UPDATE SET detail = excluded.detail, reviewer_id = excluded.reviewer_id, updated_at = excluded.updated_at`, [
+        value.versionId, value.detail, value.reviewerId, value.createdAt, value.updatedAt,
+      ]);
+    },
     async createCuration(value) {
       stats.writes++;
       return run(db, 'INSERT OR REPLACE INTO market_curations (id, list_key, entry_id, position, note, starts_at, ends_at, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)', [
@@ -296,6 +305,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     async listVersionReasons(versionId) {
       const sql = 'SELECT reason_code FROM market_version_reasons WHERE version_id = ? ORDER BY reason_code';
       return readRows(sql, await all(db, sql, [versionId]));
+    },
+    async getVersionReviewDetail(versionId) {
+      const sql = 'SELECT version_id, detail, reviewer_id, created_at, updated_at FROM market_version_review_details WHERE version_id = ?';
+      return readRow(sql, await first(db, sql, [versionId]));
+    },
+    async listVersionReviewDetails(versionIds) {
+      return readRowsByIds('SELECT version_id, detail, reviewer_id, created_at, updated_at FROM market_version_review_details WHERE version_id IN', versionIds);
     },
     async listAuthorEntryVersions(authorId, entryId) {
       const sql = 'SELECT * FROM market_versions WHERE publisher_id = ? AND entry_id = ? ORDER BY updated_at DESC, created_at DESC';
@@ -499,6 +515,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         formatVersions: [],
         stateCodes: [],
         versionReasons: [],
+        versionReviewDetails: [],
         curations,
         authors,
       };
@@ -535,7 +552,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async loadBuildSnapshot() {
       const [entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats,
-        categories, types, formatVersions, stateCodes, versionReasons, curations, authors] = await Promise.all([
+        categories, types, formatVersions, stateCodes, versionReasons, versionReviewDetails, curations, authors] = await Promise.all([
         all(db, 'SELECT * FROM market_entries', []),
         all(db, 'SELECT * FROM market_versions', []),
         all(db, 'SELECT * FROM repo_plugin_specs', []),
@@ -549,12 +566,13 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
         all(db, 'SELECT * FROM market_format_versions ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_state_codes ORDER BY sort_order', []),
         all(db, 'SELECT * FROM market_version_reasons', []),
+        all(db, 'SELECT * FROM market_version_review_details', []),
         all(db, 'SELECT * FROM market_curations', []),
         all(db, 'SELECT id, github_id, github_login, owner_avatar FROM market_authors', []),
       ]);
-      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + versionReasons.length + curations.length + authors.length;
+      const totalReads = entries.length + versions.length + repos.length + repoVersions.length + artifactProjects.length + assets.length + reactions.length + entryStats.length + categories.length + types.length + formatVersions.length + stateCodes.length + versionReasons.length + versionReviewDetails.length + curations.length + authors.length;
       stats.reads += totalReads;
-      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, versionReasons, curations, authors };
+      return { entries, versions, repos, repoVersions, artifactProjects, assets, reactions, entryStats, categories, types, formatVersions, stateCodes, versionReasons, versionReviewDetails, curations, authors };
     },
   };
 }
