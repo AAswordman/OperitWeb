@@ -273,13 +273,21 @@ Artifact 类（`script` / `package`）请求体：
 }
 ```
 
-### 撤回 / 重新提交
+### 撤回
 
 ```http
 DELETE https://api.operit.app/market/v2/entries/{entryId}
-POST https://api.operit.app/market/v2/entries/{entryId}/resubmit
 Authorization: Bearer <market_session>
 ```
+
+打回后的条目不能直接重新提交。作者必须修改后通过“提交新版本”接口重新进入审核队列：
+
+```http
+POST https://api.operit.app/market/v2/entries/{entryId}/versions
+Authorization: Bearer <market_session>
+```
+
+`version.version` 必须高于该条目的现有版本；包体、最低客户端版本、变更说明和可修改的条目元信息都应随新版本提交。
 
 ### 评论
 
@@ -339,11 +347,22 @@ GET /market/v2/private/publishers/{shard}.json
 }
 ```
 
-`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑、撤回、重新提交；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
+`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑元信息和撤回；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
 
-`reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在重新提交确认弹窗和私有管理页展示打回/拒绝原因。
+`reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在私有管理页和修订版提交入口展示打回/拒绝原因。
+
+`revisionAvailableAt` 仅在该作者最新 version 为 `changes_requested` 时返回，表示打回后允许提交修改版新版本的时间。当前冷却期为 12 小时，由服务端强制执行；冷却期间提交 `POST /entries/{entryId}/versions` 会得到 HTTP `429`、错误码 `revision_cooldown`，并在 `error.retryAt` / `error.retryAfterSeconds` 返回重试时间。该限制只针对被打回的投稿，不影响已通过版本的普通版本发布。
 
 `reviewDetail` 是审核人写入该作者最新 version 的具体说明，最长 4000 字符，仅出现在私有 publisher shard 和管理员审核详情；`reviewDetailUpdatedAt` 是其最后更新时刻。客户端应将说明与原因码一起展示给投稿者，且按 Markdown 渲染前做好常规内容安全处理。
+
+### 作者条目详情
+
+```http
+GET https://api.operit.app/market/v2/my/entries/{entryId}/detail
+Authorization: Bearer <market_session>
+```
+
+仅当当前用户是条目发布者或在该条目下提交过版本时可读。响应的 `item` 包含该用户最近提交版本、版本审核状态、仓库配置、包项目和对应资源，用于预填“修改后提交新版本”表单；不会进入公开静态条目分片。
 
 ### 通知
 

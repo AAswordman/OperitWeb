@@ -12,10 +12,11 @@ export interface EntryItem {
   publisher?: { id: string; login: string; avatar: string };
   contributors?: { id: string; login: string; avatar: string }[];
   source?: { kind: string; url: string };
+  repoVersion?: { refType: string; refName: string; installConfig?: string };
   artifact?: { projectId: string; runtimePkg?: string };
   assets?: { id: string; versionId: string; kind: string; url: string; ghOwner?: string; ghRepo?: string; ghReleaseTag?: string; sha256: string; assetName?: string }[];
-  versions?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; publishedAt?: string }[];
-  latestVersion?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; publishedAt?: string };
+  versions?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string }[];
+  latestVersion?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string };
   reactions?: { reaction: string; total: number }[];
   downloads?: number;
   downloadCount?: number;

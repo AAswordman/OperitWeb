@@ -10,6 +10,7 @@ import {
   normalizeGithubRepoUrl,
   normalizeRefType,
   nowSeconds,
+  REVISION_SUBMISSION_COOLDOWN_MS,
   requireSha256,
   requireString,
   signToken,
@@ -19,6 +20,7 @@ import { publishArtifactMutation, publishRepoMutation } from './translators/publ
 import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
 import { withdrawAndBlockAuthor } from './translators/moderation.js';
 import { notifyReview } from './translators/notify.js';
+import { buildEntryItem } from './store/renderers/entryBundle.js';
 import type { GitHubReleaseInfo, GitHubRepoInfo, JsonObject, MarketEnv, MarketMutation, MarketStore, Row } from './types.js';
 
 interface EntryRoutes {
@@ -31,6 +33,7 @@ interface EntryRoutes {
   deleteEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
   deleteVersion(request: Request, env: MarketEnv): Promise<JsonObject>;
   myEntries(request: Request, env: MarketEnv): Promise<JsonObject>;
+  myEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewApprove(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewReject(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -136,7 +139,7 @@ const AUTHOR_BLOCK_REASON_CODES = new Set([
 ]);
 
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -235,6 +238,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
     if (!entry) throw new MarketError('state_invalid', 'Artifact project entry not found');
     const originalPublisherId = text(entry.publisher_id);
     assertCanSubmitVersionForEntry(entry, publisher.id);
+    await assertRevisionSubmissionCooldown(store, publisher.id, entryId);
     if (originalPublisherId !== publisher.id) throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata', 403);
     const now = new Date().toISOString();
     const versionId = `${entryId}-v-${slug(versionInput.version)}`;
@@ -320,9 +324,13 @@ async function handleUpdateEntry(request: Request, env: MarketEnv): Promise<Json
   const updated = await store.d1.getEntry(entryId);
   return { ok: true, item: updated ? entryDetail(updated) : { id: entryId }, stats: applied.stats as unknown as JsonObject };
 }
-async function handleResubmitEntry(request: Request, env: MarketEnv): Promise<JsonObject> { return applyEntryState(env, request, extractIdFromPath(request.url, '/entries/', '/resubmit'), 'pending', 'entry.resubmitted'); }
+async function handleResubmitEntry(_request: Request, _env: MarketEnv): Promise<JsonObject> {
+  throw new MarketError('validation_failed', 'Direct resubmission is disabled; submit a modified new version instead', 409);
+}
 async function handleDeleteEntry(request: Request, env: MarketEnv): Promise<JsonObject> { return applyEntryState(env, request, extractIdFromPath(request.url, '/entries/', ''), 'withdrawn', 'entry.withdrawn'); }
-async function handleResubmitVersion(request: Request, env: MarketEnv): Promise<JsonObject> { return applyVersionState(env, request, extractIdFromPath(request.url, '/versions/', '/resubmit'), 'pending', 'version.resubmitted'); }
+async function handleResubmitVersion(_request: Request, _env: MarketEnv): Promise<JsonObject> {
+  throw new MarketError('validation_failed', 'Direct resubmission is disabled; submit a modified new version instead', 409);
+}
 async function handleDeleteVersion(request: Request, env: MarketEnv): Promise<JsonObject> { return applyVersionState(env, request, extractIdFromPath(request.url, '/versions/', ''), 'withdrawn', 'version.withdrawn'); }
 
 async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -335,6 +343,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const originalPublisherId = text(entry.publisher_id);
   assertCanSubmitVersionForEntry(entry, publisher.id);
+  await assertRevisionSubmissionCooldown(store, publisher.id, entryId);
   const body = await readBody(request);
   const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
   const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
@@ -459,6 +468,68 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_approved', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
+}
+
+async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const session = await requireSession(request, env);
+  const store = requireStore(env);
+  const publisher = await upsertAuthorFromSession(requireDb(env), session);
+  const entryId = extractIdFromPath(request.url, '/my/entries/', '/detail');
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const ownVersions = await store.d1.listAuthorEntryVersions(publisher.id, entryId);
+  if (text(entry.publisher_id) !== publisher.id && ownVersions.length === 0) {
+    throw new MarketError('unauthorized', 'You do not have a submission for this entry', 403);
+  }
+
+  const item = await buildEntryItem(store.d1, entry);
+  const versions = await Promise.all(
+    ownVersions
+      .sort((a, b) => (text(b.updated_at) || text(b.created_at)).localeCompare(text(a.updated_at) || text(a.created_at)))
+      .map(async (version) => {
+        const versionPublisherId = text(version.publisher_id);
+        const versionPublisher = versionPublisherId ? await store.d1.getAuthor(versionPublisherId) : null;
+        const repoVersion = isRepoType(text(entry.type)) ? await store.d1.getRepoVersion(text(version.id)) : null;
+        return {
+          id: text(version.id),
+          version: text(version.version),
+          formatVer: text(version.format_ver),
+          publisherId: versionPublisherId,
+          ...(versionPublisher ? { publisher: { id: versionPublisherId, login: text(versionPublisher.github_login), avatar: text(versionPublisher.owner_avatar) } } : {}),
+          minAppVer: text(version.min_app_ver),
+          maxAppVer: text(version.max_app_ver),
+          changelog: text(version.changelog),
+          stateCode: text(version.state_code),
+          runtimePackageId: text(version.runtime_pkg),
+          ...(repoVersion ? { installConfig: text(repoVersion.install_config), refType: text(repoVersion.ref_type), refName: text(repoVersion.ref_name) } : {}),
+          createdAt: text(version.created_at),
+          updatedAt: text(version.updated_at),
+          publishedAt: text(version.published_at),
+        };
+      }),
+  );
+  item.versions = versions;
+  item.latestVersion = versions[0];
+  if (isArtifactType(text(entry.type))) {
+    const ownVersionIds = new Set(ownVersions.map((version) => text(version.id)));
+    item.assets = (await store.d1.listAssets(entryId)).filter((asset) => ownVersionIds.has(text(asset.version_id))).map((asset) => ({
+      id: text(asset.id),
+      versionId: text(asset.version_id),
+      kind: text(asset.kind),
+      url: text(asset.url),
+      ...(optionalString(asset.gh_owner) ? { ghOwner: text(asset.gh_owner) } : {}),
+      ...(optionalString(asset.gh_repo) ? { ghRepo: text(asset.gh_repo) } : {}),
+      ...(optionalString(asset.gh_release_tag) ? { ghReleaseTag: text(asset.gh_release_tag) } : {}),
+      sha256: text(asset.sha256),
+      ...(optionalString(asset.asset_name) ? { assetName: text(asset.asset_name) } : {}),
+    }));
+  }
+  const latestVersion = versions[0];
+  const latestRefName = latestVersion?.refName;
+  if (isRepoType(text(entry.type)) && latestVersion?.refType && latestRefName) {
+    item.repoVersion = { refType: latestVersion.refType, refName: latestRefName, ...(latestVersion.installConfig ? { installConfig: latestVersion.installConfig } : {}) };
+  }
+  return { ok: true, item: item as unknown as JsonObject };
 }
 
 async function handleModerateEntry(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -618,6 +689,23 @@ function assertCanSubmitVersionForEntry(entry: Row, publisherId: string): void {
   if (originalPublisherId !== publisherId && !bool(entry.allow_public_updates, true)) {
     throw new MarketError('unauthorized', 'This entry does not allow public version updates', 403);
   }
+}
+
+async function assertRevisionSubmissionCooldown(store: MarketStore, publisherId: string, entryId: string): Promise<void> {
+  const latestVersion = (await store.d1.listAuthorEntryVersions(publisherId, entryId))[0];
+  if (!latestVersion || text(latestVersion.state_code) !== 'changes_requested') return;
+  const reviewedAt = Date.parse(text(latestVersion.updated_at) || text(latestVersion.created_at));
+  if (!Number.isFinite(reviewedAt)) return;
+  const availableAt = reviewedAt + REVISION_SUBMISSION_COOLDOWN_MS;
+  const remainingMs = availableAt - Date.now();
+  if (remainingMs <= 0) return;
+  const retryAt = new Date(availableAt).toISOString();
+  throw new MarketError(
+    'revision_cooldown',
+    `This entry was returned for changes. Submit a new version after ${retryAt}.`,
+    429,
+    { retryAt, retryAfterSeconds: Math.ceil(remainingMs / 1000) },
+  );
 }
 
 function assertCanApproveVersionForEntry(entry: Row, version: Row): void {

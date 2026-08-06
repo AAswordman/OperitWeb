@@ -609,6 +609,50 @@ test('requesting changes for new version keeps approved entry public', async () 
   afterTest(ctx);
 });
 
+test('changes-requested revision is blocked for twelve hours before new-version submission', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'revision-cooldown');
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }),
+    env,
+  );
+  const v2 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.1.0');
+  await entryRoutes.reviewRequestChanges(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/changes`, 'POST', {
+      entryId: pub.entryId,
+      versionId: v2.versionId,
+      reasonCode: 'metadata-incomplete',
+      reviewDetail: 'Please update the repository version.',
+    }),
+    env,
+  );
+
+  const mine = await entryRoutes.myEntries(makeRequest('http://api/market/v2/my/entries', 'GET', undefined, pubSession), env);
+  assert.match(mine.entries.entries[0].revisionAvailableAt, /^\d{4}-\d{2}-\d{2}T/);
+  await assert.rejects(
+    () => submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.2.0'),
+    (error) => {
+      assert.equal(error.code, 'revision_cooldown');
+      assert.equal(error.status, 429);
+      assert.match(error.details.retryAt, /^\d{4}-\d{2}-\d{2}T/);
+      assert.ok(error.details.retryAfterSeconds > 0);
+      return true;
+    },
+  );
+
+  const oldReviewTime = new Date(Date.now() - (13 * 60 * 60 * 1000)).toISOString();
+  await db.prepare('UPDATE market_versions SET updated_at = ? WHERE id = ?').bind(oldReviewTime, v2.versionId).run();
+  const v3 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.2.0');
+  assert.equal(v3.entryId, pub.entryId);
+  assert.equal(rows(db, 'SELECT state_code FROM market_versions WHERE id = ?', [v3.versionId])[0].state_code, 'pending');
+  afterTest(ctx);
+});
+
 test('contributor cannot patch repo entry metadata when public updates are enabled', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
@@ -951,7 +995,7 @@ test('contributor cannot publish artifact version for withdrawn entry project', 
   afterTest(ctx);
 });
 
-test('resubmit entry changes state back to pending', async () => {
+test('direct resubmit is rejected so unchanged content cannot re-enter review', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -962,12 +1006,46 @@ test('resubmit entry changes state back to pending', async () => {
   await entryRoutes.reviewReject(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/reject`, 'POST', { entryId: pub.entryId, versionId: pub.versionId, reasonCode: 'quality-too-low' }), env);
 
   const req = makeRequest(`http://api/market/v2/entries/${pub.entryId}/resubmit`, 'POST', {}, pubSession);
-  const result = await entryRoutes.resubmitEntry(req, env);
-  assert.ok(result.ok);
+  await assert.rejects(() => entryRoutes.resubmitEntry(req, env), /Direct resubmission is disabled/);
   const entry = rows(db, 'SELECT * FROM market_entries WHERE id = ?', [pub.entryId])[0];
   const version = rows(db, 'SELECT * FROM market_versions WHERE id = ?', [pub.versionId])[0];
-  assert.equal(entry.state_code, 'pending');
-  assert.equal(version.state_code, 'pending');
+  assert.equal(entry.state_code, 'rejected');
+  assert.equal(version.state_code, 'rejected');
+  afterTest(ctx);
+});
+
+test('publisher can load private detail for a changes-requested entry', async () => {
+  const ctx = await makeEnv();
+  const { env } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const otherSession = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'private-detail-changes-requested');
+  await entryRoutes.reviewRequestChanges(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/changes`, 'POST', {
+      entryId: pub.entryId,
+      versionId: pub.versionId,
+      reasonCode: 'metadata-incomplete',
+      reviewDetail: 'Update the package and the marketplace description.',
+    }),
+    env,
+  );
+
+  const detail = await entryRoutes.myEntryDetail(
+    makeRequest(`http://api/market/v2/my/entries/${pub.entryId}/detail`, 'GET', undefined, pubSession),
+    env,
+  );
+  assert.equal(detail.item.id, pub.entryId);
+  assert.equal(detail.item.latestVersion.version, '1.0.0');
+  assert.equal(detail.item.latestVersion.stateCode, 'changes_requested');
+  assert.equal(detail.item.source.url, 'https://github.com/pub1/private-detail-changes-requested');
+
+  await assert.rejects(
+    () => entryRoutes.myEntryDetail(makeRequest(`http://api/market/v2/my/entries/${pub.entryId}/detail`, 'GET', undefined, otherSession), env),
+    /You do not have a submission for this entry/,
+  );
   afterTest(ctx);
 });
 
@@ -1164,7 +1242,7 @@ test('full build private shard keeps withdrawn entry state over latest approved 
   afterTest(ctx);
 });
 
-test('my entries reflect publish review and resubmit without waiting for full build', async () => {
+test('my entries retain rejected state when direct resubmission is blocked', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -1183,9 +1261,12 @@ test('my entries reflect publish review and resubmit without waiting for full bu
   myEntries = await entryRoutes.myEntries(myReq(), env);
   assert.equal(myEntries.entries.entries[0].stateCode, 'rejected');
 
-  await entryRoutes.resubmitEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}/resubmit`, 'POST', {}, pubSession), env);
+  await assert.rejects(
+    () => entryRoutes.resubmitEntry(makeRequest(`http://api/market/v2/entries/${pub.entryId}/resubmit`, 'POST', {}, pubSession), env),
+    /Direct resubmission is disabled/,
+  );
   myEntries = await entryRoutes.myEntries(myReq(), env);
-  assert.equal(myEntries.entries.entries[0].stateCode, 'pending');
+  assert.equal(myEntries.entries.entries[0].stateCode, 'rejected');
 
   afterTest(ctx);
 });

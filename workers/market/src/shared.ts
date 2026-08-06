@@ -4,6 +4,8 @@ export const SESSION_PREFIX = 'om1';
 export const PROOF_PREFIX = 'op-proof-v1';
 export const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const DEFAULT_PROOF_TTL_SECONDS = 10 * 60;
+/** Minimum time between a changes-requested review and the author's revision submission. */
+export const REVISION_SUBMISSION_COOLDOWN_MS = 12 * 60 * 60 * 1000;
 export const ALLOWED_DOWNLOAD_HOSTS = new Set(['github.com', 'objects.githubusercontent.com', 'release-assets.githubusercontent.com', 'raw.githubusercontent.com']);
 export const ARTIFACT_TYPES = new Set(['script', 'package']);
 export const REPO_TYPES = new Set(['skill', 'mcp']);
@@ -11,16 +13,18 @@ export const REPO_TYPES = new Set(['skill', 'mcp']);
 export class MarketError extends Error {
   code: string;
   status: number;
-  constructor(code: string, message?: string, status = 400) {
+  details?: JsonObject;
+  constructor(code: string, message?: string, status = 400, details?: JsonObject) {
     super(message || code);
     this.name = 'MarketError';
     this.code = code;
     this.status = status;
+    this.details = details;
   }
 }
 
 export function ok(data: JsonObject, status = 200): Response { return jsonResponse({ ok: true, ...data }, status); }
-export function fail(code: string, message: string, status = 400): Response { return jsonResponse({ ok: false, error: { code, message } }, status); }
+export function fail(code: string, message: string, status = 400, details?: JsonObject): Response { return jsonResponse({ ok: false, error: { code, message, ...(details || {}) } }, status); }
 export function jsonResponse(body: JsonObject, status = 200): Response { return new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json; charset=utf-8' } }); }
 export function errorResponse(code: string, message: string, status = 400): Response { return jsonResponse({ ok: false, error: { code, message } }, status); }
 export function corsHeaders(_request?: Request): Record<string, string> { return { 'access-control-allow-origin': '*', 'access-control-allow-methods': 'GET,POST,PATCH,DELETE,OPTIONS', 'access-control-allow-headers': 'content-type,authorization', vary: 'origin' }; }
@@ -56,6 +60,13 @@ export function isArtifactType(type: string): boolean { return ARTIFACT_TYPES.ha
 export function isRepoType(type: string): boolean { return REPO_TYPES.has(type); }
 export function isoNow(): string { return new Date().toISOString(); }
 export function nowSeconds(): number { return Math.floor(Date.now() / 1000); }
+
+export function revisionSubmissionAvailableAt(version: { state_code?: unknown; updated_at?: unknown; created_at?: unknown }): string | undefined {
+  if (String(version.state_code || '').trim() !== 'changes_requested') return undefined;
+  const reviewedAt = Date.parse(String(version.updated_at || version.created_at || '').trim());
+  if (!Number.isFinite(reviewedAt)) return undefined;
+  return new Date(reviewedAt + REVISION_SUBMISSION_COOLDOWN_MS).toISOString();
+}
 
 export function slug(value: string): string { return String(value).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'item'; }
 export function makeEntryId(type: string, data: { owner?: string; repo?: string; source?: string; version?: string; kind?: string }): string { return `${type}-${slug([data.source, data.owner, data.repo, data.kind, data.version].filter(Boolean).join('-'))}`; }

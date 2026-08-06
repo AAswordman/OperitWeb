@@ -82,7 +82,7 @@ export default {
       return withHeaders(response, cors);
     } catch (error) {
       const err = error instanceof MarketError ? error : new MarketError('server_error', error instanceof Error ? error.message : 'Unknown error', 500);
-      const response = fail(err.code, err.message, err.status);
+      const response = fail(err.code, err.message, err.status, err.details);
       return withHeaders(response, cors);
     }
   },
@@ -182,6 +182,7 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   if (pathname.includes('/entries/') && pathname.endsWith('/curation') && request.method === 'POST') return entries.curationSet(request, storeEnv);
   if (pathname === '/market/v2/admin/review/entries' && request.method === 'GET') return entries.reviewEntries(request, storeEnv);
   if (pathname.startsWith('/market/v2/admin/review/entries/') && request.method === 'GET') return entries.reviewEntryDetail(request, storeEnv);
+  if (pathname.startsWith('/market/v2/my/entries/') && pathname.endsWith('/detail') && request.method === 'GET') return entries.myEntryDetail(request, storeEnv);
   if (pathname === '/market/v2/my/entries' && request.method === 'GET') return entries.myEntries(request, storeEnv);
   if (pathname.includes('/entries/') && request.method === 'PATCH') return entries.updateEntry(request, storeEnv);
   if (pathname.includes('/entries/') && request.method === 'DELETE') return entries.deleteEntry(request, storeEnv);

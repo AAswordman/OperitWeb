@@ -1,4 +1,4 @@
-import { MarketError, isoNow } from './shared.js';
+import { MarketError, isoNow, revisionSubmissionAvailableAt } from './shared.js';
 import { buildEntryFromSnapshot, createBuildSnapshotIndex } from './store/renderers/entryBundle.js';
 import type { BuildSnapshot, MarketEnv, MarketStore, ProjectionPlan, R2WriteStat, Row } from './types.js';
 import { rowBool, rowText, rowOptionalText } from './store/renderers/row.js';
@@ -254,7 +254,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const versionId = rowText(detail, 'version_id');
     if (versionId) versionReviewDetails.set(versionId, detail);
   }
-  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[]; reviewDetail?: string; reviewDetailUpdatedAt?: string }> }>>();
+  const publisherShards = new Map<string, Record<string, { entries: Array<{ id: string; title: string; type: string; relation: 'owner' | 'contributor'; stateCode: string; categoryId: string; updatedAt: string; reasonCodes?: string[]; reviewDetail?: string; reviewDetailUpdatedAt?: string; revisionAvailableAt?: string }> }>>();
   for (let i = 0; i < PUBLISHER_SHARDS; i++) publisherShards.set(i.toString(16).padStart(2, '0'), {});
   const entriesByIdForPublishers = new Map<string, Row>();
   const latestVersionByAuthorEntry = latestVersionsByAuthorEntry(snap.versions);
@@ -276,6 +276,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const summaryUpdatedAt = entryStateCode === 'withdrawn'
       ? rowText(entry, 'updated_at')
       : latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at');
+    const revisionAvailableAt = latestVersion ? revisionSubmissionAvailableAt(latestVersion) : undefined;
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
@@ -286,6 +287,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
       ...(reviewDetail && rowText(reviewDetail, 'detail') ? { reviewDetail: rowText(reviewDetail, 'detail'), reviewDetailUpdatedAt: rowText(reviewDetail, 'updated_at') } : {}),
+      ...(revisionAvailableAt ? { revisionAvailableAt } : {}),
     });
     authors[authorId] = bucket;
   }
@@ -311,6 +313,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
     const summaryUpdatedAt = entryStateCode === 'withdrawn'
       ? rowText(entry, 'updated_at')
       : latestVersion ? rowText(latestVersion, 'updated_at') : rowText(entry, 'updated_at');
+    const revisionAvailableAt = latestVersion ? revisionSubmissionAvailableAt(latestVersion) : undefined;
     bucket.entries.push({
       id: rowText(entry, 'id'),
       title: rowText(entry, 'title'),
@@ -321,6 +324,7 @@ async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: 
       updatedAt: summaryUpdatedAt,
       ...(reasonCodes.length > 0 ? { reasonCodes } : {}),
       ...(reviewDetail && rowText(reviewDetail, 'detail') ? { reviewDetail: rowText(reviewDetail, 'detail'), reviewDetailUpdatedAt: rowText(reviewDetail, 'updated_at') } : {}),
+      ...(revisionAvailableAt ? { revisionAvailableAt } : {}),
     });
     bucket.entries.sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
     authors[authorId] = bucket;

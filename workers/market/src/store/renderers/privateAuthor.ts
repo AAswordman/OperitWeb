@@ -1,4 +1,4 @@
-import { isoNow } from "../.././shared.js";
+import { isoNow, revisionSubmissionAvailableAt } from "../.././shared.js";
 import type { RendererContext, Row } from "../.././types.js";
 import { rowText } from "./row.js";
 import { scopeHash } from "../registry/ProjectionRegistry.js"; function shardOf(authorId: string): string { return scopeHash(authorId).substring(0, 2); }
@@ -16,6 +16,7 @@ type PublisherEntrySummary = {
   reasonCodes?: string[];
   reviewDetail?: string;
   reviewDetailUpdatedAt?: string;
+  revisionAvailableAt?: string;
 };
 
 export async function renderPrivateAuthorEntries({ d1, r2, projectionPlan, projectionRegistry }: RendererContext): Promise<{ written: string[] }> {
@@ -128,5 +129,7 @@ function toPublisherEntrySummary(entry: Row, relation: PublisherRelation, latest
     summary.reviewDetail = rowText(reviewDetail, 'detail');
     summary.reviewDetailUpdatedAt = rowText(reviewDetail, 'updated_at');
   }
+  const revisionAvailableAt = latestVersion ? revisionSubmissionAvailableAt(latestVersion) : undefined;
+  if (revisionAvailableAt) summary.revisionAvailableAt = revisionAvailableAt;
   return summary;
 }

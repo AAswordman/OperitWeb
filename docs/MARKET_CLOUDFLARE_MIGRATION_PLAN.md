@@ -50,7 +50,7 @@ Entry 与 Version 使用 `pending`、`approved`、`changes_requested`、`rejecte
 - 首次审核目标是一个 Version。当 Entry 尚无 approved Version 时，审核结论同时作用于 Entry 和该 Version。
 - 已公开 Entry 的后续 Version 单独审核，Entry 保持 `approved`。
 - 公开投影只输出 `entry.state_code = approved` 的 Entry，并且只输出 `version.state_code = approved` 的 Version 和对应资产。
-- Entry 的最初发布者可以撤回或重新提交 Entry；Version 也可以单独撤回或重新提交。
+- Entry 的最初发布者可以撤回 Entry；打回后必须提交修改后的新 Version，不能直接重新提交原 Entry 或 Version。
 
 审核原因写入 `market_version_reasons`，并通过私有发布者投影反馈给对应发布者。审核流程与人工标准见 [审核规范](MARKET_REVIEW_GUIDELINES.md)。
 
