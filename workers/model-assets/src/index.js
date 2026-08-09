@@ -7,6 +7,8 @@ const PUBLIC_ASSET_CONTENT_TYPES = new Map([
   [`${V86_RUNTIME_PREFIX}operit-runtime-manifest.json`, "application/json; charset=utf-8"],
   [`${V86_RUNTIME_PREFIX}operit-runtime-bzimage.bin`, "application/octet-stream"],
   [`${V86_RUNTIME_PREFIX}operit-runtime-initrd.cpio.gz`, "application/gzip"],
+  [`${V86_RUNTIME_PREFIX}seabios.bin`, "application/octet-stream"],
+  [`${V86_RUNTIME_PREFIX}vgabios.bin`, "application/octet-stream"],
 ]);
 
 const CORS_HEADERS = {
