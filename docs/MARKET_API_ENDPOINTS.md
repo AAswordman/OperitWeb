@@ -49,19 +49,34 @@ Authorization: Bearer <github_access_token>
 - 后续发布、评论、点赞等接口使用市场 session。
 - 新版客户端先通过 `/oauth/github/*` Broker 取得 GitHub access token；该流程将 OAuth secret 和授权码交换保留在 Worker。详情见 [GitHub OAuth Broker](GITHUB_OAUTH_BROKER.md)。
 
-### v2 管理员鉴权
+### v2 审核与管理员鉴权
 
-审核、精选、构建等管理接口使用管理员 token：
+审核接口接受管理员或审核员的登录 token：
 
 ```text
-Authorization: Bearer <admin_token>
+Authorization: Bearer <admin_or_reviewer_token>
 ```
 或：
 ```text
-x-operit-admin-token: <admin_token>
+x-operit-admin-token: <admin_or_reviewer_token>
 ```
 
-对接 `operit-api` 的 `admin_sessions`，角色要求 `admin` 或 `reviewer`。
+登录 token 对接 `operit-api` 的 `admin_sessions`，角色可为 `admin` 或 `reviewer`。审核员还可在审核台的“使用 Agent 审核”中生成可轮换的 Agent 审核密钥。该密钥只能访问审核队列、审核详情和审核动作，不能用于精选、下架、构建或其他管理操作。
+
+```http
+POST https://api.operit.app/market/v2/admin/review/agent-key
+Authorization: Bearer <admin_or_reviewer_token>
+```
+
+响应中的 `key` 只在生成时返回。再次调用会立即使该审核员原有 Agent 密钥失效，并返回新密钥：
+
+```json
+{
+  "ok": true,
+  "key": "omr_...",
+  "createdAt": "2026-08-17T00:00:00.000Z"
+}
+```
 
 ## v2 静态读取接口（全部走 static.operit.app）
 
@@ -183,7 +198,7 @@ PATCH https://api.operit.app/market/v2/entries/{entryId}
 Authorization: Bearer <market_session>
 ```
 
-请求体只允许修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。其中 `allowPublicUpdates` 只有最初发布者可改。该接口不允许修改条目归属或历史版本发布者。
+请求体只允许最初 `publisher` 修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。该接口不允许修改条目归属或历史版本发布者；其他投稿者要更新市场说明，必须随新版本提交待审核的 `description` 或 `detail` patch。
 
 该接口只更新 Entry 元数据，不创建 Version，也不改变现有 Entry 状态。投影会异步刷新；已公开 Entry 的元数据更新会在下一次对应 projection materialize 后反映到公开读取层。
 
@@ -209,7 +224,7 @@ Authorization: Bearer <market_session>
 
 当 entry 的 `allowPublicUpdates=true` 时，任意登录用户都可以为该 entry 提交新版本；关闭时只有最初 `publisher` 可以提交。新版本号必须大于该 entry 已有版本号，否则返回 `version_conflict`。新版本初始状态为 `pending`，审核通过后才会进入公开 entry 的 `versions[]` 和 `latestVersion`。
 
-请求体可选携带 `entry` patch，用于随版本提交 Entry 级元信息。`entry` 只允许包含 `title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`，且只能由最初 `publisher` 提交。该 patch 会保存在待审 Version 上；只有该 Version 审核通过时才会写入公开 Entry。打回、拒绝和待审期间都不会修改已公开 Entry，也不会自动将 Entry 状态改为 `pending`。
+请求体可选携带 `entry` patch，用于随版本提交 Entry 级元信息。最初 `publisher` 可以提交 `title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`；其他投稿者只能提交 `description` 和 `detail`。该 patch 会保存在待审 Version 上；只有该 Version 审核通过时才会写入公开 Entry。打回、拒绝和待审期间都不会修改已公开 Entry，也不会自动将 Entry 状态改为 `pending`。
 
 Repo 类（`skill` / `mcp`）请求体：
 
@@ -347,7 +362,7 @@ GET /market/v2/private/publishers/{shard}.json
 }
 ```
 
-`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑元信息和撤回；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，只能从管理页查看详情或继续提交新版本，不能编辑 entry 元信息或撤回 entry。
+`/my/entries` 只返回当前登录用户对应 `authors[authorId]` 的条目，一行仍代表一个 entry。`id`、`title`、`type`、`categoryId` 来自 entry；`stateCode`、`reasonCodes`、`updatedAt` 来自该作者在该 entry 下最新提交的 version。这样同一 entry 下不同作者的新版本审核状态互不覆盖。发布和审核会在对应的 R2 publisher shard 内增量更新该 entry，不会扫描该作者的历史条目。`relation=owner` 表示该用户是 entry 最初发布者，可编辑元信息和撤回；`relation=contributor` 表示该用户为别人归属的 entry 提交过版本，不能直接编辑 entry 元信息或撤回 entry，但可随新版本提交待审核的 `description` 和 `detail` 更新。
 
 `reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在私有管理页和修订版提交入口展示打回/拒绝原因。
 
@@ -410,7 +425,7 @@ read/unread 由客户端本地维护。
 
 ```http
 POST https://api.operit.app/market/v2/entries/{entryId}/review/{action}
-Authorization: Bearer <admin_token>
+Authorization: Bearer <admin_or_reviewer_token_or_agent_key>
 ```
 
 `action`：`approve` | `reject` | `changes`
@@ -435,6 +450,26 @@ Authorization: Bearer <admin_token>
 - 同一 entry 下存在多个待审 version 时，审核台必须分别提交对应 `versionId`；后端不接受缺少 `versionId` 的审核请求。
 
 公开 R2 列表、entry 分片和资产详情只展示 `entry.state_code = approved` 且至少存在一个 `market_versions.state_code = approved` 的内容；公开 `versions[]`、`latestVersion` 和 `assets[]` 只来自 approved version。
+
+### 审核前元数据修正
+
+```http
+POST https://api.operit.app/market/v2/entries/{entryId}/review/metadata
+Authorization: Bearer <admin_or_reviewer_token_or_agent_key>
+```
+
+该接口仅供管理员或审核员在审核时修正**仍为 `pending` 的目标版本**的确定性元数据。请求体必须包含 `entryId`、`versionId`，并至少提供 `minAppVer` 或 `detailAppend`：
+
+```json
+{
+  "entryId": "...",
+  "versionId": "...",
+  "minAppVer": "1.12.0+9",
+  "detailAppend": "## 1.2.0 更新说明\n\n已核验的实际改动摘要。"
+}
+```
+
+`minAppVer` 只修改目标 version 的最低客户端版本。`detailAppend` 会追加到该待审 version 已暂存的 `entryPatch.detail`；若版本没有暂存详情，则以当前公开 entry 的 `detail` 为基础追加。相同追加内容重复提交不会重复写入。接口不会改变版本状态、不会直接修改公开 Entry，也不会自动批准；修正后仍必须调用普通 `review/approve`。每次调用会以 `review.metadata_corrected` 记录审核 mutation 和执行人。
 
 ### 管理员下架并封禁作者
 

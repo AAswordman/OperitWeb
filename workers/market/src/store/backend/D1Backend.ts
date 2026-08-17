@@ -135,8 +135,8 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     },
     async updateVersion(id, patch) {
       stats.writes++;
-      await run(db, `UPDATE market_versions SET state_code = COALESCE(?, state_code), published_at = COALESCE(?, published_at), updated_at = ? WHERE id = ?`, [
-        patch.stateCode ?? null, patch.publishedAt ?? null, patch.updatedAt, id,
+      await run(db, `UPDATE market_versions SET state_code = COALESCE(?, state_code), min_app_ver = COALESCE(?, min_app_ver), entry_patch = COALESCE(?, entry_patch), published_at = COALESCE(?, published_at), updated_at = ? WHERE id = ?`, [
+        patch.stateCode ?? null, patch.minAppVer ?? null, patch.entryPatch ?? null, patch.publishedAt ?? null, patch.updatedAt, id,
       ]);
     },
     async createRepoSource(value) {

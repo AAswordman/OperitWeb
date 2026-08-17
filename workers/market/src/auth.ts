@@ -89,6 +89,11 @@ export function assertAuthorActive(author: MarketAuthor): void {
 // No fallback — all admin operations go through operit-api's admin_sessions table.
 export interface AdminUser { username: string; role: string }
 
+export interface ReviewAgentKey {
+  key: string;
+  createdAt: string;
+}
+
 export async function requireAdminToken(request: Request, env: MarketEnv): Promise<AdminUser> {
   const authHeader = request.headers.get('authorization') || '';
   const adminHeader = request.headers.get('x-operit-admin-token') || '';
@@ -129,6 +134,69 @@ export async function requireAdminToken(request: Request, env: MarketEnv): Promi
   await run(db, 'UPDATE admin_sessions SET last_seen_at = ? WHERE token_hash = ?', [now, tokenHash]).catch(() => {});
 
   return { username: String(row.username || ''), role };
+}
+
+export async function requireReviewToken(request: Request, env: MarketEnv): Promise<AdminUser> {
+  try {
+    return await requireAdminToken(request, env);
+  } catch (error) {
+    if (!(error instanceof MarketError) || error.status >= 500) throw error;
+  }
+
+  const token = readAdminToken(request);
+  if (!token) throw new MarketError('unauthorized', 'Review token required', 401);
+  const db = env.OPERIT_SUBMISSION_DB;
+  if (!db) throw new MarketError('server_error', 'Admin DB not configured', 500);
+  await ensureReviewAgentKeySchema(db);
+  const tokenHash = await hashReviewAgentKey(token, env);
+  const row = await first(db,
+    'SELECT k.username, u.role, u.disabled_at FROM market_reviewer_agent_keys k ' +
+    'INNER JOIN admin_users u ON u.username = k.username WHERE k.key_hash = ? LIMIT 1',
+    [tokenHash],
+  );
+  if (!row || row.disabled_at) throw new MarketError('unauthorized', 'Invalid review token', 401);
+  const role = String(row.role || '');
+  if (!['admin', 'reviewer'].includes(role)) throw new MarketError('unauthorized', 'Invalid review role', 403);
+  return { username: String(row.username || ''), role };
+}
+
+export async function rotateReviewAgentKey(request: Request, env: MarketEnv): Promise<ReviewAgentKey> {
+  const user = await requireAdminToken(request, env);
+  const db = env.OPERIT_SUBMISSION_DB;
+  if (!db) throw new MarketError('server_error', 'Admin DB not configured', 500);
+  await ensureReviewAgentKeySchema(db);
+  const key = `omr_${crypto.randomUUID().replace(/-/g, '')}${crypto.randomUUID().replace(/-/g, '')}`;
+  const createdAt = isoNow();
+  await run(db,
+    `INSERT INTO market_reviewer_agent_keys (username, key_hash, created_at, rotated_at)
+     VALUES (?, ?, ?, ?)
+     ON CONFLICT(username) DO UPDATE SET key_hash = excluded.key_hash, rotated_at = excluded.rotated_at`,
+    [user.username, await hashReviewAgentKey(key, env), createdAt, createdAt],
+  );
+  return { key, createdAt };
+}
+
+function readAdminToken(request: Request): string {
+  const authHeader = request.headers.get('authorization') || '';
+  const adminHeader = request.headers.get('x-operit-admin-token') || '';
+  return authHeader.toLowerCase().startsWith('bearer ') ? authHeader.slice(7).trim() : adminHeader.trim();
+}
+
+async function ensureReviewAgentKeySchema(db: D1DatabaseLike): Promise<void> {
+  await run(db,
+    `CREATE TABLE IF NOT EXISTS market_reviewer_agent_keys (
+      username TEXT PRIMARY KEY,
+      key_hash TEXT NOT NULL,
+      created_at TEXT NOT NULL,
+      rotated_at TEXT NOT NULL
+    )`,
+    [],
+  );
+}
+
+async function hashReviewAgentKey(key: string, env: MarketEnv): Promise<string> {
+  const salt = String(env.OPERIT_ADMIN_AUTH_SALT || env.OPERIT_IP_SALT || 'operit-admin-default-salt');
+  return sha256Hex(`operit-market-review-agent:${salt}:${key}`);
 }
 
 async function sha256Hex(input: string): Promise<string> {

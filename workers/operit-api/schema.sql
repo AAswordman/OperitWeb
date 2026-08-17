@@ -106,6 +106,13 @@ CREATE INDEX IF NOT EXISTS idx_reviewer_applications_status_created
 CREATE INDEX IF NOT EXISTS idx_reviewer_applications_username
   ON reviewer_applications(username);
 
+CREATE TABLE IF NOT EXISTS market_reviewer_agent_keys (
+  username TEXT PRIMARY KEY,
+  key_hash TEXT NOT NULL,
+  created_at TEXT NOT NULL,
+  rotated_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS market_review_logs (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   market_type TEXT NOT NULL,

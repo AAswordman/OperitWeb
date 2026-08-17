@@ -4,6 +4,7 @@
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { createHash } from 'node:crypto';
 import { existsSync, readFileSync } from 'fs';
 import { join } from 'path';
 import { MarketError, PROOF_PREFIX, SESSION_PREFIX, signToken, verifyToken } from '../dist/shared.js';
@@ -61,6 +62,17 @@ function makeAdminRequest(url, method, body) {
     headers: new Headers({ 'content-type': 'application/json', 'x-operit-admin-token': OWNER_TOKEN }),
     body: body ? JSON.stringify(body) : undefined,
   });
+}
+
+async function createReviewerSession(db) {
+  const token = 'reviewer-session-token';
+  const tokenHash = createHash('sha256').update(`operit-admin:operit-admin-default-salt:${token}`).digest('hex');
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000).toISOString();
+  await db.prepare('CREATE TABLE admin_users (username TEXT PRIMARY KEY, role TEXT NOT NULL, disabled_at TEXT)').run();
+  await db.prepare('CREATE TABLE admin_sessions (token_hash TEXT PRIMARY KEY, username TEXT NOT NULL, role TEXT NOT NULL, expires_at TEXT NOT NULL, last_seen_at TEXT)').run();
+  await db.prepare('INSERT INTO admin_users (username, role, disabled_at) VALUES (?, ?, NULL)').bind('reviewer-one', 'reviewer').run();
+  await db.prepare('INSERT INTO admin_sessions (token_hash, username, role, expires_at, last_seen_at) VALUES (?, ?, ?, ?, ?)').bind(tokenHash, 'reviewer-one', 'reviewer', expiresAt, expiresAt).run();
+  return token;
 }
 
 test('publish proof remains available for old artifact publisher clients', async () => {
@@ -308,6 +320,108 @@ test('v2 build route requires admin token', async () => {
   assert.equal(body.ok, true);
   assert.equal(typeof body.materialized, 'number');
 
+  afterTest(ctx);
+});
+
+test('reviewer agent keys can review, rotate, and cannot access non-review administration', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  env.OPERIT_SUBMISSION_DB = db;
+  const worker = (await import('../dist/index.js')).default;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const reviewerSession = await createReviewerSession(db);
+  const agentKeyUrl = 'http://api/market/v2/admin/review/agent-key';
+
+  const issued = await worker.fetch(makeRequest(agentKeyUrl, 'POST', undefined, reviewerSession), env);
+  assert.equal(issued.status, 200);
+  const firstKey = String((await issued.json()).key || '');
+  assert.match(firstKey, /^omr_/);
+
+  const pub = await publishMcp(entryRoutes, env, createSession(GITHUB_ID_PUBLISHER, 'pub1'), 'reviewer-agent-key');
+  const queue = await worker.fetch(makeRequest('http://api/market/v2/admin/review/entries', 'GET', undefined, firstKey), env);
+  assert.equal(queue.status, 200);
+  const approved = await worker.fetch(makeRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+    entryId: pub.entryId,
+    versionId: pub.versionId,
+  }, firstKey), env);
+  assert.equal(approved.status, 200);
+  assert.equal(rows(db, "SELECT actor_id FROM market_mutation_log WHERE reason = 'review.approved' ORDER BY created_at DESC LIMIT 1")[0].actor_id, 'reviewer-one');
+
+  const rotated = await worker.fetch(makeRequest(agentKeyUrl, 'POST', undefined, reviewerSession), env);
+  assert.equal(rotated.status, 200);
+  const secondKey = String((await rotated.json()).key || '');
+  assert.notEqual(secondKey, firstKey);
+  const stale = await worker.fetch(makeRequest('http://api/market/v2/admin/review/entries', 'GET', undefined, firstKey), env);
+  assert.equal(stale.status, 401);
+  const current = await worker.fetch(makeRequest('http://api/market/v2/admin/review/entries', 'GET', undefined, secondKey), env);
+  assert.equal(current.status, 200);
+  const build = await worker.fetch(makeRequest('http://api/market/v2/build', 'POST', undefined, secondKey), env);
+  assert.equal(build.status, 401);
+
+  afterTest(ctx);
+});
+
+test('admin review metadata correction appends verified detail and fixes a pending minimum version', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const worker = (await import('../dist/index.js')).default;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'review-metadata');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+    entryId: pub.entryId,
+    versionId: pub.versionId,
+  }), env);
+  const pending = await entryRoutes.newVersion(makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
+    entry: { detail: 'Author-supplied update detail.' },
+    version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.10.0' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
+  }, pubSession), env);
+  const metadataUrl = `http://api/market/v2/entries/${pub.entryId}/review/metadata`;
+  const requestBody = {
+    entryId: pub.entryId,
+    versionId: pending.versionId,
+    minAppVer: '1.12.0+9',
+    detailAppend: '## 1.1.0 update\n\nVerified reviewer summary.',
+  };
+
+  const denied = await worker.fetch(new Request(metadataUrl, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify(requestBody),
+  }), env);
+  assert.equal(denied.status, 401);
+
+  const response = await worker.fetch(makeAdminRequest(metadataUrl, 'POST', requestBody), env);
+  assert.equal(response.status, 200);
+  const responseBody = await response.json();
+  assert.equal(responseBody.ok, true);
+  assert.equal(responseBody.minAppVer, '1.12.0+9');
+  assert.equal(responseBody.entryPatch.detail, 'Author-supplied update detail.\n\n## 1.1.0 update\n\nVerified reviewer summary.');
+
+  const pendingVersion = rows(db, 'SELECT min_app_ver, entry_patch, state_code FROM market_versions WHERE id = ?', [pending.versionId])[0];
+  assert.equal(pendingVersion.min_app_ver, '1.12.0+9');
+  assert.equal(pendingVersion.state_code, 'pending');
+  assert.deepEqual(JSON.parse(pendingVersion.entry_patch), {
+    detail: 'Author-supplied update detail.\n\n## 1.1.0 update\n\nVerified reviewer summary.',
+  });
+  assert.equal(rows(db, 'SELECT detail FROM market_entries WHERE id = ?', [pub.entryId])[0].detail, '');
+  const log = rows(db, "SELECT actor_id, reason FROM market_mutation_log WHERE reason = 'review.metadata_corrected'")[0];
+  assert.equal(log.actor_id, 'owner');
+  assert.equal(log.reason, 'review.metadata_corrected');
+
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+    entryId: pub.entryId,
+    versionId: pending.versionId,
+  }), env);
+  assert.equal(rows(db, 'SELECT detail FROM market_entries WHERE id = ?', [pub.entryId])[0].detail, 'Author-supplied update detail.\n\n## 1.1.0 update\n\nVerified reviewer summary.');
+  await assert.rejects(
+    () => entryRoutes.reviewMetadata(makeAdminRequest(metadataUrl, 'POST', requestBody), env),
+    /Review metadata can only be corrected while the version is pending/,
+  );
   afterTest(ctx);
 });
 
@@ -653,7 +767,7 @@ test('changes-requested revision is blocked for twelve hours before new-version 
   afterTest(ctx);
 });
 
-test('contributor cannot patch repo entry metadata when public updates are enabled', async () => {
+test('contributor can stage repo content updates but cannot modify protected entry metadata', async () => {
   const ctx = await makeEnv();
   const { env, db } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
@@ -675,16 +789,48 @@ test('contributor cannot patch repo entry metadata when public updates are enabl
     version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
     repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
   }, pub2Session);
-  await assert.rejects(() => entryRoutes.newVersion(req, env), /Only the original publisher can update entry metadata/);
+  await assert.rejects(() => entryRoutes.newVersion(req, env), /Contributors can only update description and detail with a new version/);
+
+  const contentPatchRequest = makeRequest(`http://api/market/v2/entries/${pub.entryId}/versions`, 'POST', {
+    entry: {
+      description: 'Community summary',
+      detail: 'Community detail',
+    },
+    version: { version: '1.1.0', formatVer: 'mcp_v2', minAppVer: '1.2.0' },
+    repoVersion: { refType: 'tag', refName: 'v1.1.0', installConfig: '{}' },
+  }, pub2Session);
+  const contentPatch = await entryRoutes.newVersion(contentPatchRequest, env);
   const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
-  const versions = rows(db, 'SELECT publisher_id, state_code FROM market_versions WHERE entry_id = ?', [pub.entryId]);
+  const versions = rows(db, 'SELECT publisher_id, state_code, entry_patch FROM market_versions WHERE entry_id = ?', [pub.entryId]);
   assert.equal(entry.title, 'Test MCP');
   assert.equal(entry.description, 'Desc');
   assert.equal(entry.detail, '');
   assert.equal(entry.category_id, 'search_research');
   assert.equal(entry.allow_public_updates, 1);
   assert.equal(entry.state_code, 'approved');
-  assert.equal(versions.length, 1);
+  assert.equal(versions.length, 2);
+  const contributorVersion = versions.find((version) => version.publisher_id === 'gh_2001');
+  assert.ok(contributorVersion);
+  assert.equal(contributorVersion.state_code, 'pending');
+  assert.deepEqual(JSON.parse(contributorVersion.entry_patch), {
+    description: 'Community summary',
+    detail: 'Community detail',
+  });
+
+  await entryRoutes.reviewApprove(
+    makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+      entryId: pub.entryId,
+      versionId: contentPatch.versionId,
+    }),
+    env,
+  );
+  const approvedEntry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [pub.entryId])[0];
+  assert.equal(approvedEntry.title, 'Test MCP');
+  assert.equal(approvedEntry.description, 'Community summary');
+  assert.equal(approvedEntry.detail, 'Community detail');
+  assert.equal(approvedEntry.category_id, 'search_research');
+  assert.equal(approvedEntry.allow_public_updates, 1);
+  assert.equal(approvedEntry.state_code, 'approved');
   afterTest(ctx);
 });
 
@@ -913,7 +1059,7 @@ test('contributor can submit an artifact version but cannot patch entry metadata
       sha256: SHA_A,
     },
   }, pub2Session);
-  await assert.rejects(() => entryRoutes.newVersion(req, env), /Only the original publisher can update entry metadata/);
+  await assert.rejects(() => entryRoutes.newVersion(req, env), /Contributors can only update description and detail with a new version/);
   const entry = rows(db, 'SELECT title, description, detail, category_id, allow_public_updates, state_code FROM market_entries WHERE id = ?', [first.entryId])[0];
   const versions = rows(db, 'SELECT publisher_id, state_code, runtime_pkg FROM market_versions WHERE entry_id = ?', [first.entryId]);
   assert.equal(entry.title, 'Original Script');

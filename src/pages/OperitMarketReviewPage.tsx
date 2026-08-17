@@ -14,14 +14,17 @@ import {
   Space,
   Table,
   Tag,
+  Tooltip,
   Typography,
   message,
 } from 'antd';
 import { Avatar } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import {
+  ApiOutlined,
   CheckCircleOutlined,
   CloseCircleOutlined,
+  CopyOutlined,
   EditOutlined,
   EyeOutlined,
   LogoutOutlined,
@@ -165,9 +168,11 @@ const REVIEW_PAGE_SIZE = 100;
 
 const STORAGE = {
   adminToken: 'operit_submission_admin_token',
+  agentKeyPrefix: 'operit_market_review_agent_key:',
 };
 
 const ADMIN_API_BASE = 'https://api.aaswordsman.org';
+const MARKET_REVIEW_GUIDELINES_URL = 'https://cdn.jsdelivr.net/gh/AAswordman/OperitWeb@main/docs/MARKET_REVIEW_GUIDELINES.md';
 
 const FALLBACK_REASONS: ReviewReasonOption[] = [
   { code: 'metadata-incomplete', label: 'metadata-incomplete', zh: '元数据不完整', en: 'Metadata incomplete', description_zh: '标题、简介、详情、分类、版本或来源信息缺失。', description_en: 'Title, description, detail, category, version, or source metadata is incomplete.' },
@@ -247,6 +252,14 @@ const TEXT = {
     versionRequired: '请在版本列表中选择具体版本进行审核。',
     noReason: '无原因码',
     publishedHint: '已上架列表来自 R2 静态产物；审核操作仍走管理员 API。',
+    agentReview: '使用 Agent 审核',
+    agentReviewTitle: 'Agent 审核',
+    reviewGuidelines: '审核规范（jsDelivr）',
+    agentKey: 'Agent 审核密钥',
+    rotateAgentKey: '更换密钥',
+    copy: '复制',
+    copied: '已复制。',
+    agentKeyUpdated: 'Agent 审核密钥已更换，旧密钥已失效。',
   },
   en: {
     title: 'Operit Market Review',
@@ -306,6 +319,14 @@ const TEXT = {
     versionRequired: 'Select a specific version in the version list before reviewing.',
     noReason: 'No reason',
     publishedHint: 'Published list is loaded from R2 static output; review actions still use admin API.',
+    agentReview: 'Review with Agent',
+    agentReviewTitle: 'Agent Review',
+    reviewGuidelines: 'Review guidelines (jsDelivr)',
+    agentKey: 'Agent review key',
+    rotateAgentKey: 'Rotate key',
+    copy: 'Copy',
+    copied: 'Copied.',
+    agentKeyUpdated: 'Agent review key rotated. The previous key no longer works.',
   },
 };
 
@@ -565,6 +586,9 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [selectedReasonCodes, setSelectedReasonCodes] = useState<string[]>([]);
   const [reviewDetail, setReviewDetail] = useState('');
   const [actionSubmitting, setActionSubmitting] = useState(false);
+  const [agentKeyOpen, setAgentKeyOpen] = useState(false);
+  const [agentKey, setAgentKey] = useState('');
+  const [agentKeyLoading, setAgentKeyLoading] = useState(false);
 
   const handleUnauthorized = useCallback(() => {
     localStorage.removeItem(STORAGE.adminToken);
@@ -612,6 +636,48 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
       setLoading(false);
     }
   }, [handleUnauthorized, t.loadFailed]);
+
+  const agentKeyStorageKey = authUser?.username ? `${STORAGE.agentKeyPrefix}${authUser.username}` : '';
+
+  const rotateAgentKey = useCallback(async () => {
+    setAgentKeyLoading(true);
+    try {
+      const result = await fetchMarketV2Json<{ key?: string }>(marketV2ApiUrl('admin/review/agent-key'), {
+        method: 'POST',
+        headers: buildMarketV2AdminHeaders(adminToken),
+      });
+      const key = String(result.key || '');
+      if (!key) throw new Error('agent_key_missing');
+      setAgentKey(key);
+      if (agentKeyStorageKey) sessionStorage.setItem(agentKeyStorageKey, key);
+      message.success(t.agentKeyUpdated);
+    } catch (err) {
+      const messageText = (err as Error).message || t.loadFailed;
+      message.error(messageText);
+      if (/401|403|unauthorized|forbidden/i.test(messageText)) handleUnauthorized();
+    } finally {
+      setAgentKeyLoading(false);
+    }
+  }, [adminToken, agentKeyStorageKey, handleUnauthorized, t.agentKeyUpdated, t.loadFailed]);
+
+  const openAgentReview = useCallback(() => {
+    setAgentKeyOpen(true);
+    const cachedKey = agentKeyStorageKey ? sessionStorage.getItem(agentKeyStorageKey) || '' : '';
+    if (cachedKey) {
+      setAgentKey(cachedKey);
+      return;
+    }
+    void rotateAgentKey();
+  }, [agentKeyStorageKey, rotateAgentKey]);
+
+  const copyAgentValue = useCallback(async (value: string) => {
+    try {
+      await navigator.clipboard.writeText(value);
+      message.success(t.copied);
+    } catch {
+      message.error(t.loadFailed);
+    }
+  }, [t.copied, t.loadFailed]);
 
   useEffect(() => {
     if (!adminToken.trim()) {
@@ -950,6 +1016,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
                       {t.currentRole}: {authUser.role || 'reviewer'}
                     </Text>
                   ) : null}
+                  <Button icon={<ApiOutlined />} onClick={openAgentReview}>{t.agentReview}</Button>
                   <Button icon={<ReloadOutlined />} onClick={() => void loadData(adminToken)} loading={loading}>{t.reload}</Button>
                   <Button danger icon={<LogoutOutlined />} onClick={logout}>{t.logout}</Button>
                 </Space>
@@ -1127,6 +1194,36 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
             </Space>
           ) : null}
         </Drawer>
+
+        <Modal
+          title={t.agentReviewTitle}
+          open={agentKeyOpen}
+          onCancel={() => setAgentKeyOpen(false)}
+          footer={<Button onClick={() => setAgentKeyOpen(false)}>{t.actionCancel}</Button>}
+        >
+          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
+            <div>
+              <Text strong>{t.reviewGuidelines}</Text>
+              <Input
+                className="operit-market-review-agent-value"
+                value={MARKET_REVIEW_GUIDELINES_URL}
+                readOnly
+                addonAfter={<Tooltip title={t.copy}><Button type="text" icon={<CopyOutlined />} onClick={() => void copyAgentValue(MARKET_REVIEW_GUIDELINES_URL)} /></Tooltip>}
+              />
+            </div>
+            <div>
+              <Text strong>{t.agentKey}</Text>
+              <Input.Password
+                className="operit-market-review-agent-value"
+                value={agentKey}
+                readOnly
+                visibilityToggle
+                addonAfter={<Tooltip title={t.copy}><Button type="text" icon={<CopyOutlined />} disabled={!agentKey} onClick={() => void copyAgentValue(agentKey)} /></Tooltip>}
+              />
+            </div>
+            <Button icon={<ReloadOutlined />} onClick={() => void rotateAgentKey()} loading={agentKeyLoading}>{t.rotateAgentKey}</Button>
+          </Space>
+        </Modal>
 
         <Modal
           title={getReviewActionLabel(actionType, language)}

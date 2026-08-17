@@ -174,6 +174,8 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   if (pathname.includes('/entries/') && pathname.endsWith('/review/approve') && request.method === 'POST') return entries.reviewApprove(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.endsWith('/review/reject') && request.method === 'POST') return entries.reviewReject(request, storeEnv);
   if (pathname.includes('/entries/') && pathname.endsWith('/review/changes') && request.method === 'POST') return entries.reviewRequestChanges(request, storeEnv);
+  if (pathname.includes('/entries/') && pathname.endsWith('/review/metadata') && request.method === 'POST') return entries.reviewMetadata(request, storeEnv);
+  if (pathname === '/market/v2/admin/review/agent-key' && request.method === 'POST') return entries.reviewAgentKey(request, storeEnv);
   if (pathname.startsWith('/market/v2/admin/entries/') && pathname.endsWith('/moderation') && request.method === 'POST') {
     const result = await entries.moderateEntry(request, storeEnv);
     await incrementalBuild(storeEnv);

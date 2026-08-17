@@ -1,4 +1,4 @@
-import { assertAuthorActive, requireAdminToken, requireSession, upsertAuthorFromGithubOwner, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
+import { assertAuthorActive, requireAdminToken, requireReviewToken, requireSession, rotateReviewAgentKey, upsertAuthorFromGithubOwner, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
 import { githubApiFetch } from './github.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
@@ -17,7 +17,7 @@ import {
   slug,
 } from './shared.js';
 import { publishArtifactMutation, publishRepoMutation } from './translators/publish.js';
-import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
+import { curationUpdate, reviewApproveEntry, reviewApproveVersion, reviewCorrectVersionMetadata, reviewRejectEntry, reviewRejectVersion, reviewRequestChangesEntry, reviewRequestChangesVersion } from './translators/review.js';
 import { withdrawAndBlockAuthor } from './translators/moderation.js';
 import { notifyReview } from './translators/notify.js';
 import { buildEntryItem } from './store/renderers/entryBundle.js';
@@ -37,6 +37,8 @@ interface EntryRoutes {
   reviewApprove(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewReject(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject>;
+  reviewMetadata(request: Request, env: MarketEnv): Promise<JsonObject>;
+  reviewAgentKey(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewEntries(request: Request, env: MarketEnv): Promise<JsonObject>;
   reviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
   moderateEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
@@ -139,7 +141,7 @@ const AUTHOR_BLOCK_REASON_CODES = new Set([
 ]);
 
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewMetadata: handleReviewMetadata, reviewAgentKey: handleReviewAgentKey, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -347,7 +349,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const body = await readBody(request);
   const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
   const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
-  if (hasEntryPatch && originalPublisherId !== publisher.id) throw new MarketError('unauthorized', 'Only the original publisher can update entry metadata', 403);
+  assertVersionEntryPatchPermission(entryPatchInput, originalPublisherId, publisher.id);
   let versionInput = requireVersionInput(asRecord(body.version));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
@@ -412,7 +414,7 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
 }
 
 async function handleReviewEntries(request: Request, env: MarketEnv): Promise<JsonObject> {
-  await requireAdminToken(request, env);
+  await requireReviewToken(request, env);
   const store = requireStore(env);
   const url = new URL(request.url);
   const stateCode = optionalString(url.searchParams.get('stateCode'));
@@ -423,7 +425,7 @@ async function handleReviewEntries(request: Request, env: MarketEnv): Promise<Js
 }
 
 async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject> {
-  await requireAdminToken(request, env);
+  await requireReviewToken(request, env);
   const store = requireStore(env);
   const entryId = extractIdFromPath(request.url, '/admin/review/entries/', '');
   const entry = await store.d1.getEntry(entryId);
@@ -445,7 +447,7 @@ async function handleReviewEntryDetail(request: Request, env: MarketEnv): Promis
 }
 
 async function handleReviewApprove(request: Request, env: MarketEnv): Promise<JsonObject> {
-  const admin = await requireAdminToken(request, env);
+  const admin = await requireReviewToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
   const entryId = requireReviewEntryId(request, body, '/review/approve');
@@ -568,7 +570,7 @@ async function handleModerateEntry(request: Request, env: MarketEnv): Promise<Js
 }
 
 async function handleReviewReject(request: Request, env: MarketEnv): Promise<JsonObject> {
-  const admin = await requireAdminToken(request, env);
+  const admin = await requireReviewToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
   const entryId = requireReviewEntryId(request, body, '/review/reject');
@@ -589,7 +591,7 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
 }
 
 async function handleReviewRequestChanges(request: Request, env: MarketEnv): Promise<JsonObject> {
-  const admin = await requireAdminToken(request, env);
+  const admin = await requireReviewToken(request, env);
   const store = requireStore(env);
   const body = await readBody(request);
   const entryId = requireReviewEntryId(request, body, '/review/changes');
@@ -607,6 +609,53 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   await notifyReview(store.d1, entry, 'review_changes', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
+}
+
+async function handleReviewMetadata(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const admin = await requireReviewToken(request, env);
+  const store = requireStore(env);
+  const body = await readBody(request);
+  const entryId = requireReviewEntryId(request, body, '/review/metadata');
+  const versionId = requireString(body.versionId, 'versionId');
+  const minAppVer = optionalString(body.minAppVer);
+  const detailAppend = parseReviewDetailAppend(body.detailAppend);
+  if (!minAppVer && !detailAppend) {
+    throw new MarketError('validation_failed', 'minAppVer or detailAppend is required', 400);
+  }
+
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const targetVersion = await resolveReviewVersion(store, entryId, versionId);
+  if (text(targetVersion.state_code) !== 'pending') {
+    throw new MarketError('state_invalid', 'Review metadata can only be corrected while the version is pending', 409);
+  }
+
+  const existingEntryPatch = parseStoredEntryPatch(targetVersion) || {};
+  const entryPatch = detailAppend
+    ? { ...existingEntryPatch, detail: appendReviewDetail(text(existingEntryPatch.detail) || text(entry.detail), detailAppend) }
+    : undefined;
+  const applied = await store.apply(reviewCorrectVersionMetadata({
+    entryId,
+    versionId: text(targetVersion.id),
+    actorId: admin.username,
+    ...(minAppVer ? { minAppVer } : {}),
+    ...(entryPatch ? { entryPatch: serializeEntryPatch(entryPatch) } : {}),
+  }));
+  await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
+  return {
+    ok: true,
+    entryId,
+    versionId: text(targetVersion.id),
+    stateCode: 'pending',
+    ...(minAppVer ? { minAppVer } : {}),
+    ...(entryPatch ? { entryPatch } : {}),
+    stats: applied.stats as unknown as JsonObject,
+  };
+}
+
+async function handleReviewAgentKey(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const result = await rotateReviewAgentKey(request, env);
+  return { ok: true, key: result.key, createdAt: result.createdAt };
 }
 
 async function handleCurationSet(request: Request, env: MarketEnv): Promise<JsonObject> {
@@ -842,6 +891,20 @@ function parseReviewDetail(value: unknown): string | undefined {
   return detail;
 }
 
+function parseReviewDetailAppend(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'string') throw new MarketError('validation_failed', 'detailAppend must be a string', 400);
+  const detail = value.trim();
+  if (!detail) throw new MarketError('validation_failed', 'detailAppend must not be empty', 400);
+  if (detail.length > 4000) throw new MarketError('validation_failed', 'detailAppend exceeds 4000 character limit', 400);
+  return detail;
+}
+
+function appendReviewDetail(existing: string, append: string): string {
+  if (existing.includes(append)) return existing;
+  return existing ? `${existing}\n\n${append}` : append;
+}
+
 function parseEntryUpdateInput(body: Record<string, unknown>): EntryUpdateInput {
   const update: EntryUpdateInput = {};
   const title = optionalString(body.title);
@@ -855,6 +918,17 @@ function parseEntryUpdateInput(body: Record<string, unknown>): EntryUpdateInput 
   if (categoryId !== undefined) update.categoryId = categoryId;
   if (allowPublicUpdates !== undefined) update.allowPublicUpdates = allowPublicUpdates;
   return update;
+}
+function assertVersionEntryPatchPermission(patch: EntryUpdateInput, originalPublisherId: string, publisherId: string): void {
+  if (publisherId === originalPublisherId) return;
+  const protectedKeys = Object.keys(patch).filter((key) => key !== 'description' && key !== 'detail');
+  if (protectedKeys.length > 0) {
+    throw new MarketError(
+      'unauthorized',
+      'Contributors can only update description and detail with a new version',
+      403,
+    );
+  }
 }
 function serializeEntryPatch(patch: EntryUpdateInput): string { return JSON.stringify(patch); }
 function parseStoredEntryPatch(version: Row): EntryUpdateInput | undefined {
