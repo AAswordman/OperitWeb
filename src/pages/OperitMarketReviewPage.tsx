@@ -569,7 +569,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   const [publishedRows, setPublishedRows] = useState<MarketV2Entry[]>([]);
   const [featuredIds, setFeaturedIds] = useState<Set<string>>(() => new Set());
   const [marketFilter, setMarketFilter] = useState<MarketType | 'all'>('all');
-  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('all');
+  const [reviewFilter, setReviewFilter] = useState<ReviewFilter>('pending');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
   const [featuredFilter, setFeaturedFilter] = useState<FeaturedFilter>('all');
   const [sourceFilter, setSourceFilter] = useState<SourceFilter>('all');
