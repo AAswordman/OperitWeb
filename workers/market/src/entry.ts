@@ -618,37 +618,58 @@ async function handleReviewMetadata(request: Request, env: MarketEnv): Promise<J
   const entryId = requireReviewEntryId(request, body, '/review/metadata');
   const versionId = requireString(body.versionId, 'versionId');
   const minAppVer = optionalString(body.minAppVer);
+  const maxAppVer = optionalString(body.maxAppVer);
   const detailAppend = parseReviewDetailAppend(body.detailAppend);
-  if (!minAppVer && !detailAppend) {
-    throw new MarketError('validation_failed', 'minAppVer or detailAppend is required', 400);
+  const detailReplace = parseReviewDetailReplace(body.detailReplace);
+  if (!minAppVer && !maxAppVer && !detailAppend && !detailReplace) {
+    throw new MarketError('validation_failed', 'minAppVer, maxAppVer, detailAppend, or detailReplace is required', 400);
+  }
+  if (detailReplace && detailAppend) {
+    throw new MarketError('validation_failed', 'detailReplace cannot be combined with detailAppend', 400);
   }
 
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
   const targetVersion = await resolveReviewVersion(store, entryId, versionId);
-  if (text(targetVersion.state_code) !== 'pending') {
+  const targetState = text(targetVersion.state_code);
+  const approvedMetadataCorrection = Boolean(targetState === 'approved' && (detailReplace || minAppVer || maxAppVer));
+  const replacingApprovedDetail = Boolean(detailReplace && targetState === 'approved');
+  if (targetState !== 'pending' && !approvedMetadataCorrection) {
     throw new MarketError('state_invalid', 'Review metadata can only be corrected while the version is pending', 409);
+  }
+  if (targetState === 'approved' && detailAppend) {
+    throw new MarketError('state_invalid', 'Approved versions only allow deterministic metadata repairs', 409);
+  }
+  if (approvedMetadataCorrection && !(await isLatestApprovedVersion(store, entryId, targetVersion))) {
+    throw new MarketError('state_invalid', 'Approved metadata repairs are only allowed for the latest approved version', 409);
   }
 
   const existingEntryPatch = parseStoredEntryPatch(targetVersion) || {};
-  const entryPatch = detailAppend
-    ? { ...existingEntryPatch, detail: appendReviewDetail(text(existingEntryPatch.detail) || text(entry.detail), detailAppend) }
-    : undefined;
+  const entryPatch = detailReplace
+    ? { ...existingEntryPatch, detail: detailReplace }
+    : detailAppend
+      ? { ...existingEntryPatch, detail: appendReviewDetail(text(existingEntryPatch.detail) || text(entry.detail), detailAppend) }
+      : undefined;
   const applied = await store.apply(reviewCorrectVersionMetadata({
     entryId,
     versionId: text(targetVersion.id),
     actorId: admin.username,
     ...(minAppVer ? { minAppVer } : {}),
+    ...(maxAppVer ? { maxAppVer } : {}),
     ...(entryPatch ? { entryPatch: serializeEntryPatch(entryPatch) } : {}),
+    ...(replacingApprovedDetail ? { publicEntryPatch: { detail: detailReplace } } : {}),
+    ...(approvedMetadataCorrection ? { publicProjectionDirty: true } : {}),
   }));
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
   return {
     ok: true,
     entryId,
     versionId: text(targetVersion.id),
-    stateCode: 'pending',
+    stateCode: targetState,
     ...(minAppVer ? { minAppVer } : {}),
+    ...(maxAppVer ? { maxAppVer } : {}),
     ...(entryPatch ? { entryPatch } : {}),
+    ...(detailReplace ? { detailReplace } : {}),
     stats: applied.stats as unknown as JsonObject,
   };
 }
@@ -776,6 +797,17 @@ async function hasApprovedVersion(store: MarketStore, entryId: string): Promise<
   return versions.some((version) => text(version.state_code) === 'approved');
 }
 
+async function isLatestApprovedVersion(store: MarketStore, entryId: string, targetVersion: Row): Promise<boolean> {
+  const approved = (await store.d1.listVersionsForEntry(entryId))
+    .filter((version) => text(version.state_code) === 'approved')
+    .sort((a, b) => {
+      const aTime = text(a.published_at) || text(a.updated_at) || text(a.created_at);
+      const bTime = text(b.published_at) || text(b.updated_at) || text(b.created_at);
+      return bTime.localeCompare(aTime);
+    });
+  return text(approved[0]?.id) === text(targetVersion.id);
+}
+
 function shouldReviewVersionOnly(body: Record<string, unknown>, entry: Row, hasApproved: boolean): boolean {
   const scope = String(body.scope ?? body.reviewScope ?? '').trim().toLowerCase();
   if (scope === 'entry') return false;
@@ -897,6 +929,15 @@ function parseReviewDetailAppend(value: unknown): string | undefined {
   const detail = value.trim();
   if (!detail) throw new MarketError('validation_failed', 'detailAppend must not be empty', 400);
   if (detail.length > 4000) throw new MarketError('validation_failed', 'detailAppend exceeds 4000 character limit', 400);
+  return detail;
+}
+
+function parseReviewDetailReplace(value: unknown): string | undefined {
+  if (value === undefined || value === null) return undefined;
+  if (typeof value !== 'string') throw new MarketError('validation_failed', 'detailReplace must be a string', 400);
+  const detail = value.trim();
+  if (!detail) throw new MarketError('validation_failed', 'detailReplace must not be empty', 400);
+  if (detail.length > 20000) throw new MarketError('validation_failed', 'detailReplace exceeds 20000 character limit', 400);
   return detail;
 }
 

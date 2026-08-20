@@ -6,7 +6,16 @@ interface ReviewEntryInput { entryId: string; actorId: string; versionId?: strin
 interface ReviewVersionInput { entryId: string; actorId: string; versionId: string; publishedAt?: string; entryPatch?: EntryPatch; reviewDetail?: string }
 interface ReviewReasonInput { entryId: string; actorId: string; reasonCode?: string; versionId: string; reviewDetail?: string }
 interface ReviewVersionReasonInput extends ReviewReasonInput { versionId: string }
-interface ReviewMetadataCorrectionInput { entryId: string; versionId: string; actorId: string; minAppVer?: string; entryPatch?: string }
+interface ReviewMetadataCorrectionInput {
+  entryId: string;
+  versionId: string;
+  actorId: string;
+  minAppVer?: string;
+  maxAppVer?: string;
+  entryPatch?: string;
+  publicEntryPatch?: EntryPatch;
+  publicProjectionDirty?: boolean;
+}
 interface CurationInput { entryId: string; actorId: string; listKey: string; position: number; operation?: Extract<MarketObjectOperation, 'create' | 'update' | 'hide'> }
 
 export function reviewApproveEntry({ entryId, actorId, versionId, publishedAt, entryPatch, reviewDetail }: ReviewEntryInput): MarketMutation {
@@ -185,19 +194,30 @@ export function reviewRequestChangesVersion({ entryId, versionId, actorId, reaso
   };
 }
 
-export function reviewCorrectVersionMetadata({ entryId, versionId, actorId, minAppVer, entryPatch }: ReviewMetadataCorrectionInput): MarketMutation {
+export function reviewCorrectVersionMetadata({ entryId, versionId, actorId, minAppVer, maxAppVer, entryPatch, publicEntryPatch, publicProjectionDirty }: ReviewMetadataCorrectionInput): MarketMutation {
   const time = isoNow();
+  const objects: MarketMutation['objects'] = [{
+    kind: 'Version', operation: 'update', id: versionId,
+    patch: { ...(minAppVer ? { minAppVer } : {}), ...(maxAppVer ? { maxAppVer } : {}), ...(entryPatch ? { entryPatch } : {}), updatedAt: time },
+  }];
+  if (publicEntryPatch) {
+    objects.push({
+      kind: 'Entry', operation: 'update', id: entryId,
+      patch: { ...publicEntryPatch, updatedAt: time },
+    });
+  }
   return {
     type: 'mutation',
     id: `mut-review-metadata-${versionId}-${Date.now()}`,
     actor: { authorId: actorId, role: 'admin' },
     reason: 'review.metadata_corrected',
     createdAt: time,
-    objects: [{
-      kind: 'Version', operation: 'update', id: versionId,
-      patch: { ...(minAppVer ? { minAppVer } : {}), ...(entryPatch ? { entryPatch } : {}), updatedAt: time },
-    }],
-    effects: [],
+    objects,
+    effects: publicProjectionDirty || publicEntryPatch ? [
+      { projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } },
+      { projection: 'entry.shard', scope: { entryId } },
+      { projection: 'entry.versions', scope: { entryId } },
+    ] : [],
   };
 }
 

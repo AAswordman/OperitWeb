@@ -420,6 +420,64 @@ test('admin review metadata correction appends verified detail and fixes a pendi
   assert.equal(rows(db, 'SELECT detail FROM market_entries WHERE id = ?', [pub.entryId])[0].detail, 'Author-supplied update detail.\n\n## 1.1.0 update\n\nVerified reviewer summary.');
   await assert.rejects(
     () => entryRoutes.reviewMetadata(makeAdminRequest(metadataUrl, 'POST', requestBody), env),
+    /Approved versions only allow deterministic metadata repairs/,
+  );
+  afterTest(ctx);
+});
+
+test('admin review metadata detailReplace repairs latest approved detail and marks public projections dirty', async () => {
+  const ctx = await makeEnv();
+  const { env, db } = ctx;
+  const worker = (await import('../dist/index.js')).default;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'review-detail-replace');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${pub.entryId}/review/approve`, 'POST', {
+    entryId: pub.entryId,
+    versionId: pub.versionId,
+  }), env);
+
+  const metadataUrl = `http://api/market/v2/entries/${pub.entryId}/review/metadata`;
+  const replacement = ['## Fixed detail', '', 'This line must remain real Markdown.']
+    .join(String.fromCharCode(10));
+  const denied = await worker.fetch(new Request(metadataUrl, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ entryId: pub.entryId, versionId: pub.versionId, detailReplace: replacement }),
+  }), env);
+  assert.equal(denied.status, 401);
+
+  const response = await worker.fetch(makeAdminRequest(metadataUrl, 'POST', {
+    entryId: pub.entryId,
+    versionId: pub.versionId,
+    minAppVer: '1.12.0+9',
+    maxAppVer: '1.99.99',
+    detailReplace: replacement,
+  }), env);
+  assert.equal(response.status, 200);
+  const responseBody = await response.json();
+  assert.equal(responseBody.ok, true);
+  assert.equal(responseBody.stateCode, 'approved');
+  assert.equal(responseBody.minAppVer, '1.12.0+9');
+  assert.equal(responseBody.maxAppVer, '1.99.99');
+  assert.equal(responseBody.detailReplace, replacement);
+
+  const versionRow = rows(db, 'SELECT state_code, entry_patch FROM market_versions WHERE id = ?', [pub.versionId])[0];
+  assert.equal(versionRow.state_code, 'approved');
+  assert.equal(rows(db, 'SELECT min_app_ver FROM market_versions WHERE id = ?', [pub.versionId])[0].min_app_ver, '1.12.0+9');
+  assert.equal(rows(db, 'SELECT max_app_ver FROM market_versions WHERE id = ?', [pub.versionId])[0].max_app_ver, '1.99.99');
+  assert.deepEqual(JSON.parse(versionRow.entry_patch), { detail: replacement });
+  assert.equal(rows(db, 'SELECT detail FROM market_entries WHERE id = ?', [pub.entryId])[0].detail, replacement);
+  assert.ok(rows(db, "SELECT projection FROM market_dirty_projections WHERE scope_key LIKE ?", [`%${pub.entryId}%`]).length >= 1);
+
+  await assert.rejects(
+    () => entryRoutes.reviewMetadata(makeAdminRequest(metadataUrl, 'POST', {
+      entryId: pub.entryId,
+      versionId: pub.versionId,
+      detailAppend: 'should not append to approved detail',
+    }), env),
     /Review metadata can only be corrected while the version is pending/,
   );
   afterTest(ctx);

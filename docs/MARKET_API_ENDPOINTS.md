@@ -458,7 +458,7 @@ POST https://api.operit.app/market/v2/entries/{entryId}/review/metadata
 Authorization: Bearer <admin_or_reviewer_token_or_agent_key>
 ```
 
-该接口仅供管理员或审核员在审核时修正**仍为 `pending` 的目标版本**的确定性元数据。请求体必须包含 `entryId`、`versionId`，并至少提供 `minAppVer` 或 `detailAppend`：
+该接口供管理员或审核员在审核时修正确定性元数据。请求体必须包含 `entryId`、`versionId`，并至少提供 `minAppVer`、`maxAppVer`、`detailAppend` 或 `detailReplace` 之一：
 
 ```json
 {
@@ -469,7 +469,7 @@ Authorization: Bearer <admin_or_reviewer_token_or_agent_key>
 }
 ```
 
-`minAppVer` 只修改目标 version 的最低客户端版本。`detailAppend` 会追加到该待审 version 已暂存的 `entryPatch.detail`；若版本没有暂存详情，则以当前公开 entry 的 `detail` 为基础追加。相同追加内容重复提交不会重复写入。接口不会改变版本状态、不会直接修改公开 Entry，也不会自动批准；修正后仍必须调用普通 `review/approve`。每次调用会以 `review.metadata_corrected` 记录审核 mutation 和执行人。
+`minAppVer` 只修改目标 version 的最低客户端版本；对已通过版本，仅允许修正当前最新的 approved version，并同步标记公开版本投影；`detailAppend` 只允许追加到 `pending` version 已暂存的 `entryPatch.detail`，若版本没有暂存详情，则以当前公开 entry 的 `detail` 为基础追加。`detailReplace` 用于管理员修复已写入的详情格式：它会精确替换目标 version 的 `entryPatch.detail`；对已通过版本仅允许修复当前最新的 approved version，并同步更新公开 Entry 详情和相关投影。`detailReplace` 不能与 `detailAppend` 混用。相同追加内容重复提交不会重复写入。每次调用会以 `review.metadata_corrected` 记录审核 mutation 和执行人；修正不改变版本审核状态。
 
 ### 管理员下架并封禁作者
 
