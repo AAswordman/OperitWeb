@@ -73,6 +73,30 @@ export function makeEntryId(type: string, data: { owner?: string; repo?: string;
 export function makeVersionId(entryId: string, version: string): string { return `${entryId}-v-${slug(version)}`; }
 export function makeProjectId(entryId: string, version: string): string { return `project-${slug(entryId)}-${slug(version)}`; }
 
+/**
+ * Return GitHub's generated repository social-card image without making a
+ * network request. Market clients may use this as the entry logo.
+ */
+export function githubRepositoryLogoUrl(owner: unknown, repo: unknown): string | undefined {
+  const ownerText = String(owner ?? '').trim();
+  const repoText = String(repo ?? '').trim().replace(/\.git$/i, '');
+  if (!ownerText || !repoText || /[\s/#?]/.test(ownerText) || /[\s/#?]/.test(repoText)) return undefined;
+  return `https://opengraph.githubassets.com/1/${encodeURIComponent(ownerText)}/${encodeURIComponent(repoText)}`;
+}
+
+/** Derive a repository logo URL from a stored GitHub source URL. */
+export function githubRepositoryLogoUrlFromSource(rawUrl: unknown): string | undefined {
+  if (typeof rawUrl !== 'string' || !rawUrl.trim()) return undefined;
+  try {
+    const url = new URL(rawUrl);
+    if (url.hostname.toLowerCase() !== 'github.com' && url.hostname.toLowerCase() !== 'raw.githubusercontent.com') return undefined;
+    const segments = url.pathname.split('/').filter(Boolean);
+    return githubRepositoryLogoUrl(segments[0], segments[1]);
+  } catch {
+    return undefined;
+  }
+}
+
 export function normalizeGithubRepoUrl(rawUrl: unknown): { owner: string; repo: string; url: string } {
   const text = requireString(rawUrl, 'source.url');
   let url: URL;
@@ -143,3 +167,4 @@ function base64UrlFromBytes(bytes: Uint8Array): string { return btoa(String.from
 function base64UrlFromString(value: string): string { return base64UrlFromBytes(new TextEncoder().encode(value)); }
 function stringFromBase64Url(value: string): string { const base64 = value.replace(/-/g, '+').replace(/_/g, '/').padEnd(Math.ceil(value.length / 4) * 4, '='); return atob(base64); }
 function timingSafeEqual(left: string, right: string): boolean { if (left.length !== right.length) return false; let diff = 0; for (let i = 0; i < left.length; i++) diff |= left.charCodeAt(i) ^ right.charCodeAt(i); return diff === 0; }
+

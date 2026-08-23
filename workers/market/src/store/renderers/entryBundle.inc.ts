@@ -1,4 +1,4 @@
-import { isArtifactType, isRepoType } from '../../shared.js';
+import { githubRepositoryLogoUrl, githubRepositoryLogoUrlFromSource, isArtifactType, isRepoType } from '../../shared.js';
 import type { RendererContext, Row } from '../../types.js';
 import { rowOptionalText, rowText } from './row.js';
 import type { EntryItem } from './entryBundle.js';
@@ -13,7 +13,7 @@ export async function buildEntryItem(d1: RendererContext['d1'], entry: Row): Pro
   const publisher = item.publisherId !== item.authorId ? await d1.getAuthor(item.publisherId) : author;
   if (publisher) item.publisher = { id: item.publisherId, login: rowText(publisher, 'github_login'), avatar: rowText(publisher, 'owner_avatar') };
 
-  if (isRepoType(type)) { const spec = await d1.getRepoSpecByEntry(item.id); if (spec) item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') }; }
+  if (isRepoType(type)) { const spec = await d1.getRepoSpecByEntry(item.id); if (spec) { item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') }; const logoUrl = githubRepositoryLogoUrlFromSource(spec.source_url); if (logoUrl) item.logoUrl = logoUrl; } }
   const versions = (await d1.listVersionsForEntry(item.id)).filter((v: Row) => rowText(v, 'state_code') === 'approved').sort((a: Row, b: Row) => rowText(b, 'published_at').localeCompare(rowText(a, 'published_at')));
   const approvedVersionIds = new Set(versions.map((version: Row) => rowText(version, 'id')));
   if (isArtifactType(type)) {
@@ -21,9 +21,11 @@ export async function buildEntryItem(d1: RendererContext['d1'], entry: Row): Pro
     if (project) {
       item.artifact = { projectId: rowText(project, 'project_key'), ...(rowOptionalText(project, 'runtime_pkg') ? { runtimePkg: rowText(project, 'runtime_pkg') } : {}) };
     }
-    item.assets = (await d1.listAssets(item.id))
-      .filter((a: Row) => approvedVersionIds.has(rowText(a, 'version_id')))
-      .map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), ...(rowOptionalText(a, 'gh_owner') ? { ghOwner: rowText(a, 'gh_owner') } : {}), ...(rowOptionalText(a, 'gh_repo') ? { ghRepo: rowText(a, 'gh_repo') } : {}), ...(rowOptionalText(a, 'gh_release_tag') ? { ghReleaseTag: rowText(a, 'gh_release_tag') } : {}), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
+    const assetRows = (await d1.listAssets(item.id)).filter((a: Row) => approvedVersionIds.has(rowText(a, 'version_id')));
+    item.assets = assetRows.map((a: Row) => ({ id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), ...(rowOptionalText(a, 'gh_owner') ? { ghOwner: rowText(a, 'gh_owner') } : {}), ...(rowOptionalText(a, 'gh_repo') ? { ghRepo: rowText(a, 'gh_repo') } : {}), ...(rowOptionalText(a, 'gh_release_tag') ? { ghReleaseTag: rowText(a, 'gh_release_tag') } : {}), sha256: rowText(a, 'sha256'), ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}) }));
+    const logoAsset = assetRows.find((asset: Row) => rowOptionalText(asset, 'gh_owner') && rowOptionalText(asset, 'gh_repo'));
+    const logoUrl = logoAsset ? githubRepositoryLogoUrl(logoAsset.gh_owner, logoAsset.gh_repo) : undefined;
+    if (logoUrl) item.logoUrl = logoUrl;
   }
   const latest = versions[0];
   item.contributors = buildContributors(await Promise.all(versions.map(async (version: Row) => {
@@ -84,3 +86,4 @@ function rowBoolStrict(row: Row, key: string, defaultValue = false): boolean {
   if (typeof value === 'number') return value === 1;
   return defaultValue;
 }
+

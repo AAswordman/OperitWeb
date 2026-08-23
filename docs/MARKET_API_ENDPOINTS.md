@@ -140,6 +140,17 @@ GET /market/v2/entries/{shard}.json
 
 列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
 
+### Entry Logo
+
+公开 entry payload 可以包含可选字段 `logoUrl`（缺省或 `null`）：
+
+```json
+{
+  "logoUrl": "https://opengraph.githubassets.com/1/owner/repo"
+}
+```
+
+Worker 不提供 Logo 上传、托管或修改接口，也不会要求发布、更新或新版本请求传递 `logoUrl` 或 Logo 文件。对于 `skill` / `mcp`，`logoUrl` 由 GitHub source repo 的 owner/repo 无网络请求派生；对于 `script` / `package`，由已验证 GitHub Release asset 的 `ghOwner` / `ghRepo` 派生。没有可派生仓库时省略该字段。客户端只需读取并渲染 URL，支持 SVG、PNG、JPG/JPEG、WebP；不得调用或保留 `POST /market/v2/logos`。
 ### 评论分页
 
 ```http
@@ -572,3 +583,5 @@ GET  /agent/items/{type}/{id}/install-plan
 ```
 
 `/download` 与 `/like` 均写入 Analytics Engine；旧市场定时构建聚合后刷新 `stats` / `rank` 静态 JSON。
+
+

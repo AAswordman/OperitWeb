@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Alert, Button, Card, Col, Descriptions, Drawer, Input, Layout, Row, Segmented, Space, Spin, Tag, Typography } from 'antd';
+import { Alert, Button, Card, Col, Descriptions, Drawer, Image, Input, Layout, Row, Segmented, Space, Spin, Tag, Typography } from 'antd';
 import {
   DownloadOutlined,
   EyeOutlined,
@@ -353,6 +353,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                       <Card className="market-item-card" styles={{ body: { padding: 0, height: '100%' } }}>
                         <div className="market-item-shell">
                           <div className="market-item-cover">
+                            {entry.logoUrl && <Image className="market-item-logo" src={entry.logoUrl} alt="" preview={false} />}
                             <div className="market-item-cover-meta">
                               <Space size={6}>
                                 <Tag className="market-id-tag">{typeLabel(entry.type, language)}</Tag>
@@ -449,6 +450,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
         >
           {selectedEntry && (
             <Space direction="vertical" size={16} style={{ width: '100%' }}>
+              {selectedEntry.logoUrl && <Image className="market-detail-logo" src={selectedEntry.logoUrl} alt="" preview={false} />}
               <div className="market-detail-tags">
                 <Tag className="market-id-tag">{selectedEntry.id}</Tag>
                 <Tag className="market-chip">{typeLabel(selectedEntry.type, language)}</Tag>
@@ -539,3 +541,4 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
 };
 
 export default OperitMCPMarketPage;
+

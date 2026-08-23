@@ -27,6 +27,7 @@ export interface MarketV2Entry {
   type: MarketEntryType;
   id: string;
   title: string;
+  logoUrl?: string | null;
   description?: string;
   detail?: string;
   authorId?: string;
@@ -156,3 +157,4 @@ export function marketV2AuthHeaders(session: string): HeadersInit {
     Authorization: `Bearer ${session.trim()}`,
   };
 }
+

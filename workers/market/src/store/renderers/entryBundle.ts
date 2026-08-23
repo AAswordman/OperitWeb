@@ -1,4 +1,4 @@
-import { isArtifactType, isRepoType } from '../../shared.js';
+import { githubRepositoryLogoUrl, githubRepositoryLogoUrlFromSource, isArtifactType, isRepoType } from '../../shared.js';
 import type { BuildSnapshot, Row } from '../../types.js';
 import { rowOptionalText, rowText } from './row.js';
 
@@ -7,6 +7,7 @@ export { buildEntryItem } from './entryBundle.inc.js';
 
 export interface EntryItem {
   type: string; id: string; title: string; description: string; detail?: string; authorId: string; publisherId: string; allowPublicUpdates: boolean; categoryId?: string; stateCode: string; createdAt: string; updatedAt: string; publishedAt?: string;
+  logoUrl?: string | null;
   featured: boolean;
   author?: { id: string; login: string; avatar: string };
   publisher?: { id: string; login: string; avatar: string };
@@ -123,7 +124,11 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
   const entryId = item.id;
   if (isRepoType(type)) {
     const spec = index ? index.reposByEntryId.get(entryId) : snap.repos.find((r) => rowText(r, 'entry_id') === entryId);
-    if (spec) item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') };
+    if (spec) {
+      item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') };
+      const logoUrl = githubRepositoryLogoUrlFromSource(spec.source_url);
+      if (logoUrl) item.logoUrl = logoUrl;
+    }
   }
   if (isArtifactType(type)) {
     const project = index ? index.artifactProjectByEntryId.get(entryId) : snap.artifactProjects.find((p) => rowText(p, 'entry_id') === entryId);
@@ -133,13 +138,17 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
         ...(rowOptionalText(project, 'runtime_pkg') ? { runtimePkg: rowText(project, 'runtime_pkg') } : {}),
       };
     }
-    item.assets = (index ? (index.assetsByEntryId.get(entryId) ?? []) : snap.assets.filter((a) => {
+    const assetRows = index ? (index.assetsByEntryId.get(entryId) ?? []) : snap.assets.filter((a) => {
       const version = snap.versions.find((vv) => rowText(vv, 'id') === rowText(a, 'version_id'));
       return version && rowText(version, 'entry_id') === entryId && rowText(version, 'state_code') === 'approved';
-    })).map((a) => ({
+    });
+    item.assets = assetRows.map((a) => ({
       id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'),
       ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}),
     }));
+    const logoAsset = assetRows.find((asset) => rowOptionalText(asset, 'gh_owner') && rowOptionalText(asset, 'gh_repo'));
+    const logoUrl = logoAsset ? githubRepositoryLogoUrl(logoAsset.gh_owner, logoAsset.gh_repo) : undefined;
+    if (logoUrl) item.logoUrl = logoUrl;
   }
   const versions = index
     ? (index.approvedVersionsByEntryId.get(entryId) ?? [])
@@ -246,3 +255,4 @@ function buildContributors(index: BuildSnapshotIndex | undefined, versions: Row[
   }
   return contributors;
 }
+

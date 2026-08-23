@@ -210,6 +210,24 @@
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.35);
 }
 
+.market-item-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(27, 31, 36, 0.12);
+}
+
+.market-detail-logo {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 1px 5px rgba(27, 31, 36, 0.14);
+}
 .market-item-cover {
   position: relative;
   padding: 12px 12px 10px;
@@ -261,7 +279,25 @@
   color: #0969da;
 }
 
-[data-theme='dark'] .market-item-cover {
+[data-theme='dark'] .market-item-logo {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 14px;
+  margin-bottom: 10px;
+  background: #ffffff;
+  box-shadow: 0 1px 4px rgba(27, 31, 36, 0.12);
+}
+
+.market-detail-logo {
+  width: 88px;
+  height: 88px;
+  object-fit: cover;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 1px 5px rgba(27, 31, 36, 0.14);
+}
+.market-item-cover {
   color: #e6edf3;
   background: #161b22;
   border-bottom-color: #30363d;
@@ -523,3 +559,4 @@
     height: 28px;
   }
 }
+
