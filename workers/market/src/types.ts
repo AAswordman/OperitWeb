@@ -69,6 +69,7 @@ export interface MarketEnv {
   projectionRegistry?: ProjectionRegistry;
   mockGitHubGetUser?: (token: string, env: MarketEnv) => Promise<GitHubUser>;
   mockGitHubGetRepo?: (owner: string, repo: string, env: MarketEnv) => Promise<GitHubRepoInfo>;
+  mockGitHubGetSocialPreview?: (owner: string, repo: string, env: MarketEnv) => Promise<string | undefined>;
   mockGitHubResolveRef?: (owner: string, repo: string, refType: string, refName: string, env: MarketEnv) => Promise<string>;
   mockGitHubGetRelease?: (owner: string, repo: string, tag: string, env: MarketEnv) => Promise<GitHubReleaseInfo>;
 }

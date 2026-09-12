@@ -13,6 +13,7 @@ export function writeEntryVersionsR2(entryId: string, snap: BuildSnapshot, r2: {
         ...(rowOptionalText(v, 'publisher_id') ? { publisherId: rowText(v, 'publisher_id') } : {}),
         ...(authorInfo(snap, rowText(v, 'publisher_id')) ? { publisher: authorInfo(snap, rowText(v, 'publisher_id')) } : {}),
         ...(rowOptionalText(v, 'max_app_ver') ? { maxAppVer: rowText(v, 'max_app_ver') } : {}),
+        ...(rowOptionalText(v, 'api_version') ? { apiVersion: rowText(v, 'api_version') } : {}),
         stateCode: rowText(v, 'state_code'),
         ...(rowOptionalText(v, 'changelog') ? { changelog: rowText(v, 'changelog') } : {}),
         ...(rowOptionalText(v, 'published_at') ? { publishedAt: rowText(v, 'published_at') } : {}),

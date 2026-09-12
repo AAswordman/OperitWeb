@@ -183,6 +183,7 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   }
   if (pathname.includes('/entries/') && pathname.endsWith('/curation') && request.method === 'POST') return entries.curationSet(request, storeEnv);
   if (pathname === '/market/v2/admin/review/entries' && request.method === 'GET') return entries.reviewEntries(request, storeEnv);
+  if (pathname === '/market/v2/admin/social-previews/refresh' && request.method === 'POST') return entries.refreshSocialPreviews(request, storeEnv);
   if (pathname.startsWith('/market/v2/admin/review/entries/') && request.method === 'GET') return entries.reviewEntryDetail(request, storeEnv);
   if (pathname.startsWith('/market/v2/my/entries/') && pathname.endsWith('/detail') && request.method === 'GET') return entries.myEntryDetail(request, storeEnv);
   if (pathname === '/market/v2/my/entries' && request.method === 'GET') return entries.myEntries(request, storeEnv);
@@ -198,6 +199,10 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   if (pathname === '/market/v2/build' && request.method === 'POST') {
     await requireAdminToken(request, env);
     return build.buildR2(storeEnv);
+  }
+  if (pathname === '/market/v2/admin/cleanup-generated-logos' && request.method === 'POST') {
+    await requireAdminToken(request, env);
+    return build.cleanupGeneratedLogos(storeEnv);
   }
   if (pathname === '/market/v2/admin/incremental-build' && request.method === 'POST') {
     await requireAdminToken(request, env);

@@ -55,6 +55,7 @@ export interface MarketV2Entry {
     formatVer?: string;
     minAppVer?: string;
     maxAppVer?: string;
+    apiVersion?: string;
     changelog?: string;
     installConfig?: string;
     runtimePackageId?: string;
@@ -66,6 +67,7 @@ export interface MarketV2Entry {
     formatVer?: string;
     minAppVer?: string;
     maxAppVer?: string;
+    apiVersion?: string;
     changelog?: string;
     installConfig?: string;
     runtimePackageId?: string;

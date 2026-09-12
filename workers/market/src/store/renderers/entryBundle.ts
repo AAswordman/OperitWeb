@@ -1,4 +1,4 @@
-import { githubRepositoryLogoUrl, githubRepositoryLogoUrlFromSource, isArtifactType, isRepoType } from '../../shared.js';
+import { isArtifactType, isRepoType } from '../../shared.js';
 import type { BuildSnapshot, Row } from '../../types.js';
 import { rowOptionalText, rowText } from './row.js';
 
@@ -16,8 +16,8 @@ export interface EntryItem {
   repoVersion?: { refType: string; refName: string; installConfig?: string };
   artifact?: { projectId: string; runtimePkg?: string };
   assets?: { id: string; versionId: string; kind: string; url: string; ghOwner?: string; ghRepo?: string; ghReleaseTag?: string; sha256: string; assetName?: string }[];
-  versions?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string }[];
-  latestVersion?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string };
+  versions?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; apiVersion?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string }[];
+  latestVersion?: { id: string; version: string; formatVer: string; publisherId?: string; publisher?: { id: string; login: string; avatar: string }; minAppVer: string; maxAppVer?: string; apiVersion?: string; changelog?: string; installConfig?: string; runtimePackageId?: string; stateCode?: string; publishedAt?: string };
   reactions?: { reaction: string; total: number }[];
   downloads?: number;
   downloadCount?: number;
@@ -122,12 +122,11 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
     ...(rowOptionalText(entry, 'published_at') ? { publishedAt: rowText(entry, 'published_at') } : {}),
   };
   const entryId = item.id;
+  if (rowOptionalText(entry, 'logo_url')) item.logoUrl = rowText(entry, 'logo_url');
   if (isRepoType(type)) {
     const spec = index ? index.reposByEntryId.get(entryId) : snap.repos.find((r) => rowText(r, 'entry_id') === entryId);
     if (spec) {
       item.source = { kind: rowText(spec, 'source_kind'), url: rowText(spec, 'source_url') };
-      const logoUrl = githubRepositoryLogoUrlFromSource(spec.source_url);
-      if (logoUrl) item.logoUrl = logoUrl;
     }
   }
   if (isArtifactType(type)) {
@@ -146,9 +145,6 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
       id: rowText(a, 'id'), versionId: rowText(a, 'version_id'), kind: rowText(a, 'kind'), url: rowText(a, 'url'), sha256: rowText(a, 'sha256'),
       ...(rowOptionalText(a, 'asset_name') ? { assetName: rowText(a, 'asset_name') } : {}),
     }));
-    const logoAsset = assetRows.find((asset) => rowOptionalText(asset, 'gh_owner') && rowOptionalText(asset, 'gh_repo'));
-    const logoUrl = logoAsset ? githubRepositoryLogoUrl(logoAsset.gh_owner, logoAsset.gh_repo) : undefined;
-    if (logoUrl) item.logoUrl = logoUrl;
   }
   const versions = index
     ? (index.approvedVersionsByEntryId.get(entryId) ?? [])
@@ -165,6 +161,7 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
       ...(versionPublisherId ? { publisherId: versionPublisherId } : {}),
       ...(publisherInfo ? { publisher: publisherInfo } : {}),
       ...(rowOptionalText(version, 'max_app_ver') ? { maxAppVer: rowText(version, 'max_app_ver') } : {}),
+      ...(rowOptionalText(version, 'api_version') ? { apiVersion: rowText(version, 'api_version') } : {}),
       ...(rowOptionalText(version, 'changelog') ? { changelog: rowText(version, 'changelog') } : {}),
       ...(repoVersion && rowOptionalText(repoVersion, 'install_config') ? { installConfig: rowText(repoVersion, 'install_config') } : {}),
       ...(rowOptionalText(version, 'runtime_pkg') ? { runtimePackageId: rowText(version, 'runtime_pkg') } : {}),
@@ -180,6 +177,7 @@ export function buildEntryFromSnapshot(entry: Row, snap: BuildSnapshot, index?: 
       ...(latestPublisherId ? { publisherId: latestPublisherId } : {}),
       ...(latestPublisher ? { publisher: latestPublisher } : {}),
       ...(rowOptionalText(latest, 'max_app_ver') ? { maxAppVer: rowText(latest, 'max_app_ver') } : {}),
+      ...(rowOptionalText(latest, 'api_version') ? { apiVersion: rowText(latest, 'api_version') } : {}),
       ...(rowOptionalText(latest, 'changelog') ? { changelog: rowText(latest, 'changelog') } : {}),
       ...(repoVersion && rowOptionalText(repoVersion, 'install_config') ? { installConfig: rowText(repoVersion, 'install_config') } : {}),
       ...(rowOptionalText(latest, 'runtime_pkg') ? { runtimePackageId: rowText(latest, 'runtime_pkg') } : {}),

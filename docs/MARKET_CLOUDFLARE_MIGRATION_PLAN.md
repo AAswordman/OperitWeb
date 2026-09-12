@@ -36,7 +36,7 @@ V2 管理 `script`、`package`、`skill` 和 `mcp`。它不是 GitHub Issue 市�
 ### 内容和版本
 
 - `market_entries` 保存类型、标题、描述、详情、分类、归属和 Entry 状态。
-- `market_versions` 保存版本号、格式版本、应用兼容范围、changelog、状态和版本发布者。一个 Entry 内版本号唯一，提交的新版本必须高于已有最高版本。
+- `market_versions` 保存版本号、格式版本、应用兼容范围、可选 ToolPkg API 版本、changelog、状态和版本发布者。一个 Entry 内版本号唯一，提交的新版本必须高于已有最高版本。
 - `repo_plugin_specs` 保存 GitHub source URL；`repo_plugin_versions` 保存 ref 类型、ref 名称、解析后的 commit SHA 和安装配置。`subdir` 与 `manifest_path` 已不存在。
 - `artifact_projects` 按项目键关联 Artifact Entry；`market_assets` 以 Version 为单位保存经 GitHub Release 验证的下载地址、Release 定位、文件名和 SHA-256。
 - `market_comments`、`market_notifications`、`market_curations`、`market_reaction_counts` 与 `market_entry_stats` 保存互动和运营数据。

@@ -14,12 +14,14 @@ interface RepoPublishInput {
   refName: string;
   installConfig?: string;
   commitSha: string;
+  logoUrl?: string;
   allowPublicUpdates?: boolean;
   version: string;
   formatVer: string;
   minAppVer: string;
   maxAppVer?: string;
   changelog?: string;
+  apiVersion?: string;
   createdAt?: string;
 }
 
@@ -37,10 +39,12 @@ interface ArtifactPublishInput {
   minAppVer: string;
   maxAppVer?: string;
   changelog?: string;
+  apiVersion?: string;
   projectKey: string;
   runtimePackageId: string;
   allowPublicUpdates?: boolean;
   assets?: ArtifactAssetInput[];
+  logoUrl?: string;
   createdAt?: string;
 }
 
@@ -68,6 +72,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         stateCode: 'pending',
         createdAt: time,
         updatedAt: time,
+        ...(input.logoUrl ? { logoUrl: input.logoUrl } : {}),
       },
     },
     {
@@ -82,6 +87,7 @@ export function publishRepoMutation(input: RepoPublishInput): MarketMutation {
         publisherId: input.publisherId,
         minAppVer: input.minAppVer,
         ...(input.maxAppVer !== undefined ? { maxAppVer: input.maxAppVer } : {}),
+        ...(input.apiVersion !== undefined ? { apiVersion: input.apiVersion } : {}),
         stateCode: 'pending',
         ...(input.changelog !== undefined ? { changelog: input.changelog } : {}),
         createdAt: time,
@@ -149,6 +155,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         stateCode: 'pending',
         createdAt: time,
         updatedAt: time,
+        ...(input.logoUrl ? { logoUrl: input.logoUrl } : {}),
       },
     },
     {
@@ -161,6 +168,7 @@ export function publishArtifactMutation(input: ArtifactPublishInput): MarketMuta
         publisherId: input.publisherId,
         minAppVer: input.minAppVer,
         ...(input.maxAppVer !== undefined ? { maxAppVer: input.maxAppVer } : {}),
+        ...(input.apiVersion !== undefined ? { apiVersion: input.apiVersion } : {}),
         runtimePkg: input.runtimePackageId,
         stateCode: 'pending',
         ...(input.changelog !== undefined ? { changelog: input.changelog } : {}),

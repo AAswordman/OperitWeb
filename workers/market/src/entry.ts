@@ -1,5 +1,5 @@
 import { assertAuthorActive, requireAdminToken, requireReviewToken, requireSession, rotateReviewAgentKey, upsertAuthorFromGithubOwner, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
-import { githubApiFetch } from './github.js';
+import { githubApiFetch, githubRepositorySocialPreviewUrl } from './github.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
   MarketError,
@@ -43,9 +43,10 @@ interface EntryRoutes {
   reviewEntryDetail(request: Request, env: MarketEnv): Promise<JsonObject>;
   moderateEntry(request: Request, env: MarketEnv): Promise<JsonObject>;
   curationSet(request: Request, env: MarketEnv): Promise<JsonObject>;
+  refreshSocialPreviews(request: Request, env: MarketEnv): Promise<JsonObject>;
 }
 
-interface VersionInput { version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string; runtimePackageId?: string }
+interface VersionInput { version: string; formatVer: string; minAppVer: string; maxAppVer?: string; changelog?: string; runtimePackageId?: string; apiVersion?: string }
 interface EntryUpdateInput { title?: string; description?: string; detail?: string; categoryId?: string; allowPublicUpdates?: boolean }
 interface RepoVersionBody { refType: string; refName: string; installConfig?: string }
 interface ArtifactAssetBody { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; assetName: string; sha256: string; projectId?: string; runtimePackageId?: string }
@@ -141,7 +142,7 @@ const AUTHOR_BLOCK_REASON_CODES = new Set([
 ]);
 
 export function createEntryRoutes(): EntryRoutes {
-  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewMetadata: handleReviewMetadata, reviewAgentKey: handleReviewAgentKey, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet };
+  return { publish: handlePublish, publishProof: handlePublishProof, updateEntry: handleUpdateEntry, newVersion: handleNewVersion, resubmitEntry: handleResubmitEntry, resubmitVersion: handleResubmitVersion, deleteEntry: handleDeleteEntry, deleteVersion: handleDeleteVersion, myEntries: handleMyEntries, myEntryDetail: handleMyEntryDetail, reviewApprove: handleReviewApprove, reviewReject: handleReviewReject, reviewRequestChanges: handleReviewRequestChanges, reviewMetadata: handleReviewMetadata, reviewAgentKey: handleReviewAgentKey, reviewEntries: handleReviewEntries, reviewEntryDetail: handleReviewEntryDetail, moderateEntry: handleModerateEntry, curationSet: handleCurationSet, refreshSocialPreviews: handleRefreshSocialPreviews };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -221,8 +222,9 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
   if (!repo.isPublic) throw new MarketError('validation_failed', 'GitHub repo must be public');
   const repoOwner = await upsertAuthorFromGithubOwner(requireDb(env), { githubId: repo.ownerId, login: repo.ownerLogin, avatar: repo.ownerAvatar });
   const commitSha = await resolveRef(env, source.owner, source.repo, refType, refName);
+  const logoUrl = await getGithubSocialPreview(env, source.owner, source.repo);
   const installConfig = optionalString(repoBody.installConfig);
-  const mutation = publishRepoMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...versionInput });
+  const mutation = publishRepoMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: repoOwner.id, sourceUrl: source.url, refType, refName, ...(installConfig !== undefined ? { installConfig } : {}), commitSha, ...(logoUrl ? { logoUrl } : {}), ...versionInput });
   const applied = await store.apply(mutation);
   const entryId = String(mutation.objects[0]?.id || '');
   await materializePrivatePublisherShards(store, [publisher.id], entryId);
@@ -231,6 +233,7 @@ async function publishRepoEntry(env: MarketEnv, store: MarketStore, publisher: M
 
 async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session: MarketSession, publisher: MarketAuthor, type: string, title: string, description: string, detail: string | undefined, categoryId: string | undefined, allowPublicUpdates: boolean, versionInput: VersionInput, body: Record<string, unknown>, timing: PublishTimingLog): Promise<JsonObject> {
   const artifact = await measurePublishPhase(timing, 'artifact.validate-github-release', () => validateArtifactVersion(env, session, body));
+  const logoUrl = await measurePublishPhase(timing, 'artifact.social-preview', () => getGithubSocialPreview(env, artifact.asset.ghOwner, artifact.asset.ghRepo));
   const projectVersions = await measurePublishPhase(timing, 'artifact.list-project-versions', () => store.d1.listVersionsForArtifactProjectKey(artifact.projectId));
   await measurePublishPhase(timing, 'artifact.assert-version', () => assertVersionGreaterThanExisting(versionInput.version, projectVersions));
   const existingVersion = projectVersions[0];
@@ -255,6 +258,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
           entryId,
           ...versionInput,
           runtimePackageId: artifact.runtimePackageId,
+          ...(versionInput.apiVersion !== undefined ? { apiVersion: versionInput.apiVersion } : {}),
           publisherId: publisher.id,
           entryPatch: serializeEntryPatch({ title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates }),
           stateCode: 'pending',
@@ -280,6 +284,9 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
         },
       },
     ];
+    if (logoUrl && logoUrl !== text(entry.logo_url)) {
+      objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { logoUrl, updatedAt: now } });
+    }
     const effects = withPrivatePublisherShardEffects(
       [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }, { projection: 'entry.shard', scope: { entryId } }, { projection: 'entry.versions', scope: { entryId } }, { projection: 'asset.detail', scope: { assetId } }],
       [originalPublisherId, publisher.id],
@@ -289,7 +296,7 @@ async function publishArtifactEntry(env: MarketEnv, store: MarketStore, session:
     await measurePublishPhase(timing, 'materialize.publisher-shard', () => materializePrivatePublisherShards(store, [originalPublisherId, publisher.id], entryId));
     return { ok: true, entryId, versionId, stats: applied.stats as unknown as JsonObject };
   }
-  const mutation = publishArtifactMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, assets: [artifact.asset] });
+  const mutation = publishArtifactMutation({ type, title, description, ...(detail !== undefined ? { detail } : {}), ...(categoryId !== undefined ? { categoryId } : {}), allowPublicUpdates, publisherId: publisher.id, authorId: publisher.id, ...versionInput, runtimePackageId: artifact.runtimePackageId, projectKey: artifact.projectId, ...(logoUrl ? { logoUrl } : {}), assets: [artifact.asset] });
   const applied = await measurePublishPhase(timing, 'store.apply-new-entry', () => store.apply(mutation));
   const entryId = String(mutation.objects[0]?.id || '');
   await measurePublishPhase(timing, 'materialize.publisher-shard', () => materializePrivatePublisherShards(store, [publisher.id], entryId));
@@ -357,7 +364,9 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   if (isArtifactType(text(entry.type))) {
     const artifact = await validateArtifactVersion(env, session, body);
     versionInput = { ...versionInput, runtimePackageId: artifact.runtimePackageId };
+    const logoUrl = await getGithubSocialPreview(env, artifact.asset.ghOwner, artifact.asset.ghRepo);
     objects.push({ kind: 'Asset' as const, operation: 'create' as const, id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, value: { id: `asset-${versionId}-${artifact.asset.assetName.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`, versionId, kind: artifact.asset.kind, url: artifact.asset.url, ghOwner: artifact.asset.ghOwner, ghRepo: artifact.asset.ghRepo, ghReleaseTag: artifact.asset.ghReleaseTag, sha256: artifact.asset.sha256, assetName: artifact.asset.assetName, createdAt: new Date().toISOString() } });
+    if (logoUrl && logoUrl !== text(entry.logo_url)) objects.push({ kind: 'Entry' as const, operation: 'update' as const, id: entryId, patch: { logoUrl, updatedAt: new Date().toISOString() } });
   }
   const now = new Date().toISOString();
   objects.unshift({ kind: 'Version', operation: 'create', id: versionId, value: { id: versionId, entryId, ...versionInput, publisherId: publisher.id, ...(hasEntryPatch ? { entryPatch: serializeEntryPatch(entryPatchInput) } : {}), stateCode: 'pending', createdAt: now, updatedAt: now } });
@@ -500,6 +509,7 @@ async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<Js
           ...(versionPublisher ? { publisher: { id: versionPublisherId, login: text(versionPublisher.github_login), avatar: text(versionPublisher.owner_avatar) } } : {}),
           minAppVer: text(version.min_app_ver),
           maxAppVer: text(version.max_app_ver),
+          ...(optionalString(version.api_version) ? { apiVersion: text(version.api_version) } : {}),
           changelog: text(version.changelog),
           stateCode: text(version.state_code),
           runtimePackageId: text(version.runtime_pkg),
@@ -692,6 +702,40 @@ async function handleCurationSet(request: Request, env: MarketEnv): Promise<Json
   return { ok: true, entryId, listKey, stats: applied.stats as unknown as JsonObject };
 }
 
+async function handleRefreshSocialPreviews(request: Request, env: MarketEnv): Promise<JsonObject> {
+  const admin = await requireAdminToken(request, env);
+  const store = requireStore(env);
+  const entries = await store.d1.listAllEntries();
+  const previewByRepo = new Map<string, string | undefined>();
+  const objects: MarketMutation['objects'] = [];
+  const effects: MarketMutation['effects'] = [{ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } }];
+  let inspected = 0;
+  let updated = 0;
+  for (const entry of entries) {
+    const coordinates = await githubCoordinatesForEntry(store, entry);
+    if (!coordinates) continue;
+    inspected++;
+    const cacheKey = `${coordinates.owner.toLowerCase()}/${coordinates.repo.toLowerCase()}`;
+    if (!previewByRepo.has(cacheKey)) previewByRepo.set(cacheKey, await getGithubSocialPreview(env, coordinates.owner, coordinates.repo));
+    const logoUrl = previewByRepo.get(cacheKey);
+    if (!logoUrl || logoUrl === text(entry.logo_url)) continue;
+    const entryId = text(entry.id);
+    objects.push({ kind: 'Entry', operation: 'update', id: entryId, patch: { logoUrl, updatedAt: new Date().toISOString() } });
+    effects.push({ projection: 'entry.shard', scope: { entryId } });
+    updated++;
+  }
+  if (objects.length === 0) return { ok: true, inspected, updated: 0, repositories: previewByRepo.size };
+  const applied = await store.apply({
+    type: 'mutation',
+    id: `mut-social-preview-refresh-${Date.now()}`,
+    actor: { authorId: admin.username, role: 'admin' },
+    reason: 'entry.social_preview_refreshed',
+    objects,
+    effects,
+  });
+  return { ok: true, inspected, updated, repositories: previewByRepo.size, stats: applied.stats as unknown as JsonObject };
+}
+
 async function applyEntryState(env: MarketEnv, request: Request, entryId: string, stateCode: string, reason: string): Promise<JsonObject> {
   const session = await requireSession(request, env);
   const store = requireStore(env);
@@ -882,6 +926,7 @@ function reviewVersionSummary(row: Row): JsonObject {
       minAppVer: text(row.min_app_ver),
       maxAppVer: text(row.max_app_ver),
       runtimePackageId: text(row.runtime_pkg),
+      ...(optionalString(row.api_version) ? { apiVersion: text(row.api_version) } : {}),
       stateCode: text(row.version_state_code),
       changelog: text(row.changelog),
       createdAt: text(row.version_created_at),
@@ -904,6 +949,7 @@ function versionDetail(version: Row, reviewDetail?: Row): JsonObject {
     publisherId: text(version.publisher_id),
     minAppVer: text(version.min_app_ver),
     maxAppVer: text(version.max_app_ver),
+    ...(optionalString(version.api_version) ? { apiVersion: text(version.api_version) } : {}),
     stateCode: text(version.state_code),
     changelog: text(version.changelog),
     createdAt: text(version.created_at),
@@ -1017,7 +1063,7 @@ function parseVersion(value: string): { parts: number[]; suffix: string } {
   return { parts, suffix };
 }
 function requireVersionInput(input: Record<string, unknown>): VersionInput {
-  return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}) };
+  return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}), ...(input.apiVersion !== undefined ? { apiVersion: requireString(input.apiVersion, 'version.apiVersion') } : {}) };
 }
 async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; runtimePackageId: string; asset: { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; sha256: string; assetName: string } }> {
   const v = asRecord(body.version) as ArtifactVersionBody;
@@ -1049,6 +1095,28 @@ async function validateArtifactVersion(env: MarketEnv, session: MarketSession, b
   };
 }
 async function getRepo(env: MarketEnv, owner: string, repo: string): Promise<GitHubRepoInfo> { return (env.mockGitHubGetRepo || realGitHubGetRepo)(owner, repo, env); }
+async function getGithubSocialPreview(env: MarketEnv, owner: string, repo: string): Promise<string | undefined> {
+  return env.mockGitHubGetSocialPreview ? env.mockGitHubGetSocialPreview(owner, repo, env) : githubRepositorySocialPreviewUrl(owner, repo);
+}
+async function githubCoordinatesForEntry(store: MarketStore, entry: Row): Promise<{ owner: string; repo: string } | undefined> {
+  const type = text(entry.type);
+  if (isRepoType(type)) {
+    const spec = await store.d1.getRepoSpecByEntry(text(entry.id));
+    if (!spec) return undefined;
+    try {
+      const source = normalizeGithubRepoUrl(text(spec.source_url));
+      return { owner: source.owner, repo: source.repo };
+    } catch {
+      return undefined;
+    }
+  }
+  if (isArtifactType(type)) {
+    const assets = await store.d1.listAssets(text(entry.id));
+    const asset = assets.find((candidate) => optionalString(candidate.gh_owner) && optionalString(candidate.gh_repo));
+    if (asset) return { owner: text(asset.gh_owner), repo: text(asset.gh_repo) };
+  }
+  return undefined;
+}
 async function getGitHubRelease(env: MarketEnv, owner: string, repo: string, tag: string): Promise<GitHubReleaseInfo> { return (env.mockGitHubGetRelease || realGitHubGetRelease)(owner, repo, tag, env); }
 async function resolveRef(env: MarketEnv, owner: string, repo: string, refType: string, refName: string): Promise<string> { return (env.mockGitHubResolveRef || realGitHubResolveRef)(owner, repo, refType, refName, env); }
 async function realGitHubGetRepo(owner: string, repo: string, env: MarketEnv): Promise<GitHubRepoInfo> { const response = await githubApiFetch(`/repos/${owner}/${repo}`, env); if (!response.ok) throw new MarketError('validation_failed', 'GitHub repo is not accessible'); const data = await response.json() as { owner?: { id?: number; login?: string; avatar_url?: string }; private?: boolean }; return { ownerId: Number(data.owner?.id || 0), ownerLogin: String(data.owner?.login || ''), ...(data.owner?.avatar_url !== undefined ? { ownerAvatar: data.owner.avatar_url } : {}), isPublic: !data.private }; }

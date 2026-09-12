@@ -35,6 +35,7 @@ async function makeEnv() {
       throw new MarketError('unauthorized', 'Invalid token', 401);
     },
     mockGitHubGetRepo: async () => ({ ownerId: GITHUB_ID_PUBLISHER, ownerLogin: 'pub1', ownerAvatar: '', isPublic: true }),
+    mockGitHubGetSocialPreview: async () => undefined,
     mockGitHubResolveRef: async () => 'resolved-commit-sha',
     mockGitHubGetRelease: async () => ({ authorId: GITHUB_ID_PUBLISHER, assets: [] }),
   };
@@ -136,8 +137,9 @@ async function submitMcpVersion(entryRoutes, env, session, entryId, version) {
 }
 
 async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0', projectId = 'script.test.artifact', metadata = {}) {
-  const releaseTag = `script-test-v${version}`;
-  const assetName = `script-test-${version}.zip`;
+  const type = metadata.type ?? 'script';
+  const releaseTag = `${type}-test-v${version}`;
+  const assetName = `${type}-test-${version}.zip`;
   const githubId = metadata.githubId ?? GITHUB_ID_PUBLISHER;
   const owner = metadata.owner ?? 'pub1';
   const repo = metadata.repo ?? 'OperitForge';
@@ -147,21 +149,22 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
     assets: [{ name: assetName, browserDownloadUrl: canonicalUrl, sha256: SHA_A }],
   });
   const req = makeRequest('http://api/market/v2/publish', 'POST', {
-    type: 'script',
-    title: metadata.title ?? 'Test Script',
+    type,
+    title: metadata.title ?? (type === 'package' ? 'Test Package' : 'Test Script'),
     description: metadata.description ?? 'Desc',
     detail: metadata.detail ?? '',
     categoryId: metadata.categoryId ?? 'automation',
     allowPublicUpdates: metadata.allowPublicUpdates ?? true,
     version: {
       version,
-      formatVer: 'script',
+      formatVer: metadata.formatVer ?? 'script',
       minAppVer: '1.2.0',
+      ...(metadata.apiVersion !== undefined ? { apiVersion: metadata.apiVersion } : {}),
       projectId,
       runtimePackageId: projectId,
     },
     asset: {
-      kind: 'script',
+      kind: type,
       url: metadata.submittedUrl ?? `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
       ghOwner: owner,
       ghRepo: repo,
@@ -171,6 +174,38 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
     },
   }, session);
   return entryRoutes.publish(req, env);
+}
+
+async function submitArtifactVersion(entryRoutes, env, session, entryId, { type = 'script', version, projectId, apiVersion, githubId = GITHUB_ID_PUBLISHER, owner = 'pub1', repo = 'OperitForge', formatVer = 'script' }) {
+  const releaseTag = `${type}-test-v${version}`;
+  const assetName = `${type}-test-${version}.zip`;
+  env.mockGitHubGetRelease = async () => ({
+    authorId: githubId,
+    assets: [{
+      name: assetName,
+      browserDownloadUrl: `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
+      sha256: SHA_A,
+    }],
+  });
+  return entryRoutes.newVersion(makeRequest(`http://api/market/v2/entries/${entryId}/versions`, 'POST', {
+    version: {
+      version,
+      formatVer,
+      minAppVer: '1.2.0',
+      ...(apiVersion !== undefined ? { apiVersion } : {}),
+      projectId,
+      runtimePackageId: projectId,
+    },
+    asset: {
+      kind: type,
+      url: `https://github.com/${owner}/${repo}/releases/download/${releaseTag}/${assetName}`,
+      ghOwner: owner,
+      ghRepo: repo,
+      ghReleaseTag: releaseTag,
+      assetName,
+      sha256: SHA_A,
+    },
+  }, session), env);
 }
 
 test('artifact publish accepts a release created by the current publisher without a proof marker', async () => {
@@ -220,6 +255,76 @@ test('artifact publish uses GitHub canonical asset URL instead of the submitted 
 
   const asset = rows(db, 'SELECT url FROM market_assets WHERE version_id = ?', [published.versionId])[0];
   assert.equal(asset.url, canonicalUrl);
+  afterTest(ctx);
+});
+
+test('package versions expose optional ToolPkg API version across market v2 reads', async () => {
+  const ctx = await makeEnv();
+  const { env, db, r2, store } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createBuildRoutes } = await import('../dist/build.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const projectId = 'package.toolpkg.api';
+
+  const first = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', projectId, {
+    type: 'package',
+    formatVer: 'toolpkg_v2',
+    apiVersion: '1.0',
+  });
+  assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [first.versionId])[0].api_version, '1.0');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }), env);
+
+  const second = await submitArtifactVersion(entryRoutes, env, pubSession, first.entryId, {
+    type: 'package',
+    version: '1.1.0',
+    projectId,
+    formatVer: 'toolpkg_v2',
+    apiVersion: '1.1',
+  });
+  assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [second.versionId])[0].api_version, '1.1');
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: second.versionId }), env);
+
+  const privateDetail = await entryRoutes.myEntryDetail(makeRequest(`http://api/market/v2/my/entries/${first.entryId}/detail`, 'GET', undefined, pubSession), env);
+  assert.equal(privateDetail.item.latestVersion.apiVersion, '1.1');
+  assert.equal(privateDetail.item.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0');
+
+  const reviewDetail = await entryRoutes.reviewEntryDetail(makeAdminRequest(`http://api/market/v2/admin/review/entries/${first.entryId}`, 'GET'), env);
+  assert.equal(reviewDetail.versions.find((version) => version.version === '1.1.0').apiVersion, '1.1');
+
+  await store.materialize({ projection: 'entry.versions', scope: { entryId: first.entryId } });
+  await createBuildRoutes().buildR2(env);
+
+  const entryVersions = r2.readJson(`market/v2/entries/${first.entryId}/versions.json`);
+  assert.equal(entryVersions.items.find((version) => version.version === '1.1.0').apiVersion, '1.1');
+  const shardItem = r2.readJson(`market/v2/entries/${entryShardOf(first.entryId)}.json`).entriesById[first.entryId];
+  assert.equal(shardItem.latestVersion.apiVersion, '1.1');
+  assert.equal(shardItem.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0');
+  const listItem = r2.readJson('market/v2/lists/type/package/updated/page-1.json').items.find((item) => item.id === first.entryId);
+  assert.equal(listItem.latestVersion.apiVersion, '1.1');
+  assert.equal(listItem.versions.find((version) => version.version === '1.1.0').apiVersion, '1.1');
+
+  afterTest(ctx);
+});
+
+test('custom GitHub Social preview is persisted and emitted in public projections', async () => {
+  const ctx = await makeEnv();
+  const { env, db, r2, store } = ctx;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createBuildRoutes } = await import('../dist/build.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const preview = 'https://repository-images.githubusercontent.com/1001/preview-image';
+  env.mockGitHubGetSocialPreview = async () => preview;
+  const published = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', 'package.social-preview', { type: 'package', formatVer: 'toolpkg_v2' });
+  assert.equal(rows(db, 'SELECT logo_url FROM market_entries WHERE id = ?', [published.entryId])[0].logo_url, preview);
+  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${published.entryId}/review/approve`, 'POST', { entryId: published.entryId, versionId: published.versionId }), env);
+  await store.materialize({ projection: 'list.page', scope: { list: {}, sort: 'updated', page: 1 } });
+  const listItem = r2.readJson('market/v2/lists/all/updated/page-1.json').items.find((item) => item.id === published.entryId);
+  assert.equal(listItem.logoUrl, preview);
+  await createBuildRoutes().buildR2(env);
+  const shardItem = r2.readJson(`market/v2/entries/${entryShardOf(published.entryId)}.json`).entriesById[published.entryId];
+  assert.equal(shardItem.logoUrl, preview);
   afterTest(ctx);
 });
 

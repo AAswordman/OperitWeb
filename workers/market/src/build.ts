@@ -11,8 +11,9 @@ const ENTRY_SHARDS = 256;
 export function createBuildRoutes(): {
   buildR2: (env: MarketEnv) => Promise<{ ok: true; materialized: number }>;
   rebuildEntry: (env: MarketEnv, entryId: string) => Promise<{ ok: true; materialized: number }>;
+  cleanupGeneratedLogos: (env: MarketEnv) => Promise<{ ok: true; scanned: number; cleaned: number; removed: number }>;
 } {
-  return { buildR2, rebuildEntry };
+  return { buildR2, rebuildEntry, cleanupGeneratedLogos };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -23,6 +24,72 @@ function requireStore(env: MarketEnv): MarketStore {
 async function buildR2(env: MarketEnv): Promise<{ ok: true; materialized: number }> {
   const store = requireStore(env);
   return fullBuild(store);
+}
+
+async function cleanupGeneratedLogos(env: MarketEnv): Promise<{ ok: true; scanned: number; cleaned: number; removed: number }> {
+  const store = requireStore(env);
+  const [listObjects, entryObjects] = await Promise.all([
+    store.r2.list('market/v2/lists/'),
+    store.r2.list('market/v2/entries/'),
+  ]);
+  const keys = [...new Set([
+    ...listObjects.objects.map((object) => object.key),
+    ...entryObjects.objects.map((object) => object.key),
+  ])].filter((key) => key.endsWith('.json'));
+  let scanned = 0;
+  let cleaned = 0;
+  let removed = 0;
+  const batchSize = 24;
+  for (let start = 0; start < keys.length; start += batchSize) {
+    const batch = keys.slice(start, start + batchSize);
+    const results = await Promise.all(batch.map(async (key) => {
+      const current = await store.r2.readJson(key);
+      if (current === null) return { scanned: 0, cleaned: 0, removed: 0 };
+      const result = stripGeneratedLogoUrls(current);
+      if (result.removed === 0) return { scanned: 1, cleaned: 0, removed: 0 };
+      await store.r2.writeJson(key, result.value);
+      return { scanned: 1, cleaned: 1, removed: result.removed };
+    }));
+    for (const result of results) {
+      scanned += result.scanned;
+      cleaned += result.cleaned;
+      removed += result.removed;
+    }
+  }
+  return { ok: true, scanned, cleaned, removed };
+}
+
+function stripGeneratedLogoUrls(value: unknown): { value: unknown; removed: number } {
+  if (Array.isArray(value)) {
+    let removed = 0;
+    const next = value.map((item) => {
+      const result = stripGeneratedLogoUrls(item);
+      removed += result.removed;
+      return result.value;
+    });
+    return { value: next, removed };
+  }
+  if (!value || typeof value !== 'object') return { value, removed: 0 };
+  let removed = 0;
+  const next: Record<string, unknown> = {};
+  for (const [key, item] of Object.entries(value)) {
+    if (key === 'logoUrl' && typeof item === 'string' && isGeneratedGithubLogoUrl(item)) {
+      removed++;
+      continue;
+    }
+    const result = stripGeneratedLogoUrls(item);
+    next[key] = result.value;
+    removed += result.removed;
+  }
+  return { value: next, removed };
+}
+
+function isGeneratedGithubLogoUrl(value: string): boolean {
+  try {
+    return new URL(value).hostname.toLowerCase() === 'opengraph.githubassets.com';
+  } catch {
+    return false;
+  }
 }
 
 // Cron-only: checks market_meta.last_full_build, runs fullBuild if needed (30-day interval)

@@ -17,6 +17,49 @@ export async function githubApiFetch(path: string, env: MarketEnv): Promise<Resp
   });
 }
 
+/**
+ * Read GitHub's repository page metadata and return only a custom Social
+ * preview image. GitHub's generated opengraph card is deliberately ignored.
+ */
+export async function githubRepositorySocialPreviewUrl(owner: string, repo: string): Promise<string | undefined> {
+  const ownerText = String(owner || '').trim();
+  const repoText = String(repo || '').trim().replace(/\.git$/i, '');
+  if (!ownerText || !repoText || /[\s/#?]/.test(ownerText) || /[\s/#?]/.test(repoText)) return undefined;
+  const pageUrl = `https://github.com/${encodeURIComponent(ownerText)}/${encodeURIComponent(repoText)}`;
+  try {
+    const response = await fetch(pageUrl, {
+      headers: {
+        Accept: 'text/html,application/xhtml+xml',
+        'User-Agent': GITHUB_USER_AGENT,
+      },
+    });
+    if (!response.ok) return undefined;
+    const html = await response.text();
+    const image = extractMetaContent(html, 'og:image');
+    if (!image) return undefined;
+    const imageUrl = new URL(decodeHtmlEntities(image), pageUrl);
+    if (imageUrl.hostname.toLowerCase() !== 'repository-images.githubusercontent.com') return undefined;
+    return imageUrl.href;
+  } catch {
+    return undefined;
+  }
+}
+
+function extractMetaContent(html: string, property: string): string | undefined {
+  const tags = html.match(/<meta\b[^>]*>/gi) || [];
+  for (const tag of tags) {
+    const propertyMatch = tag.match(/\b(?:property|name)\s*=\s*(["'])(.*?)\1/i);
+    if (!propertyMatch || (propertyMatch[2] || '').toLowerCase() !== property.toLowerCase()) continue;
+    const contentMatch = tag.match(/\bcontent\s*=\s*(["'])(.*?)\1/i);
+    if (contentMatch?.[2]) return contentMatch[2].trim();
+  }
+  return undefined;
+}
+
+function decodeHtmlEntities(value: string): string {
+  return value.replace(/&amp;/gi, '&').replace(/&quot;/gi, '"').replace(/&#39;/gi, "'").replace(/&lt;/gi, '<').replace(/&gt;/gi, '>');
+}
+
 async function fetchGitHubToken(env: MarketEnv): Promise<string> {
   if (githubTokenCache.token && githubTokenCache.expiresAt > Date.now()) {
     return githubTokenCache.token;

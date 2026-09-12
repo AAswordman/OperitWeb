@@ -138,7 +138,7 @@ GET /market/v2/entries/{shard}.json
 
 返回 `entriesById` map，用于从作者页、通知等场景按 id 查 entry。
 
-列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
+列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。`package` 版本可额外返回 `versions[].apiVersion` / `latestVersion.apiVersion`，表示宿主 ToolPkg API 版本；该字段属于单个版本记录，不属于 Entry 元信息。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
 
 ### Entry Logo
 
@@ -146,11 +146,13 @@ GET /market/v2/entries/{shard}.json
 
 ```json
 {
-  "logoUrl": "https://opengraph.githubassets.com/1/owner/repo"
+  "logoUrl": "https://repository-images.githubusercontent.com/123456/01234567-89ab-cdef-0123-456789abcdef"
 }
 ```
 
-Worker 不提供 Logo 上传、托管或修改接口，也不会要求发布、更新或新版本请求传递 `logoUrl` 或 Logo 文件。对于 `skill` / `mcp`，`logoUrl` 由 GitHub source repo 的 owner/repo 无网络请求派生；对于 `script` / `package`，由已验证 GitHub Release asset 的 `ghOwner` / `ghRepo` 派生。没有可派生仓库时省略该字段。客户端只需读取并渲染 URL，支持 SVG、PNG、JPG/JPEG、WebP；不得调用或保留 `POST /market/v2/logos`。
+Worker 不提供 Logo 上传、托管或修改接口，也不会要求发布、更新或新版本请求传递 `logoUrl` 或 Logo 文件。发布时 Worker 读取 GitHub 仓库页面的 `og:image`，仅接受 GitHub 自定义 Social preview 返回的 `repository-images.githubusercontent.com` URL；如果仓库没有自定义 Social preview，就省略 `logoUrl`，不使用 `opengraph.githubassets.com` 默认信息卡。管理员可通过 `POST /market/v2/admin/social-previews/refresh` 重新扫描已有条目的仓库并刷新已存在的自定义 Social preview。客户端只需读取并渲染 URL，支持 SVG、PNG、JPG/JPEG、WebP；不得调用或保留 `POST /market/v2/logos`。
+
+管理员可通过 `POST /market/v2/admin/cleanup-generated-logos` 清理历史投影中错误的 `opengraph.githubassets.com` 地址；该操作只删除错误的 `logoUrl` 字段，不影响其他数据，也不删除 `repository-images.githubusercontent.com` 自定义图。
 ### 评论分页
 
 ```http
@@ -189,6 +191,8 @@ Repo 类条目必须能公开访问并确认 GitHub repo owner；仓库不可访
 
 Artifact 类提交以 `ghOwner`、`ghRepo`、`ghReleaseTag`、`assetName` 和 `sha256` 定位 Release 资产。Worker 验证 Release author 等于当前市场身份后保存 GitHub 返回的 canonical `browser_download_url`；客户端传入的 `asset.url` 不参与接受判定，也不应作为下载来源。
 
+`package` 发布请求可在 `version.apiVersion` 传入宿主 ToolPkg API 版本；客户端 manifest 字段名为 `api_version`，发布到市场时映射为 `version.apiVersion`。`script`、`skill`、`mcp` 一般不传该字段。
+
 每次发布会在响应结束后写入调试日志：
 
 ```text
@@ -209,7 +213,7 @@ PATCH https://api.operit.app/market/v2/entries/{entryId}
 Authorization: Bearer <market_session>
 ```
 
-请求体只允许最初 `publisher` 修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。该接口不允许修改条目归属或历史版本发布者；其他投稿者要更新市场说明，必须随新版本提交待审核的 `description` 或 `detail` patch。
+请求体只允许最初 `publisher` 修改 entry 级字段：`title`、`description`、`detail`、`categoryId`、`allowPublicUpdates`。该接口不允许修改条目归属、历史版本发布者或版本级 `apiVersion`；其他投稿者要更新市场说明，必须随新版本提交待审核的 `description` 或 `detail` patch。
 
 该接口只更新 Entry 元数据，不创建 Version，也不改变现有 Entry 状态。投影会异步刷新；已公开 Entry 的元数据更新会在下一次对应 projection materialize 后反映到公开读取层。
 
@@ -284,6 +288,21 @@ Artifact 类（`script` / `package`）请求体：
     "ghReleaseTag": "v1.1.0",
     "assetName": "file.zip",
     "sha256": "..."
+  }
+}
+```
+
+`package` 的 ToolPkg API 版本放在同一个 `version` 对象内：
+
+```json
+{
+  "version": {
+    "version": "1.1.0",
+    "formatVer": "toolpkg_v2",
+    "minAppVer": "1.2.0",
+    "apiVersion": "1.0",
+    "projectId": "...",
+    "runtimePackageId": "..."
   }
 }
 ```

@@ -73,30 +73,6 @@ export function makeEntryId(type: string, data: { owner?: string; repo?: string;
 export function makeVersionId(entryId: string, version: string): string { return `${entryId}-v-${slug(version)}`; }
 export function makeProjectId(entryId: string, version: string): string { return `project-${slug(entryId)}-${slug(version)}`; }
 
-/**
- * Return GitHub's generated repository social-card image without making a
- * network request. Market clients may use this as the entry logo.
- */
-export function githubRepositoryLogoUrl(owner: unknown, repo: unknown): string | undefined {
-  const ownerText = String(owner ?? '').trim();
-  const repoText = String(repo ?? '').trim().replace(/\.git$/i, '');
-  if (!ownerText || !repoText || /[\s/#?]/.test(ownerText) || /[\s/#?]/.test(repoText)) return undefined;
-  return `https://opengraph.githubassets.com/1/${encodeURIComponent(ownerText)}/${encodeURIComponent(repoText)}`;
-}
-
-/** Derive a repository logo URL from a stored GitHub source URL. */
-export function githubRepositoryLogoUrlFromSource(rawUrl: unknown): string | undefined {
-  if (typeof rawUrl !== 'string' || !rawUrl.trim()) return undefined;
-  try {
-    const url = new URL(rawUrl);
-    if (url.hostname.toLowerCase() !== 'github.com' && url.hostname.toLowerCase() !== 'raw.githubusercontent.com') return undefined;
-    const segments = url.pathname.split('/').filter(Boolean);
-    return githubRepositoryLogoUrl(segments[0], segments[1]);
-  } catch {
-    return undefined;
-  }
-}
-
 export function normalizeGithubRepoUrl(rawUrl: unknown): { owner: string; repo: string; url: string } {
   const text = requireString(rawUrl, 'source.url');
   let url: URL;

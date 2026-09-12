@@ -103,6 +103,7 @@ interface ReviewVersion {
   publisher?: { id?: string; login?: string; avatar?: string };
   minAppVer?: string;
   maxAppVer?: string;
+  apiVersion?: string;
   runtimePackageId?: string;
   stateCode: string;
   changelog?: string;
@@ -395,6 +396,7 @@ function normalizeVersion(version: ReviewEntrySummary['version'] | MarketV2Entry
     publisher: source.publisher,
     minAppVer: version.minAppVer,
     maxAppVer: version.maxAppVer,
+    apiVersion: version.apiVersion,
     runtimePackageId: version.runtimePackageId,
     stateCode: source.stateCode || fallbackState,
     changelog: version.changelog,
@@ -476,6 +478,7 @@ function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', act
               <Text type="secondary">{version.formatVer}</Text>
               <Text type="secondary">min {version.minAppVer}</Text>
               {version.maxAppVer ? <Text type="secondary">max {version.maxAppVer}</Text> : null}
+              {version.apiVersion ? <Text type="secondary">api {version.apiVersion}</Text> : null}
               {version.runtimePackageId ? <Text type="secondary">runtime {version.runtimePackageId}</Text> : null}
               <Tag color={stateColor(version.stateCode)}>{getReviewStateLabel(version.stateCode, language)}</Tag>
               <Text type="secondary">{formatDateTime(version.publishedAt)}</Text>
