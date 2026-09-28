@@ -24,7 +24,7 @@
   --site-header: #080d17ed;
   --site-shadow: 0 20px 70px #0007;
 }
-.site-shell { min-height: 100vh; background: var(--site-bg); color: var(--site-ink); position: relative; isolation: isolate; font-family: Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+.site-shell { min-height: 100vh; background: var(--site-bg); color: var(--site-ink); position: relative; isolation: isolate; font-family: 'Inter Variable', Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
 .site-shell *, .site-mobile-drawer * { box-sizing: border-box; }
 .site-shell a { text-decoration: none; }
 .site-shell :is(button,a,select,summary):focus-visible, .site-mobile-drawer :focus-visible { outline: 2px solid var(--site-blue); outline-offset: 5px; }

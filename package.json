@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
+    "@fontsource-variable/inter": "^5.3.0",
     "@tsparticles/engine": "^3.9.1",
     "@tsparticles/interaction-external-grab": "^3.9.1",
     "@tsparticles/move-base": "^3.9.1",
