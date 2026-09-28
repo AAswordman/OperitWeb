@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
+import LaunchPage from './pages/LaunchPage';
 import SiteMetadata from './components/SiteMetadata';
 
 const GuidePage = lazy(() => import('./pages/GuidePage'));
@@ -28,11 +29,9 @@ const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
-    const savedMode = localStorage.getItem('darkMode');
-    if (savedMode) {
-      return JSON.parse(savedMode);
-    }
-    return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    // The midnight redesign defaults to dark, independently of the legacy theme.
+    // Subsequent explicit theme choices remain persistent.
+    return localStorage.getItem('operit-theme-v2') !== 'light';
   });
   const [language, setLanguage] = useState<'zh' | 'en'>(() => {
     const savedLanguage = localStorage.getItem('language');
@@ -53,6 +52,7 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('darkMode', JSON.stringify(darkMode));
+    localStorage.setItem('operit-theme-v2', darkMode ? 'dark' : 'light');
     if (darkMode) {
       document.documentElement.setAttribute('data-theme', 'dark');
     } else {
@@ -73,6 +73,21 @@ const App: React.FC = () => {
     <ConfigProvider
       theme={{
         algorithm: darkMode ? theme.darkAlgorithm : theme.defaultAlgorithm,
+        token: {
+          colorPrimary: '#4285ff',
+          colorInfo: '#4285ff',
+          borderRadius: 10,
+          fontFamily: "Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
+          ...(darkMode ? {
+            colorBgBase: '#060911',
+            colorBgContainer: '#0d1523',
+            colorBgElevated: '#111e32',
+            colorBorder: '#263852',
+            colorBorderSecondary: '#1b2a41',
+            colorText: '#e8f0ff',
+            colorTextSecondary: '#a1b2cc',
+          } : {}),
+        },
       }}
     >
       <Router>
@@ -91,7 +106,8 @@ const App: React.FC = () => {
               />
             }
           >
-            <Route index element={<HomePage darkMode={darkMode} language={language} />} />
+            <Route index element={<LaunchPage language={language} />} />
+            <Route path="classic" element={<HomePage darkMode={darkMode} language={language} />} />
             <Route path="guide">
               <Route index element={<GuideHubPage darkMode={darkMode} language={language} />} />
               <Route path="new" element={<GuideNewPage darkMode={darkMode} language={language} />}>
@@ -129,4 +145,5 @@ const App: React.FC = () => {
 }
 
 export default App; 
+
 

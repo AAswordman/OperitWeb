@@ -1,114 +1,26 @@
-import React from 'react';
-import { theme, Layout, Typography, Row, Col, Space, Avatar } from 'antd';
-import {
-  GithubOutlined,
-  MailOutlined,
-  MessageOutlined,
-  WechatOutlined,
-} from '@ant-design/icons';
+import { Link } from 'react-router-dom';
+import { GithubOutlined, MailOutlined, MessageOutlined, WechatOutlined } from '@ant-design/icons';
 import { translations } from '../translations';
-import logo from '/logo.png';
+import './Footer.css';
 
-const { Footer: AntFooter } = Layout;
-const { Title, Text } = Typography;
+interface FooterProps { language: 'zh' | 'en'; }
 
-interface FooterProps {
-  language: 'zh' | 'en';
-}
-
-const Footer: React.FC<FooterProps> = ({ language }) => {
-  const { token } = theme.useToken();
+export default function Footer({ language }: FooterProps) {
+  const zh = language === 'zh';
   const t = (key: string): string => {
     const translation = translations[language];
     const value = translation[key as keyof typeof translation];
     return typeof value === 'string' ? value : key;
   };
-
   return (
-    <AntFooter
-      style={{
-        background: 'transparent',
-        textAlign: 'center',
-        padding: '40px 24px',
-      }}
-    >
-      <Row justify="center">
-        <Col xs={24} lg={16}>
-          <Space direction="vertical" size="middle" style={{ width: '100%' }}>
-            <Space>
-              <Avatar
-                size={32}
-                src={logo}
-                style={{ backgroundColor: 'transparent' }}
-              />
-              <Title level={4} style={{ margin: 0, color: token.colorText }}>
-                Operit AI
-              </Title>
-            </Space>
-
-            <div style={{ color: token.colorTextSecondary }}>
-              <Title
-                level={5}
-                style={{ color: token.colorText, marginBottom: 12 }}
-              >
-                {t('contact')}
-              </Title>
-              <Space wrap size="middle" style={{ justifyContent: 'center' }}>
-                <a
-                  href="https://github.com/AAswordman/Operit/discussions"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: token.colorTextSecondary }}
-                >
-                  <Space size={4}>
-                    <GithubOutlined />
-                    <span>{t('githubDiscussions')}</span>
-                  </Space>
-                </a>
-                <span>•</span>
-                <a
-                  href="mailto:aaswordsman@foxmail.com"
-                  style={{ color: token.colorTextSecondary }}
-                >
-                  <Space size={4}>
-                    <MailOutlined />
-                    <span>{t('email')}</span>
-                  </Space>
-                </a>
-                <span>•</span>
-                <a
-                  href="https://qm.qq.com/q/Sa4fKEH7sO"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: token.colorTextSecondary }}
-                >
-                  <Space size={4}>
-                    <WechatOutlined />
-                    <span>{t('qqGroup')}</span>
-                  </Space>
-                </a>
-                <span>•</span>
-                <a
-                  href="https://discord.gg/YnV9MWurRF"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ color: token.colorTextSecondary }}
-                >
-                  <Space size={4}>
-                    <MessageOutlined />
-                    <span>{t('discord')}</span>
-                  </Space>
-                </a>
-              </Space>
-            </div>
-            <Text style={{ color: token.colorTextTertiary, fontSize: 12 }}>
-              © 2024 Operit AI. All rights reserved.
-            </Text>
-          </Space>
-        </Col>
-      </Row>
-    </AntFooter>
+    <footer className="site-footer">
+      <div className="site-footer-grid">
+        <div className="site-footer-brand"><Link to="/"><img src="/logo.svg" alt="" /><span>Operit<span>.</span></span></Link><p>{zh ? '让想法行动起来。' : 'Turn your ideas into action.'}</p><span className="site-footer-caption">YOUR IDEAS. MORE POSSIBILITIES.</span></div>
+        <div className="site-footer-column"><h2>{zh ? '探索产品' : 'Explore'}</h2><Link to="/">Operit 2</Link><Link to="/classic">Operit 1</Link><Link to="/market">{zh ? '插件市场' : 'Plugin market'}</Link></div>
+        <div className="site-footer-column"><h2>{zh ? '文档与资源' : 'Resources'}</h2><Link to="/guide">{zh ? '使用文档' : 'Documentation'}</Link><Link to="/guide/old/quick-start">{zh ? '快速开始' : 'Quick start'}</Link><Link to="/guide/plugin">{zh ? '插件开发' : 'Plugin development'}</Link></div>
+        <div className="site-footer-column"><h2>{t('contact')}</h2><a href="https://github.com/AAswordman/Operit/discussions" target="_blank" rel="noopener noreferrer"><GithubOutlined />{t('githubDiscussions')}</a><a href="https://qm.qq.com/q/Sa4fKEH7sO" target="_blank" rel="noopener noreferrer"><WechatOutlined />{t('qqGroup')}</a><a href="https://discord.gg/YnV9MWurRF" target="_blank" rel="noopener noreferrer"><MessageOutlined />{t('discord')}</a><a href="mailto:aaswordsman@foxmail.com"><MailOutlined />{t('email')}</a></div>
+      </div>
+      <div className="site-footer-bottom"><span>© {new Date().getFullYear()} Operit. All rights reserved.</span><span>{zh ? '保持好奇，继续探索。' : 'Stay curious. Keep exploring.'}</span></div>
+    </footer>
   );
-};
-
-export default Footer;
+}

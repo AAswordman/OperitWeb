@@ -15,7 +15,7 @@ interface MetaContent {
 
 const SITE_NAME = 'Operit AI';
 const SITE_URL = 'https://operit.app/';
-const SITE_IMAGE = `${SITE_URL}logo.png`;
+const SITE_IMAGE = `${SITE_URL}logo.png?v=2`;
 
 const META_TAGS: Array<{ selector: string; attribute: 'name' | 'property'; key: string }> = [
   { selector: 'meta[name="description"]', attribute: 'name', key: 'description' },
@@ -56,6 +56,19 @@ function ensureLink(rel: string): HTMLLinkElement {
 }
 
 function getRouteMetadata(pathname: string, language: Language): MetaContent {
+  if (pathname === '/') {
+    return language === 'zh'
+      ? {
+          title: 'Operit 2 · 内测已开启 | Operit 官方网站',
+          description: 'Operit 2 内测已开启，全新体验敬请期待。了解 iOS 与 macOS 公测进展，或继续探索 Operit 1 的下载、功能、文档与插件市场。',
+          locale: 'zh_CN',
+        }
+      : {
+          title: 'Operit 2 · Private Beta Is Live | Official Website',
+          description: 'Meet Operit 2, now in private beta. Discover iOS and macOS public testing progress, or explore Operit 1 downloads, features, documentation and plugins.',
+          locale: 'en_US',
+        };
+  }
   if (pathname.startsWith('/guide')) {
     return language === 'zh'
       ? {
@@ -148,8 +161,11 @@ export default function SiteMetadata({ language }: SiteMetadataProps) {
     });
 
     ensureLink('canonical').setAttribute('href', pathnameToCanonical(location.pathname));
-    ensureLink('icon').setAttribute('href', '/logo.png');
-    ensureLink('apple-touch-icon').setAttribute('href', '/logo.png');
+    const icon = ensureLink('icon');
+    icon.setAttribute('href', '/logo.svg');
+    icon.setAttribute('type', 'image/svg+xml');
+    icon.setAttribute('sizes', 'any');
+    ensureLink('apple-touch-icon').setAttribute('href', '/logo.png?v=2');
   }, [language, location.pathname]);
 
   return null;
@@ -162,3 +178,4 @@ function pathnameToCanonical(pathname: string): string {
 
   return `${SITE_URL}#${pathname}`;
 }
+

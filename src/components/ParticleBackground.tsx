@@ -4,9 +4,10 @@ import { loadSlim } from '@tsparticles/slim';
 
 interface ParticleBackgroundProps {
   darkMode: boolean;
+  foregroundLayer?: boolean;
 }
 
-const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ darkMode }) => {
+const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ darkMode, foregroundLayer = false }) => {
   const [init, setInit] = useState(false);
 
   useEffect(() => {
@@ -17,7 +18,10 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ darkMode }) => 
     });
   }, []);
 
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   const particlesOptions = {
+    fullScreen: { enable: false },
     background: {
       color: {
         value: "transparent",
@@ -61,7 +65,7 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ darkMode }) => 
       },
       move: {
         direction: "none" as const,
-        enable: true,
+        enable: !reducedMotion,
         outModes: {
           default: "out" as const,
         },
@@ -101,7 +105,7 @@ const ParticleBackground: React.FC<ParticleBackgroundProps> = ({ darkMode }) => 
           width: '100%',
           height: '100%',
           pointerEvents: 'none',
-          zIndex: -1,
+          zIndex: foregroundLayer ? 0 : -1,
         }}
       />
     );

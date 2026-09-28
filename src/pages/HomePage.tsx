@@ -1,17 +1,8 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   Typography,
-  Button,
-  Card,
-  Row,
-  Col,
-  Space,
-  Avatar,
-  Badge,
-  Carousel,
 } from 'antd';
-import { motion } from 'framer-motion';
 import {
   RobotOutlined,
   ToolOutlined,
@@ -21,14 +12,16 @@ import {
   WindowsOutlined,
   StarOutlined,
   BookOutlined,
+  ArrowRightOutlined,
+  CheckOutlined,
 } from '@ant-design/icons';
 import { translations } from '../translations.ts';
-import AnimatedSection from '../components/AnimatedSection';
 import GachaGallery from '../components/GachaGallery';
 import type { GachaGalleryRef } from '../components/GachaGallery';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 import FooterComponent from '../components/Footer.tsx';
 import SupportDevelopmentButton from '../components/SupportDevelopmentButton';
+import './HomePage.css';
 
 // 导入所有服务商的logo
 import openAILogo from '/images/OTHER_LOGO/openai_latest.svg';
@@ -44,7 +37,7 @@ import baiduLogo from '/images/OTHER_LOGO/baidu_latest.svg';
 import mnnLogo from '/images/OTHER_LOGO/mnn_latest.png';
 
 
-const { Title, Paragraph, Text } = Typography;
+const { Title, Paragraph } = Typography;
 
 interface HomePageProps {
   darkMode: boolean;
@@ -59,6 +52,8 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
   };
 
   const gachaRef = useRef<GachaGalleryRef>(null);
+  const [activeUseCase, setActiveUseCase] = useState(0);
+  const zh = language === 'zh';
 
   const providers = [
     { name: 'OpenAI', logo: openAILogo },
@@ -69,8 +64,8 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     { name: 'Moonshot AI', logo: moonshotLogo },
     { name: 'OpenRouter', logo: openRouterLogo },
     { name: 'SiliconFlow', logo: siliconFlowLogo },
-    { name: 'Alibaba Cloud (Tongyi Qianwen)', logo: alibabaCloudLogo },
-    { name: 'Baidu (Wenxin)', logo: baiduLogo },
+    { name: zh ? '阿里云 · 通义千问' : 'Alibaba Cloud', logo: alibabaCloudLogo },
+    { name: zh ? '百度 · 文心' : 'Baidu Wenxin', logo: baiduLogo },
     { name: 'MNN (Local Models)', logo: mnnLogo }
   ];
 
@@ -189,417 +184,90 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
   ];
 
   return (
-    <main style={{ paddingTop: 88, paddingBottom: 40 }}>
-      {/* Hero Section */}
-      <div id="home" style={{ padding: '100px 24px 80px', textAlign: 'center' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
-            <Badge.Ribbon 
-              text={t('homeRibbonText')} 
-              color="blue"
-              style={{ 
-                top: -10,
-                fontSize: '14px',
-                padding: '4px 12px',
-                borderRadius: '6px'
-              }}
-            >
-              <Title
-                level={1}
-                style={{
-                  fontSize: 'clamp(36px, 7vw, 72px)',
-                  color: darkMode ? '#fff' : '#0d1a26',
-                  marginBottom: 24,
-                  lineHeight: 1.2,
-                  fontWeight: 700
-                }}
-              >
-                {t('heroTitle1')}<Text style={{ color: '#52c41a' }}>{t('heroTitle2')}</Text>
-                <br />
-                {t('heroTitle3')}
-                <br />
-                <Text
-                  style={{
-                    background: 'linear-gradient(45deg, #1890ff, #722ed1, #eb2f96)',
-                    backgroundClip: 'text',
-                    WebkitBackgroundClip: 'text',
-                    color: 'transparent',
-                    fontSize: 'inherit',
-                    animation: 'gradient-animation 5s ease infinite',
-                  }}
-                >
-                  {t('heroTitle4')}
-                </Text>
-              </Title>
-            </Badge.Ribbon>
-            
-            <Paragraph
-              style={{
-                fontSize: 20,
-                color: darkMode ? '#a0a0a0' : '#595959',
-                maxWidth: 900,
-                margin: '0 auto 32px',
-                lineHeight: 1.7
-              }}
-            >
-              {t('homeHeroDescription')}
-            </Paragraph>
-
-            <Space size="large" wrap style={{ justifyContent: 'center' }}>
-              <DownloadLatestButton downloadText={t('downloadLatest')} language={language} />
-              <SupportDevelopmentButton
-                language={language}
-                buttonText={t('supportDevelopment')}
-                buttonType="primary"
-                style={{
-                  height: 52,
-                  fontSize: 18,
-                  paddingLeft: 36,
-                  paddingRight: 36,
-                  borderRadius: '8px',
-                  background: '#f96854',
-                  borderColor: '#f96854',
-                  boxShadow: '0 4px 15px rgba(249, 104, 84, 0.2)'
-                }}
-              />
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Link to="/guide">
-                  <Button
-                    size="large"
-                    icon={<BookOutlined />}
-                    style={{
-                      height: 52,
-                      fontSize: 18,
-                      paddingLeft: 36,
-                      paddingRight: 36,
-                      borderRadius: '8px',
-                    }}
-                  >
-                    {t('viewDocs')}
-                  </Button>
-                </Link>
-              </motion.div>
-              <motion.div
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                <Button
-                  size="large"
-                  icon={<StarOutlined />}
-                  style={{
-                    height: 52,
-                    fontSize: 18,
-                    paddingLeft: 36,
-                    paddingRight: 36,
-                    borderRadius: '8px',
-                  }}
-                  onClick={() => {
-                    const gachaElement = document.getElementById('gacha-gallery');
-                    if (gachaElement) {
-                      gachaElement.scrollIntoView({ behavior: 'smooth' });
-                      setTimeout(() => {
-                        gachaRef.current?.draw();
-                      }, 500);
-                    }
-                  }}
-                >
-                  {t('goToGacha')}
-                </Button>
-              </motion.div>
-            </Space>
-
-          </motion.div>
+    <main className="classic-page" style={{ paddingTop: 88 }}>
+      <div className="operit-legacy-banner">
+        <span><strong>OPERIT 1</strong>{language === 'zh' ? '熟悉的功能、下载与生态，继续为你保留。' : 'Your familiar features, downloads and ecosystem, all still here.'}</span>
+        <Link to="/">{language === 'zh' ? '了解 Operit 2 →' : 'Discover Operit 2 →'}</Link>
       </div>
-      
-      {/* 抽卡功能 */}
-      <AnimatedSection className="site-section">
-        <div id="gacha-gallery">
-          <GachaGallery darkMode={darkMode} ref={gachaRef} />
+      <section id="home" className="classic-hero" aria-labelledby="classic-hero-title">
+        <div className="classic-hero-label"><span />Operit 1 <span className="classic-label-divider">/</span> {t('homeRibbonText')}</div>
+        <Title id="classic-hero-title" level={1} className="classic-hero-title">
+          {t('heroTitle1')}{!zh && ' '}<small className="classic-hero-first">{t('heroTitle2')}</small><br />
+          {t('heroTitle3')}<br />
+          <span>{t('heroTitle4')}</span>
+        </Title>
+        <Paragraph className="classic-hero-description">{t('homeHeroDescription')}</Paragraph>
+        <div className="classic-hero-primary">
+          <DownloadLatestButton downloadText={zh ? '下载 Operit 1' : 'Download Operit 1'} language={language} withMotion={false} style={{ height: 50, padding: '0 27px', fontSize: 15, borderRadius: 9 }} />
+          <Link to="/guide" className="classic-docs-button"><BookOutlined />{t('viewDocs')}<ArrowRightOutlined /></Link>
         </div>
-      </AnimatedSection>
-      
-      <style>
-        {`
-          @keyframes gradient-animation {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-          }
-          .ant-carousel .slick-dots li button {
-            background: ${darkMode ? 'rgba(255,255,255,0.3)' : 'rgba(0,0,0,0.3)'} !important;
-          }
-          .ant-carousel .slick-dots li.slick-active button {
-            background: ${darkMode ? '#1890ff' : '#1890ff'} !important;
-          }
-          .dark-mode-anchor .ant-anchor-link-title { color: #e5e7eb !important; }
-          .dark-mode-anchor .ant-anchor-ink-ball { border-color: #e5e7eb !important; }
-          .dark-mode-steps .ant-steps-item-title,
-          .dark-mode-steps .ant-steps-item-description {
-              color: rgba(255, 255, 255, 0.85) !important;
-          }
-          .dark-mode-steps .ant-steps-item-icon {
-              background-color: rgba(255, 255, 255, 0.1) !important;
-              border-color: rgba(255, 255, 255, 0.25) !importa
-nt;
-          }
-          .dark-mode-steps .ant-steps-item-icon .ant-steps-icon {
-              color: rgba(255, 255, 255, 0.85) !important;
-          }
-          .dark-mode-steps .ant-steps-item-tail::after {
-              background-color: rgba(255, 255, 255, 0.25) !important;
-          }
-        `}
-      </style>
+        <div className="classic-hero-secondary">
+          <button onClick={() => { document.getElementById('gacha-gallery')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}><StarOutlined />{zh ? '探索演示' : 'Explore demos'}</button>
+          <span className="classic-action-divider" aria-hidden="true" />
+          <SupportDevelopmentButton language={language} buttonText={t('supportDevelopment')} buttonType="text" buttonSize="small" withMotion={false} />
+        </div>
+      </section>
 
-      {/* 示例卡片画廊 */}
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={20}>
-              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 40 }}>
-                {t('featureShowcase')}
-              </Title>
-                <Carousel
-                  autoplay
-                  dots={{ className: 'custom-dots' }}
-                  style={{ margin: '40px 0' }}
-                  slidesToShow={3}
-                  responsive={[
-                    {
-                      breakpoint: 1024,
-                      settings: {
-                        slidesToShow: 2,
-                      }
-                    },
-                    {
-                      breakpoint: 600,
-                      settings: {
-                        slidesToShow: 1,
-                      }
-                    }
-                  ]}
-                >
-                  {exampleCards.map((card, index) => (
-                    <div key={index} style={{ padding: '0 8px' }}>
-                      <motion.div whileHover={{ y: -10, transition: { duration: 0.3 } }}>
-                        <Card
-                          hoverable
-                          style={{
-                            margin: '0 10px',
-                            textAlign: 'center',
-                            background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                            backdropFilter: 'blur(10px)',
-                            border: '1px solid rgba(255, 255, 255, 0.1)',
-                            borderRadius: '12px'
-                          }}
-                        >
-                          <Badge.Ribbon text={card.rarity} color={
-                            card.rarity === 'SSR' ? '#f5222d' : 
-                            card.rarity === 'SR' ? '#fa541c' : '#52c41a'
-                          }>
-                            <Title level={4} style={{ color: darkMode ? 'white' : '#1890ff', minHeight: 56 }}>
-                              {card.title}
-                            </Title>
-                            <Paragraph style={{ color: darkMode ? '#d1d5db' : '#666', minHeight: 66 }}>
-                              {card.description}
-                            </Paragraph>
-                          </Badge.Ribbon>
-                        </Card>
-                      </motion.div>
-                    </div>
-                  ))}
-                </Carousel>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
-      
-      {/* AI服务商支持 */}
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={20}>
-              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 40 }}>
-                {t('serviceProviders')}
-              </Title>
-              <Row gutter={[24, 24]} justify="center" align="middle">
-                {providers.map((provider, index) => (
-                  <Col xs={8} sm={6} md={4} lg={3} key={index}>
-                    <motion.div whileHover={{ scale: 1.1, transition: { duration: 0.2 } }}>
-                      <Card
-                        hoverable
-                        style={{
-                          textAlign: 'center',
-                          background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                          backdropFilter: 'blur(10px)',
-                          borderRadius: '12px',
-                          border: '1px solid rgba(255, 255, 255, 0.1)'
-                        }}
-                        bodyStyle={{ padding: '16px 8px' }}
-                      >
-                          <Space direction="vertical" size={8}>
-                           <img 
-                             src={provider.logo} 
-                             alt={provider.name} 
-                             style={{ 
-                               height: '32px', 
-                               width: '100%',
-                               maxWidth: '80px',
-                               objectFit: 'contain', 
-                               margin: '0 auto',
-                               display: 'block'
-                             }} 
-                           />
-                           <Text
-                            style={{ 
-                              fontSize: 12, 
-                              color: darkMode ? '#d1d5db' : '#666' 
-                            }}
-                          >
-                            {provider.name}
-                          </Text>
-                        </Space>
-                      </Card>
-                    </motion.div>
-                  </Col>
-                ))}
-              </Row>
-              <div style={{ textAlign: 'center', marginTop: 32 }}>
-                <Text style={{ color: darkMode ? '#d1d5db' : '#666', fontSize: 16 }}>{t('andMore')}</Text>
-              </div>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
+      <nav className="classic-section-nav" aria-label={zh ? 'Operit 1 内容导航' : 'Operit 1 sections'}>
+        {[
+          ['features', zh ? '核心能力' : 'Capabilities'],
+          ['providers', zh ? '模型接入' : 'Models'],
+          ['use-cases', zh ? '使用场景' : 'Use cases'],
+          ['toolkit', zh ? '工具生态' : 'Toolkit'],
+          ['gacha-gallery', zh ? '探索演示' : 'Explore demos'],
+        ].map(([id, label]) => <button key={id} onClick={() => document.getElementById(id)?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })}>{label}<span>↗</span></button>)}
+      </nav>
 
-      {/* 核心功能 */}
-      <AnimatedSection className="site-section">
-        <div id="features" style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={20}>
-              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 40 }}>
-                {t('coreFeatures')}
-              </Title>
-              <Row gutter={[32, 32]} style={{ marginTop: 40 }}>
-                {features.map((feature, index) => (
-                  <Col xs={24} sm={12} lg={8} key={index}>
-                    <motion.div whileHover={{ y: -10, transition: { duration: 0.3 } }} style={{height: '100%'}}>
-                      <Card
-                        hoverable
-                        style={{
-                          height: '100%',
-                          background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                          backdropFilter: 'blur(10px)',
-                          border: `1px solid ${feature.color}50`,
-                          borderRadius: '12px',
-                          overflow: 'hidden',
-                          padding: '24px'
-                        }}
-                      >
-                        <Space direction="vertical" size="middle" align="center" style={{ width: '100%', textAlign: 'center' }}>
-                          <Avatar
-                            size={64}
-                            style={{ backgroundColor: `${feature.color}30`, color: feature.color, marginBottom: 16 }}
-                            icon={React.cloneElement(feature.icon, {style: {fontSize: '32px'}})}
-                          />
-                          <Title level={4} style={{ color: darkMode ? 'white' : '#1890ff' }}>
-                            {feature.title}
-                          </Title>
-                          <Paragraph style={{ color: darkMode ? '#d1d5db' : '#666' }}>
-                            {feature.description}
-                          </Paragraph>
-                        </Space>
-                      </Card>
-                    </motion.div>
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
+      <div className="classic-content">
+        <section className="classic-section" id="features" aria-labelledby="classic-features-title">
+          <div className="classic-section-heading">
+            <div><span className="classic-eyebrow">01 / CAPABILITIES</span><h2 id="classic-features-title">{zh ? '不止对话，更能行动。' : 'Beyond conversation. Into action.'}</h2></div>
+            <p>{zh ? '从记住你的偏好，到执行复杂任务。\n将日常所需，放进一个助手。' : 'From remembering your preferences to running complex tasks. Your everyday tools, together in one assistant.'}</p>
+          </div>
+          <div className="classic-feature-grid">
+            {features.map((feature, index) => <article className="classic-feature" key={feature.title}>
+              <div className="classic-feature-top"><span className="classic-feature-icon">{feature.icon}</span><span className="classic-index">0{index + 1}</span></div>
+              <h3>{feature.title}</h3><p>{feature.description}</p>
+            </article>)}
+          </div>
+        </section>
 
-      {/* 使用场景 */}
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={20}>
-              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 12 }}>
-                {t('homeUseCasesTitle')}
-              </Title>
-              <Paragraph style={{ textAlign: 'center', color: darkMode ? '#a0a0a0' : '#595959', maxWidth: 860, margin: '0 auto 40px' }}>
-                {t('homeUseCasesDescription')}
-              </Paragraph>
-              <Row gutter={[24, 24]}>
-                {useCaseCards.map((item) => (
-                  <Col xs={24} md={12} lg={8} key={item.title}>
-                    <Card
-                      style={{
-                        height: '100%',
-                        background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                        backdropFilter: 'blur(10px)',
-                        border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.12)' : 'rgba(24, 144, 255, 0.2)'}`,
-                        borderRadius: '12px'
-                      }}
-                    >
-                      <Title level={4} style={{ color: darkMode ? '#fff' : '#1677ff', marginBottom: 10 }}>
-                        {item.title}
-                      </Title>
-                      <Paragraph style={{ color: darkMode ? '#d1d5db' : '#666', marginBottom: 0 }}>
-                        {item.description}
-                      </Paragraph>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
+        <section className="classic-section" id="providers" aria-labelledby="classic-providers-title">
+          <div className="classic-section-heading">
+            <div><span className="classic-eyebrow">02 / MODEL CONNECTIONS</span><h2 id="classic-providers-title">{zh ? '模型，由你选择。' : 'Your assistant. Your choice of model.'}</h2></div>
+            <p>{zh ? '云端服务与本地模型，各取所长。\n在同一个助手中，找到适合自己的配置。' : 'Cloud services and local models, each with their strengths. Find the right setup for you.'}</p>
+          </div>
+          <div className="classic-provider-panel">
+            <div className="classic-panel-label"><span>{zh ? '云端模型与接入平台' : 'CLOUD MODELS & PLATFORMS'}</span><span>{zh ? '灵活配置 · 自由选择' : 'FLEXIBLE BY DESIGN'}</span></div>
+            <ul className="classic-provider-grid">
+              {providers.slice(0, -1).map(provider => <li key={provider.name}><span className="classic-provider-logo"><img src={provider.logo} alt="" loading="lazy" /></span><span>{provider.name}</span></li>)}
+            </ul>
+            <div className="classic-provider-bottom"><span>{t('andMore')}</span><Link to="/guide/old/ai-provider-basics">{zh ? '了解模型接入' : 'Model setup guide'} <ArrowRightOutlined /></Link></div>
+          </div>
+          <div className="classic-local-models"><div className="classic-local-icon"><GlobalOutlined /></div><div><h3>{zh ? '也可以，让 AI 留在本地。' : 'Or keep your AI local.'}</h3><p>{zh ? '支持 MNN 与 llama.cpp（GGUF）本地模型。' : 'Local model support with MNN and llama.cpp (GGUF).'}</p></div><span className="classic-model-tag">MNN</span><span className="classic-model-tag">llama.cpp</span></div>
+          <p className="classic-provider-note">{zh ? '此处展示支持接入的服务与平台，不代表合作或背书。模型可用性、账户与费用以对应服务商为准。' : 'Listed services indicate supported integrations, not partnerships or endorsements. Model availability, accounts and fees depend on each provider.'}</p>
+        </section>
 
-      {/* 工具生态总览 */}
-      <AnimatedSection className="site-section">
-        <div style={{ padding: '60px 24px' }}>
-          <Row justify="center">
-            <Col xs={24} lg={20}>
-              <Title level={2} style={{ textAlign: 'center', color: darkMode ? 'white' : '#0d1a26', marginBottom: 12 }}>
-                {t('homeToolingOverviewTitle')}
-              </Title>
-              <Paragraph style={{ textAlign: 'center', color: darkMode ? '#a0a0a0' : '#595959', maxWidth: 900, margin: '0 auto 40px' }}>
-                {t('homeToolingOverviewDescription')}
-              </Paragraph>
-              <Row gutter={[18, 18]}>
-                {toolchainOverview.map((item) => (
-                  <Col xs={24} sm={12} lg={8} key={item.title}>
-                    <Card
-                      size="small"
-                      style={{
-                        height: '100%',
-                        background: darkMode ? 'rgba(255, 255, 255, 0.04)' : '#fafcff',
-                        border: `1px solid ${darkMode ? 'rgba(255, 255, 255, 0.1)' : '#d6e4ff'}`,
-                        borderRadius: 10
-                      }}
-                    >
-                      <Text strong style={{ color: darkMode ? '#e6f4ff' : '#1d39c4', fontSize: 15 }}>
-                        {item.title}
-                      </Text>
-                      <Paragraph style={{ color: darkMode ? '#d1d5db' : '#555', marginTop: 8, marginBottom: 0 }}>
-                        {item.description}
-                      </Paragraph>
-                    </Card>
-                  </Col>
-                ))}
-              </Row>
-            </Col>
-          </Row>
-        </div>
-      </AnimatedSection>
+        <section className="classic-section" id="use-cases" aria-labelledby="classic-cases-title">
+          <div className="classic-section-heading"><div><span className="classic-eyebrow">03 / MADE FOR YOUR DAY</span><h2 id="classic-cases-title">{zh ? '从你的日常，开始。' : 'Start with your everyday.'}</h2></div><p>{zh ? '学习、开发、创作，或是少做一些重复工作。\n看看 Operit 能如何融入你的生活。' : 'Study, build, create, or spend less time on repetitive tasks. Find your way to use Operit.'}</p></div>
+          <div className="classic-usecase-layout">
+            <div className="classic-usecase-list" role="group" aria-label={zh ? '选择使用场景' : 'Choose a use case'}>{useCaseCards.map((item, index) => <button key={item.title} aria-pressed={activeUseCase === index} aria-controls="classic-usecase-detail" onClick={() => setActiveUseCase(index)}><span className="classic-index">0{index + 1}</span><span>{item.title}</span><ArrowRightOutlined /></button>)}</div>
+            <div className="classic-usecase-detail" id="classic-usecase-detail" aria-live="polite" aria-atomic="true"><span className="classic-eyebrow">OPERIT 1 / EVERYDAY POSSIBILITIES</span><span className="classic-usecase-number" aria-hidden="true">0{activeUseCase + 1}</span><div><h3>{useCaseCards[activeUseCase].title}</h3><p>{useCaseCards[activeUseCase].description}</p><Link to="/guide/old">{zh ? '从使用手册开始' : 'Get started with the guide'} <ArrowRightOutlined /></Link></div></div>
+          </div>
+          <div className="classic-examples-heading"><h3>{t('featureShowcase')}</h3><span>{zh ? '把想法，变成具体的任务。' : 'Turn ideas into practical tasks.'}</span></div>
+          <div className="classic-example-grid">{exampleCards.map(card => <article key={card.title}><CheckOutlined /><div><h4>{card.title}</h4><p>{card.description}</p></div></article>)}</div>
+        </section>
+
+        <section className="classic-section" id="toolkit" aria-labelledby="classic-tools-title">
+          <div className="classic-section-heading"><div><span className="classic-eyebrow">04 / THE TOOLKIT</span><h2 id="classic-tools-title">{zh ? '能力，从这里延伸。' : 'Room to do more.'}</h2></div><p>{zh ? '从文件处理到工作流编排。\n展开分类，了解每一组工具的能力。' : 'From files to workflows. Expand a category to explore the tools within.'}</p></div>
+          <div className="classic-tools-grid">{toolchainOverview.map((item, index) => <details key={item.title} className="classic-tool"><summary><span className="classic-index">0{index + 1}</span><span>{item.title}</span><span className="classic-tool-toggle" aria-hidden="true">+</span></summary><p>{item.description}</p></details>)}</div>
+          <div className="classic-ecosystem-links"><Link to="/market"><AppstoreOutlined /><span>{zh ? '探索插件市场' : 'Explore the plugin market'}</span><ArrowRightOutlined /></Link><Link to="/guide/plugin"><BookOutlined /><span>{zh ? '阅读插件开发教程' : 'Read the plugin developer guide'}</span><ArrowRightOutlined /></Link></div>
+        </section>
+
+        <section className="classic-section classic-demo-section" id="gacha-gallery" aria-labelledby="classic-demo-title"><div className="classic-section-heading"><div><span className="classic-eyebrow">05 / EXPLORE THE POSSIBILITIES</span><h2 id="classic-demo-title">{zh ? '还有一些，意想不到。' : 'Discover something unexpected.'}</h2></div><p>{zh ? '抽取一组真实演示，看看更多玩法。' : 'Draw a set of real demos and discover more ways to use Operit.'}</p></div><GachaGallery darkMode={darkMode} ref={gachaRef} /></section>
+
+        <section className="classic-start"><div><span className="classic-eyebrow">READY WHEN YOU ARE</span><h2>{zh ? '让下一件事，简单一点。' : 'Make your next task a little easier.'}</h2><p>{zh ? '继续使用 Operit 1，或了解即将到来的 Operit 2。' : 'Start with Operit 1, or discover what’s next with Operit 2.'}</p></div><div className="classic-start-actions"><DownloadLatestButton downloadText={zh ? '下载 Operit 1' : 'Download Operit 1'} language={language} /><Link to="/">{zh ? '了解 Operit 2' : 'Discover Operit 2'} <ArrowRightOutlined /></Link></div></section>
+      </div>
 
       <FooterComponent language={language} />
     </main>

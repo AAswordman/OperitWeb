@@ -34,33 +34,32 @@
 }
 
 [data-theme="dark"] {
-    --primary-color: #60a5fa;
-    --background-color: #1a1a2e;
-    --background-color-secondary: #16162b;
-    --text-color: #e5e7eb;
-    --text-color-secondary: #9ca3af;
-    --card-background: #374151;
-    --card-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-    --card-hover-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
-    --border-color: #4b5563;
-    --header-background: transparent;
-    --snowflake-color: #ffffff;
-
-    /* Scrollbar */
-    --scrollbar-thumb-color: rgba(255, 255, 255, 0.2);
-    --scrollbar-thumb-hover-color: rgba(255, 255, 255, 0.4);
-
-    --hero-button-secondary-hover-bg: #444;
+    color-scheme: dark;
+    --primary-color: #73a7ff;
+    --primary-color-rgb: 66, 133, 255;
+    --accent-color: #65d4ff;
+    --background-color: #060911;
+    --background-color-secondary: #0a111e;
+    --text-color: #e8f0ff;
+    --text-color-secondary: #a1b2cc;
+    --card-background: #0d1523;
+    --card-hover-shadow: 0 12px 36px rgba(16, 62, 140, 0.2);
+    --border-color: #263852;
+    --header-background: rgba(6, 9, 17, 0.88);
+    --snowflake-color: #659dff;
+    --scrollbar-thumb-color: #2b4162;
+    --scrollbar-thumb-hover-color: #44699e;
+    --hero-button-secondary-hover-bg: #172d4e;
     --hero-button-secondary-hover-text: #fff;
-    --card-bg: #2c2c2e;
-    --card-border: #444;
-    --card-shadow: rgba(0, 0, 0, 0.4);
-    --modal-bg: rgba(0, 0, 0, 0.7);
-    --modal-content-bg: #1c1c1e;
-    --section-bg-odd: #1c1c1e;
-    --section-bg-even: #242426;
-    --tooltip-bg: #333;
-    --tooltip-text: #fff;
+    --card-bg: #0d1523;
+    --card-border: #263852;
+    --card-shadow: rgba(0, 0, 0, 0.35);
+    --modal-bg: rgba(1, 5, 12, 0.8);
+    --modal-content-bg: #111e32;
+    --section-bg-odd: #080e19;
+    --section-bg-even: #0b1320;
+    --tooltip-bg: #14243d;
+    --tooltip-text: #e8f0ff;
 }
 
 /* Global Styles */
@@ -81,8 +80,8 @@ body {
     background-color: var(--background-color);
     transition: background-color var(--transition-speed), color var(--transition-speed);
     overflow-x: hidden;
-    touch-action: pan-y;
-    cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="white" stroke="black" stroke-width="1"><path d="M12 2l2.5 5 5 2.5 -5 2.5 -2.5 5 -2.5 -5 -5 -2.5 5 -2.5z"/></svg>') 12 12, auto;
+    touch-action: auto;
+    cursor: auto;
 }
 
 .click-effect {
@@ -237,3 +236,17 @@ body {
                 border-color var(--transition-speed),
                 box-shadow var(--transition-speed);
 } 
+
+/* Shared midnight surfaces across documentation, the market and Operit 1. */
+[data-theme="dark"] body { background-image: radial-gradient(ellipse at 50% 0, #10274b44, transparent 640px); }
+[data-theme="dark"] .ant-layout-header { background: rgba(6, 9, 17, .88) !important; backdrop-filter: blur(20px); }
+[data-theme="dark"] .ant-card { box-shadow: 0 8px 30px #00000015; }
+[data-theme="dark"] .ant-card-hoverable:hover { border-color: #426eb0; box-shadow: 0 12px 35px #16376d30; }
+[data-theme="dark"] .ant-btn-primary { box-shadow: 0 3px 18px #2465df25; }
+[data-theme="dark"] .ant-input:focus-visible, [data-theme="dark"] a:focus-visible, [data-theme="dark"] button:focus-visible { outline: 2px solid #76a9ff; outline-offset: 4px; }
+::selection { background: #3575d966; color: #fff; }
+.operit-legacy-banner { max-width: 1160px; margin: 12px auto 0; padding: 15px 22px; display: flex; align-items: center; justify-content: space-between; gap: 20px; border: 1px solid var(--border-color); border-radius: 10px; background: var(--card-background); color: var(--text-color-secondary); font-size: 13px; }
+.operit-legacy-banner strong { color: var(--primary-color); letter-spacing: 1px; margin-right: 16px; }
+.operit-legacy-banner a { color: var(--primary-color); white-space: nowrap; }
+@media(max-width: 760px) { .operit-legacy-banner { margin: 0 20px; align-items: flex-start; flex-direction: column; gap: 8px; font-size: 12px; } }
+@media(prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
