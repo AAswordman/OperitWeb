@@ -1,0 +1,1 @@
+const n=(e,i)=>{typeof e?.addEventListener<"u"?e.addEventListener("change",i):typeof e?.addListener<"u"&&e.addListener(i)},d=(e,i)=>{typeof e?.removeEventListener<"u"?e.removeEventListener("change",i):typeof e?.removeListener<"u"&&e.removeListener(i)};export{n as a,d as r};
