@@ -1,6 +1,6 @@
-# New Docs Welcome Page
+# Operit 1 User Tutorials
 
-> Welcome to the new user docs section.
+> Welcome to the Operit 1 tutorials. “New docs” refers to rewritten generation-one documentation, not Operit 2 guides.
 > A lot of the old docs were generated directly by AI, and honestly, most people didn’t enjoy reading them — they were just "good enough to get by." This time, we’re reorganizing all features and rewriting the docs in a tutorial-style voice.
 > Of course, my writing is still kinda rough (lol), so the new version might not be perfect either (?).
 
