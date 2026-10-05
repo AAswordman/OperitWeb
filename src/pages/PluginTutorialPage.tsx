@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { Layout, Menu, Button } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
@@ -14,14 +14,14 @@ const PluginTutorialPage: React.FC<{
 }> = ({
   darkMode,
   language,
-  basePath = '/guide/plugin',
+  basePath = '/developers/plugins',
   homePath = '/guide'
 }) => {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
   const basePathParts = useMemo(() => basePath.split('/').filter(Boolean), [basePath]);
-  const linkTo = (path?: string) => path ? `${basePath}/${path}` : basePath;
+  const linkTo = useCallback((path?: string) => path ? `${basePath}/${path}` : basePath, [basePath]);
 
   const labels = useMemo(() => (
     language === 'zh'
@@ -131,7 +131,7 @@ const PluginTutorialPage: React.FC<{
         { key: 'pitfalls', label: <Link to={linkTo('pitfalls')}>{labels.pitfalls}</Link> },
       ],
     },
-  ], [basePath, homePath, labels]);
+  ], [linkTo, homePath, labels]);
 
   const selectedKeys = useMemo(() => {
     if (location.pathname === basePath || location.pathname === `${basePath}/`) {

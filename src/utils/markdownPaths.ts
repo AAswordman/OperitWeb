@@ -1,4 +1,4 @@
-const SPECIAL_MARKDOWN_ROOTS = new Set(['plugin-tutorial', 'newcontent']);
+const SPECIAL_MARKDOWN_ROOTS = new Set(['plugin-tutorial', 'newcontent', 'v2content']);
 
 const normalizeMarkdownValue = (value: string) => (
   String(value || '')
@@ -33,17 +33,9 @@ export const buildMarkdownCandidates = (
   return candidates;
 };
 
+export const EDITABLE_MARKDOWN_PATH_RE = /^(?:content|newcontent|v2content|plugin-tutorial)\/(zh|en)\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.md$/i;
+
 export const isEditableMarkdownPath = (targetPath: string): boolean => {
   const normalizedPath = String(targetPath || '').trim().replace(/^\/+/, '');
-  if (normalizedPath.startsWith('content/')) {
-    return true;
-  }
-
-  for (const root of SPECIAL_MARKDOWN_ROOTS) {
-    if (normalizedPath.startsWith(`${root}/`)) {
-      return true;
-    }
-  }
-
-  return false;
+  return EDITABLE_MARKDOWN_PATH_RE.test(normalizedPath);
 };

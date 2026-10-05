@@ -30,9 +30,9 @@
 .release-hero-bottom button { display: flex; align-items: center; gap: 20px; padding: 0; background: none; border: 0; color: var(--site-muted); font-size: 10px; }
 .release-platform-ribbon { max-width: 1248px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr 1fr; border-bottom: 1px solid var(--site-line); padding: 29px 0; gap: 30px; }
 .release-platform-ribbon > div > p { color: var(--site-ink); font-size: 15px; margin: 7px 0 0; }
-.release-platform-ribbon > button { display: flex; gap: 14px; align-items: center; background: none; border: 0; border-left: 1px solid var(--site-line); color: var(--site-ink); padding: 10px 0 10px 35px; text-align: left; font-size: 16px; }
-.release-platform-ribbon > button > .anticon:first-child { font-size: 22px; }
-.release-platform-ribbon > button > .anticon:last-child { color: var(--site-muted); font-size: 13px; margin-left: auto; }
+.release-platform-ribbon > a { display: flex; gap: 14px; align-items: center; background: none; border: 0; border-left: 1px solid var(--site-line); color: var(--site-ink); padding: 10px 0 10px 35px; text-align: left; font-size: 16px; }
+.release-platform-ribbon > a > .anticon:first-child { font-size: 22px; }
+.release-platform-ribbon > a > .anticon:last-child { color: var(--site-muted); font-size: 13px; margin-left: auto; }
 .release-status { font-size: 9px; color: var(--site-blue); display: inline-flex; align-items: center; gap: 7px; border: 1px solid var(--site-line); border-radius: 30px; padding: 5px 9px; background: var(--site-blue-soft); white-space: nowrap; }
 .release-status-neutral { color: var(--site-muted); background: transparent; }
 .release-section { max-width: 1248px; margin: 0 auto; padding: 100px 0 0; scroll-margin-top: 100px; }
@@ -84,7 +84,7 @@
 .release-test-details p { font-size: 14px; line-height: 1.9; margin: 18px 0; }
 .release-test-details .release-button { margin: 6px 0 12px; }
 @media(max-width:1350px) { .release-section,.release-platform-ribbon,.release-closing { margin-left: 40px; margin-right: 40px; } }
-@media(max-width:1100px) { .release-hero-side { display: none; } .release-world { gap: 65px; } .release-product-card { padding: 26px; } .release-current-tools { opacity: .3; right: 20px; } .release-platform-ribbon { gap: 20px; } .release-platform-ribbon > button { padding-left: 22px; gap: 10px; } .release-platform-ribbon .release-status { font-size: 8px; } }
+@media(max-width:1100px) { .release-hero-side { display: none; } .release-world { gap: 65px; } .release-product-card { padding: 26px; } .release-current-tools { opacity: .3; right: 20px; } .release-platform-ribbon { gap: 20px; } .release-platform-ribbon > a { padding-left: 22px; gap: 10px; } .release-platform-ribbon .release-status { font-size: 8px; } }
 @media(max-width:760px) {
   .release-hero { padding: 49px 22px 0; min-height: 603px; }
   .release-wordmark { height: 155px; gap: 17px; margin: 15px 0 15px; letter-spacing: -6px; }
@@ -102,9 +102,9 @@
   .release-platform-ribbon { grid-template-columns: 1fr 1fr; gap: 22px 14px; padding: 24px 0; }
   .release-platform-ribbon > div { grid-column: 1/-1; display: flex; align-items: center; justify-content: space-between; }
   .release-platform-ribbon > div > p { margin: 0; font-size: 12px; }
-  .release-platform-ribbon > button { padding: 0; border: 0; font-size: 13px; gap: 8px; flex-wrap: wrap; }
-  .release-platform-ribbon > button > .anticon:first-child { font-size: 20px; }
-  .release-platform-ribbon > button > .anticon:last-child { display: none; }
+  .release-platform-ribbon > a { padding: 0; border: 0; font-size: 13px; gap: 8px; flex-wrap: wrap; }
+  .release-platform-ribbon > a > .anticon:first-child { font-size: 20px; }
+  .release-platform-ribbon > a > .anticon:last-child { display: none; }
   .release-platform-ribbon .release-status { font-size: 8px; padding: 3px 6px; }
   .release-section { padding-top: 62px; }
   .release-section-heading { flex-direction: column; align-items: flex-start; gap: 16px; margin-bottom: 25px; }

@@ -27,7 +27,7 @@ const ADMIN_PASSWORD_MIN_LENGTH = 8;
 const DEFAULT_ADMIN_SESSION_HOURS = 24 * 7;
 
 const ALLOWED_LANGUAGES = new Set(['zh', 'en']);
-const ALLOWED_PATH_RE = /^content\/(zh|en)\/[a-z0-9/_-]+\.md$/i;
+const ALLOWED_PATH_RE = /^(?:content|newcontent|v2content|plugin-tutorial)\/(zh|en)\/[a-z0-9_-]+(?:\/[a-z0-9_-]+)*\.md$/i;
 
 function json(body, status = 200, headers = {}) {
   return new Response(JSON.stringify(body), {
@@ -206,8 +206,8 @@ function validateSubmission(body) {
   if (!targetPath) {
     errors.push('target_path is required');
   } else if (!ALLOWED_PATH_RE.test(targetPath)) {
-    errors.push('target_path must be under content/zh or content/en and end with .md');
-  } else if (language && !targetPath.startsWith(`content/${language}/`)) {
+    errors.push('target_path must be a language-scoped .md file under content, newcontent, v2content or plugin-tutorial');
+  } else if (language && targetPath.split('/')[1] !== language) {
     errors.push('target_path must match language');
   }
 

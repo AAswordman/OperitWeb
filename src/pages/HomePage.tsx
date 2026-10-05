@@ -1,10 +1,10 @@
 import React, { useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Typography,
+  Typography, Button,
 } from 'antd';
 import {
-  RobotOutlined,
+  RobotOutlined, DownloadOutlined,
   ToolOutlined,
   AppstoreOutlined,
   PlayCircleOutlined,
@@ -18,7 +18,7 @@ import {
 import { translations } from '../translations.ts';
 import GachaGallery from '../components/GachaGallery';
 import type { GachaGalleryRef } from '../components/GachaGallery';
-import DownloadLatestButton from '../components/DownloadLatestButton';
+import { PRODUCTS, SHARED_PATHS } from '../config/products';
 import FooterComponent from '../components/Footer.tsx';
 import SupportDevelopmentButton from '../components/SupportDevelopmentButton';
 import './HomePage.css';
@@ -187,7 +187,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
     <main className="classic-page" style={{ paddingTop: 88 }}>
       <div className="operit-legacy-banner">
         <span><strong>OPERIT 1</strong>{language === 'zh' ? '熟悉的功能、下载与生态，继续为你保留。' : 'Your familiar features, downloads and ecosystem, all still here.'}</span>
-        <Link to="/">{language === 'zh' ? '了解 Operit 2 →' : 'Discover Operit 2 →'}</Link>
+        <Link to={PRODUCTS.v2.homePath}>{language === 'zh' ? '了解 Operit 2 →' : 'Discover Operit 2 →'}</Link>
       </div>
       <section id="home" className="classic-hero" aria-labelledby="classic-hero-title">
         <div className="classic-hero-label"><span />Operit 1 <span className="classic-label-divider">/</span> {t('homeRibbonText')}</div>
@@ -198,8 +198,8 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
         </Title>
         <Paragraph className="classic-hero-description">{t('homeHeroDescription')}</Paragraph>
         <div className="classic-hero-primary">
-          <DownloadLatestButton downloadText={zh ? '下载 Operit 1' : 'Download Operit 1'} language={language} withMotion={false} style={{ height: 50, padding: '0 27px', fontSize: 15, borderRadius: 9 }} />
-          <Link to="/guide" className="classic-docs-button"><BookOutlined />{t('viewDocs')}<ArrowRightOutlined /></Link>
+          <Link to={PRODUCTS.v1.downloadPath}><Button type="primary" size="large" icon={<DownloadOutlined />} style={{ height: 50, padding: '0 27px', fontSize: 15, borderRadius: 9 }}>{zh ? '下载 Operit 1' : 'Download Operit 1'}</Button></Link>
+          <Link to={PRODUCTS.v1.guidePath} className="classic-docs-button"><BookOutlined />{t('viewDocs')}<ArrowRightOutlined /></Link>
         </div>
         <div className="classic-hero-secondary">
           <button onClick={() => { document.getElementById('gacha-gallery')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' }); }}><StarOutlined />{zh ? '探索演示' : 'Explore demos'}</button>
@@ -242,7 +242,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
             <ul className="classic-provider-grid">
               {providers.slice(0, -1).map(provider => <li key={provider.name}><span className="classic-provider-logo"><img src={provider.logo} alt="" loading="lazy" /></span><span>{provider.name}</span></li>)}
             </ul>
-            <div className="classic-provider-bottom"><span>{t('andMore')}</span><Link to="/guide/old/ai-provider-basics">{zh ? '了解模型接入' : 'Model setup guide'} <ArrowRightOutlined /></Link></div>
+            <div className="classic-provider-bottom"><span>{t('andMore')}</span><Link to={`${PRODUCTS.v1.guidePath}/reference/ai-provider-basics`}>{zh ? '了解模型接入' : 'Model setup guide'} <ArrowRightOutlined /></Link></div>
           </div>
           <div className="classic-local-models"><div className="classic-local-icon"><GlobalOutlined /></div><div><h3>{zh ? '也可以，让 AI 留在本地。' : 'Or keep your AI local.'}</h3><p>{zh ? '支持 MNN 与 llama.cpp（GGUF）本地模型。' : 'Local model support with MNN and llama.cpp (GGUF).'}</p></div><span className="classic-model-tag">MNN</span><span className="classic-model-tag">llama.cpp</span></div>
           <p className="classic-provider-note">{zh ? '此处展示支持接入的服务与平台，不代表合作或背书。模型可用性、账户与费用以对应服务商为准。' : 'Listed services indicate supported integrations, not partnerships or endorsements. Model availability, accounts and fees depend on each provider.'}</p>
@@ -252,7 +252,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
           <div className="classic-section-heading"><div><span className="classic-eyebrow">03 / MADE FOR YOUR DAY</span><h2 id="classic-cases-title">{zh ? '从你的日常，开始。' : 'Start with your everyday.'}</h2></div><p>{zh ? '学习、开发、创作，或是少做一些重复工作。\n看看 Operit 能如何融入你的生活。' : 'Study, build, create, or spend less time on repetitive tasks. Find your way to use Operit.'}</p></div>
           <div className="classic-usecase-layout">
             <div className="classic-usecase-list" role="group" aria-label={zh ? '选择使用场景' : 'Choose a use case'}>{useCaseCards.map((item, index) => <button key={item.title} aria-pressed={activeUseCase === index} aria-controls="classic-usecase-detail" onClick={() => setActiveUseCase(index)}><span className="classic-index">0{index + 1}</span><span>{item.title}</span><ArrowRightOutlined /></button>)}</div>
-            <div className="classic-usecase-detail" id="classic-usecase-detail" aria-live="polite" aria-atomic="true"><span className="classic-eyebrow">OPERIT 1 / EVERYDAY POSSIBILITIES</span><span className="classic-usecase-number" aria-hidden="true">0{activeUseCase + 1}</span><div><h3>{useCaseCards[activeUseCase].title}</h3><p>{useCaseCards[activeUseCase].description}</p><Link to="/guide/old">{zh ? '从使用手册开始' : 'Get started with the guide'} <ArrowRightOutlined /></Link></div></div>
+            <div className="classic-usecase-detail" id="classic-usecase-detail" aria-live="polite" aria-atomic="true"><span className="classic-eyebrow">OPERIT 1 / EVERYDAY POSSIBILITIES</span><span className="classic-usecase-number" aria-hidden="true">0{activeUseCase + 1}</span><div><h3>{useCaseCards[activeUseCase].title}</h3><p>{useCaseCards[activeUseCase].description}</p><Link to={`${PRODUCTS.v1.guidePath}/reference`}>{zh ? '从使用手册开始' : 'Get started with the guide'} <ArrowRightOutlined /></Link></div></div>
           </div>
           <div className="classic-examples-heading"><h3>{t('featureShowcase')}</h3><span>{zh ? '把想法，变成具体的任务。' : 'Turn ideas into practical tasks.'}</span></div>
           <div className="classic-example-grid">{exampleCards.map(card => <article key={card.title}><CheckOutlined /><div><h4>{card.title}</h4><p>{card.description}</p></div></article>)}</div>
@@ -261,12 +261,12 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
         <section className="classic-section" id="toolkit" aria-labelledby="classic-tools-title">
           <div className="classic-section-heading"><div><span className="classic-eyebrow">04 / THE TOOLKIT</span><h2 id="classic-tools-title">{zh ? '能力，从这里延伸。' : 'Room to do more.'}</h2></div><p>{zh ? '从文件处理到工作流编排。\n展开分类，了解每一组工具的能力。' : 'From files to workflows. Expand a category to explore the tools within.'}</p></div>
           <div className="classic-tools-grid">{toolchainOverview.map((item, index) => <details key={item.title} className="classic-tool"><summary><span className="classic-index">0{index + 1}</span><span>{item.title}</span><span className="classic-tool-toggle" aria-hidden="true">+</span></summary><p>{item.description}</p></details>)}</div>
-          <div className="classic-ecosystem-links"><Link to="/market"><AppstoreOutlined /><span>{zh ? '探索插件市场' : 'Explore the plugin market'}</span><ArrowRightOutlined /></Link><Link to="/guide/plugin"><BookOutlined /><span>{zh ? '阅读插件开发教程' : 'Read the plugin developer guide'}</span><ArrowRightOutlined /></Link></div>
+          <div className="classic-ecosystem-links"><Link to={SHARED_PATHS.market}><AppstoreOutlined /><span>{zh ? '探索插件市场' : 'Explore the plugin market'}</span><ArrowRightOutlined /></Link><Link to={SHARED_PATHS.pluginGuide}><BookOutlined /><span>{zh ? '阅读插件开发教程' : 'Read the plugin developer guide'}</span><ArrowRightOutlined /></Link></div>
         </section>
 
         <section className="classic-section classic-demo-section" id="gacha-gallery" aria-labelledby="classic-demo-title"><div className="classic-section-heading"><div><span className="classic-eyebrow">05 / EXPLORE THE POSSIBILITIES</span><h2 id="classic-demo-title">{zh ? '还有一些，意想不到。' : 'Discover something unexpected.'}</h2></div><p>{zh ? '抽取一组真实演示，看看更多玩法。' : 'Draw a set of real demos and discover more ways to use Operit.'}</p></div><GachaGallery darkMode={darkMode} ref={gachaRef} /></section>
 
-        <section className="classic-start"><div><span className="classic-eyebrow">READY WHEN YOU ARE</span><h2>{zh ? '让下一件事，简单一点。' : 'Make your next task a little easier.'}</h2><p>{zh ? '继续使用 Operit 1，或了解即将到来的 Operit 2。' : 'Start with Operit 1, or discover what’s next with Operit 2.'}</p></div><div className="classic-start-actions"><DownloadLatestButton downloadText={zh ? '下载 Operit 1' : 'Download Operit 1'} language={language} /><Link to="/">{zh ? '了解 Operit 2' : 'Discover Operit 2'} <ArrowRightOutlined /></Link></div></section>
+        <section className="classic-start"><div><span className="classic-eyebrow">READY WHEN YOU ARE</span><h2>{zh ? '让下一件事，简单一点。' : 'Make your next task a little easier.'}</h2><p>{zh ? '继续使用 Operit 1，或了解即将到来的 Operit 2。' : 'Start with Operit 1, or discover what’s next with Operit 2.'}</p></div><div className="classic-start-actions"><Link to={PRODUCTS.v1.downloadPath}><Button type="primary" size="large" icon={<DownloadOutlined />}>{zh ? '下载 Operit 1' : 'Download Operit 1'}</Button></Link><Link to={PRODUCTS.v2.homePath}>{zh ? '了解 Operit 2' : 'Discover Operit 2'} <ArrowRightOutlined /></Link></div></section>
       </div>
 
       <FooterComponent language={language} />

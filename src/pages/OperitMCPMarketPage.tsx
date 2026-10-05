@@ -126,7 +126,7 @@ const normalizeEntry = (entry: MarketV2Entry): MarketV2Entry => ({
 const uiText = {
   zh: {
     title: 'Operit 插件市场',
-    subtitle: '当前市场页只读取 Market v2 静态 JSON：manifest、全市场列表和 entry 分片。',
+    subtitle: 'Operit 1 与 Operit 2 共用同一份插件市场。安装前请查看插件的应用版本要求。',
     reload: '刷新',
     loading: '加载中...',
     loadError: '加载失败',
@@ -157,7 +157,7 @@ const uiText = {
   },
   en: {
     title: 'Operit Plugin Market',
-    subtitle: 'This page reads Market v2 static JSON only: manifest, all-list pages, and entry shards.',
+    subtitle: 'One plugin marketplace for Operit 1 and Operit 2. Check each plugin’s app-version requirements before installing.',
     reload: 'Reload',
     loading: 'Loading...',
     loadError: 'Load failed',

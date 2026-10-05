@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Card, Row, Col, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import {
@@ -13,9 +13,9 @@ import { translations } from '../translations';
 
 const { Title, Paragraph } = Typography;
 
-const GuideIndex: React.FC<{ language: 'zh' | 'en'; basePath?: string }> = ({ language, basePath = '/guide/old' }) => {
+const GuideIndex: React.FC<{ language: 'zh' | 'en'; basePath?: string }> = ({ language, basePath = '/v1/guide/reference' }) => {
   const t = translations[language].guide;
-  const linkTo = (path: string) => `${basePath}/${path}`;
+  const linkTo = useCallback((path: string) => `${basePath}/${path}`, [basePath]);
 
   const guideItems = useMemo(() => [
     {
@@ -54,7 +54,7 @@ const GuideIndex: React.FC<{ language: 'zh' | 'en'; basePath?: string }> = ({ la
       link: linkTo('character-system/character-cards'),
       icon: <UserAddOutlined />,
     },
-  ], [basePath, t]);
+  ], [linkTo, t]);
 
   return (
     <div>

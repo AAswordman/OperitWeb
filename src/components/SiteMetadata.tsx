@@ -1,16 +1,12 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { getRouteMetadata } from '../config/routeMetadata';
+import { resolveLegacyPath } from '../routing/paths';
 
 type Language = 'zh' | 'en';
 
 interface SiteMetadataProps {
   language: Language;
-}
-
-interface MetaContent {
-  title: string;
-  description: string;
-  locale: string;
 }
 
 const SITE_NAME = 'Operit AI';
@@ -55,88 +51,11 @@ function ensureLink(rel: string): HTMLLinkElement {
   return link;
 }
 
-function getRouteMetadata(pathname: string, language: Language): MetaContent {
-  if (pathname === '/') {
-    return language === 'zh'
-      ? {
-          title: 'Operit 2 · 内测已开启 | Operit 官方网站',
-          description: 'Operit 2 内测已开启，全新体验敬请期待。了解 iOS 与 macOS 公测进展，或继续探索 Operit 1 的下载、功能、文档与插件市场。',
-          locale: 'zh_CN',
-        }
-      : {
-          title: 'Operit 2 · Private Beta Is Live | Official Website',
-          description: 'Meet Operit 2, now in private beta. Discover iOS and macOS public testing progress, or explore Operit 1 downloads, features, documentation and plugins.',
-          locale: 'en_US',
-        };
-  }
-  if (pathname.startsWith('/guide')) {
-    return language === 'zh'
-      ? {
-          title: 'Operit AI 文档 | Android AI 助手使用手册',
-          description:
-            '查看 Operit AI 的中文使用文档，涵盖 API 配置、工具与工作流、自动化、本地模型、语音交互与移动端开发能力。',
-          locale: 'zh_CN',
-        }
-      : {
-          title: 'Operit AI Docs | Android AI Assistant Guides',
-          description:
-            'Explore Operit AI documentation covering setup, tools, workflows, automation, local models, voice features, and mobile development.',
-          locale: 'en_US',
-        };
-  }
-
-  if (pathname.startsWith('/market')) {
-    return language === 'zh'
-      ? {
-          title: 'Operit AI 市场 | MCP 与 Skill 插件生态',
-          description:
-            '浏览 Operit AI 的 MCP 与 Skill 市场，扩展工具能力、工作流编排与移动端自动化场景。',
-          locale: 'zh_CN',
-        }
-      : {
-          title: 'Operit AI Market | MCP and Skill Ecosystem',
-          description:
-            'Discover MCP and Skill extensions for Operit AI, including tooling, workflow automation, and mobile productivity integrations.',
-          locale: 'en_US',
-        };
-  }
-
-  if (pathname.startsWith('/project-update')) {
-    return language === 'zh'
-      ? {
-          title: 'Operit AI 项目近况与赞助说明',
-          description:
-            '查看 Operit AI 关于官网赞助、项目维护节奏、社区建设与后续规划的完整说明。',
-          locale: 'zh_CN',
-        }
-      : {
-          title: 'Operit AI Project Update and Sponsorship Note',
-          description:
-            'Read the full Operit AI statement about official sponsorship, project maintenance, community building, and future plans.',
-          locale: 'en_US',
-        };
-  }
-
-  return language === 'zh'
-    ? {
-        title: 'Operit AI | Android AI 助手与自动化平台',
-        description:
-          'Operit AI 是面向 Android 的全功能 AI 助手与自动化平台，支持 Ubuntu 24 终端、本地模型、40+ 工具、MCP/Skill 插件、语音交互、文件管理与工作流自动化。',
-        locale: 'zh_CN',
-      }
-    : {
-        title: 'Operit AI | Android AI Assistant and Automation Platform',
-        description:
-          'Operit AI is a full-featured Android AI assistant with Ubuntu 24 terminal access, local models, 40+ built-in tools, MCP/Skill extensions, voice interaction, file management, and workflow automation.',
-        locale: 'en_US',
-      };
-}
-
 export default function SiteMetadata({ language }: SiteMetadataProps) {
   const location = useLocation();
 
   useEffect(() => {
-    const { title, description, locale } = getRouteMetadata(location.pathname, language);
+    const { title, description, locale } = getRouteMetadata(resolveLegacyPath(location.pathname) ?? location.pathname, language);
     const currentUrl = window.location.href;
 
     document.title = title;
@@ -160,7 +79,7 @@ export default function SiteMetadata({ language }: SiteMetadataProps) {
       meta.setAttribute('content', metaValues.get(key) ?? '');
     });
 
-    ensureLink('canonical').setAttribute('href', pathnameToCanonical(location.pathname));
+    ensureLink('canonical').setAttribute('href', pathnameToCanonical(resolveLegacyPath(location.pathname) ?? location.pathname));
     const icon = ensureLink('icon');
     icon.setAttribute('href', '/logo.svg');
     icon.setAttribute('type', 'image/svg+xml');

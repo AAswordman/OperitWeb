@@ -1,22 +1,37 @@
-import React, { useMemo, useState, useRef } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { Layout, Menu, Button, Input } from 'antd';
 import { Outlet, Link, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons';
 import FooterComponent from '../components/Footer';
+import { PRODUCTS, SHARED_PATHS } from '../config/products';
+import './VersionPages.css';
 
 const { Sider, Content } = Layout;
 const CATEGORY_SLUG = 'beginner-tutorial';
+interface TutorialSearchResult {
+  key: string;
+  label: string;
+  path: string;
+  score: number;
+  matchType: 'title' | 'content';
+  highlight?: string;
+}
 
-const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ darkMode, language }) => {
+const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?: string }> = ({ darkMode, language, basePath = PRODUCTS.v1.guidePath }) => {
   const location = useLocation();
   const { category, slug } = useParams();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<TutorialSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const searchRequestIdRef = useRef(0);
+  useEffect(() => () => {
+    searchRequestIdRef.current += 1;
+    if (searchTimeoutRef.current) clearTimeout(searchTimeoutRef.current);
+  }, []);
   const contentCacheRef = useRef(new Map<string, string>());
 
   const tutorialItems = useMemo(() => (
@@ -81,6 +96,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
 
   // 搜索功能
   const searchTutorials = async (query: string) => {
+    const requestId = ++searchRequestIdRef.current;
     if (!query.trim()) {
       setSearchResults([]);
       setIsSearching(false);
@@ -88,7 +104,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
     }
 
     setIsSearching(true);
-    const results: any[] = [];
+    const results: TutorialSearchResult[] = [];
 
     for (const item of tutorialItems) {
       const labelLower = item.label.toLowerCase();
@@ -98,7 +114,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
         results.push({
           key: item.slug,
           label: item.label,
-          path: `/guide/new/${CATEGORY_SLUG}/${item.slug}`,
+          path: `${basePath}/${CATEGORY_SLUG}/${item.slug}`,
           score: 100,
           matchType: 'title' as const,
         });
@@ -107,11 +123,11 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
 
       // 搜索文档内容
       try {
-        const filePath = `/newcontent/${language}/${CATEGORY_SLUG}/${item.slug}.md`;
+        const filePath = `${import.meta.env.BASE_URL}${PRODUCTS.v1.markdownRoot}/${language}/${CATEGORY_SLUG}/${item.slug}.md`;
         let content = contentCacheRef.current.get(filePath);
         if (!content) {
           const response = await fetch(filePath);
-          if (response.ok) {
+          if (response.ok && !response.headers.get('content-type')?.includes('text/html')) {
             content = await response.text();
             contentCacheRef.current.set(filePath, content);
           }
@@ -126,7 +142,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           results.push({
             key: item.slug,
             label: item.label,
-            path: `/guide/new/${CATEGORY_SLUG}/${item.slug}`,
+            path: `${basePath}/${CATEGORY_SLUG}/${item.slug}`,
             score: 60,
             matchType: 'content' as const,
             highlight,
@@ -138,13 +154,16 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
     }
 
     results.sort((a, b) => b.score - a.score);
-    setSearchResults(results.slice(0, 10));
-    setIsSearching(false);
+    if (requestId === searchRequestIdRef.current) {
+      setSearchResults(results.slice(0, 10));
+      setIsSearching(false);
+    }
   };
 
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
+    searchRequestIdRef.current += 1;
 
     if (!value.trim()) {
       setSearchResults([]);
@@ -163,28 +182,31 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
 
   const handleResultClick = (path: string) => {
     navigate(path);
+    searchRequestIdRef.current += 1;
     setSearchQuery('');
     setSearchResults([]);
   };
 
   const menuItems = useMemo(() => [
-    { key: 'welcome', label: <Link to="/guide/new">{labels.welcome}</Link> },
+    { key: 'guide-home', label: <Link to={SHARED_PATHS.guides}>{language === 'zh' ? '选择教程版本' : 'Choose generation'}</Link> },
+    { key: 'reference', label: <Link to={`${PRODUCTS.v1.guidePath}/reference`}>{language === 'zh' ? '一代参考手册' : 'Generation-one reference'}</Link> },
+    { key: 'welcome', label: <Link to={basePath}>{labels.welcome}</Link> },
     {
       key: 'beginner',
       label: labels.beginner,
       children: tutorialItems.map((item) => ({
         key: item.slug,
-        label: <Link to={`/guide/new/${CATEGORY_SLUG}/${item.slug}`}>{item.label}</Link>,
+        label: <Link to={`${basePath}/${CATEGORY_SLUG}/${item.slug}`}>{item.label}</Link>,
       })),
     },
-  ], [labels, tutorialItems]);
+  ], [basePath, language, labels, tutorialItems]);
 
   const selectedKeys = useMemo(() => {
-    if (location.pathname === '/guide/new' || location.pathname === '/guide/new/') {
+    if (location.pathname === basePath || location.pathname === `${basePath}/`) {
       return ['welcome'];
     }
     return [slug ? decodeURIComponent(slug) : 'welcome'];
-  }, [location.pathname, slug]);
+  }, [basePath, location.pathname, slug]);
 
   const defaultOpenKeys = useMemo(() => {
     if (category === CATEGORY_SLUG || slug) {
@@ -201,8 +223,8 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
   return (
     <Layout
       style={{
-        minHeight: isScreenshotMode ? 'auto' : 'calc(100vh - 64px)',
-        paddingTop: isScreenshotMode ? 0 : 64,
+        minHeight: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top))',
+        paddingTop: isScreenshotMode ? 0 : 16,
         background: isScreenshotMode ? '#ffffff' : 'transparent',
       }}
     >
@@ -216,13 +238,13 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
         trigger={null}
         style={{
           overflow: 'auto',
-          height: 'calc(100vh - 64px)',
+          height: 'calc(100dvh - var(--product-content-top) - 16px)',
           background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
           backdropFilter: 'blur(10px)',
           borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
           zIndex: 1001,
           position: broken ? 'fixed' : 'relative',
-          top: broken ? '64px' : 'auto',
+          top: broken ? 'var(--product-content-top)' : 'auto',
           left: broken ? 0 : 'auto',
         }}
       >
@@ -324,7 +346,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           <div
             style={{
               position: 'fixed',
-              top: 64,
+              top: 'var(--product-content-top)',
               left: 0,
               right: 0,
               bottom: 0,
@@ -341,7 +363,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
             onClick={() => setCollapsed(!collapsed)}
             style={{
               position: 'fixed',
-              top: 74,
+              top: 'calc(var(--product-content-top) + 10px)',
               left: 16,
               zIndex: 1002,
             }}
@@ -354,7 +376,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
           style={{
             margin: 0,
             minHeight: 280,
-            height: isScreenshotMode ? 'auto' : 'calc(100vh - 64px)',
+            height: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top) - 16px)',
             overflow: isScreenshotMode ? 'visible' : 'hidden',
             display: 'flex',
             flexDirection: 'column',
@@ -385,6 +407,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en' }> = ({ 
                 minHeight: '100%',
               }}
             >
+              {!isScreenshotMode && <div className="guide-version-context" style={{ paddingLeft: broken ? 48 : 0 }}><strong>Operit 1</strong><span>{language === 'zh' ? '使用教程' : 'User tutorials'}</span><Link to={`${PRODUCTS.v1.guidePath}/reference`}>{language === 'zh' ? '完整参考手册' : 'Full reference'}</Link></div>}
               <Outlet />
             </div>
             {!isScreenshotMode && <div style={{ marginTop: 16 }}>

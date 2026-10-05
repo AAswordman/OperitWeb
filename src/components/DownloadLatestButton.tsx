@@ -4,8 +4,11 @@ import type { ButtonProps } from 'antd';
 import { DownloadOutlined } from '@ant-design/icons';
 import { motion } from 'framer-motion';
 import SupportDevelopmentButton from './SupportDevelopmentButton';
+import { PRODUCTS } from '../config/products';
+import type { GitHubReleaseSource } from '../config/products';
 
 interface DownloadLatestButtonProps {
+  releaseSource: GitHubReleaseSource;
   downloadText: string;
   language: 'zh' | 'en';
   block?: boolean;
@@ -186,6 +189,7 @@ const measureMirrorDownloadSpeed = async (targetUrl: string, signal: AbortSignal
   });
 
 const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
+  releaseSource,
   downloadText,
   language,
   block = false,
@@ -196,7 +200,8 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
   style,
   withMotion = true
 }) => {
-  const [downloadUrl, setDownloadUrl] = useState<string>('https://github.com/AAswordman/Operit/releases');
+  const releasePageUrl = `https://github.com/${releaseSource.repository}/releases`;
+  const [downloadUrl, setDownloadUrl] = useState<string>(releasePageUrl);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
   const [isTestingMirrors, setIsTestingMirrors] = useState<boolean>(false);
@@ -218,10 +223,12 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
   };
 
   useEffect(() => {
+    const releaseController = new AbortController();
+    setDownloadUrl(releasePageUrl);
     const fetchLatestRelease = async () => {
       setIsLoading(true);
       try {
-        const response = await fetch('https://api.github.com/repos/AAswordman/Operit/releases/latest');
+        const response = await fetch(`https://api.github.com/repos/${releaseSource.repository}/releases/latest`, { signal: releaseController.signal });
         if (!response.ok) {
           throw new Error(`GitHub API request failed with status ${response.status}`);
         }
@@ -234,18 +241,19 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
           setDownloadUrl(apkAsset.browser_download_url);
         }
       } catch (error) {
-        console.error('Error fetching GitHub release:', error);
+        if (!releaseController.signal.aborted) console.error('Error fetching GitHub release:', error);
       } finally {
-        setIsLoading(false);
+        if (!releaseController.signal.aborted) setIsLoading(false);
       }
     };
 
     fetchLatestRelease();
 
     return () => {
+      releaseController.abort();
       probeAbortControllerRef.current?.abort();
     };
-  }, []);
+  }, [releasePageUrl, releaseSource.repository]);
 
   const handleCancel = () => {
     probeAbortControllerRef.current?.abort();
@@ -505,11 +513,11 @@ const DownloadLatestButton: React.FC<DownloadLatestButtonProps> = ({
   ];
 
   const guideUrl =
-    typeof window === 'undefined' ? '#/guide' : `${window.location.origin}${window.location.pathname}#/guide`;
+    typeof window === 'undefined' ? `#${PRODUCTS.v1.guidePath}` : `${window.location.origin}${window.location.pathname}#${PRODUCTS.v1.guidePath}`;
   const quickStartUrl =
     typeof window === 'undefined'
-      ? '#/guide/old/quick-start'
-      : `${window.location.origin}${window.location.pathname}#/guide/old/quick-start`;
+      ? `#${PRODUCTS.v1.guidePath}/beginner-tutorial/01-quick-start`
+      : `${window.location.origin}${window.location.pathname}#${PRODUCTS.v1.guidePath}/beginner-tutorial/01-quick-start`;
 
   const modalTitle = (() => {
     switch (currentStage) {

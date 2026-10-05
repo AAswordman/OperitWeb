@@ -10,7 +10,9 @@
     "preview": "vite preview",
     "export-pdf": "node generate-pdfs.mjs",
     "validate:plugin-denylist": "node scripts/validate-plugin-denylist.mjs",
-    "test:market-v2": "node --test workers/market/v2/test/*.test.js"
+    "test:market-v2": "pnpm --dir workers/market test",
+    "test:site": "node --test tests/site-routing.test.mjs",
+    "test:site:smoke": "node scripts/test-site-smoke.mjs"
   },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",

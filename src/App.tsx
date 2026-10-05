@@ -1,31 +1,8 @@
-import React, { useState, useEffect, lazy } from 'react';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { HashRouter as Router } from 'react-router-dom';
 import { ConfigProvider, theme } from 'antd';
-import MainLayout from './layouts/MainLayout';
-import HomePage from './pages/HomePage';
-import LaunchPage from './pages/LaunchPage';
+import AppRoutes from './routing/AppRoutes';
 import SiteMetadata from './components/SiteMetadata';
-
-const GuidePage = lazy(() => import('./pages/GuidePage'));
-const GuideIndex = lazy(() => import('./pages/GuideIndex'));
-const GuideHubPage = lazy(() => import('./pages/GuideHubPage'));
-const GuideNewPage = lazy(() => import('./pages/GuideNewPage'));
-const GuideNewContent = lazy(() => import('./pages/GuideNewContent'));
-const MarkdownRenderer = lazy(() => import('./components/MarkdownRenderer'));
-const GuideContent = lazy(() => import('./pages/GuideContent'));
-const PluginTutorialPage = lazy(() => import('./pages/PluginTutorialPage'));
-const PluginTutorialContent = lazy(() => import('./pages/PluginTutorialContent'));
-const ReturnCodeGeneratorPage = lazy(() => import('./pages/ReturnCodeGeneratorPage'));
-const OperitSubmissionAdminPage = lazy(() => import('./pages/OperitSubmissionAdminPage'));
-const OperitSubmissionEditPage = lazy(() => import('./pages/OperitSubmissionEditPage'));
-const OperitSubmissionCenterPage = lazy(() => import('./pages/OperitSubmissionCenterPage'));
-const OperitLoginPage = lazy(() => import('./pages/OperitLoginPage'));
-const OperitReviewerApplyPage = lazy(() => import('./pages/OperitReviewerApplyPage'));
-const OperitOwnerAdminPage = lazy(() => import('./pages/OperitOwnerAdminPage'));
-const OperitMCPMarketPage = lazy(() => import('./pages/OperitMCPMarketPage'));
-const OperitMarketReviewPage = lazy(() => import('./pages/OperitMarketReviewPage'));
-const ProjectUpdatePage = lazy(() => import('./pages/ProjectUpdatePage'));
-const NotFoundPage = lazy(() => import('./pages/NotFoundPage'));
 
 const App: React.FC = () => {
   const [darkMode, setDarkMode] = useState(() => {
@@ -35,8 +12,8 @@ const App: React.FC = () => {
   });
   const [language, setLanguage] = useState<'zh' | 'en'>(() => {
     const savedLanguage = localStorage.getItem('language');
-    if (savedLanguage) {
-      return savedLanguage as 'zh' | 'en';
+    if (savedLanguage === 'zh' || savedLanguage === 'en') {
+      return savedLanguage;
     }
     // 获取浏览器语言
     const browserLang = navigator.language.toLowerCase();
@@ -92,53 +69,11 @@ const App: React.FC = () => {
     >
       <Router>
         <SiteMetadata language={language} />
-        <Routes>
-          <Route
-            path="/"
-            element={
-              <MainLayout
-                darkMode={darkMode}
-                setDarkMode={setDarkMode}
-                language={language}
-                setLanguage={setLanguage}
-                dpi={dpi}
-                setDpi={setDpi}
-              />
-            }
-          >
-            <Route index element={<LaunchPage language={language} />} />
-            <Route path="classic" element={<HomePage darkMode={darkMode} language={language} />} />
-            <Route path="guide">
-              <Route index element={<GuideHubPage darkMode={darkMode} language={language} />} />
-              <Route path="new" element={<GuideNewPage darkMode={darkMode} language={language} />}>
-                <Route index element={<MarkdownRenderer file="newcontent/index" language={language} />} />
-                <Route path=":category/:slug" element={<GuideNewContent language={language} />} />
-              </Route>
-              <Route path="old" element={<GuidePage darkMode={darkMode} language={language} basePath="/guide/old" />}>
-                <Route index element={<GuideIndex language={language} basePath="/guide/old" />} />
-                <Route path="quick-start" element={<MarkdownRenderer file="quick-start" language={language} />} />
-                <Route path="ai-provider-basics" element={<MarkdownRenderer file="ai-provider-basics" language={language} />} />
-                <Route path="faq" element={<MarkdownRenderer file="faq" language={language} />} />
-                <Route path="tools-and-features/return-code-generator" element={<ReturnCodeGeneratorPage />} />
-                <Route path=":category/*" element={<GuideContent language={language} />} />
-              </Route>
-              <Route path="plugin" element={<PluginTutorialPage darkMode={darkMode} language={language} basePath="/guide/plugin" homePath="/guide" />}>
-                <Route index element={<MarkdownRenderer file="plugin-tutorial/index" language={language} />} />
-                <Route path=":slug" element={<PluginTutorialContent language={language} />} />
-              </Route>
-            </Route>
-            <Route path="operit-submission-edit" element={<OperitSubmissionEditPage language={language} />} />
-            <Route path="operit-login" element={<OperitLoginPage language={language} />} />
-            <Route path="operit-reviewer-apply" element={<OperitReviewerApplyPage language={language} />} />
-            <Route path="operit-submission-admin" element={<OperitSubmissionAdminPage language={language} />} />
-            <Route path="operit-owner-admin" element={<OperitOwnerAdminPage language={language} />} />
-            <Route path="operit-market-review" element={<OperitMarketReviewPage language={language} />} />
-            <Route path="operit-submission-center/*" element={<OperitSubmissionCenterPage language={language} />} />
-            <Route path="project-update" element={<ProjectUpdatePage darkMode={darkMode} language={language} />} />
-            <Route path="market" element={<OperitMCPMarketPage language={language} />} />
-            <Route path="*" element={<NotFoundPage language={language} />} />
-          </Route>
-        </Routes>
+        <AppRoutes
+          darkMode={darkMode} setDarkMode={setDarkMode}
+          language={language} setLanguage={setLanguage}
+          dpi={dpi} setDpi={setDpi}
+        />
       </Router>
     </ConfigProvider>
   );

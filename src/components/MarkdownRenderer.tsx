@@ -13,6 +13,7 @@ import remarkImageGallery from '../remark/remarkImageGallery';
 import remarkDetails from '../remark/remarkDetails';
 import { translations } from '../translations';
 import { buildMarkdownCandidates } from '../utils/markdownPaths';
+import { canonicalizeSiteHref } from '../routing/paths';
 
 // Omit 'ref' from the standard 'code' component props to avoid type conflicts with SyntaxHighlighter
 type CodeComponentProps = Omit<ComponentProps<'code'>, 'ref'>;
@@ -78,6 +79,8 @@ interface MarkdownRendererProps {
 const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) => {
   const [markdown, setMarkdown] = useState('');
   const [loading, setLoading] = useState(true);
+  const [loadedDocumentKey, setLoadedDocumentKey] = useState('');
+  const documentKey = JSON.stringify([file, language]);
   const [error, setError] = useState<string | null>(null);
   const [resolvedPath, setResolvedPath] = useState<string | null>(null);
   const [imagesReady, setImagesReady] = useState(false);
@@ -90,6 +93,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
   const markdownBodyRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    const controller = new AbortController();
     const fetchMarkdown = async () => {
       setLoading(true);
       setError(null);
@@ -99,9 +103,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
         const candidates = buildMarkdownCandidates(file, language);
 
         for (const candidate of candidates) {
-          const response = await fetch(`${import.meta.env.BASE_URL}${candidate}`);
-          if (response.ok) {
+          const response = await fetch(`${import.meta.env.BASE_URL}${candidate}`, { signal: controller.signal });
+          if (response.ok && !response.headers.get('content-type')?.includes('text/html')) {
             const text = await response.text();
+            if (controller.signal.aborted) return;
             setMarkdown(text);
             setResolvedPath(candidate);
             return;
@@ -110,14 +115,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
 
         throw new Error(`Failed to fetch markdown file: ${file}.md`);
       } catch (err) {
+        if (controller.signal.aborted) return;
         console.error(`Failed to load markdown file: ${file}.md`, err);
         setError(t.loadError);
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoadedDocumentKey(JSON.stringify([file, language]));
+          setLoading(false);
+        }
       }
     };
 
     fetchMarkdown();
+    return () => controller.abort();
   }, [file, language, t.loadError]);
 
   useEffect(() => {
@@ -160,7 +170,8 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
     };
   }, [loading, markdown, screenshotMode]);
 
-  const urlTransform = (uri: string) => {
+  const urlTransform = (value: string) => {
+    const uri = canonicalizeSiteHref(value);
     // Prepend the base URL to absolute paths to fix image loading on GitHub Pages.
     if (uri.startsWith('/') && !uri.startsWith('//')) {
       const baseUrl = import.meta.env.BASE_URL;
@@ -170,7 +181,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
     return uri;
   };
 
-  if (loading) {
+  if (loading || loadedDocumentKey !== documentKey) {
     return (
       <div className="loading-container">
         <Spin size="large" />
@@ -509,7 +520,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
   };
 
   return (
-    <div className={screenshotMode ? 'markdown-renderer-root screenshot-mode' : 'markdown-renderer-root'}>
+    <div data-markdown-path={resolvedPath} className={screenshotMode ? 'markdown-renderer-root screenshot-mode' : 'markdown-renderer-root'}>
       {screenshotMode && (
         <div className="markdown-screenshot-toolbar">
           <Space wrap align="center">

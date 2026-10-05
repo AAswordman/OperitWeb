@@ -1,9 +1,11 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useCallback, useMemo, useRef } from 'react';
 import { Layout, Menu, Button, Input } from 'antd';
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom';
 import { MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons';
 import { translations } from '../translations';
 import FooterComponent from '../components/Footer';
+import { PRODUCTS } from '../config/products';
+import './VersionPages.css';
 import { ENGLISH_STOP_WORDS, CHINESE_STOP_WORDS } from '../utils/dictionary';
 
 const { Sider, Content } = Layout;
@@ -39,7 +41,7 @@ const expandKeywordsByIntent = (query: string, baseKeywords: string[]): string[]
 const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?: string }> = ({
   darkMode,
   language,
-  basePath = '/guide/old'
+  basePath = '/v1/guide/reference'
 }) => {
   const t = translations[language].guide;
   const navigate = useNavigate();
@@ -63,7 +65,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
     level?: number;
   }
 
-  const linkTo = (path?: string) => path ? `${basePath}/${path}` : basePath;
+  const linkTo = useCallback((path?: string) => path ? `${basePath}/${path}` : basePath, [basePath]);
   const basePathParts = useMemo(() => basePath.split('/').filter(Boolean), [basePath]);
 
   // 获取所有文档的元数据
@@ -546,10 +548,11 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
     { key: 'ai-provider-basics', label: <Link to={linkTo('ai-provider-basics')}>{t.aiProviderBasics}</Link> },
     { key: 'return-code-generator', label: <Link to={linkTo('tools-and-features/return-code-generator')}>{t.returnCodeGenerator}</Link> },
     { key: 'faq', label: <Link to={linkTo('faq')}>{t.faq}</Link> },
-  ], [basePath, t]);
+  ], [linkTo, t]);
   const [collapsed, setCollapsed] = useState(false);
   const [broken, setBroken] = useState(false);
   const location = useLocation();
+  const isScreenshotMode = new URLSearchParams(location.search).get('mode') === 'screenshot';
 
   const isToolPage = location.pathname.startsWith(`${basePath}/tools/`);
 
@@ -588,8 +591,8 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
   };
 
   return (
-    <Layout style={{ minHeight: 'calc(100vh - 64px)', paddingTop: 64, background: 'transparent' }}>
-      <Sider
+    <Layout style={{ minHeight: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top))', paddingTop: isScreenshotMode ? 0 : 16, background: 'transparent' }}>
+      {!isScreenshotMode && <Sider
         collapsible
         collapsed={collapsed}
         onCollapse={setCollapsed}
@@ -599,13 +602,13 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
         trigger={null}
         style={{
           overflow: 'auto',
-          height: 'calc(100vh - 64px)',
+          height: 'calc(100dvh - var(--product-content-top) - 16px)',
           background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
           backdropFilter: 'blur(10px)',
           borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
           zIndex: 1001, // 设置比Header更高的z-index
           position: broken ? 'fixed' : 'relative', // 移动端时使用固定定位
-          top: broken ? '64px' : 'auto',
+          top: broken ? 'var(--product-content-top)' : 'auto',
           left: broken ? 0 : 'auto',
         }}
       >
@@ -713,14 +716,14 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
           items={menuItems}
           style={{ height: '100%', borderRight: 0, background: 'transparent' }}
             />
-      </Sider>
+      </Sider>}
       <Layout style={{ background: 'transparent', minWidth: 0 }}>
         {/* 移动端遮罩层 */}
-        {broken && !collapsed && (
+        {!isScreenshotMode && broken && !collapsed && (
           <div
             style={{
               position: 'fixed',
-              top: 64,
+              top: 'var(--product-content-top)',
               left: 0,
               right: 0,
               bottom: 0,
@@ -731,13 +734,13 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
           />
         )}
         
-        {broken && (
+        {!isScreenshotMode && broken && (
           <Button
             icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
             onClick={() => setCollapsed(!collapsed)}
             style={{
               position: 'fixed',
-              top: 74,
+              top: 'calc(var(--product-content-top) + 10px)',
               left: 16,
               zIndex: 1002,
             }}
@@ -749,8 +752,8 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
           style={{ 
             margin: 0, 
             minHeight: 280,
-            height: 'calc(100vh - 64px)',
-            overflow: 'hidden',
+            height: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top) - 16px)',
+            overflow: isScreenshotMode ? 'visible' : 'hidden',
             display: 'flex',
             flexDirection: 'column',
           }}
@@ -758,7 +761,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
           <div
             style={{
               flex: 1,
-              overflow: 'auto',
+              overflow: isScreenshotMode ? 'visible' : 'auto',
               padding: isToolPage ? '0' : (broken ? '8px' : '24px'),
             }}
           >
@@ -773,12 +776,13 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
                 padding: '6px 24px',
                 minHeight: '100%',
               }}>
+                {!isScreenshotMode && <div className="guide-version-context" style={{ paddingLeft: broken ? 48 : 0 }}><strong>Operit 1</strong><span>{language === 'zh' ? '参考手册' : 'Reference manual'}</span><Link to={PRODUCTS.v1.guidePath}>{language === 'zh' ? '返回一代教程' : 'Generation-one tutorials'}</Link></div>}
                 <Outlet />
               </div>
             )}
-            <div style={{ marginTop: 16 }}>
+            {!isScreenshotMode && <div style={{ marginTop: 16 }}>
               <FooterComponent language={language} />
-            </div>
+            </div>}
           </div>
         </Content>
       </Layout>
