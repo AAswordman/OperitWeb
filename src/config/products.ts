@@ -13,10 +13,31 @@ export interface PublicBetaPlatform {
   url: string;
 }
 
+// Destination for the other-platform beta download entry.
+export const OPERIT_V2_BETA_GROUP_NUMBER = '1121622579';
+export const OPERIT_V2_BETA_GROUP_URL = `mqqapi://card/show_pslcard?src_type=internal&version=1&uin=${OPERIT_V2_BETA_GROUP_NUMBER}&card_type=group&source=qrcode`;
+
 export const OPERIT_V2_TESTFLIGHT_URL = 'https://testflight.apple.com/join/hzq2xRrH';
 export const OPERIT_V2_PUBLIC_BETAS: PublicBetaPlatform[] = [
   { id: 'ios', name: 'iOS', url: OPERIT_V2_TESTFLIGHT_URL },
   { id: 'macos', name: 'macOS', url: OPERIT_V2_TESTFLIGHT_URL },
+];
+
+
+export interface DownloadPlatform {
+  id: 'android' | 'ios' | 'windows' | 'macos' | 'linux';
+  name: string;
+  url: string;
+  channel: 'testflight' | 'qq';
+}
+
+// Download-page entries only; the overview's Apple beta links stay unchanged.
+export const OPERIT_V2_DOWNLOAD_PLATFORMS: DownloadPlatform[] = [
+  { id: 'android', name: 'Android', url: OPERIT_V2_BETA_GROUP_URL, channel: 'qq' },
+  { ...OPERIT_V2_PUBLIC_BETAS[0], channel: 'testflight' },
+  { id: 'windows', name: 'Windows', url: OPERIT_V2_BETA_GROUP_URL, channel: 'qq' },
+  { ...OPERIT_V2_PUBLIC_BETAS[1], channel: 'testflight' },
+  { id: 'linux', name: 'Linux', url: OPERIT_V2_BETA_GROUP_URL, channel: 'qq' },
 ];
 
 export interface ProductDefinition {

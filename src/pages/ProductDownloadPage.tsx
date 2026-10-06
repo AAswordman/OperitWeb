@@ -1,9 +1,9 @@
 import { Alert } from 'antd';
 import { Link } from 'react-router-dom';
-import { AppleOutlined, DesktopOutlined, AndroidOutlined, ArrowRightOutlined, BookOutlined, DownloadOutlined, GithubOutlined } from '@ant-design/icons';
+import { AppleOutlined, DesktopOutlined, AndroidOutlined, ArrowRightOutlined, BookOutlined, DownloadOutlined, GithubOutlined, WindowsOutlined } from '@ant-design/icons';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 import Footer from '../components/Footer';
-import { PRODUCTS, SHARED_PATHS, getExternalDownloadUrl } from '../config/products';
+import { PRODUCTS, SHARED_PATHS, getExternalDownloadUrl, OPERIT_V2_DOWNLOAD_PLATFORMS } from '../config/products';
 import type { Language, ProductGeneration } from '../config/products';
 import './VersionPages.css';
 
@@ -21,15 +21,15 @@ export default function ProductDownloadPage({ generation, language }: { generati
           <p>{zh ? '此入口仅下载 Operit 1。自动获取一代 GitHub Release 中的最新 APK，并保留原有的下载线路选择。' : 'This entry downloads Operit 1 only. It fetches the latest APK from the generation-one GitHub releases, with download-source selection.'}</p>
           <div className="version-download-actions"><DownloadLatestButton releaseSource={source} downloadText={zh ? '下载 Operit 1 APK' : 'Download Operit 1 APK'} language={language} withMotion={false} /><a href={`https://github.com/${source.repository}/releases`} target="_blank" rel="noopener noreferrer"><GithubOutlined />{zh ? '历史版本与发布说明' : 'Release history'}</a></div>
         </> : <>
-          <p>{zh ? 'Operit 2 是全平台产品，不只面向 Apple 设备。目前 iOS 与 macOS 已开放 TestFlight 公测，其他平台的内测将逐步开放。' : 'Operit 2 is a cross-platform product, not limited to Apple devices. iOS and macOS public betas are available through TestFlight; private testing on other platforms will open gradually.'}</p>
+          <p>{zh ? 'Operit 2 是全平台产品，不只面向 Apple 设备。iOS 与 macOS 通过 TestFlight 参与公测；Android、Windows 与 Linux 可通过各自的公测入口参与测试。' : 'Operit 2 is a cross-platform product, not limited to Apple devices. Join iOS and macOS public betas through TestFlight, or use the Android, Windows and Linux beta entries below.'}</p>
           <div className="version-platform-downloads">
-            {source.publicBetas.map(platform => <article className="version-platform-download" key={platform.id}>
-              <div className="version-platform-heading"><span className="version-platform-download-icon">{platform.id === 'ios' ? <AppleOutlined /> : <DesktopOutlined />}</span><div><h3>{platform.name}</h3><span className="version-platform-caption">Operit 2 · {zh ? '公测已开放' : 'Public beta available'}</span></div></div>
-              <p>{zh ? `通过 TestFlight 参与 ${platform.name} 公测。` : `Join the ${platform.name} public beta through TestFlight.`}</p>
-              <a className="version-primary-link" href={platform.url} target="_blank" rel="noopener noreferrer" data-platform={platform.id}><DownloadOutlined />{zh ? `加入 ${platform.name} 公测` : `Join ${platform.name} beta`}<ArrowRightOutlined /></a>
+            {OPERIT_V2_DOWNLOAD_PLATFORMS.map(platform => <article className="version-platform-download" key={platform.id}>
+              <div className="version-platform-heading"><span className="version-platform-download-icon">{platform.id === 'android' ? <AndroidOutlined /> : platform.id === 'ios' ? <AppleOutlined /> : platform.id === 'windows' ? <WindowsOutlined /> : <DesktopOutlined />}</span><div><h3>{platform.name}</h3><span className="version-platform-caption">Operit 2 · {platform.channel === 'testflight' ? (zh ? '公测已开放' : 'Public beta available') : (zh ? '公测渠道' : 'Beta access')}</span></div></div>
+              <p>{platform.channel === 'testflight' ? (zh ? `通过 TestFlight 参与 ${platform.name} 公测。` : `Join the ${platform.name} public beta through TestFlight.`) : (zh ? `通过公测入口获取 ${platform.name} 测试版本与安装说明。` : `Get ${platform.name} test builds and installation instructions through the beta channel.`)}</p>
+              <a className="version-primary-link" href={platform.url} target={platform.channel === 'testflight' ? '_blank' : undefined} rel={platform.channel === 'testflight' ? 'noopener noreferrer' : undefined} data-platform={platform.id}><DownloadOutlined />{zh ? `加入 ${platform.name} 公测` : `Join ${platform.name} beta`}<ArrowRightOutlined /></a>
             </article>)}
           </div>
-          <Alert type="info" showIcon message={zh ? '其他平台 · 内测逐步开放' : 'Other platforms · private testing opens gradually'} description={zh ? 'Operit 2 面向全平台。其他平台正在内测，参与入口将逐步开放，请关注后续官方公告。请勿将 Operit 1 的安装包作为二代安装包。' : 'Operit 2 is designed for all platforms. Other platforms are in private testing, with access opening gradually. Follow official announcements; Operit 1 packages are not Operit 2 installers.'} />
+          <Alert type="info" showIcon message={zh ? '公测说明' : 'Beta information'} description={zh ? '公测版本不代表正式发布。各平台测试范围与安装说明，以对应公测入口中的公告为准。请勿将 Operit 1 的安装包作为二代安装包。' : 'Beta builds are not a general release. Check the selected platform’s beta channel for availability and installation instructions. Operit 1 packages are not Operit 2 installers.'} />
           {externalUrl && <a className="version-primary-link version-additional-download" href={externalUrl} target="_blank" rel="noopener noreferrer"><DownloadOutlined />{zh ? '其他官方二代发布入口' : 'Additional official Operit 2 releases'}<ArrowRightOutlined /></a>}
         </>}
         <div className="version-download-guide"><BookOutlined /><Link to={product.guidePath}>{zh ? `查看 ${product.name} 使用教程` : `${product.name} guides`}</Link><ArrowRightOutlined /></div>

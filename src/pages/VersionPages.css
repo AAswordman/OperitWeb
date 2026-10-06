@@ -40,7 +40,7 @@
 .version-platform-download h3 { font-size: 24px; font-weight: 600; letter-spacing: -.02em; margin: 0 0 6px; }
 .version-platform-caption { color: var(--site-muted); font-size: 11px; }
 .version-platform-download p { color: var(--site-muted); font-size: 13px; line-height: 1.8; }
-.version-platform-download .version-primary-link { width: auto; margin-top: 4px; }
+.version-platform-download .version-primary-link { width: auto; margin-top: auto; }
 .version-download-panel .ant-alert { border: 1px solid var(--site-line); background: transparent; border-radius: 10px; padding: 20px; }
 .version-download-panel .ant-alert-description { color: var(--site-muted); font-size: 12px; line-height: 1.8; }
 .version-download-panel .ant-alert-message { font-size: 13px; }

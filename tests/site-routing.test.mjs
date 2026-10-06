@@ -13,7 +13,7 @@ async function loadTsModule(relativePath, imports = {}) {
 }
 
 const products = await loadTsModule('../src/config/products.ts');
-const { PRODUCTS, SHARED_PATHS, OPERIT_V2_TESTFLIGHT_URL, OPERIT_V2_PUBLIC_BETAS, getProductFromPath, getExternalDownloadUrl } = products.module;
+const { PRODUCTS, SHARED_PATHS, OPERIT_V2_TESTFLIGHT_URL, OPERIT_V2_PUBLIC_BETAS, OPERIT_V2_DOWNLOAD_PLATFORMS, OPERIT_V2_BETA_GROUP_NUMBER, OPERIT_V2_BETA_GROUP_URL, getProductFromPath, getExternalDownloadUrl } = products.module;
 const { resolveLegacyPath, canonicalizeSiteHref } = (await loadTsModule('../src/routing/paths.ts', { '../config/products.ts': products.url })).module;
 const { getRouteMetadata } = (await loadTsModule('../src/config/routeMetadata.ts', { './products.ts': products.url })).module;
 const { buildMarkdownCandidates, isEditableMarkdownPath } = (await loadTsModule('../src/utils/markdownPaths.ts')).module;
@@ -161,4 +161,26 @@ test('navigation keeps shared routes and documentation boundaries explicit', () 
   assert.equal(getNavigationContext('/market').market, true);
   assert.equal(getNavigationContext('/marketish').market, false);
   assert.equal(getNavigationContext('/v2/guide').downloadPath, '/v2/download');
+});
+
+
+test('other-platform beta group opens the supplied QQ group without rewriting its protocol', () => {
+  assert.equal(OPERIT_V2_BETA_GROUP_NUMBER, '1121622579');
+  const url = new URL(OPERIT_V2_BETA_GROUP_URL);
+  assert.equal(url.protocol, 'mqqapi:');
+  assert.equal(url.hostname, 'card');
+  assert.equal(url.pathname, '/show_pslcard');
+  assert.equal(url.searchParams.get('uin'), OPERIT_V2_BETA_GROUP_NUMBER);
+  assert.equal(url.searchParams.get('card_type'), 'group');
+  assert.equal(canonicalizeSiteHref(OPERIT_V2_BETA_GROUP_URL), OPERIT_V2_BETA_GROUP_URL);
+});
+
+
+test('Operit 2 downloads list each platform and use the appropriate beta destination', () => {
+  assert.deepEqual(OPERIT_V2_DOWNLOAD_PLATFORMS.map(platform => platform.name), ['Android', 'iOS', 'Windows', 'macOS', 'Linux']);
+  for (const platform of OPERIT_V2_DOWNLOAD_PLATFORMS) {
+    const apple = ['ios', 'macos'].includes(platform.id);
+    assert.equal(platform.channel, apple ? 'testflight' : 'qq');
+    assert.equal(platform.url, apple ? OPERIT_V2_TESTFLIGHT_URL : OPERIT_V2_BETA_GROUP_URL);
+  }
 });

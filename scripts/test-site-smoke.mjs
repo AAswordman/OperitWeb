@@ -132,19 +132,27 @@ try {
     await page.waitForFunction(() => document.title.includes('Operit 2'));
     const text = await page.$eval('.version-download-panel', element => element.textContent);
     assert.match(text, /全平台/);
-    assert.match(text, /其他平台.*内测.*逐步开放/);
+    assert.match(text, /Android.*Windows.*Linux/);
     assert.doesNotMatch(text, /公开下载暂未开放/);
     const betaLinks = await page.$$eval('.version-platform-downloads a[data-platform]', links => links.map(link => ({
       platform: link.dataset.platform, href: link.href, target: link.target, rel: link.rel, text: link.textContent,
     })));
-    assert.equal(betaLinks.length, 2);
-    assert.deepEqual(betaLinks.map(link => link.platform), ['ios', 'macos']);
+    assert.equal(betaLinks.length, 5);
+    assert.deepEqual(betaLinks.map(link => link.platform), ['android', 'ios', 'windows', 'macos', 'linux']);
     for (const link of betaLinks) {
-      assert.equal(link.href, testFlightUrl);
-      assert.equal(link.target, '_blank');
-      assert.match(link.rel, /noopener/);
+      if (['ios', 'macos'].includes(link.platform)) {
+        assert.equal(link.href, testFlightUrl);
+        assert.equal(link.target, '_blank');
+        assert.match(link.rel, /noopener/);
+      } else {
+        const destination = new URL(link.href);
+        assert.equal(destination.protocol, 'mqqapi:');
+        assert.equal(destination.searchParams.get('uin'), '1121622579');
+        assert.equal(destination.searchParams.get('card_type'), 'group');
+      }
       assert.match(link.text, /加入 .* 公测/);
     }
+    assert.doesNotMatch(text, /1121622579|QQ|其他平台/);
     if (configuredV2Url) {
       assert.equal(await page.$eval('.version-additional-download', element => element.href), configuredV2Url);
     } else assert.equal(await page.$('.version-additional-download'), null);
@@ -244,7 +252,7 @@ try {
     await page.waitForFunction(() => !document.documentElement.hasAttribute('data-theme'));
     assert.match(await page.title(), /Operit 2 Guides/);
   });
-  await check('English download page retains both public-beta links and the other-platform testing notice', async () => {
+  await check('English download page lists every platform with its own beta entry', async () => {
     // Close the open preferences popover before using the product navigation.
     await page.keyboard.press('Escape');
     // Change the current language via client-side navigation, not a full reload.
@@ -252,7 +260,7 @@ try {
     await page.waitForSelector('.version-platform-downloads');
     const panelText = await page.$eval('.version-download-panel', element => element.textContent);
     assert.match(panelText, /cross-platform/);
-    assert.match(panelText, /Other platforms.*private testing/s);
+    assert.match(panelText, /Android.*Windows.*Linux/s);
     assert.match(panelText, /Join iOS beta/);
     assert.match(panelText, /Join macOS beta/);
     assert.equal((await hrefs('.version-platform-downloads')).filter(href => href === testFlightUrl).length, 2);
@@ -583,6 +591,56 @@ try {
         assert((await hrefs('.site-mobile-navigation')).includes('#/v2/download'));
       }
     });
+  }
+  for (const language of ['zh', 'en']) {
+    await applyPreferences(language, 'dark');
+    for (const width of [390, 1440]) {
+      await check(`v2 overview uses concise product-context labels in ${language} at ${width}px`, async () => {
+        await page.setViewport({ width, height: 900 });
+        await open('/v2', '.release-actions');
+        const actions = await page.$$eval('.release-actions a', elements => elements.map(element => ({ text: element.textContent, href: element.getAttribute('href') })));
+        assert.deepEqual(actions, [
+          { text: language === 'zh' ? '下载' : 'Download', href: '#/v2/download' },
+          { text: language === 'zh' ? '使用教程' : 'Guides', href: '#/v2/guide' },
+        ]);
+        const resources = await page.$eval('.release-resource-grid', element => element.textContent);
+        assert.doesNotMatch(resources, /二代|产品代际|both generations|generation of Operit/);
+        assert.equal(await page.$eval('.release-wordmark', element => element.textContent), 'Operit2');
+      });
+    }
+  }
+  for (const language of ['zh', 'en']) {
+    await applyPreferences(language, 'dark');
+    for (const width of [320, 390, 768, 1440]) {
+      await check(`v2 downloads list every platform in ${language} at ${width}px without exposing group details`, async () => {
+        await page.setViewport({ width, height: 900 });
+        await open('/v2/download', '.version-platform-downloads a[data-platform="linux"]');
+        const names = await page.$$eval('.version-platform-download h3', elements => elements.map(element => element.textContent));
+        assert.deepEqual(names, ['Android', 'iOS', 'Windows', 'macOS', 'Linux']);
+        assert.doesNotMatch(await page.$eval('.version-download-panel', element => element.textContent), /1121622579|QQ|其他平台|Other platforms/);
+        const entries = await page.$$eval('.version-platform-downloads a[data-platform]', elements => elements.map(element => {
+          const rect = element.getBoundingClientRect();
+          return { platform: element.dataset.platform, href: element.getAttribute('href'), text: element.textContent,
+            left: rect.left, right: rect.right };
+        }));
+        for (const entry of entries) {
+          const name = names[entries.indexOf(entry)];
+          assert.equal(entry.text, language === 'zh' ? `加入 ${name} 公测` : `Join ${name} beta`);
+          if (['ios', 'macos'].includes(entry.platform)) {
+            assert.equal(entry.href, testFlightUrl);
+          } else {
+            const url = new URL(entry.href);
+            assert.equal(url.protocol, 'mqqapi:');
+            assert.equal(url.hostname, 'card');
+            assert.equal(url.pathname, '/show_pslcard');
+            assert.equal(url.searchParams.get('uin'), '1121622579');
+            assert.equal(url.searchParams.get('card_type'), 'group');
+          }
+          assert(entry.left >= 0 && entry.right <= width, JSON.stringify(entry));
+        }
+        assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
+      });
+    }
   }
   await check('all pages render without JavaScript runtime errors', async () => assert.deepEqual(errors, []));
   console.log(`\n${checks} browser smoke checks passed.`);
