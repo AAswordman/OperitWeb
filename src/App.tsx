@@ -43,7 +43,22 @@ const App: React.FC = () => {
 
   useEffect(() => {
     localStorage.setItem('dpi', dpi.toString());
-    document.documentElement.style.zoom = `${dpi / 100}`;
+    const root = document.documentElement;
+    const scale = dpi / 100;
+    root.style.zoom = `${scale}`;
+    // CSS viewport units do not shrink with root CSS zoom. Express the
+    // visible height in the same logical pixels as the scaled sidebar.
+    const updateViewport = () => {
+      const height = window.visualViewport?.height ?? window.innerHeight;
+      root.style.setProperty('--site-viewport-height', `${height / scale}px`);
+    };
+    updateViewport();
+    window.addEventListener('resize', updateViewport);
+    window.visualViewport?.addEventListener('resize', updateViewport);
+    return () => {
+      window.removeEventListener('resize', updateViewport);
+      window.visualViewport?.removeEventListener('resize', updateViewport);
+    };
   }, [dpi]);
 
   return (
@@ -56,13 +71,13 @@ const App: React.FC = () => {
           borderRadius: 10,
           fontFamily: "Inter, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif",
           ...(darkMode ? {
-            colorBgBase: '#060911',
-            colorBgContainer: '#0d1523',
-            colorBgElevated: '#111e32',
-            colorBorder: '#263852',
-            colorBorderSecondary: '#1b2a41',
-            colorText: '#e8f0ff',
-            colorTextSecondary: '#a1b2cc',
+            colorBgBase: '#0b0c0f',
+            colorBgContainer: '#121418',
+            colorBgElevated: '#1a1c22',
+            colorBorder: '#292c33',
+            colorBorderSecondary: '#22252d',
+            colorText: '#f0f1f3',
+            colorTextSecondary: '#9499a4',
           } : {}),
         },
       }}

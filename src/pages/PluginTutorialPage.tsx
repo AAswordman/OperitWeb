@@ -1,10 +1,8 @@
-import React, { useCallback, useMemo, useState } from 'react';
-import { Layout, Menu, Button } from 'antd';
+import React, { useCallback, useMemo } from 'react';
+import { Menu } from 'antd';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { MenuFoldOutlined, MenuUnfoldOutlined } from '@ant-design/icons';
-import FooterComponent from '../components/Footer';
+import DocsLayout from '../layouts/DocsLayout';
 
-const { Sider, Content } = Layout;
 
 const PluginTutorialPage: React.FC<{
   darkMode: boolean;
@@ -18,8 +16,6 @@ const PluginTutorialPage: React.FC<{
   homePath = '/guide'
 }) => {
   const location = useLocation();
-  const [collapsed, setCollapsed] = useState(false);
-  const [broken, setBroken] = useState(false);
   const basePathParts = useMemo(() => basePath.split('/').filter(Boolean), [basePath]);
   const linkTo = useCallback((path?: string) => path ? `${basePath}/${path}` : basePath, [basePath]);
 
@@ -169,103 +165,20 @@ const PluginTutorialPage: React.FC<{
   }, [basePathParts.length, location.pathname]);
 
   return (
-    <Layout style={{ minHeight: 'calc(100vh - 64px)', paddingTop: 64, background: 'transparent' }}>
-      <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={setBroken}
-        trigger={null}
-        style={{
-          overflow: 'auto',
-          height: 'calc(100vh - 64px)',
-          background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
-          backdropFilter: 'blur(10px)',
-          borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
-          zIndex: 1001,
-          position: broken ? 'fixed' : 'relative',
-          top: broken ? '64px' : 'auto',
-          left: broken ? 0 : 'auto',
-        }}
-      >
+    <DocsLayout language={language} title={language === 'zh' ? '插件开发文档' : 'Plugin developer docs'} context={language === 'zh' ? '共享文档' : 'Shared docs'}
+      sidebar={<>
         <Menu
           theme={darkMode ? 'dark' : 'light'}
           mode="inline"
           selectedKeys={selectedKeys}
           defaultOpenKeys={defaultOpenKeys}
           items={menuItems}
-          style={{ height: '100%', borderRight: 0, background: 'transparent' }}
+          style={{ borderRight: 0, background: 'transparent' }}
         />
-      </Sider>
-      <Layout style={{ background: 'transparent', minWidth: 0 }}>
-        {broken && !collapsed && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 64,
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 1000,
-            }}
-            onClick={() => setCollapsed(true)}
-          />
-        )}
-
-        {broken && (
-          <Button
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              position: 'fixed',
-              top: 74,
-              left: 16,
-              zIndex: 1002,
-            }}
-            type="primary"
-            shape="circle"
-          />
-        )}
-
-        <Content
-          style={{
-            margin: 0,
-            minHeight: 280,
-            height: 'calc(100vh - 64px)',
-            overflow: 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              overflow: 'auto',
-              padding: broken ? '8px' : '24px',
-            }}
-          >
-            <div
-              style={{
-                background: darkMode ? 'rgba(255, 255, 255, 0.05)' : 'rgba(255, 255, 255, 0.7)',
-                backdropFilter: 'blur(10px)',
-                border: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : 'none',
-                borderRadius: '12px',
-                padding: '6px 24px',
-                minHeight: '100%',
-              }}
-            >
-              <Outlet />
-            </div>
-            <div style={{ marginTop: 16 }}>
-              <FooterComponent language={language} />
-            </div>
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
+      </>}
+    >
+      <Outlet />
+    </DocsLayout>
   );
 };
 

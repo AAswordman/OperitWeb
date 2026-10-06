@@ -595,7 +595,7 @@ const OperitOwnerAdminPage: React.FC<OperitOwnerAdminPageProps> = ({ language })
   ];
 
   return (
-    <main style={{ paddingTop: 88, paddingBottom: 48 }}>
+    <main style={{ paddingTop: 24, paddingBottom: 48 }}>
       <Content style={{ maxWidth: 1200, margin: '0 auto', padding: '0 24px' }}>
         <Card>
           <Space direction="vertical" size="large" style={{ width: '100%' }}>

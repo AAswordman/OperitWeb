@@ -38,28 +38,28 @@
     --primary-color: #73a7ff;
     --primary-color-rgb: 66, 133, 255;
     --accent-color: #65d4ff;
-    --background-color: #060911;
-    --background-color-secondary: #0a111e;
-    --text-color: #e8f0ff;
-    --text-color-secondary: #a1b2cc;
-    --card-background: #0d1523;
+    --background-color: #0b0c0f;
+    --background-color-secondary: #101216;
+    --text-color: #f0f1f3;
+    --text-color-secondary: #9499a4;
+    --card-background: #121418;
     --card-hover-shadow: 0 12px 36px rgba(16, 62, 140, 0.2);
-    --border-color: #263852;
+    --border-color: #292c33;
     --header-background: rgba(6, 9, 17, 0.88);
     --snowflake-color: #659dff;
-    --scrollbar-thumb-color: #2b4162;
-    --scrollbar-thumb-hover-color: #44699e;
+    --scrollbar-thumb-color: #2c3039;
+    --scrollbar-thumb-hover-color: #4c5260;
     --hero-button-secondary-hover-bg: #172d4e;
     --hero-button-secondary-hover-text: #fff;
-    --card-bg: #0d1523;
-    --card-border: #263852;
+    --card-bg: #121418;
+    --card-border: #292c33;
     --card-shadow: rgba(0, 0, 0, 0.35);
     --modal-bg: rgba(1, 5, 12, 0.8);
-    --modal-content-bg: #111e32;
-    --section-bg-odd: #080e19;
-    --section-bg-even: #0b1320;
+    --modal-content-bg: #1a1c22;
+    --section-bg-odd: #0e1014;
+    --section-bg-even: #121418;
     --tooltip-bg: #14243d;
-    --tooltip-text: #e8f0ff;
+    --tooltip-text: #f0f1f3;
 }
 
 /* Global Styles */
@@ -69,8 +69,10 @@
     box-sizing: border-box;
 }
 
+/* Clip decorative overflow without creating a second scroll container;
+   overflow-x: hidden implicitly sets overflow-y: auto and breaks sticky docs. */
 html {
-    overflow-x: hidden;
+    overflow-x: clip;
 }
 
 body {
@@ -79,7 +81,7 @@ body {
     color: var(--text-color);
     background-color: var(--background-color);
     transition: background-color var(--transition-speed), color var(--transition-speed);
-    overflow-x: hidden;
+    overflow-x: clip;
     touch-action: auto;
     cursor: auto;
 }

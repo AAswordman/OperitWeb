@@ -987,7 +987,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
 
   if (authChecking) {
     return (
-      <main style={{ paddingTop: 88, paddingBottom: 48 }}>
+      <main style={{ paddingTop: 24, paddingBottom: 48 }}>
         <Content style={{ maxWidth: 1480, margin: '0 auto', padding: '0 24px' }}>
           <Card>
             <div className="operit-market-review-detail-loading">
@@ -1001,7 +1001,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
   }
 
   return (
-    <main style={{ paddingTop: 88, paddingBottom: 48 }}>
+    <main style={{ paddingTop: 24, paddingBottom: 48 }}>
       <Content style={{ maxWidth: 1480, margin: '0 auto', padding: '0 24px' }}>
         <Space direction="vertical" size="large" style={{ width: '100%' }}>
           <Card>

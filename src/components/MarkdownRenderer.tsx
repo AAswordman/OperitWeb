@@ -539,19 +539,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
           </Space>
         </div>
       )}
-      {!screenshotMode && <div className="markdown-edit-bar">
-        <Space wrap>
-          <Button type="primary" icon={<EditOutlined />} onClick={handleEdit} disabled={!resolvedPath}>
-            {submissionT.editButton}
-          </Button>
-          <Typography.Text type="secondary">{submissionT.editHint}</Typography.Text>
-        </Space>
-        {resolvedPath && (
-          <Typography.Text type="secondary" className="markdown-edit-path">
-            {resolvedPath}
-          </Typography.Text>
-        )}
-      </div>}
+
       <div
         ref={markdownBodyRef}
         className={screenshotMode ? 'markdown-body markdown-body-screenshot' : 'markdown-body'}
@@ -580,6 +568,10 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
                 </code>
               );
             },
+            table: ({ node, children, ...props }) => {
+              void node;
+              return <div className="markdown-table-scroll" tabIndex={screenshotMode ? undefined : 0} role={screenshotMode ? undefined : 'region'} aria-label={language === 'zh' ? '可横向滚动的表格' : 'Horizontally scrollable table'}><table {...props}>{children}</table></div>;
+            },
             img: ({ node, onClick, ...props }) => {
               void node;
               void onClick;
@@ -605,6 +597,19 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
         </ReactMarkdown>
       </Image.PreviewGroup>
       </div>
+      {!screenshotMode && <div className="markdown-edit-bar">
+        <Space wrap>
+          <Button icon={<EditOutlined />} onClick={handleEdit} disabled={!resolvedPath}>
+            {submissionT.editButton}
+          </Button>
+          <Typography.Text type="secondary">{submissionT.editHint}</Typography.Text>
+        </Space>
+        {resolvedPath && (
+          <Typography.Text type="secondary" className="markdown-edit-path">
+            {resolvedPath}
+          </Typography.Text>
+        )}
+      </div>}
     </div>
   );
 };

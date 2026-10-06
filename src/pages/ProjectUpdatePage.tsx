@@ -166,7 +166,7 @@ const ProjectUpdatePage: React.FC<ProjectUpdatePageProps> = ({ darkMode, languag
   const copy = COPY[language];
 
   return (
-    <main style={{ paddingTop: 104, paddingBottom: 56 }}>
+    <main style={{ paddingTop: 40, paddingBottom: 56 }}>
       <div style={{ maxWidth: 920, margin: '0 auto', padding: '0 24px' }}>
         <Card
           bordered={false}

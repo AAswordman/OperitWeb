@@ -166,23 +166,17 @@
 .markdown-edit-bar {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  gap: 8px 16px;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 16px;
-  padding: 12px 16px;
-  border: 1px dashed rgba(24, 144, 255, 0.35);
-  border-radius: 10px;
-  background: rgba(24, 144, 255, 0.06);
+  margin-top: 32px;
+  padding-top: 20px;
+  border-top: 1px solid var(--site-line, var(--border-color));
 }
-
-[data-theme='dark'] .markdown-edit-bar {
-  border-color: rgba(120, 170, 255, 0.4);
-  background: rgba(120, 170, 255, 0.08);
-}
-
-.markdown-edit-path {
-  font-size: 12px;
+.markdown-edit-bar .ant-btn { min-height: 44px; }
+.markdown-edit-bar .ant-typography { font-size: 12px; }
+.markdown-edit-path { font-size: 12px; overflow-wrap: anywhere; }
+@media (max-width: 600px) {
+  .markdown-edit-path { display: none; }
 }
 
 .markdown-body h1,
@@ -486,3 +480,8 @@
 .markdown-details-content pre {
   margin-bottom: 0;
 }
+
+/* Wide documentation tables scroll locally instead of pushing the page out. */
+.markdown-table-scroll { max-width: 100%; overflow-x: auto; margin-bottom: 20px; }
+.markdown-table-scroll table { margin-bottom: 0; }
+.screenshot-mode .markdown-table-scroll { overflow: visible; }

@@ -1,32 +1,32 @@
 /* Operit release page — built on the shared site design system. */
-.release-page { padding-top: 64px; color: var(--site-ink); }
+.release-page { padding-top: 0; color: var(--site-ink); }
 .release-page button { font: inherit; cursor: pointer; }
 .release-live-dot { display: inline-block; width: 5px; height: 5px; border-radius: 50%; background: #75aaff; box-shadow: 0 0 12px #518cff66; flex-shrink: 0; }
 .release-hero { position: relative; overflow: hidden; isolation: isolate; min-height: 724px; display: flex; flex-direction: column; align-items: center; padding: 65px 40px 0; }
 .release-hero-light { position: absolute; z-index: -2; left: 50%; top: -120px; transform: translateX(-50%); width: 1000px; height: 770px; background: radial-gradient(ellipse, #1e61c72a 0%, #15407112 43%, transparent 68%); pointer-events: none; }
 .release-hero-content { position: relative; text-align: center; z-index: 2; width: min(840px,100%); }
-.release-kicker { font-size: 9px; font-weight: 550; letter-spacing: 2.2px; color: var(--site-muted); }
+.release-kicker { font-size: 11px; font-weight: 500; letter-spacing: .1em; color: var(--site-muted); }
 .release-hero-content > .release-kicker { color: var(--site-blue); }
 .release-wordmark { display: flex; align-items: center; justify-content: center; gap: 23px; height: 217px; margin: 15px 0 20px; font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif; font-weight: 650; font-synthesis: none; letter-spacing: -9px; line-height: 1; }
 .release-wordmark > span:first-child { font-size: 137px; color: var(--site-ink); }
 .release-wordmark .release-two { font-size: 228px; font-family: 'Inter Variable', Inter, 'Segoe UI', Arial, sans-serif; font-weight: 800; display: block; transform: rotate(-9deg) translateY(-1px); padding-right: 15px; background: linear-gradient(125deg, #d7f2ff 8%, #83bfff 33%, #377eee 55%, #1d4bb5 75%, #81c7ff 96%); background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(1px 2px 0 #2764c2) drop-shadow(4px 7px 0 #173d7a) drop-shadow(0 8px 23px #1d65d344); }
-.release-hero h2 { margin: 0; font-size: 35px; font-weight: 500; letter-spacing: -1px; line-height: 1.5; }
+.release-hero h2 { margin: 0; font-size: 36px; font-weight: 500; letter-spacing: -1px; line-height: 1.5; }
 .release-hero h2 > span { color: var(--site-blue); }
-.release-hero-content > p { color: var(--site-muted); font-size: 14px; line-height: 1.95; margin: 19px 0 27px; }
+.release-hero-content > p { color: var(--site-muted); font-size: 16px; line-height: 1.8; margin: 24px 0 32px; }
 .release-actions { display: flex; align-items: center; justify-content: center; gap: 12px; }
-.release-button { display: inline-flex; align-items: center; justify-content: center; gap: 24px; padding: 14px 22px; border-radius: 7px; font-size: 12px !important; font-weight: 550 !important; text-decoration: none; transition: background .2s, transform .2s; }
+.release-button { display: inline-flex; align-items: center; justify-content: center; gap: 16px; min-height: 48px; padding: 14px 22px; border-radius: 8px; font-size: 13px !important; font-weight: 550 !important; text-decoration: none; transition: background .2s, transform .2s; }
 .release-button-primary { border: 1px solid #4285ff; background: #2e72ec; color: #fff !important; box-shadow: 0 4px 24px #3678ee25; }
 .release-button-primary:hover { background: #4085fc; transform: translateY(-2px); }
 .release-button-secondary { background: var(--site-panel); border: 1px solid var(--site-line); color: var(--site-ink) !important; }
 .release-button-secondary:hover { background: var(--site-panel-soft); border-color: var(--site-blue); }
-.release-hero-footnote { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 10px; color: var(--site-muted); margin-top: 20px; }
+.release-hero-footnote { display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 11px; color: var(--site-muted); margin-top: 24px; }
 .release-orbit { position: absolute; top: 88px; left: 50%; z-index: -1; width: 760px; height: 250px; border: 1px solid #438aff1e; border-radius: 50%; transform: translateX(-50%) rotate(-15deg); pointer-events: none; }
 .release-orbit-two { width: 900px; height: 355px; top: 65px; transform: translateX(-50%) rotate(13deg); border-color: #438aff12; }
 .release-hero-side { position: absolute; top: 224px; font-size: 8px; line-height: 2; letter-spacing: 1.5px; color: var(--site-muted); opacity: .7; }
 .release-hero-side span { opacity: .65; }
 .release-hero-side-left { left: max(40px, calc((100% - 1248px) / 2)); }
 .release-hero-side-right { right: max(40px, calc((100% - 1248px) / 2)); text-align: right; }
-.release-hero-bottom { width: min(1248px,100%); display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding: 26px 0; border-bottom: 1px solid var(--site-line); font-size: 8px; letter-spacing: 1.5px; color: var(--site-muted); }
+.release-hero-bottom { width: min(1248px,100%); display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding: 26px 0; border-bottom: 1px solid var(--site-line); font-size: 10px; letter-spacing: .08em; color: var(--site-muted); }
 .release-hero-bottom button { display: flex; align-items: center; gap: 20px; padding: 0; background: none; border: 0; color: var(--site-muted); font-size: 10px; }
 .release-platform-ribbon { max-width: 1248px; margin: 0 auto; display: grid; grid-template-columns: 1.1fr 1fr 1fr; border-bottom: 1px solid var(--site-line); padding: 29px 0; gap: 30px; }
 .release-platform-ribbon > div > p { color: var(--site-ink); font-size: 15px; margin: 7px 0 0; }
@@ -38,12 +38,12 @@
 .release-section { max-width: 1248px; margin: 0 auto; padding: 100px 0 0; scroll-margin-top: 100px; }
 .release-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 36px; margin-bottom: 32px; }
 .release-section h2 { font-size: 33px; font-weight: 550; letter-spacing: -1px; line-height: 1.5; margin: 13px 0 0; }
-.release-section-heading > p { color: var(--site-muted); font-size: 12px; line-height: 1.9; margin: 0; }
+.release-section-heading > p { color: var(--site-muted); font-size: 14px; line-height: 1.8; margin: 0; }
 .release-product-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
 .release-product-card { position: relative; isolation: isolate; overflow: hidden; padding: 30px 32px; border: 1px solid var(--site-line); border-radius: 14px; min-height: 365px; background: var(--site-panel); }
 .release-product-next { background: radial-gradient(ellipse at 100% 15%,#19458255,transparent 70%),var(--site-panel); }
 .release-product-top { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
-.release-product-category { color: var(--site-muted); font-size: 8px; letter-spacing: 1.5px; }
+.release-product-category { color: var(--site-muted); font-size: 10px; letter-spacing: .08em; }
 .release-product-copy { margin-top: 45px; }
 .release-product-copy h3 { font-size: 42px; font-weight: 500; letter-spacing: -1.4px; margin: 0 0 9px; }
 .release-product-copy p { color: var(--site-muted); font-size: 13px; margin: 0; }
@@ -73,9 +73,9 @@
 .release-resource-card:hover { background: var(--site-panel-soft); color: var(--site-ink); }
 .release-resource-card > div { display: flex; justify-content: space-between; align-items: center; color: var(--site-muted); }
 .release-resource-card > div > .anticon { color: var(--site-blue); font-size: 21px; }
-.release-resource-card > div > span:last-child { font-size: 8px; letter-spacing: 1.5px; }
+.release-resource-card > div > span:last-child { font-size: 10px; letter-spacing: .08em; }
 .release-resource-card h3 { font-size: 20px; font-weight: 500; margin: 28px 0 10px; }
-.release-resource-card p { font-size: 12px; line-height: 1.8; color: var(--site-muted); margin: 0; }
+.release-resource-card p { font-size: 14px; line-height: 1.8; color: var(--site-muted); margin: 0; }
 .release-resource-card > .anticon { color: var(--site-muted); font-size: 13px; margin-top: 28px; }
 .release-closing { max-width: 1248px; margin: 95px auto 0; padding: 54px 0; border-top: 1px solid var(--site-line); }
 .release-closing h2 { font-size: 37px; font-weight: 500; letter-spacing: -1px; margin: 16px 0 20px; }
@@ -86,14 +86,14 @@
 @media(max-width:1350px) { .release-section,.release-platform-ribbon,.release-closing { margin-left: 40px; margin-right: 40px; } }
 @media(max-width:1100px) { .release-hero-side { display: none; } .release-world { gap: 65px; } .release-product-card { padding: 26px; } .release-current-tools { opacity: .3; right: 20px; } .release-platform-ribbon { gap: 20px; } .release-platform-ribbon > a { padding-left: 22px; gap: 10px; } .release-platform-ribbon .release-status { font-size: 8px; } }
 @media(max-width:760px) {
-  .release-hero { padding: 49px 22px 0; min-height: 603px; }
-  .release-wordmark { height: 155px; gap: 17px; margin: 15px 0 15px; letter-spacing: -6px; }
+  .release-hero { padding: 49px 24px 0; min-height: 603px; }
+  .release-wordmark { height: 155px; gap: 17px; margin: 15px 0; letter-spacing: -6px; }
   .release-wordmark > span:first-child { font-size: 85px; }
   .release-wordmark .release-two { font-size: 160px; padding-right: 10px; }
   .release-hero h2 { font-size: 25px; letter-spacing: -.7px; }
-  .release-hero-content > p { font-size: 12px; margin-top: 16px; }
-  .release-kicker { font-size: 8px; letter-spacing: 1.7px; }
-  .release-button { padding: 12px 16px; gap: 15px; font-size: 11px !important; }
+  .release-hero-content > p { font-size: 14px; margin-top: 20px; }
+  .release-kicker { font-size: 10px; letter-spacing: .08em; }
+  .release-button { padding: 12px 16px; gap: 15px; font-size: 12px !important; }
   .release-hero-footnote { font-size: 9px; }
   .release-hero-bottom { margin-top: 44px; font-size: 7px; letter-spacing: 1px; }
   .release-hero-bottom > span:last-child { display: none; }
@@ -128,5 +128,5 @@
   .release-closing { margin-top: 62px; padding: 35px 0; }
   .release-closing h2 { font-size: 27px; }
 }
-@media(max-width:360px) { .release-wordmark > span:first-child { font-size: 74px; } .release-wordmark .release-two { font-size: 143px; } .release-hero h2 { font-size: 23px; } .release-actions { gap: 8px; } .release-button { padding: 12px; gap: 11px; } }
+@media(max-width:360px) { .release-wordmark { gap: 10px; } .release-wordmark > span:first-child { font-size: 74px; } .release-wordmark .release-two { font-size: 143px; } .release-hero h2 { font-size: 23px; } .release-actions { gap: 8px; } .release-button { padding: 12px; gap: 11px; } }
 @media(prefers-reduced-motion:reduce) { .release-button-primary:hover { transform: none; } }

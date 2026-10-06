@@ -1,12 +1,10 @@
 import React, { useEffect, useMemo, useState, useRef } from 'react';
-import { Layout, Menu, Button, Input } from 'antd';
+import { Menu, Input } from 'antd';
 import { Outlet, Link, useLocation, useParams, useNavigate } from 'react-router-dom';
-import { MenuFoldOutlined, MenuUnfoldOutlined, SearchOutlined } from '@ant-design/icons';
-import FooterComponent from '../components/Footer';
+import { SearchOutlined } from '@ant-design/icons';
+import DocsLayout from '../layouts/DocsLayout';
 import { PRODUCTS, SHARED_PATHS } from '../config/products';
-import './VersionPages.css';
 
-const { Sider, Content } = Layout;
 const CATEGORY_SLUG = 'beginner-tutorial';
 interface TutorialSearchResult {
   key: string;
@@ -21,8 +19,6 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
   const location = useLocation();
   const { category, slug } = useParams();
   const navigate = useNavigate();
-  const [collapsed, setCollapsed] = useState(false);
-  const [broken, setBroken] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [searchResults, setSearchResults] = useState<TutorialSearchResult[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -221,33 +217,8 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
   );
 
   return (
-    <Layout
-      style={{
-        minHeight: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top))',
-        paddingTop: isScreenshotMode ? 0 : 16,
-        background: isScreenshotMode ? '#ffffff' : 'transparent',
-      }}
-    >
-      {!isScreenshotMode && <Sider
-        collapsible
-        collapsed={collapsed}
-        onCollapse={setCollapsed}
-        breakpoint="lg"
-        collapsedWidth="0"
-        onBreakpoint={setBroken}
-        trigger={null}
-        style={{
-          overflow: 'auto',
-          height: 'calc(100dvh - var(--product-content-top) - 16px)',
-          background: darkMode ? 'rgba(0,0,0,0.3)' : 'rgba(255,255,255,0.3)',
-          backdropFilter: 'blur(10px)',
-          borderRight: darkMode ? '1px solid rgba(255, 255, 255, 0.1)' : '1px solid rgba(0, 0, 0, 0.05)',
-          zIndex: 1001,
-          position: broken ? 'fixed' : 'relative',
-          top: broken ? 'var(--product-content-top)' : 'auto',
-          left: broken ? 0 : 'auto',
-        }}
-      >
+    <DocsLayout language={language} title={language === 'zh' ? '使用教程' : 'User tutorials'} context="Operit 1" screenshot={isScreenshotMode} overview={location.pathname === basePath}
+      sidebar={<>
         <div style={{ padding: '12px', borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)' }}>
           <Input
             placeholder={t.searchPlaceholder}
@@ -284,7 +255,10 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
                   {t.searchResults} ({searchResults.length})
                 </div>
                 {searchResults.map((result, index) => (
-                  <div
+                  <button
+                    type="button"
+                    className="docs-search-result"
+                    data-doc-navigation
                     key={index}
                     onClick={() => handleResultClick(result.path)}
                     style={{
@@ -321,7 +295,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
                         {result.highlight}
                       </div>
                     )}
-                  </div>
+                  </button>
                 ))}
               </>
             ) : (
@@ -338,85 +312,12 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
           selectedKeys={selectedKeys}
           defaultOpenKeys={defaultOpenKeys}
           items={menuItems}
-          style={{ height: '100%', borderRight: 0, background: 'transparent' }}
+          style={{ borderRight: 0, background: 'transparent' }}
         />
-      </Sider>}
-      <Layout style={{ background: 'transparent', minWidth: 0 }}>
-        {!isScreenshotMode && broken && !collapsed && (
-          <div
-            style={{
-              position: 'fixed',
-              top: 'var(--product-content-top)',
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: 'rgba(0, 0, 0, 0.5)',
-              zIndex: 1000,
-            }}
-            onClick={() => setCollapsed(true)}
-          />
-        )}
-
-        {!isScreenshotMode && broken && (
-          <Button
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{
-              position: 'fixed',
-              top: 'calc(var(--product-content-top) + 10px)',
-              left: 16,
-              zIndex: 1002,
-            }}
-            type="primary"
-            shape="circle"
-          />
-        )}
-
-        <Content
-          style={{
-            margin: 0,
-            minHeight: 280,
-            height: isScreenshotMode ? 'auto' : 'calc(100dvh - var(--product-content-top) - 16px)',
-            overflow: isScreenshotMode ? 'visible' : 'hidden',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
-        >
-          <div
-            style={{
-              flex: 1,
-              overflow: isScreenshotMode ? 'visible' : 'auto',
-              padding: isScreenshotMode ? '32px 0 48px' : broken ? '8px' : '24px',
-            }}
-          >
-            <div
-              style={{
-                background: isScreenshotMode
-                  ? 'transparent'
-                  : darkMode
-                    ? 'rgba(255, 255, 255, 0.05)'
-                    : 'rgba(255, 255, 255, 0.72)',
-                backdropFilter: isScreenshotMode ? 'none' : 'blur(10px)',
-                border: isScreenshotMode
-                  ? 'none'
-                  : darkMode
-                    ? '1px solid rgba(255, 255, 255, 0.1)'
-                    : 'none',
-                borderRadius: isScreenshotMode ? 0 : 12,
-                padding: isScreenshotMode ? 0 : '6px 24px',
-                minHeight: '100%',
-              }}
-            >
-              {!isScreenshotMode && <div className="guide-version-context" style={{ paddingLeft: broken ? 48 : 0 }}><strong>Operit 1</strong><span>{language === 'zh' ? '使用教程' : 'User tutorials'}</span><Link to={`${PRODUCTS.v1.guidePath}/reference`}>{language === 'zh' ? '完整参考手册' : 'Full reference'}</Link></div>}
-              <Outlet />
-            </div>
-            {!isScreenshotMode && <div style={{ marginTop: 16 }}>
-              <FooterComponent language={language} />
-            </div>}
-          </div>
-        </Content>
-      </Layout>
-    </Layout>
+      </>}
+    >
+      <Outlet />
+    </DocsLayout>
   );
 };
 

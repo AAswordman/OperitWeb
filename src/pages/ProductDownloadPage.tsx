@@ -13,11 +13,10 @@ export default function ProductDownloadPage({ generation, language }: { generati
   const source = product.download;
   const externalUrl = source.kind === 'external' ? getExternalDownloadUrl(import.meta.env[source.urlEnvironmentKey]) : undefined;
   return <main className="product-download-page version-page">
-    <div className="version-page-inner">
-      <header className="version-page-heading"><span className="version-eyebrow">{product.name.toUpperCase()} / DOWNLOAD</span><h1>{zh ? `下载 ${product.name}` : `Download ${product.name}`}</h1><p>{product.description[language]}</p></header>
+    <div className="version-page-inner download-page-inner">
+      <header className="version-page-heading"><span className="version-eyebrow">{product.name.toUpperCase()} / DOWNLOAD</span><h1>{zh ? `下载 ${product.name}` : `Download ${product.name}`}</h1><p>{zh ? '选择你的设备，开始使用。' : 'Choose your device. Make it yours.'}</p></header>
       <section className="version-download-panel" aria-label={zh ? `${product.name} 下载入口` : `${product.name} downloads`}>
-        <span className="version-status">{product.status[language]}</span>
-        <h2>{source.kind === 'github-release' ? <><AndroidOutlined />{product.name} for Android</> : product.name}</h2>
+        {source.kind === 'github-release' && <h2><AndroidOutlined />{product.name} for Android</h2>}
         {source.kind === 'github-release' ? <>
           <p>{zh ? '此入口仅下载 Operit 1。自动获取一代 GitHub Release 中的最新 APK，并保留原有的下载线路选择。' : 'This entry downloads Operit 1 only. It fetches the latest APK from the generation-one GitHub releases, with download-source selection.'}</p>
           <div className="version-download-actions"><DownloadLatestButton releaseSource={source} downloadText={zh ? '下载 Operit 1 APK' : 'Download Operit 1 APK'} language={language} withMotion={false} /><a href={`https://github.com/${source.repository}/releases`} target="_blank" rel="noopener noreferrer"><GithubOutlined />{zh ? '历史版本与发布说明' : 'Release history'}</a></div>
@@ -25,9 +24,7 @@ export default function ProductDownloadPage({ generation, language }: { generati
           <p>{zh ? 'Operit 2 是全平台产品，不只面向 Apple 设备。目前 iOS 与 macOS 已开放 TestFlight 公测，其他平台的内测将逐步开放。' : 'Operit 2 is a cross-platform product, not limited to Apple devices. iOS and macOS public betas are available through TestFlight; private testing on other platforms will open gradually.'}</p>
           <div className="version-platform-downloads">
             {source.publicBetas.map(platform => <article className="version-platform-download" key={platform.id}>
-              <span className="version-platform-download-icon">{platform.id === 'ios' ? <AppleOutlined /> : <DesktopOutlined />}</span>
-              <h3>Operit 2 for {platform.name}</h3>
-              <span className="version-status">{zh ? '公测已开放' : 'Public beta available'}</span>
+              <div className="version-platform-heading"><span className="version-platform-download-icon">{platform.id === 'ios' ? <AppleOutlined /> : <DesktopOutlined />}</span><div><h3>{platform.name}</h3><span className="version-platform-caption">Operit 2 · {zh ? '公测已开放' : 'Public beta available'}</span></div></div>
               <p>{zh ? `通过 TestFlight 参与 ${platform.name} 公测。` : `Join the ${platform.name} public beta through TestFlight.`}</p>
               <a className="version-primary-link" href={platform.url} target="_blank" rel="noopener noreferrer" data-platform={platform.id}><DownloadOutlined />{zh ? `加入 ${platform.name} 公测` : `Join ${platform.name} beta`}<ArrowRightOutlined /></a>
             </article>)}

@@ -1,10 +1,10 @@
 .classic-page {
-  --classic-surface: rgba(13, 23, 40, .82);
-  --classic-line: #23334d;
-  --classic-muted: #a0b0c9;
-  --classic-heading: #eff5ff;
-  --classic-blue: #85b6ff;
-  --classic-soft: rgba(41, 83, 145, .14);
+  --classic-surface: var(--site-panel);
+  --classic-line: var(--site-line);
+  --classic-muted: var(--site-muted);
+  --classic-heading: var(--site-ink);
+  --classic-blue: var(--site-blue);
+  --classic-soft: var(--site-panel-soft);
   color: var(--classic-heading);
 }
 :root:not([data-theme='dark']) .classic-page {

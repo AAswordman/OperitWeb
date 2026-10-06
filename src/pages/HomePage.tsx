@@ -184,7 +184,7 @@ const HomePage: React.FC<HomePageProps> = ({ darkMode, language }) => {
   ];
 
   return (
-    <main className="classic-page" style={{ paddingTop: 88 }}>
+    <main className="classic-page" style={{ paddingTop: 24 }}>
       <div className="operit-legacy-banner">
         <span><strong>OPERIT 1</strong>{language === 'zh' ? '熟悉的功能、下载与生态，继续为你保留。' : 'Your familiar features, downloads and ecosystem, all still here.'}</span>
         <Link to={PRODUCTS.v2.homePath}>{language === 'zh' ? '了解 Operit 2 →' : 'Discover Operit 2 →'}</Link>

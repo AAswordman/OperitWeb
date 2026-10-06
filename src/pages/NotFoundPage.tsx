@@ -29,11 +29,11 @@ const NotFoundPage: React.FC<NotFoundPageProps> = ({ language }) => {
   return (
     <div
       style={{
-        minHeight: '100vh',
+        minHeight: 'calc(100svh - var(--site-header-height))',
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '120px 24px 48px',
+        padding: '48px 24px',
       }}
     >
       <Result

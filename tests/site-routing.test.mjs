@@ -18,6 +18,8 @@ const { resolveLegacyPath, canonicalizeSiteHref } = (await loadTsModule('../src/
 const { getRouteMetadata } = (await loadTsModule('../src/config/routeMetadata.ts', { './products.ts': products.url })).module;
 const { buildMarkdownCandidates, isEditableMarkdownPath } = (await loadTsModule('../src/utils/markdownPaths.ts')).module;
 
+const { getNavigationContext, getProductSwitchPath } = (await loadTsModule('../src/config/navigation.ts', { './products.ts': products.url })).module;
+
 const redirects = [
   ['/classic', '/v1'], ['/classic/', '/v1/'],
   ['/guide/new', '/v1/guide'],
@@ -135,4 +137,28 @@ test('both-language generation-two guides include the public-beta invite and do 
       assert.doesNotMatch(markdown, /公开下载尚未开放|public downloads are available,|is in private beta/);
     }
   }
+});
+
+
+test('navigation switches generation without changing the current section', () => {
+  for (const [path, expected] of [
+    ['/v1', '/v2'], ['/v1/download', '/v2/download'],
+    ['/v1/guide/reference/basic-config/model-config', '/v2/guide'],
+    ['/guide', '/v2/guide'], ['/download', '/v2/download'],
+    ['/developers/plugins', '/v2'], ['/market', '/v2'],
+  ]) assert.equal(getProductSwitchPath(path, PRODUCTS.v2), expected);
+  assert.equal(getProductSwitchPath('/v2/guide/release-information', PRODUCTS.v1), '/v1/guide');
+  assert.equal(getProductSwitchPath('/v2/guide/release-information', PRODUCTS.v2), '/v2/guide/release-information');
+});
+
+test('navigation keeps shared routes and documentation boundaries explicit', () => {
+  assert.equal(getNavigationContext('/v2/guide/release-information').documentation, true);
+  assert.equal(getNavigationContext('/developers/plugins/typescript-basics').documentation, true);
+  assert.equal(getNavigationContext('/developers/plugins-other').documentation, false);
+  assert.equal(getNavigationContext('/v2/download').documentation, false);
+  assert.equal(getNavigationContext('/v2/guide-other').documentation, false);
+  assert.equal(getNavigationContext('/market').product, undefined);
+  assert.equal(getNavigationContext('/market').market, true);
+  assert.equal(getNavigationContext('/marketish').market, false);
+  assert.equal(getNavigationContext('/v2/guide').downloadPath, '/v2/download');
 });

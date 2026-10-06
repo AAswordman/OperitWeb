@@ -668,7 +668,7 @@ const OperitSubmissionEditPage: React.FC<OperitSubmissionEditPageProps> = ({ lan
   };
 
   return (
-    <main style={{ paddingTop: 88, paddingBottom: 48 }}>
+    <main style={{ paddingTop: 24, paddingBottom: 48 }}>
       <Content style={{ maxWidth: 1100, margin: '0 auto', padding: '0 24px' }}>
         <Card>
           <Space direction="vertical" size="middle" style={{ width: '100%' }}>
