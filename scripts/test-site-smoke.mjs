@@ -134,8 +134,8 @@ try {
     assert.match(text, /全平台/);
     assert.match(text, /Android.*Windows.*Linux/);
     assert.doesNotMatch(text, /公开下载暂未开放/);
-    const betaLinks = await page.$$eval('.version-platform-downloads a[data-platform]', links => links.map(link => ({
-      platform: link.dataset.platform, href: link.href, target: link.target, rel: link.rel, text: link.textContent,
+    const betaLinks = await page.$$eval('.version-platform-downloads [data-platform]', links => links.map(link => ({
+      platform: link.dataset.platform, href: link.getAttribute('href'), target: link.target, rel: link.rel, text: link.textContent, tag: link.tagName,
     })));
     assert.equal(betaLinks.length, 5);
     assert.deepEqual(betaLinks.map(link => link.platform), ['android', 'ios', 'windows', 'macos', 'linux']);
@@ -145,10 +145,8 @@ try {
         assert.equal(link.target, '_blank');
         assert.match(link.rel, /noopener/);
       } else {
-        const destination = new URL(link.href);
-        assert.equal(destination.protocol, 'mqqapi:');
-        assert.equal(destination.searchParams.get('uin'), '1121622579');
-        assert.equal(destination.searchParams.get('card_type'), 'group');
+        assert.equal(link.tag, 'BUTTON');
+        assert.equal(link.href, null);
       }
       assert.match(link.text, /加入 .* 公测/);
     }
@@ -614,13 +612,13 @@ try {
     for (const width of [320, 390, 768, 1440]) {
       await check(`v2 downloads list every platform in ${language} at ${width}px without exposing group details`, async () => {
         await page.setViewport({ width, height: 900 });
-        await open('/v2/download', '.version-platform-downloads a[data-platform="linux"]');
+        await open('/v2/download', '.version-platform-downloads button[data-platform="linux"]');
         const names = await page.$$eval('.version-platform-download h3', elements => elements.map(element => element.textContent));
         assert.deepEqual(names, ['Android', 'iOS', 'Windows', 'macOS', 'Linux']);
         assert.doesNotMatch(await page.$eval('.version-download-panel', element => element.textContent), /1121622579|QQ|其他平台|Other platforms/);
-        const entries = await page.$$eval('.version-platform-downloads a[data-platform]', elements => elements.map(element => {
+        const entries = await page.$$eval('.version-platform-downloads [data-platform]', elements => elements.map(element => {
           const rect = element.getBoundingClientRect();
-          return { platform: element.dataset.platform, href: element.getAttribute('href'), text: element.textContent,
+          return { platform: element.dataset.platform, href: element.getAttribute('href'), text: element.textContent, tag: element.tagName,
             left: rect.left, right: rect.right };
         }));
         for (const entry of entries) {
@@ -629,18 +627,45 @@ try {
           if (['ios', 'macos'].includes(entry.platform)) {
             assert.equal(entry.href, testFlightUrl);
           } else {
-            const url = new URL(entry.href);
-            assert.equal(url.protocol, 'mqqapi:');
-            assert.equal(url.hostname, 'card');
-            assert.equal(url.pathname, '/show_pslcard');
-            assert.equal(url.searchParams.get('uin'), '1121622579');
-            assert.equal(url.searchParams.get('card_type'), 'group');
+            assert.equal(entry.tag, 'BUTTON');
+            assert.equal(entry.href, null);
           }
           assert(entry.left >= 0 && entry.right <= width, JSON.stringify(entry));
         }
         assert(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth));
       });
     }
+  }
+  for (const [language, theme, width, height] of [
+    ['zh', 'dark', 320, 740], ['zh', 'light', 390, 600], ['en', 'dark', 1440, 900],
+  ]) {
+    await applyPreferences(language, theme);
+    await check(`beta group dialog shows the number and QR code in ${language}/${theme} at ${width}px`, async () => {
+      await page.setViewport({ width, height });
+      await open('/v2/download', '.version-platform-downloads button[data-platform="linux"]');
+      const hashBefore = await hash();
+      for (const platform of ['android', 'windows', 'linux']) {
+        const name = { android: 'Android', windows: 'Windows', linux: 'Linux' }[platform];
+        await page.click(`button[data-platform="${platform}"]`);
+        await page.waitForSelector('.version-beta-modal .ant-modal-content', { visible: true });
+        await page.waitForSelector('.version-beta-modal .version-beta-qrcode svg path');
+        await page.waitForFunction(() => document.querySelector('.version-beta-modal')?.contains(document.activeElement));
+        assert.equal(await hash(), hashBefore);
+        assert.equal(await page.$eval('.version-beta-modal .ant-modal-title', element => element.textContent), language === 'zh' ? `加入 ${name} 公测` : `Join ${name} beta`);
+        assert.match(await page.$eval('.version-beta-number', element => element.textContent), /1121622579/);
+        assert.equal(await page.$('.version-beta-modal a[href^="mqqapi:"]'), null);
+        assert(await page.$('.version-beta-number .ant-typography-copy'));
+        const bounds = await page.$eval('.version-beta-modal .ant-modal-content', element => {
+          const rect = element.getBoundingClientRect();
+          return { left: rect.left, right: rect.right, top: rect.top, bottom: rect.bottom };
+        });
+        assert(bounds.left >= 0 && bounds.right <= width && bounds.top >= 0 && bounds.bottom <= height, JSON.stringify(bounds));
+        await page.keyboard.press('Escape');
+        await page.waitForSelector('.version-beta-modal', { hidden: true });
+        await page.waitForFunction(platform => document.activeElement?.dataset.platform === platform, {}, platform);
+      }
+      assert.notEqual(await page.evaluate(() => getComputedStyle(document.body).overflowY), 'hidden');
+    });
   }
   await check('all pages render without JavaScript runtime errors', async () => assert.deepEqual(errors, []));
   console.log(`\n${checks} browser smoke checks passed.`);

@@ -58,3 +58,13 @@
   .version-shared-note > div { flex: 1 1 180px; }
   .version-download-panel > p { font-size: 13px; margin-bottom: 24px; }
 }
+
+button.version-primary-link { border: 0; font-family: inherit; cursor: pointer; }
+.version-beta-dialog { display: flex; flex-direction: column; align-items: center; gap: 20px; padding-top: 12px; }
+.version-beta-dialog > p { color: var(--site-muted); line-height: 1.8; margin: 0; text-align: center; }
+.version-beta-qrcode { padding: 16px; background: #fff; border-radius: 12px; flex-shrink: 0; }
+.version-beta-scan-hint { max-width: 320px; font-size: 12px; color: var(--site-muted); text-align: center; line-height: 1.8; }
+.version-beta-number { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; width: 100%; padding: 14px; background: var(--site-panel-soft); border: 1px solid var(--site-line); border-radius: 10px; }
+.version-beta-number > span:first-child { color: var(--site-muted); font-size: 12px; }
+.version-beta-number .ant-typography { font-size: 20px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.version-beta-modal .ant-modal-body { max-height: calc(var(--site-viewport-height, 100dvh) - 180px); overflow-y: auto; }
