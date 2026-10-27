@@ -1,0 +1,550 @@
+[
+  {
+    "fact": "ShellCommandManager 是 Shell 执行屏的命令管理器，构造参数为 Context",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:17"
+  },
+  {
+    "fact": "命令历史上限 MAX_HISTORY_SIZE 为 100 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:21"
+  },
+  {
+    "fact": "历史记录 prefs 文件名为 shell_executor_prefs，键为 command_history",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:18"
+  },
+  {
+    "fact": "prefs 用 lazy + Context.MODE_PRIVATE 延迟初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:22"
+  },
+  {
+    "fact": "getPresetCommands 返回 16 条预设命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:30"
+  },
+  {
+    "fact": "预设命令的名称、命令、描述均取自 string 资源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:32"
+  },
+  {
+    "fact": "addCustomPresetCommand 是空实现，未真正保存自定义预设",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:150"
+  },
+  {
+    "fact": "getCommandHistory 恒返回空列表，JSON 解析逻辑未实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:157"
+  },
+  {
+    "fact": "executeCommand 在 Dispatchers.IO 上调用 AndroidShellExecutor.executeShellCommand",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:171"
+  },
+  {
+    "fact": "executeCommand 构造 CommandRecord(command, result, System.currentTimeMillis())",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:177"
+  },
+  {
+    "fact": "saveCommandToHistory 先去重，再把新记录插到列表头部并截断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:191"
+  },
+  {
+    "fact": "历史写回 prefs 的代码被注释掉，实际不落盘",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:205"
+  },
+  {
+    "fact": "clearCommandHistory 删除 prefs 中的 command_history 键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:211"
+  },
+  {
+    "fact": "getSuggestedCommands 按前缀过滤历史命令、最多取 5 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt:230"
+  },
+  {
+    "fact": "CommandRecord 含 command、result(AndroidShellExecutor.CommandResult)、timestamp 三个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:49"
+  },
+  {
+    "fact": "CommandCategory 枚举 5 个值：SYSTEM/FILE/NETWORK/HARDWARE/PACKAGE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:56"
+  },
+  {
+    "fact": "PresetCommand 含 name/command/description/category/icon 五个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:70"
+  },
+  {
+    "fact": "ShellExecutorScreen 入口参数 navController 默认为 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:83"
+  },
+  {
+    "fact": "空命令经 trim 后直接返回，不执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:122"
+  },
+  {
+    "fact": "执行按钮的启用条件是 commandInput.trim().isNotEmpty()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:266"
+  },
+  {
+    "fact": "输入变化时 LaunchedEffect(commandInput) 刷新命令建议列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:107"
+  },
+  {
+    "fact": "预设区按 category 经 groupBy 分组展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:363"
+  },
+  {
+    "fact": "预设 FlowRow 每行最多放 2 个芯片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:396"
+  },
+  {
+    "fact": "PresetCommandChip 点击后把命令填入输入框并收起预设区",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:509"
+  },
+  {
+    "fact": "CommandResultCard 用绿/红圆点表示 result.success",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:610"
+  },
+  {
+    "fact": "结果卡展示 stdout、stderr、exitCode 三部分输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:541"
+  },
+  {
+    "fact": "exitCode 为 0 显示默认颜色，非 0 显示红色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:697"
+  },
+  {
+    "fact": "重新执行按钮触发 onReExecute，即 executeCommand(record.command)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellExecutorScreen.kt:707"
+  },
+  {
+    "fact": "SqlTableView 是原生 View 子类，用 @JvmOverloads 构造",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:17"
+  },
+  {
+    "fact": "默认单元格宽 140dp、高 32dp、表头高 36dp，均乘以 density",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:32"
+  },
+  {
+    "fact": "zoomScale 初始值为 1f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:42"
+  },
+  {
+    "fact": "缩放范围 minScale 0.6f、maxScale 2.2f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:58"
+  },
+  {
+    "fact": "手势用 GestureDetector 处理滚动与甩动，ScaleGestureDetector 处理双指缩放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:60"
+  },
+  {
+    "fact": "缩放进行中 isScaling 为 true，滚动与甩动回调直接忽略",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:77"
+  },
+  {
+    "fact": "setData 设置列与行后调用 clampOffset 并 invalidate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:135"
+  },
+  {
+    "fact": "onDraw 只绘制视口内的可见列与可见行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:161"
+  },
+  {
+    "fact": "单元格文本超宽时用 TextUtils.ellipsize 做末尾省略",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:353"
+  },
+  {
+    "fact": "drawCellText 用 canvas.clipRect 把文字裁剪在单元格内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:358"
+  },
+  {
+    "fact": "applyScale 以手势焦点为锚点缩放，缩放值钳制在 min/max 范围内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:261"
+  },
+  {
+    "fact": "startFling 用 OverScroller.fling，传入的速度取反",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:290"
+  },
+  {
+    "fact": "computeScroll 在滚动器未结束时调用 postInvalidateOnAnimation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt:152"
+  },
+  {
+    "fact": "SQL 屏默认候选表为 chats 和 messages",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:51"
+  },
+  {
+    "fact": "SQL 输入框初始文本为 SELECT * FROM chats",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:62"
+  },
+  {
+    "fact": "ViewModel 经 SqlViewerViewModel.Factory(context) 创建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:57"
+  },
+  {
+    "fact": "canLoadMore 要求结果非空、开启分页、上次取满一页、且未在执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:68"
+  },
+  {
+    "fact": "加载更多用 currentOffset + pageSize 且 append=true 追加行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:119"
+  },
+  {
+    "fact": "快捷芯片可一键填入 SELECT name FROM sqlite_master WHERE type='table' 查表清单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:166"
+  },
+  {
+    "fact": "快捷芯片可一键填入 PRAGMA table_info(chats) 查表结构",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:170"
+  },
+  {
+    "fact": "运行按钮调用 runQuery(sqlText, pageSize, 0, enablePaging, append=false)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:196"
+  },
+  {
+    "fact": "pageSize 输入框只保留数字、最多 4 位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:224"
+  },
+  {
+    "fact": "非法 pageSize 回退为 50",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:66"
+  },
+  {
+    "fact": "SqlResultTable 用 AndroidView 托管原生 SqlTableView",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:328"
+  },
+  {
+    "fact": "SqlTableView 的配色取自 MaterialTheme.colorScheme",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:319"
+  },
+  {
+    "fact": "触摸按下时 requestDisallowInterceptTouchEvent(true) 防止父容器拦截手势",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:343"
+  },
+  {
+    "fact": "SqlViewerScreen.kt 内的 clampOffset/drawCellText/SqlTableGestureHandler 无调用方",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:269"
+  },
+  {
+    "fact": "withFrameNanos 与 Job 在 SqlViewerScreen.kt 仅 import 未使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt:46"
+  },
+  {
+    "fact": "SqlViewerToolScreen 用 CustomScaffold 包裹 SqlViewerScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerToolScreen.kt:11"
+  },
+  {
+    "fact": "SQL 执行的数据库取自 AppDatabase.getDatabase(context).openHelper.writableDatabase",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:39"
+  },
+  {
+    "fact": "runQuery 参数为 rawSql/pageSize/offset/canPaginate/append",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:41"
+  },
+  {
+    "fact": "空 SQL 直接报 sql_viewer_empty_sql 错误，不执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:47"
+  },
+  {
+    "fact": "分页查询拼接为 \"$trimmed LIMIT $limit OFFSET $offset\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:163"
+  },
+  {
+    "fact": "sanitizeSql 只做 trim 与去除末尾分号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:168"
+  },
+  {
+    "fact": "select/with/pragma 开头判为查询语句，其余走 execSQL 执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:158"
+  },
+  {
+    "fact": "executeQuery 用 cursor.use 自动关闭游标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:119"
+  },
+  {
+    "fact": "BLOB 单元格显示为 BLOB(字节数)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:140"
+  },
+  {
+    "fact": "NULL 字段显示为字符串 NULL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:137"
+  },
+  {
+    "fact": "非查询语句执行后用 SELECT changes() 取影响行数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:150"
+  },
+  {
+    "fact": "append=true 时新行拼接到已有 rows 后面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:103"
+  },
+  {
+    "fact": "查询异常把 e.message 写入 state.error",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt:110"
+  },
+  {
+    "fact": "LogRecord 含 message/level/timestamp/tag/pid/tid 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogModels.kt:9"
+  },
+  {
+    "fact": "LogLevel 共 8 个级别：VERBOSE/DEBUG/INFO/WARNING/ERROR/FATAL/SILENT/UNKNOWN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogModels.kt:19"
+  },
+  {
+    "fact": "每个日志级别带 displayName/symbol/color",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogModels.kt:19"
+  },
+  {
+    "fact": "generateColorFromString 按 tag 的 hash 取 hsl 色相，饱和度 0.75、亮度 0.65",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt:31"
+  },
+  {
+    "fact": "LogRecordItem 用级别色绘制圆点徽标与卡片边框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt:44"
+  },
+  {
+    "fact": "日志时间戳格式为 HH:mm:ss.SSS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt:45"
+  },
+  {
+    "fact": "CompactSearchField 是高 36dp 的圆角搜索框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt:142"
+  },
+  {
+    "fact": "LogRecordItem 与 CompactSearchField 未被 LogcatScreen 引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt:44"
+  },
+  {
+    "fact": "LogcatExportHelper.exportLogs 在 Dispatchers.IO 上执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:26"
+  },
+  {
+    "fact": "日志文件为空时直接返回 logcat_no_logs_to_save",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:28"
+  },
+  {
+    "fact": "导出文件名格式为 operit_log_yyyyMMdd_HHmmss.txt",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:45"
+  },
+  {
+    "fact": "Android Q 及以上走 MediaStore 写入 Downloads/operit，以下走文件系统",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:46"
+  },
+  {
+    "fact": "导出前统计非空行数，空行不计入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:60"
+  },
+  {
+    "fact": "导出文件头部含标题、日期、总行数与分隔线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt:74"
+  },
+  {
+    "fact": "LogcatManager 用正则解析日志行的 时间/级别/tag/消息 四段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatManager.kt:20"
+  },
+  {
+    "fact": "级别字母 A 映射为 FATAL，其余 V/D/I/W/E 一一对应",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatManager.kt:57"
+  },
+  {
+    "fact": "不匹配格式的非空行降级为 UNKNOWN 级别保留展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatManager.kt:74"
+  },
+  {
+    "fact": "clearLogs 调用 AppLogger.resetLogFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatManager.kt:43"
+  },
+  {
+    "fact": "LogcatManager.loadInitialLogs 无调用方",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatManager.kt:27"
+  },
+  {
+    "fact": "LogcatScreen 是导出/清空两个按钮的卡片页",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatScreen.kt:24"
+  },
+  {
+    "fact": "保存中按钮禁用并显示转圈指示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatScreen.kt:70"
+  },
+  {
+    "fact": "LogcatViewModel.saveLogsToFile 用 _isSaving 防重入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatViewModel.kt:33"
+  },
+  {
+    "fact": "保存结果提示 3 秒后自动清除",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatViewModel.kt:43"
+  },
+  {
+    "fact": "UIDebuggerState 含 elements/selectedElementId/元素操作反馈/Activity 监听状态等字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerState.kt:8"
+  },
+  {
+    "fact": "UIElement 含 id/className/resourceId/contentDesc/text/bounds/isClickable/activityName/packageName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerState.kt:25"
+  },
+  {
+    "fact": "getTypeDescription 按 className 关键字判定按钮/文本/输入/图片/视图类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerState.kt:36"
+  },
+  {
+    "fact": "UIElementAction 枚举三个值：CLICK/HIGHLIGHT/INSPECT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerState.kt:84"
+  },
+  {
+    "fact": "UIDebuggerScreen 的 FAB 有悬浮窗权限则启动 UIDebuggerService，否则跳到 overlay 权限设置页",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerScreen.kt:38"
+  },
+  {
+    "fact": "UIDebuggerScreen 取 UIDebuggerViewModel.getInstance() 单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerScreen.kt:28"
+  },
+  {
+    "fact": "进入页面时 LaunchedEffect(Unit) 调用 viewModel.initialize(context)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerScreen.kt:33"
+  },
+  {
+    "fact": "UIDebuggerViewModel.getInstance 用双重检查锁实现单例，主应用与悬浮窗共用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:48"
+  },
+  {
+    "fact": "initialize 取 AIToolHandler 单例并读取系统 status_bar_height",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:70"
+  },
+  {
+    "fact": "CLICK 操作构造 click_element 工具，用 ByResourceId 或 ByText 选择器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:91"
+  },
+  {
+    "fact": "refreshUI 先隐藏悬浮窗、delay 300ms 再调用 get_page_info 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:148"
+  },
+  {
+    "fact": "convertToUIElements 递归遍历 SimplifiedUINode 子节点转 UIElement",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:194"
+  },
+  {
+    "fact": "UIElement 的 id 用 UUID.randomUUID 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:237"
+  },
+  {
+    "fact": "bounds 用正则 \\[(\\d+),(\\d+)\\]\\[(\\d+),(\\d+)\\] 解析，并减去状态栏高度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:222"
+  },
+  {
+    "fact": "startActivityListening 经 ActionListenerFactory.getHighestAvailableListener 取监听器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:275"
+  },
+  {
+    "fact": "监听器权限不足时直接返回并提示原因",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:278"
+  },
+  {
+    "fact": "handleActionEvent 过滤掉本应用自己包名的事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:405"
+  },
+  {
+    "fact": "Activity 事件只保留最近 100 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:413"
+  },
+  {
+    "fact": "UIDebuggerViewModel.onCleared 时停止监听器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt:440"
+  },
+  {
+    "fact": "UIDebuggerOverlay 含元素高亮层、元素信息面板、Activity 监听面板、右下角控制条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:71"
+  },
+  {
+    "fact": "ElementHighlightOverlay 点选手势取包含点击点的最小面积元素",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:427"
+  },
+  {
+    "fact": "元素高亮绘制红色 2dp 描边矩形",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:469"
+  },
+  {
+    "fact": "右下角控制条有 4 个 40dp FAB：分析/监听/最小化/关闭",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:273"
+  },
+  {
+    "fact": "DebuggerMode 枚举在代码中无引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:420"
+  },
+  {
+    "fact": "CreatePackageDialog 在代码中无引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt:630"
+  },
+  {
+    "fact": "ActivityMonitorPanel 用 1dp 隐藏输入框抢占输入法焦点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/components/ActivityMonitorPanel.kt:117"
+  },
+  {
+    "fact": "开始监听时请求输入法焦点，停止时释放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/components/ActivityMonitorPanel.kt:90"
+  },
+  {
+    "fact": "事件列表倒序展示，最新的事件在上面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/components/ActivityMonitorPanel.kt:312"
+  },
+  {
+    "fact": "事件按类型配色，CLICK 用 primaryContainer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/components/ActivityMonitorPanel.kt:416"
+  },
+  {
+    "fact": "ToolTesterScreen.runTest 在 IO 线程调 aiToolHandler.executeTool(AITool(id, parameters))",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:60"
+  },
+  {
+    "fact": "set_input_text 测试先关弹窗、delay 300ms 再请求输入框焦点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:62"
+  },
+  {
+    "fact": "一键测试跳过 isManual 组；sequential 组串行执行，其余组并发后 join",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:114"
+  },
+  {
+    "fact": "测试基目录取自 OperitPaths.testPathSdcard()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:293"
+  },
+  {
+    "fact": "大文件写测试内容为固定字符串 repeat(12000)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:300"
+  },
+  {
+    "fact": "测试含下载 picsum.photos/100、请求 httpbin.org/get/post 等外网用例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:305"
+  },
+  {
+    "fact": "press_key 测试用 KEYCODE_VOLUME_UP",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:362"
+  },
+  {
+    "fact": "测试网格列自适应最小 75dp，单个格子 65dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:141"
+  },
+  {
+    "fact": "详情弹窗展示参数（超 200 字符截断）与结果（截断 1000 字符）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt:261"
+  },
+  {
+    "fact": "StreamMarkdownDemoScreen 演示流式 Markdown 渲染效果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:63"
+  },
+  {
+    "fact": "演示用 Channel<Char>(Channel.UNLIMITED) 逐字发送字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:81"
+  },
+  {
+    "fact": "通道经 consumeAsFlow().asStream() 转成渲染器要的流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:82"
+  },
+  {
+    "fact": "streamKey 变化时重建通道，DisposableEffect 关闭旧通道防泄漏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:91"
+  },
+  {
+    "fact": "每字符发送间隔为 (10/speedFactor)ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:115"
+  },
+  {
+    "fact": "速度滑杆范围 0.5f..80f、共 18 步",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:214"
+  },
+  {
+    "fact": "暂停后恢复无法续播：暂停时 LaunchedEffect 协程取消，finally 块已关闭通道且 streamKey 未变不会重建；再次启动时循环虽从全文开头开始，但第一次 channel.send 即抛 ClosedSendChannelException 被 catch (e: Exception) 吞掉，渲染器实际收不到任何字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt:105"
+  }
+]

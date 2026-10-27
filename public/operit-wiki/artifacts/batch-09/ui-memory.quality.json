@@ -1,0 +1,74 @@
+[
+ {
+  "title": "导入文件时 fileName 未净化，`..` 可穿越 cacheDir",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt",
+  "line": 215,
+  "severity": "high",
+  "confidence": "medium",
+  "evidence": "} else {\n    // For binary files, use the tool\n    tempFile = File(context.cacheDir, fileName)\n    withContext(Dispatchers.IO) {\n        val inputStream = context.contentResolver.openInputStream(fileUri)\n        val outputStream = FileOutputStream(tempFile)",
+  "detail": "文件选择器返回后，非文本文件直接以 content provider 提供的 DISPLAY_NAME 拼出 File(context.cacheDir, fileName) 并写入。若某个恶意文档提供者返回含 `..` 的显示名，可在应用沙盒内向 cacheDir 之外写文件（与已发现的扩展包管理界面同类问题）。"
+ },
+ {
+  "title": "连接模式可选中超过 2 个节点，导致建边对话框永远不出现",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt",
+  "line": 478,
+  "severity": "warn",
+  "confidence": "high",
+  "evidence": "if (_uiState.value.isLinkingMode) {\n    // 连接模式\n    val currentLinkingIds = _uiState.value.linkingNodeIds.toMutableList()\n    if (node.id !in currentLinkingIds) {\n        currentLinkingIds.add(node.id)\n    }\n    _uiState.update { it.copy(linkingNodeIds = currentLinkingIds) }",
+  "detail": "selectNode 在连接模式下无上限追加 linkingNodeIds，而 MemoryScreen 仅在 linkingNodeIds.size == 2 时弹出 LinkMemoryDialog。用户若点选第 3 个节点，对话框不再出现且无任何提示，只能手动关闭连接模式重来。"
+ },
+ {
+  "title": "新建文件夹用 `.folder_placeholder` 记忆占位，会污染图谱与搜索",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt",
+  "line": 902,
+  "severity": "warn",
+  "confidence": "medium",
+  "evidence": "fun createFolder(folderPath: String) {\n    viewModelScope.launch {\n        try {\n            // 创建一个空的占位记忆，确保文件夹路径存在\n            repository.createMemory(\n                title = \".folder_placeholder\",",
+  "detail": "createFolder 为让文件夹路径存在而创建一条标题为 `.folder_placeholder` 的真实记忆。它会成为图谱中的一个节点，也可能出现在搜索结果里，直到用户在该文件夹下创建真实记忆。占位记忆与真实记忆无区分标记。"
+ },
+ {
+  "title": "ToolTestDialog 已定义但从未被组合，是死代码",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt",
+  "line": 32,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "@Composable\nfun ToolTestDialog(\n    onDismiss: () -> Unit,\n    onExecute: (String) -> Unit,\n    result: String,\n    isLoading: Boolean\n)",
+  "detail": "ToolTestDialog（query_memory 工具测试对话框）已完整实现，MemoryViewModel 也有 isToolTestDialogVisible / showToolTestDialog / testQueryTool，但 MemoryScreen 中没有任何调用点，用户在界面上永远打不开它。"
+ },
+ {
+  "title": "Node.color 字段在图谱渲染中被忽略",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt",
+  "line": 13,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "data class Node(\n    val id: String,\n    val label: String,\n    val color: Color = Color.LightGray,\n    val metadata: Map<String, String> = emptyMap()\n)",
+  "detail": "GraphModels.Node 定义了 color（默认 LightGray），但 GraphVisualizer.drawNode 全程使用 nodePalette 的配色，从未读取 node.color。该字段形同虚设，调用方无法通过它控制节点颜色。"
+ },
+ {
+  "title": "FolderNode.isExpanded 字段在渲染中从未被读取",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt",
+  "line": 91,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "data class FolderNode(\n    val name: String,\n    val fullPath: String,\n    val children: MutableList<FolderNode> = mutableListOf(),\n    var isExpanded: Boolean = true\n)",
+  "detail": "FolderNode 定义了可变的 isExpanded（默认 true），buildFolderTree 建树时设为 false，但实际渲染依据的是 rememberLocal 持久化的 expandedPaths 集合，isExpanded 字段没有任何读取点。"
+ },
+ {
+  "title": "边权重输入非法时静默回退为 1.0f",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt",
+  "line": 162,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "Button(onClick = {\n    onSave(type, weight.toFloatOrNull() ?: 1.0f, description)\n}) { Text(stringResource(R.string.memory_save)) }",
+  "detail": "EditEdgeDialog 与 LinkMemoryDialog 都用 weight.toFloatOrNull() ?: 1.0f 解析用户输入的权重。用户输错（如字母）时无任何提示，权重被静默重置为 1.0。"
+ },
+ {
+  "title": "文档标题 remember 缺 key，切换选中时可能显示旧标题",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt",
+  "line": 444,
+  "severity": "suggestion",
+  "confidence": "medium",
+  "evidence": "var memoryTitle by remember { mutableStateOf(uiState.selectedMemory!!.title) }",
+  "detail": "DocumentViewDialog 的 memoryTitle 用无 key 的 remember 初始化为 uiState.selectedMemory!!.title。若在文档视图打开期间 selectedMemory 变化，标题输入框不会同步更新，显示的是旧标题。"
+ }
+]

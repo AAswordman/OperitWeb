@@ -1,0 +1,82 @@
+[
+  {
+    "fact": "MistralProvider 是 Mistral AI 模型的专用供应商实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:9"
+  },
+  {
+    "fact": "构造函数参数 providerType 默认值为 ApiProviderType.MISTRAL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:15"
+  },
+  {
+    "fact": "providerType 参数被转发给父类 OpenAIProvider 的构造函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:27"
+  },
+  {
+    "fact": "重写 parseXmlToolCalls：用 ChatMarkupRegex.toolCallPattern.findAll(content) 找出文本中的 XML 工具调用块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:38"
+  },
+  {
+    "fact": "没有任何匹配时直接返回 Pair(content, null)，即原文与空工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:41"
+  },
+  {
+    "fact": "每个匹配取 groupValues[2] 为工具名、groupValues[3] 为工具体（参数区原文）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:49"
+  },
+  {
+    "fact": "参数用 ChatMarkupRegex.toolParamPattern 在工具体内匹配 <param name=\"...\">...</param>，参数值经 unescapeXml 反转义后放入 JSONObject",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:53"
+  },
+  {
+    "fact": "每个工具调用的 id 由 generateMistralToolCallId(toolName, params, callIndex) 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:59"
+  },
+  {
+    "fact": "生成的工具调用 JSON 结构为 id / type=\"function\" / function{name=工具名, arguments=params.toString()}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:62"
+  },
+  {
+    "fact": "处理完一个匹配后，用 textContent.replace(match.value, \"\") 把该 XML 片段从文本中删掉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:71"
+  },
+  {
+    "fact": "最终返回 Pair(textContent.trim(), toolCalls)：去掉工具调用块后的纯文本与工具调用数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:74"
+  },
+  {
+    "fact": "generateMistralToolCallId 用 \"$toolName:${params.toString()}:$index\" 拼出 raw 字符串后取 hashCode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:78"
+  },
+  {
+    "fact": "hash == Int.MIN_VALUE 时取 0，否则取绝对值，避免 abs(Int.MIN_VALUE) 溢出仍为负数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:80"
+  },
+  {
+    "fact": "绝对值转 36 进制字符串后过滤为小写字母数字",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:81"
+  },
+  {
+    "fact": "结果为空时兜底为 \"0\"，再左补 0 到 9 位；超过 9 位时取最后 9 位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:84"
+  },
+  {
+    "fact": "unescapeXml 按顺序反转义 &lt; &gt; &quot; &apos;，最后才处理 &amp;（避免二次转义）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt:89"
+  },
+  {
+    "fact": "ChatMarkupRegex.toolCallPattern 匹配 <标签名 name=\"...\">...</标签名> 结构，忽略大小写且点号匹配换行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:28"
+  },
+  {
+    "fact": "ChatMarkupRegex.toolParamPattern 匹配 <param\\s+name=\"([^\"]+)\">([\\s\\S]*?)</param>，分组 1 为参数名、分组 2 为参数值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:91"
+  },
+  {
+    "fact": "OpenAIProvider.parseXmlToolCalls 声明为 open fun，允许各供应商重写自己的 XML 工具调用解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1729"
+  },
+  {
+    "fact": "AIServiceFactory 中 ApiProviderType.MISTRAL 分支构造 MistralProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:578"
+  }
+]

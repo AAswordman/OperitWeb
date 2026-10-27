@@ -1,0 +1,26 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt",
+    "line": 82,
+    "evidence": "        logLargeString(\n            \"OpenAIResponsesProvider\",\n            sanitizedLogJson.toString(4),\n            \"Final Responses request body: \"\n        )",
+    "severity": "警告",
+    "confidence": "高",
+    "description": "每次请求都把完整请求体（含用户消息、系统提示词）写入设备日志。虽经 sanitizeImageDataForLogging 清理了图片数据，但全部文本内容仍落盘 logcat，在旧 Android 版本上其他应用可读取，属隐私面扩大。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt",
+    "line": 692,
+    "evidence": "                appendReasoningItemFromMetadata(JSONObject(decodedPayload), input)\n            }.onFailure { e ->\n                AppLogger.w(\"OpenAIResponsesProvider\", \"OpenAI Responses reasoning metadata decode failed\", e)\n            }",
+    "severity": "建议",
+    "confidence": "高",
+    "description": "历史消息里的 reasoning 元数据 Base64/JSON 解码失败时只记一条 warning，该 reasoning 项被静默丢弃。下一轮请求将缺少对应的 reasoning item（含 encrypted_content），Responses API 可能因此报错，且失败原因难以定位。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt",
+    "line": 430,
+    "evidence": "            if (role == \"tool\") {\n                val callId = message.optString(\"tool_call_id\", \"\")\n                if (callId.isNotEmpty()) {",
+    "severity": "建议",
+    "confidence": "中",
+    "description": "tool 角色消息只有在 tool_call_id 非空时才转为 function_call_output；缺 call_id 的 tool 消息会落入通用分支，按原 role 生成 message 项（system 才映射为 developer）。Responses input 不接受 \"tool\" 角色，此类请求可能被 API 拒绝。"
+  }
+]

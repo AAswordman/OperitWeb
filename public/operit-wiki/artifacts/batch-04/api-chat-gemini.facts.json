@@ -1,0 +1,402 @@
+[
+  {
+    "fact": "GeminiProvider 是 open class，对接 Google Gemini REST API，支持流式传输",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:134"
+  },
+  {
+    "fact": "GeminiProvider 实现 AIService 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:145"
+  },
+  {
+    "fact": "构造函数默认 providerType 为 ApiProviderType.GOOGLE，enableGoogleSearch 与 enableToolCall 默认均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:140"
+  },
+  {
+    "fact": "GeminiThinkingConfig 是 internal data class，字段 includeThoughts/thinkingLevel/thinkingBudget，toJsonObject 序列化为 includeThoughts/thinkingLevel/thinkingBudget 三个键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:49"
+  },
+  {
+    "fact": "GeminiThinkingConfig.fromOption 经 ThinkingQualityMappingRegistry.resolve 按 GOOGLE 类型和模型名解析思考配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:68"
+  },
+  {
+    "fact": "思考映射的 wire 值分三种：Text→thinkingLevel、Number→thinkingBudget、Omitted→抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:78"
+  },
+  {
+    "fact": "先经 ThinkingConfigurationApplier.apply 做共享映射，thinkingConfigurations 等参数传入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:104"
+  },
+  {
+    "fact": "enableThinking=false 时把 generationConfig.thinkingConfig.includeThoughts 置为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:116"
+  },
+  {
+    "fact": "buildGeminiFunctionCallPart 构造 Part：put(\"functionCall\", functionCall)，有 thoughtSignature 时追加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:124"
+  },
+  {
+    "fact": "DEBUG 常量硬编码为 true，logDebug 实际恒开启",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:148"
+  },
+  {
+    "fact": "terminalFinishReasons 共 20 个终结原因，含 STOP/MAX_TOKENS/SAFETY/RECITATION 等",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:149"
+  },
+  {
+    "fact": "HttpStatusException 携带 statusCode，继承 IOException 并实现 HttpStatusCodeException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:187"
+  },
+  {
+    "fact": "PromptBlockedException 是 private class，继承 IOException，用于 prompt 被拦截",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:193"
+  },
+  {
+    "fact": "Token 统计委托给 TokenCacheManager；inputTokenCount/cachedInputTokenCount/outputTokenCount 均为其代理属性",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:200"
+  },
+  {
+    "fact": "providerModel 返回 \"${providerType.name}:$modelName\" 格式的供应商:模型标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:206"
+  },
+  {
+    "fact": "cancelStreaming 先置 isManuallyCancelled=true，再强制关闭 activeResponse（it.close()）中断流读取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:211"
+  },
+  {
+    "fact": "随后取消 activeCall（it.cancel()），并把 activeResponse/activeCall 引用清空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:228"
+  },
+  {
+    "fact": "isManuallyCancelled 用 @Volatile 修饰，跨线程可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:182"
+  },
+  {
+    "fact": "calculateInputTokens 先用 ChatUtils.stripGeminiThoughtSignatureMeta 剥离 thought signature 元信息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:248"
+  },
+  {
+    "fact": "ASSISTANT 轮再用 ChatUtils.removeThinkingContent 剥离思考内容后估算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:260"
+  },
+  {
+    "fact": "buildToolsJson 只有 enableToolCall 且工具非空时才生成 function_declarations；enableGoogleSearch 单独时只生成 googleSearch 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:280"
+  },
+  {
+    "fact": "XmlEscaper.escape 按 & < > \" ' 顺序转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:323"
+  },
+  {
+    "fact": "XmlEscaper.unescape 按 < > \" ' & 顺序反转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:332"
+  },
+  {
+    "fact": "parseXmlToolCalls 在 enableToolCall=false 时原样返回文本、空调用列表、null signature",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:406"
+  },
+  {
+    "fact": "parseXmlToolCalls 用 ChatMarkupRegex.toolCallPattern 匹配 XML 工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:417"
+  },
+  {
+    "fact": "匹配出的工具名（groupValues[2]）与参数体（groupValues[3]）组装参数，参数值经 XmlEscaper.unescape 反转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:430"
+  },
+  {
+    "fact": "匹配结果转成 {name, args} 的 JSONObject functionCall 对象",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:442"
+  },
+  {
+    "fact": "从文本中逐个删掉已匹配的原 XML（textContent.replace(match.value, \"\")）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:448"
+  },
+  {
+    "fact": "parseXmlToolResults 把 XML tool_result 转成 Gemini functionResponse：{name, response:{result}}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:486"
+  },
+  {
+    "fact": "buildToolDefinitionsForGemini 把 ToolPrompt 的 description+details 拼成完整描述",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:512"
+  },
+  {
+    "fact": "buildToolDefinitionsForGemini 的 parameters 来自 parametersStructured，经 buildSchemaFromStructured 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:516"
+  },
+  {
+    "fact": "buildSchemaFromStructured 生成 type=object 的 schema",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:531"
+  },
+  {
+    "fact": "逐参数写 type/description，default 非空才写进 properties",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:539"
+  },
+  {
+    "fact": "required 数组非空才加入 schema",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:553"
+  },
+  {
+    "fact": "buildPartsArray 把图片/媒体链接转为 inline_data Part（含 mime_type 与 data）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:563"
+  },
+  {
+    "fact": "buildPartsArray 纯文本时只放一个 {text} Part",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:610"
+  },
+  {
+    "fact": "buildContentsAndCountTokens 先经 StructuredToolCallBridge.compileHistoryForProvider 编译历史",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:626"
+  },
+  {
+    "fact": "系统消息合并为 systemInstruction：{parts:[{text}]}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:672"
+  },
+  {
+    "fact": "多个系统消息用双换行拼接成 systemContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:667"
+  },
+  {
+    "fact": "非 toolcall 模式下 ASSISTANT/TOOL_CALL 轮映射为 model 角色，其余为 user 角色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:930"
+  },
+  {
+    "fact": "queueFunctionCalls 把文本与 functionCall 排队，thoughtSignature 只保留第一个非空值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:707"
+  },
+  {
+    "fact": "emitQueuedFunctionCallsIfNeeded 把排队内容拼成 model 角色消息，thoughtSignature 只挂在第一个 Part 上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:729"
+  },
+  {
+    "fact": "未匹配的 open functionCall 会被转成 name=unmatched_function（或原名）的 functionResponse",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:758"
+  },
+  {
+    "fact": "历史末尾残留的 open functionCall 以 history_end 为由刷新为未匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:943"
+  },
+  {
+    "fact": "TOOL_RESULT 轮先 emitQueuedFunctionCallsIfNeeded，再按名字匹配 openFunctionCalls 消费",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:866"
+  },
+  {
+    "fact": "logLargeString 按 3000 字符分块打日志，适配 Android 日志长度上限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:949"
+  },
+  {
+    "fact": "sanitizeImageDataForLogging 把日志 JSON 中的图片 base64 替换为 [image base64 omitted, length=...]",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:991"
+  },
+  {
+    "fact": "输出图片落盘目录为 Downloads/Operit/output images",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1026"
+  },
+  {
+    "fact": "fileExtensionForImageMime 按 mime 类型映射 png/jpg/webp/gif，未知默认 png",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1033"
+  },
+  {
+    "fact": "writeOutputImage 文件名格式为 前缀_时间戳.扩展名，失败记日志返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1050"
+  },
+  {
+    "fact": "buildGeminiErrorDetail 取 error 的 message/status/code 三字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1074"
+  },
+  {
+    "fact": "状态码非空时追加 [status=.., code=..] 后缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1090"
+  },
+  {
+    "fact": "throwIfGeminiErrorPayload 检测到 error 字段即抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1098"
+  },
+  {
+    "fact": "resolveRetryErrorText 对 SocketTimeoutException/UnknownHostException 取本地化文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1107"
+  },
+  {
+    "fact": "handleRetryableError 对 UserCancellationException、CancellationException、PromptBlockedException 直接原样抛出不重试",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1128"
+  },
+  {
+    "fact": "handleRetryableError 在 isManuallyCancelled 时转抛 UserCancellationException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1132"
+  },
+  {
+    "fact": "重试间隔由 LlmRetryPolicy.nextDelayMs(newRetryCount) 计算，delay 后继续",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1154"
+  },
+  {
+    "fact": "key 池限流提示经 shouldSuppressKeyPoolRateLimitNotice 决定是否压制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1156"
+  },
+  {
+    "fact": "sendMessage 用 replay=Int.MAX_VALUE 的 MutableSharedStream 做事件通道",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1179"
+  },
+  {
+    "fact": "sendMessage 入口重置 isManuallyCancelled=false，并清零输出 token 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1181"
+  },
+  {
+    "fact": "emitSavepoint/emitRollback 两个本地挂起函数：前者发射 SAVEPOINT 事件，后者先清空已收内容再发射 ROLLBACK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1201"
+  },
+  {
+    "fact": "每次请求尝试前发射 SAVEPOINT 事件（requestSavepointId）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1222"
+  },
+  {
+    "fact": "重试被接受时经 onRetryAccepted 回调发射 ROLLBACK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1327"
+  },
+  {
+    "fact": "重试上限取 LlmRetryPolicy.MAX_RETRY_ATTEMPTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1193"
+  },
+  {
+    "fact": "HTTP 400..499 抛带状态码的 HttpStatusException，其他失败抛普通 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1266"
+  },
+  {
+    "fact": "响应处理完在 finally 中 close response",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1303"
+  },
+  {
+    "fact": "请求成功后清 activeCall/activeResponse，打最终输出摘要日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1308"
+  },
+  {
+    "fact": "成功后调 onUsageFinalized?.invoke(retryCount + 1)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1315"
+  },
+  {
+    "fact": "createRequestBody 按顺序组装 tools、systemInstruction、contents、generationConfig",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1391"
+  },
+  {
+    "fact": "temperature→temperature、top_p→topP、top_k→topK、max_tokens→maxOutputTokens 的参数名映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1410"
+  },
+  {
+    "fact": "ParameterCategory.OTHER 的 OBJECT 参数直接挂到请求根，否则进 generationConfig",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1431"
+  },
+  {
+    "fact": "请求体打日志前把 tools 替换为 \"[N tools omitted for brevity]\" 并做图片脱敏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1466"
+  },
+  {
+    "fact": "createRequest 按 stream 参数选择 streamGenerateContent 或 generateContent 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1484"
+  },
+  {
+    "fact": "请求 URL 格式为 $baseUrl/v1beta/models/$modelName:$method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1485"
+  },
+  {
+    "fact": "自定义请求头经 builder.addHeader 逐个添加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1491"
+  },
+  {
+    "fact": "API Key 从 apiKeyProvider 获取后拼到 URL 的 ?key= 或 &key= 查询参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1501"
+  },
+  {
+    "fact": "请求头日志经 HttpLogSanitizer.headersForLog 脱敏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1511"
+  },
+  {
+    "fact": "determineBaseUrl 从 apiEndpoint 解析协议+host+端口，解析失败回退到 https://generativelanguage.googleapis.com",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1521"
+  },
+  {
+    "fact": "processStreamingResponse 逐行读 SSE，\"data: \" 开头为数据行，\"[DONE]\" 为结束标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1571"
+  },
+  {
+    "fact": "SSE 解析只有非 IO 的普通 Exception 才记日志继续；CancellationException 与 IOException 原样抛出、中断流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1608"
+  },
+  {
+    "fact": "非 data 行的 JSON 按花括号/方括号深度做分段收集，凑齐再解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1620"
+  },
+  {
+    "fact": "流结束未确认 completion 时抛 provider_error_network_interrupted",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1815"
+  },
+  {
+    "fact": "流结束仍在思考模式则补发 </think>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1818"
+  },
+  {
+    "fact": "全程无内容则发送一个空格占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1824"
+  },
+  {
+    "fact": "extractContentFromJson 先提取 usageMetadata 再处理 candidates，避免 prompt 被拦截时漏记用量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1917"
+  },
+  {
+    "fact": "usageMetadata 取 promptTokenCount/cachedContentTokenCount/candidatesTokenCount 三个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1924"
+  },
+  {
+    "fact": "无 candidates 但有 promptFeedback 时抛 PromptBlockedException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1957"
+  },
+  {
+    "fact": "finishReason 落在 terminalFinishReasons 集合即判定 completionConfirmed",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1973"
+  },
+  {
+    "fact": "enableGoogleSearch 时解析 groundingMetadata 的 webSearchQueries（搜索查询）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:1978"
+  },
+  {
+    "fact": "再解析 groundingMetadata 的 groundingChunks（搜索结果来源）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2018"
+  },
+  {
+    "fact": "搜索来源拼成 <search> 块放在内容最前面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2185"
+  },
+  {
+    "fact": "响应 inline_data 图片解码后写文件，正文插入 ![gemini_image_$i](uri) 的 markdown 图片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2084"
+  },
+  {
+    "fact": "functionCall 转 XML 时用 generateRandomToolTagName 生成随机标签名防冲突",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2106"
+  },
+  {
+    "fact": "functionCall 参数经 StreamingJsonXmlConverter 流式转 XML",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2112"
+  },
+  {
+    "fact": "thought Part 开启 <think>，非 thought Part 关闭，思考文本按 includeThoughtsInOutput 决定是否输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2145"
+  },
+  {
+    "fact": "服务器已给累计用量（serverUsageApplied）时跳过本地 token 估算，避免重复计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2170"
+  },
+  {
+    "fact": "part 级 thoughtSignature 收集后统一追加为 base64 元信息标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2181"
+  },
+  {
+    "fact": "getModelsList 经 ModelListFetcher 按 GOOGLE 类型拉取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2205"
+  },
+  {
+    "fact": "testConnection 发 system+\"Hi\" 短消息实测聊天接口，enableRetry=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2226"
+  },
+  {
+    "fact": "testConnection 中 CancellationException 原样传播，不包成 Result.failure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt:2244"
+  }
+]

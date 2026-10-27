@@ -1,0 +1,862 @@
+[
+  {
+    "fact": "ProviderUsageSnapshot 是 provider 适配层规范化后的 usage 快照数据类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:32"
+  },
+  {
+    "fact": "快照中 null 字段表示“未知”（provider 未提供）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:8"
+  },
+  {
+    "fact": "快照中 0 表示 provider 确认该分量为 0（如确认无缓存读取/无缓存写入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:8"
+  },
+  {
+    "fact": "任何字段都不得静默把“未知”当作 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:9"
+  },
+  {
+    "fact": "token 字段使用 Long 承载，聚合以 Long 运算避免 Int 溢出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:10"
+  },
+  {
+    "fact": "用量字段的负值一律拒绝为未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:10"
+  },
+  {
+    "fact": "completeSnapshot=true 表示完整快照：null 字段=明确未知，同一 attempt 合并时覆盖旧值（即“撤销”旧值）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:11"
+  },
+  {
+    "fact": "completeSnapshot=false 表示部分更新：null=字段省略，保留旧值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:12"
+  },
+  {
+    "fact": "cacheWriteSeparateBilling 默认为 true，保持保守：未声明时缺失缓存写入字段仍按未知处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:18"
+  },
+  {
+    "fact": "reasoningIncludedInOutput=true 表示 provider 的 output 计数已包含推理 token，计费时不得再加推理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:21"
+  },
+  {
+    "fact": "reasoningIncludedInOutput=false 表示推理独立计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:22"
+  },
+  {
+    "fact": "reasoningIncludedInOutput=null（provider 未声明）时，计费按“已包含”处理以避免重复收费。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:23"
+  },
+  {
+    "fact": "totalInputTokens 是 provider 明确上报的总输入（含缓存命中/缓存写入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:24"
+  },
+  {
+    "fact": "拆分已知时 totalInputTokens 为冗余可空字段（uncached+cached 即总输入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:29"
+  },
+  {
+    "fact": "totalInputTokens 用于拆分未知场景，绝不伪造 uncached。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:29"
+  },
+  {
+    "fact": "source 是诊断用的来源标签（哪个解析路径），不含任何凭据或正文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:30"
+  },
+  {
+    "fact": "hasKnownFields() 在有任何已知用量分量（含明确 0）时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:46"
+  },
+  {
+    "fact": "ProviderUsageNormalizer 定义了 7 个来源常量：openai_chat_completions/openai_responses/anthropic/gemini/llama_cpp/mnn/toolpkg_js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:79"
+  },
+  {
+    "fact": "openAiChatCompletions 认为 OpenAI 兼容系的 prompt_tokens/completion_tokens 已包含缓存命中与推理 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:60"
+  },
+  {
+    "fact": "openAiChatCompletions 的 cachedInputTokens 从 prompt_tokens_details.cached_tokens（或 input_tokens_details/顶层 cached_tokens）提取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:99"
+  },
+  {
+    "fact": "openAiChatCompletions 中 cached 拆分未知时不得把总输入确定为 uncached（分类确定性），uncached 保持 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:118"
+  },
+  {
+    "fact": "openAiChatCompletions 单次上报即该 attempt 的完整最终 usage，completeSnapshot 默认为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:85"
+  },
+  {
+    "fact": "OpenAI 兼容系 reasoningIncludedInOutput=true（completion_tokens 包含推理）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:129"
+  },
+  {
+    "fact": "OpenAI 兼容系 cacheWriteSeparateBilling=false（缓存写入成本已包含在输入单价内）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:131"
+  },
+  {
+    "fact": "openAiResponses 从 input_tokens_details.cached_tokens 和 output_tokens_details.reasoning_tokens 提取缓存与推理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:147"
+  },
+  {
+    "fact": "Anthropic 的 input_tokens 不含缓存分量，总量 = input_tokens + cache_read_input_tokens + cache_creation_input_tokens。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:196"
+  },
+  {
+    "fact": "Anthropic 流式 message_start/message_delta 是部分更新，completeSnapshot 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:193"
+  },
+  {
+    "fact": "Anthropic 缓存写入独立计费（cacheWriteSeparateBilling=true），字段缺失即该分量未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:231"
+  },
+  {
+    "fact": "Anthropic 的 cache_creation 对象用 sumNumericFields 递归求和数值字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:209"
+  },
+  {
+    "fact": "Gemini 的 candidatesTokenCount 是 response candidates token，按输出计费。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:243"
+  },
+  {
+    "fact": "Gemini 的 thoughtsTokenCount 是独立字段（不含在 candidatesTokenCount 内），计费时需另行补加，reasoningIncludedInOutput=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:240"
+  },
+  {
+    "fact": "本地模型（llama/MNN）没有 provider usage 对象，token 为本地实测计数（tokenizer 计数 + 逐 token 生成计数），缓存分量明确为 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:69"
+  },
+  {
+    "fact": "local() 归一化结果为单次完整上报（completeSnapshot=true）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:282"
+  },
+  {
+    "fact": "ToolPkg JS provider 把 input 视为总量（含缓存命中），uncached 为差值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:302"
+  },
+  {
+    "fact": "toolPkg 的 completeSnapshot 由协议版本决定：新协议（携带 attempt）为同 attempt 内的部分更新，旧协议为完整快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:303"
+  },
+  {
+    "fact": "toolPkg 要求 cachedInput <= input 才承认拆分有效，否则 uncached 与 cached 均保持未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:318"
+  },
+  {
+    "fact": "toolPkg 缺省字段=未知，绝不继承全局累计计数；负值拒绝为未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ProviderUsageSnapshot.kt:306"
+  },
+  {
+    "fact": "TokenCostCalculator.saturatedAdd 在溢出时饱和为 Long.MAX_VALUE，避免聚合溢出回绕。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:8"
+  },
+  {
+    "fact": "COUNT 计费模式下费用 = pricePerRequest × requests。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:20"
+  },
+  {
+    "fact": "COUNT 模式下 pricePerRequest>0 时未知费用计数为 0，否则未知计数 = 全部 requests。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:23"
+  },
+  {
+    "fact": "TOKEN 模式下 input/cachedInput/cacheWrite 三单价相等时，按 totalInput 一次计算费用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:35"
+  },
+  {
+    "fact": "TOKEN 模式下三输入单价不全相等时，uncached/cached/cacheWrite 分开按各自单价计算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:40"
+  },
+  {
+    "fact": "单价 ≤0 的分量不计入费用，并按 requests - known 累加未知请求数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:30"
+  },
+  {
+    "fact": "四项单价全 ≤0 时，未知费用贡献计数 = 全部 requests。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:50"
+  },
+  {
+    "fact": "TokenCostCurrency.convertTo 中同币种金额不变。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:87"
+  },
+  {
+    "fact": "USD 转其他币种时金额乘以汇率；非 USD 转目标币种时金额除以汇率。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:88"
+  },
+  {
+    "fact": "DEFAULT_USD_TO_CNY_RATE = 7.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenCostCalculator.kt:79"
+  },
+  {
+    "fact": "ModelPriceSettings 的 7 个价格字段全部可空，未设置时回退到内置默认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:5"
+  },
+  {
+    "fact": "hasAnyUserSetting() 在任一价格字段非空时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:16"
+  },
+  {
+    "fact": "settingFor 在 config 级设置缺字段时，用模型级（providerModel）设置的同字段补齐。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:36"
+  },
+  {
+    "fact": "tokenPriceConfigKey 用 \\u001f 分隔 providerModel 与 configId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:48"
+  },
+  {
+    "fact": "ResolvedTokenPricing 包含解析后的计费模式、币种、四项 token 单价、按次单价与来源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:51"
+  },
+  {
+    "fact": "TokenPriceResolver.resolve 只解析当前价格：用户设置优先，其次内置模型表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:63"
+  },
+  {
+    "fact": "cachedInput 单价回退链：用户 cached 价 → 用户 input 价 → 内置 cached 价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:68"
+  },
+  {
+    "fact": "cacheWrite 单价回退链：用户 cacheWrite 价 → 用户 input 价 → 内置 input 价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:72"
+  },
+  {
+    "fact": "解析来源 source：有任意用户设置→USER，否则→BUILT_IN。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenPriceResolver.kt:79"
+  },
+  {
+    "fact": "PricingSource 枚举含 BUILT_IN/USER/UNKNOWN，用于价格来源诊断与计算测试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatTypes.kt:4"
+  },
+  {
+    "fact": "TokenUsageRepository 是成功的形式推理用量与定价的 Room 持有者（单例）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:14"
+  },
+  {
+    "fact": "TokenUsageRepository.getInstance 使用双重检查单例，instance 字段带 @Volatile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:22"
+  },
+  {
+    "fact": "withDatabaseAccess 用 databaseAccessMutex 在数据库文件被 restore 替换期间阻止 Room 访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:28"
+  },
+  {
+    "fact": "ensureInitialized 用 importMutex 与 initializationComplete 保证迁移只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:43"
+  },
+  {
+    "fact": "迁移只在 TokenStatsPreferences.importedAtMs() 为 null 时执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:47"
+  },
+  {
+    "fact": "迁移把 legacy 总量写入 token_usage_records，importKey 形如 legacy-cumulative:{provider}:{model}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:56"
+  },
+  {
+    "fact": "迁移行的 occurredAtMs 为 null（累计量无发生时间）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:57"
+  },
+  {
+    "fact": "迁移时 uncachedInputTokens = (inputTokens - cachedInputTokens).coerceAtLeast(0L)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:61"
+  },
+  {
+    "fact": "迁移把旧价格设置 upsert 到 token_stats_models（configId 为空即模型级）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:68"
+  },
+  {
+    "fact": "迁移完成后 completeMigration 记录导入时间与发布的 USD→CNY 汇率。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:87"
+  },
+  {
+    "fact": "迁移后调用 clearMigratedTokenStatsData 清除 DataStore 中的旧统计键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:93"
+  },
+  {
+    "fact": "withDao 先 ensureInitialized 再持锁获取 TokenUsageDao。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:99"
+  },
+  {
+    "fact": "record() 插入单条 TokenUsageRecordEntity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:103"
+  },
+  {
+    "fact": "TokenStatsQueryService 是 SQL-backed 统计查询：只有聚合行离开 Room。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:13"
+  },
+  {
+    "fact": "lifetimeOverview 聚合全量模型行并结合价格快照，返回 totals 与 displayModels。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:15"
+  },
+  {
+    "fact": "rangeData 按 TokenStatsTimeRanges.granularityFor 选择的粒度切分桶，每桶独立做一次聚合查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:52"
+  },
+  {
+    "fact": "rangeData 的 eventCount 取自 summary.totalTokens.totalEventCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:74"
+  },
+  {
+    "fact": "earliestOccurredDate 把 getEarliestOccurredAtMs 转为指定时区的 LocalDate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:88"
+  },
+  {
+    "fact": "activitySnapshot 按 localDate 分组对日 token 求和（saturatedAdd 防溢出）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:108"
+  },
+  {
+    "fact": "buildDisplayModels 按 displayModelIdFor(model) = \"model:{小写模型名}\" 分组展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:125"
+  },
+  {
+    "fact": "展示模型按 totals.totalTokens.knownSum 降序排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:144"
+  },
+  {
+    "fact": "toTotals 先对聚合行做 normalizeLegacyCacheWriteUsage 修补。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:148"
+  },
+  {
+    "fact": "toTotals 用 normalizeProviderModel 规范化 providerModel 再解析定价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:143"
+  },
+  {
+    "fact": "totalInputKnown>0 时用 totalInput 分量，否则合并 uncached+cached+cacheWrite 三分量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:160"
+  },
+  {
+    "fact": "combineTotals 对空列表返回全零的 emptyTotals。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:185"
+  },
+  {
+    "fact": "combineComponents 取各分量 knownEventCount 的最小值作为合并后的 known 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:250"
+  },
+  {
+    "fact": "component 的 unknownEventCount = (total - known).coerceAtLeast(0L)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:244"
+  },
+  {
+    "fact": "toPriceSnapshot 把 configId 为空的行建成 providerModels 映射，非空的建成 configs 映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:283"
+  },
+  {
+    "fact": "queryValues 在 providerModels 为 null/空时返回 listOf(\"__none__\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt:274"
+  },
+  {
+    "fact": "TokenStatsPriceScope 区分 PROVIDER_MODEL（模型级）与 CONFIG（配置级）两种定价作用域。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:10"
+  },
+  {
+    "fact": "validatePriceValue 允许 null；非有限或负数抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:46"
+  },
+  {
+    "fact": "savePrice 要求 provider 与 model 非空；CONFIG 作用域要求 configId 非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:58"
+  },
+  {
+    "fact": "PROVIDER_MODEL 作用域存储时 configId 存空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:64"
+  },
+  {
+    "fact": "TOKEN 计费只保存四项 token 单价字段（input/cachedInput/cacheWrite/output），非 TOKEN 时存 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:72"
+  },
+  {
+    "fact": "COUNT 计费只保存 pricePerRequest，token 单价字段存 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:96"
+  },
+  {
+    "fact": "allPriceSettings 按 providerModel 小写、scope 序号、configId 小写排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:112"
+  },
+  {
+    "fact": "restoreBuiltInPrice 清除模型级定价并删除变空的价格行，恢复内置默认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:125"
+  },
+  {
+    "fact": "resetConfigPrice 清除指定 config 的定价并删除变空的价格行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:133"
+  },
+  {
+    "fact": "splitProviderModel 要求 provider:model 含 ':' 且不在首尾，否则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:142"
+  },
+  {
+    "fact": "toPriceSetting 对未设置的用户字段用内置默认补齐 billingMode 与 currency。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt:181"
+  },
+  {
+    "fact": "TokenStatsTimeRange 是半开区间 [startMs, endMs)，endMs 须大于 startMs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:8"
+  },
+  {
+    "fact": "TokenStatsGranularity 有 TEN_MINUTES/HOURLY/DAILY 三档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:21"
+  },
+  {
+    "fact": "granularityFor：时长 ≤12h 用 10 分钟，≤48h 用 1 小时，更长用 1 自然日。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:53"
+  },
+  {
+    "fact": "桶数上限 MAX_BUCKETS=10000，超限抛错以防病态输入拖垮内存/UI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:42"
+  },
+  {
+    "fact": "bucketStarts 在本地时间对齐桶边界（10 分钟整点/整点小时/自然日 0 点）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:64"
+  },
+  {
+    "fact": "bucketEndMs 用日历推进（非固定毫秒），跨 DST 的小时/日桶自动得到 23/25 小时跨度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:31"
+  },
+  {
+    "fact": "bucketIndexOf 用二分查找定位时间戳所在桶，范围外返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRange.kt:101"
+  },
+  {
+    "fact": "TokenStatsPreferences 基于 DataStore \"token_stats_preferences\" 存标量统计设置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:15"
+  },
+  {
+    "fact": "loadRateWithEstimate 无存储值时返回 (7.0, true)，true 表示该值是估计值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:43"
+  },
+  {
+    "fact": "loadRateWithEstimate 对已存非法汇率（非有限或 ≤0）抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:45"
+  },
+  {
+    "fact": "saveRate 要求汇率为正有限值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:51"
+  },
+  {
+    "fact": "loadTargetCurrency 默认返回 CNY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:57"
+  },
+  {
+    "fact": "loadTokenDisplayUnit 默认返回 MILLIONS。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:67"
+  },
+  {
+    "fact": "loadActivityViewMode 默认返回 DAILY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:76"
+  },
+  {
+    "fact": "loadTimeRange 在 start 缺失时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:85"
+  },
+  {
+    "fact": "loadTimeRange 在 end 缺失时抛错（checkNotNull）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:86"
+  },
+  {
+    "fact": "saveTimeRange(null) 删除起止两个 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:93"
+  },
+  {
+    "fact": "completeMigration 把发布的 USD→CNY 汇率与导入时间一起写入 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt:33"
+  },
+  {
+    "fact": "TokenStatsSettingsStore 接口定义汇率/目标货币/显示单位/活动视图/时间范围六组读写方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsStore.kt:4"
+  },
+  {
+    "fact": "TokenStatsPreferencesStore 是该接口基于 TokenStatsPreferences 的委托实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsStore.kt:27"
+  },
+  {
+    "fact": "TokenStatsDisplayUnit 有 MILLIONS/BILLIONS 两档，toggled() 在二者间切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnit.kt:9"
+  },
+  {
+    "fact": "formatTokenCount：<1000 原样显示；<1M 显示为 %.1fK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnit.kt:19"
+  },
+  {
+    "fact": "formatTokenCount：≥1M 时 MILLIONS 显示 %.1fM，BILLIONS 显示 %.3fB，均用 Locale.US。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnit.kt:25"
+  },
+  {
+    "fact": "TokenStatsQueryParams 默认目标货币 CNY、手动汇率 7.0、providerModels 为 null（全量）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:5"
+  },
+  {
+    "fact": "TokenStatsTokenAggregate 记录 knownSum/knownEventCount/unknownEventCount/totalEventCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:20"
+  },
+  {
+    "fact": "isFullyKnown 在 unknownEventCount==0 时为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:26"
+  },
+  {
+    "fact": "TokenStatsTotals 含 requests、uncachedInput/cachedInput/totalInput/output、totalTokens 与 cost。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:29"
+  },
+  {
+    "fact": "TokenStatsDisplayModelBreakdown 按显示模型聚合，含按 config 拆分的 identities 与 providerModels。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:69"
+  },
+  {
+    "fact": "cacheRate 要求 cached/total 完全已知、total>0 且 cached 在 [0,total] 内，否则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryModels.kt:89"
+  },
+  {
+    "fact": "ReleasedProviderModelKeyDecoder 解码 released 时代 provider_model 格式的旧 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoder.kt:11"
+  },
+  {
+    "fact": "内置别名表由 ApiProviderType.entries 的 name 构成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoder.kt:13"
+  },
+  {
+    "fact": "额外别名出现同 alias 不同 identity 时抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoder.kt:26"
+  },
+  {
+    "fact": "匹配时按别名长度降序取最长前缀（encoded==别名 或以 “别名_” 开头）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoder.kt:29"
+  },
+  {
+    "fact": "decodeOrNull 捕获 IllegalArgumentException 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoder.kt:45"
+  },
+  {
+    "fact": "normalizeLegacyCacheWriteUsage 只修补 v20→v21 历史行的内存形态，不改库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageLegacyNormalizer.kt:7"
+  },
+  {
+    "fact": "configId 非空、cacheWriteKnown≥requests 或 provider 独立计费时原样返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageLegacyNormalizer.kt:17"
+  },
+  {
+    "fact": "否则把缺失的 cacheWrite 视为确认 0（cacheWriteTokens=0，cacheWriteKnown=requests）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageLegacyNormalizer.kt:24"
+  },
+  {
+    "fact": "PricingCurrency 有 CNY（¥）与 USD（$）两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:9"
+  },
+  {
+    "fact": "ModelPricingDefaults 含 billingMode、input/output/cachedInput 百万 token 价、pricePerRequest 与 currency。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:13"
+  },
+  {
+    "fact": "domesticProviders 列出 16 个国内供应商，用于默认 CNY 币种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:23"
+  },
+  {
+    "fact": "defaultPricePerRequest：CNY→0.01，USD→0.001。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:43"
+  },
+  {
+    "fact": "zeroPricing 为 TOKEN 模式、token 单价全 0 的兜底定价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:49"
+  },
+  {
+    "fact": "tokenPricing 中 cachedInput 单价默认等于 input 单价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:63"
+  },
+  {
+    "fact": "countPricing 为 COUNT 模式、token 单价全 0、按次收费的定价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:77"
+  },
+  {
+    "fact": "scrapedPricingRows 懒解析：`|` 分隔，少于 7 段的行跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:104"
+  },
+  {
+    "fact": "解析时 provider 转小写，billingMode 经 BillingMode.fromString 解析，数字解析失败→0.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:109"
+  },
+  {
+    "fact": "非 CNY 的币种一律视为 USD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:115"
+  },
+  {
+    "fact": "COUNT 行用第 6 段作 pricePerRequest。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:119"
+  },
+  {
+    "fact": "TOKEN 行第 6 段>0 作 cached 单价，否则用 input 单价。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:129"
+  },
+  {
+    "fact": "scrapedModelDefaults 的 key 为 “{小写provider}:{model}”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:146"
+  },
+  {
+    "fact": "scrapedModelNameFallbacks 按小写模型名分组，供跨 provider 回退。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:150"
+  },
+  {
+    "fact": "providerFallbacks 为 34 个 provider 提供按币种的 zeroPricing 兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:156"
+  },
+  {
+    "fact": "getDefaultPricing 兜底链：精确匹配→模型名回退→provider 兜底→按国内外 zeroPricing。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:207"
+  },
+  {
+    "fact": "模型名回退时优先选与 provider 国内外属性一致币种的候选项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:218"
+  },
+  {
+    "fact": "isDomesticProvider 大小写不敏感。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:203"
+  },
+  {
+    "fact": "getCurrency 返回某 provider:model 默认定价的币种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt:238"
+  },
+  {
+    "fact": "ScrapedModelPricingRowsCollect.rows 是 `|` 分隔的原始定价行，由多个三引号字符串块合并。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:4"
+  },
+  {
+    "fact": "行格式为 provider|model|billingMode|inputPerM|outputPerM|cachedOrCount|currency。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:6"
+  },
+  {
+    "fact": "DeepSeek 价格块标注 “Synced with DeepSeek official pricing on 2026-05-07”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:504"
+  },
+  {
+    "fact": "DeepSeek 官方价示例：deepseek-chat 输入 1、输出 2、缓存 0.02（CNY/百万 token）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:506"
+  },
+  {
+    "fact": "COUNT 计费行示例：gpt-4o-mini-tts 按次 0.18 USD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:36"
+  },
+  {
+    "fact": "tts-1 以 TOKEN 模式记录了语音模型的 token 价（输入 0.3/输出 9 USD 每百万）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt:104"
+  },
+  {
+    "fact": "ProviderApiConfig 含 providerType、defaultModelName、defaultApiEndpoint、endpointOptions 与 requiresApiKey（默认 true）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:11"
+  },
+  {
+    "fact": "ApiProviderConfigs 以 ApiProviderType 为 key 收录 38 个供应商的默认 API 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:19"
+  },
+  {
+    "fact": "OPENAI_CODEX 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:40"
+  },
+  {
+    "fact": "LMSTUDIO 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:233"
+  },
+  {
+    "fact": "OLLAMA 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:239"
+  },
+  {
+    "fact": "OPENAI_LOCAL 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:245"
+  },
+  {
+    "fact": "MNN 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:251"
+  },
+  {
+    "fact": "LLAMA_CPP 不要求 API Key（requiresApiKey=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:257"
+  },
+  {
+    "fact": "requiresApiKey(providerType, endpoint)：配置不要求时直接 false；否则 loopback 端点也视为不需要。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:318"
+  },
+  {
+    "fact": "未知 providerTypeId 时 requiresApiKey 回退为 !isLoopbackEndpoint(apiEndpoint)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:326"
+  },
+  {
+    "fact": "isLoopbackEndpoint 对空端点返回 false；URI 解析失败时回退文本前缀匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:340"
+  },
+  {
+    "fact": "loopback 主机含 localhost/127.0.0.1/::1/0.0.0.0/10.0.2.2（覆盖 Android 模拟器）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:359"
+  },
+  {
+    "fact": "get() 对未收录的 providerType 返回仅含 providerType 的默认空配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:302"
+  },
+  {
+    "fact": "getEndpointOptions 仅在 endpointOptions 非空时返回，否则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:314"
+  },
+  {
+    "fact": "DEEPSEEK 提供 Chat Completions 与 Responses 两个可选端点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:79"
+  },
+  {
+    "fact": "ZHIPU 提供国内标准/国内 coding/国际标准/国际 coding 四个可选端点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:109"
+  },
+  {
+    "fact": "OPENAI 默认模型 gpt-4o。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:23"
+  },
+  {
+    "fact": "ANTHROPIC 默认模型 claude-3-opus-20240229。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:54"
+  },
+  {
+    "fact": "GOOGLE 默认模型 gemini-2.0-flash。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:64"
+  },
+  {
+    "fact": "DEEPSEEK 默认模型 deepseek-v4-flash。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:74"
+  },
+  {
+    "fact": "ModelThinkingConfigDefaults.DEFAULT_JSON 是按供应商区分的推理参数默认规则数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:8"
+  },
+  {
+    "fact": "规则含 id/providers/match/control/parameterLabel/options/enable/disable 等字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:13"
+  },
+  {
+    "fact": "control=levels 表示多档可调（如 reasoning_effort 的 low/medium/high）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:15"
+  },
+  {
+    "fact": "control=toggle_only 表示仅开关（如 thinking.type 的 enabled/disabled）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:137"
+  },
+  {
+    "fact": "control=unsupported 表示该模型不支持推理参数（如 openai-chat-non-reasoning-models）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:29"
+  },
+  {
+    "fact": "openai-chat-reasoning-effort 用 modelRegex 匹配 o[1-9]/gpt-[5-9]/gpt-oss/codex 系列模型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:14"
+  },
+  {
+    "fact": "gemini-25-thinking-budget 提供 1024/4096/8192/16384/32768 五档 thinkingBudget。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:80"
+  },
+  {
+    "fact": "mnn-llama-template-thinking-toggle 为 MNN/LLAMA_CPP 提供 thinking 开关默认（端侧推理引擎已停止维护）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:318"
+  },
+  {
+    "fact": "forProvider(providerTypeId) 大小写不敏感过滤规则，返回时剥离 providers/providerTypeIds 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:406"
+  },
+  {
+    "fact": "forProvider 对空 provider 返回 \"[]\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:403"
+  },
+  {
+    "fact": "BillingMode 只有 TOKEN（按 token 计费）与 COUNT（按次计费）两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/BillingMode.kt:15"
+  },
+  {
+    "fact": "BillingMode.fromString 无法解析时默认返回 TOKEN。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/BillingMode.kt:30"
+  },
+  {
+    "fact": "token_stats_models 表联合主键为 (configId, provider, model)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenStatsModelEntity.kt:7"
+  },
+  {
+    "fact": "TokenStatsModelEntity.configId 为空表示模型级定价（configuration-unscoped）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenStatsModelEntity.kt:10"
+  },
+  {
+    "fact": "token_usage_records 表对 importKey 建唯一索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenUsageRecordEntity.kt:13"
+  },
+  {
+    "fact": "TokenUsageRecordEntity.providerModel = \"$provider:$model\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenUsageRecordEntity.kt:31"
+  },
+  {
+    "fact": "normalizeProviderModel 只规范化 provider:model 中的 provider 部分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ProviderIdentityUtils.kt:15"
+  },
+  {
+    "fact": "hasIndependentCacheWriteBilling 对 ANTHROPIC/ANTHROPIC_GENERIC/OTHER/未知返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ProviderIdentityUtils.kt:25"
+  },
+  {
+    "fact": "TokenUsageDao.insertRecord 冲突策略为 REPLACE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:39"
+  },
+  {
+    "fact": "聚合 SQL 按 provider/model/configId 分组，known 计数=SUM(分量非空时的 requestCount)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:100"
+  },
+  {
+    "fact": "getActivityDaysInRange 用 strftime localtime 按天分组；totalInput 缺失时尝试三输入分量求和。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:190"
+  },
+  {
+    "fact": "TokenTrackingAIService.finish() 在 reasoningIncludedInOutput==false 时把 reasoningTokens 并入 output（饱和加）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:287"
+  },
+  {
+    "fact": "finish() 在 cacheWriteSeparateBilling 为 false 时把 cacheWriteTokens 持久化为 0L。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:308"
+  },
+  {
+    "fact": "finish() 用 markPersisted() 的 compareAndSet 保证单条记录只持久化一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:315"
+  },
+  {
+    "fact": "ApiPreferences.readTokenStatsMigrationSnapshot 按 token_input_/token_cached_input_/token_output_/request_count_ 前缀收集旧总量键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:493"
+  },
+  {
+    "fact": "解码失败的旧 key 被跳过并打警告日志，允许其余迁移继续。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:515"
+  },
+  {
+    "fact": "同一 provider:model 的多个旧 key 用 ReleasedTokenUsageTotal.plus 合并。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:538"
+  },
+  {
+    "fact": "旧价格冲突（同一模型多组不同设置）时 require 抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:562"
+  },
+  {
+    "fact": "迁移的旧 COUNT 价格货币记为 CNY，否则记为 USD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:553"
+  },
+  {
+    "fact": "clearMigratedTokenStatsData 删除旧统计键与汇率键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:578"
+  },
+  {
+    "fact": "TokenTrackingAIService 是 AIService 的装饰器：仅当 recordTokenUsage=true 时才拦截 onUsageReported/onUsageFinalized 做 token 统计，其余接口全部直透 delegate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:61"
+  },
+  {
+    "fact": "TokenTrackingAIService.cancelStreaming 递增 cancellationEpoch 并取消全部在途请求；请求启动时若 epoch 已变化则直接抛 CancellationException，防止过期请求落库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:46"
+  },
+  {
+    "fact": "TokenTrackingAIService 的用量持久化跑在 Dispatchers.IO + NonCancellable 上，保证协程被取消后仍能把 token 记录写进 TokenUsageRepository。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:348"
+  },
+  {
+    "fact": "ApiPreferences.readTokenCount 兼容存成 Int 的旧计数：负 Int 按无符号 32 位掩码 value.toLong() and 0xFFFF_FFFFL 还原。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:596"
+  },
+  {
+    "fact": "ApiPreferences.getFeatureToggleBlocking/setFeatureToggleBlocking 用 runBlocking 做阻塞桥并标 @JvmStatic，供 Java 侧同步读写特性开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:56"
+  },
+  {
+    "fact": "ApiPreferences 的 SAF 书签以 JSON 存于 saf_bookmarks_json，按 uri 去重、按名称大小写不敏感排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:213"
+  }
+]

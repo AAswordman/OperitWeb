@@ -1,0 +1,114 @@
+[
+  {
+    "confidence": 0.85,
+    "description": "chatRuntimes 只增不减：全文件对 chatRuntimes 只有 get/put，没有任何 remove() 调用。ChatRuntime 含 sendJob、stream 引用等重型运行态，聊天越开越多时 Map 无限增长，长期运行存在内存泄漏风险。",
+    "evidence": "return chatRuntimes[key] ?: ChatRuntime().also { chatRuntimes[key] = it }",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt",
+    "line": 246,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.8,
+    "description": "handleTokenLimitExceeded 直接用 coroutineScope.launch 覆盖 summaryJob，未先取消旧 Job：旧 Job 引用丢失后无法再取消，且旧 Job 结束时会把 summaryJob = null 置空，可能把新 Job 的引用误清空。连续两次超限会留下不可控的野总结协程。",
+    "evidence": "summaryJob = coroutineScope.launch {",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt",
+    "line": 1625,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.75,
+    "description": "sendMessageInternal 等多处（618/664/684/782/1420/1433）在协程内用 runBlocking 等 StateFlow.first()：会阻塞当前协程线程，若在单线程调度器或线程池紧张时执行，存在线程饥饿甚至死锁风险。",
+    "evidence": "val roleCardId = runBlocking {",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt",
+    "line": 618,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "无对话自动创建时只等待 10 次×100ms = 1 秒，超时后本次用户输入被丢弃（仅弹出一条通用错误 toast）。低端机上数据库 Flow 发射超过 1 秒就吞掉用户消息，1 秒硬编码阈值对冷启动不友好。",
+    "evidence": "while (chatHistoryDelegate.currentChatId.value == null && waitCount < 10) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt",
+    "line": 349,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.8,
+    "description": "awaitTurnComplete 默认 180 秒超时后，群组编排调用方（992）只是打一条 AppLogger.w 日志就 return@forEachIndexed 跳过剩余成员：用户侧无任何提示，会误以为整轮对话已正常结束。",
+    "evidence": "timeoutMs: Long = 180_000L",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt",
+    "line": 1251,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "isConfigured 永远为 true：默认值 true，全文件只在 576/604 两处处置 true，没有任何处置 false 的路径。'是否已配置'这个门控是个死开关，key 为空时下游也以为已配置。",
+    "evidence": "private val _isConfigured = MutableStateFlow(true) // 默认已配置",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt",
+    "line": 70,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.95,
+    "description": "getMimeTypeFromPath 给 docx 返回 application/msword、给 xlsx 返回 application/vnd.ms-excel（904 行）都是错的 MIME：OOXML 格式应为 vnd.openxmlformats-officedocument.wordprocessingml.document / spreadsheetml.sheet。下游按 MIME 分流（OCR/解析器）时可能把新版 Office 文档当旧二进制格式处理。",
+    "evidence": "\"doc\", \"docx\" -> \"application/msword\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/AttachmentDelegate.kt",
+    "line": 903,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.6,
+    "description": "normalizeWorkspaceRelativePath 只做斜杠归一化与去首尾斜杠，不处理 '..' 路径穿越。工作区 @引用路径若被构造出 '../'，能否越过工作区根目录取决于 file_exists/read_file_full 工具侧是否二次校验，附件层自己不防御。",
+    "evidence": "return relativePath.trim().replace('\\\\', '/').trim('/')",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/AttachmentDelegate.kt",
+    "line": 464,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.7,
+    "description": "captureNotifications 默认 include_ongoing=true：抓通知时连常驻的进行中通知一起抓进 notifications.json 附件。常驻通知常含验证码、快递、会议等敏感内容，会作为文本附件留在附件列表里被模型读到。",
+    "evidence": "ToolParameter(\"include_ongoing\", \"true\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/AttachmentDelegate.kt",
+    "line": 694,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.65,
+    "description": "ChatMessage.content 是 var，流式收集协程（MessageProcessingDelegate 443/1339/1375/1758/1896 行）在 IO 线程直接写 content，而同一对象已在 StateFlow 列表里被 UI 线程读：跨线程直接变异可观察对象，无可见性保证也无内存屏障，偶发 UI 闪旧字或脏读。",
+    "evidence": "var content: String = \"\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt",
+    "line": 12,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.6,
+    "description": "updateChatOrderAndGroup 排序持久化防抖 350ms：拖拽后 350ms 内杀进程，排序变更就丢了。UI 先乐观更新，崩溃/被杀时内存与数据库不一致，下次启动排序回退。",
+    "evidence": "delay(350)",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt",
+    "line": 1530,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.6,
+    "description": "ChatRuntime 的 cancellationMutex 等取消逻辑依赖 turnId 核对，但 sendUserMessage 在 719 行对'正在加载中再次调用直接忽略并打日志'：用户快速连点发送时，第二条消息被静默丢弃且无 UI 提示，易被误认为已发送。",
+    "evidence": "private data class ChatRuntime(",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt",
+    "line": 203,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.5,
+    "description": "ChatServiceCore 的 onTurnComplete 接线同时做 token 累计与窗口刷新：若某轮因异常触发两次 onTurnComplete（如 finalize 失败重试），updateCumulativeStatistics 会把同一轮 token 累加两次，累计账偏大。建议加幂等标记。",
+    "evidence": "onTurnComplete = { chatId, service, nextWindowSize, turnOptions ->",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt",
+    "line": 186,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.55,
+    "description": "launchAsyncSummaryForSend 在聊天已切换时跳过总结消息插入只打日志（1790）：总结结果被丢弃，但发送前已做的'阈值 +0.5 放宽'不会回滚，下一轮的总结触发点比预期晚半个上下文。",
+    "evidence": "private fun launchAsyncSummaryForSend(",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt",
+    "line": 1754,
+    "severity": "suggestion"
+  }
+]

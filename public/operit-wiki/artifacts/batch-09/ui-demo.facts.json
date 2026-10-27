@@ -1,0 +1,642 @@
+[
+ {
+  "fact": "DemoStateManager 继承 ViewModel，构造参数为 context 与 coroutineScope",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:39"
+ },
+ {
+  "fact": "DemoStateManager 的 _uiState 是 MutableStateFlow(DemoScreenState())，对外只暴露只读 uiState: StateFlow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:41"
+ },
+ {
+  "fact": "isPnpmInstalled、isPythonInstalled、isNodejsPythonEnvironmentReady 三个 MutableState 跟踪 NodeJS/Python 环境",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:45"
+ },
+ {
+  "fact": "shizukuListener 与 rootListener 两个状态变更回调都调用 refreshStatus()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:50"
+ },
+ {
+  "fact": "DemoStateManager 的 init 块向 ShizukuAuthorizer 与 RootAuthorizer 注册状态监听并在协程里跑一次 refreshAllStates()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:55"
+ },
+ {
+  "fact": "initialize() 启动协程执行 registerStateChangeListeners 与 refreshStatusAsync",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:66"
+ },
+ {
+  "fact": "refreshStatus() 启动协程调用 refreshStatusAsync",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:75"
+ },
+ {
+  "fact": "updateRootStatus(isDeviceRooted, hasRootAccess) 把两个 Root 状态写入 uiState",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:82"
+ },
+ {
+  "fact": "设备已 Root 但应用未获授权时 updateRootStatus 自动把 showRootWizard 置 true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:90"
+ },
+ {
+  "fact": "updateOutputText 是空实现，仅为兼容旧调用保留",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:99"
+ },
+ {
+  "fact": "showResultDialog(title, content) 设置结果对话框标题、内容并显示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:104"
+ },
+ {
+  "fact": "hideResultDialog() 关闭结果对话框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:114"
+ },
+ {
+  "fact": "toggleShizukuWizard、toggleOperitTerminalWizard、toggleRootWizard、toggleAccessibilityWizard 翻转各自向导卡的 show 标志",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:121"
+ },
+ {
+  "fact": "toggleAdbCommandExecutor 与 toggleSampleCommands 控制命令执行器与示例命令区的显隐",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:151"
+ },
+ {
+  "fact": "updateCommandText 与 updateResultText 分别更新命令输入与结果文本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:169"
+ },
+ {
+  "fact": "cleanup() 移除 ShizukuAuthorizer 与 RootAuthorizer 的状态监听",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:178"
+ },
+ {
+  "fact": "refreshAllStates() 目前只调用 refreshNodejsPythonEnvironment()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:187"
+ },
+ {
+  "fact": "refreshAllStatesPublic() 是 refreshAllStates 的协程包装",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:194"
+ },
+ {
+  "fact": "registerStateChangeListeners() 是空实现，实际监听注册在 init 块完成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:200"
+ },
+ {
+  "fact": "setLoading(isLoading) 切换 uiState 的 isLoading 标志",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:205"
+ },
+ {
+  "fact": "initializeAsync() 依次调用 registerStateChangeListeners 与 refreshStatusAsync",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:210"
+ },
+ {
+  "fact": "refreshStatusAsync() 先把 isRefreshing 置 true，再调用 refreshPermissionsAndStatus 并传入 12 个状态更新 lambda",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:217"
+ },
+ {
+  "fact": "Shizuku 已安装且运行中时用 ShizukuAuthorizer.hasShizukuPermission() 检查 API_V23 授权，缺授权自动展开 Shizuku 向导卡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:245"
+ },
+ {
+  "fact": "Shizuku 未安装或未运行时 hasShizukuPermission 置 false 且 showShizukuWizard 置 true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:251"
+ },
+ {
+  "fact": "refreshStatusAsync 刷新后 delay(300) 毫秒再把 isRefreshing 置 false，异常打日志并在 finally 复位",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:262"
+ },
+ {
+  "fact": "refreshNodejsPythonEnvironment() 先调用 MCPSharedSession.getOrCreateSharedSession(context) 获取会话",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:277"
+ },
+ {
+  "fact": "拿不到共享 session 时 pnpm/python/环境就绪三项全部置 false",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:281"
+ },
+ {
+  "fact": "pnpm 检测在终端执行 command -v pnpm，输出包含 pnpm 算已安装",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:287"
+ },
+ {
+  "fact": "python 检测先执行 command -v python，不存在再查 command -v python3",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:290"
+ },
+ {
+  "fact": "pip 只在 python 存在时检测，先 command -v pip 再 command -v pip3；isPythonInstalled = hasPython && hasPip",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:301"
+ },
+ {
+  "fact": "isNodejsPythonEnvironmentReady = isPnpmInstalled && isPythonInstalled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:316"
+ },
+ {
+  "fact": "refreshPermissionsAndStatus() 检测 Shizuku 安装、运行、授权三态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:344"
+ },
+ {
+  "fact": "OperitTerminal 的已安装状态被 NodeJS/Python 环境就绪度检查替代，结果写入 isOperitTerminalInstalled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:403"
+ },
+ {
+  "fact": "存储权限在 Android 11 及以上用 Environment.isExternalStorageManager() 判断，低版本同时检查读写权限",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:397"
+ },
+ {
+  "fact": "位置权限以 ACCESS_FINE_LOCATION 或 ACCESS_COARSE_LOCATION 任一已授权即算通过",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:410"
+ },
+ {
+  "fact": "悬浮窗权限用 Settings.canDrawOverlays(context) 判断",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:418"
+ },
+ {
+  "fact": "电池优化豁免用 PowerManager.isIgnoringBatteryOptimizations(packageName) 判断",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:436"
+ },
+ {
+  "fact": "无障碍提供者用 UIHierarchyManager.isProviderAppInstalled(context) 检测，装好后立即 bindToService",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:427"
+ },
+ {
+  "fact": "DemoScreenState 是 data class，包含权限状态、UI 显隐状态与命令/结果文本字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:455"
+ },
+ {
+  "fact": "getSampleAdbCommands 提供 8 条 adb 示例命令（getprop、pm、dumpsys、settings、am、service、wm）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:491"
+ },
+ {
+  "fact": "getOperitTerminalSampleCommands 提供 6 条终端示例命令（echo、ls、whoami、apt、ip addr）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:504"
+ },
+ {
+  "fact": "getRootSampleCommands 提供 8 条 Root 示例命令（mount、/proc、getenforce、ps、pm、dumpsys）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt:515"
+ },
+ {
+  "fact": "ShizukuDemoViewModel 继承 AndroidViewModel",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:21"
+ },
+ {
+  "fact": "ShizukuDemoViewModel 内部直接创建 DemoStateManager(application, viewModelScope)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:23"
+ },
+ {
+  "fact": "toolHandler = AIToolHandler.getInstance(application) 供刷新工具时使用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:26"
+ },
+ {
+  "fact": "uiState: StateFlow<DemoScreenState> 直接代理自 stateManager",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:29"
+ },
+ {
+  "fact": "isPnpmInstalled、isPythonInstalled、isNodejsPythonEnvironmentReady 三个属性代理自 stateManager",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:33"
+ },
+ {
+  "fact": "initialize(context) 先 RootAuthorizer.initialize(context) 再调用 stateManager.initialize()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:41"
+ },
+ {
+  "fact": "initializeAsync 在 Dispatchers.IO 初始化 RootAuthorizer，读取 isRooted/hasRootAccess 后切 Main 线程更新状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:54"
+ },
+ {
+  "fact": "initializeAsync 的 finally 块切 Main 线程关闭 loading 指示器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:75"
+ },
+ {
+  "fact": "refreshStatus(context) 先 checkRootStatus 再调用 stateManager.refreshStatus()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:81"
+ },
+ {
+  "fact": "checkRootStatus 用 RootAuthorizer.isDeviceRooted() 与 checkRootStatus(context) 更新两个 Root 状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:88"
+ },
+ {
+  "fact": "requestRootPermission 已有 Root 权限时直接执行测试命令 id，否则 Toast 后请求授权",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:101"
+ },
+ {
+  "fact": "Root 授权成功后 Toast 提示并执行 id 测试命令",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:112"
+ },
+ {
+  "fact": "executeRootCommand 把 RootAuthorizer.executeRootCommand 的结果拼成文本写入 resultText，成功失败都 Toast",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:129"
+ },
+ {
+  "fact": "showResultDialog 与 hideResultDialog 代理到 stateManager",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:143"
+ },
+ {
+  "fact": "六个 toggle 方法（Shizuku/终端/Root/无障碍向导、adb 执行器、示例命令）全部代理到 stateManager",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:152"
+ },
+ {
+  "fact": "updateCommandText 代理到 stateManager",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:177"
+ },
+ {
+  "fact": "refreshTools 先 toolHandler.reset() 清空工具执行状态，再 registerDefaultTools() 重注册全部默认工具并 Toast",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:182"
+ },
+ {
+  "fact": "onCleared() 调用 stateManager.cleanup() 解注册监听",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:197"
+ },
+ {
+  "fact": "Factory 按 ViewModelProvider.Factory 模式构造 ShizukuDemoViewModel",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/viewmodel/ShizukuDemoViewModel.kt:203"
+ },
+ {
+  "fact": "ShizukuDemoScreen 是顶层 @Composable 函数，viewModel 参数默认用 ShizukuDemoViewModel.Factory 构造。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:44"
+ },
+ {
+  "fact": "ShizukuDemoScreen 的 navigateTo 回调参数类型为可空 ScreenNavigationHandler，默认 null。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:53"
+ },
+ {
+  "fact": "uiState 经 viewModel.uiState.collectAsState() 收集",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:60"
+ },
+ {
+  "fact": "currentDisplayedPermissionLevel 初始为 AndroidPermissionLevel.STANDARD",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:63"
+ },
+ {
+  "fact": "locationPermissionLauncher 一次请求精粗两个位置权限，任一 granted 就在 IO 线程刷新状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:68"
+ },
+ {
+  "fact": "DisposableEffect(Unit) 额外注册一个 Shizuku 状态监听，onDispose 时移除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:82"
+ },
+ {
+  "fact": "LaunchedEffect(Unit) 置 loading，在 IO 线程跑完 initializeAsync 后把 isInitialized 置 true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:96"
+ },
+ {
+  "fact": "isLoading 时显示 CircularProgressIndicator 与 loading_app_state 文本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:114"
+ },
+ {
+  "fact": "无障碍提供者的已安装/内置/需更新三元组用 remember(uiState.isRefreshing.value) 缓存，随刷新失效",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:129"
+ },
+ {
+  "fact": "手动刷新时先清 AccessibilityProviderInstaller 与 ShizukuInstaller 的版本缓存再调 viewModel.refreshStatus",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:173"
+ },
+ {
+  "fact": "存储权限点击在 Android 11+ 跳 ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION，低版本跳应用详情页，双层 try/catch 失败弹 Toast",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:182"
+ },
+ {
+  "fact": "悬浮窗点击跳 ACTION_MANAGE_OVERLAY_PERMISSION",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:203"
+ },
+ {
+  "fact": "电池优化点击跳 ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:214"
+ },
+ {
+  "fact": "无障碍点击跳 ACTION_ACCESSIBILITY_SETTINGS",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:225"
+ },
+ {
+  "fact": "安装无障碍提供者在 IO 线程执行，未安装则调用 UIHierarchyManager.launchProviderInstall",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:234"
+ },
+ {
+  "fact": "Shizuku 未完全设置时点击状态项弹向导；终端状态项点击总是打开向导；Root 状态项只在当前浏览级别为 ROOT 时响应",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:255"
+ },
+ {
+  "fact": "onPermissionLevelChange 更新当前浏览级别；onPermissionLevelSet 在用户设为当前级别后触发 refreshTools",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:279"
+ },
+ {
+  "fact": "needOperitTerminalSetupGuide = !isNodejsPythonEnvironmentReady，环境没就绪就显示终端向导",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:270"
+ },
+ {
+  "fact": "Shizuku 版本三元组用 remember 缓存已安装/内置/需更新状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:274"
+ },
+ {
+  "fact": "needShizukuSetupGuide 要求当前浏览级别为 DEBUGGER，且 Shizuku 未完全设置或完全设置但有更新可用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:285"
+ },
+ {
+  "fact": "needRootSetupGuide 要求浏览级别为 ROOT 且应用未获 Root 授权",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:296"
+ },
+ {
+  "fact": "needAccessibilitySetupGuide 要求浏览级别为 ACCESSIBILITY 且提供者未安装或服务未启用或有更新",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:300"
+ },
+ {
+  "fact": "四个 need 标志任一成立即显示设置向导标题区（Build 图标加分割线）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:307"
+ },
+ {
+  "fact": "AccessibilityWizardCard 的安装与更新回调都在 IO 线程调 UIHierarchyManager.launchProviderInstall",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:347"
+ },
+ {
+  "fact": "RootWizardCard 的请求 Root 回调在 IO 线程调 viewModel.requestRootPermission",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:380"
+ },
+ {
+  "fact": "RootWizardCard 的看教程回调打开 https://magiskmanager.com/",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:387"
+ },
+ {
+  "fact": "ShizukuWizardCard 的从商店安装回调打开 shizuku.rikka.app 中文下载页",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:407"
+ },
+ {
+  "fact": "内置安装回调在 IO 线程用 ShizukuInstaller.extractApkFromAssets(context) 从 assets 提取 APK",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:424"
+ },
+ {
+  "fact": "内置安装用 FileProvider 生成 APK 的 URI 后以 ACTION_VIEW 拉起安装界面",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:432"
+ },
+ {
+  "fact": "打开 Shizuku 回调用 getLaunchIntentForPackage(\"moe.shizuku.privileged.api\") 拉起",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:509"
+ },
+ {
+  "fact": "看教程回调打开 shizuku.rikka.app 官方配置指南页",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:528"
+ },
+ {
+  "fact": "请求授权回调调 ShizukuAuthorizer.requestShizukuPermission，结果 Toast 后在 IO 线程刷新状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:537"
+ },
+ {
+  "fact": "更新 Shizuku 回调走与安装相同的提取 assets APK 加安装 intent 流程",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:573"
+ },
+ {
+  "fact": "OperitTerminalWizardCard 的打开终端回调经 navigateTo?.invoke(Screen.TerminalSetup) 跳转",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt:674"
+ },
+ {
+  "fact": "CommandResultDialog 是 AlertDialog，showDialog 控制显隐",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:21"
+ },
+ {
+  "fact": "isExecuting 时标题下方加 LinearProgressIndicator",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:41"
+ },
+ {
+  "fact": "内容区高度限制 150 到 350dp，用 LazyColumn 滚动",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:50"
+ },
+ {
+  "fact": "allowCopy 为 true 时用 SelectionContainer 包裹等宽文本允许复制",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:60"
+ },
+ {
+  "fact": "showButtons 且非执行中时显示确定按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:82"
+ },
+ {
+  "fact": "复制按钮走 ClipboardManager.setPrimaryClip 写剪贴板，失败弹 Toast",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:100"
+ },
+ {
+  "fact": "DialogProperties 在执行中时禁止返回键与点击外部关闭，宽度 95% 非平台默认宽度",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:118"
+ },
+ {
+  "fact": "FeatureErrorCard 用 errorContainer 底色显示权限缺失提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:130"
+ },
+ {
+  "fact": "SampleCommandsCard 渲染描述加命令对列表，点击把命令文本回调用方",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/DialogComponents.kt:149"
+ },
+ {
+  "fact": "PermissionLevelCard 是可组合函数，接收二十多个状态与回调参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:59"
+ },
+ {
+  "fact": "当前激活级别用 androidPermissionPreferences.preferredPermissionLevelFlow.collectAsState(STANDARD) 读取",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:92"
+ },
+ {
+  "fact": "displayedPermissionLevel 是独立于激活级别的浏览级别，变化经 LaunchedEffect 通知父组件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:97"
+ },
+ {
+  "fact": "首次加载时把浏览级别同步为激活级别",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:115"
+ },
+ {
+  "fact": "权限描述区用 AnimatedContent 做横滑加淡入淡出过渡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:195"
+ },
+ {
+  "fact": "浏览级别与激活级别不一致时显示设为当前级别按钮：保存偏好、清 AndroidShellExecutor 级别缓存、Toast 提示、触发 onPermissionLevelSet",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:209"
+ },
+ {
+  "fact": "已是激活级别时显示带 CheckCircle 的当前正在使用行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:235"
+ },
+ {
+  "fact": "刷新按钮带 360 度旋转动画，刷新进行中时禁用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:258"
+ },
+ {
+  "fact": "内容区按浏览级别切换 STANDARD、ACCESSIBILITY、ADMIN、DEBUGGER、ROOT 五个 Section",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:296"
+ },
+ {
+  "fact": "PermissionLevelSelector 用 ScrollableTabRow 列出 AndroidPermissionLevel.values() 全部级别",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:443"
+ },
+ {
+  "fact": "PermissionSectionContainer 给当前激活级别的 Section 加 primary 色实线边框，纯浏览的不加",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:506"
+ },
+ {
+  "fact": "PermissionLevelCard.kt 内的 PermissionStatusItem 用圆点加标题加已授权或未授权文本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:534"
+ },
+ {
+  "fact": "StandardPermissionSection 列出存储、悬浮窗、电池优化、位置、OperitTerminal 五项",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:574"
+ },
+ {
+  "fact": "AccessibilityPermissionSection 在基础权限下追加无障碍服务项，四态为未安装、未授权、待更新、已授权",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:797"
+ },
+ {
+  "fact": "无障碍服务待更新时状态文本显示橙色",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:798"
+ },
+ {
+  "fact": "AdminPermissionSection 顶部有琥珀色版本不支持提示卡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:825"
+ },
+ {
+  "fact": "DebuggerPermissionSection 在基础权限下追加 Shizuku 服务项，五态为未安装、未运行、未授权、待更新、已授权",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:947"
+ },
+ {
+  "fact": "DebuggerPermissionSection 的 Shizuku 更新检查用无 key 的 remember 缓存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:967"
+ },
+ {
+  "fact": "RootPermissionSection 在基础权限下追加 Root 授权项，并按授权状态显示三段提示文本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1127"
+ },
+ {
+  "fact": "getPermissionLevelDescription 按级别取 permission_level 加 full_desc 的字符串资源",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1271"
+ },
+ {
+  "fact": "PermissionLevelVisualDescription 渲染级别标题、级别描述与 FeatureGrid 功能九宫格",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1333"
+ },
+ {
+  "fact": "FeatureGrid 功能支持矩阵：悬浮窗、文件操作、Termux、插件市场 MCP 全级别支持；Android/data 需 ADMIN 起；data/data 仅 ROOT",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1338"
+ },
+ {
+  "fact": "FeatureGrid 中屏幕自动点击需无障碍级别起，系统权限修改需 DEBUGGER 级别起，运行 JS 仅 DEBUGGER 与 ROOT",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1352"
+ },
+ {
+  "fact": "isFeatureSupported(level, inStandard, inAccessibility, inAdmin, inDebugger, inRoot) 按级别查六个布尔参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1389"
+ },
+ {
+  "fact": "FeatureItem 是圆形图标加名称的九宫格单元，不支持的功能显示锁图标",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt:1416"
+ },
+ {
+  "fact": "components.PermissionStatusItem 带 isHighlighted 参数，高亮时 primaryContainer 背景加粗体",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionStatusItem.kt:17"
+ },
+ {
+  "fact": "components.PermissionStatusItem 的状态文本硬编码英文 Authorized 与 Unauthorized",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionStatusItem.kt:49"
+ },
+ {
+  "fact": "ShizukuWizardCard 参数覆盖安装、运行、授权三态、展开标志、五个动作回调、更新与版本信息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:21"
+ },
+ {
+  "fact": "标题图标在完全设置且有更新时用 Update 图标，否则用 Edit 图标，标题文本同样二选一",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:54"
+ },
+ {
+  "fact": "进度条 0、0.33、0.66、1 对应未安装、未运行、未授权、完成三阶段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:119"
+ },
+ {
+  "fact": "状态文本四态为 step1 安装、step2 启动、step3 授权、完成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:136"
+ },
+ {
+  "fact": "详情区用 AnimatedVisibility(visible = showWizard) 控制展开",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:169"
+ },
+ {
+  "fact": "步骤一显示安装说明与安装内置 ElevatedButton，回调 onInstallBundled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:175"
+ },
+ {
+  "fact": "步骤二展示两种启动方式的说明卡片",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:220"
+ },
+ {
+  "fact": "步骤二底部有查看教程 OutlinedButton 与打开 Shizuku FilledTonalButton",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:292"
+ },
+ {
+  "fact": "步骤三显示授权说明加 errorContainer 警告块加授权 Button",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:314"
+ },
+ {
+  "fact": "完成态显示成功提示；有更新时追加更新区展示已安装与内置版本号并提供更新按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt:403"
+ },
+ {
+  "fact": "RootWizardCard 参数为 isDeviceRooted、hasRootAccess、展开标志与三个回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/RootWizardCard.kt:47"
+ },
+ {
+  "fact": "Root 进度 0、0.5、1 对应未 Root、已 Root 未授权、已授权，状态文本 step1、step2、完成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/RootWizardCard.kt:103"
+ },
+ {
+  "fact": "已授权态显示成功提示，测试命令按钮复用 onRequestRoot 执行示例命令",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/RootWizardCard.kt:246"
+ },
+ {
+  "fact": "已 Root 未授权态显示设备已 Root 说明、获取指引卡、请求权限 Button 与查看教程 OutlinedButton",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/RootWizardCard.kt:271"
+ },
+ {
+  "fact": "未 Root 态显示未 Root 说明、errorContainer 风险提示与查看教程 ElevatedButton",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/RootWizardCard.kt:392"
+ },
+ {
+  "fact": "AccessibilityWizardCard 参数覆盖提供者安装、服务启用、展开标志、安装、设置、更新回调与版本信息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:36"
+ },
+ {
+  "fact": "无障碍进度 0、0.5、1 对应未安装提供者、未启用服务、完成两阶段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:99"
+ },
+ {
+  "fact": "步骤一显示安装说明，安装按钮先弹风险警告对话框不直接安装",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:208"
+ },
+ {
+  "fact": "步骤二显示启用说明加注意事项卡，打开设置 Button 跳系统无障碍设置",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:235"
+ },
+ {
+  "fact": "完成态显示成功提示；需更新时显示 UpdateAvailableInfo 组件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:289"
+ },
+ {
+  "fact": "风险警告对话框要求输入确认文本：中文句取自 a11y_wizard_risk_acknowledgment 字符串，英文句硬编码在代码里，任一忽略大小写匹配才执行 onInstallProvider()，不匹配标 isError",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:276"
+ },
+ {
+  "fact": "英文确认句硬编码为 I understand and acknowledge the risks of account bans and restricted account functions caused by accessibility permissions, and I bear the consequences myself",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:282"
+ },
+ {
+  "fact": "UpdateAvailableInfo 显示检测到新版本、已安装与内置版本号及立即更新按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt:363"
+ },
+ {
+  "fact": "OperitTerminalWizardCard 参数为 pnpm、pip 安装态、环境就绪态、展开标志与打开终端回调，另带一批旧版兼容参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:33"
+ },
+ {
+  "fact": "状态文本四态为环境就绪、有 pnpm 缺 pip、有 pip 缺 pnpm、均需配置",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:101"
+ },
+ {
+  "fact": "状态颜色就绪用 tertiary，部分安装用 primary，都没有用 onSurfaceVariant",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:109"
+ },
+ {
+  "fact": "未就绪时显示 pnpm 的安装状态行（pnpm状态 Row）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:139"
+ },
+ {
+  "fact": "未就绪时显示 pip 的安装状态行（pip状态 Row）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:158"
+ },
+ {
+  "fact": "未就绪态显示配置说明与前往终端配置 Button；就绪态显示已配置说明与打开终端 OutlinedButton",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/OperitTerminalWizardCard.kt:172"
+ }
+]

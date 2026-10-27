@@ -1,0 +1,74 @@
+[
+  {
+    "confidence": "high",
+    "description": "AIChatScreen 自动滚动的异常被静默吞掉：catch (e: Exception) 块为空，日志行被注释，滚动失败时无任何可观测痕迹。",
+    "evidence": "                } catch (e: Exception) {\n                    // AppLogger.e(\"AIChatScreen\", \"自动滚动失败\", e)\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt",
+    "line": 681,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "FloatingWindowDelegate 存在 5 处空的 catch (_: Exception) 块（onServiceDisconnected 清回调、registerReceiver、unbindService、clearCallbacks、unregisterReceiver），异常被静默吞掉，悬浮窗服务绑定/解绑失败难以排查。",
+    "evidence": "            override fun onServiceDisconnected(name: ComponentName?) {\n                try {\n                    floatingBinder?.clearCallbacks()\n                } catch (_: Exception) {\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/FloatingWindowDelegate.kt",
+    "line": 91,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "导出进度对话框的取消按钮只有 TODO 注释，没有实现取消导出的逻辑，点击仅关闭对话框，导出任务继续在后台跑。",
+    "evidence": "                    onCancel = {\n                        // TODO: 实现取消导出的逻辑\n                        showExportProgressDialog = false\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt",
+    "line": 1405,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "模型建议弹窗把模型 id deepseek-r1-0528-qwen3-8b:free 硬编码在界面层，换模型或改名后这段逻辑即失效，应下沉到配置/远端策略。",
+    "evidence": "            if (modelName.isNotBlank() && modelName.contains(\"deepseek-r1-0528-qwen3-8b:free\", ignoreCase = true)) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt",
+    "line": 342,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "AttachmentUtils.getIconForMimeType 是未实现的桩，直接 return 0，调用方拿到的图标资源 id 无效。",
+    "evidence": "    fun getIconForMimeType(mimeType: String): Int {\n        // Implementation would return appropriate drawable resource IDs\n        // This would map to drawable resources in your app\n        // For now just returning 0 since we don't have access to the real drawable resources\n        return 0\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/attachments/AttachmentUtils.kt",
+    "line": 30,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "speakMessage 的日志打印消息内容预览 preview=speechPreview(message)，用户消息原文会进入日志，隐私敏感，建议只记长度或哈希。",
+    "evidence": "                    \"interrupt=$interrupt provider=${currentVoiceService?.javaClass?.simpleName} rawLen=${message.length} preview=\\\"${speechPreview(message)}\\\"\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt",
+    "line": 3016,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "MessageImageGenerator 用固定 delay(500) 等待 Compose 布局完成再截图，慢设备上可能截到未完成布局，快设备上则白白等待，建议用布局完成回调替代固定延时。",
+    "evidence": "                // 等待 Compose 完成布局（给它一些时间）\n                delay(500)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt",
+    "line": 350,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "handleSharedFiles 逐个串行处理分享文件且每个间隔 delay(100)，分享几十个文件时耗时线性增长，可考虑并发处理或去掉固定延时。",
+    "evidence": "                    delay(100) // Small delay between files",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt",
+    "line": 2110,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "ApiKeyFormatValidator.isValid 仅校验非空且全部为可打印 ASCII（0x21..0x7E），对 key 的真实格式（前缀、长度、字符集）无实质校验，非法 key 要到真正请求时才暴露。",
+    "evidence": "    fun isValid(value: String): Boolean {\n        val normalized = normalize(value)\n        return normalized.isNotEmpty() && normalized.all { character ->\n            character.code in 0x21..0x7E\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt",
+    "line": 6,
+    "severity": "suggestion"
+  }
+]

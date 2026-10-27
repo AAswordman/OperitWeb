@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "description": "http_request 与 multipart_request 都向模型暴露 ignore_ssl 参数，允许模型关闭 HTTPS 证书校验。若模型被诱导/误用该参数（如对钓鱼或中间人站点），TLS 保护即被绕过。建议：默认不暴露，或在提示中明确仅限用户明确要求的调试场景使用。",
+    "evidence": "ToolParameterSchema(name = \"ignore_ssl\", type = \"boolean\", description = \"ignore https certificate verification, true/false\", required = false)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 716,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "execute_hidden_terminal_command 明确说明命令执行“不显示在可见终端 UI 中”。隐藏执行降低了用户的可观测性：用户在终端界面看不到模型实际跑了什么命令，事后审计只能依赖日志。建议：在提示中要求对隐藏执行做显式结果回显，或限制仅用于无副作用的查询类命令。",
+    "evidence": "description = \"Execute a command in a hidden non-PTY terminal executor. Commands using the same executor_key reuse the same hidden login context and are not shown in the visible terminal UI.\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 98,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "delete_memory 仅凭 title 识别记忆节点且明确不可逆。标题是用户/AI 自由文本，存在重名或近似标题时可能误删；且删除后无恢复路径。建议：删除前要求模型先 query 确认唯一性，或在提示中加入二次确认话术。",
+    "evidence": "description = \"Deletes a memory node from the library by title. Use with caution as this operation is irreversible.\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 667,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "install_app / uninstall_app 的英文描述缺失“需要用户确认”的行为口径，而中文版明确写了（需要用户确认）。英文模式下模型可能不知道安装/卸载需要用户确认，导致其话术与真实审批流程不一致。建议：英文描述补上 requires user confirmation。",
+    "evidence": "description = \"Request installing an APK.\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 2570,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "execute_shell 的提示描述只有一句话 \"Execute a device shell command.\"，无任何使用护栏（如禁止破坏性命令、建议先 dry-run）。该工具在 internal 分类中权限极高，提示层零约束。建议：补充基础安全指引。",
+    "evidence": "description = \"Execute a device shell command.\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 17,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "execute_intent / send_broadcast 允许模型构造任意 action、package、component 的 Intent（含 broadcast/service 类型）。提示描述均为一句话，无越权调用方面的约束说明。实际拦截依赖运行时权限校验，提示层可补充“仅调用用户任务所需的 action”的指引。",
+    "evidence": "description = \"Execute an Android Intent (activity/broadcast/service).\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 518,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "modify_system_setting 允许模型写 system/secure/global 三个命名空间的系统设置，默认 system。提示层无任何约束（如禁止修改关键系统开关）。实际保护依赖运行时，但提示可加入“谨慎修改系统级设置”的说明。",
+    "evidence": "name = \"namespace\",\n                                        type = \"string\",\n                                        description = \"optional, system/secure/global\",\n                                        required = false,\n                                        default = \"system\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 2540,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "update_user_profile 的安全前提（“在用户确认工具调用后执行”）只写在提示文本里，提示词配置文件本身无法强制执行该审批。若运行时审批链路变更或被绕过，模型可一次性整体替换 user.md。建议：把该前提移到运行时强校验，而非仅依赖提示文本。",
+    "evidence": "description = \"Replaces the active memory-space user.md profile after the user approves the tool call. Preserve useful existing content and write the complete Markdown document.\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt",
+    "line": 696,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "PromptVersionManager（93 行通用版本管理器）在全仓库没有任何调用方（除自身文件外零引用）：shouldUpdate / autoUpdate / defaults 等逻辑无人使用，属于死代码。建议：若后续版本化提示词默认值的方案启用再引入，或删除以减少维护面。",
+    "evidence": "class PromptVersionManager<T : PromptVersionManager.VersionSpec> {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptVersionManager.kt",
+    "line": 9,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "PromptTagManager.migratePreferencesFromVersionZero 在版本 0→1 迁移时直接删除遗留系统标签及其全部偏好键，无备份、无导出。若误删判定（is_system_tag 标记或 SYSTEM_ 前缀）误伤用户标签，数据不可恢复。建议：迁移前先备份或转存。",
+    "evidence": "internal fun migratePreferencesFromVersionZero(preferences: MutablePreferences) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt",
+    "line": 50,
+    "severity": "suggestion"
+  }
+]

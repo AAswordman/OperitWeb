@@ -1,0 +1,626 @@
+[
+  {
+    "fact": "FileUtils 是 util 包下的单例对象，提供文本判定、URI 扩展名、文件拷贝与视频大小检查等文件工具函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:15"
+  },
+  {
+    "fact": "FileUtils 维护了 TEXT_BASED_EXTENSIONS 文本扩展名集合，isTextBasedExtension 按小写扩展名判定是否为文本文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:63"
+  },
+  {
+    "fact": "isTextBasedFileName 对无扩展名文件按 TEXT_BASED_FILENAMES 文件名集合判定（如 readme、makefile、license）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:66"
+  },
+  {
+    "fact": "isTextLike 默认读取文件前 512 字节做内容嗅探，空文件视为文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:86"
+  },
+  {
+    "fact": "isTextLikeBytes 按字节统计：可打印 ASCII 与空白算文本字符，合法 UTF-8 多字节序列算文本字符，其余算非文本字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:149"
+  },
+  {
+    "fact": "isTextLikeBytes 判定文本的阈值是非文本字符占比小于 10%。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:212"
+  },
+  {
+    "fact": "isWorkspaceFile 要求文件是文本文件，并用 GitIgnoreFilter 排除 gitignore 命中文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:242"
+  },
+  {
+    "fact": "isVideoFile 先查 ContentResolver 的 MIME 类型是否以 video/ 开头，再回退到 VIDEO_EXTENSIONS 扩展名名单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:260"
+  },
+  {
+    "fact": "VIDEO_EXTENSIONS 包含 mp4、3gp、webm、mkv、avi、mov、flv、wmv 共 8 种视频扩展名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:22"
+  },
+  {
+    "fact": "copyFileToInternalStorage 是挂起函数，在 Dispatchers.IO 上把 URI 内容拷贝到应用 filesDir，文件名形如 uniqueName_UUID.扩展名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:296"
+  },
+  {
+    "fact": "copyFileToInternalStorage 用 4KB 缓冲区逐块拷贝，失败返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:296"
+  },
+  {
+    "fact": "getFileExtensionFromUri 按顺序尝试 URI 路径后缀、ContentResolver MIME 映射、OpenableColumns.DISPLAY_NAME 三种方式取扩展名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:341"
+  },
+  {
+    "fact": "checkVideoSize 默认上限 30MB，用 openFileDescriptor 的 statSize 比较；无法检查大小时返回 true 以免误拦用户。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt:404"
+  },
+  {
+    "fact": "ArchiveUtil 是单例对象，统一处理 zip/tar/7z/rar 四种压缩格式的解压与打包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:18"
+  },
+  {
+    "fact": "ArchiveUtil 的读写缓冲区 BUFFER_SIZE 为 8192 字节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:21"
+  },
+  {
+    "fact": "convertArchive 的 targetExt 为 \"extract\" 时直接解压，否则先解到 cacheDir 下 temp_extract_时间戳 临时目录再重新打包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:24"
+  },
+  {
+    "fact": "convertArchive 在 finally 块中总是递归删除临时解压目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:88"
+  },
+  {
+    "fact": "extractArchive 按扩展名分发到 extractZip/extractTar/extract7z/extractRar，不支持的格式返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:123"
+  },
+  {
+    "fact": "extractZip 使用标准 ZipInputStream，明确不支持带密码 ZIP，检测到加密时在目标目录写 EXTRACTION_FAILED.txt 说明文件并返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:136"
+  },
+  {
+    "fact": "extractTar 使用 commons-compress 的 TarArchiveInputStream，加密 TAR 同样写 EXTRACTION_FAILED.txt 并返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:206"
+  },
+  {
+    "fact": "extract7z 支持传入密码（SevenZFile(file, password.toCharArray())），密码错误时回退为无密码尝试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:266"
+  },
+  {
+    "fact": "extractRar 使用 junrar 的 Archive 类，支持密码；无密码遇到加密 RAR 时写 EXTRACTION_FAILED.txt 并返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:349"
+  },
+  {
+    "fact": "createArchive 支持 zip/tar/7z 三种格式打包，RAR 打包因许可证限制直接返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:435"
+  },
+  {
+    "fact": "createZip 递归打包时用 file.toRelativeString(baseDir) 生成条目相对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:451"
+  },
+  {
+    "fact": "createTar 设置 LONGFILE_GNU 长文件名模式以支持超长文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:496"
+  },
+  {
+    "fact": "addToTar 对目录显式写入带尾部斜杠的目录条目再递归其内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:513"
+  },
+  {
+    "fact": "addTo7z 对目录条目补齐尾部斜杠后写入，再递归其内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt:538"
+  },
+  {
+    "fact": "OperitPaths 是单例对象，集中定义应用全部标准目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:8"
+  },
+  {
+    "fact": "OperitPaths.operitRootDir 指向公共 Download 目录下的 Operit 文件夹。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:31"
+  },
+  {
+    "fact": "pluginConfigDir 对 pluginId 做消毒：替换 \\/:*?\"<>| 与控制字符为下划线，去除首尾点和空格，空白则用 \"plugin\" 兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:43"
+  },
+  {
+    "fact": "pluginConfigDir 消毒后若与原名不同，会在目录名后追加 pluginId 哈希值的十六进制后缀以避免冲突。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:47"
+  },
+  {
+    "fact": "OperitPaths 提供 imagePoolDir、mediaPoolDir、skillRepoZipPoolDir 三个池目录，分别对应 image_pool、media_pool、skill_repo_zip_pool。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:24"
+  },
+  {
+    "fact": "rawSnapshotExcludedFilesTopLevelDirNames 返回快照排除的顶层目录名集合，含模型、向量索引与三个池目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:111"
+  },
+  {
+    "fact": "operitRootPathSdcard 返回固定的 \"/sdcard/Download/Operit\" 字符串路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:122"
+  },
+  {
+    "fact": "workspacePathSdcard(chatId) 在 Operit 根下按聊天 ID 拼接 workspace 子目录路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:141"
+  },
+  {
+    "fact": "PathMapper.mapLinuxPath 把 Linux 路径拼到应用 filesDir 下的 proot Ubuntu 根目录 usr/var/lib/proot-distro/installed-rootfs/ubuntu。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt:19"
+  },
+  {
+    "fact": "mapLinuxPath 去掉路径开头斜杠后拼接；输入为空或仅 \"/\" 时返回 Ubuntu 根目录本身。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt:27"
+  },
+  {
+    "fact": "PathMapper.isLinuxEnvironment 仅当 environment 字符串忽略大小写等于 \"linux\" 时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt:43"
+  },
+  {
+    "fact": "resolvePath 在 Linux 环境下走 mapLinuxPath 映射，否则原样返回路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt:55"
+  },
+  {
+    "fact": "AssetCopyUtils.copyAssetToCache 把 assets 文件拷贝到 cacheDir 下同名路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AssetCopyUtils.kt:6"
+  },
+  {
+    "fact": "copyAssetToFile 默认不覆盖已存在文件；overwrite 为 true 时先删除再拷贝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AssetCopyUtils.kt:15"
+  },
+  {
+    "fact": "copyAssetDirToCache 拷贝单层 assets 目录；目标非空且不覆盖时直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AssetCopyUtils.kt:47"
+  },
+  {
+    "fact": "copyAssetDirRecursive 递归拷贝 assets 目录树，子目录用 assetManager.list 非空判断，递归时强制 overwrite=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AssetCopyUtils.kt:68"
+  },
+  {
+    "fact": "AndroidUserPathUtils.PER_USER_RANGE 为 100000，currentUserId 用 Process.myUid() 除以它得到当前用户 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AndroidUserPathUtils.kt:7"
+  },
+  {
+    "fact": "currentUserPackageFilesPath 拼出 /data/user/{userId}/{packageName}/files 路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AndroidUserPathUtils.kt:14"
+  },
+  {
+    "fact": "DocumentConversionUtil.convertTextToPdf 用 PDFBox 按 Helvetica 12、行距 14.5、起点 (25,725) 逐行写文本生成 PDF。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:48"
+  },
+  {
+    "fact": "extractTextFromPdf 先用 PDFBox 直接提文本，文本长度超过 20 字符才算成功，否则走 OCR 兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:79"
+  },
+  {
+    "fact": "extractTextFromPdf 遇到加密 PDF 会调用 setAllSecurityToBeRemoved(true) 尝试去安全限制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:83"
+  },
+  {
+    "fact": "convertPdfToTextWithOcr 用 Android PdfRenderer 逐页渲染为 ARGB_8888 位图，再调 OCRUtils 高质量模式识别。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:135"
+  },
+  {
+    "fact": "convertPdfToImage 只渲染 PDF 第一页，按 2 倍缩放成位图再按目标格式压缩。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:167"
+  },
+  {
+    "fact": "convertPdfToImage 的 JPEG/WEBP 质量为 95，PNG 为 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:200"
+  },
+  {
+    "fact": "convertPdfToImage 失败时会写一个同扩展名的纯文本占位文件并返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:226"
+  },
+  {
+    "fact": "convertBetweenDocFormats 的 DOC 转 DOCX 用 POI HWPF 读段落、XWPF 写新文档，并按启发式加粗疑似标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:253"
+  },
+  {
+    "fact": "DOC 转 DOCX 时表格内的段落会被跳过（注释写明表格转换暂不支持）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:286"
+  },
+  {
+    "fact": "convertBetweenDocFormats 的 DOCX 转 DOC 实际是把提取的纯文本直接改名存为 .doc 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:336"
+  },
+  {
+    "fact": "convertFromHtml 先用正则去掉 HTML 标签、实体与多余空白，再按目标格式分发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:358"
+  },
+  {
+    "fact": "convertFromHtml 支持转 txt/doc/docx/pdf 四种目标；HTML 转 DOC 也是纯文本改名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:386"
+  },
+  {
+    "fact": "convertFromHtml 转 PDF 用 iText 写标题与正文段落。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:418"
+  },
+  {
+    "fact": "convertToHtml 支持 txt/doc/docx/pdf 四种来源，统一输出带样式的 HTML 骨架并转义 < >。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:452"
+  },
+  {
+    "fact": "convertToHtml 的 PDF 来源先调 extractTextFromPdf 生成临时文本再转 HTML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:590"
+  },
+  {
+    "fact": "convertSpreadsheetToHtml 用 POI WorkbookFactory 打开表格并计算公式值，输出带工作表切换标签的 HTML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:643"
+  },
+  {
+    "fact": "convertSpreadsheetToHtml 用 TextUtils.htmlEncode 转义标题、表名与单元格内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:686"
+  },
+  {
+    "fact": "extractTextFromDoc/extractTextFromDocx 用 POI 提取文本后都经过 optimizeTextFormat 压缩连续空行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:792"
+  },
+  {
+    "fact": "optimizeTextFormat 把连续空行压缩为最多保留两行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:830"
+  },
+  {
+    "fact": "convertPdfToDocx 先提文本到临时文件再用 XWPF 按双换行分段写 DOCX。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:888"
+  },
+  {
+    "fact": "convertWordToPdf 先提 Word 文本到临时文件再调 convertTextToPdf，全程经纯文本中转。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt:916"
+  },
+  {
+    "fact": "HttpMultiPartDownloader.download 默认 4 线程，线程数钳制在 1 到 8 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:25"
+  },
+  {
+    "fact": "probeDownload 先发 HEAD 探测 Content-Length 与 Accept-Ranges，失败则回退为 GET Range: bytes=0-0 探测。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:46"
+  },
+  {
+    "fact": "probeDownload 从 Content-Range 头（如 bytes 0-0/12345）解析文件总大小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:77"
+  },
+  {
+    "fact": "buildSegmentPlan 按线程数均分字节区间，区间为闭区间 [startInclusive, endInclusive]。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:101"
+  },
+  {
+    "fact": "downloadSegment 发 GET 请求并带 Range 头，按分片区间下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:150"
+  },
+  {
+    "fact": "downloadSegment 支持取消回调 isCancelled 与分块进度回调 onChunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:132"
+  },
+  {
+    "fact": "downloadMulti 先用 RandomAccessFile.setLength 预分配目标文件大小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:228"
+  },
+  {
+    "fact": "downloadMulti 每段先下载到 dest.name.part.N 临时文件，再 seek 到对应偏移拼入目标文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:257"
+  },
+  {
+    "fact": "downloadMulti 任一段失败会删除目标文件并抛出 RuntimeException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:294"
+  },
+  {
+    "fact": "HttpMultiPartDownloader 对请求头名做消毒：含换行或冒号的头名会被丢弃，头值去掉换行符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt:320"
+  },
+  {
+    "fact": "SkillRepoZipPoolManager.maxPoolSize 默认为 6，只接受大于 0 的新值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:12"
+  },
+  {
+    "fact": "SkillRepoZipPoolManager.initialize 把缓存目录定为 OperitPaths.skillRepoZipPoolDir(baseDir)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:26"
+  },
+  {
+    "fact": "池中 ZIP 文件名是 repo_ 加 key 的 SHA-256 十六进制前 16 位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:47"
+  },
+  {
+    "fact": "getOrDownloadZip 每个 key 配一个 Mutex，同 key 并发下载只会执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:76"
+  },
+  {
+    "fact": "getOrDownloadZip 缓存命中时刷新文件修改时间以维持 LRU 顺序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:82"
+  },
+  {
+    "fact": "getOrDownloadZip 先下载到 .download 临时文件，成功后 renameTo 为正式 zip，rename 失败回退为 copyTo。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:105"
+  },
+  {
+    "fact": "evictIfNeededLocked 超出上限时按 lastModified 从旧到新删除多余 zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt:60"
+  },
+  {
+    "fact": "ToolPkgArtifactMinifier 是单例对象，负责生成带市场来源标记的发布产物。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:19"
+  },
+  {
+    "fact": "readToolPkgLogoAsset 从包内 manifest 读取 logo 资源，校验大小不超过 PUBLISH_LOGO_MAX_BYTES。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:50"
+  },
+  {
+    "fact": "readToolPkgLogoAsset 只接受 svg/png/jpeg/webp 四种 logo 格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:386"
+  },
+  {
+    "fact": "processArtifactFile 对 toolpkg 走 processToolPkgArchive，对单脚本走 processScriptFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:61"
+  },
+  {
+    "fact": "processToolPkgArchive 开启 minify 时只保留可达条目：manifest、入口、可达模块与资源，其余条目被剪枝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:95"
+  },
+  {
+    "fact": "collectReachableToolPkgEntries 从可执行入口出发，沿静态 require/import 引用做 BFS 收集可达模块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:225"
+  },
+  {
+    "fact": "resolveToolPkgModuleEntry 只解析以 . 开头的相对引用，并按 .js/.mjs/.cjs/.json/index.js 顺序试探候选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:287"
+  },
+  {
+    "fact": "minify 开启时会校验 manifest 与全部可执行入口仍在可达集合中，否则抛异常拒绝产出空壳包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:161"
+  },
+  {
+    "fact": "主入口文件在压缩前会被注入 ToolPkgMarketOrigin（market 固定为 \"Operit\"），来源信息随代码一起被压缩而非当注释剥离。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:184"
+  },
+  {
+    "fact": "minifyJavaScriptSourcePreservingMetadata 会把源码顶部的 /* METADATA ... */ 块原样保留在压缩产物最前面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:321"
+  },
+  {
+    "fact": "shouldMinifyToolPkgEntry 不压缩资源目录下的条目，只压缩可执行入口与 js/mjs/cjs/ts/jsx/tsx。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgArtifactMinifier.kt:366"
+  },
+  {
+    "fact": "ToolPkgJsAstMinifier 是 internal 类，内部持有 QuickJS 引擎并加载 assets/js/terser.bundle.min.js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgJsAstMinifier.kt:12"
+  },
+  {
+    "fact": "JS 压缩经 QuickJS 调用 __operitToolPkgAstMinify，底层是 Terser 的 minify_sync。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgJsAstMinifier.kt:51"
+  },
+  {
+    "fact": "Terser 压缩配置为 compress 3 遍、mangle 的 toplevel 不混淆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgJsAstMinifier.kt:70"
+  },
+  {
+    "fact": "Terser 输出配置为注释全删（comments: false）、ascii_only 输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgJsAstMinifier.kt:76"
+  },
+  {
+    "fact": ".mjs 结尾的入口会被当作 ES module 压缩，其余按脚本模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgJsAstMinifier.kt:64"
+  },
+  {
+    "fact": "ToolPkgWasmRuntime 是 internal 单例，用 ConcurrentHashMap 按 cacheKey 缓存已加载的 WASM 模块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgWasmRuntime.kt:7"
+  },
+  {
+    "fact": "ToolPkgWasmRuntime.call 传入 cacheKey、wasm 字节、导出函数名与参数类型/参数位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgWasmRuntime.kt:17"
+  },
+  {
+    "fact": "resolveLoadedModule 用 SHA-256 指纹比对：同 key 但字节变化时先关闭旧模块再重新加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgWasmRuntime.kt:66"
+  },
+  {
+    "fact": "closeAllForPackage 按 \"packageName:\" 前缀批量关闭该包的全部 WASM 模块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgWasmRuntime.kt:41"
+  },
+  {
+    "fact": "ToolPkgWasmNative 调用 System.loadLibrary(\"toolpkgwasm\") 加载 native 库，提供 load/call/close 三个外部函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ToolPkgWasmRuntime.kt:93"
+  },
+  {
+    "fact": "ImagePoolManager 是单例对象，图片入池时统一解码、方向归一、缩放、格式转换，池中只存最终发送用的标准图。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:39"
+  },
+  {
+    "fact": "ImageRegistrationOptions 默认缩放 100%、JPEG 质量 85、EXIF 方向归一开启、长边上限 2048。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:41"
+  },
+  {
+    "fact": "ImagePoolManager.maxPoolSize 默认为 20。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:52"
+  },
+  {
+    "fact": "imagePool 是访问顺序 LinkedHashMap 实现的 LRU，超限淘汰最旧条目并同步删除磁盘文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:84"
+  },
+  {
+    "fact": "initialize 首次初始化或目录变化时会清空内存池与磁盘缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:97"
+  },
+  {
+    "fact": "addImage/addImageFromBase64/addImageFromBitmap 三个入口都返回图片 ID，失败返回字符串 \"error\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:151"
+  },
+  {
+    "fact": "addImageFromBase64 支持 data: URI 前缀，会从头部解析真实 MIME 类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:380"
+  },
+  {
+    "fact": "registerBitmap 的处理流水线是 EXIF 方向归一→按比例缩放→长边限制→输出格式解析→编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:248"
+  },
+  {
+    "fact": "resolveOptions 把 scalePercent 钳制在 1 到 100，jpegQuality 钳制在 1 到 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:360"
+  },
+  {
+    "fact": "输出格式 AUTO 时有透明通道选 PNG，否则选 JPEG。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:538"
+  },
+  {
+    "fact": "转 JPEG 前若位图带透明通道，会先在白色画布上压平。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:561"
+  },
+  {
+    "fact": "编码后会用 BitmapFactory 探测真实 MIME，声明与实际不符时按真实编码修正并记警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:451"
+  },
+  {
+    "fact": "getImage 命中内存时若发现存储的 MIME 与真实编码不符，会修正并写回磁盘。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:451"
+  },
+  {
+    "fact": "图片磁盘缓存为每图一对文件：$id.dat 存 base64，$id.meta 存 JSON 元信息（mimeType/width/height）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt:632"
+  },
+  {
+    "fact": "MediaPoolManager 是单例对象，媒体入池上限 MAX_INPUT_BYTES 为 20MB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:11"
+  },
+  {
+    "fact": "MediaPoolManager.maxPoolSize 默认为 12，同样用访问顺序 LinkedHashMap 做 LRU 淘汰。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:154"
+  },
+  {
+    "fact": "addMedia 遇到超 20MB 文件会先转码：音频转单声道 16kHz mp3（64k/32k 两档），视频转 640/480 宽 mp4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:35"
+  },
+  {
+    "fact": "视频转码按 640 宽 h264、640 宽 mpeg4、480 宽 mpeg4 三档依次尝试，首个达标即用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:58"
+  },
+  {
+    "fact": "转码失败或转码后仍超限时 addMedia 拒绝入池并返回 \"error\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:203"
+  },
+  {
+    "fact": "addMediaFromBase64 先用 MediaBase64Limiter 估算解码大小，超限则流式解码到临时文件再转码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:222"
+  },
+  {
+    "fact": "媒体磁盘缓存为每媒体一对文件：$id.meta 存 MIME，$id.b64 存 base64。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:338"
+  },
+  {
+    "fact": "MediaPoolManager 用 FFmpegUtil.executeCommand 执行转码命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaPoolManager.kt:42"
+  },
+  {
+    "fact": "ImageBitmapLimiter 的 UI 与 AI 两套上限都是 1200 万像素、单边 4096。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt:9"
+  },
+  {
+    "fact": "decodeDownsampledBitmap 先只解码边界算 inSampleSize，再按采样率解码以省内存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt:31"
+  },
+  {
+    "fact": "limitBase64ForAi 在尺寸达标时直接返回原 base64 不做重编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt:62"
+  },
+  {
+    "fact": "calculateSampleSize 按 2 的幂次递增，最大到 128。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt:165"
+  },
+  {
+    "fact": "limitBase64ForAi 的重编码只支持 png/webp/jpeg，其他 MIME 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt:138"
+  },
+  {
+    "fact": "MediaBase64Limiter.DEFAULT_MAX_DECODED_BYTES 为 20MB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaBase64Limiter.kt:6"
+  },
+  {
+    "fact": "estimateDecodedSizeBytes 按 (有效字符数*3/4 - 填充数) 估算解码大小，忽略空白字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaBase64Limiter.kt:13"
+  },
+  {
+    "fact": "limitBase64ForAi 先用 length*3/4 估算大小，估算超限直接返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaBase64Limiter.kt:42"
+  },
+  {
+    "fact": "估算未超限后真实解码再测大小，真实解码仍超限返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MediaBase64Limiter.kt:52"
+  },
+  {
+    "fact": "ColorQrCodeUtil.generate 支持 2/4/8/16 四种颜色数，分别对应每符号 1/2/3/4 比特。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:555"
+  },
+  {
+    "fact": "ColorQrCodeUtil.generate 把颜色数经 bitsPerSymbol 换算为每符号比特数后生成彩色二维码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:52"
+  },
+  {
+    "fact": "ColorQrCodeUtil.bitsPerSymbol 的颜色数到比特数映射为 2→1、4→2、8→3、16→4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:557"
+  },
+  {
+    "fact": "generate(text) 会在有益时先做 gzip 压缩再编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:101"
+  },
+  {
+    "fact": "decode 未指定颜色数时按 16/8/4/2 依次尝试，并对 16 色尝试 9 种色相偏移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:105"
+  },
+  {
+    "fact": "decode 校验魔数、协议版本与颜色数声明，任一不符即抛 ColorQrException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:153"
+  },
+  {
+    "fact": "decode 校验载荷 CRC32，与头中声明值不符即抛 ColorQrException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:179"
+  },
+  {
+    "fact": "decodeToString 在载荷为 gzip 魔数时自动解压再按字符集转字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:202"
+  },
+  {
+    "fact": "调色板按 HSV 色相轮均分生成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:563"
+  },
+  {
+    "fact": "legacy 调色板用低饱和度（0.25）高明度（1.0）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:575"
+  },
+  {
+    "fact": "解码时每个模块采样 5 个点投票决定颜色，中心点优先。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:376"
+  },
+  {
+    "fact": "cropToQrRegion 用 zxing Detector 定位二维码角点并按 0.25 膨胀裁剪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ColorQrCodeUtil.kt:245"
+  },
+  {
+    "fact": "OCRUtils 封装 ML Kit，提供拉丁/中文/日文/韩文四种语言识别器并按语言缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:33"
+  },
+  {
+    "fact": "OCRUtils.Quality 是识别质量选项枚举，分为 LOW 与 HIGH 两档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:48"
+  },
+  {
+    "fact": "OCRUtils 的 HIGH 质量档在识别前会先把位图放大 2 倍（上限 4096 像素）再识别。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:99"
+  },
+  {
+    "fact": "recognizeText(context, bitmap) 同时跑拉丁与中文识别并合并结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:248"
+  },
+  {
+    "fact": "extractTextBlocks 按语言优先级逐个尝试，首个有结果的语言即停止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:324"
+  },
+  {
+    "fact": "OCRResult 是密封类，分 Success（带全文/文本块/结构化文本）与 Error 两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OCRUtils.kt:387"
+  },
+  {
+    "fact": "FFmpegUtil.executeCommand 用 FFmpegKit.execute 执行命令字符串，按 ReturnCode 判成功。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FFmpegUtil.kt:24"
+  },
+  {
+    "fact": "scaleFilterMaxWidth 生成 \"scale=min(宽\\,iw):-2\" 滤镜，逗号做了转义以适配 FFmpegKit 参数解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FFmpegUtil.kt:19"
+  },
+  {
+    "fact": "FFmpegUtil.getMediaInfo 用 FFprobeKit 获取媒体文件信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/FFmpegUtil.kt:49"
+  }
+]

@@ -1,0 +1,101 @@
+[
+  {
+    "severity": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt",
+    "line": 346,
+    "title": "导入文件路径穿越：content provider 返回的 _display_name 未做净化直接拼进 cacheDir",
+    "description": "packageFilePicker 回调从 contentResolver 查询 _display_name 得到 fileNameNonNull（外部 content provider 完全可控，可含 \"../\" 片段），随后直接 File(context.cacheDir, fileNameNonNull)。File(parent, child) 会解析 child 中的 \"..\"，恶意 provider 可把任意内容写到 cacheDir 之外（如 ../../shared_prefs/）。修复：取 fileName.substringAfterLast('/') 并拒绝含 \"..\" 与分隔符的名字，或用固定随机文件名。",
+    "evidence": "                                    withContext(Dispatchers.IO) {\n                                        val inputStream = context.contentResolver.openInputStream(uri)\n                                        val tempFile = File(context.cacheDir, fileNameNonNull)\n                                        try {\n                                            inputStream?.use { input ->\n                                                tempFile.outputStream().use { output -> input.copyTo(output) }\n                                            }",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt",
+    "line": 320,
+    "title": "导入校验只看文件后缀，未做内容嗅探",
+    "description": "导入前仅按 selectedTab 检查后缀（插件页 .toolpkg，包页 .js/.ts/.hjson），任何内容披着正确后缀都能进入 addPackageFileFromExternalStorage。后端若对输入做解析假设，可能被畸形文件打崩或触发非预期行为。",
+    "evidence": "PackageManagerScreen.kt:315-322:\n                                val fileNameNonNull = fileName ?: return@launch\n                                val lowerFileName = fileNameNonNull.lowercase()\n                                val supported =\n                                    when (selectedTab) {\n                                        PackageTab.PLUGINS ->\n                                            lowerFileName.endsWith(\".toolpkg\")\n                                        PackageTab.PACKAGES ->\n                                            lowerFileName.endsWith(\".js\") ||\n                                                lowerFileName.endsWith(\".ts\") ||\n                                                lowerFileName.endsWith(\".hjson\")\n导入校验只看文件后缀，未做内容嗅探；真正的内容校验在后端导入器内，不在 UI 层。",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt",
+    "line": 441,
+    "title": "导入失败弹窗把完整堆栈展示给用户",
+    "description": "catch 分支把 e.stackTraceToString() 拼进 importErrorMessage 并用 ErrorDialog 展示，内部类名、包路径等实现细节直接暴露给终端用户，且堆栈文本可能很长。建议只展示本地化错误消息，堆栈仅写日志。",
+    "evidence": "                                R.string.import_failed,\n                                e.message ?: context.getString(R.string.unknown_error)\n                            ) + \"\\n\\n\" + e.stackTraceToString()\n                    }\n                }\n            }",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt",
+    "line": 847,
+    "title": "运行监控轮询无异常保护，一次抛错就静默停摆",
+    "description": "ToolPkgRuntimeMonitorDialog 的 LaunchedEffect 里 while(true) 每秒调 getToolPkgRuntimeMonitorSnapshot，但 withContext(Dispatchers.IO) 调用没有任何 try/catch。一旦抛异常，协程直接取消，轮询永久停止，界面停留在旧快照且无任何提示，用户会误以为监控仍在工作。",
+    "evidence": "    LaunchedEffect(packageName) {\n        while (true) {\n            snapshot =\n                withContext(Dispatchers.IO) {\n                    packageManager.getToolPkgRuntimeMonitorSnapshot(packageName)\n                }\n            delay(1_000L)\n        }\n    }",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt",
+    "line": 242,
+    "title": "必填参数校验用 isNullOrEmpty，与 MCP 版的 isNullOrBlank 口径不一致",
+    "description": "ScriptExecutionDialog 用 paramValues[it].isNullOrEmpty() 判定必填参数缺失，全空格字符串会被放行进入执行；而 MCPToolExecutionDialog 用 isNullOrBlank()。同一产品两处同类校验口径不一，全空格参数可能导致脚本拿到无意义输入。",
+    "evidence": "                                    val missingParams = tool.parameters\n                                        .filter { it.required }\n                                        .map { it.name }\n                                        .filter { paramValues[it].isNullOrEmpty() }\n\n                                    if (missingParams.isNotEmpty()) {\n                                        val missingResult = ToolResult(",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt",
+    "line": 153,
+    "title": "MarketManageItemCard 的 isOpen 分支是死条件，两边颜色相同",
+    "description": "containerColor 的 if (isOpen) / else 分支都返回 MaterialTheme.colorScheme.surface，条件无实际效果。疑似复制粘贴残留，应删掉分支或补上真正的区分色。",
+    "evidence": "            containerColor =\n                if (isOpen) {\n                    MaterialTheme.colorScheme.surface\n                } else {\n                    MaterialTheme.colorScheme.surface\n                }",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt",
+    "line": 1000,
+    "title": "删除成功提示用了硬编码英文，未走 stringResource",
+    "description": "onPackageDeleted 回调里直接写死英文 \"Package deleted successfully.\"，全文件其他提示都用 R.string。非英文用户会看到语言混杂。",
+    "evidence": "                            snackbarHostState.showSnackbar(\"Package deleted successfully.\")",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/AutomationPackageDetailsDialog.kt",
+    "line": 24,
+    "title": "自动化相关两个对话框已是“功能已移除”占位，可考虑删除",
+    "description": "AutomationPackageDetailsDialog 与 AutomationFunctionExecutionDialog（AutomationFunctionExecutionDialog.kt:28）都只是展示“功能已移除”提示的空壳，不再承载业务。若自动化功能确定下线，这两个文件可清理，避免后人误接。",
+    "evidence": "@Composable\nfun AutomationPackageDetailsDialog(\n    onDismiss: () -> Unit,\n    message: String? = null\n) {\n    val context = LocalContext.current\n    val displayMessage = message ?: stringResource(R.string.pkg_automation_removed)\n    AlertDialog(",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/lists/PackageLists.kt",
+    "line": 44,
+    "title": "两个 Deprecated 列表函数仍保留在源码中",
+    "description": "AvailablePackagesList（:44）与 ImportedPackagesList（:69）都标了 @Deprecated(\"Use PackagesList instead\") 但函数体完整保留。若已无调用方，可删除以减少维护面。",
+    "evidence": "// 保留这些函数以防其他地方还在使用，但标记为已弃用\n@Deprecated(\"Use PackagesList instead\")\n@Composable\nfun AvailablePackagesList(\n        packages: Map<String, ToolPackage>,\n        onPackageClick: (String) -> Unit,\n        onImportClick: (String) -> Unit\n) {",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt",
+    "line": 90,
+    "title": "安装成功页把设备绝对路径展示给用户",
+    "description": "InstallResult.Success 时把 result.pluginPath（设备上的绝对路径）原文显示出来。普通用户不需要知道内部存储路径，且泄露目录结构。建议只显示“已安装到插件目录”等文案。",
+    "evidence": "                                        if (result.pluginPath.isNotEmpty()) {\n                                            Spacer(modifier = Modifier.height(8.dp))\n                                            Text(stringResource(R.string.mcp_plugin_installed_to, operationType), style = MaterialTheme.typography.bodyMedium)\n                                            Text(\n                                                    text = result.pluginPath,\n                                                    style = MaterialTheme.typography.bodySmall,\n                                                    color = MaterialTheme.colorScheme.onSurfaceVariant,\n                                                    textAlign = TextAlign.Center",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt",
+    "line": 347,
+    "title": "openInputStream 返回 null 时仍会拿空路径去调导入",
+    "description": "inputStream?.use 只在非空时复制文件；若 openInputStream 返回 null，tempFile 根本没被创建，代码仍会调 addPackageFileFromExternalStorage(tempFile.absolutePath) 让后端去处理不存在的路径。建议在流为 null 时提前 snackbar 提示并返回。",
+    "evidence": "                                        val tempFile = File(context.cacheDir, fileNameNonNull)\n                                        try {\n                                            inputStream?.use { input ->\n                                                tempFile.outputStream().use { output -> input.copyTo(output) }\n                                            }",
+    "confidence": "medium"
+  }
+]

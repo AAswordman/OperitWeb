@@ -1,0 +1,52 @@
+[
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt",
+    "line": 3167,
+    "title": "流式 SSE 行解析失败被静默跳过，响应可能不完整",
+    "detail": "processStreamingResponse 的行循环中，JSON 解析抛出的通用 Exception 只记警告日志后继续下一行。若某供应商返回畸形 data 行（非 CancellationException/非 IOException），该行内容被丢弃且无任何上抛，用户看到的回复可能缺片段，而外层仍视为成功。",
+    "evidence": "                } catch (e: CancellationException) {\n                    throw e\n                } catch (e: IOException) {\n                    throw e\n                } catch (e: Exception) {\n                    AppLogger.w(\"AIService\", \"【发送消息】JSON解析错误: ${e.message}\")\n                    logLargeString(\"AIService\", data, \"[Send message] Original data when JSON parsing failed: \")\n                }",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt",
+    "line": 3050,
+    "title": "只处理 choices[0]，多候选响应被静默丢弃",
+    "detail": "processResponseChunk 取 choices.getJSONObject(0)，n>1 的候选直接忽略。若供应商返回多个 choice（如 n 参数），用户无从得知其余候选被丢弃。",
+    "evidence": "        val choices = jsonResponse.optJSONArray(\"choices\")\n        if (choices == null || choices.length() == 0) {\n            applyUsageToCounters(usage, onTokensUpdated, onUsageReported, attemptNumber)\n            return\n        }\n\n        val choice = choices.getJSONObject(0)",
+    "confidence": "high"
+  },
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt",
+    "line": 1972,
+    "title": "mergeCanonicalArgs 拼接策略可能拼出非法 JSON",
+    "detail": "当 incoming 既非空、也非 existing 的前缀扩展快照时，代码做 existing + incoming 字符串拼接。若某供应商先发增量片段后又发一份不以前缀形式出现的完整快照，拼接结果是两段 JSON 首尾相连，无法解析，后续 StreamingJsonXmlConverter 会持续喂入损坏数据。",
+    "evidence": "    private fun mergeCanonicalArgs(existing: String, incoming: String): String {\n        if (incoming.isEmpty()) return existing\n        if (existing.isEmpty()) return incoming\n\n        // 增量通道：默认直接追加；若供应商偶发回传完整快照，则直接切换为快照值。\n        return if (incoming.startsWith(existing)) incoming else existing + incoming\n    }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt",
+    "line": 415,
+    "title": "downloadBytes 吞掉所有异常，图片静默丢失",
+    "detail": "图片 URL 下载失败（网络异常、非 2xx、空 body）一律返回 null，调用方 tryHandleOpenAiImageResponse 无任何日志或用户提示，图片就静默消失了。",
+    "evidence": "    private suspend fun downloadBytes(url: String): ByteArray? {\n        return try {\n            val request = Request.Builder().url(url).get().build()\n            val response = withContext(Dispatchers.IO) { client.newCall(request).execute() }\n            response.use {\n                if (!it.isSuccessful) return null\n                val body = it.body ?: return null\n                body.bytes()\n            }\n        } catch (_: Exception) {\n            null\n        }\n    }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt",
+    "line": 2055,
+    "title": "closeToolCallIfOpen 强制补标签可能输出畸形 XML",
+    "detail": "当解析器报告未闭合参数但累计 arguments 恰好是合法 JSON 时，代码强制 emit </param> 与闭合标签。若解析器内部状态与字符串状态不一致（如嵌套引号转义未处理完），补出的标签与真实参数边界错位，下游 XML 解析可能错位。",
+    "evidence": "        if (parser.hasUnfinishedParam()) {\n            val parsedAsJson = runCatching { JSONObject(accumulatedArgsBeforeFlush) }.isSuccess\n            if (parsedAsJson) {\n                AppLogger.w(\n                    \"AIService\",\n                    \"Tool 参数解析器状态未闭合，但累计 arguments 已是合法 JSON，强制补全标签收尾，index=$index\"\n                )\n                emitter.emitTag(\"</param>\")\n                emitter.emitTag(\"\\n</$toolTagName>\")",
+    "confidence": "medium"
+  }
+]

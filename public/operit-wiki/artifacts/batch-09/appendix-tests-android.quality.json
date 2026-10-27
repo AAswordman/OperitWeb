@@ -1,0 +1,242 @@
+[
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "var stateUpdated = false\n// 轮询 eagerlyState.value != 0（约5次）\nif (stateUpdated) {\n    assertTrue(eagerlyState.value > 0) // 值应该被更新\n    // 理想状态下应该是3，但我们不做严格要求\n}",
+  "file": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/HotStreamAndroidTest.kt",
+  "line": 280,
+  "severity": "warn",
+  "title": "HotStreamAndroidTest EAGERLY 断言被包在 if 里，状态未更新时测试空过",
+  "detail": "testStreamStateInDifferentModes 对 EAGERLY 的 state 更新只做轮询 5 次、若 stateUpdated 仍为 false 则直接跳过 assertTrue，测试在不满足前置条件时静默通过，无法捕获回归。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "val slowCharStream = stream<Char> {\n    testText.forEach { char ->\n        emit(char)\n        // 每发射10个字符添加一个小延迟，模拟网络或文件读取的不均匀速度\n        if (testText.indexOf(char) % 10 == 0) {\n            delay(5)\n        }",
+  "file": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamRealTimeSplitTest.kt",
+  "line": 159,
+  "severity": "warn",
+  "title": "StreamRealTimeSplitTest 两个测试零断言，且慢速生产者延迟逻辑错误",
+  "detail": "testRealTimeSplitByProcessing 与 testRealTimeSplitByWithSlowProducer 全程只有 println，无任何断言，永远无法失败；另 slowCharStream 用 testText.indexOf(char)（返回该字符首次出现位置，而非当前位置）决定是否 delay(5)，注释称“每发射10个字符延迟”与实际行为不符——每个不同字符要么恒延迟要么恒不延迟。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "// 确保分组合理（注意：实际行为可能因插件实现而异）\nassertTrue(\"应该至少有1个组\", groups.size >= 1)\n// ...\nassertSame(\"第一组应该是XML标签\", xmlPlugin, contents[0].first)",
+  "file": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamSplitByTest.kt",
+  "line": 150,
+  "severity": "warn",
+  "title": "StreamSplitByTest.testSplitByWithNestedLikeTags 断言过弱",
+  "detail": "该用例只断言 groups.size >= 1 且第一组 tag 为 xmlPlugin，任何不改变首组的多组回归都不会被捕获；同文件其他用例均为精确分组断言，此处明显降级。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "val currentCache = eagerlyStream.replayCache\n// ...\nif (currentCache.size == 3 && currentCache == listOf(1,2,3) && eagerlyStream.replayCache.size ==2 && eagerlyStream.replayCache == listOf(2,3)){\n    // This case can happen ...（仅注释，无语句）\n}",
+  "file": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/HotStreamAndroidTest.kt",
+  "line": 171,
+  "severity": "suggestion",
+  "title": "HotStreamAndroidTest 轮询循环内有空分支死代码",
+  "detail": "testStreamShareInDifferentModes 的 withTimeout 轮询中第二个 if 分支体为空（只有注释），且条件同时读取已快照的 currentCache 与重读的 eagerlyStream.replayCache 做交叉比较，逻辑晦涩且无实际作用。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "const successCases = [\n    // ...\n    url: 'https://cdn.jsdelivr.net/gh/AAswordman/Operit@main/examples/types/android.d.ts',",
+  "file": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/download_file_probe.js",
+  "line": 157,
+  "severity": "suggestion",
+  "title": "download_file 两个探针强依赖外网 CDN，不可离线复现",
+  "detail": "download_file_probe.js 与 download_file_stress_probe.js 的成功路径硬编码 https://cdn.jsdelivr.net/gh/AAswordman/Operit@main/... URL（27 个下载），无网络或 CDN 波动即失败；作为探针可接受，但不应被误认为稳定回归测试。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "execute_js_dir.bat app\\src\\androidTest\\js ...bridge_contract\\bridge_contract_runner.js run @params.json\n实际目录仅含: basic_syntax.js bridge_contract.js common.js completion_contract.js host_runtime.js interfaces.js java_to_js.js js_to_java.js suspend_await.js",
+  "file": "tools/adb/JS_ADB_README.md",
+  "line": 136,
+  "severity": "suggestion",
+  "title": "JS_ADB_README 引用的 bridge_contract_runner.js 不存在",
+  "detail": "tools/adb/JS_ADB_README.md 第 136/313/567 行示例命令引用 bridge_contract_runner.js，但目录下实际文件为 bridge_contract.js（无 runner 后缀），文档已漂移，会误导执行者。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "medium",
+  "evidence": "Prefs:1 方法 / Repeat:2 方法 / Lifecycle:3 方法 / 主类:12 方法，场景（mark→consume→删键→重 mark）完全重叠",
+  "file": "app/src/androidTest/java/com/ai/assistance/operit/util/CrashRecoveryStatePrefsAndroidTest.kt",
+  "line": 11,
+  "severity": "suggestion",
+  "title": "CrashRecoveryState 四个测试类高度重叠，建议合并",
+  "detail": "CrashRecoveryStateAndroidTest（12 方法）已覆盖 mark/consume/删键/无关 key 保留/重复语义；Lifecycle（3）、Prefs（1）、Repeat（2）均为其子集场景的重复，建议合并为一个类以减少维护面。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "<!-- 2026-08-21 upstream UI additions -->\n<string name=\"follow_chat_model_for_all_functions\">すべての機能を現在のチャットモデルに合わせる</string>\n# rg 'follow_chat_model_for_all_functions' app/src/main/java → 0 hits\n# rg 同名 in app/src/main/res/values/strings.xml → 0 hits",
+  "file": "app/src/main/res/values-ja/strings.xml",
+  "line": 256,
+  "severity": "warn",
+  "title": "values-ja 存在默认 values 没有的孤儿 key：follow_chat_model_for_all_functions",
+  "detail": "values-ja/strings.xml:256 定义了 follow_chat_model_for_all_functions，但默认 values/strings.xml 无此 key，且全仓库 Kotlin 代码零引用。它是不可达的死资源；若将来代码引用它，非日语 locale 会因默认配置缺值而抛 Resources.NotFoundException。注释标明该段为 \"2026-08-21 upstream UI additions\"，疑似上游合并残留。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "# key-set diff: default 7716 keys vs en 7710 keys\n# missing: ['backup_format_csv', 'backup_format_csv_desc', 'data_recovery_configuration_file_domain_issue', 'tool_permission_confirmation_timeout', 'tool_permission_execution_denied', 'tool_permission_overlay_required_for_confirmation']",
+  "file": "app/src/main/res/values-en/strings.xml",
+  "line": 1,
+  "severity": "warn",
+  "title": "values-en 缺 6 个默认 key，英文用户看到中文 fallback 文案",
+  "detail": "en 缺 backup_format_csv、backup_format_csv_desc（导出格式 CSV 选项）、data_recovery_configuration_file_domain_issue、tool_permission_confirmation_timeout、tool_permission_execution_denied、tool_permission_overlay_required_for_confirmation（工具权限拒绝/超时提示）。英文用户在这几处会看到中文默认文案，属于翻译覆盖缺口。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "# key-set diff: es/ms/ro missing=161 each; id/ko/pt-rBR missing=241 each; ja missing=7439\n# Android 未翻译 key 自动回退到 values/ 默认（中文）资源",
+  "file": "app/src/main/res/values-es/strings.xml",
+  "line": 1,
+  "severity": "warn",
+  "title": "多语言翻译覆盖缺口大，非中文/非英文缺失项回退到中文",
+  "detail": "es/ms/ro 各缺 161 个 key，id/ko/pt-rBR 各缺 241 个 key，这些 locale 的用户在对应界面会看到中文默认文案。ja 缺 7439 个（仅 278/7716），但有 ja→en 回退链设计兜底（LocaleUtils.kt:97），不回退到中文。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "<string name=\"not_recognizing\">未识别</string>\n<string name=\"engine_init_failed\">引擎 %s 初始化失败。</string>\n<string name=\"recognition_error\">识别错误: %s</string>\n<string name=\"start_recognition_error\">开始识别错误: %s</string>",
+  "file": "app/src/main/res/values/strings.xml",
+  "line": 2067,
+  "severity": "suggestion",
+  "title": "混用索引式与非索引式格式化占位符",
+  "detail": "全文件主流是 %1$s 索引式，但 engine_init_failed 用非索引 \"%s\"，相邻语音识别文案（recognition_error 等）同样用 %s。非索引占位符在翻译调整语序时会错位；建议统一为 %1$s。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "medium",
+  "evidence": "<string name=\"plugin_complete_success\">已完成启动，成功率: %1$d%%</string>\n<string name=\"plugin_no_plugins_to_start\">没有需要启动的插件</string>\n<string name=\"plugin_copyright\"> 2023 AI Assistance</string>\n<string name=\"plugin_registered\">已注册</string>",
+  "file": "app/src/main/res/values/strings.xml",
+  "line": 698,
+  "severity": "suggestion",
+  "title": "plugin_copyright 值行首有多余空格",
+  "detail": "plugin_copyright = \" 2023 AI Assistance\"，值以空格开头，渲染时会产生前导空白，疑似手误。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "\"icons\": [\n  {\n    \"src\": \"icons/Icon-maskable-192.png\",\n    \"sizes\": \"192x192\",\n    \"type\": \"image/png\",\n    \"purpose\": \"maskable\"\n  },\n  // 该文件实际为 0 字节",
+  "file": "app/src/main/assets/templates/flutter/web/manifest.json",
+  "line": 23,
+  "severity": "warn",
+  "title": "28 个 0 字节图片占位文件被清单/资源脚本引用，相关平台构建或 PWA 安装图标损坏",
+  "detail": "flutter 模板中 28 个图片文件为 0 字节：ios AppIcon 15 个 PNG、ios LaunchImage 3 个 PNG、macos AppIcon 7 个 PNG、web maskable 图标 2 个、windows app_icon.ico 1 个。但 web/manifest.json 引用了 2 个 maskable 图标，LaunchScreen.storyboard 引用了 LaunchImage，windows Runner.rc IDI_APP_ICON 引用了 app_icon.ico——Xcode actool 无法读取 0 字节 PNG 会报错，rc.exe 无法编译 0 字节 ico，PWA manifest 指向无效图标。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "flutter/README.md: \"- `android/local.properties` 是占位文件…\"；find 全量清单中无 local.properties；flutter/android/settings.gradle.kts:7: require(flutterSdkPath != null) { \"flutter.sdk not set in local.properties\" }",
+  "file": "app/src/main/assets/templates/flutter/android/settings.gradle.kts",
+  "line": 7,
+  "severity": "warn",
+  "title": "flutter README 声称 android/local.properties 是占位文件，但该文件根本不存在",
+  "detail": "flutter/README.md 写“android/local.properties 是占位文件，若要直接运行 Android Gradle 任务，请先改成你本机的…路径”，但模板内无此文件；同时 flutter/android/settings.gradle.kts 用 require(flutterSdkPath != null) 强制要求该文件存在，否则配置阶段抛 IllegalStateException。用户按 README 操作会找不到文件。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "diff 结果：重写版在 `if \"%OS%\"==\"Windows_NT\" endlocal` 之后多出空行和 `:omega` 两行；模板自带 android/gradlew.bat 共 89 行以 endlocal 结尾",
+  "file": "app/src/main/assets/templates/android/setup_android_env.sh",
+  "line": 390,
+  "severity": "warn",
+  "title": "setup_android_env.sh 的 restore_gradlew_bat() 把 gradlew.bat 改写成与模板自带版本不一致的文件",
+  "detail": "android/setup_android_env.sh main() 流程中调用 restore_gradlew_bat() 用 heredoc 重写 gradlew.bat；python 提取 heredoc 与模板自带文件 diff，证实重写版末尾多出空行 + `:omega` 标签（其余 85 行一致）。运行初始化脚本后工作区 gradlew.bat 与模板原始文件产生无意义差异。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "restore_gradle_properties() { cat > gradle.properties <<'EOF' ... } 直接覆盖；main() 中无条件调用，无备份逻辑",
+  "file": "app/src/main/assets/templates/android/setup_android_env.sh",
+  "line": 355,
+  "severity": "suggestion",
+  "title": "restore_gradle_properties() 无备份静默覆盖用户 gradle.properties",
+  "detail": "android 与 flutter 的 setup_android_env.sh 在初始化流程中都用 heredoc 全量重写 gradle.properties（android 版经 python 比对与模板自带文件完全一致，属“恢复出厂”语义），用户此前自定义的代理、内存、并行等配置会被无提示丢弃且无备份。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "go/main.go:29: `// 并发示例`；其后仅为 Println 成功提示；grep 全文件无 go / chan / sync 关键字",
+  "file": "app/src/main/assets/templates/go/main.go",
+  "line": 29,
+  "severity": "suggestion",
+  "title": "go/main.go“并发示例”注释下没有任何并发代码",
+  "detail": "main.go 的 `// 并发示例` 注释之后直接是 `fmt.Println(\"\\n✅ 程序运行成功！\")`，全文件无 goroutine/channel/sync 任何并发原语；同时文件头部宣传“利用 Go 的并发特性”。注释与代码不符。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "sed -n '7p' | od -c 显示 `357 277 275`（EF BF BD）紧随 `### ` 之后；grep -n 命中第 7 行与第 214 行",
+  "file": "app/src/main/assets/templates/office/README.md",
+  "line": 7,
+  "severity": "suggestion",
+  "title": "office/README.md 存在 U+FFFD 乱码字符（emoji 损坏）",
+  "detail": "office/README.md:7 标题含字节 EF BF BD（U+FFFD REPLACEMENT CHARACTER），:214 结尾同样损坏；原 emoji 在写入时已损坏。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "typescript/package.json:10: \"clean\": \"rm -rf dist\"",
+  "file": "app/src/main/assets/templates/typescript/package.json",
+  "line": 10,
+  "severity": "suggestion",
+  "title": "typescript 模板 clean 脚本用 rm -rf，在 Windows 下不可用",
+  "detail": "typescript/package.json 的 clean 脚本 `\"clean\": \"rm -rf dist\"` 直接调用 POSIX rm；Windows cmd/PowerShell 下运行会失败。该模板 README 明确面向含 Windows 用户的操作指引。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "evidence": "copyTemplateFiles: `val destFileName = if (filename == \"gitignore\") \".gitignore\" else filename`；copyTemplateFilesRecursive 内仅 `val destFile = File(destDir, filename)`，无重命名逻辑",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt",
+  "line": 724,
+  "severity": "suggestion",
+  "title": "copyTemplateFilesRecursive 未对嵌套目录应用 gitignore→.gitignore 重命名",
+  "detail": "顶层 copyTemplateFiles 对根目录 gitignore 做重命名，但递归函数 copyTemplateFilesRecursive 直接用 File(destDir, filename)，若未来模板出现嵌套 gitignore 会被原样复制为无点文件名。目前 9 个模板的 gitignore 都在根目录，属潜在问题。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "lib.rs:56 `_literal: jboolean,`（以下划线开头、从未使用）；lib.rs:199-207 build_matchers 只调 RegexMatcherBuilder::new().build(pattern)；NativeRipgrep.kt:14 `literal: Boolean,`；StandardFileSystemTools.kt:287 `literal = false,`",
+  "file": "tools/native_ripgrep/src/lib.rs",
+  "line": 56,
+  "severity": "warn",
+  "title": "native_ripgrep 的 literal 参数被 JNI 层静默丢弃，字面量搜索实际按正则执行",
+  "detail": "Kotlin 侧 external fun searchJson 声明了 literal: Boolean 参数（NativeRipgrep.kt:14），Rust JNI 入口也接收 _literal: jboolean（lib.rs:56），但 read_options 根本不接收该参数，build_matchers 永远用 RegexMatcherBuilder 构建正则匹配器。调用方若传 literal=true，含正则元字符的字面量要么报 invalid regex、要么被误匹配。目前唯一调用方 StandardFileSystemTools.kt:287 传的是 literal=false，所以是潜伏性契约破裂。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "run_shower_server.bat:66 `echo   CREATE_DISPLAY 1080 1920 320`；shower_ws_client.py:110 `cmd = f\"CREATE_DISPLAY {width} {height} {dpi}\"`；Main.java:401 `logToFile(\"server started (Binder only mode)\", null)`；Main.java:34-35 未使用的 import；Main.java:49 注释仍为 'Local WebSocket server...'",
+  "file": "tools/shower/run_shower_server.bat",
+  "line": 66,
+  "severity": "warn",
+  "title": "shower 已改为 Binder-only 架构，但 run 脚本/客户端/注释仍描述旧的 WebSocket 协议",
+  "detail": "Main.java:401 打日志 'server started (Binder only mode)'，且全文件已无任何 ServerSocket/accept/WebSocket 服务端代码（java.net.Socket 与 InetSocketAddress 的 import 在 34-35 行残留未用，类注释 49 行仍写 'Local WebSocket server'）；但 run_shower_server.bat:66 仍指导用户连接 ws://<device>:8986 并发送 'CREATE_DISPLAY 1080 1920 320'，shower_ws_client.py:110 仍按 CREATE_DISPLAY 文本协议发命令。按现有实现这些指令发出去没有任何服务端接收。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "evidence": "apk_reverse.ts:13 `\"enabledByDefault\": true,`；manifest.json:15 `\"enabled_by_default\": false,`；对照 qqbot/src/packages/qqbot.ts:12 true 与 qqbot/manifest.json:15 true 一致",
+  "file": "examples/apktool/src/packages/apk_reverse.ts",
+  "line": 13,
+  "severity": "warn",
+  "title": "apktool 的 enabledByDefault 在 METADATA 与 manifest.json 中互相矛盾",
+  "detail": "src/packages/apk_reverse.ts:13 写 \"enabledByDefault\": true，而 manifest.json:15 写 \"enabled_by_default\": false。以 qqbot/linux_ssh 为对照，两者在两处均为 true 且一致，说明 apktool 的分歧是异常；最终以哪一层为准不确定，会导致包默认启用状态不可预期。"
+ },
+ {
+  "category": "security",
+  "confidence": "medium",
+  "evidence": "native-lib.cpp:174-180 setgid/setuid 失败仅 perror；native-lib.cpp:198-203 最终校验 `if (final_uid != 2000 || final_gid != 2000) return 1;` 兜底",
+  "file": "tools/shell_identity_launcher/native-lib.cpp",
+  "line": 174,
+  "severity": "suggestion",
+  "title": "shell_identity_launcher：setgroups/setgid/setuid 失败仅 perror 后继续",
+  "detail": "native-lib.cpp 中 setgroups/setgid(2000)/setuid(2000) 失败只打 perror 并继续往下走；不过后续有最终 uid/gid==2000 的硬校验（失败 return 1），所以提权残留风险被兜住。属可接受的写法，列为建议：失败时可直接退出以减少模糊中间态。"
+ }
+]

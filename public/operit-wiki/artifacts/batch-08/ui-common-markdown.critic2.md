@@ -1,0 +1,3 @@
+# critic2 复验报告 — ui-common-markdown（Issue #109）
+
+结论：FAIL。重锚工修正 74 条后，抽查 40 条发现 20 条"多证据枚举型断言"仍漂移：[0]→FpsCounter.kt:47、[14] 拆（clearCache :149/getStats :227）、[31] 拆三（show :277/updateProgress :299/hide :307）、[35]→:510、[41] 拆三（showTap :246/showSwipe :265/showTextInput :283）、[42] 拆三（:247/:266/:284，默认 1500/1500/2000ms）、[43]→:299、[44] 拆（hide :310/hideImmediately :321）、[49] 拆（show :220/capture :255）、[56] 拆（AndroidView :658/bindController :742）、[65]→:23、[85] 拆（AnimatedNode :1000/FADE_IN 800 :81）、[86]→:1078、[92]→:117、[96] 拆三（onLoad :541/dispatchAction :385/dispatchTextInputAction :417）、[100] 拆（PaintCache :184/LayoutCache :281）、[141]→:662、[168] 拆三（:229/:259/:280）、[169] 拆四（:347/:368/:414/:405）、[188] 拆（:86/:68）。

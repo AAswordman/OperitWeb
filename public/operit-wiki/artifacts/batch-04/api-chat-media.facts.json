@@ -1,0 +1,106 @@
+[
+  {
+    "fact": "MediaCapabilityProbe 是模型配置/函数配置测试用的闭式媒体探测；期望码放在测试资源里，不在 prompt 里（KDoc）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:3"
+  },
+  {
+    "fact": "探测资源路径：test/1.jpg、test/1.mp3、test/1.mp4",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:10"
+  },
+  {
+    "fact": "期望码：IMAGE_CODE=\"7K2Q\"、AUDIO_CODE=\"375\"、VIDEO_CODE=\"M4XP\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:14"
+  },
+  {
+    "fact": "三类探测 prompt 都要求模型只回复短码、不描述媒体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:18"
+  },
+  {
+    "fact": "matchesImage/matchesVideo：alnumUpper(response) 等于期望码即通过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:39"
+  },
+  {
+    "fact": "matchesAudio：直接匹配或经 extractStrictDigitWords 提取数字词后匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:43"
+  },
+  {
+    "fact": "alnumUpper：只保留字母数字并转大写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:50"
+  },
+  {
+    "fact": "extractStrictDigitWords：严格扫描；数字直接收录；数字英文单词需字母边界匹配；遇到无法匹配的字母返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbe.kt:60"
+  },
+  {
+    "fact": "MediaLinkBuilder.image/audio/video 用 R.string.conversation_media_*_link 模板按 id 生成链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilder.kt:7"
+  },
+  {
+    "fact": "MediaLinkBuilder.file 把 id 和 XML 转义后的 fileName 填入 conversation_media_file_link 模板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilder.kt:19"
+  },
+  {
+    "fact": "escapeXmlAttribute 转义 & < > \" ' 五个字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilder.kt:28"
+  },
+  {
+    "fact": "MediaLink(type,id,base64Data,mimeType,fileName?=null)；ImageLink 无 fileName；MediaLinkTag 只带 type/id/fileName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:7"
+  },
+  {
+    "fact": "LINK_PATTERN 匹配 <link> 整块：type 限 image|audio|video|file，属性顺序任意，DOT_MATCHES_ALL + IGNORE_CASE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:30"
+  },
+  {
+    "fact": "isMediaType 指 audio|video|file（不含 image）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:35"
+  },
+  {
+    "fact": "extractImageLinks：跳过 id==\"error\"，按 id 去重，经 ImagePoolManager 取图，取不到跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:73"
+  },
+  {
+    "fact": "extractImageLinkIds：同样匹配去重，但不查图池只返回 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:92"
+  },
+  {
+    "fact": "removeImageLinks 删除 message 中的 image 链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:101"
+  },
+  {
+    "fact": "replaceImageLinks 把 id 为 `error` 的 image 链接换成空串，其余调用 `replacer(id)` 替换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:107"
+  },
+  {
+    "fact": "hasImageLinks 判断 message 中是否存在 image 链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:116"
+  },
+  {
+    "fact": "extractMediaLinks：按 type:id 去重；file 类型无 fileName 则跳过；经 MediaPoolManager 取数再过 MediaBase64Limiter.limitBase64ForAi",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:126"
+  },
+  {
+    "fact": "extractMediaLinkTags：同样匹配去重，只产出不带 base64 的 MediaLinkTag",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:152"
+  },
+  {
+    "fact": "replaceMediaLinks：id 为 `error` 的媒体链接换成空串，非媒体类型原样保留，其余调用 `replacer(type, id)` 替换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:168"
+  },
+  {
+    "fact": "removeMediaLinks 删除 message 中的媒体链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:175"
+  },
+  {
+    "fact": "hasMediaLinks 判断 message 中是否存在媒体链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:180"
+  },
+  {
+    "fact": "unescapeXml 按 &lt; &gt; &quot; &apos; 最后 &amp; 的顺序反转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:185"
+  },
+  {
+    "fact": "extractFileName 用 FILE_NAME_ATTRIBUTE_PATTERN 提取 filename 属性并反转义，空白则为 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt:63"
+  }
+]

@@ -1,0 +1,554 @@
+[
+ {
+  "fact": "MNNForwardType 是用 type: Int 字段封装推理硬件类型的 Kotlin 枚举类",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNForwardType.kt:7"
+ },
+ {
+  "fact": "MNNForwardType 枚举取值：FORWARD_CPU=0、FORWARD_OPENCL=3、FORWARD_AUTO=4、FORWARD_OPENGL=6、FORWARD_VULKAN=7",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNForwardType.kt:16"
+ },
+ {
+  "fact": "MNNForwardType 的取值与上游 MNN 官方 Java 绑定常用取值不完全一致（如官方 OpenCL 通常为 2）",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNForwardType.kt:31"
+ },
+ {
+  "fact": "MNNLibraryLoader 是 internal 单例，用 @Volatile loaded + synchronized(lock) 双重检查保证 so 只加载一次",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLibraryLoader.kt:16"
+ },
+ {
+  "fact": "MNNLibraryLoader 依次加载 MNN 与 MNNWrapper 两个 so，捕获 UnsatisfiedLinkError 后打日志并原样 rethrow",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLibraryLoader.kt:33"
+ },
+ {
+  "fact": "MNNLibraryLoader.isLoaded() 对外暴露 native 库是否已加载",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLibraryLoader.kt:51"
+ },
+ {
+  "fact": "MNNImageProcess 是 MNN 图像预处理工具类的 Kotlin object 单例",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNImageProcess.kt:8"
+ },
+ {
+  "fact": "MNNImageProcess.Config 默认 mean=0、normal=1、source=RGBA、dest=BGR、filter=NEAREST、wrap=CLAMP_TO_EDGE，并为 FloatArray 字段手写了 equals/hashCode",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNImageProcess.kt:56"
+ },
+ {
+  "fact": "MNNImageProcess.convertBuffer 把 ByteArray 图像经 3x3 Matrix 变换后转成 tensor，经 MNNNetNative.nativeConvertBufferToTensor 完成",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNImageProcess.kt:114"
+ },
+ {
+  "fact": "MNNImageProcess.convertBitmap 直接接受 Bitmap 并调用 MNNNetNative.nativeConvertBitmapToTensor",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNImageProcess.kt:136"
+ },
+ {
+  "fact": "MNNLlmContextInfo 是最近一次推理上下文快照的 data class，含 token 数、各阶段耗时 us、pixels_mp、currentToken、status、generatedText、historyTokens/outputTokens",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmContextInfo.kt:8"
+ },
+ {
+  "fact": "MNNLlmContextInfo.fromJson 用 JSONObject.opt* 容错解析 native 返回的 JSON 字符串",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmContextInfo.kt:28"
+ },
+ {
+  "fact": "MNNLlmContextInfo 的 optIntArray 辅助函数在 history_tokens 等数组字段缺失时返回空 IntArray",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmContextInfo.kt:50"
+ },
+ {
+  "fact": "MNNLlmNative 的 init 块在类首次加载时调用 MNNLibraryLoader.loadLibraries()",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmNative.kt:9"
+ },
+ {
+  "fact": "MNNLlmNative 的约 20 个函数都是 external JNI 声明，全部以 Long 指针 llmPtr 传递 native 对象",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmNative.kt:20"
+ },
+ {
+  "fact": "MNNLlmNative.nativeCreateLlm 返回 Long 指针（失败返回 0），调用者必须先 nativeSetConfig 再 nativeLoadLlm",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmNative.kt:20"
+ },
+ {
+  "fact": "MNNLlmNative.GenerationCallback.onToken 返回 Boolean，返回 false 表示停止生成",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmNative.kt:197"
+ },
+ {
+  "fact": "MNNLlmSession.create 默认 backendType=cpu、threadNum=4、precision=low、memory=low，按官方 llm_bench.cpp 顺序逐条 nativeSetConfig（tmp_path/async/precision/memory/backend_type/thread_num）",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt:61"
+ },
+ {
+  "fact": "MNNLlmSession.create 任何一步失败（创建/配置/加载）都会 nativeReleaseLlm 释放指针并返回 null",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt:79"
+ },
+ {
+  "fact": "MNNLlmSession.withActiveCall 用 synchronized(lock) + activeCalls 计数保护指针，checkValid 在 released 或指针为 0 时抛 RuntimeException",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt:97"
+ },
+ {
+  "fact": "MNNLlmSession.release() 先 nativeCancel，再用 wait/notifyAll 等 activeCalls 归零后才 nativeReleaseLlm",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt:390"
+ },
+ {
+  "fact": "MNNLlmSession.cancel() 在锁内取指针、锁外调 nativeCancel，已释放的会话直接返回",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt:302"
+ },
+ {
+  "fact": "MNNModule.load(filePath, Config) 经 MNNModuleNative.nativeCreateModuleFromFile 建 module，面向动态形状模型",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModule.kt:33"
+ },
+ {
+  "fact": "MNNModule.Config 默认 forwardType=CPU、numThread=4、precision=NORMAL、memoryMode=NORMAL",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModule.kt:51"
+ },
+ {
+  "fact": "MNNModule.DataType 按 halide 编码 (code shl 8) or bits 定义，如 FLOAT32=(2 shl 8) or 32",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModule.kt:88"
+ },
+ {
+  "fact": "MNNModule.forward() 先校验输入变量数与 inputNames 一致，不一致打日志返回 null",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModule.kt:187"
+ },
+ {
+  "fact": "MNNModule.Variable.release() 释放 native 指针并置 0，finalize() 兜底调用 release()",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModule.kt:135"
+ },
+ {
+  "fact": "MNNModuleNative 的 init 块触发 MNNLibraryLoader.loadLibraries()",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModuleNative.kt:7"
+ },
+ {
+  "fact": "MNNModuleNative.nativeForward(modulePtr, inputVarPtrs) 执行前向推理，返回输出 VARP 指针数组",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModuleNative.kt:49"
+ },
+ {
+  "fact": "MNNModuleNative.nativeCreateModuleFromFile 接收 inputs/outputs 名称数组及 forwardType/numThread/precision/memoryMode",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNModuleNative.kt:25"
+ },
+ {
+  "fact": "MNNNetInstance.createFromFile/createFromBuffer 两种建模方式，native 返回 0 即失败返回 null",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetInstance.kt:20"
+ },
+ {
+  "fact": "MNNNetInstance.Tensor.getData() 采用两阶段读数：先传 null 查尺寸，再分配数组二次读取",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetInstance.kt:154"
+ },
+ {
+  "fact": "MNNNetInstance.Session 提供 reshape()/run()/runWithCallback()，runWithCallback 按名返回 Tensor 数组",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetInstance.kt:176"
+ },
+ {
+  "fact": "MNNNetInstance.Session.release() 释放会话；MNNNetInstance.release() 释放网络实例并把指针置 0",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetInstance.kt:223"
+ },
+ {
+  "fact": "MNNNetNative 的 init 块触发 MNNLibraryLoader.loadLibraries()",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetNative.kt:11"
+ },
+ {
+  "fact": "MNNNetNative.nativeRunSessionWithCallback 支持按名称回调抓取中间 tensor",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetNative.kt:42"
+ },
+ {
+  "fact": "MNNNetNative.nativeTensorGetData(tensorPtr, dest) 中 dest 可为 null，用于先查尺寸",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetNative.kt:72"
+ },
+ {
+  "fact": "MNNNetNative 声明了图像预处理的 nativeConvertBitmapToTensor/nativeConvertBufferToTensor",
+  "ref": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNNetNative.kt:82"
+ },
+ {
+  "fact": "LlamaLibraryLoader 是双重检查单例，只加载 LlamaWrapper 一个 so",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaLibraryLoader.kt:8"
+ },
+ {
+  "fact": "LlamaLibraryLoader 不捕获 UnsatisfiedLinkError，加载失败无日志直接上抛",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaLibraryLoader.kt:13"
+ },
+ {
+  "fact": "LlamaNative 的 init 块触发 LlamaLibraryLoader.loadLibraries()",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaNative.kt:5"
+ },
+ {
+  "fact": "LlamaNative.nativeIsAvailable()/nativeGetUnavailableReason() 让 Java 层在建会话前先探活后端",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaNative.kt:9"
+ },
+ {
+  "fact": "LlamaNative.nativeSetSamplingParams 一次传递 temperature/topP/topK/repetitionPenalty/frequencyPenalty/presencePenalty/penaltyLastN 七个采样参数",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaNative.kt:42"
+ },
+ {
+  "fact": "LlamaNative.nativeGenerateStream 以 GenerationCallback.onToken 做流式输出回调",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaNative.kt:64"
+ },
+ {
+  "fact": "LlamaSession.Config 默认 nCtx=2048、nBatch=512、nUBatch=512、nGpuLayers=0、useMmap=false、kvUnified=true",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaSession.kt:9"
+ },
+ {
+  "fact": "LlamaSession.isAvailable()/getUnavailableReason() 用 runCatching 包裹 native 调用，异常时返回默认值",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaSession.kt:20"
+ },
+ {
+  "fact": "LlamaSession.create() 先探活再 nativeCreateSession，指针为 0 返回 null",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaSession.kt:26"
+ },
+ {
+  "fact": "LlamaSession.release() 只在锁内取指针置 0、锁外调 nativeReleaseSession，不等待在途的 generateStream 结束",
+  "ref": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaSession.kt:178"
+ },
+ {
+  "fact": "DragonBonesView 构造时检查 activeInstance，同一时间只允许一个实例，否则抛 IllegalStateException",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesView.kt:51"
+ },
+ {
+  "fact": "DragonBonesView.init 调用 JniBridge.init() 触发 dragonbones_native 加载，EGL 取 8/8/8/8/16/0 透明配置 + OpenGL ES 2.0 + 连续渲染",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesView.kt:56"
+ },
+ {
+  "fact": "DragonBonesView 所有 JNI 调用经 queueEvent 发到 GL 线程，如 loadModel 把骨骼/纹理三份数据读成字节数组后调 JniBridge.loadDragonBones",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesView.kt:144"
+ },
+ {
+  "fact": "DragonBonesView.destroy() 在 GL 线程调 JniBridge.onDestroy() 并清除 activeInstance 引用",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesView.kt:175"
+ },
+ {
+  "fact": "DragonBonesController 是 @Stable 的 Compose 控制器，构造需传入 coroutineScope",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesController.kt:27"
+ },
+ {
+  "fact": "DragonBonesController.fadeInAnimation 不直接调 JNI，而是把 FadeInAnimationCommand 推进 animationCommandQueue 由 LaunchedEffect 逐帧消费",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesController.kt:119"
+ },
+ {
+  "fact": "FadeInAnimationCommand 的 id 默认 System.currentTimeMillis()，保证同名动画在重组时也能再次触发",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesController.kt:201"
+ },
+ {
+  "fact": "DragonBonesController.fetchAnimationNames 用 suspendCancellableCoroutine 把回调转成挂起函数",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/DragonBonesController.kt:66"
+ },
+ {
+  "fact": "FbxGlSurfaceView 是 EGL ES 2.0 透明悬浮的 GLSurfaceView，RENDERMODE_CONTINUOUSLY 连续渲染",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxGlSurfaceView.kt:36"
+ },
+ {
+  "fact": "FbxGlSurfaceView.onDrawFrame 每帧调 FbxNative.nativeBuildPreviewFrame(sessionHandle, animationName, sampleTimeSeconds) 向 native 索要当前动画帧顶点",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxGlSurfaceView.kt:406"
+ },
+ {
+  "fact": "FBX 预览顶点步长 STRIDE_FLOATS=8（position3+normal3+uv2）",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxGlSurfaceView.kt:226"
+ },
+ {
+  "fact": "FbxGlSurfaceView.onDetachedFromWindow 在 GL 线程 release() 销毁 native 预览会话",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxGlSurfaceView.kt:86"
+ },
+ {
+  "fact": "FbxInspector.inspectModel(pathModel) 经 FbxNative.nativeInspectModel 拿 JSON 转成 FbxModelInfo（含动画名、动画时长、缺失外部文件）",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxInspector.kt:25"
+ },
+ {
+  "fact": "FbxInspector.inspectModel 在 modelName 为空时从文件路径 basename 去扩展名兜底",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxInspector.kt:43"
+ },
+ {
+  "fact": "FbxModelInfo.defaultAnimation 取 animationNames 列表第一个",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxInspector.kt:13"
+ },
+ {
+  "fact": "FbxLibraryLoader 双重检查加载 FbxWrapper，失败无日志直接上抛",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxLibraryLoader.kt:13"
+ },
+ {
+  "fact": "MmdGlSurfaceView 使用 OpenGL ES 3.0（setEGLContextClientVersion(3)），EGL 配置 8/8/8/8/24/8",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt:32"
+ },
+ {
+  "fact": "MmdGlSurfaceView 用 NEXT_INSTANCE_ID（AtomicInteger）给每个实例编号用于日志",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt:23"
+ },
+ {
+  "fact": "MmdGlSurfaceView.onSurfaceCreated 时若 rendererHandle==0 会重建 native renderer 并 syncRequestedState() 同步待应用状态",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt:235"
+ },
+ {
+  "fact": "MmdGlSurfaceView.requestHighRefreshRateIfSupported 在 Android R+ 上用反射调 Surface.setFrameRate(120f, 0) 请求 120Hz",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt:107"
+ },
+ {
+  "fact": "MmdInspector.inspectModel 用 nativeReadModelSummary 返回的 LongArray，要求长度≥MODEL_SUMMARY_SIZE=8，不足直接返回 null",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdInspector.kt:46"
+ },
+ {
+  "fact": "MmdInspector.inspectModel 中 summary[0] 为 1/2 时映射 PMD/PMX，否则为 UNKNOWN",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdInspector.kt:49"
+ },
+ {
+  "fact": "MmdInspector.inspectMotion 读 VMD 动作摘要（motion/morph/camera/light/shadow/ik 六项计数，要求长度≥6）",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdInspector.kt:69"
+ },
+ {
+  "fact": "MmdLibraryLoader 双重检查加载 MmdWrapper，失败无日志直接上抛",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdLibraryLoader.kt:13"
+ },
+ {
+  "fact": "MmdNative 的 init 块触发 MmdLibraryLoader.loadLibraries()",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdNative.kt:7"
+ },
+ {
+  "fact": "MmdNative.nativeIsAvailable()/nativeGetUnavailableReason() 供 Java 层探活后端",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdNative.kt:13"
+ },
+ {
+  "fact": "MmdNative.nativeCreateRenderer()/nativeDestroyRenderer() 管理 native 渲染器句柄",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdNative.kt:27"
+ },
+ {
+  "fact": "MmdNative.nativeOnSurfaceCreated(handle, assetManager) 把 AssetManager 传给 native 读资源",
+  "ref": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdNative.kt:31"
+ },
+ {
+  "fact": "QuickJsNativeBridge 的 init 块加载 quickjsjni so",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeRuntime.kt:9"
+ },
+ {
+  "fact": "QuickJsNativeBridge.nativeCreate(hostBridge) 把 HostBridge 回调对象传给 native，QuickJsNativeRuntime.create 要求返回 handle 非 0",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeRuntime.kt:67"
+ },
+ {
+  "fact": "QuickJsNativeRuntime.installCompatLayerOrThrow() 把兼容层脚本装入运行时并执行 pending jobs，失败抛 IllegalStateException",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeRuntime.kt:96"
+ },
+ {
+  "fact": "QuickJsNativeRuntime.close()/interrupt() 用 AtomicBoolean + synchronized(lifecycleLock) 保证 native 运行时只销毁一次",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeRuntime.kt:146"
+ },
+ {
+  "fact": "buildQuickJsCompatScript() 返回的 JS 兼容层补齐 globalThis/window/self/global 别名",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt:5"
+ },
+ {
+  "fact": "兼容层用 Proxy 包裹 NativeInterface，JS 侧任意方法调用被转成 nativeBridge.__call(method, JSON.stringify(args))",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt:20"
+ },
+ {
+  "fact": "兼容层补齐缺失的 console.log/info/warn/error/debug，转调宿主的 'console.<level>' 方法",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt:31"
+ },
+ {
+  "fact": "兼容层 normalizeTimerCallback 对字符串回调走 eval(callback) 执行",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt:88"
+ },
+ {
+  "fact": "兼容层把 setTimeout/setInterval 重写为经 NativeInterface.scheduleTimer/cancelTimer 桥接到宿主线程",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt:149"
+ },
+ {
+  "fact": "QuickJsNativeHostDispatcher.onCall 分流：console.* 丢弃、scheduleTimer/cancelTimer 本地处理、其余经 forwardCall 转发宿主",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeHostDispatcher.kt:23"
+ },
+ {
+  "fact": "QuickJsNativeHostDispatcher 的定时器跑在名为 QuickJsNativeTimer 的守护线程单线程 ScheduledExecutor 上",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeHostDispatcher.kt:16"
+ },
+ {
+  "fact": "QuickJsNativeHostDispatcher.scheduleAtFixedRate 用 max(1L, delayMs) 保证重复定时器周期至少 1ms",
+  "ref": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeHostDispatcher.kt:52"
+ },
+ {
+  "fact": "showerclient 的 ShellIdentity 枚举定义三种执行 shell 命令的身份：DEFAULT、SHELL、ROOT",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShellEnvironment.kt:8"
+ },
+ {
+  "fact": "宿主必须在应用启动时把 ShellRunner 实现赋给 ShowerEnvironment.shellRunner，否则 ShowerServerManager 无法拉起投屏服务端",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShellEnvironment.kt:50"
+ },
+ {
+  "fact": "ShowerLog 默认继续写 Android 系统 logcat（emitToSystemLog 默认为 true），宿主可注入 ShowerLogSink 把日志镜像到自己的日志管线",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShellEnvironment.kt:64"
+ },
+ {
+  "fact": "宿主注入的 ShowerLogSink 抛异常会被吞掉，保证宿主日志故障不影响 showerclient 执行",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShellEnvironment.kt:89"
+ },
+ {
+  "fact": "ShowerBinderRegistry 是全局单例，宿主在收到服务端发布 Binder 的广播后调 setService 更新当前 IShowerService",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerBinderRegistry.kt:19"
+ },
+ {
+  "fact": "ShowerBinderRegistry.hasAliveService 用 IBinder.isBinderAlive 判断投屏服务端是否还活着",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerBinderRegistry.kt:27"
+ },
+ {
+  "fact": "ShowerController 的视频宽高按 16 字节对齐（CODEC_SIZE_ALIGNMENT = 16），满足 H.264 编码块尺寸要求",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:26"
+ },
+ {
+  "fact": "ShowerController.getBinder 发现 binder 死亡时，会调 ShowerServerManager.ensureServerStarted 重启服务端、等 200ms 后再重试连接",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:34"
+ },
+ {
+  "fact": "setBinaryHandler 注册回调前到达的视频帧缓存在 earlyBinaryFrames，上限 120 帧，超限丢弃最旧帧，回调注册后回放补上",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:137"
+ },
+ {
+  "fact": "ShowerController.requestScreenshot 默认 3000ms 超时，超时返回 null",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:147"
+ },
+ {
+  "fact": "ShowerController.prepareMainDisplay 不创建虚拟屏，直接在物理主屏（displayId=0）注入输入，正式注入前先发 injectKey(0, 0) 探活输入通路",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:165"
+ },
+ {
+  "fact": "ShowerController.ensureDisplay 同尺寸复用旧 displayId 并重新绑定 videoSink，尺寸变化时先 destroyDisplay 再重建",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:234"
+ },
+ {
+  "fact": "ShowerController.injectTouchEvent 一次透传 12 个触摸事件参数（action/坐标/时间戳/压力/精度等）到服务端",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerController.kt:406"
+ },
+ {
+  "fact": "ShowerServerManager.ensureServerStarted 先用 pkill -f com.ai.assistance.shower.Main 杀掉旧的投屏服务端进程",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerServerManager.kt:54"
+ },
+ {
+  "fact": "投屏服务端 jar 被拷到 /data/local/tmp/shower-server.jar 后，用 CLASSPATH 指向它并经 app_process 在后台启动 com.ai.assistance.shower.Main",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerServerManager.kt:86"
+ },
+ {
+  "fact": "ShowerServerManager 启动服务端后最多轮询 10 秒（50 次 × 200ms）等待 Binder 交接广播被缓存",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerServerManager.kt:98"
+ },
+ {
+  "fact": "shower-server.jar 从 assets 拷出时中转目录为 /sdcard/Download/Operit（与截图目录复用），再用 SHELL 身份 cp 到 /data/local/tmp 使文件属主为 shell 用户",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerServerManager.kt:137"
+ },
+ {
+  "fact": "ShowerVideoRenderer 用 MediaCodec 硬解 video/avc，把投屏视频流渲染到 Surface，每个实例负责一个虚拟屏",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerVideoRenderer.kt:253"
+ },
+ {
+  "fact": "ShowerVideoRenderer.onFrame 先做 AVCC→Annex B 转换，凑齐 SPS（NAL type 7→csd-0）与 PPS（NAL type 8→csd-1）才初始化解码器，此前的帧缓存在 pendingFrames",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerVideoRenderer.kt:104"
+ },
+ {
+  "fact": "ShowerVideoRenderer.captureCurrentFramePng 用 PixelCopy 从 Surface 抓帧压成 PNG，API 26 以下直接返回 null",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerVideoRenderer.kt:217"
+ },
+ {
+  "fact": "ShowerSurfaceView.surfaceCreated 后最多等 5 秒（50 次 × 100ms）拿视频尺寸，setFixedSize 后才把二进制帧路由给 renderer.onFrame，避免 SPS/PPS 缓冲帧在 Surface 未就绪时丢失",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ui/ShowerSurfaceView.kt:59"
+ },
+ {
+  "fact": "ShowerSurfaceView.surfaceDestroyed 时清掉控制器的 binaryHandler 并调 renderer.detach() 释放解码器",
+  "ref": "showerclient/src/main/java/com/ai/assistance/showerclient/ui/ShowerSurfaceView.kt:89"
+ },
+ {
+  "fact": "android 工程模板的 ExampleInstrumentedTest 断言包名为 com.java.myapplication（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/androidTest/java/com/java/myapplication/ExampleInstrumentedTest.kt:22"
+ },
+ {
+  "fact": "android 工程模板的 MainActivity 用 Compose 写了 Greeting(\"Android\") 的 Hello World，外层包 MyApplicationTheme 与 Scaffold（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/main/java/com/java/myapplication/MainActivity.kt:34"
+ },
+ {
+  "fact": "android 工程模板的 Color.kt 定义 Purple80/PurpleGrey80/Pink80 与 Purple40/PurpleGrey40/Pink40 两套 Material3 配色（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/main/java/com/java/myapplication/ui/theme/Color.kt:5"
+ },
+ {
+  "fact": "android 工程模板的 MyApplicationTheme 默认开 dynamicColor，Android 12+ 取系统动态色（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/main/java/com/java/myapplication/ui/theme/Theme.kt:40"
+ },
+ {
+  "fact": "android 工程模板的 Type.kt 只覆写了 bodyLarge（16.sp 字号、24.sp 行高），其余为注释掉的占位样式（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/main/java/com/java/myapplication/ui/theme/Type.kt:10"
+ },
+ {
+  "fact": "android 工程模板的 ExampleUnitTest 是 2+2=4 的占位本地单测（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/android/app/src/test/java/com/java/myapplication/ExampleUnitTest.kt:14"
+ },
+ {
+  "fact": "flutter 工程模板的 MainActivity 仅 5 行，class MainActivity : FlutterActivity()，包名 com.example.operit_flutter_project（模板工程骨架代码）",
+  "ref": "app/src/main/assets/templates/flutter/android/app/src/main/kotlin/com/example/operit_flutter_project/MainActivity.kt:5"
+ },
+ {
+  "fact": "Preconditions.kt 是从 compose-foundation 抄来的 internal 前置条件工具，checkPrecondition 失败抛 IllegalStateException",
+  "ref": "app/src/main/java/androidx/compose/foundation/internal/Preconditions.kt:3"
+ },
+ {
+  "fact": "Preconditions.kt 的 requirePrecondition 与 requirePreconditionNotNull 失败时抛 IllegalArgumentException",
+  "ref": "app/src/main/java/androidx/compose/foundation/internal/Preconditions.kt:9"
+ },
+ {
+  "fact": "sherpa mnn 的 FeatureConfig 默认采样率 16000、特征维度 80",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/FeatureConfig.kt:5"
+ },
+ {
+  "fact": "sherpa mnn 的 OnlineStream.acceptWaveform 喂音频、inputFinished 标记输入结束，release() 直接调 finalize() 释放 native 指针",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/OnlineStream.kt:16"
+ },
+ {
+  "fact": "sherpa mnn 三个 JNI 封装类（OnlineStream、Vad、OnlineRecognizer）都在 companion object 里 System.loadLibrary(\"sherpa-mnn-jni\")",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/OnlineStream.kt:33"
+ },
+ {
+  "fact": "OnlineRecognizer.createStream/decode/isEndpoint/isReady/getResult 全部走 JNI，getResult 返回 OnlineRecognizerResult(text/tokens/timestamps)",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/OnlineRecognizer.kt:106"
+ },
+ {
+  "fact": "OnlineRecognizer 的 getModelConfig(type) 内置 0–14 号预训练模型路径，type 0 为中英双语 zipformer，type 5 为中英双语 paraformer",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/OnlineRecognizer.kt:193"
+ },
+ {
+  "fact": "sherpa mnn 的 Vad 是 Silero VAD 封装，默认阈值 0.5、窗口 512，getVadModelConfig(0) 指向 silero_vad.onnx",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/Vad.kt:103"
+ },
+ {
+  "fact": "sherpa mnn 的 SpeechSegment 携带语音段起始帧 start 与采样 samples",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/mnn/Vad.kt:23"
+ },
+ {
+  "fact": "sherpa ncnn 的 ModelConfig 含 encoder/decoder/joiner 的 param+bin 共六个文件加 tokens，useGPU 默认 true",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/ncnn/SherpaNcnn.kt:20"
+ },
+ {
+  "fact": "sherpa ncnn 的 DecoderConfig 默认解码方法为 modified_beam_search",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/ncnn/SherpaNcnn.kt:24"
+ },
+ {
+  "fact": "SherpaNcnn.release() 用 @Synchronized 保证多线程下只释放一次 native 指针",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/ncnn/SherpaNcnn.kt:58"
+ },
+ {
+  "fact": "sherpa ncnn 封装加载的 native 库为 sherpa-ncnn-jni，getModelConfig(type) 内置 0–6 号模型，type 0 为纯中文 sherpa-ncnn-2022-09-30",
+  "ref": "app/src/main/java/com/k2fsa/sherpa/ncnn/SherpaNcnn.kt:100"
+ },
+ {
+  "fact": "Uuid.kt 是对 java.util.UUID 的薄包装，文件路径为 kotlin/uuid/Uuid.kt 但包名却是 org.jetbrains.kotlinx.mcp.shared.util.uuid，与目录结构不一致",
+  "ref": "app/src/main/java/kotlin/uuid/Uuid.kt:1"
+ },
+ {
+  "fact": "Uuid 类被 ExperimentalUuidApi 注解标记为实验性 API（RequiresOptIn Level.ERROR），Uuid.random() 生成随机 UUID",
+  "ref": "app/src/main/java/kotlin/uuid/Uuid.kt:40"
+ },
+ {
+  "fact": "tools/shower 示例工程的 MainActivity.onCreate 调 Main.start(this)，在 Activity 启动时拉起投屏服务端 com.ai.assistance.shower.Main（示例代码）",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/MainActivity.kt:21"
+ },
+ {
+  "fact": "tools/shower 示例工程的 ExampleInstrumentedTest 断言包名为 com.ai.assistance.shower（示例代码）",
+  "ref": "tools/shower/app/src/androidTest/java/com/ai/assistance/shower/ExampleInstrumentedTest.kt:22"
+ },
+ {
+  "fact": "tools/shower 示例工程的主题函数叫 ShowerTheme，默认同样开 dynamicColor（示例代码）",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/ui/theme/Theme.kt:37"
+ },
+ {
+  "fact": "tools/shower 示例工程的 Color.kt 与 android 模板同构，定义 Purple80/PurpleGrey80/Pink80 与 Purple40/PurpleGrey40/Pink40 两套配色（示例代码）",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/ui/theme/Color.kt:5"
+ },
+ {
+  "fact": "tools/shower 示例工程的 Type.kt 只覆写 bodyLarge（16.sp/24.sp），与 android 模板同构（示例代码）",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/ui/theme/Type.kt:10"
+ },
+ {
+  "fact": "tools/shower 示例工程的 ExampleUnitTest 同样是 2+2=4 的占位本地单测（示例代码）",
+  "ref": "tools/shower/app/src/test/java/com/ai/assistance/shower/ExampleUnitTest.kt:14"
+ }
+]

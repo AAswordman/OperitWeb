@@ -1,0 +1,74 @@
+[
+  {
+    "confidence": "high",
+    "description": "完整包下载只校验 Content-Length 与 Range 支持，下载后不做任何 SHA-256 或签名校验即产出 update.apk 等待安装；安装前的完整性信任完全落在系统安装器侧，若下载链路被劫持，损坏或被替换的包只能靠系统安装器拒装，应用层无二次确认。",
+    "evidence": "            val totalBytes = body.contentLength()\n            if (totalBytes <= 0L) {\n                throw IllegalStateException(\"Server must provide a valid Content-Length for 6-thread download\")\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt",
+    "line": 163,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "MainActivity 启动 3 秒后自动静默检查更新；checkForUpdatesSilently 捕获所有异常仅记日志，用户无任何感知。网络异常、GitHub Token 失效等导致的检查失败会使更新提示长期缺席，且无重试或提示。",
+    "evidence": "        } catch (e: Exception) {\n            AppLogger.w(TAG, \"checkForUpdatesSilently() failed\", e)\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt",
+    "line": 112,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "beta 开关读取抛异常时静默视为未开启，直接跳过补丁通道检查且无任何提示；偏好存储损坏的 beta 用户收不到增量更新，而正式版检查仍照常判定版本状态。",
+    "evidence": "                val betaEnabled = try {\n                    UserPreferencesManager.getInstance(context).isBetaPlanEnabled()\n                } catch (_: Exception) {\n                    false\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt",
+    "line": 136,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "补丁源仓库硬编码为 AAswordman/OperitNightlyRelease，与正式版经 about_website 解析出的仓库相互独立；若两者配置不一致，正式版与补丁来自不同仓库，信任边界分裂，且补丁仓库变更需要发版才能改。",
+    "evidence": "        val owner = \"AAswordman\"\n        val repo = \"OperitNightlyRelease\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt",
+    "line": 226,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "补丁链中间步骤的元数据解析自 GitHub release 正文（仓库协作者可编辑的富文本字段），而非签名附件；篡改正文可改变整条链的走向。每步应用后校验 targetSha256 能暴露不一致，但对抗恶意仓库维护者时仍需信任 GitHub 仓库本身。",
+    "evidence": "            val meta = parseReleaseBodyAsPatchMeta(release.body) ?: continue",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt",
+    "line": 415,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "补丁更新前对 34 个镜像 × meta/patch 两个 URL 并发实测下载，每个 URL 最多下载 256KB；单次探测理论流量上限约 17MB。用户在移动数据下触发补丁更新时，测速本身的流量成本可观，且探测失败仅记为 ok=false，不影响回退 GitHub 直连。",
+    "evidence": "        private const val SPEED_TEST_BYTES = 256 * 1024L",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt",
+    "line": 106,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "每次公告请求拼接毫秒时间戳破坏缓存，CDN 与代理缓存完全失效，每次启动都回源请求 operit.app；毫秒时间戳也可被用于请求关联。公告内容本身不敏感，影响有限。",
+    "evidence": "    private fun addCacheBust(url: String): String {\n        val separator = if (url.contains(\"?\")) \"&\" else \"?\"\n        return \"$url${separator}ts=${System.currentTimeMillis()}\"\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt",
+    "line": 248,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "完整包产物固定命名 update.apk，且工作目录每次清空重建；若两个更新流程并发执行，后者会删掉前者正在下载的文件。AboutScreen 侧用 patchUpdateJob/fullUpdateJob 守卫，实际触发概率低。",
+    "evidence": "        val apkFile = File(workDir, \"update.apk\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt",
+    "line": 54,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "补丁链解析每次只拉取该仓库最多 100 个 release 做全量扫描；release 数量超过 100 时，更早的补丁边不可见，有拼不出完整链而抛 No applicable next patch 的风险。",
+    "evidence": "            perPage = 100",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt",
+    "line": 377,
+    "severity": "suggestion"
+  }
+]

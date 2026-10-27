@@ -589,6 +589,7 @@ const GuidePage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePath?:
     <DocsLayout language={language} title={language === 'zh' ? '参考手册' : 'Reference manual'} context="Operit 1" screenshot={isScreenshotMode} fullWidth={isToolPage}
       action={<Link to={PRODUCTS.v1.guidePath}>{language === 'zh' ? '入门教程' : 'Tutorials'}</Link>}
       sidebar={<>
+        <nav style={{ marginBottom: 16 }}><Link to="/v1/guide/wiki">{language === 'zh' ? '源码知识库 ↗' : 'Source knowledge base ↗'}</Link></nav>
         <div style={{ padding: '12px', borderBottom: darkMode ? '1px solid rgba(255,255,255,0.1)' : '1px solid rgba(0,0,0,0.05)' }}>
           <Input
             placeholder={t.searchPlaceholder}

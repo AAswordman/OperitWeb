@@ -1,0 +1,111 @@
+[
+  {
+    "confidence": "high",
+    "description": "pendingScrollPosition 在 navigateToDirectory/navigateUp/navigateToPath/navigateToFileDirectory 四处被赋值，但全仓库没有任何读取它的代码（无 scrollToItem/animateScrollToItem 调用），恢复滚动从未真正发生。更严重的是 FileManagerScreen 的保存逻辑要求 pendingScrollPosition == null 才记录滚动位置，而该字段一旦被赋值就永远不会清零，导致第一次导航之后所有目录的滚动位置都不再被记录。",
+    "evidence": "FileManagerScreen.kt:226-231:\n    // 监听滚动位置变化，保存到scrollPositions\n    LaunchedEffect(firstVisibleItemIndex) {\n        if (viewModel.files.isNotEmpty() && viewModel.pendingScrollPosition == null) {\n            viewModel.scrollPositions[viewModel.currentPath] = firstVisibleItemIndex\n        }\n    }\nFileManagerViewModel.kt:150 写入 pendingScrollPosition 后，全仓库无 scrollTo/scrollToItem 消费它。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt",
+    "line": 150,
+    "severity": "warn",
+    "title": "滚动位置从未被消费用于恢复，且首次导航后滚动记录永久停止",
+    "detail": "pendingScrollPosition 并非\"只写不读\"——它在 FileManagerScreen.kt:228 被读取，作为滚动记录 LaunchedEffect 的空值守卫（`viewModel.pendingScrollPosition == null`）。真实缺陷是双重的：(1) 它写入后从未被消费用于恢复滚动——全仓库没有任何 scrollTo/scrollToItem 调用它；(2) 首次导航后它永久非空（:150 写入后无处清零），导致 :226–231 的 LaunchedEffect 永久跳过 `scrollPositions[currentPath] = firstVisibleItemIndex`，滚动记录彻底停止。"
+  },
+  {
+    "confidence": "high",
+    "description": "units 数组只有 B/KB/MB/GB/TB 五档，digitGroups 由 log10 计算得出且无上界钳制。当 size >= 1024^5（1PB）时 digitGroups >= 5，units[digitGroups] 抛出 ArrayIndexOutOfBoundsException，直接崩溃调用方。",
+    "evidence": "    val units = arrayOf(\"B\", \"KB\", \"MB\", \"GB\", \"TB\")\n    val digitGroups = (log10(size.toDouble()) / log10(1024.0)).toInt()\n\n    return String.format(\"%.1f %s\", size / 1024.0.pow(digitGroups.toDouble()), units[digitGroups])",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt",
+    "line": 90,
+    "severity": "warn",
+    "title": "formatFileSize 对超过 1PB 的文件会数组越界崩溃"
+  },
+  {
+    "confidence": "high",
+    "description": "FileContextMenu.createNewFolder(folderName, currentPath) 函数体为空（只有一行注释），而组件内渲染的新建文件夹 AlertDialog 所依赖的 showNewFolderDialog 在该组件内没有任何置 true 的代码路径——对话框永远弹不出，即使能弹出，确认按钮调用的也是空函数。",
+    "evidence": "    fun createNewFolder(folderName: String, currentPath: String) {\n        // Implementation of creating a new folder\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt",
+    "line": 373,
+    "severity": "warn",
+    "title": "底部菜单的“新建文件夹”入口是空实现且对话框不可达"
+  },
+  {
+    "confidence": "high",
+    "description": "pasteFiles 对剪贴板逐个文件执行 copy_file，某个文件失败时只把 error 写到主线程就继续下一个；剪切模式下删除源文件的 delete_file 结果被完全忽略（连 error 都不写）。最终用户只看到最后一个失败文件的报错，已复制/已删除的文件无法回滚，源与目标可能各剩一半。",
+    "evidence": "FileManagerViewModel.kt:459-463:\n                        } else {\n                            withContext(Dispatchers.Main) {\n                                error = result.error ?: \"Unknown error\"\n                            }\n                        }\n                    }\n多文件 forEach 内每个失败都覆盖 error，最后只剩最后一个失败的信息。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt",
+    "line": 461,
+    "severity": "warn",
+    "title": "剪切粘贴多文件时部分失败导致状态不一致，且错误信息互相覆盖"
+  },
+  {
+    "confidence": "high",
+    "description": "openFile/shareFile/deleteFile/renameFile/compressFiles/unzipFile/batchRenameFiles 全部用 \"$currentPath/${file.name}\" 拼接路径。当 currentPath 为 \"/\" 时得到 \"//name\"。ViewModel 侧有 buildPath 专门处理根目录避免双斜杠，但 FileContextMenu 完全没用它。",
+    "evidence": "                try {\n                    val fullPath = \"$currentPath/${file.name}\"\n\n                    val deleteTool =",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt",
+    "line": 169,
+    "severity": "suggestion",
+    "title": "FileContextMenu 内多处用字符串拼接拼路径，根目录下会产生双斜杠"
+  },
+  {
+    "confidence": "high",
+    "description": "searchFiles 拿到 find_files 的路径列表后，对其中每一个路径都单独执行一次 file_info 工具调用来判断是否为目录（try/catch 包裹，串行在 Dispatchers.IO 上）。结果很多时延迟线性增长；且 file_info 本身已返回 size/lastModified 等信息却被丢弃（结果 FileItem 的 size/lastModified 硬填 0）。",
+    "evidence": "                                    val isDir =\n                                            try {\n                                                val fileInfoTool =\n                                                        AITool(\n                                                                name = \"file_info\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt",
+    "line": 318,
+    "severity": "suggestion",
+    "title": "搜索对每个结果逐个串行调用 file_info，N+1 次工具调用"
+  },
+  {
+    "confidence": "high",
+    "description": "FileListPane（双窗格遗留组件）在 app/src 内零调用；utils 的 parseFileList 与 getFileType 在 app/src 内零调用；FileManagerScreen.querySafBookmarkDisplayName 定义后从未被调用（实际用的是 queryRepoBookmarkName）；ViewModel.isSafEnv 为 private 且零调用。这些代码随版本残留，增加维护负担。",
+    "evidence": "@Composable\nfun FileListPane(\n        path: String,\n        isActive: Boolean,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListPane.kt",
+    "line": 27,
+    "severity": "suggestion",
+    "title": "多处死代码：FileListPane、parseFileList、getFileType、querySafBookmarkDisplayName、isSafEnv"
+  },
+  {
+    "confidence": "high",
+    "description": "FileManagerViewModel 声明了 showCompressDialog、compressFileName，但压缩对话框实际由 FileContextMenu 的本地状态驱动，ViewModel 这两个状态零读写。FileContextMenu 内部也声明了 clipboardFiles/isCutOperation/clipboardSourcePath 三个 remember 状态，复制/剪切实际走 onCopy/onCut 回调委托给 ViewModel，本地三状态零读写。",
+    "evidence": "    var showCompressDialog by mutableStateOf(false)\n    var compressFileName by mutableStateOf(\"\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt",
+    "line": 68,
+    "severity": "suggestion",
+    "title": "ViewModel 的 showCompressDialog/compressFileName 与菜单内的剪贴板三状态从未被读写"
+  },
+  {
+    "confidence": "high",
+    "description": "FileListItem.kt 顶部从 utils 导入了 formatDate 与 formatFileSize，但文件底部又定义了同签名的 private fun formatFileSize(size: Long) 与 private fun formatDate(timestamp: Long)。同文件声明优先，两个 import 形同虚设，易误导读者以为用的是 utils 版本（两者行为不同：utils 版处理字符串日期、带一位小数）。",
+    "evidence": "private fun formatFileSize(size: Long): String {\n    return when {\n        size < 1024 -> \"$size B\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt",
+    "line": 243,
+    "severity": "suggestion",
+    "title": "FileListItem 私有函数遮蔽同名 import，顶部 import 实际无效"
+  },
+  {
+    "confidence": "high",
+    "description": "FileManagerToolbar 的前进（ArrowForward）按钮 onClick 为空 lambda，仅留注释“前进功能”。用户点击无任何反馈。",
+    "evidence": "                    // 前进按钮\n                    IconButton(onClick = { /* 前进功能 */ }, modifier = Modifier.size(36.dp)) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt",
+    "line": 76,
+    "severity": "suggestion",
+    "title": "工具栏前进按钮是空实现"
+  },
+  {
+    "confidence": "high",
+    "description": "createNewFolder 与 renameFile 直接把用户输入的文件名拼接到当前路径后交给 make_directory/move_file 工具，未校验是否包含 \"/\" 或 \"..\"。输入 \"../x\" 可能越出当前目录操作，输入含 \"/\" 的名字语义不明。",
+    "evidence": "                // 处理路径，使用统一的buildPath方法\n                val fullPath = buildPath(currentPath, folderName)\n\n                val createFolderTool =",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt",
+    "line": 253,
+    "severity": "suggestion",
+    "title": "新建文件夹/重命名未校验文件名中的斜杠与 .."
+  },
+  {
+    "confidence": "high",
+    "description": "batchRenameFiles 对每个文件调用 move_file，但完全不检查返回的 ToolResult，某一个重命名失败（如目标已存在）会被静默跳过，最后仍调用 onFilesUpdated 刷新，用户无法察觉部分文件没改名。",
+    "evidence": "FileContextMenu.kt:357-360:\n                        AppLogger.d(\"ToolboxFileManager\", \"execute move_file src=$oldPath dst=$newPath env=$currentEnvironment\")\n                        toolHandler.executeTool(moveTool)\n                    }\nmove 结果未检查、未累积，单文件失败静默跳过。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt",
+    "line": 359,
+    "severity": "suggestion",
+    "title": "批量重命名忽略单文件 move 结果，失败静默跳过"
+  }
+]

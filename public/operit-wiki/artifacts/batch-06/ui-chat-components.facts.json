@@ -1,0 +1,470 @@
+[
+  {
+    "fact": "ChatScreenContent 是聊天主屏组装器，组装顶栏、消息区、输入区与对话框栈。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:96"
+  },
+  {
+    "fact": "多选模式状态 isMultiSelectMode 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:160"
+  },
+  {
+    "fact": "只有 sender 为 user 或 ai 的消息可被多选，系统消息不可入选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:168"
+  },
+  {
+    "fact": "会话切换（currentChatId/messageOrder 变化）时自动退出多选并取消未完成的复制协程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:191"
+  },
+  {
+    "fact": "多选复制经 buildSelectedMessagesPlainText 拼接，markdown 经 markdownToPlainTextForCopy 转纯文本，公式经 LatexMathMlConverter 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:628"
+  },
+  {
+    "fact": "多选可加入记忆：调用 actualViewModel.enqueueSelectedMessagesForMemoryAutoSave(selectedMessages)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:679"
+  },
+  {
+    "fact": "分享选中消息经 shareMessages 进入 ShareImagePreviewDialog 预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:901"
+  },
+  {
+    "fact": "TTS 悬浮按钮位置用 rememberSaveable 持久化，可全屏拖拽且钳制在屏幕范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:757"
+  },
+  {
+    "fact": "TTS 悬浮按钮提供暂停/继续/停止，对应 pauseSpeaking、resumeSpeaking、stopSpeaking。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:799"
+  },
+  {
+    "fact": "长按菜单朗读走 speakMessage，自动朗读走 enableAutoReadAndSpeak。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:283"
+  },
+  {
+    "fact": "编辑 user 消息保存走 updateMessage(index, editedMessage)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1126"
+  },
+  {
+    "fact": "重发走 rewindAndResendMessage，工作区有变更时需二次确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1142"
+  },
+  {
+    "fact": "编辑对话框是否显示重发按钮取决于 editingMessageType == \"user\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1148"
+  },
+  {
+    "fact": "回滚/重发前先经 previewWorkspaceChangesForMessage 预览工作区变更，再弹 WorkspaceChangeConfirmDialog。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:229"
+  },
+  {
+    "fact": "导出链为 ExportPlatformDialog → AndroidExportDialog/WindowsExportDialog → exportAndroidApp/exportWindowsApp → ExportCompleteDialog。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1007"
+  },
+  {
+    "fact": "ChatHistorySelectorPanel 是 280.dp 宽的左侧历史会话抽屉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1192"
+  },
+  {
+    "fact": "cleanMessageContentForCopy 去掉内部标记，供剪贴板复制使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:129"
+  },
+  {
+    "fact": "cleanMessageContentForXmlCopy 保留结构标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:162"
+  },
+  {
+    "fact": "buildSelectedMessagesPlainText 按时间戳排序拼接选中的多条消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:172"
+  },
+  {
+    "fact": "ChatStyle 枚举只有 CURSOR 和 BUBBLE 两种聊天风格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:194"
+  },
+  {
+    "fact": "ChatArea 用 Column + verticalScroll 全量排布消息，未使用 LazyColumn。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:200"
+  },
+  {
+    "fact": "messageAnchors 记录每条消息的 ChatScrollMessageAnchor（timestamp → 锚点）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:275"
+  },
+  {
+    "fact": "pendingJumpToMessageTimestamp 是待跳转信号，滚动到位后清零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:276"
+  },
+  {
+    "fact": "时间戳重复的消息用 key(timestamp, occurrence) 计数区分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:431"
+  },
+  {
+    "fact": "BUBBLE 风格下等待模型响应时隐藏最后一条 AI 消息，避免空泡闪烁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:427"
+  },
+  {
+    "fact": "MessageItem 是单条消息的交互壳，长按弹出操作菜单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:614"
+  },
+  {
+    "fact": "长按菜单含插件注册项，插件可经 ChatMessageMenuItemRegistry 添加条目与对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:614"
+  },
+  {
+    "fact": "MessageCopyPreviewBottomSheet 提供三模式复制预览底 sheet。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:1275"
+  },
+  {
+    "fact": "MessageFooterBar 负责消息变体切换与 token 数/耗时/速度/时间戳统计展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:1438"
+  },
+  {
+    "fact": "LoadingDotsIndicator 是三点 keyframes 加载动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:1581"
+  },
+  {
+    "fact": "ChatScrollNavigator 有两个重载：99 行接自研 ChatLazyListState，313 行接 ScrollState + messageAnchors。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:99"
+  },
+  {
+    "fact": "ChatArea 实际使用 ChatScrollNavigator 的 ScrollState 重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt:559"
+  },
+  {
+    "fact": "NAVIGATOR_HIDE_DELAY_MS = 1200L，快速滚动 chip 无操作 1200ms 后自动隐藏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:86"
+  },
+  {
+    "fact": "快速滚动 chip 用 Canvas 自绘进度线与圆点指示当前位置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:99"
+  },
+  {
+    "fact": "ChatMessageLocatorDialog 是消息定位器对话框，支持搜索与收藏过滤。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:604"
+  },
+  {
+    "fact": "定位器搜索防抖 180ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:681"
+  },
+  {
+    "fact": "buildMessagePreview 取消息内容前 72 字符作预览片段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:1260"
+  },
+  {
+    "fact": "LOCATOR_PREVIEW_CHAR_COUNT = 48，定位器条目预览截 48 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:84"
+  },
+  {
+    "fact": "ChatScrollNavigator 只有两个重载：99 行接自研 ChatLazyListState、313 行接 ScrollState + messageAnchors；1126 行是 resolveCenteredMessageIndex 辅助函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:99"
+  },
+  {
+    "fact": "resolveBindingForCreate 解析新建会话时的角色/分组绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:141"
+  },
+  {
+    "fact": "HistoryListItem 为密封类，含 CharacterHeader、Header、Item 三种子类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:157"
+  },
+  {
+    "fact": "ChatHistorySelector 支持按角色卡、按文件夹、仅当前角色三种显示模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:97"
+  },
+  {
+    "fact": "历史搜索防抖 400ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:590"
+  },
+  {
+    "fact": "历史搜索先做标题/分组本地匹配，无命中且查询≥2 字符才调 searchChatIdsByContent 做全文搜索。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:582"
+  },
+  {
+    "fact": "历史会话拖拽排序用 sh.calvin.reorderable，落下后重算分组归属、角色绑定与 displayOrder。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:777"
+  },
+  {
+    "fact": "历史会话滑动操作阈值为 100.dp，右滑编辑、左滑删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:2371"
+  },
+  {
+    "fact": "删除会话有 220ms 收缩动画，锁定会话跳过确认直接删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:477"
+  },
+  {
+    "fact": "分组折叠状态用 rememberLocal 持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:458"
+  },
+  {
+    "fact": "HistoryQuickScroller 是自绘右侧快速滚动条，拖拽经 dispatchRawDelta 跳转。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:209"
+  },
+  {
+    "fact": "后台任务数 runningTaskCount >= 2 时顶栏显示计数 pill。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHeader.kt:55"
+  },
+  {
+    "fact": "角色名截断长度常量 CHAT_HEADER_CHARACTER_NAME_MAX_LENGTH = 12。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHeader.kt:28"
+  },
+  {
+    "fact": "顶栏角色切换器头像经 Coil 加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHeader.kt:176"
+  },
+  {
+    "fact": "上下文窗口占用超过 75% 显示 tertiary 色，超过 90% 显示 error 色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenHeader.kt:192"
+  },
+  {
+    "fact": "点击上下文圆环可展开下拉查看 input/output/total 的 token 明细。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenHeader.kt:192"
+  },
+  {
+    "fact": "悬浮窗启动走 useFloatingWindowLauncher，含麦克风权限申请流程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenHeader.kt:140"
+  },
+  {
+    "fact": "estimateToastDurationMs 按 (2500 + 行数×850)ms 估算，钳制在 3500~12000ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatToastHost.kt:145"
+  },
+  {
+    "fact": "AttachmentPreview 用 LazyRow 横向预览附件，按 URI 前缀 camera_/image/screen_ 配图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentPreview.kt:40"
+  },
+  {
+    "fact": "AttachmentChip 图片类型显示 52.dp 缩略图加右上角删除角标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentChip.kt:58"
+  },
+  {
+    "fact": "AttachmentChip 非图片类型为 26.dp 高 chip，文件名限宽 80.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentChip.kt:116"
+  },
+  {
+    "fact": "ParsedMessagePart 含 type、content、tag、attributes 四个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:53"
+  },
+  {
+    "fact": "PartType 枚举只有 TEXT 和 XML 两种消息块类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:54"
+  },
+  {
+    "fact": "parseMessageContentForEditor 用正则切分 XML 标签块，支持带属性的标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:76"
+  },
+  {
+    "fact": "recomposeMessageFromParts 把编辑后的块拼回原始消息文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:106"
+  },
+  {
+    "fact": "MessageEditor 提供可视化与纯文本双模式编辑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:118"
+  },
+  {
+    "fact": "XmlTagItem 把 XML 块渲染为可展开/编辑/删除的卡片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:453"
+  },
+  {
+    "fact": "TagEditorDialog 单独编辑标签的 tag 名、属性与内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:586"
+  },
+  {
+    "fact": "编辑器内置 12 个标签建议：think、thinking、search、tool、tool_result、status、html、mood、font、details、detail、meta。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt:62"
+  },
+  {
+    "fact": "AttachmentSelectorPanel 含图片、拍照、记忆、文件、屏幕内容、通知、位置、安装包 8 个选项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:88"
+  },
+  {
+    "fact": "附件面板选项经 chunked(8) 分页，用 HorizontalPager 横滑切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:231"
+  },
+  {
+    "fact": "图片与文件选择用 ActivityResultContracts.GetMultipleContents 支持多选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:112"
+  },
+  {
+    "fact": "拍照先校验 CAMERA 权限，拒绝时弹 Toast 提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:537"
+  },
+  {
+    "fact": "拍照临时文件建在 cacheDir（temp_image_*.jpg），经 FileProvider 共享。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:588"
+  },
+  {
+    "fact": "getAttachmentSource 对 file:// 取 path，content:// 返回 uri 字符串，其他 scheme 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:598"
+  },
+  {
+    "fact": "AttachmentSelectorPopupPanel 是附件选择的弹窗版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:326"
+  },
+  {
+    "fact": "PackageSelectorDialog 列出工具包、技能、MCP 服务三类可附加能力，排除 ToolPkg 容器自身。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:656"
+  },
+  {
+    "fact": "buildAttachmentPackageOptions 按包名去重合并三类来源并排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt:806"
+  },
+  {
+    "fact": "ExportPlatformDialog 提供 Android / Windows 二选一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:57"
+  },
+  {
+    "fact": "AndroidExportDialog 的输入用 rememberLocal 按工作区路径持久化（export_*_<workDir>）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:171"
+  },
+  {
+    "fact": "版本号格式校验正则为 ^\\d+(\\.\\d+){0,2}(-[a-zA-Z0-9]+)?$。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:362"
+  },
+  {
+    "fact": "导出按钮要求包名、应用名、版本名、版本号非空且无格式错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:398"
+  },
+  {
+    "fact": "WindowsExportDialog 用 CropImageContract 裁剪应用图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:408"
+  },
+  {
+    "fact": "exportAndroidApp 从 assets 的 subpack/android.apk 模板改包名、应用名、版本、图标后签名打包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:766"
+  },
+  {
+    "fact": "Android 导出产物输出到公共 Download 目录 Operit/exports/WebApp_<时间戳>.apk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:822"
+  },
+  {
+    "fact": "Android 导出签名使用硬编码调试密钥：密码 android、别名 androidkey、密钥密码 android。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:827"
+  },
+  {
+    "fact": "exportWindowsApp 解压 assets 的 subpack/windows.zip 模板，改 assistance_subpack.exe 图标后打包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:860"
+  },
+  {
+    "fact": "Windows 导出把网页内容拷到 data/flutter_assets/assets/web_content，产物为 <安全名>_<时间戳>.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:942"
+  },
+  {
+    "fact": "CharacterSelectorTarget 区分 CharacterCardTarget（角色卡）与 CharacterGroupTarget（群组）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/CharacterSelectorPanel.kt:57"
+  },
+  {
+    "fact": "CharacterSelectorPanel 是顶部下滑面板，从 -it 滑入，顶部留 60.dp，点击遮罩关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/CharacterSelectorPanel.kt:78"
+  },
+  {
+    "fact": "角色选择器排序选项用 rememberLocal 持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/CharacterSelectorPanel.kt:95"
+  },
+  {
+    "fact": "MemoryFolderSelectionDialog 的文件夹展开状态与 FolderNavigator 共用 rememberLocal 键 folder_navigator_expanded_state。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MemoryFolderSelectionDialog.kt:64"
+  },
+  {
+    "fact": "ScrollToBottomButton 有三个重载：42 行接 ScrollState、97 行接自研 ChatLazyListState、156 行接 Compose LazyListState（支持 reverseLayout）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ScrollToBottomButton.kt:97"
+  },
+  {
+    "fact": "滚动按钮在拖拽离开底部时浮现，回到判底时隐藏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ScrollToBottomButton.kt:120"
+  },
+  {
+    "fact": "滚动按钮点击时调用 animateScrollToEnd 滚回底部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ScrollToBottomButton.kt:147"
+  },
+  {
+    "fact": "SharedFileTargetDialog 列出最近 5 个会话（按 updatedAt desc 再 createdAt desc），另可新建会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SharedFileTargetDialog.kt:220"
+  },
+  {
+    "fact": "分享目标对话框最大高度为屏幕高度的 80%。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SharedFileTargetDialog.kt:54"
+  },
+  {
+    "fact": "SharedIncomingContentHandler 把待分享的文件/文本排队，消费后清空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SharedFileTargetDialog.kt:185"
+  },
+  {
+    "fact": "WorkspaceChangeConfirmMode 分 ROLLBACK（回滚）与 EDIT_AND_RESEND（编辑重发）两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/WorkspaceChangeConfirmDialog.kt:32"
+  },
+  {
+    "fact": "工作区变更预览区高度紧凑屏 120.dp、常规屏 260.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/WorkspaceChangeConfirmDialog.kt:44"
+  },
+  {
+    "fact": "MessageInfoDialog 展示 sender、provider、时间戳、等待耗时与输出耗时（%.2f s (%d ms)）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageInfoDialog.kt:29"
+  },
+  {
+    "fact": "LinkPreviewDialog 展示链接，点击经 Uri.parse(url) 跳转。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/LinkPreviewDialog.kt:31"
+  },
+  {
+    "fact": "FullscreenInputDialog 关闭或取消时经 finishEditing 把编辑内容回写，无丢弃更改路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/FullscreenInputDialog.kt:35"
+  },
+  {
+    "fact": "全屏输入框 usePlatformDefaultWidth=false 真全屏，带 @提及高亮 visualTransformation。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/FullscreenInputDialog.kt:42"
+  },
+  {
+    "fact": "rememberRevisableTextStream 监听 SAVEPOINT/ROLLBACK 事件，回滚时换新流承接后续 chunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/RevisableTextStreamRemember.kt:28"
+  },
+  {
+    "fact": "回滚时旧流 resetReplayCache()，快照经 RollbackTailStream.rollbackPrefix 交渲染器自行恢复前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/RevisableTextStreamRemember.kt:70"
+  },
+  {
+    "fact": "流完成后不立刻清空 replay 缓存，避免与渲染器末帧竞态导致工具结果空白。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/RevisableTextStreamRemember.kt:87"
+  },
+  {
+    "fact": "CompactDialogMetrics 阈值为 320dp 宽、560dp 高、最大高度比 0.9。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/CompactDialogLayout.kt:28"
+  },
+  {
+    "fact": "ReferencesDisplay 把 AI 回答的引用以 SuggestionChip 横滑列表展示，点击经 uriHandler.openUri 打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ReferencesDisplay.kt:24"
+  },
+  {
+    "fact": "SimpleLinearProgressIndicator 不确定进度时静态填充 30% 且无动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SimpleLinearProgressIndicator.kt:51"
+  },
+  {
+    "fact": "animateScrollToEnd 先 animateScrollToItem 到末项，再补 animateScrollBy 使末项尾缘贴视口底部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollExtensions.kt:11"
+  },
+  {
+    "fact": "ChatMessageHeightMemory 用 linkedMapOf 存 AI 消息 timestamp 到实测高度 px 的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatMessageHeightMemory.kt:10"
+  },
+  {
+    "fact": "高度记忆的 prune 只保留当前 AI 消息的 id，其余丢弃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatMessageHeightMemory.kt:19"
+  },
+  {
+    "fact": "extractClipboardPastedText 经前后缀匹配定位插入文本，归一化换行后与剪贴板比对。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachment.kt:25"
+  },
+  {
+    "fact": "formatCacheHitRate 对命中率向下截断保留两位小数，input<=0 时返回 \"-\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/TokenHitRateFormat.kt:11"
+  },
+  {
+    "fact": "lazy/ 是 Compose Foundation 1.10.4 的 LazyColumn 本地化副本，入口重命名为 RecyclerLazyColumn，仅保留 LazyColumn/LazyList 链路。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/README.md:1"
+  },
+  {
+    "fact": "README 声明 lazy/ 副本这次没有执行编译、构建或测试，为后续魔改准备。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/README.md:15"
+  },
+  {
+    "fact": "RecyclerLazyColumn 在全仓库无调用方，ChatArea 实际用 Column + ScrollState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:385"
+  },
+  {
+    "fact": "为 ChatLazyListState 准备的 ChatScrollNavigator/ScrollToBottomButton/ChatScrollExtensions 重载同样无调用方。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:99"
+  }
+]

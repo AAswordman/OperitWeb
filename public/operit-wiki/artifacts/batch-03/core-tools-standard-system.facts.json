@@ -1,0 +1,806 @@
+[
+  {
+    "fact": "Cookie 清理走 CookiePrivacyManager.clearAllCookies：先调用兄弟页 StandardHttpTools.clearSharedCookies() 清共享 HTTP cookie，再在主线程（Dispatchers.Main.immediate）经 WebView CookieManager.removeAllCookies() 清除并 flush()",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/CookiePrivacyManager.kt:11",
+    "symbol": "CookiePrivacyManager.clearAllCookies"
+  },
+  {
+    "fact": "CookiePrivacyManager 是 internal object 单例，clearAllCookies 为 suspend 函数，WebView 清除用 suspendCancellableCoroutine 等待 removeAllCookies 回调",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/CookiePrivacyManager.kt:10",
+    "symbol": "CookiePrivacyManager"
+  },
+  {
+    "fact": "计算器工具由 StandardCalculator 包装，底层委托 com.ai.assistance.operit.core.tools.calculator.Calculator（CalcImpl）",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:9",
+    "symbol": "StandardCalculator"
+  },
+  {
+    "fact": "StandardCalculator.evalExpression(expression) 返回 Double 类型的表达式计算值",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:12",
+    "symbol": "StandardCalculator.evalExpression"
+  },
+  {
+    "fact": "StandardCalculator.calculateExpression(expression) 返回 CalculationResultData 结构化计算结果（区别于 evalExpression 的裸 Double）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:17",
+    "symbol": "StandardCalculator.calculateExpression"
+  },
+  {
+    "fact": "计算器支持变量 get/set/clear：getVariablesMap 只暴露 ans、pi、e 三个常用变量",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:31",
+    "symbol": "StandardCalculator.getVariablesMap"
+  },
+  {
+    "fact": "StandardCalculator 提供日期格式化（formatDate 返回字符串、formatDateStructured 返回 DateResultData）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:62",
+    "symbol": "StandardCalculator.formatDate"
+  },
+  {
+    "fact": "StandardCalculator.getSupportedUnits() 返回支持的单位换算类别映射",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:82",
+    "symbol": "StandardCalculator.getSupportedUnits"
+  },
+  {
+    "fact": "StandardCalculator.getSupportedDateFunctions()/getSupportedStatFunctions() 分别返回支持的日期函数与统计函数清单",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:87",
+    "symbol": "StandardCalculator.getSupportedDateFunctions"
+  },
+  {
+    "fact": "StandardCalculator.getSupportedJsFeatures() 返回计算器底层支持的 JS 特性清单",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardCalculator.kt:97",
+    "symbol": "StandardCalculator.getSupportedJsFeatures"
+  },
+  {
+    "fact": "ADB 命令工具 execute_shell 由 StandardShellToolExecutor 实现，实际经 AndroidShellExecutor.executeShellCommand 执行（依赖 Shizuku 服务）",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt:18",
+    "symbol": "StandardShellToolExecutor"
+  },
+  {
+    "fact": "StandardShellToolExecutor.DEFAULT_TIMEOUT=15000L（15 秒），但代码注释明确说明 timeout 参数保留仅为 API 兼容，实际执行未使用该超时",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt:20",
+    "symbol": "StandardShellToolExecutor.DEFAULT_TIMEOUT"
+  },
+  {
+    "fact": "StandardShellToolExecutor.validateParameters 只拦截命令中含 \"rm -rf\" 或 \"format\" 子串的情况，返回 \"Potentially dangerous command detected\"",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt:84",
+    "symbol": "StandardShellToolExecutor.validateParameters"
+  },
+  {
+    "fact": "shell 工具缺少 command 参数时校验失败并提示 \"Command parameter is required\"",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt:84",
+    "symbol": "StandardShellToolExecutor.validateParameters"
+  },
+  {
+    "fact": "shell 执行结果封装为 ADBResultData(command/output/exitCode)",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt:25",
+    "symbol": "StandardShellToolExecutor.invoke"
+  },
+  {
+    "fact": "设备信息工具由 open class StandardDeviceInfoToolExecutor 实现 ToolExecutor 接口",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:21",
+    "symbol": "StandardDeviceInfoToolExecutor"
+  },
+  {
+    "fact": "设备唯一标识取自 Settings.Secure.ANDROID_ID",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:26",
+    "symbol": "StandardDeviceInfoToolExecutor.invoke"
+  },
+  {
+    "fact": "内存信息经 ActivityManager.MemoryInfo 读取，存储信息经 StatFs(Environment.getExternalStorageDirectory().path) 读取",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:47",
+    "symbol": "ActivityManager.MemoryInfo"
+  },
+  {
+    "fact": "电池信息通过 registerReceiver(null, IntentFilter(Intent.ACTION_BATTERY_CHANGED)) 读取粘性广播",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:66",
+    "symbol": "Intent.ACTION_BATTERY_CHANGED"
+  },
+  {
+    "fact": "CPU ABI 经 ProcessBuilder(\"getprop\", \"ro.product.cpu.abi\") 读取",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:84",
+    "symbol": "ProcessBuilder"
+  },
+  {
+    "fact": "设备信息还采集型号/厂商、Android 版本/SDK、屏幕分辨率/密度、网络类型（WiFi/蜂窝/蓝牙/以太网）、Build.DEVICE/PRODUCT/HARDWARE/FINGERPRINT/TIME，最终封装为 DeviceInfoResultData",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardDeviceInfoToolExecutor.kt:22",
+    "symbol": "StandardDeviceInfoToolExecutor.invoke"
+  },
+  {
+    "fact": "StandardSendBroadcastToolExecutor 是发送系统广播的工具类，invoke 为 suspend 函数，action 参数必填",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:17",
+    "symbol": "StandardSendBroadcastToolExecutor"
+  },
+  {
+    "fact": "广播 component 参数格式为\"包名/类名\"；类名以点开头时 applyComponentName 自动补包名前缀",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:23",
+    "symbol": "StandardSendBroadcastToolExecutor.applyComponentName"
+  },
+  {
+    "fact": "广播支持 uri/package/component 目标定位，以及 extra_key+extra_value、extra_key2+extra_value2 两组键值额外参数",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:42",
+    "symbol": "StandardSendBroadcastToolExecutor.invoke"
+  },
+  {
+    "fact": "广播的 extras 参数为 JSON，按 String/Int/Boolean/Float/Double/Long/Array 类型分别 putExtra",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:42",
+    "symbol": "StandardSendBroadcastToolExecutor.invoke"
+  },
+  {
+    "fact": "广播在主线程经 context.sendBroadcast 发出，返回 IntentResultData",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:42",
+    "symbol": "StandardSendBroadcastToolExecutor.invoke"
+  },
+  {
+    "fact": "StandardSendBroadcastToolExecutor.validateParameters 在 action 缺失时校验失败",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt:142",
+    "symbol": "StandardSendBroadcastToolExecutor.validateParameters"
+  },
+  {
+    "fact": "StandardIntentToolExecutor 支持 activity/broadcast/service 三种 intent 类型，默认 activity",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:22",
+    "symbol": "StandardIntentToolExecutor"
+  },
+  {
+    "fact": "intent 工具必填 action 或 component 二者之一，validateParameters 负责校验",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:260",
+    "symbol": "StandardIntentToolExecutor.validateParameters"
+  },
+  {
+    "fact": "intent flags 支持 JSON 数组按位或组合，也支持单个整数直接传入",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:52",
+    "symbol": "StandardIntentToolExecutor.invoke"
+  },
+  {
+    "fact": "intent extras 支持 JSONArray 数组类型，可传递 String[]/Int[] 等数组额外参数",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:52",
+    "symbol": "StandardIntentToolExecutor.invoke"
+  },
+  {
+    "fact": "service 类型的 intent 必须提供 component（显式组件），activity 类型自动附加 FLAG_ACTIVITY_NEW_TASK",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:52",
+    "symbol": "StandardIntentToolExecutor.invoke"
+  },
+  {
+    "fact": "StandardIntentToolExecutor 的 component 解析复用与广播工具相同的 applyComponentName 逻辑（点开头类名补包名前缀）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardIntentToolExecutor.kt:33",
+    "symbol": "StandardIntentToolExecutor.applyComponentName"
+  },
+  {
+    "fact": "终端会话工具由 StandardTerminalCommandExecutor 实现，类注释说明为非流式版本",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:19",
+    "symbol": "StandardTerminalCommandExecutor"
+  },
+  {
+    "fact": "createOrGetSession 按 session_name 在 Terminal.getInstance(context).terminalState.value.sessions 中查找，存在则复用并更新 sessionNameToIdMap 缓存，否则 terminal.createSession(sessionName) 新建",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:31",
+    "symbol": "StandardTerminalCommandExecutor.createOrGetSession"
+  },
+  {
+    "fact": "终端命令默认超时 timeout_ms=1800000L（30 分钟），经 terminal.executeCommandFlow(sessionId, command) 收集输出",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:88",
+    "symbol": "StandardTerminalCommandExecutor.executeCommandInSession"
+  },
+  {
+    "fact": "终端命令超时走 withTimeout，超时后 cancelTimedOutCommand 发中断信号并等待 COMMAND_CANCEL_SETTLE_TIMEOUT_MS=3000L 让命令安定，返回 exitCode=-1、timedOut=true",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:605",
+    "symbol": "StandardTerminalCommandExecutor.cancelTimedOutCommand"
+  },
+  {
+    "fact": "executeCommandInSessionStream 是 Flow 流式版：先 emit TerminalStreamEventData(type=\"start\")，再逐 chunk emit TerminalStreamEventData(type=\"chunk\", chunkIndex, receivedChars)",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:197",
+    "symbol": "StandardTerminalCommandExecutor.executeCommandInSessionStream"
+  },
+  {
+    "fact": "executeHiddenCommand 在隐藏终端执行命令，executor_key 默认 \"default\"，默认 timeout 120000L；输出取 result.output.ifBlank { result.rawOutputPreview }",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:342",
+    "symbol": "StandardTerminalCommandExecutor.executeHiddenCommand"
+  },
+  {
+    "fact": "inputInSession 向会话写输入或控制键，normalizeControl 做别名映射（return→enter、escape→esc、arrowup→up 等）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:642",
+    "symbol": "StandardTerminalCommandExecutor.normalizeControl"
+  },
+  {
+    "fact": "终端修饰键语义：ctrl+c 发中断信号；ctrl+单字符转控制码（A=1…Z=26），ctrl 要求输入为单字符；alt/meta 加 ESC 前缀；shift 转大写",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:691",
+    "symbol": "StandardTerminalCommandExecutor.applyModifierControl"
+  },
+  {
+    "fact": "getSessionScreen 用 ansiParser.getScreenContent() 渲染当前屏幕内容，只含可见屏、不含历史滚动",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt:539",
+    "symbol": "StandardTerminalCommandExecutor.getSessionScreen"
+  },
+  {
+    "fact": "系统操作工具总入口是 open class StandardSystemOperationTools",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:57",
+    "symbol": "StandardSystemOperationTools"
+  },
+  {
+    "fact": "toast 在主线程弹出 Toast.LENGTH_SHORT 短提示",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:112",
+    "symbol": "StandardSystemOperationTools.toast"
+  },
+  {
+    "fact": "sendNotification 用通道 AI_REPLY_CHANNEL_ID 发高优先级通知（PRIORITY_HIGH、DEFAULT_ALL、CATEGORY_STATUS、可自动消除），正文截断 100 字但 BigTextStyle 保留完整文本，点击经 PendingIntent 回应用",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:138",
+    "symbol": "StandardSystemOperationTools.sendNotification"
+  },
+  {
+    "fact": "通知 id 取 (System.currentTimeMillis() and 0x7FFFFFFF).toInt()",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:195",
+    "symbol": "System.currentTimeMillis"
+  },
+  {
+    "fact": "modifySystemSetting 的 namespace 限 system/secure/global（默认 system），分别写入 Settings.System/Secure/Global",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:217",
+    "symbol": "StandardSystemOperationTools.modifySystemSetting"
+  },
+  {
+    "fact": "无 WRITE_SETTINGS 权限时 modifySystemSetting 自动打开 ACTION_MANAGE_WRITE_SETTINGS 授权页并返回失败",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:244",
+    "symbol": "Settings.ACTION_MANAGE_WRITE_SETTINGS"
+  },
+  {
+    "fact": "getSystemSetting 从 system/secure/global 三命名空间读取系统设置",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:295",
+    "symbol": "StandardSystemOperationTools.getSystemSetting"
+  },
+  {
+    "fact": "installApp 校验 APK 路径存在；Operit 内部路径（/data/data/<包名>开头）先拷贝到 OperitPaths.cleanOnExitDir() 暂存为 install_<时间戳>_<原名>，再经 FileProvider 发 ACTION_VIEW 安装请求（用户确认安装）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:357",
+    "symbol": "StandardSystemOperationTools.installApp"
+  },
+  {
+    "fact": "uninstallApp 先 getPackageInfo 确认应用已安装，再发 ACTION_DELETE 意图（用户确认卸载）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:419",
+    "symbol": "StandardSystemOperationTools.uninstallApp"
+  },
+  {
+    "fact": "listInstalledApps 默认排除系统应用，结果按应用名排序",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:467",
+    "symbol": "StandardSystemOperationTools.listInstalledApps"
+  },
+  {
+    "fact": "startApp 按包名启动应用，或按 ComponentName 指定 activity 启动",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:514",
+    "symbol": "StandardSystemOperationTools.startApp"
+  },
+  {
+    "fact": "stopApp 经 ActivityManager.killBackgroundProcesses 杀后台进程（需 KILL_BACKGROUND_PROCESSES 权限）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:568",
+    "symbol": "StandardSystemOperationTools.stopApp"
+  },
+  {
+    "fact": "getNotifications 检查 enabled_notification_listeners 是否含本包：无权限则打开 ACTION_NOTIFICATION_LISTENER_SETTINGS 授权页；数据来自 OperitNotificationStore.snapshot(limit, includeOngoing)",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:610",
+    "symbol": "StandardSystemOperationTools.getNotifications"
+  },
+  {
+    "fact": "getAppUsageTime 用 UsageStatsManager 按天聚合前台时长，默认近 24 小时、top 10（limit 默认 10，include_system_apps 默认 false）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:666",
+    "symbol": "StandardSystemOperationTools.getAppUsageTime"
+  },
+  {
+    "fact": "无用量访问权限时 getAppUsageTime 打开 ACTION_USAGE_ACCESS_SETTINGS 授权页；hasUsageStatsAccess 经 AppOpsManager.OPSTR_GET_USAGE_STATS 判定",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:91",
+    "symbol": "StandardSystemOperationTools.hasUsageStatsAccess"
+  },
+  {
+    "fact": "requestBluetoothPermission：Android 12+ 申请 BLUETOOTH_CONNECT+BLUETOOTH_SCAN，否则申请定位权限；统一走 WebSessionPermissionRequestCoordinator 申请",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:890",
+    "symbol": "StandardSystemOperationTools.requestBluetoothPermission"
+  },
+  {
+    "fact": "getBluetoothState 在设备不支持蓝牙时返回 supported=false；否则返回蓝牙开关状态",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:920",
+    "symbol": "StandardSystemOperationTools.getBluetoothState"
+  },
+  {
+    "fact": "requestEnableBluetooth 发 ACTION_REQUEST_ENABLE 意图让用户确认开启蓝牙",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:967",
+    "symbol": "StandardSystemOperationTools.requestEnableBluetooth"
+  },
+  {
+    "fact": "listBluetoothBondedDevices 返回已配对设备列表，按设备名+地址排序",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1024",
+    "symbol": "StandardSystemOperationTools.listBluetoothBondedDevices"
+  },
+  {
+    "fact": "scanBluetoothDevices：duration_ms 默认 10000L，include_ble 默认 true，同时扫经典蓝牙与 BLE",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1077",
+    "symbol": "StandardSystemOperationTools.scanBluetoothDevices"
+  },
+  {
+    "fact": "connectBluetooth 的 address 必填，uuid 可选（缺省用 SPP 默认 UUID）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1106",
+    "symbol": "StandardSystemOperationTools.connectBluetooth"
+  },
+  {
+    "fact": "listenBluetooth 默认监听名 \"Operit Bluetooth\"，acceptBluetooth 的 timeout 默认 30000ms",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1129",
+    "symbol": "StandardSystemOperationTools.listenBluetooth"
+  },
+  {
+    "fact": "sendBluetooth/readBluetooth 的 max_bytes 默认 4096、timeout 默认 3000L；sendAndReadBluetooth 的 payload 支持 text 或 data_base64 两种形式",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1200",
+    "symbol": "StandardSystemOperationTools.readBluetooth"
+  },
+  {
+    "fact": "BLE 组：connectBle 的 auto_connect 默认 false",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1262",
+    "symbol": "StandardSystemOperationTools.connectBle"
+  },
+  {
+    "fact": "discoverBleServices 的 timeout 默认 10000L",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1287",
+    "symbol": "StandardSystemOperationTools.connectBle"
+  },
+  {
+    "fact": "readBleCharacteristic/writeBleCharacteristic 的 timeout 均为 5000L；writeAndReadBleCharacteristic 允许写与读使用不同的 service_uuid/characteristic_uuid",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1309",
+    "symbol": "StandardSystemOperationTools.readBleCharacteristic"
+  },
+  {
+    "fact": "subscribeBleCharacteristic 的 enable 默认 true",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1376",
+    "symbol": "StandardSystemOperationTools.subscribeBleCharacteristic"
+  },
+  {
+    "fact": "readBleNotifications 的 limit 默认 20，读取后清空通知队列",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1393",
+    "symbol": "StandardSystemOperationTools.subscribeBleCharacteristic"
+  },
+  {
+    "fact": "getDeviceLocation 先检查定位权限；high_accuracy 默认 false；优先用 10 分钟内最后已知位置，否则 requestLocationUpdates 等待（timeout 参数默认 10 秒，超时回退最后已知位置）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1411",
+    "symbol": "StandardSystemOperationTools.getDeviceLocation"
+  },
+  {
+    "fact": "getDeviceLocation 的 include_address 默认 true，用 Geocoder 反查地址（city/province/country/postalCode）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:1416",
+    "symbol": "StandardSystemOperationTools.getDeviceLocation"
+  },
+  {
+    "fact": "BluetoothSessionManager 是 object 单例，集中管理经典蓝牙/BLE 会话与监听器",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:44",
+    "symbol": "BluetoothSessionManager"
+  },
+  {
+    "fact": "BluetoothSessionManager 用三个 ConcurrentHashMap 分别存经典会话 classicSessions、监听器 classicListeners、BLE 会话 bleSessions",
+    "kind": "field",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:68",
+    "symbol": "BluetoothSessionManager.classicSessions"
+  },
+  {
+    "fact": "蓝牙会话 id 由 newSessionId 生成：前缀 bt-/bt-listen-/ble- 加 UUID.randomUUID()",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:72",
+    "symbol": "BluetoothSessionManager.newSessionId"
+  },
+  {
+    "fact": "默认 SPP UUID 为 00001101-0000-1000-8000-00805F9B34FB；parseUuid 在参数为空时回退该默认值",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:45",
+    "symbol": "BluetoothSessionManager.DEFAULT_SPP_UUID"
+  },
+  {
+    "fact": "scan 并行做经典蓝牙扫描（BroadcastReceiver 收 ACTION_FOUND，含 RSSI）与 BLE 扫描（ScanCallback），结果按设备名+地址排序并标记 source=classic/ble",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:110",
+    "symbol": "BluetoothSessionManager.scan"
+  },
+  {
+    "fact": "connectClassic 经 createRfcommSocketToServiceRecord(uuid) 建 RFCOMM 连接，在 IO 线程执行",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:232",
+    "symbol": "BluetoothSessionManager.connectClassic"
+  },
+  {
+    "fact": "readClassic 轮询 input.available()，每 20ms 检查一次，超时无数据返回空",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:293",
+    "symbol": "BluetoothSessionManager.readClassic"
+  },
+  {
+    "fact": "connectBle 经 device.connectGatt(..., TRANSPORT_LE) 连接，连接成功自动 discoverServices()",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:333",
+    "symbol": "BluetoothSessionManager.connectBle"
+  },
+  {
+    "fact": "TIRAMISU 版本分支在经典蓝牙广播接收器注册、getParcelableExtra 取设备、BLE 写特征三处，BluetoothGattCallback 本身无版本分支",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:171",
+    "symbol": "BluetoothSessionManager.connectBle"
+  },
+  {
+    "fact": "subscribeBleCharacteristic 向 0x2902 描述符写 ENABLE_NOTIFICATION_VALUE/DISABLE_NOTIFICATION_VALUE 实现订阅开关",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:513",
+    "symbol": "BluetoothSessionManager.subscribeBleCharacteristic"
+  },
+  {
+    "fact": "readBleNotifications 取出最多 limit 条通知后从队列清除（subList(0, size).clear()）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:538",
+    "symbol": "BluetoothSessionManager.readBleNotifications"
+  },
+  {
+    "fact": "蓝牙收发载荷经 decodePayload 解析：data_base64 优先，否则 text 按 UTF-8 编码",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/BluetoothSessionManager.kt:581",
+    "symbol": "BluetoothSessionManager.decodePayload"
+  },
+  {
+    "fact": "StandardFFmpegToolExecutor 经 FFmpegKit.execute(command) 执行任意 ffmpeg 命令，command 为空直接失败（\"Command cannot be empty\"）",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:30",
+    "symbol": "StandardFFmpegToolExecutor"
+  },
+  {
+    "fact": "ffmpeg 执行按 ReturnCode 区分成功/取消/失败，成功结果封装为 FFmpegResultData(command/returnCode/output/duration，duration 为执行耗时毫秒)",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:38",
+    "symbol": "FFmpegKit.execute"
+  },
+  {
+    "fact": "StandardFFmpegInfoToolExecutor 返回 FFmpegKitConfig.getVersion() 与 getBuildDate()（代码注释写 \"Build configuration\" 但实际取的是 build date），再执行 \"-codecs\" 列出支持的编解码器",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:102",
+    "symbol": "StandardFFmpegInfoToolExecutor"
+  },
+  {
+    "fact": "StandardFFmpegConvertToolExecutor 的 input_path/output_path 必填且输入文件必须存在",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:142",
+    "symbol": "StandardFFmpegConvertToolExecutor"
+  },
+  {
+    "fact": "转码命令按 -i \"input\" [-c:v] [-c:a] [-s resolution] [-b:v bitrate] \"output\" 顺序拼接",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:142",
+    "symbol": "StandardFFmpegConvertToolExecutor.invoke"
+  },
+  {
+    "fact": "转码成功后用 FFprobeKit.getMediaInformation 取媒体信息（format/duration/bitrate、video/audio 流列表），并二次 FFprobe 补帧率（r_frame_rate）、采样率、声道数",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt:211",
+    "symbol": "FFprobeKit.getMediaInformation"
+  },
+  {
+    "fact": "音乐播放由 MusicPlaybackManager 单例管理（双重检查），ensurePlayer 懒创建 ExoPlayer，音频属性为 USAGE_MEDIA + CONTENT_TYPE_MUSIC",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardMusicPlaybackTools.kt:629",
+    "symbol": "MusicPlaybackManager"
+  },
+  {
+    "fact": "play 的 source 必填，source_type 限 path/url/uri：path 要求文件存在，url 限 http/https，uri 要求有 scheme；可选 loop/volume/start_position_ms，volume 限 0~1",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardMusicPlaybackTools.kt:28",
+    "symbol": "MusicPlaybackManager.play"
+  },
+  {
+    "fact": "playQueue 的 items 为 JSON 数组，每项 source+source_type 必填；start_index 做越界校验；单曲循环用 REPEAT_MODE_ONE，队列循环用 REPEAT_MODE_ALL",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardMusicPlaybackTools.kt:84",
+    "symbol": "MusicPlaybackManager.playQueue"
+  },
+  {
+    "fact": "pause/resume/stop/status/seek/setVolume 统一走 execute 包装；stop 会清空媒体项；seek 要求 position_ms≥0",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardMusicPlaybackTools.kt:135",
+    "symbol": "MusicPlaybackManager.pause"
+  },
+  {
+    "fact": "播放状态机为 idle/playing/paused/stopped/preparing/ended/error 字符串；requirePlayer 在无活跃播放会话时抛 IllegalStateException(\"No active music playback session\")",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardMusicPlaybackTools.kt:549",
+    "symbol": "MusicPlaybackManager.playbackState"
+  },
+  {
+    "fact": "StandardUITools 实现 ToolImplementations，类注释明示标准版不支持 UI 操作",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:52",
+    "symbol": "StandardUITools"
+  },
+  {
+    "fact": "标准版 UI 操作统一返回 OPERATION_NOT_SUPPORTED：\"This operation is not supported in the standard version. Please use the accessibility or debugger version.\"",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:58",
+    "symbol": "StandardUITools.OPERATION_NOT_SUPPORTED"
+  },
+  {
+    "fact": "getPageInfo/tap/longPress/clickElement/setInputText/pressKey/swipe 在标准版全部直接返回不支持失败（无实际 UI 操作）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:306",
+    "symbol": "StandardUITools.getPageInfo"
+  },
+  {
+    "fact": "APP_PACKAGES 是中文应用名→包名的映射表（如微信/QQ/淘宝/京东/拼多多/小红书/高德/美团/12306/滴滴/bilibili/抖音/快手等）及大量英文别名",
+    "kind": "field",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:61",
+    "symbol": "StandardUITools.APP_PACKAGES"
+  },
+  {
+    "fact": "addAppPackages 可扩展映射表；scanAndAddInstalledApps 扫描已装应用补全映射（只跑一次）",
+    "kind": "field",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:253",
+    "symbol": "StandardUITools.APP_PACKAGES"
+  },
+  {
+    "fact": "runUiSubAgent 是 UI 自动化子 agent 循环：intent 必填，max_steps 默认 20",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:407",
+    "symbol": "StandardUITools.runUiSubAgent"
+  },
+  {
+    "fact": "runUiSubAgent 要求 UI_CONTROLLER 功能模型启用识图（enableDirectImageProcessing），否则报错并指引去设置开启",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:407",
+    "symbol": "StandardUITools.runUiSubAgent"
+  },
+  {
+    "fact": "runUiSubAgent 经 EnhancedAIService.getAIServiceForFunction(UI_CONTROLLER) 取模型服务，用 PhoneAgent + ActionHandler + AgentConfig 执行；system prompt 按中英文日期构建（FunctionalPrompts.buildUiAutomationAgentPrompt）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:407",
+    "symbol": "StandardUITools.runUiSubAgent"
+  },
+  {
+    "fact": "runUiSubAgent 的成功判定为返回的 finalMessage 不含 \"Max steps reached\"/\"Error\"；结果含 stepCount 与 contextHistory（AutomationExecutionResult）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:407",
+    "symbol": "StandardUITools.runUiSubAgent"
+  },
+  {
+    "fact": "截图经 MediaProjection：无权限则 ScreenCaptureActivity.cleanStart 申请，最多等 20×500ms；保存到 OperitPaths.cleanOnExitDir() 的 <时间戳后4位>.png，最多重试 3 次；captureScreenshotBitmap 同理返回 Bitmap",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:612",
+    "symbol": "StandardUITools.captureScreenshotToFile"
+  },
+  {
+    "fact": "StandardSoftwareSettingsModifyTools 是软件设置修改工具（含 MCP 重启与日志收集）",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:90",
+    "symbol": "StandardSoftwareSettingsModifyTools"
+  },
+  {
+    "fact": "readEnvironmentVariable/writeEnvironmentVariable 经 EnvPreferences.getInstance(context) 读写环境变量；写空值=删除（返回 cleared=true）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:92",
+    "symbol": "StandardSoftwareSettingsModifyTools.readEnvironmentVariable"
+  },
+  {
+    "fact": "listSandboxPackages 经 packageManager.getAvailablePackages(forceRefresh=true) 列沙盒包，返回总数/内置数/外部数/启用数/禁用数、外部包路径、脚本开发指南 URL（docs/SCRIPT_DEV_SKILL.md）与包加载错误",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:177",
+    "symbol": "StandardSoftwareSettingsModifyTools.listSandboxPackages"
+  },
+  {
+    "fact": "沙盒包管理模式：内置包为 \"toggle_only\"（只能开关），外部包为 \"file_and_toggle\"（文件+开关）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:177",
+    "symbol": "StandardSoftwareSettingsModifyTools.listSandboxPackages"
+  },
+  {
+    "fact": "setSandboxPackageEnabled 的 enabled 须为 true/false；包不存在报错；返回 previousEnabled/currentEnabled",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:241",
+    "symbol": "StandardSoftwareSettingsModifyTools.setSandboxPackageEnabled"
+  },
+  {
+    "fact": "executeSandboxScriptDirect 要求 source_path 与 source_code 恰好二选一；params_json 默认 \"{}\"；env_file_path 可选；wait_ms 默认 15000L（最小 1000L）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:334",
+    "symbol": "StandardSoftwareSettingsModifyTools.executeSandboxScriptDirect"
+  },
+  {
+    "fact": "沙盒脚本经 JsEngine(context).executeScriptCode 执行 JS，JsExecutionTraceRecorder 记录执行轨迹；成功判定为结果不以 \"Error:\" 开头",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:334",
+    "symbol": "StandardSoftwareSettingsModifyTools.executeSandboxScriptDirectResult"
+  },
+  {
+    "fact": "parseEnvFile 解析 env 文件：跳过空行与 # 注释，按第一个 = 分割键值，去除包裹引号；路径不存在或非文件时报错",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2454",
+    "symbol": "StandardSoftwareSettingsModifyTools.parseEnvFile"
+  },
+  {
+    "fact": "getSpeechServicesConfig 返回 TTS/STT 配置，apiKey 只返回是否设置 + 脱敏预览（maskSecret）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:438",
+    "symbol": "StandardSoftwareSettingsModifyTools.getSpeechServicesConfig"
+  },
+  {
+    "fact": "maskSecret 脱敏规则：≤4 位全掩码为星号，否则取前 3 位 + *** + 后 2 位",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2358",
+    "symbol": "StandardSoftwareSettingsModifyTools.maskSecret"
+  },
+  {
+    "fact": "setSpeechServicesConfig 只更新传入的字段（hasField 判定）；更新后 VoiceServiceFactory.resetInstance() + SpeechServiceFactory.resetInstance()；无更新字段则报错",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:502",
+    "symbol": "StandardSoftwareSettingsModifyTools.setSpeechServicesConfig"
+  },
+  {
+    "fact": "testTtsPlayback 的 text 必填；interrupt 默认 true；走 VoiceServiceFactory 初始化并 speak，返回初始化/触发状态",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:820",
+    "symbol": "StandardSoftwareSettingsModifyTools.testTtsPlayback"
+  },
+  {
+    "fact": "formatTtsPlaybackError 按异常类型分级格式化：TtsException 按 httpStatusCode/errorBody 组合；UnknownHostException/SocketTimeoutException/ConnectException/ProtocolException/IOException 分别给中文网络错误提示",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2396",
+    "symbol": "StandardSoftwareSettingsModifyTools.formatTtsPlaybackError"
+  },
+  {
+    "fact": "listModelConfigs 返回模型配置列表 + 各 FunctionType 的功能-模型映射（含 modelIndex 与选中模型名）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:954",
+    "symbol": "StandardSoftwareSettingsModifyTools.listModelConfigs"
+  },
+  {
+    "fact": "createModelConfig 默认名 \"New Model Config\"，创建时可同时带字段更新",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1007",
+    "symbol": "StandardSoftwareSettingsModifyTools.createModelConfig"
+  },
+  {
+    "fact": "updateModelConfig 的 config_id 必填；更新后刷新受影响功能的 AIService（EnhancedAIService.refreshServiceForFunction）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1053",
+    "symbol": "StandardSoftwareSettingsModifyTools.updateModelConfig"
+  },
+  {
+    "fact": "deleteModelConfig 拒绝删除默认配置",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1124",
+    "symbol": "StandardSoftwareSettingsModifyTools.deleteModelConfig"
+  },
+  {
+    "fact": "applyModelConfigUpdates 支持的更新字段覆盖：api_key/api_endpoint/model_name/api_provider_type、max_tokens/temperature/top_p/top_k/presence/frequency/repetition 惩罚、context_length、mnn/llama 本地推理参数、enable_direct_image/audio/video_processing、enable_google_search、enable_tool_call 等；max_tokens≥1；llamaGpuLayers≤0 时强制 llamaOffloadKqv=false",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2131",
+    "symbol": "StandardSoftwareSettingsModifyTools.applyModelConfigUpdates"
+  },
+  {
+    "fact": "modelConfigToResultItem 返回的配置条目中 apiKey 只暴露 apiKeySet（是否设置）与 apiKeyPreview（脱敏），不返回明文",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2298",
+    "symbol": "StandardSoftwareSettingsModifyTools.modelConfigToResultItem"
+  },
+  {
+    "fact": "getFunctionModelConfig/setFunctionModelConfig 的 function_type 必填，经 parseFunctionType 按忽略大小写匹配 FunctionType 枚举",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1224",
+    "symbol": "StandardSoftwareSettingsModifyTools.getFunctionModelConfig"
+  },
+  {
+    "fact": "setFunctionModelConfig 的 config_id 必填，model_index 默认 0（coerceAtLeast(0)）；绑定后刷新该功能的 AIService；返回 requestedModelIndex/actualModelIndex/selectedModel",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1290",
+    "symbol": "StandardSoftwareSettingsModifyTools.setFunctionModelConfig"
+  },
+  {
+    "fact": "testModelConfigConnection 经 ModelConfigConnectionTester.run 做连通性测试，返回 totalTests/passedTests/failedTests/unverifiedTests 与逐项 type/success/outcome/error",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1369",
+    "symbol": "StandardSoftwareSettingsModifyTools.testModelConfigConnection"
+  },
+  {
+    "fact": "角色卡 CRUD：listCharacterCards/getCharacterCard/createCharacterCard/updateCharacterCard/deleteCharacterCard；create 要求 name 非空，update 至少一个更新字段，delete 拒绝删除默认角色卡（CharacterCardManager.DEFAULT_CHARACTER_CARD_ID）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1450",
+    "symbol": "StandardSoftwareSettingsModifyTools.listCharacterCards"
+  },
+  {
+    "fact": "setActiveCharacterCard/clearActiveCharacterCard 切换/清空当前激活角色卡",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1662",
+    "symbol": "StandardSoftwareSettingsModifyTools.setActiveCharacterCard"
+  },
+  {
+    "fact": "importCharacterCardFromTavernJson/exportCharacterCardToTavernJson 支持 Tavern JSON 格式的角色卡导入导出",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1721",
+    "symbol": "StandardSoftwareSettingsModifyTools.importCharacterCardFromTavernJson"
+  },
+  {
+    "fact": "角色卡字段覆盖：name/description/character_setting/opening_statement/other_content_chat/other_content_voice/advanced_custom_prompt/marks/attached_tag_ids；chat_model_binding_mode 限 FOLLOW_GLOBAL/FIXED_CONFIG；memory_profile_binding_mode 限 FOLLOW_GLOBAL/FIXED_PROFILE；tool_access_config 含 enabled/allowed_builtin_tools/allowed_packages/allowed_skills/allowed_mcp_servers（更新后 normalized）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1937",
+    "symbol": "StandardSoftwareSettingsModifyTools.applyCharacterCardUpdates"
+  },
+  {
+    "fact": "restartMcpWithLogs：timeout_ms 默认 120000L（钳制 5000L~600000L）；经 PluginLoadingStateRegistry.getState/getScope 取插件加载状态；reset+show+initializeMCPServer 后每 250ms 轮询，直到 progress≥0.999 且 message 非空或超时",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1823",
+    "symbol": "StandardSoftwareSettingsModifyTools.restartMcpWithLogs"
+  },
+  {
+    "fact": "restartMcpWithLogs 返回 McpRestartWithLogsResultData：pluginsTotal/pluginsStarted/successCount/failedCount、每个插件的 id/displayName/status/message/log，以及未归属插件的 extraLogs；任一插件失败则整体 success=false",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:1823",
+    "symbol": "StandardSoftwareSettingsModifyTools.restartMcpWithLogs"
+  },
+  {
+    "fact": "parseBooleanParameter 接受 1/true/yes/y/on 为真、0/false/no/n/off 为假（忽略大小写与首尾空白），其他返回 null",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt:2438",
+    "symbol": "StandardSoftwareSettingsModifyTools.parseBooleanParameter"
+  }
+]

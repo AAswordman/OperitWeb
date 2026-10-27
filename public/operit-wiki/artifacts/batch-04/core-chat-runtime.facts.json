@@ -1,0 +1,438 @@
+[
+  {
+    "fact": "`AIMessageManager` 是 object 单例，负责管理与 AI 服务的所有通信",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:80"
+  },
+  {
+    "fact": "设计原则无状态：本身不持有任何特定聊天的状态，所有需要的数据都通过方法参数传入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:73"
+  },
+  {
+    "fact": "主要职责：构建发送给 AI 的消息请求、发送消息并处理流式响应、请求生成对话总结",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:68"
+  },
+  {
+    "fact": "独立协程作用域 `scope = CoroutineScope(Dispatchers.IO + SupervisorJob())`，AI 操作生命周期独立于任何特定 ViewModel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:86"
+  },
+  {
+    "fact": "`DEFAULT_CHAT_KEY = \"__DEFAULT_CHAT__\"`，chatId 为空时的默认聊天键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:88"
+  },
+  {
+    "fact": "`activeEnhancedAiServiceByChatId` 是按 chatKey 存放活跃 AI 服务实例的 ConcurrentHashMap",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:90"
+  },
+  {
+    "fact": "`activeMessageProcessingControllerByChatId` 存放插件接管执行时的 controller",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:91"
+  },
+  {
+    "fact": "`lastActiveChatKey` 是 @Volatile 变量，记录最后活跃的聊天键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:93"
+  },
+  {
+    "fact": "`initialize(context)` 初始化 `toolHandler`、`packageManager`、`context`、`apiPreferences`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:105"
+  },
+  {
+    "fact": "计时标签 `MESSAGE_PROCESS_TIMING_TAG = \"MessageProcessTiming\"`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:45"
+  },
+  {
+    "fact": "`messageTimingNow()` 返回 `SystemClock.elapsedRealtime()`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:47"
+  },
+  {
+    "fact": "`logMessageTiming(stage, startTimeMs, details)` 把各阶段耗时记到日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:56"
+  },
+  {
+    "fact": "`formatDialogueReviewHeader(defaultHeader, customTitle)` 规范化总结中的对话回顾标题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:59"
+  },
+  {
+    "fact": "先调用 `InputProcessor.processUserInput` 处理用户原始输入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:144"
+  },
+  {
+    "fact": "代理发送者：`proxySenderName` 非空且文本中没有 proxy_sender 标签时，拼接 `<proxy_sender name=\"...\"/>` 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:158"
+  },
+  {
+    "fact": "回复标签：`replyToMessage` 非空时拼接 `<reply_to>`，内容去掉 XML 标签并截断到 100 字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:172"
+  },
+  {
+    "fact": "工作区标签：workspacePath 非空时经 `WorkspaceChangeTracker.consumeChanges` 取变更，拼接 `<workspace_attachment>`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:192"
+  },
+  {
+    "fact": "图片附件直连：`enableDirectImageProcessing` 开启且 mimeType 以 image/ 开头时，`ImagePoolManager.addImage` 入池",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:217"
+  },
+  {
+    "fact": "图片直连成功后用 `MediaLinkBuilder.image` 生成 link",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:233"
+  },
+  {
+    "fact": "图片入池失败时记日志并回退为普通 `<attachment>` 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:240"
+  },
+  {
+    "fact": "PDF 附件直连：`enableDirectFileProcessing` 开启且 mimeType 为 application/pdf 时，`MediaPoolManager.addMedia` 入池",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:251"
+  },
+  {
+    "fact": "入池成功后用 `MediaLinkBuilder.file` 生成 PDF 下载链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:255"
+  },
+  {
+    "fact": "PDF 入池返回 \"error\" 时 `check(fileId != \"error\")` 直接抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:252"
+  },
+  {
+    "fact": "音频附件直连：`enableDirectAudioProcessing` 开启且 mimeType 以 audio/ 开头时，`MediaPoolManager.addMedia` 入池后用 `MediaLinkBuilder.audio` 生成链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:260"
+  },
+  {
+    "fact": "音频附件直连失败时记日志并回退为普通附件格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:273"
+  },
+  {
+    "fact": "视频附件直连：`enableDirectVideoProcessing` 开启且 mimeType 以 video/ 开头时，`MediaPoolManager.addMedia` 入池后用 `MediaLinkBuilder.video` 生成链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:279"
+  },
+  {
+    "fact": "视频附件直连失败时记日志并回退为普通附件格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:292"
+  },
+  {
+    "fact": "普通附件格式为 `<attachment id filename type size>` 包裹附件内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:296"
+  },
+  {
+    "fact": "最终消息内容 = proxySenderTag、processedMessageText、attachmentTags、workspaceTag、replyTag 的非空部分用空格拼接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:315"
+  },
+  {
+    "fact": "`sendMessage` 是消息发送主入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:345"
+  },
+  {
+    "fact": "消息发送主入口返回 `SharedStream<String>`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:373"
+  },
+  {
+    "fact": "发送前先经 `getMemoryFromMessages` 把聊天历史转成 PromptTurn 记忆",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:380"
+  },
+  {
+    "fact": "历史音视频裁剪：`limitMediaLinksInChatHistory` 处理媒体链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:406"
+  },
+  {
+    "fact": "插件优先：`MessageProcessingPluginRegistry.createExecutionIfMatched` 匹配成功则插件接管本轮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:431"
+  },
+  {
+    "fact": "插件接管时 controller 存入 `activeMessageProcessingControllerByChatId`，返回插件的 stream",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:450"
+  },
+  {
+    "fact": "未被插件接管则走普通模式，用 `EnhancedAIService.SendMessageOptions` 组装请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:485"
+  },
+  {
+    "fact": "流式开关由 `apiPreferences.disableStreamOutputFlow` 决定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:474"
+  },
+  {
+    "fact": "响应流用 `shareRevisable(scope, replay=Int.MAX_VALUE, propagateCompletionCause=false)` 做多订阅者共享",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:511"
+  },
+  {
+    "fact": "流完成时 `onComplete` 从两个活跃 map 中移除 chatKey",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:517"
+  },
+  {
+    "fact": "经 `estimateRequestWindowFromMemory` 估算请求窗口大小",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:569"
+  },
+  {
+    "fact": "`limitMediaLinksInChatHistory` 按用户轮次计数，只保留最后 keepLastUserMediaTurns 个轮次的媒体链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:593"
+  },
+  {
+    "fact": "被裁掉的媒体链接替换为省略提示文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:603"
+  },
+  {
+    "fact": "`limitImageLinksInChatHistory` 同理只保留最近 N 个用户轮次的图片链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:617"
+  },
+  {
+    "fact": "`cancelCurrentOperation()` 取消最后活跃聊天的 AI 操作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:640"
+  },
+  {
+    "fact": "`cancelOperation` 同时取消插件接管执行和 AI 对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:652"
+  },
+  {
+    "fact": "`cancelOperation` 还会取消该聊天的 ToolPkg JS 执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:660"
+  },
+  {
+    "fact": "`cancelAllOperations()` 遍历两个活跃 map 的全部键逐个取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:669"
+  },
+  {
+    "fact": "只总结 `lastSummaryIndex` 之后的消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:691"
+  },
+  {
+    "fact": "无新消息需要总结时返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:701"
+  },
+  {
+    "fact": "总结前剥离 `<memory>` 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:987"
+  },
+  {
+    "fact": "AI 消息总结前先用 `ChatUtils.removeThinkingContent` 去掉思考内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:849"
+  },
+  {
+    "fact": "群聊模式把全部消息打包成 \"speaker: content\" 的单条用户消息再总结",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1011"
+  },
+  {
+    "fact": "总结经 `enhancedAiService.generateSummary(conversation, previousSummary, summaryConfig)` 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1046"
+  },
+  {
+    "fact": "AI 返回的总结为空则放弃本次总结",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1052"
+  },
+  {
+    "fact": "总结消息以 sender=\"summary\"、roleName=\"system\" 的 ChatMessage 返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1093"
+  },
+  {
+    "fact": "`dialogueReviewEnabled` 开启时在总结尾部追加对话回顾条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1063"
+  },
+  {
+    "fact": "`buildPackageWarmupBlock` 调用 `extractTopPackageUsages(messagesToSummarize, limit = 2)` 取窗口内工具使用 Top 2 的包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1111"
+  },
+  {
+    "fact": "预热块对每个 Top 包调用 `packageManager.usePackage` 取工具提示文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1137"
+  },
+  {
+    "fact": "`extractTopPackageUsages` 从 AI 消息的 tool 调用中提取包名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1184"
+  },
+  {
+    "fact": "按次数降序、次数相同时按先见顺序排序后取前 N",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1250"
+  },
+  {
+    "fact": "package_proxy/proxy 工具按 `tool_name` 参数解析出的真实工具名统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1234"
+  },
+  {
+    "fact": "`use_package` 工具本身不参与包使用统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1241"
+  },
+  {
+    "fact": "shouldGenerateSummary：enableSummary 关闭直接返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1292"
+  },
+  {
+    "fact": "token 使用率 >= tokenUsageThreshold 时触发总结",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1298"
+  },
+  {
+    "fact": "按消息数触发：上次总结后用户消息数 >= `summaryMessageCountThreshold`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1314"
+  },
+  {
+    "fact": "getMemoryFromMessages 找到最后一条 summary 消息，只处理其之后的消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1339"
+  },
+  {
+    "fact": "角色隔离模式：splitByRole 且 targetRoleName 非空时启用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1347"
+  },
+  {
+    "fact": "非角色隔离模式：AI 消息直接作为 ASSISTANT 返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1402"
+  },
+  {
+    "fact": "角色隔离模式：其他角色的 AI 消息转为 USER 并加 \"[From role: xxx]\" 前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1425"
+  },
+  {
+    "fact": "群组编排+角色隔离：用户消息加 \"[From user]\" 前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1441"
+  },
+  {
+    "fact": "`ChatRuntimeHookEvent` 目前只有一个事件 `STATE_CHANGED(\"state_changed\")`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:15"
+  },
+  {
+    "fact": "`ChatRuntimeHookContext` 携带 context、chatId、slot、state、activeChatIds 和工具调用计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:24"
+  },
+  {
+    "fact": "`ChatRuntimeHook` 接口要求 `id` 和 suspend 的 `onEvent(event, context)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:34"
+  },
+  {
+    "fact": "`ChatRuntimeHookRegistry` 是 object；注册时先按 id 注销旧 hook 再添加，防重复注册",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:45"
+  },
+  {
+    "fact": "`dispatch` 逐个调用 hook，异常被捕获记日志，不中断后续 hook",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:58"
+  },
+  {
+    "fact": "`ChatRuntimeHookRegistry` 定义 `dispatchScope = CoroutineScope(SupervisorJob() + Dispatchers.Default)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:42"
+  },
+  {
+    "fact": "`dispatchAsync` 用 `dispatchScope.launch` 把事件分发切到后台异步执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:72"
+  },
+  {
+    "fact": "`PromptHookContext` 携带 stage、chatId、functionType、rawInput/processedInput、chatHistory",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:11"
+  },
+  {
+    "fact": "`PromptHookContext` 还携带 systemPrompt、toolPrompt、availableTools、metadata",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:20"
+  },
+  {
+    "fact": "`PromptHookMutation` 各字段可选，用于覆盖式修改上下文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:27"
+  },
+  {
+    "fact": "以 `PromptInputHook` 为例，prompt 阶段钩子接口要求 `id` 与回调 `onEvent(context): PromptHookMutation?`，默认返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:38"
+  },
+  {
+    "fact": "`PromptHookRegistry` 是 object 单例，7 组钩子各用 `CopyOnWriteArrayList` 存放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:80"
+  },
+  {
+    "fact": "`applyMutation` 用 mutation 的非空字段覆盖当前值，metadata 做合并",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:267"
+  },
+  {
+    "fact": "分发是同步串行的：逐个调用 hook，runCatching 捕获异常记日志后继续下一个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptHookRegistry.kt:245"
+  },
+  {
+    "fact": "`SummaryHookContext` 携带 stage、previousSummary、chatHistory、summaryPrompt、summaryResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/SummaryHookRegistry.kt:12"
+  },
+  {
+    "fact": "`SummaryGenerateHook` 接口回调为 `onEvent(context): SummaryHookMutation?`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/SummaryHookRegistry.kt:30"
+  },
+  {
+    "fact": "`dispatchSummaryGenerateHooks` 委托给私有的 `dispatch` 函数执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/SummaryHookRegistry.kt:50"
+  },
+  {
+    "fact": "私有 `dispatch` 用 `runCatching` 包裹每个 hook 调用，失败记日志后继续下一个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/SummaryHookRegistry.kt:69"
+  },
+  {
+    "fact": "`buildActivePromptHookMetadata(context, chatId, roleCardId)` 返回包含 activePrompt 的元数据 map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:15"
+  },
+  {
+    "fact": "聊天绑定的角色组优先，用 `ActivePrompt.CharacterGroup(boundGroupId)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:32"
+  },
+  {
+    "fact": "其次用传入的 roleCardId，用 `ActivePrompt.CharacterCard(resolvedRoleCardId)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:37"
+  },
+  {
+    "fact": "再按聊天绑定的角色卡名经 `CharacterCardManager.findCharacterCardByName` 解析为 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:43"
+  },
+  {
+    "fact": "都为空时回退到全局 active prompt",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:54"
+  },
+  {
+    "fact": "`resolveBoundChat` 从 `ChatHistoryManager.chatHistoriesFlow` 取第一条匹配 chatId 的记录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:57"
+  },
+  {
+    "fact": "character_card 元数据格式为 {type:\"character_card\", id, name}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:79"
+  },
+  {
+    "fact": "character_group 元数据格式为 {type:\"character_group\", id, name}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ActivePromptHookMetadata.kt:92"
+  },
+  {
+    "fact": "`PromptTurnKind` 有 6 种：SYSTEM、USER、ASSISTANT、TOOL_CALL、TOOL_RESULT、SUMMARY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:6"
+  },
+  {
+    "fact": "`appendUserTurnIfMissing` 末尾不是相同用户消息时才追加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:64"
+  },
+  {
+    "fact": "`role` 按 kind 派生字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:32"
+  },
+  {
+    "fact": "`withContent` 内容相同时返回自身，否则 copy",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:60"
+  },
+  {
+    "fact": "合并规则：相邻同 kind 轮次合并，但 SYSTEM/TOOL_CALL/TOOL_RESULT 三类不合并",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:76"
+  },
+  {
+    "fact": "合并时内容用换行拼接，metadata 做合并",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:93"
+  },
+  {
+    "fact": "`toPromptTurns` 把 Pair 列表转成 PromptTurn 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:103"
+  },
+  {
+    "fact": "`toRoleContentPairs` 把 PromptTurn 列表转回 Pair 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/PromptTurn.kt:109"
+  },
+  {
+    "fact": "`MessageProcessingHookParams` 携带 context、enhancedAIService、chatId、messageContent、chatHistory、workspacePath、maxTokens、tokenUsageThreshold、onNonFatalError",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:13"
+  },
+  {
+    "fact": "`MessageProcessingExecution` = 可 cancel 的 controller + 文本流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:25"
+  },
+  {
+    "fact": "`MessageProcessingPlugin` 接口：`id` 加 suspend 的 `createExecutionIfMatched(params)`，返回 null 表示不接管",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:30"
+  },
+  {
+    "fact": "`MessageProcessingPluginRegistry.createExecutionIfMatched` 按注册顺序逐个询问，第一个返回非空的插件接管",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:52"
+  },
+  {
+    "fact": "插件注册/注销 @Synchronized，注册时先注销同 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:42"
+  }
+]

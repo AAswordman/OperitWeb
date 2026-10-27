@@ -1,0 +1,12 @@
+[
+ {
+  "severity": "suggestion",
+  "category": "maintainability",
+  "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt",
+  "line": 12,
+  "title": "providerType 默认值 FOUR_ROUTER 永不生效",
+  "detail": "FourRouterProvider 构造参数 providerType 默认为 ApiProviderType.FOUR_ROUTER，但唯一构造点 AIServiceFactory 在 FOUR_ROUTER 分支总是显式传入 providerType（AIServiceFactory.kt:641），默认值写了也用不上，属于冗余参数。",
+  "evidence": "    providerType: ApiProviderType = ApiProviderType.FOUR_ROUTER,",
+  "confidence": "medium"
+ }
+]

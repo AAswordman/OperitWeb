@@ -1,0 +1,606 @@
+[
+  {
+    "fact": "单元测试源码位于 app/src/test/java/com/ai/assistance/operit/ 之下的 api/ 与 core/ 两个目录",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:1"
+  },
+  {
+    "fact": "api/ 目录 43 个测试文件、234 个 @Test；core/ 29 个文件、471 个 @Test；合计 72 文件、705 个 @Test（逐文件清点）",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:1"
+  },
+  {
+    "fact": "测试框架为 JUnit4：@Test 注解配合 org.junit.Assert 的 assertEquals/assertTrue 断言",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:4"
+  },
+  {
+    "fact": "协程相关测试用 kotlinx.coroutines 的 runBlocking 把挂起代码包裹成同步测试",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResultsTest.kt:18"
+  },
+  {
+    "fact": "需要 Android Context 的地方用 mockito-kotlin 的 mock() 伪造",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManagerTest.kt:109"
+  },
+  {
+    "fact": "全局静态对象打桩用 Mockito.mockStatic(AppLogger::class.java).use {} 限定作用域",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ProviderUsageCancellationTest.kt:175"
+  },
+  {
+    "fact": "异常断言使用 @Test(expected = IllegalArgumentException::class) 声明式写法",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParserTest.kt:313"
+  },
+  {
+    "fact": "全目录扫描无 Thread.sleep、无随机数、无墙钟读取；时区相关测试写死 ZoneId，确定性高",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScopeTest.kt:13"
+  },
+  {
+    "fact": "DataStore 迁移测试用 mutablePreferencesOf 构造内存偏好数据验证迁移逻辑",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAiChatReasoningEffortTest.kt:72"
+  },
+  {
+    "fact": "EndpointCompleter.completeEndpoint：根 URL 补 /v1/chat/completions",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:9"
+  },
+  {
+    "fact": "EndpointCompleter：已有 /v1 路径只补 chat/completions 后缀",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:23"
+  },
+  {
+    "fact": "EndpointCompleter：非 v1 自定义路径保持不变",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:37"
+  },
+  {
+    "fact": "EndpointCompleter：末尾 # 禁用补全（hash bypass）",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:47"
+  },
+  {
+    "fact": "EndpointCompleter：OpenAI Responses 根 URL 补 /v1/responses",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:51"
+  },
+  {
+    "fact": "EndpointCompleter：Anthropic 根 URL 补 /v1/messages",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:77"
+  },
+  {
+    "fact": "EndpointCompleter：Google/Gemini/MNN 的 endpoint 保持原样不补全",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:108"
+  },
+  {
+    "fact": "EndpointCompleter：只有 query 的根 URL，query 保留在补全路径之前",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTest.kt:158"
+  },
+  {
+    "fact": "EndpointCompleter：外层空白先去除再补全",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterTrimTest.kt:9"
+  },
+  {
+    "fact": "EndpointCompleter：Anthropic 路径以 anthropic/ 结尾补 messages，已有 messages 不变",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterAnthropicPathTest.kt:9"
+  },
+  {
+    "fact": "EndpointCompleter：OpenAI 通用 provider 走 Responses 补全",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterProviderSpecificTest.kt:9"
+  },
+  {
+    "fact": "ChatConfigReadiness：中文 API key 被拒绝",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadinessTest.kt:18"
+  },
+  {
+    "fact": "ChatConfigReadiness：Codex 未 OAuth 登录被拒绝",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadinessTest.kt:34"
+  },
+  {
+    "fact": "ChatConfigReadiness：本地 provider（MNN）不需要 endpoint 与 key",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadinessTest.kt:76"
+  },
+  {
+    "fact": "ChatConfigReadiness：注册插件自带配置要求",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadinessTest.kt:91"
+  },
+  {
+    "fact": "OpenAiToolCallHistory：乱序返回的 tool 结果按 tool 名配对到对应调用",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAiToolCallHistoryTest.kt:88"
+  },
+  {
+    "fact": "OpenAiToolCallHistory：配不上调用的 tool 结果被忽略，不抢占别人的 call id",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAiToolCallHistoryTest.kt:184"
+  },
+  {
+    "fact": "ClaudeOrderedToolHistory：有序流拆分成保存轮次后 tool 历史保持一致",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeOrderedToolHistoryTest.kt:37"
+  },
+  {
+    "fact": "StructuredToolCallBridge：跨 provider 的乱序 tool 结果按 tool 名配对",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridgeHistoryTest.kt:52"
+  },
+  {
+    "fact": "GeminiThinkingConfig：模型选项映射到 Gemini thinking level",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiThinkingConfigTest.kt:19"
+  },
+  {
+    "fact": "GeminiThinkingConfig：启用的 thinking 选项请求 thought 摘要",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiThinkingConfigTest.kt:25"
+  },
+  {
+    "fact": "GeminiThinkingConfig：function call 部件使用 thoughtSignature 线路字段",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiThinkingConfigTest.kt:52"
+  },
+  {
+    "fact": "ThinkingQualityMapping：OpenAI 使用 5 个具名 effort 值",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMappingTest.kt:37"
+  },
+  {
+    "fact": "ThinkingQualityMapping：deepseek-chat 保留在 DeepSeek 家族映射中",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMappingTest.kt:55"
+  },
+  {
+    "fact": "OpenCodeThinkingConfiguration：OpenCode 智谱 provider 段使用 GLM effort 配置",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeThinkingConfigurationTest.kt:17"
+  },
+  {
+    "fact": "XaiProviderReasoning：启用的 thinking 选项映射到 xAI effort",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProviderReasoningTest.kt:30"
+  },
+  {
+    "fact": "XaiProviderReasoning：默认使用 xAI 官方端点与模型",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProviderReasoningTest.kt:11"
+  },
+  {
+    "fact": "OpenAiChatReasoningEffort：OpenAI chat 模型永不接收 reasoning_effort 参数",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAiChatReasoningEffortTest.kt:97"
+  },
+  {
+    "fact": "ColdStreamCancellation：token tracking 在收集前取消会阻止 delegate 执行",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ColdStreamCancellationTest.kt:20"
+  },
+  {
+    "fact": "ColdStreamCancellation：rate limited 在收集前取消同样阻止 delegate 执行",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ColdStreamCancellationTest.kt:48"
+  },
+  {
+    "fact": "ProviderUsageCancellation：OpenAI 流式 usage 回调的取消原样向上传播",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ProviderUsageCancellationTest.kt:45"
+  },
+  {
+    "fact": "LocalGenerationEnd.end：取消时抛异常，不伪造 tool 结果",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEndTest.kt:23"
+  },
+  {
+    "fact": "ClaudeProviderCancellation：正常流终止不被当作手动取消",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProviderCancellationTest.kt:9"
+  },
+  {
+    "fact": "MediaCapabilityProbe：图片匹配要求完整 code，7k2q 与带空格的 7K2Q 通过，句子中的 code 与残缺 code 拒绝",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbeTest.kt:9"
+  },
+  {
+    "fact": "MediaCapabilityProbe：视频匹配同样要求完整 code",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbeTest.kt:18"
+  },
+  {
+    "fact": "MediaCapabilityProbe：音频匹配接受数字与英文词",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaCapabilityProbeTest.kt:27"
+  },
+  {
+    "fact": "MediaLinkParser：图片链接提取去重并跳过 error id",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserTest.kt:10"
+  },
+  {
+    "fact": "MediaLinkParser：标签属性顺序任意仍能提取",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserTagOrderTest.kt:7"
+  },
+  {
+    "fact": "DeepseekProviderMediaRole：DeepSeek 历史图片经 user image 输入保持可读",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProviderMediaRoleTest.kt:56"
+  },
+  {
+    "fact": "DeepseekProviderMediaRole：图片池用临时目录隔离，@Before 创建 @After 递归删除",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProviderMediaRoleTest.kt:38"
+  },
+  {
+    "fact": "DeepseekResponsesPayloadAdapter：明文 reasoning 在 function call 前保留并重放",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekResponsesPayloadAdapterTest.kt:12"
+  },
+  {
+    "fact": "OpenAIResponsesFileInput：PDF 内容映射为 Responses 的 input_file",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesFileInputTest.kt:10"
+  },
+  {
+    "fact": "OpenAIResponsesVideoInput：空 video URL 被丢弃，不产生空白 part",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesVideoInputTest.kt:82"
+  },
+  {
+    "fact": "OpenAIResponsesWebSearchSource：web search 来源按 URL 去重合并并保留额外元数据",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesWebSearchSourceTest.kt:74"
+  },
+  {
+    "fact": "OpenAIResponsesPayloadAdapter：超 int 范围的 usage 数值保持精确不截断",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesPayloadAdapterTest.kt:46"
+  },
+  {
+    "fact": "OpenAIProviderContentField：chat 协议去掉 responses 标记",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProviderContentFieldTest.kt:12"
+  },
+  {
+    "fact": "CodexModelListParser：解析 OpenCode 模型目录并展开允许的模式",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/CodexModelListParserTest.kt:8"
+  },
+  {
+    "fact": "CodexModelPolicy：显式 OpenCode 模型被允许",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/CodexModelPolicyTest.kt:12"
+  },
+  {
+    "fact": "OrderedToolResults：同名调用逆序完成也按调用顺序发布",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResultsTest.kt:18"
+  },
+  {
+    "fact": "OrderedToolResults：取消不用部分输出伪造 completed 结果",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResultsTest.kt:92"
+  },
+  {
+    "fact": "ToolExecutionManagerMarkup：ensureOwnLine 让 tool 结果独占一行",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManagerMarkupTest.kt:27"
+  },
+  {
+    "fact": "ConversationMarkupManager：每个 tool 结果独立限长、全部保留",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManagerResultLimitTest.kt:14"
+  },
+  {
+    "fact": "ChatMemoryWindowPlanner：窗口规划保持 user/assistant 轮次配对",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlannerTest.kt:13"
+  },
+  {
+    "fact": "ChatMemoryWindowPlanner：2000+ 消息的对话在窗口规划下仍有界",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlannerTest.kt:163"
+  },
+  {
+    "fact": "ChatMemoryRebuildTimeScope：时区写死为 Asia/Shanghai 与 America/New_York，不依赖机器时区",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScopeTest.kt:13"
+  },
+  {
+    "fact": "MemoryAnalysisProtocol：拒绝旧的 positional array 协议",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/library/MemoryAnalysisProtocolTest.kt:74"
+  },
+  {
+    "fact": "AIMessageManagerDialogueReview：空标题使用默认对话回顾头",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/AIMessageManagerDialogueReviewTest.kt:8"
+  },
+  {
+    "fact": "PromptTurnConversion：fromRole 保留 toolName",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnConversionTest.kt:8"
+  },
+  {
+    "fact": "PromptTurnKind：fromRole 把 ai 映射为 assistant",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnKindTest.kt:8"
+  },
+  {
+    "fact": "PromptTurnMerge：mergeAdjacentTurns 合并相邻 assistant 轮次",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnMergeTest.kt:18"
+  },
+  {
+    "fact": "FunctionalPrompts：无覆盖时保持 legacy 摘要提示词",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/config/FunctionalPromptsSummaryTest.kt:12"
+  },
+  {
+    "fact": "ExpressionParserTest：96 个用例覆盖数字、运算符优先级、括号、函数、三元、赋值",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParserTest.kt:24"
+  },
+  {
+    "fact": "ExpressionParserEdgeCase：除零返回 Infinity",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParserEdgeCaseTest.kt:17"
+  },
+  {
+    "fact": "ExpressionContext.coerceToNumber：非法字符串转数字得 NaN",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContextTest.kt:87"
+  },
+  {
+    "fact": "ExpressionContext：变量表是全局状态，@After 调用 clearVariables 清理",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContextTest.kt:10"
+  },
+  {
+    "fact": "ExpressionNode：除零求值得 Infinity",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeTest.kt:61"
+  },
+  {
+    "fact": "JsCalculator：未定义变量求值抛异常",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/JsCalculatorTest.kt:55"
+  },
+  {
+    "fact": "Calculator：clearVariables 后 PI 恢复为预定义常量",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/CalculatorTest.kt:50"
+  },
+  {
+    "fact": "ConditionEvaluator：空表达式默认 true",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorTest.kt:11"
+  },
+  {
+    "fact": "ConditionEvaluator：and 优先级高于 or",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorTest.kt:51"
+  },
+  {
+    "fact": "ConditionEvaluatorParseFailure：解析失败返回 false 而非抛异常",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorParseFailureTest.kt:10"
+  },
+  {
+    "fact": "ConditionEvaluatorBooleanLogic：null 在布尔上下文为 falsy",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorBooleanLogicTest.kt:21"
+  },
+  {
+    "fact": "JsRuntimeToolCall：toolCall 经通用 native 桥分发",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/javascript/JsRuntimeToolCallTest.kt:9"
+  },
+  {
+    "fact": "JsToolPkgRegistration：注册期捕获合法的 marketplace origin",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistrationTest.kt:11"
+  },
+  {
+    "fact": "McpServerRegistration：连接 remote runtime 不把 server 暴露给 AI",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/mcp/McpServerRegistrationTest.kt:37"
+  },
+  {
+    "fact": "McpServerRegistration：重复注册只保留一条 server 记录",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/mcp/McpServerRegistrationTest.kt:60"
+  },
+  {
+    "fact": "ToolPkgManager：执行上下文不能被不同容器共享",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManagerTest.kt:16"
+  },
+  {
+    "fact": "ToolPkgManifestSelection：root hjson 优先于其他 manifest",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManifestSelectionTest.kt:32"
+  },
+  {
+    "fact": "ToolPkgApiDeclaration：空声明版本视为 legacy 版本",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiDeclarationTest.kt:10"
+  },
+  {
+    "fact": "ToolPkgMarketOriginCodec：marketplace origin 编码为无可读作者数据的 xor marker",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOriginCodecTest.kt:10"
+  },
+  {
+    "fact": "EndpointCompleterDefaultPathTest 含 4 个 @Test：被测类为 EndpointCompleter，锁定\"已有完整路径就不动\"的默认行为",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterDefaultPathTest.kt:8"
+  },
+  {
+    "fact": "completeEndpoint_keepsFullChatPathUntouched：已有完整 /v1/chat/completions 路径的 endpoint 原样返回，不再追加",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterDefaultPathTest.kt:8"
+  },
+  {
+    "fact": "completeEndpoint_keepsNonHttpUrlUntouched：file:///tmp/test 这类非 http(s) URL 原样返回，不触发补全",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterDefaultPathTest.kt:18"
+  },
+  {
+    "fact": "completeEndpoint_keepsWhitespaceForInvalidInput：\" invalid \" 这类非法带空格输入原样返回，不做 trim 后补全",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterDefaultPathTest.kt:23"
+  },
+  {
+    "fact": "EndpointCompleterHashControlTest 含 3 个 @Test：被测类为 EndpointCompleter，锁定 hash bypass 只去尾部 #",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterHashControlTest.kt:9"
+  },
+  {
+    "fact": "defaultCompletion_hashBypassStripsHashOnly：https://x/v1# 去掉尾部 # 得 https://x/v1，不再追加 chat/completions",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterHashControlTest.kt:9"
+  },
+  {
+    "fact": "responsesCompletion_hashBypassStripsHashOnly：OPENAI_RESPONSES 提供商下 https://x# 去 hash 得 https://x，不追加 responses",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterHashControlTest.kt:17"
+  },
+  {
+    "fact": "EndpointCompleterOpenAiStyleTest 含 3 个 @Test：被测类为 EndpointCompleter，覆盖带自定义端口的 OpenAI 风格 URL",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterOpenAiStyleTest.kt:8"
+  },
+  {
+    "fact": "baseUrlWithCustomPort_completesNormally：http://localhost:8080 正常补全为 http://localhost:8080/v1/chat/completions",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterOpenAiStyleTest.kt:8"
+  },
+  {
+    "fact": "nestedV1PathWithPort_completesNormally：http://localhost:8080/proxy/v1 补全为 http://localhost:8080/proxy/v1/chat/completions",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterOpenAiStyleTest.kt:15"
+  },
+  {
+    "fact": "alreadyCustomPathWithPort_staysUnchanged：http://localhost:8080/custom/chat 这类自定义路径保持不变",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleterOpenAiStyleTest.kt:22"
+  },
+  {
+    "fact": "MediaLinkParserFileTest 含 1 个 @Test：被测类为 MediaLinkParser，专测 file 类型媒体标签",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserFileTest.kt:8"
+  },
+  {
+    "fact": "extractsPdfFilenameAndRemovesFileLink：extractMediaLinkTags 解析 file 标签的 filename 并做 HTML 实体解码（report&amp;one.pdf → report&one.pdf）",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserFileTest.kt:8"
+  },
+  {
+    "fact": "removeMediaLinks 删除 file 标签后前后文本之间只剩双空格，hasMediaLinks 仍能检测到原标签",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserFileTest.kt:8"
+  },
+  {
+    "fact": "MediaLinkParserImageOpsTest 含 4 个 @Test：被测类为 MediaLinkParser，专测图片链接操作",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserImageOpsTest.kt:10"
+  },
+  {
+    "fact": "replaceImageLinks_keepsNonLinkTextOrder：图片链接替换后前后非链接文本顺序保留",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserImageOpsTest.kt:10"
+  },
+  {
+    "fact": "hasImageLinks_ignoresAudioLinks：audio 标签不被 hasImageLinks 误判为图片链接",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserImageOpsTest.kt:19"
+  },
+  {
+    "fact": "extractImageLinkIds_returnsOrderedIds：多个图片标签的 id 按出现顺序提取",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserImageOpsTest.kt:23"
+  },
+  {
+    "fact": "MediaLinkParserMediaOpsTest 含 4 个 @Test：被测类为 MediaLinkParser，专测通用媒体链接（非图片）操作",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserMediaOpsTest.kt:10"
+  },
+  {
+    "fact": "replaceMediaLinks_skipsErrorIds：id 为 error 的媒体标签替换结果为空字符串",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserMediaOpsTest.kt:10"
+  },
+  {
+    "fact": "hasMediaLinks_detectsVideoLink：video 标签被 hasMediaLinks 检测到",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserMediaOpsTest.kt:19"
+  },
+  {
+    "fact": "hasMediaLinks_ignoresImageLink：image 标签不被 hasMediaLinks 计入媒体链接",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserMediaOpsTest.kt:23"
+  },
+  {
+    "fact": "MediaLinkParserNoopTest 含 3 个 @Test：被测类为 MediaLinkParser，覆盖纯文本无链接时的 noop 行为",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserNoopTest.kt:9"
+  },
+  {
+    "fact": "extractImageLinkIds_returnsEmptyForPlainText：纯文本提取图片 id 得空列表",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserNoopTest.kt:9"
+  },
+  {
+    "fact": "replaceMediaLinks_returnsOriginalWhenNoLinksExist：无链接文本替换时原样返回",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserNoopTest.kt:17"
+  },
+  {
+    "fact": "MediaLinkParserReplacementTest 含 2 个 @Test：被测类为 MediaLinkParser，覆盖替换回调",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserReplacementTest.kt:8"
+  },
+  {
+    "fact": "replaceMediaLinks_keepsSurroundingText：替换后前后非链接文本原样保留",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserReplacementTest.kt:8"
+  },
+  {
+    "fact": "replaceImageLinks_replacesMultipleDifferentIds：多个不同 id 的图片标签各被替换一次、顺序保留",
+    "ref": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParserReplacementTest.kt:13"
+  },
+  {
+    "fact": "PromptTurnAppendTest 含 3 个 @Test：被测扩展函数为 List<PromptTurn>.appendUserTurnIfMissing",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnAppendTest.kt:8"
+  },
+  {
+    "fact": "appendUserTurnIfMissing_doesNothingForBlankMessage：空消息不追加轮次",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnAppendTest.kt:8"
+  },
+  {
+    "fact": "appendUserTurnIfMissing_doesNothingForDuplicateTrailingUserMessage：末轮已是相同 user 内容时不重复追加",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnAppendTest.kt:13"
+  },
+  {
+    "fact": "appendUserTurnIfMissing_appendsAfterAssistant：末轮是 assistant 时追加一条 user 轮",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnAppendTest.kt:18"
+  },
+  {
+    "fact": "PromptTurnListOpsTest 含 4 个 @Test：被测为 PromptTurn.withContent 与 List<PromptTurn> 列表操作",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnListOpsTest.kt:9"
+  },
+  {
+    "fact": "withContent_returnsSameInstanceWhenUnchanged：内容不变时 withContent 返回同一实例（assertSame）",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnListOpsTest.kt:9"
+  },
+  {
+    "fact": "mergeAdjacentTurns_mergesUserTurns：相邻 user 轮内容以换行拼接成一轮",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnListOpsTest.kt:20"
+  },
+  {
+    "fact": "roleContentPairs_roundTrip：role-content 对与 PromptTurn 列表可互转往返",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnListOpsTest.kt:25"
+  },
+  {
+    "fact": "PromptTurnMetadataMergeTest 含 2 个 @Test：被测为 List<PromptTurn>.mergeAdjacentTurns 的 metadata 合并",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnMetadataMergeTest.kt:8"
+  },
+  {
+    "fact": "mergeAdjacentTurns_keepsPreviousMetadataWhenCurrentEmpty：当前轮 metadata 为空时保留前一轮的",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnMetadataMergeTest.kt:8"
+  },
+  {
+    "fact": "mergeAdjacentTurns_mergesMetadataMaps：两轮 metadata 字典按键合并",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/chat/hooks/PromptTurnMetadataMergeTest.kt:16"
+  },
+  {
+    "fact": "ExpressionNodeEdgeCaseTest 含 27 个 @Test：被测为 NumberNode/BinaryOperationNode/UnaryOperationNode 等 ExpressionNode 的边界求值",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:15"
+  },
+  {
+    "fact": "binary operation with NaN left：NaN 参与二元运算结果仍为 NaN",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:23"
+  },
+  {
+    "fact": "array access with negative index returns NaN：ExpressionContext.getArrayElement 负索引访问返回 NaN",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:72"
+  },
+  {
+    "fact": "function call node with unknown function throws：FunctionCallNode 调用未知函数抛 IllegalArgumentException",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:102"
+  },
+  {
+    "fact": "variable node with PI constant：VariableNode(\"PI\") 求值为 Math.PI",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:89"
+  },
+  {
+    "fact": "template string with expression evaluating to number：\"prefix42.0\" 这类不可解析为 double 的模板字符串求值为 NaN",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNodeEdgeCaseTest.kt:77"
+  },
+  {
+    "fact": "ConditionEvaluatorCollectionTest 含 4 个 @Test：被测方法为 ConditionEvaluator.evaluate，覆盖集合相关",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorCollectionTest.kt:9"
+  },
+  {
+    "fact": "kotlinArray_isSupportedByInOperator：in 运算符支持 Kotlin 数组",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorCollectionTest.kt:9"
+  },
+  {
+    "fact": "emptyCollection_isFalsy：空集合在布尔上下文为 falsy",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorCollectionTest.kt:17"
+  },
+  {
+    "fact": "ConditionEvaluatorComparisonTest 含 4 个 @Test：被测方法为 ConditionEvaluator.evaluate，覆盖比较运算",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorComparisonTest.kt:9"
+  },
+  {
+    "fact": "numericLessEqual_falseWhenGreater：score=3 时 \"score <= 2\" 求值为 false",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorComparisonTest.kt:9"
+  },
+  {
+    "fact": "stringInequality_trueWhenDifferent：name='a' 时 \"name != 'b'\" 求值为 true",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorComparisonTest.kt:21"
+  },
+  {
+    "fact": "ConditionEvaluatorIdentifierTest 含 3 个 @Test：被测方法为 ConditionEvaluator.evaluate，覆盖标识符 truthiness",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorIdentifierTest.kt:9"
+  },
+  {
+    "fact": "stringCapabilityIsTruthyWhenNonEmpty：非空字符串标识符为 truthy",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorIdentifierTest.kt:9"
+  },
+  {
+    "fact": "numericCapabilityIsTruthyWhenNonZero：非零数值标识符为 truthy",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorIdentifierTest.kt:17"
+  },
+  {
+    "fact": "ConditionEvaluatorLiteralTruthinessTest 含 3 个 @Test：被测方法为 ConditionEvaluator.evaluate，覆盖字面量 truthiness",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorLiteralTruthinessTest.kt:9"
+  },
+  {
+    "fact": "zero_isFalsy：\"0\" 求值为 false",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorLiteralTruthinessTest.kt:9"
+  },
+  {
+    "fact": "nullLiteral_isFalsy：\"null\" 字面量为 falsy",
+    "ref": "app/src/test/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluatorLiteralTruthinessTest.kt:17"
+  },
+  {
+    "fact": "ToolPkgChatMessageHookBridgeTest 含 2 个 @Test：被测类为 ToolPkgChatMessageHookBridge，覆盖 toolpkg 消息钩子桥",
+    "ref": "app/src/test/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridgeTest.kt:12"
+  },
+  {
+    "fact": "buildChatMessageEventPayload：事件 payload 含 chatId、sender、content、tokens、displayMode（序列化为 \"NORMAL\"）、selectedVariantIndex 等全部字段并逐一断言",
+    "ref": "app/src/test/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridgeTest.kt:52"
+  },
+  {
+    "fact": "dispatchMessagePersisted uses the materialized message variant：消息持久化后派发给 toolpkg 监听的是物化后的 variant 消息内容，而非占位原消息",
+    "ref": "app/src/test/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridgeTest.kt:57"
+  },
+  {
+    "fact": "MessageProcessingDelegateTest 含 1 个 @Test：被测类为 MessageProcessingDelegate，覆盖中断消息收尾",
+    "ref": "app/src/test/java/com/ai/assistance/operit/services/core/MessageProcessingDelegateTest.kt:10"
+  },
+  {
+    "fact": "completeInterruptedMessage_appliesTurnSnapshotAndCompletesPartialContent：用 TurnCancellationSnapshot 的 inputTokens/outputTokens/sentAt 等把中断的流式消息标记完成，contentStream 置 null",
+    "ref": "app/src/test/java/com/ai/assistance/operit/services/core/MessageProcessingDelegateTest.kt:39"
+  }
+]

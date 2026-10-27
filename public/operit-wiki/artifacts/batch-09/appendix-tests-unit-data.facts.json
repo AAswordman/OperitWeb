@@ -1,0 +1,578 @@
+[
+ {
+  "fact": "JUnit 4 版本号：gradle/libs.versions.toml:6 声明 junit = \"4.13.2\"。",
+  "ref": "gradle/libs.versions.toml:6"
+ },
+ {
+  "fact": "单元测试依赖接入点：app/build.gradle.kts:759 以 testImplementation(libs.junit) 引入 JUnit。",
+  "ref": "app/build.gradle.kts:759"
+ },
+ {
+  "fact": "JVM 测试使用真实 org.json：app/build.gradle.kts:768 引入 org.json:json:20240303，注释（:760）说明 Android 自带的 org.json 方法在 JVM 测试中是抛 Stub 异常的桩。",
+  "ref": "app/build.gradle.kts:768"
+ },
+ {
+  "fact": "协程测试依赖 kotlinx-coroutines-test：app/build.gradle.kts:795 声明 testImplementation(libs.coroutines.test)。",
+  "ref": "app/build.gradle.kts:795"
+ },
+ {
+  "fact": "Mockito 依赖保留：app/build.gradle.kts:799-800 声明 testImplementation(libs.mockito.core) 与 mockito-kotlin。",
+  "ref": "app/build.gradle.kts:799"
+ },
+ {
+  "fact": "CodexOAuthTokenResponseTest（app/src/test/.../data/api/CodexOAuthTokenResponseTest.kt:6）验证 CodexOAuthTokenResponse.requireComplete() 的完整性校验。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexOAuthTokenResponseTest.kt:6"
+ },
+ {
+  "fact": "completeTokenResponseIsAccepted（CodexOAuthTokenResponseTest.kt:8）：idToken/accessToken/refreshToken/expiresInSeconds 四字段齐全时 requireComplete() 返回自身（assertSame，:16）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexOAuthTokenResponseTest.kt:8"
+ },
+ {
+  "fact": "missingRefreshTokenIsRejected（CodexOAuthTokenResponseTest.kt:19）：refreshToken=null 时 requireComplete() 抛 IllegalArgumentException（expected 声明于 :19）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexOAuthTokenResponseTest.kt:19"
+ },
+ {
+  "fact": "CodexUsageClientTest（CodexUsageClientTest.kt:13）持有一个 CodexUsageClient(OkHttpClient()) 实例（:14），仅调用其纯解析方法 parseUsage，不发起网络请求。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexUsageClientTest.kt:14"
+ },
+ {
+  "fact": "parsesPlanAndRollingWindows（CodexUsageClientTest.kt:17）：parseUsage 解析 plan_type=plus；primary_window（604800s，used 52%）归为 sevenDayWindow，remainingPercent=48（:38-42）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexUsageClientTest.kt:39"
+ },
+ {
+  "fact": "parsesPlanAndRollingWindows：secondary_window（18000s，used 18%）归为 fiveHourWindow，remainingPercent=82，windowDurationSeconds=18000L（CodexUsageClientTest.kt:39-41）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexUsageClientTest.kt:41"
+ },
+ {
+  "fact": "classifiesSevenDayWindowFromPrimarySlot（CodexUsageClientTest.kt:46）：只有 primary_window 时 sevenDayWindow 非空而 fiveHourWindow 为空（:62-63）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexUsageClientTest.kt:62"
+ },
+ {
+  "fact": "persistedSnapshotRoundTripsWithoutTokenData（CodexUsageClientTest.kt:68）：CodexStoredUsageSnapshot 经 kotlinx.serialization 编解码后与原对象相等（:84-88）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/api/CodexUsageClientTest.kt:84"
+ },
+ {
+  "fact": "RawSnapshotBackupManagerTest（RawSnapshotBackupManagerTest.kt:7）：isSupportedSnapshotPackageName 接受 com.ai.assistance.operit 及其 .debug/.clone 后缀（:10-14）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManagerTest.kt:10"
+ },
+ {
+  "fact": "snapshotPackageName_rejectsDifferentPackagePrefix（RawSnapshotBackupManagerTest.kt:17）：com.ai.assistance.other 与 com.example.operit 被判不支持（:18-19）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManagerTest.kt:17"
+ },
+ {
+  "fact": "migration20To21CreatesMessageIndexesExpectedByRoom（AppDatabaseMigrationTest.kt:11）：直接驱动 AppDatabase.MIGRATION_20_21.migrate（:14），断言迁移执行了两条 CREATE INDEX 语句（:17-24）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/db/AppDatabaseMigrationTest.kt:14"
+ },
+ {
+  "fact": "断言的迁移 SQL 为 CREATE INDEX IF NOT EXISTS `index_messages_chatId` ON `messages` (`chatId`)（AppDatabaseMigrationTest.kt:19）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/db/AppDatabaseMigrationTest.kt:19"
+ },
+ {
+  "fact": "断言的迁移 SQL 为 CREATE INDEX IF NOT EXISTS `index_messages_chatId_timestamp` ON `messages` (`chatId`, `timestamp`)（AppDatabaseMigrationTest.kt:23）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/db/AppDatabaseMigrationTest.kt:23"
+ },
+ {
+  "fact": "recordingDatabase（AppDatabaseMigrationTest.kt:27）用 java.lang.reflect.Proxy 伪造 SupportSQLiteDatabase，只记录单参数 execSQL 调用，其余方法抛 UnsupportedOperationException（:27-50）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/db/AppDatabaseMigrationTest.kt:27"
+ },
+ {
+  "fact": "assertSqlWasExecuted（AppDatabaseMigrationTest.kt:52）把执行的 SQL 做空白归一化后精确比对（:53-56）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/db/AppDatabaseMigrationTest.kt:52"
+ },
+ {
+  "fact": "parse_classifiesStdioAndRemoteTransports（McpConfigImportParserTest.kt:11）：McpConfigImportParser.parse（:36）把 MCP 配置区分为 StdioMcpImportedServer 与 RemoteMcpImportedServer（:38-45）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:36"
+ },
+ {
+  "fact": "stdio 条目断言：id=filesystem、command=npx、args=[-y, @modelcontextprotocol/server-filesystem]、env={HOME=/data/local/tmp}、autoApprove=[read_file]（McpConfigImportParserTest.kt:38-43）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:38"
+ },
+ {
+  "fact": "远程条目断言：type=streamable_http 映射为 connectionType=httpStream 且 disabled=true；type=sse 映射为 connectionType=sse（McpConfigImportParserTest.kt:47-51）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:47"
+ },
+ {
+  "fact": "parse_rejectsMissingTransportDeclaration（McpConfigImportParserTest.kt:55）：只有 url、无 transport 声明的条目 parse 失败。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:55"
+ },
+ {
+  "fact": "parse_rejectsAmbiguousStdioAndRemoteConfiguration（McpConfigImportParserTest.kt:69）：同时含 command 与 type/url 的歧义条目 parse 失败。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:69"
+ },
+ {
+  "fact": "assertParseFails（McpConfigImportParserTest.kt:86）捕获 IllegalArgumentException 即判通过，否则抛 AssertionError（:86-93）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/mcp/McpConfigImportParserTest.kt:86"
+ },
+ {
+  "fact": "AIToolTest（AIToolTest.kt:10）覆盖 ToolParameter、AITool、ToolInvocation、ToolResult、ToolValidationResult 的构造与 copy 语义。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/AIToolTest.kt:10"
+ },
+ {
+  "fact": "`create ai tool with minimal fields`（AIToolTest.kt:18）：AITool 默认 parameters 为空、description 为 \"\"（:21-22）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/AIToolTest.kt:18"
+ },
+ {
+  "fact": "`create tool invocation`（AIToolTest.kt:37）：ToolInvocation.responseLocation 为 IntRange 0..10（:39）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/AIToolTest.kt:37"
+ },
+ {
+  "fact": "`create tool validation result valid`（AIToolTest.kt:62）：valid=true 时 errorMessage 为 \"\"（:64-65）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/AIToolTest.kt:62"
+ },
+ {
+  "fact": "outerWhitespace_isNormalized（ApiKeyFormatValidatorTest.kt:9）：首尾空白被归一化后密钥判有效。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidatorTest.kt:9"
+ },
+ {
+  "fact": "nonAsciiCharacters_areRejected（ApiKeyFormatValidatorTest.kt:14）：中文、全角、emoji 密钥被 ApiKeyFormatValidator.isValid 拒绝（:15-17）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidatorTest.kt:14"
+ },
+ {
+  "fact": "whitespaceAndControlCharacters_areRejected（ApiKeyFormatValidatorTest.kt:21）：内部空格、tab、换行、NUL 字符的密钥被拒绝（:22-25）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidatorTest.kt:21"
+ },
+ {
+  "fact": "availableKeyPool_isAcceptedWithoutSingleKey（ApiKeyFormatValidatorTest.kt:29）：useMultipleApiKeys=true 且池中有 AVAILABLE 密钥时 hasUsableKey 返回 true（:45）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidatorTest.kt:45"
+ },
+ {
+  "fact": "invalidEnabledPoolEntry_rejectsWholePool（ApiKeyFormatValidatorTest.kt:49）：池中任一启用密钥格式非法则 hasUsableKey 拒绝整个池（:62）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidatorTest.kt:62"
+ },
+ {
+  "fact": "ApiKeyInfoTest（ApiKeyInfoTest.kt:8）断言 ApiKeyInfo 默认值：name=\"\"（:16-18）、isEnabled=true（:21-23）、availabilityStatus=UNTESTED（:26-28）、usageCount/lastUsed/errorCount=0（:31-43）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyInfoTest.kt:26"
+ },
+ {
+  "fact": "`api key availability status enum values`（ApiKeyInfoTest.kt:112）：ApiKeyAvailabilityStatus 恰好 3 个值：UNTESTED、AVAILABLE、UNAVAILABLE（:113-116）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ApiKeyInfoTest.kt:112"
+ },
+ {
+  "fact": "AttachmentInfoTest（AttachmentInfoTest.kt:6）：content 字段默认为 \"\"（:21-28），copy 保留未改字段如 mimeType（:76-80）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/AttachmentInfoTest.kt:21"
+ },
+ {
+  "fact": "`id is randomly generated`（ChatEntityTest.kt:20）：两次构造的 ChatEntity.id 不相等（:21-23）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:20"
+ },
+ {
+  "fact": "`display order defaults to negative createdAt`（ChatEntityTest.kt:62）：ChatEntity.displayOrder 默认等于 -createdAt（:63-64）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:62"
+ },
+ {
+  "fact": "`toChatHistory creates correct object`（ChatEntityTest.kt:92）：toChatHistory 把 id/title/tokens/group/workspace/parentChatId/characterCardName/locked/pinned 逐字段映射（:106-121）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:106"
+ },
+ {
+  "fact": "`fromChatHistory round trip`（ChatEntityTest.kt:135）：toChatHistory→fromChatHistory 往返后 id/title/inputTokens/outputTokens/group 一致（:143-150）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:143"
+ },
+ {
+  "fact": "`fromChatHistory computes displayOrder when zero`（ChatEntityTest.kt:152）：displayOrder=0 的 ChatHistory 转回后 displayOrder<0（:158-159）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:152"
+ },
+ {
+  "fact": "`fromChatHistory preserves non-zero displayOrder`（ChatEntityTest.kt:162）：displayOrder=42 的 ChatHistory 转回后保持 42L（:168-169）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatEntityTest.kt:162"
+ },
+ {
+  "fact": "ChatHistoryTest（ChatHistoryTest.kt:11）用私有工厂 createHistory（:13）固定 createdAt=2024-01-15T10:30、updatedAt=11:00，避免时间断言抖动（:20-21）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatHistoryTest.kt:13"
+ },
+ {
+  "fact": "`display order defaults to zero`（ChatHistoryTest.kt:52）：ChatHistory.displayOrder 默认为 0L（:54），与 ChatEntity 的 -createdAt 默认不同。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatHistoryTest.kt:52"
+ },
+ {
+  "fact": "ChatMessageDisplayModeTest（ChatMessageDisplayModeTest.kt:7）：ChatMessageDisplayMode 枚举恰好 2 个值 NORMAL 与 HIDDEN_PLACEHOLDER（:17-19）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageDisplayModeTest.kt:17"
+ },
+ {
+  "fact": "ChatMessageTest 的 tearDown（ChatMessageTest.kt:12-15）用 @After 在每条测试后调用 ChatMessageTimestampAllocator.next()，推进全局时间戳分配器。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTest.kt:12"
+ },
+ {
+  "fact": "`consecutive messages have increasing timestamps`（ChatMessageTest.kt:37）：连续构造的两条 ChatMessage 时间戳递增（:38-40）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTest.kt:37"
+ },
+ {
+  "fact": "ChatMessage 默认 displayMode=NORMAL（ChatMessageTest.kt:78-81）、selectedVariantIndex=0（:47-51）、variantCount=1（:53-56）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTest.kt:78"
+ },
+ {
+  "fact": "`multiple messages have distinct timestamps`（ChatMessageTest.kt:156）：10 条消息时间戳两两递增（:157-160）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTest.kt:156"
+ },
+ {
+  "fact": "`next returns monotonically increasing values`（ChatMessageTimestampAllocatorTest.kt:14）：ChatMessageTimestampAllocator.next() 连续三次返回值严格递增（:15-19）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocatorTest.kt:14"
+ },
+ {
+  "fact": "`observe increases max timestamp`（ChatMessageTimestampAllocatorTest.kt:33）：observe(987654321L) 后 next() 返回值大于该值（:34-37）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocatorTest.kt:33"
+ },
+ {
+  "fact": "`observe with smaller value does nothing`（ChatMessageTimestampAllocatorTest.kt:40）：observe 更小值后 next() 仍大于之前的值（:41-44）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocatorTest.kt:40"
+ },
+ {
+  "fact": "`concurrent next calls produce unique values`（ChatMessageTimestampAllocatorTest.kt:47）：100 次 next() 返回值互不相同（:48-50）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocatorTest.kt:47"
+ },
+ {
+  "fact": "`prompt function type has CHAT and VOICE`（FunctionTypeTest.kt:9）：PromptFunctionType 恰好 2 个值（:10-12）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/FunctionTypeTest.kt:9"
+ },
+ {
+  "fact": "`function type has all expected values`（FunctionTypeTest.kt:20）：FunctionType 恰好 11 个值（:28），含 CHAT/SUMMARY/TITLE_GENERATION/MEMORY/UI_CONTROLLER/TRANSLATION/GREP/ROLE_RESPONSE_PLANNER/IMAGE_RECOGNITION/AUDIO_RECOGNITION/VIDEO_RECOGNITION（:21-27）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/FunctionTypeTest.kt:28"
+ },
+ {
+  "fact": "`status constants are defined`（MemoryAutoSaveCandidateTest.kt:85）：状态常量 STATUS_PENDING=\"pending\"、STATUS_PROCESSING=\"processing\"、STATUS_FAILED=\"failed\"（:86-88）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidateTest.kt:85"
+ },
+ {
+  "fact": "`source type constants are defined`（MemoryAutoSaveCandidateTest.kt:91）：SOURCE_TYPE_REPLY_FINALIZED_AUTO=\"reply_finalized_auto\"、SOURCE_TYPE_SELECTED_USER_MESSAGE=\"selected_user_message\"（:92-93）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidateTest.kt:91"
+ },
+ {
+  "fact": "isSelectedUserMessageSource 仅对 SOURCE_TYPE_SELECTED_USER_MESSAGE 返回 true，对 auto 与未知字符串返回 false（MemoryAutoSaveCandidateTest.kt:69-83）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidateTest.kt:69"
+ },
+ {
+  "fact": "MessageEntityTest 的 tearDown（MessageEntityTest.kt:12-15）同样在 @After 中推进 ChatMessageTimestampAllocator。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageEntityTest.kt:12"
+ },
+ {
+  "fact": "MessageEntity.displayMode 在实体中以字符串存储，默认值为 ChatMessageDisplayMode.NORMAL.name（MessageEntityTest.kt:70-73）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageEntityTest.kt:70"
+ },
+ {
+  "fact": "`toChatMessage handles unknown display mode`（MessageEntityTest.kt:110）：displayMode=\"UNKNOWN_MODE\" 时 toChatMessage() 回退为 NORMAL（:115-116）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageEntityTest.kt:110"
+ },
+ {
+  "fact": "`fromChatMessage round trip preserves data`（MessageEntityTest.kt:159）：fromChatMessage→toChatMessage 往返后 sender/content/timestamp/roleName/provider/modelName/tokens 一致（:166-174）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageEntityTest.kt:159"
+ },
+ {
+  "fact": "`applyTo updates message content`（MessageVariantEntityTest.kt:64）：MessageVariantEntity.applyTo 把 content、selectedVariantIndex、variantCount 写回 ChatMessage（:69-72）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageVariantEntityTest.kt:64"
+ },
+ {
+  "fact": "applyTo 的 roleName 规则：variant roleName 非空时覆盖 base，空白时保留 base（MessageVariantEntityTest.kt:93-110）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageVariantEntityTest.kt:93"
+ },
+ {
+  "fact": "`fromChatMessage creates variant from message`（MessageVariantEntityTest.kt:134）：从 ChatMessage 提取 content/roleName/provider/modelName/tokens 生成 MessageVariantEntity（:140-152）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MessageVariantEntityTest.kt:134"
+ },
+ {
+  "fact": "MiscModelTest（MiscModelTest.kt:8）批量覆盖杂项模型：BillingMode、ActivePrompt、AiReference、CustomEmoji、DocumentChunk、EmbeddingDimensionUsage、EmbeddingRebuildProgress、InputProcessingState、MemorySearchConfig/MemorySearchDebugInfo、WorkflowExecutionRecord、ChatMessageLocatorPreview、MemorySpace、OperitNodeInfo、ChatTurnOptions。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:8"
+ },
+ {
+  "fact": "`billing mode fromString default to TOKEN`（MiscModelTest.kt:20）：fromString(\"invalid\") 与 fromString(null) 均返回 TOKEN（:21-22）；大小写不敏感（:25-28）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:20"
+ },
+ {
+  "fact": "ActivePrompt.CharacterCard(id)/CharacterGroup(id) 密封类分支构造断言（MiscModelTest.kt:30-39）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:30"
+ },
+ {
+  "fact": "`embedding rebuild progress fraction`（MiscModelTest.kt:106）：fraction=processed/total（10/5→0.5f），未完成时 isFinished=false（:107-109）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:106"
+ },
+ {
+  "fact": "`embedding rebuild progress zero total`（MiscModelTest.kt:118）：total=0 时 fraction=0f 且 isFinished=false（:119-121）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:118"
+ },
+ {
+  "fact": "InputProcessingState 密封类 10 个分支逐一构造断言：Idle/Completed/Processing/Error/Connecting/Receiving/ExecutingTool/ToolProgress/Summarizing/ExecutingPlan（MiscModelTest.kt:124-176）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:156"
+ },
+ {
+  "fact": "`chat message locator preview creation`（MiscModelTest.kt:230）：ChatMessageLocatorPreview.resolvedDisplayMode 由 displayMode 字符串解析为 NORMAL（:241）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/MiscModelTest.kt:230"
+ },
+ {
+  "fact": "`parameter value type enum has all values`（ModelParameterTest.kt:108）：ParameterValueType 恰好 5 个：INT/FLOAT/STRING/BOOLEAN/OBJECT（:109-114）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ModelParameterTest.kt:108"
+ },
+ {
+  "fact": "`parameter category enum has all values`（ModelParameterTest.kt:117）：ParameterCategory 恰好 4 个：GENERATION/CREATIVITY/REPETITION/OTHER（:118-122）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ModelParameterTest.kt:117"
+ },
+ {
+  "fact": "`custom parameter data with all fields`（ModelParameterTest.kt:125）：CustomParameterData 全字段构造断言（:126-143）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ModelParameterTest.kt:125"
+ },
+ {
+  "fact": "`tag type enum has all values`（PromptTagTest.kt:61）：TagType 恰好 4 个：TONE/CHARACTER/FUNCTION/CUSTOM（:62-66）；PromptTag.tagType 默认为 CUSTOM（:25-28）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/PromptTagTest.kt:61"
+ },
+ {
+  "fact": "PromptTagTest 还覆盖 ModelOption 与 WorkspaceRenameResult 的构造（PromptTagTest.kt:82-103）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/PromptTagTest.kt:82"
+ },
+ {
+  "fact": "`known legacy provider display value uses built in provider id`（ProviderIdentityUtilsTest.kt:9）：normalizeProviderTypeId(\"DEEPSEEK/old configuration\")=\"DEEPSEEK\"，带首尾空白的 \" openai/legacy configuration \" 被 trim 后归一化为 \"OPENAI\"（:10-11）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ProviderIdentityUtilsTest.kt:9"
+ },
+ {
+  "fact": "`provider model normalization changes only the provider part`（ProviderIdentityUtilsTest.kt:21）：normalizeProviderModel 只归一化冒号前的 provider 部分，model 部分原样保留（:22-26）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ProviderIdentityUtilsTest.kt:21"
+ },
+ {
+  "fact": "`only independently billed providers keep missing cache write unknown`（ProviderIdentityUtilsTest.kt:30）：hasIndependentCacheWriteBilling(\"DEEPSEEK/legacy\")=false，\"ANTHROPIC/legacy\"=true，\"custom/provider\"=true（:31-33）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/model/ProviderIdentityUtilsTest.kt:30"
+ },
+ {
+  "fact": "remapsAllFunctionsUsingDeletedConfigToDefault（FunctionalConfigMappingRepairTest.kt:9）：remapDeletedConfigReferences 把引用 \"deleted\" 的 CHAT 与 TITLE_GENERATION 重映射到 FunctionConfigMapping(\"default\", 0)，affectedFunctions=[CHAT, TITLE_GENERATION]（:18-24）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/FunctionalConfigMappingRepairTest.kt:9"
+ },
+ {
+  "fact": "leavesMappingUnchangedWhenDeletedConfigIsNotReferenced（FunctionalConfigMappingRepairTest.kt:28）：未引用被删配置时映射原样返回、affectedFunctions 为空（:36-37）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/FunctionalConfigMappingRepairTest.kt:28"
+ },
+ {
+  "fact": "ModelConfigSummariesFlowTest.TestPreferencesDataStore（ModelConfigSummariesFlowTest.kt:74）是私有测试替身：用 MutableStateFlow<Preferences> 实现 DataStore<Preferences> 的 data 与 updateData（:76-86）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ModelConfigSummariesFlowTest.kt:74"
+ },
+ {
+  "fact": "`active config summaries subscription receives created and updated models`（ModelConfigSummariesFlowTest.kt:26）用 runBlocking 驱动：预置 config_first-config 后 configSummariesFlow 首发射含该 id 与 thinkingConfigurations/thinkingOptionId（:55-59）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ModelConfigSummariesFlowTest.kt:26"
+ },
+ {
+  "fact": "createConfig(\"second\") 后第二次发射的 id 列表为 [first-config, secondConfigId]（ModelConfigSummariesFlowTest.kt:61-63）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ModelConfigSummariesFlowTest.kt:61"
+ },
+ {
+  "fact": "updateConfigBase 改名后第三次发射首条 name=renamed、末条 name=second，thinking 配置透传不变（ModelConfigSummariesFlowTest.kt:65-71）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ModelConfigSummariesFlowTest.kt:65"
+ },
+ {
+  "fact": "ModelConfigSummariesFlowTest.kt:48 用 Mockito.mock(Context::class.java) 伪造 Android Context 传入 ModelConfigManager（:48-49）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ModelConfigSummariesFlowTest.kt:48"
+ },
+ {
+  "fact": "activeDefaultWithoutScopedDataMigratesLegacyTheme（ThemeScopeMigrationPolicyTest.kt:9）：活跃卡为默认卡、无作用域主题时 shouldCopyLegacyThemeToDefaultCharacter 返回 true（:10-20）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicyTest.kt:9"
+ },
+ {
+  "fact": "existingScopedDataPreventsLegacyThemeMigration（ThemeScopeMigrationPolicyTest.kt:23）：存在任意作用域主题时返回 false（:24-34）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicyTest.kt:23"
+ },
+ {
+  "fact": "completedMigrationDoesNotRunAgain（ThemeScopeMigrationPolicyTest.kt:65）：migrationCompleted=true 时直接返回 false，不重复执行迁移（:66-76）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicyTest.kt:65"
+ },
+ {
+  "fact": "transitionsAreSerialized（ThemeTargetOperationCoordinatorTest.kt:15）用 runTest：两个 runTransition 并发提交时第二个在第一个结束后才执行，事件序列为 [first-start, first-end, second]（:38-45）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/preferences/ThemeTargetOperationCoordinatorTest.kt:15"
+ },
+ {
+  "fact": "indexEntryFailuresAreRepairable（RoomDatabaseHealthManagerTest.kt:9）：quick_check 输出含 \"row 42 missing from index index_messages_chatId\" 类条目时 isIndexOnlyQuickCheckFailure 返回 true（:10-17）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManagerTest.kt:9"
+ },
+ {
+  "fact": "pageDamageIsNotClassifiedAsIndexOnly（RoomDatabaseHealthManagerTest.kt:21）：\"Page 8 is never used\" 判为不可仅索引修复（:22-26）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManagerTest.kt:21"
+ },
+ {
+  "fact": "unrelatedFailureContainingIndexWordsIsNotRepairable（RoomDatabaseHealthManagerTest.kt:30）：含 index 字样但非索引问题的输出判 false（:31-34）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManagerTest.kt:30"
+ },
+ {
+  "fact": "successfulQuickCheckDoesNotRequestIndexRepair（RoomDatabaseHealthManagerTest.kt:38）：quick_check 输出为 [\"ok\"] 时不请求索引修复（:39-43）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManagerTest.kt:38"
+ },
+ {
+  "fact": "decodePersistedAvatarConfigs_rejectsEntriesWithNullOrMissingData（AvatarConfigPersistenceTest.kt:13）：data 为 null 或缺失的条目记入 invalidEntryIndexes=[1,2]，有效条目保留且 getBasePath()=/avatars/valid（:40-44）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/repository/AvatarConfigPersistenceTest.kt:13"
+ },
+ {
+  "fact": "decodePersistedAvatarConfigs_preservesValidSavedConfig（AvatarConfigPersistenceTest.kt:48）：AvatarType.GLTF 的配置经 Gson 序列化往返后与原对象相等（:58-61）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/repository/AvatarConfigPersistenceTest.kt:48"
+ },
+ {
+  "fact": "decodePersistedAvatarConfigs_rejectsMalformedEntryWithoutDiscardingValidSiblings（AvatarConfigPersistenceTest.kt:65）：data 类型错误（42）与非对象条目（42）记入 invalidEntryIndexes=[1,2]，有效兄弟条目 first/last 保留（:94-97）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/repository/AvatarConfigPersistenceTest.kt:65"
+ },
+ {
+  "fact": "JvmSupportSQLiteDatabase（JvmSupportSQLiteDatabase.kt:18-28）是纯 JVM 的最小 SupportSQLiteDatabase 测试替身，基于 sqlite-jdbc，用于直接驱动生产 Migration.migrate(SupportSQLiteDatabase) 变体。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/JvmSupportSQLiteDatabase.kt:18"
+ },
+ {
+  "fact": "该替身只实现迁移路径实际用到的 execSQL/query/close/isOpen（JvmSupportSQLiteDatabase.kt:31-73），其余方法经 unsupported() 抛 UnsupportedOperationException（:22-23）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/JvmSupportSQLiteDatabase.kt:31"
+ },
+ {
+  "fact": "JvmSupportSQLiteDatabase.open(dbPath)（:173-175）用 DriverManager.getConnection(\"jdbc:sqlite:$dbPath\") 打开数据库。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/JvmSupportSQLiteDatabase.kt:173"
+ },
+ {
+  "fact": "JvmCursor（JvmSupportSQLiteDatabase.kt:194）是最小 Cursor 实现：getColumnIndex 按小写做大小写不敏感匹配（:239-240）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/JvmSupportSQLiteDatabase.kt:194"
+ },
+ {
+  "fact": "ProviderUsageNormalizerTest 类注释（ProviderUsageNormalizerTest.kt:15-23）声明归一化语义总纲：未知（缺失字段）→null；确认的 0→0。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:15"
+ },
+ {
+  "fact": "`openai chat completions splits cached input and keeps cache write and reasoning`（ProviderUsageNormalizerTest.kt:27）：prompt_tokens=1000、cached_tokens=200 时 uncachedInputTokens=800、cachedInputTokens=200、totalInputTokens=1000（:39-46）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:44"
+ },
+ {
+  "fact": "OpenAI chat 的 completion_tokens 包含推理 token：reasoningIncludedInOutput=true（ProviderUsageNormalizerTest.kt:52），source=SOURCE_OPENAI_CHAT_COMPLETIONS（:54）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:52"
+ },
+ {
+  "fact": "`openai without cached details keeps input split unknown not claiming uncached total`（ProviderUsageNormalizerTest.kt:73）：缺 prompt_tokens_details 时 uncached/cached 保持 null，总输入仍保留 1000L（:89-93）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:73"
+ },
+ {
+  "fact": "`openai responses keeps reasoning tokens separately and marks included`（ProviderUsageNormalizerTest.kt:136）：OpenAI Responses 的 reasoning_tokens 单独保留且 reasoningIncludedInOutput=true（:147-152）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:136"
+ },
+ {
+  "fact": "`anthropic keeps cache read and cache write as independent components`（ProviderUsageNormalizerTest.kt:158）：Anthropic 的 input_tokens 不含缓存分量，uncached/cached/cacheWrite 各自独立，totalInputTokens=800（:172-176），cacheWriteSeparateBilling=true（:181）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:172"
+ },
+ {
+  "fact": "Anthropic 的 output_tokens 包含 thinking：reasoningIncludedInOutput=true，而 reasoningTokens 为 null（ProviderUsageNormalizerTest.kt:178-179）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:178"
+ },
+ {
+  "fact": "`gemini normalizes usage metadata with cached content and thoughts`（ProviderUsageNormalizerTest.kt:217）：candidatesTokenCount 不含 thoughtsTokenCount，reasoningIncludedInOutput=false（:233-235）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:217"
+ },
+ {
+  "fact": "`gemini thoughts are billed on top of candidates by cost layer`（ProviderUsageNormalizerTest.kt:238）：thoughtsTokenCount 独立于 candidatesTokenCount，按输出计费（注释 P1-4，:239-241）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:238"
+ },
+ {
+  "fact": "`local providers preserve long measured counts with explicit zero cache`（ProviderUsageNormalizerTest.kt:319）：超过 Int 范围的本地模型计数以 Long 原样承载（:320-333）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:319"
+ },
+ {
+  "fact": "`toolpkg cached greater than input keeps total but rejects split`（ProviderUsageNormalizerTest.kt:348）：toolPkg(100, 250, 20) 保留 totalInputTokens=100 但 uncached/cached 拆分置 null（:349-353）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:348"
+ },
+ {
+  "fact": "`toolpkg negative input components become unknown independently`（ProviderUsageNormalizerTest.kt:356）：负值分量各自变为未知，不污染其他分量（:357-368）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:356"
+ },
+ {
+  "fact": "`negative provider values are rejected as unknown not recorded`（ProviderUsageNormalizerTest.kt:389）：负输入被拒为未知但有效输出 500L 仍保留（:398-400）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:389"
+ },
+ {
+  "fact": "`values beyond int range are carried as long without overflow`（ProviderUsageNormalizerTest.kt:403）：3000000000 的 prompt_tokens 以 Long 承载不溢出，拆分未知时 uncached 保持 null（:410-413）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:403"
+ },
+ {
+  "fact": "`snapshot hasKnownFields keeps explicit zero components and drops fully unknown`（ProviderUsageNormalizerTest.kt:415）：全未知快照 hasKnownFields()=false，显式全零快照为 true（:418-433）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ProviderUsageNormalizerTest.kt:415"
+ },
+ {
+  "fact": "`provider model key decodes with provider aliases`（ReleasedProviderModelKeyDecoderTest.kt:9）：decodeOrNull(\"TOOLPKG_example_provider_deepseek-chat\") 用别名表解出 provider=\"Example Provider\"、model=\"deepseek-chat\"（:10-17）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoderTest.kt:9"
+ },
+ {
+  "fact": "`pre provider model function key is skipped`（ReleasedProviderModelKeyDecoderTest.kt:19）：\"CHAT\"、\"FILE_BINDING\" 这类纯功能键 decodeOrNull 返回 null（:20-21）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/ReleasedProviderModelKeyDecoderTest.kt:19"
+ },
+ {
+  "fact": "`range data contains every selected calendar day and excludes surrounding activity`（TokenActivityAggregatorTest.kt:11）：TokenActivityAggregator.rangeData 为选中范围内每天生成记录（含 0 的空日），范围外日期排除（:26-35）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenActivityAggregatorTest.kt:11"
+ },
+ {
+  "fact": "`range data calculates streaks and cumulative totals inside the selected range`（TokenActivityAggregatorTest.kt:40）：currentStreak=2、longestStreak=2，cumulative 为 [10, 30, 30, 60, 100]（:54-56）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenActivityAggregatorTest.kt:54"
+ },
+ {
+  "fact": "`token cost uses current split prices`（TokenCostCalculatorTest.kt:11）：TokenCostCalculator.currentCost 对 800 未缓存输入+200 缓存输入+500 输出按 1.0/0.5/2.0（每百万）计得 knownAmount=0.0019 USD（:26）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:11"
+ },
+ {
+  "fact": "`equal input prices use total input when split is unknown`（TokenCostCalculatorTest.kt:31）：输入单价相等时拆分未知可用 totalInput 计费，得 0.002（:44-45）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:31"
+ },
+ {
+  "fact": "`missing priced token field counts request as unknown`（TokenCostCalculatorTest.kt:48）：缺失已定价字段的请求记 unknownContributionCount=1（:60-61）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:48"
+ },
+ {
+  "fact": "`legacy non independent cache write is known zero`（TokenCostCalculatorTest.kt:64）：normalizeLegacyCacheWriteUsage 把 DEEPSEEK/legacy 配置的 cacheWriteKnown 归一化为 165（:75-78），unknownContributionCount=0（:79）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:64"
+ },
+ {
+  "fact": "`legacy independently billed cache write remains unknown`（TokenCostCalculatorTest.kt:81）：ANTHROPIC/legacy 配置的 cacheWrite 保持未知（:89-91）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:81"
+ },
+ {
+  "fact": "`unknown zero pricing counts every request as unknown`（TokenCostCalculatorTest.kt:117）：全零定价（PricingSource.UNKNOWN）下 3 个请求全部记未知（:131-132）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:117"
+ },
+ {
+  "fact": "`count billing uses current per request price`（TokenCostCalculatorTest.kt:134）：COUNT 计费模式下 4 请求×0.02=0.08（:154-155）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:134"
+ },
+ {
+  "fact": "`currency conversion uses configured rate`（TokenCostCalculatorTest.kt:159）：TokenCostCurrency.convertTo 按 usdToCnyRate=7.0 换算，10 USD=70 CNY（:170-177）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:159"
+ },
+ {
+  "fact": "`saturated add clamps overflow`（TokenCostCalculatorTest.kt:187）：TokenCostCalculator.saturatedAdd(Long.MAX_VALUE, 1)=Long.MAX_VALUE（:188-189）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenCostCalculatorTest.kt:187"
+ },
+ {
+  "fact": "`million display keeps compact values below one million`（TokenStatsDisplayUnitTest.kt:11）：formatTokenCount(8800, MILLIONS)=\"8.8K\"，formatTokenCount(999900, MILLIONS)=\"999.9K\"（:12-13）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnitTest.kt:11"
+ },
+ {
+  "fact": "`million display formats large values in millions`（TokenStatsDisplayUnitTest.kt:16）：formatTokenCount(1000000, MILLIONS)=\"1.0M\"（:17）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnitTest.kt:16"
+ },
+ {
+  "fact": "`billion display formats large values in billions`（TokenStatsDisplayUnitTest.kt:22）：formatTokenCount(917400000, BILLIONS)=\"0.917B\"（:23）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnitTest.kt:22"
+ },
+ {
+  "fact": "`display unit toggles between millions and billions`（TokenStatsDisplayUnitTest.kt:28）：TokenStatsDisplayUnit.MILLIONS.toggled()=BILLIONS，反之亦然（:29-35）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsDisplayUnitTest.kt:28"
+ },
+ {
+  "fact": "`legacy records without configuration id use provider model pricing`（TokenStatsPriceScopeTest.kt:11）：tokenStatsPriceScopeForConfigId(\"\") 与空白字符串均返回 PROVIDER_MODEL（:12-18）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsPriceScopeTest.kt:11"
+ },
+ {
+  "fact": "`current records with configuration id keep configuration pricing`（TokenStatsPriceScopeTest.kt:20）：tokenStatsPriceScopeForConfigId(\"config-123\") 返回 CONFIG（:21-25）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsPriceScopeTest.kt:20"
+ },
+ {
+  "fact": "`custom range requires end after start`（TokenStatsTimeRangeTest.kt:25）：TokenStatsTimeRanges.customRange(1000, 2000) 正常，end==start 时抛 IllegalArgumentException（:29-35）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:25"
+ },
+ {
+  "fact": "`granularity is chosen by range duration`（TokenStatsTimeRangeTest.kt:40）：granularityFor 按时长选择粒度：≤12 小时→TEN_MINUTES，13-48 小时→HOURLY，49 小时以上→DAILY（:39-45）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:40"
+ },
+ {
+  "fact": "`ten minute buckets align to local clock boundaries`（TokenStatsTimeRangeTest.kt:53）：13:07 起的范围首个 TEN_MINUTES 桶边界为本地 13:00，桶间距恒为 TEN_MINUTES_MS（:58-60）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:53"
+ },
+ {
+  "fact": "`hourly buckets across spring forward skip the missing hour`（TokenStatsTimeRangeTest.kt:63）：纽约春令切换日只有 23 个小时桶，无 02:00 本地小时的桶（:69-72）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:63"
+ },
+ {
+  "fact": "`hourly buckets across fall back produce both repeated hour buckets`（TokenStatsTimeRangeTest.kt:91）：纽约秋令回拨日 25 个桶，本地 01:00 出现两次（EDT 与 EST，不同 epoch）（:94-97）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:91"
+ },
+ {
+  "fact": "`bucket boundaries partition events exactly once`（TokenStatsTimeRangeTest.kt:131）：桶边界半开语义——range.endMs 与 startMs-1 的事件不属于任何桶（bucketIndexOf 返回 null，:127-132）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/data/stats/TokenStatsTimeRangeTest.kt:131"
+ }
+]

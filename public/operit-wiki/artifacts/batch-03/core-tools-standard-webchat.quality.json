@@ -1,0 +1,172 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "visit_web 的 WebViewClient 在 onReceivedSslError 中记警告后直接调用 handler.proceed() 继续加载页面并提取内容，仅在抓取对话框显示 SSL 徽标。证书校验失败（过期、自签名、中间人）时页面照样被读取，抓取到的内容与 Cookie 都不可信。",
+    "evidence": "override fun onReceivedSslError(\n                                                        view: WebView?,\n                                                        handler: SslErrorHandler,\n                                                        error: SslError?\n                                                    ) {\n                                                        AppLogger.w(TAG, \"SSL error ...\")\n                                                        handler.proceed()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt",
+    "line": 1248,
+    "severity": "high",
+    "title": "visit_web 在 SSL 错误时调用 handler.proceed() 继续抓取"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "applyUnsafeSsl 配置信任所有证书的 TrustManager 且 hostnameVerifier 恒返回 true；ignore_ssl 参数只是字符串比较，LLM 在调用 http_request/multipart_request 时可任意开启，开启后整个请求的 TLS 证书校验被关闭，存在中间人攻击面。",
+    "evidence": "private fun applyUnsafeSsl(builder: OkHttpClient.Builder) {\n        val trustAllCerts = arrayOf<TrustManager>(object : X509TrustManager {\n            override fun checkClientTrusted(chain: Array<out X509Certificate>?, authType: String?) {}\n            override fun checkServerTrusted(chain: Array<out X509Certificate>?, authType: String?) {}\n            override fun getAcceptedIssuers(): Array<X509Certificate> = arrayOf()\n        })\n        ...\n        builder.hostnameVerifier { _, _ -> true }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 124,
+    "severity": "high",
+    "title": "http_request 的 ignore_ssl 开关关闭全部 TLS 证书校验"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "isValidUrl 只校验协议为 http/https，对目标是否为内网地址（127.0.0.1、10.0.0.0/8、169.254.169.254 等）没有任何过滤，且默认跟随重定向。LLM 可借此探测内网服务或读取云元数据端点，存在 SSRF 风险。",
+    "evidence": "private fun isValidUrl(urlString: String): Boolean {\n        return try {\n            val url = URL(urlString)\n            val protocol = url.protocol.lowercase()\n            protocol == \"http\" || protocol == \"https\"\n        } catch (e: Exception) {\n            false\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 425,
+    "severity": "warning",
+    "title": "http_request 无 SSRF 防护：不做内网 IP 过滤且默认跟随重定向"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "browser_navigate 只校验 url 非空，没有 scheme 白名单（javascript: 等未在本文件拦截）。实际拦截依赖外部 websession.browser 包的 navigateSessionOnMain，本文件内未找到对应逻辑，无法确认是否兜底。",
+    "evidence": "private fun browserNavigate(tool: AITool): ToolResult {\n        val url = param(tool, \"url\") ?: \"\"\n        if (url.isBlank()) {\n            return error(tool.name, \"...url is required...\")\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt",
+    "line": 246,
+    "severity": "warning",
+    "title": "browser_navigate 本文件内无 URL scheme 白名单"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "browser_file_upload 逐项校验 paths 为绝对路径、存在且是文件，但无扩展名/MIME 白名单。App 可读的任意文件（含数据库、偏好设置等敏感文件）都可被选中并上传到网页的文件选择器。",
+    "evidence": "private fun browserFileUpload(tool: AITool): ToolResult {\n        val paths = parseStringArrayParam(tool, \"paths\")\n        // empty string = cancel file chooser\n        ...逐项检查绝对路径、存在、isFile...",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt",
+    "line": 866,
+    "severity": "warning",
+    "title": "browser_file_upload 无文件类型白名单，可上传 App 可读的任意文件"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "multipart_request 的 file_path 指向设备上任意可读路径即可被上传，无沙盒目录限制；配合 http_request 的任意 URL，LLM 可把设备文件外发到任意服务器。",
+    "evidence": "val file = File(filePath)\n            if (!file.exists() || !file.canRead()) {\n                return errorResult(toolName, \"File not found or not readable: $filePath\")\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 732,
+    "severity": "warning",
+    "title": "multipart_request 可上传设备任意可读路径的文件"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "httpRequest 把响应体全量读入内存，没有任何大小上限；超大文件下载会直接 OOM。buildHttpResponseData 同时生成 Base64 字段，内存占用约为响应体的 2 倍以上。",
+    "evidence": "suspend fun httpRequest(tool: AITool): ToolResult {\n        return try {\n            val (client, request) = prepareHttpRequest(tool)\n            ...\n            val responseBytes = response.body!!.bytes()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 315,
+    "severity": "warning",
+    "title": "http_request 无响应大小上限，全量读入内存"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "parseHeaders 解析 headers JSON 失败时只记日志并静默返回空 Map。LLM 传了格式错误的请求头时请求照发（缺头），失败原因对模型不可见，排障困难。",
+    "evidence": "private fun parseHeaders(headersJson: String): Map<String, String> {\n        ...\n        } catch (e: Exception) {\n            AppLogger.e(TAG, \"Failed to parse headers\", e)\n            emptyMap()\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 436,
+    "severity": "warning",
+    "title": "parseHeaders 解析失败静默返回空 Map"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "query_memory 的 query 允许通配符 *，此时若未传 limit 则 limit 默认为 Int.MAX_VALUE，一次查询可能返回海量记忆并全部格式化进上下文，有撑爆上下文窗口的风险。",
+    "evidence": "val defaultLimit = if (isWildcardQuery && limit == null) {\n            rawLimit == null -> if (query == \"*\") Int.MAX_VALUE else 20\n            ...",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt",
+    "line": 278,
+    "severity": "warning",
+    "title": "query_memory 通配查询默认 limit 为 Int.MAX_VALUE"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "executeUpdateUserProfile 把 markdown 参数全量覆盖写入该 profile 的 user.md，没有任何确认或备份。一次误调用会清空用户画像文档。",
+    "evidence": "suspend fun executeUpdateUserProfile(tool: AITool): ToolResult {\n        val markdown = ... ?: return ToolResult(... \"markdown is required\" ...)\n        ...全量写入 user.md...",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt",
+    "line": 710,
+    "severity": "warning",
+    "title": "update_user_profile 全量覆盖 user.md，无确认无备份"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "patchWorkflow 里 condition/logic/extract 节点的 operator/mode 非法枚举值静默回退旧值（如 565-573、598-608、614-624 行），不报错。LLM 传错枚举时 patch 看似成功但实际未生效，行为与直觉不符。",
+    "evidence": "val operator = if (patchObj.has(\"operator\")) {\n    val operatorRaw = patchObj.optString(\"operator\", existingNode.operator.name)\n    try {\n        ConditionOperator.valueOf(operatorRaw.trim().uppercase())\n    } catch (_: Exception) {\n        existingNode.operator // 非法值静默回退旧值\n    }\n} else {\n    existingNode.operator\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt",
+    "line": 590,
+    "severity": "suggestion",
+    "title": "patch_workflow 非法枚举值静默回退旧值"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "resolveNodeId 在 id 键的值不在节点集但可转 int 时，按节点数组下标解析（1223-1227 行）。这是给 LLM 误填下标的容错，但下标与 id 语义混淆后可能连到错误的节点，且无任何警告。",
+    "evidence": "val idxFromIdField = v.toIntOrNull()\n            if (index != null && index in nodeIdList.indices) {\n                return nodeIdList[index] // 下标容错",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt",
+    "line": 1220,
+    "severity": "suggestion",
+    "title": "resolveNodeId 的下标容错可能连到错误节点"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "defaultClient（connect 15s/read 20s/挂共享 cookieJar）在类内构造，但全文没有任何方法使用它——所有请求都走 buildConfigurableClient。属于遗留死代码，应删除或复用。",
+    "evidence": "private val defaultClient =er()\n        .connectTimeout(15, TimeUnit.SECONDS)\n        .readTimeout(20, TimeUnit.SECONDS)\n        .followRedirects(true)\n        .cookieJar(cookieJar)\n        .build()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt",
+    "line": 78,
+    "severity": "suggestion",
+    "title": "StandardHttpTools.defaultClient 无人使用（死代码）"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "medium",
+    "detail": "StandardWebVisitTool 内有一个 OkHttpClient 字段（connect 10s/read 15s），但全文阅读中未发现任何调用点——实际抓取走 WebView 路径。与 StandardHttpTools.defaultClient 同属遗留死代码。",
+    "evidence": "private val client =\n        .connectTimeout(10, TimeUnit.SECONDS)\n        .readTimeout(15, TimeUnit.SECONDS)\n        .build()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt",
+    "line": 116,
+    "severity": "suggestion",
+    "title": "StandardWebVisitTool 的 OkHttpClient 字段无人使用"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "low",
+    "detail": "visit_web 默认 UA 是桌面 Chrome 108，而浏览器会话工具默认 UA 是桌面 Chrome 124。两处硬编码的 UA 版本不一致，未来升级容易漏掉一处。",
+    "evidence": "private const val USER_AGENT = \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) ... Chrome/108.0.0.0 Safari/537.36\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt",
+    "line": 95,
+    "severity": "suggestion",
+    "title": "两处默认桌面 UA 版本不一致（108 vs 124）"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "low",
+    "detail": "stopChatService 内部调用 setFloatingWindowVisible(false) 时用空 catch 吞掉异常（1325-1327 行）。停止服务时若隐藏悬浮窗失败，错误被静默丢弃。",
+    "evidence": "try {\n                floatingService?.setFloatingWindowVisible(false)\n            } catch (_: Exception) { }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt",
+    "line": 1325,
+    "severity": "suggestion",
+    "title": "stopChatService 空 catch 吞掉隐藏悬浮窗的异常"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "low",
+    "detail": "StandardWebVisitTool 用 TYPE_APPLICATION_OVERLAY 悬浮窗做抓取，但本文件未像浏览器工具那样调用 ensureOverlayPermission 做前置检查；无权限时靠 windowManager.addView 的 try/catch 转错误文本，失败路径不一致。",
+    "evidence": "val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager\n            try {\n                windowManager.addView(overlayComposeView, overlayLayoutParams)\n            } catch (e: Exception) { ... }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt",
+    "line": 666,
+    "severity": "suggestion",
+    "title": "visit_web 未做悬浮窗权限前置检查"
+  }
+]

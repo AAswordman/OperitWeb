@@ -1,0 +1,494 @@
+[
+  {
+    "fact": "MemoryLibrary 是 object 单例：记忆库管理类，分析对话内容并存储为结构化记忆图谱",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:35"
+  },
+  {
+    "fact": "DEFAULT_ANALYSIS_HISTORY_MESSAGE_COUNT = 10：默认分析历史消息条数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:37"
+  },
+  {
+    "fact": "coroutineScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)：后台 IO 协程域，异步任务互不取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:38"
+  },
+  {
+    "fact": "autoCategorizeMemories 经全局 mutex 互斥串行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:198"
+  },
+  {
+    "fact": "saveMemory 经全局 mutex 互斥串行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:323"
+  },
+  {
+    "fact": "@Volatile isInitialized：初始化标志位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:42"
+  },
+  {
+    "fact": "ParsedLink 字段：sourceTitle、targetTitle、type、description、weight",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:44"
+  },
+  {
+    "fact": "ParsedEntity 字段：title、content、tags、aliasFor、folderPath",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:52"
+  },
+  {
+    "fact": "ParsedUpdate 字段：titleToUpdate、newContent、reason、newCredibility、newImportance",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:60"
+  },
+  {
+    "fact": "ParsedMerge 字段：sourceTitles、newTitle、newContent、newTags、folderPath、reason",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:68"
+  },
+  {
+    "fact": "ParsedAnalysis 字段：mainProblem、extractedEntities、links、updatedEntities、mergedEntities、profileMarkdown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:77"
+  },
+  {
+    "fact": "initialize(context) 用 synchronized 做一次性初始化，apiPreferences 取 ApiPreferences.getInstance",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:87"
+  },
+  {
+    "fact": "autoCategorizeMemoriesAsync 在后台协程启动自动分类，异常只记日志不抛",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:101"
+  },
+  {
+    "fact": "saveMemoryAsync 后台保存记忆，onSuccess/onError 回调；CancellationException 重抛不吞",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:136"
+  },
+  {
+    "fact": "saveMemoryNow 同步保存：history limit 用默认值 10，propagateAnalysisFailure=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:158"
+  },
+  {
+    "fact": "saveMemoryWindowNow 要求 analysisHistoryLimit > 0，否则 require 抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:174"
+  },
+  {
+    "fact": "autoCategorizeMemories 持 mutex 锁运行，profileId 取自 activeMemorySpaceIdFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:199"
+  },
+  {
+    "fact": "自动分类用 searchMemories(\"\") 全量查，再过滤出 folderPath 为空的未分类记忆",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:203"
+  },
+  {
+    "fact": "自动分类每 10 条一批（chunked(10)），单批失败记日志继续下一批",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:219"
+  },
+  {
+    "fact": "categorizeBatch 按 LocaleUtils.usesChineseContent 决定提示词用中文还是英文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:243"
+  },
+  {
+    "fact": "categorizeBatch 经 aiService.sendMessage 流式收集 AI 返回的分类 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:261"
+  },
+  {
+    "fact": "parseAndApplyCategorization 用 extractJsonArray 提取数组，非 \"[\" 开头直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:277"
+  },
+  {
+    "fact": "分类更新调用 repository.updateMemory，会自动重新生成 embedding",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:296"
+  },
+  {
+    "fact": "saveMemory 的 profileId 优先用 profileIdOverride，否则取 activeMemorySpaceIdFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:324"
+  },
+  {
+    "fact": "保存前对 content 做三层清洗：pruneToolResultContent → stripGeminiThoughtSignatureMeta → removeThinkingContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:329"
+  },
+  {
+    "fact": "历史消息过滤掉 system 角色；user 消息去掉 <memory>...</memory> 标签块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:338"
+  },
+  {
+    "fact": "清洗后历史为空则跳过保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:352"
+  },
+  {
+    "fact": "query 取最后一条 user 消息；找不到 user 消息则跳过保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:358"
+  },
+  {
+    "fact": "分析返回的 profileMarkdown 经 MemorySpaceProfileDocumentRepository.saveAutomatic 自动更新记忆空间资料",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:379"
+  },
+  {
+    "fact": "分析结果全空（main/new/update/merge/links/profile 全无）则判为无需记忆的对话，跳过保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:389"
+  },
+  {
+    "fact": "合并阶段调用 memoryRepository.mergeMemories(sourceTitles/newTitle/newContent/newTags/folderPath)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:406"
+  },
+  {
+    "fact": "更新阶段按 titleToUpdate 找记忆；标题保持原样不改，只更新内容与可信度/重要度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:423"
+  },
+  {
+    "fact": "主问题记忆 importance=0.8f、credibility=1.0f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:464"
+  },
+  {
+    "fact": "同名记忆已存在时更新内容而非新建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:453"
+  },
+  {
+    "fact": "别名实体：aliasFor 先在本次新建的 createdMemories 查，再查数据库；找不到原始记忆则当新实体处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:488"
+  },
+  {
+    "fact": "新建实体记忆的 source 字段固定为 \"memory_analysis\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:505"
+  },
+  {
+    "fact": "链接阶段调用 linkMemories(source, target, type, weight, description)；源或目标找不到记警告跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:532"
+  },
+  {
+    "fact": "图谱落库阶段异常时，propagateAnalysisFailure=true 则重抛",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:546"
+  },
+  {
+    "fact": "profileUpdateEnabled = profileAutoUpdateEnabled && !profileAutoUpdateLocked：锁定时不更新资料",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:573"
+  },
+  {
+    "fact": "候选记忆检索用 scoreMode + keyword/tag/semantic/edge 四权重（semanticWeight 取自 vectorWeight 配置），取前 15 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:591"
+  },
+  {
+    "fact": "findAndDescribeDuplicates 发现同名记忆多于 1 条时，生成提示指令让 LLM 合并",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:760"
+  },
+  {
+    "fact": "系统提示词由 FunctionalPrompts.buildKnowledgeGraphExtractionPrompt 构造",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:637"
+  },
+  {
+    "fact": "分析消息由 buildAnalysisMessage 按 historyLimit 取最近 N 条历史拼成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:647"
+  },
+  {
+    "fact": "generateAnalysis 经 aiService.sendMessage 流式收集 AI 分析结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:664"
+  },
+  {
+    "fact": "分析结果先过 removeThinkingContent 再进 parseAnalysisResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:667"
+  },
+  {
+    "fact": "分析失败时 propagateFailure=true 则抛异常，否则返回空的 ParsedAnalysis(null)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:675"
+  },
+  {
+    "fact": "buildCandidateSearchQuery = 核心问题 + solution(180字) + 最近12条消息(1200字)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:688"
+  },
+  {
+    "fact": "extractCoreQuestionText 用正则从 \"问题：...解决方案：\" / \"Question:...Solution:\" 结构提取核心问题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:705"
+  },
+  {
+    "fact": "normalizeCandidateSearchText 去掉工具标签、URL、markdown 符号并压缩空白",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:732"
+  },
+  {
+    "fact": "parseAnalysisResult 要求 AI 返回 JSON 对象；\"{}\" 直接返回空分析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:818"
+  },
+  {
+    "fact": "main 实体不允许 alias_for（aliasAllowed=false），new 实体允许",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:824"
+  },
+  {
+    "fact": "AI 返回协议必填字段：main/new/update/merge/links",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:829"
+  },
+  {
+    "fact": "profile_markdown 为可选字段（optionalString 解析）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:837"
+  },
+  {
+    "fact": "必填协议字段缺失时抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:842"
+  },
+  {
+    "fact": "credibility/importance 必须在 0.0..1.0 之间，否则校验抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:870"
+  },
+  {
+    "fact": "links 的 weight 必填，缺失则 requireNotNull 抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:912"
+  },
+  {
+    "fact": "pruneToolResultContent 把 <tool_result> 内容替换为 R.string.memory_tool_result_pruned 占位符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt:923"
+  },
+  {
+    "fact": "ChatMemoryRebuildManager 是 private 构造的单例，getInstance 双重检查锁",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:37"
+  },
+  {
+    "fact": "Progress 数据类含 status、totalChats、completedChats、currentChatTitle、totalWindows、completedWindows、totalSourceMessages、processedSourceMessages、failedWindows、errorMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:43"
+  },
+  {
+    "fact": "Progress.fraction = processedSourceMessages / totalSourceMessages，无消息时为 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:56"
+  },
+  {
+    "fact": "Status 枚举：IDLE/PREPARING/RUNNING/COMPLETED/CANCELLED/FAILED",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:61"
+  },
+  {
+    "fact": "operationMutex 保证同一时间只有一个重建任务运行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:71"
+  },
+  {
+    "fact": "progress 以 StateFlow 对外暴露，UI 可订阅重建进度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:73"
+  },
+  {
+    "fact": "start(chatIds, windowMessageCount, timeScope)：已有任务在跑则直接返回；chatId 去空去重",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:78"
+  },
+  {
+    "fact": "cancel() 取消 runningJob",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:94"
+  },
+  {
+    "fact": "rebuild 先报 PREPARING 进度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:104"
+  },
+  {
+    "fact": "按 chatId 加载全部消息并用 ChatMemoryWindowPlanner.plan 切窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:115"
+  },
+  {
+    "fact": "选中聊天为空则 require 抛 \"No selected chat history found\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:108"
+  },
+  {
+    "fact": "窗口总数为 0 则抛异常：整聊模式提示无用户消息，日期范围模式提示空区间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:123"
+  },
+  {
+    "fact": "重建用 EnhancedAIService.getAIServiceForFunction(context, FunctionType.MEMORY) 取记忆专用模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:133"
+  },
+  {
+    "fact": "窗口循环每步调用 coroutineContext.ensureActive() 响应取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:146"
+  },
+  {
+    "fact": "消息 sender 映射：user→user，ai/assistant→assistant，其他 sender 直接抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:165"
+  },
+  {
+    "fact": "窗口 content 取最后一条 ai/assistant 消息；没有则取最后一条 user 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:169"
+  },
+  {
+    "fact": "每窗调用 MemoryLibrary.saveMemoryWindowNow，analysisHistoryLimit = 窗口消息数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:180"
+  },
+  {
+    "fact": "单个窗口失败时 failedWindows++ 并记日志，不中断后续窗口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:184"
+  },
+  {
+    "fact": "全部完成报 Status.COMPLETED；取消报 CANCELLED；异常报 FAILED 并带 errorMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:197"
+  },
+  {
+    "fact": "resolveMemoryProfileId：有 characterGroupId 直接用当前记忆空间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:222"
+  },
+  {
+    "fact": "角色卡 FIXED_PROFILE 绑定则用卡绑定的 memoryProfileId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:230"
+  },
+  {
+    "fact": "ChatMemoryRebuildTimeScope 是 sealed class：EntireChat（整聊）或 InclusiveLocalRange（日期区间）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScope.kt:8"
+  },
+  {
+    "fact": "InclusiveLocalRange init 要求 endExclusiveMs > startInclusiveMs",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScope.kt:15"
+  },
+  {
+    "fact": "InclusiveLocalRange.contains 左闭右开：startInclusiveMs <= t < endExclusiveMs",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScope.kt:21"
+  },
+  {
+    "fact": "utcMidnightMillisToLocalDate 把 UTC 午夜毫秒转 LocalDate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScope.kt:26"
+  },
+  {
+    "fact": "inclusiveDates(start, end, zone) 把起止日期转毫秒区间，结束日加一天做左闭右开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildTimeScope.kt:29"
+  },
+  {
+    "fact": "ChatMemoryWindowPlanner 是 internal object",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:5"
+  },
+  {
+    "fact": "窗口消息数默认 32，最小 8，最大 48",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:7"
+  },
+  {
+    "fact": "Window 数据类含 messages 与 sourceMessageCount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:11"
+  },
+  {
+    "fact": "plan 把窗口大小 coerceIn(8, 48) 钳制在合法范围",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:22"
+  },
+  {
+    "fact": "EntireChat 用全部消息；InclusiveLocalRange 按时间戳过滤",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:26"
+  },
+  {
+    "fact": "切窗前按 timestamp 排序；内容为空的消息跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:48"
+  },
+  {
+    "fact": "user 消息计入 source；source 达到 windowSize-1 时先 emit 当前窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:58"
+  },
+  {
+    "fact": "ai/assistant 回复必须配对到 currentTurnUser；超窗时 emit 并把本轮 user 作为下一窗上下文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:72"
+  },
+  {
+    "fact": "emitWindow 要求 pendingSourceMessages 非空且 currentTurnUser 非空，否则不发射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:34"
+  },
+  {
+    "fact": "遍历结束调用 emitWindow 收尾最后一个窗口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryWindowPlanner.kt:79"
+  },
+  {
+    "fact": "MemoryAutoSaveScheduler(context, scope)：长期记忆自动保存轮询器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:24"
+  },
+  {
+    "fact": "LOOP_TICK_MS = 60000：轮询 tick 每分钟一次",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:30"
+  },
+  {
+    "fact": "DEFAULT_POLL_INTERVAL_MS = DEFAULT_AUTO_SAVE_INTERVAL_MINUTES * 60000：默认轮询间隔",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:31"
+  },
+  {
+    "fact": "MAX_MESSAGES_PER_BATCH = 48：自动批最多取 48 条消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:33"
+  },
+  {
+    "fact": "MAX_CANDIDATES_PER_RUN_PER_CHAT = 20：每聊天每轮最多处理 20 个候选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:34"
+  },
+  {
+    "fact": "MIN_TOTAL_CANDIDATES_TO_EXTRACT = 5：候选不足 5 条则继续累计不提取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:35"
+  },
+  {
+    "fact": "getInstance() 返回可空单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:40"
+  },
+  {
+    "fact": "start() 未启动时才赋值 instance",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:48"
+  },
+  {
+    "fact": "start()：loopJob 活跃则返回；后台循环 while(isActive){ delay(60000); runOnce() }",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:54"
+  },
+  {
+    "fact": "getMinutesUntilNextRun 返回距下次运行的分钟数，向上取整",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:67"
+  },
+  {
+    "fact": "runOnce 用 AtomicBoolean.compareAndSet 防重入；上一轮未结束则跳过本轮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:70"
+  },
+  {
+    "fact": "scanAndProcessCandidates 遍历 memorySpaceListFlow 的全部记忆空间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:83"
+  },
+  {
+    "fact": "自动保存用 FunctionType.MEMORY 的 AI 服务做记忆提取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:88"
+  },
+  {
+    "fact": "未到该 profile 的下次运行时间则跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:94"
+  },
+  {
+    "fact": "候选总数不足 5 条则重置下次执行时间继续累计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:101"
+  },
+  {
+    "fact": "候选按 chatId 分组，空 chatId 的分组被过滤掉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:112"
+  },
+  {
+    "fact": "每聊天取前 20 个候选，按 triggerMessageTimestamp 再按 createdAt 排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:131"
+  },
+  {
+    "fact": "用户选中消息候选与自动候选分两组分别处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:138"
+  },
+  {
+    "fact": "intervalMsForProfile 从 MemorySearchSettingsPreferences.loadAutoSaveIntervalMinutes 取间隔",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:169"
+  },
+  {
+    "fact": "getOrInitNextRunAtMs 优先级：内存缓存 → 持久化的下次时间 → nowMs + 间隔",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:177"
+  },
+  {
+    "fact": "scheduleNextRun 同时写内存 ConcurrentHashMap 与 saveNextAutoSaveRunAtMs 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:187"
+  },
+  {
+    "fact": "processChatCandidateGroup 先 markProcessing 把候选标记为处理中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:207"
+  },
+  {
+    "fact": "用户选中批按 triggerMessageTimestamp 取消息，只保留 sender=user 且内容非空，按时间排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:216"
+  },
+  {
+    "fact": "自动批取 latestTriggerTimestamp 之前倒序 48 条消息再反转为正序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:228"
+  },
+  {
+    "fact": "候选对应消息找不到则直接删除候选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:238"
+  },
+  {
+    "fact": "conversationHistory 只保留 user/ai 消息；没有 user 上下文则删除候选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:255"
+  },
+  {
+    "fact": "选中批的 memoryContent 拼接全部 user 消息；自动批取最后一条非空 assistant 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:268"
+  },
+  {
+    "fact": "memoryContent 为空则删除候选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:275"
+  },
+  {
+    "fact": "自动保存调用 MemoryLibrary.saveMemoryNow(profileIdOverride=profileId)，成功后删除候选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:285"
+  },
+  {
+    "fact": "候选处理失败记日志并 markFailed(candidateIds, 错误信息)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:294"
+  }
+]

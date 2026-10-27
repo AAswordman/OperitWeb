@@ -1,0 +1,50 @@
+[
+  {
+    "fact": "XaiProvider 是 xAI Grok 模型的供应商实现，兼容 OpenAI Chat Completions 协议",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:12"
+  },
+  {
+    "fact": "构造函数参数 customHeaders 缺省为空 Map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:18"
+  },
+  {
+    "fact": "supportsVision、supportsAudio、supportsVideo、enableToolCall 四个能力开关缺省均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:20"
+  },
+  {
+    "fact": "thinkingConfigurations 与 thinkingOptionId 缺省为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:23"
+  },
+  {
+    "fact": "固定以 ApiProviderType.XAI 作为供应商类型传入父类 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:31"
+  },
+  {
+    "fact": "硬编码 includeUsageInStream = true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:36"
+  },
+  {
+    "fact": "父类在 stream 且 includeUsageInStream 为真时，向请求体写入 stream_options.include_usage=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:620"
+  },
+  {
+    "fact": "用私有字段 configuredApiEndpoint 保存构造传入的 apiEndpoint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:40"
+  },
+  {
+    "fact": "createRequestBody 先调用父类 createRequestBodyInternal 生成标准 OpenAI 格式请求体字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:52"
+  },
+  {
+    "fact": "再经 ThinkingConfigurationApplier.apply 注入 thinking 配置，providerTypeId 取 ApiProviderType.XAI.name",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:62"
+  },
+  {
+    "fact": "XaiProvider 类注释明确其为 xAI 的 OpenAI-compatible Chat Completions provider（Grok 模型），类内无任何 Responses 相关实现，当前版本不支持 Responses 端点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt:12"
+  },
+  {
+    "fact": "AIServiceFactory 注释确认 xAI 走 OpenAI-compatible Chat Completions 协议，XAI 分支实例化 XaiProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:319"
+  }
+]

@@ -1,0 +1,846 @@
+[
+  {
+    "fact": "LocalWebServer 的工作区服务端口为常量 WORKSPACE_PORT = 8093。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:74"
+  },
+  {
+    "fact": "LocalWebServer.getInstance 按 ServerType 做进程内单例缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:79"
+  },
+  {
+    "fact": "LocalWebServer 默认根目录为公共 Downloads 目录下的 Operit/workspace。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:87"
+  },
+  {
+    "fact": "LocalWebServer 在 init 块中把 ServerSocket 工厂设为自研的 CloseOnExecServerSocketFactory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:141"
+  },
+  {
+    "fact": "CloseOnExecServerSocket 用 Os.socket 以 SOCK_STREAM or SOCK_CLOEXEC 创建监听 socket，防止子进程继承 fd。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:104"
+  },
+  {
+    "fact": "LocalWebServer.start() 用 isServerRunning 做幂等保护，重复启动直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:148"
+  },
+  {
+    "fact": "updateChatWorkspace 会把服务器 rootPath 与 workspaceEnv 切到当前聊天的工作区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:168"
+  },
+  {
+    "fact": "serve() 中 /api/ 开头的请求走 handleApiRequest。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:395"
+  },
+  {
+    "fact": "serve() 中非 API 请求在 workspaceEnv 非空时走 serveWorkspaceFileViaTool，否则走 serveFileFromDisk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:403"
+  },
+  {
+    "fact": "isSafeRelativeWebPath 拒绝含反斜杠或任一路径段为 .. 的请求路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:416"
+  },
+  {
+    "fact": "serveWorkspaceFileViaTool 先做 isSafeRelativeWebPath 校验，校验失败返回 403。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:429"
+  },
+  {
+    "fact": "serveWorkspaceFileViaTool 经 read_file_binary AI 工具读取文件内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:437"
+  },
+  {
+    "fact": "serveWorkspaceFileViaTool 与 serveFileFromDisk 都会对 text/html 调用 injectErudaIntoHtml 注入脚本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:462"
+  },
+  {
+    "fact": "serveFileFromDisk 在文件不存在或 isInRoot 校验失败时返回 404。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:479"
+  },
+  {
+    "fact": "injectErudaIntoHtml 向每个 HTML 页面注入 console 早期缓冲回放脚本与 Eruda 加载器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:513"
+  },
+  {
+    "fact": "Eruda 调试器从 https://cdn.jsdelivr.net/npm/eruda 加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:589"
+  },
+  {
+    "fact": "isInRoot 用 canonicalPath.startsWith(root.canonicalPath) 做目录穿越校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:668"
+  },
+  {
+    "fact": "handleApiRequest 把 /api/proxy 路由到 handleProxyRequest、/api/files 路由到 listDirectory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:681"
+  },
+  {
+    "fact": "handleProxyRequest 缺少 url 参数时返回 400 Missing url。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:694"
+  },
+  {
+    "fact": "handleProxyRequest 只允许 http 与 https 两种 scheme。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:697"
+  },
+  {
+    "fact": "handleProxyRequest 对 OPTIONS 请求直接返回空 200。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:701"
+  },
+  {
+    "fact": "handleProxyRequest 转发时剥离 host/connection/content-length/accept-encoding 四个请求头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:713"
+  },
+  {
+    "fact": "handleProxyRequest 会把 WebView CookieManager 中目标站点的 Cookie 附加到代理请求上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:723"
+  },
+  {
+    "fact": "代理响应会剥离 content-length/content-encoding/transfer-encoding/connection 四个响应头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:750"
+  },
+  {
+    "fact": "addCorsHeaders 默认下发 Access-Control-Allow-Origin: *，代理请求则反射请求方的 origin。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:821"
+  },
+  {
+    "fact": "addCorsHeaders 下发 Access-Control-Allow-Credentials: true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:827"
+  },
+  {
+    "fact": "listDirectory 在 workspaceEnv 非空时先做 isSafeRelativeWebPath 校验再拼接虚拟根路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:781"
+  },
+  {
+    "fact": "listDirectory 磁盘模式用 canonicalPath.startsWith 做根目录校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:787"
+  },
+  {
+    "fact": "listDirectory 经 list_files 工具列目录，返回 FileApiEntry(name, isDirectory) 的 JSON 数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:809"
+  },
+  {
+    "fact": "FileApiEntry 是只有 name 与 isDirectory 两个字段的 @Serializable 数据类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:43"
+  },
+  {
+    "fact": "getCustomMimeType 委托 workspaceMimeTypeForPath 解析扩展名 MIME。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt:862"
+  },
+  {
+    "fact": "WebViewOptions 的 preferDesktopSite 默认为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:44"
+  },
+  {
+    "fact": "BlobDownloadInterface.downloadBlob 是 @JavascriptInterface 暴露给 JS 的下载入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:79"
+  },
+  {
+    "fact": "downloadBlob 先剥离 base64Data 中的 data: 前缀再做 Base64 解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:83"
+  },
+  {
+    "fact": "downloadBlob 把文件写入公共 Downloads 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:96"
+  },
+  {
+    "fact": "downloadBlob 的文件名经过 sanitizeFileName 清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:99"
+  },
+  {
+    "fact": "downloadBlob 写完后发送 ACTION_MEDIA_SCANNER_SCAN_FILE 广播通知媒体库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:107"
+  },
+  {
+    "fact": "downloadBlob 完成后经 openDownloadedFile 用 FileProvider 调起外部应用打开文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:115"
+  },
+  {
+    "fact": "configureWebView 以 NativeBridge 为名注入 BlobDownloadInterface。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:159"
+  },
+  {
+    "fact": "configureWebView 开启 javaScriptEnabled 与 javaScriptCanOpenWindowsAutomatically。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:164"
+  },
+  {
+    "fact": "configureWebView 的 mixedContentMode 为 MIXED_CONTENT_ALWAYS_ALLOW。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:168"
+  },
+  {
+    "fact": "configureWebView 同时开启 allowFileAccess、allowFileAccessFromFileURLs、allowUniversalAccessFromFileURLs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:171"
+  },
+  {
+    "fact": "preferDesktopSite 为 true 时 UA 为桌面 Chrome/120 并带 OperitWebView/1.0 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:196"
+  },
+  {
+    "fact": "preferDesktopSite 为 false 时使用 WebSettings.getDefaultUserAgent。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:198"
+  },
+  {
+    "fact": "onReceivedSslError 弹警告对话框，用户点继续会执行 handler.proceed() 放行证书错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:276"
+  },
+  {
+    "fact": "onPermissionRequest 直接 grant(request.resources)，不做二次确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:363"
+  },
+  {
+    "fact": "createDownloadListener 对 blob: URL 注入 JS 把 Blob 转 Base64 再走 NativeBridge。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:372"
+  },
+  {
+    "fact": "注入的 CORS 代理 JS 把非 localhost 的 http/https 请求重写到 localhost:8093/api/proxy?url=。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:587"
+  },
+  {
+    "fact": "sanitizeFileName 把 \\ / : * ? \" < > | 替换为下划线，空白结果则用 download_时间戳 兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:703"
+  },
+  {
+    "fact": "configureWebView 开启硬件加速 LAYER_TYPE_HARDWARE 以支持 backdrop-filter 等 CSS 效果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt:147"
+  },
+  {
+    "fact": "MAX_FILE_SUGGESTIONS = 10，文件建议最多保留 10 条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:59"
+  },
+  {
+    "fact": "文件建议按 score 升序、再按 relativePath 小写排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:62"
+  },
+  {
+    "fact": "MentionSuggestionPanelStyle 含 hasBackgroundImage 等 5 个输入框样式布尔。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:65"
+  },
+  {
+    "fact": "WorkspaceFileSuggestion 含 relativePath/displayName/parentPath/isDirectory/score 五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:73"
+  },
+  {
+    "fact": "MentionSuggestionPanel 接收 ChatViewModel 与 onFileSelected/onPackageSelected 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:103"
+  },
+  {
+    "fact": "mention 的搜索词与触发字符来自 ChatViewModel 的 mentionSearchQuery/mentionSuggestionTriggerChar。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:110"
+  },
+  {
+    "fact": "触发字符为 / 时不显示文件建议，只显示包建议。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:112"
+  },
+  {
+    "fact": "scoreMentionPackageSuggestion 在 query 为空时返回 4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:546"
+  },
+  {
+    "fact": "包建议评分：包名前缀命中 0、标题前缀命中 1、包名包含 2、标题包含 3、描述包含 4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:549"
+  },
+  {
+    "fact": "buildMentionPackageOptions 聚合工具包、Skill、MCP 服务三类建议。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:561"
+  },
+  {
+    "fact": "工具包容器（isToolPkgContainer）在包建议中被跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:569"
+  },
+  {
+    "fact": "文件建议用 GitIgnoreFilter.loadRules 加载工作区的忽略规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:638"
+  },
+  {
+    "fact": "文件建议用 GitIgnoreFilter.shouldEnterDirectory 决定是否进入子目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:649"
+  },
+  {
+    "fact": "文件建议用 GitIgnoreFilter.shouldIgnore 过滤条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:658"
+  },
+  {
+    "fact": "文件建议跳过非文本文件（FileUtils.isTextBasedFile）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:661"
+  },
+  {
+    "fact": "空查询时目录得分为深度 depth，文件得分为 20 + depth。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:727"
+  },
+  {
+    "fact": "文件建议评分：文件名精确 0、路径精确 1、文件名开头 2、路径开头 3、父路径包含 4、文件名包含 5、路径包含 6。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:736"
+  },
+  {
+    "fact": "文件建议最终得分：目录为 baseScore*2，文件为 baseScore*2+1，分数越小越靠前。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceFileSelector.kt:743"
+  },
+  {
+    "fact": "createAndGetDefaultWorkspace 有两个重载，projectType 可空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:22"
+  },
+  {
+    "fact": "createAndGetDefaultWorkspace 支持 android/flutter/node/typescript/python/java/go/office/blank 等项目类型，缺省走 web。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:31"
+  },
+  {
+    "fact": "默认工作区目录为 context.filesDir 下的 workspace/{chatId}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:80"
+  },
+  {
+    "fact": "web 项目默认配置开启 server（端口 8093、自启）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:312"
+  },
+  {
+    "fact": "web 项目默认预览类型为 browser，URL 为 http://localhost:8093。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:319"
+  },
+  {
+    "fact": "仅 web 项目模板默认启用导出（export.enabled=true），blank/android/flutter/node/typescript/python/java/go/office 九种模板默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:322"
+  },
+  {
+    "fact": "copyTemplateFiles 从 assets 的 templates/<模板名> 复制模板文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:684"
+  },
+  {
+    "fact": "模板中的 gitignore 会被重命名为 .gitignore，因为构建工具会排除 assets 中的点文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:692"
+  },
+  {
+    "fact": "DirectoryEntry 含 name/isDirectory/size/lastModified/permissions 五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:57"
+  },
+  {
+    "fact": "OpenFileInfo 是 @Serializable 数据类，含 path/content/lastModified/name/mimeType。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:67"
+  },
+  {
+    "fact": "FileBrowser 参数含 initialPath、environment、onBindWorkspace、onCancel、isManageMode、onFileOpen。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:87"
+  },
+  {
+    "fact": "FileBrowser 用 environment 是否以 repo: 开头判断是否为 SAF 环境。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:160"
+  },
+  {
+    "fact": "loadDirectory 经 list_files 工具加载目录，失败时不改变任何状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:200"
+  },
+  {
+    "fact": "快速路径含 Linux(/，environment=linux)、SDCard、Workspace(filesDir/workspace) 三个芯片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:187"
+  },
+  {
+    "fact": "createNewFile 对目录调 make_directory，对文件调 write_file 写空内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:325"
+  },
+  {
+    "fact": "deleteFile 调 delete_file 并带 recursive=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:355"
+  },
+  {
+    "fact": "openFile 对媒体与文档类文件走 workspaceShouldOpenAsDirectPreview，直接回调空 content 的 OpenFileInfo。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:378"
+  },
+  {
+    "fact": "openFile 对其他文件经 read_file_full 读取全文后回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:392"
+  },
+  {
+    "fact": "添加 SAF 书签用 OpenDocumentTree 并 takePersistableUriPermission 做持久授权。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:238"
+  },
+  {
+    "fact": "SAF 书签名做忽略大小写的重复检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:286"
+  },
+  {
+    "fact": "文件排序支持名称/大小/修改时间三种模式，目录始终置顶。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:953"
+  },
+  {
+    "fact": "showHiddenFiles 为 false 时过滤掉点开头的文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:687"
+  },
+  {
+    "fact": "长按上下文菜单仅在管理模式且文件名不以点开头时弹出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:714"
+  },
+  {
+    "fact": "getFileIcon 按扩展名映射 html/css/js/json/图片/文本/markdown 等图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:930"
+  },
+  {
+    "fact": "底部绑定栏把当前路径与 environment 交给 onBindWorkspace。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt:767"
+  },
+  {
+    "fact": "备份根为 .backup，对象库为 objects，按聊天隔离在 chats/{chatId} 下，当前状态记 current_state.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:48"
+  },
+  {
+    "fact": "WORKSPACE_MUTATING_TOOLS 含 apply_file/create_file/edit_file/write_file/write_file_binary/move_file/delete_file/copy_file/make_directory 共 9 个。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:60"
+  },
+  {
+    "fact": "syncState(workspacePath, messageTimestamp, workspaceEnv, chatId) 按消息时间戳同步或回滚工作区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:97"
+  },
+  {
+    "fact": "WorkspaceToolHookSession 实现 AIToolHook 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:118"
+  },
+  {
+    "fact": "onToolExecutionStarted 只处理变更文件工具，并调用 WorkspaceChangeTracker.ignoreAiChanges 去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:135"
+  },
+  {
+    "fact": "onToolExecutionResult 成功后刷新受影响路径的快照，并经 WorkspacePreviewRefreshBus 广播刷新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:199"
+  },
+  {
+    "fact": "hook 回调内用 runBlocking(Dispatchers.IO) 执行挂起函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:144"
+  },
+  {
+    "fact": "WorkspaceToolHookSession.close() 把当前状态写回 current_state.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:209"
+  },
+  {
+    "fact": "hook 会话初始化时确保 .backup/chats/{chatId}/ 与 objects/ 目录存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:391"
+  },
+  {
+    "fact": "chatId 做规范化：非法字符转下划线，空则为 __default__。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:661"
+  },
+  {
+    "fact": "文件对象按 SHA-256 内容寻址。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:630"
+  },
+  {
+    "fact": "备份对象存于 objectsDir/哈希前两位/完整哈希，并兼容旧扁平路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:690"
+  },
+  {
+    "fact": "refreshPathInStateProvider 只把文本文件名（FileUtils.isTextBasedFileName）纳入快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:549"
+  },
+  {
+    "fact": "目录变更时用 find_files 枚举其下全部文本文件逐个快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:571"
+  },
+  {
+    "fact": "BackupManifest 记录 timestamp、相对路径到哈希的 files 映射与 fileStats。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:40"
+  },
+  {
+    "fact": "syncState 发现更新的备份时回滚到最近的更新备份，并删除其后的全部备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:912"
+  },
+  {
+    "fact": "restoreFromManifestsProvider 第一步删除当前有但目标快照缺失的跟踪文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:973"
+  },
+  {
+    "fact": "previewChanges 用 DiffUtils 估算两个快照间的变更行数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:1010"
+  },
+  {
+    "fact": "extractWorkspaceAffectedPaths 排除 .backup/ 目录下的路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:254"
+  },
+  {
+    "fact": "makeRelativePath 用字符串 startsWith 做根路径判断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:678"
+  },
+  {
+    "fact": "WorkspaceCommandExecutionState 含 workspacePath/commandLabel/commandText/sessionId/usesDedicatedSession/outputEntries/isRunning/isVisible/isCancelling 共 9 个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceCommandExecutionState.kt:8"
+  },
+  {
+    "fact": "toWorkspaceCommandOutputEntries 把 \\r\\n 与 \\r 统一为 \\n 后按行切分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceCommandExecutionState.kt:15"
+  },
+  {
+    "fact": "WorkspaceConfig 含 projectType/title/description/server/preview/commands/export/watch 共 8 个字段，默认 projectType 为 web。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:20"
+  },
+  {
+    "fact": "ServerConfig 默认 enabled=false、port=8093、autoStart=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:27"
+  },
+  {
+    "fact": "PreviewConfig 的 type 默认为 browser，取值为 browser/terminal/none。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:36"
+  },
+  {
+    "fact": "CommandConfig 支持直接跑 command 或调用 tool（含 toolParameters），workingDir 默认为 .。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:51"
+  },
+  {
+    "fact": "WatchConfig 默认 enabled=true、maxDepth=3、maxChangedFiles=80，默认排除 .git/.operit/.backup/backup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:69"
+  },
+  {
+    "fact": "WorkspaceConfigReader.readConfig 读取 .operit/config.json，文件缺失或解析失败时回退默认 web 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:88"
+  },
+  {
+    "fact": "默认 web 配置开启 server 并自启，预览走 http://localhost:8093。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:118"
+  },
+  {
+    "fact": "配置解析用 Json{ ignoreUnknownKeys=true, isLenient=true }，容忍未知字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt:76"
+  },
+  {
+    "fact": "workspaceMimeTypeForPath 内置 html/css/js/json/md/图片/音频/视频/pdf/office 等扩展名到 MIME 的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:11"
+  },
+  {
+    "fact": "OpenFileInfo 的 isImage/isAudio/isVideo 按 resolvedMimeType 前缀判定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:61"
+  },
+  {
+    "fact": "isReadOnlyDocumentPreviewable 覆盖 pdf 与 Word/Excel 文档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:91"
+  },
+  {
+    "fact": "workspaceShouldOpenAsDirectPreview 对媒体与 pdf/office 文档返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:100"
+  },
+  {
+    "fact": "buildWorkspacePreviewUri 把文件拼成 http://127.0.0.1:8093/相对路径，支持 v 参数做缓存破坏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:126"
+  },
+  {
+    "fact": "workspaceEnv 为空时 buildWorkspacePreviewUri 退回 Uri.fromFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:136"
+  },
+  {
+    "fact": "本地模式用 canonicalPath 解析相对路径，越界返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceFilePreviewSupport.kt:166"
+  },
+  {
+    "fact": "图片预览缩放常量：最小 1f、双击 2.5f、最大 5f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt:48"
+  },
+  {
+    "fact": "Coil 的 ImageRequest 禁用内存与磁盘缓存并关闭 crossfade。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt:73"
+  },
+  {
+    "fact": "双击在 1x 与 2.5x 间切换，并以点击点为缩放中心。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt:120"
+  },
+  {
+    "fact": "双指缩放经 clampImageOffset 把偏移钳制在可视范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt:234"
+  },
+  {
+    "fact": "图片左下角有半透明文件名徽标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt:174"
+  },
+  {
+    "fact": "WorkspaceManager 接收 actualViewModel/currentChat/workspacePath/workspaceEnv/isVisible/onExportClick 六个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:167"
+  },
+  {
+    "fact": "isSafEnv 由 workspaceEnv 是否以 repo: 开头决定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:182"
+  },
+  {
+    "fact": "SAF 环境使用默认 WorkspaceConfig()，本地环境从磁盘读 .operit/config.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:185"
+  },
+  {
+    "fact": "server.enabled 为 true 时启动 LocalWebServer 并 updateChatWorkspace，否则停掉服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:199"
+  },
+  {
+    "fact": "withWorkspaceEnvParams 在 workspaceEnv 非空时给工具参数追加 environment。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:214"
+  },
+  {
+    "fact": "saveFile 对只读预览文件直接返回，否则经 write_file 工具全量写回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:452"
+  },
+  {
+    "fact": "HTML 文件保存后若正处预览态会触发 refreshWebView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:470"
+  },
+  {
+    "fact": "confirmCloseFile 从 openFiles 移除标签并更新 currentFileIndex 与 unsavedFiles。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:478"
+  },
+  {
+    "fact": "closeFile 在文件有未保存更改时弹确认框，否则直接关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:503"
+  },
+  {
+    "fact": "openFile 对已打开文件直接切换标签，HTML 文件默认进入预览态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:530"
+  },
+  {
+    "fact": "WorkspaceCommandExecutionDialog 输出有新行时自动滚动到底部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1231"
+  },
+  {
+    "fact": "命令执行对话框禁止返回键与点击外部关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1259"
+  },
+  {
+    "fact": "ExpandableFabMenu 的位置经 rememberLocal(fab_menu_offset) 持久化且可拖拽。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1418"
+  },
+  {
+    "fact": "FAB 菜单含撤销/重做/格式化/文件管理/导出/重命名/解绑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1400"
+  },
+  {
+    "fact": "格式化仅对 js/css/html 生效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1052"
+  },
+  {
+    "fact": "canRenameWorkspace 要求非 SAF 且工作区父目录为 filesDir/workspace。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:325"
+  },
+  {
+    "fact": "VSCodeTab 对未保存文件显示圆点而非关闭叉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1587"
+  },
+  {
+    "fact": "CommandButtonsView 在非 browser 预览时把 config.commands 渲染成执行按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:724"
+  },
+  {
+    "fact": "WorkspacePreviewRefreshEvent 含 workspacePath/workspaceEnv/affectedPaths/source 四个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspacePreviewRefreshBus.kt:6"
+  },
+  {
+    "fact": "WorkspacePreviewRefreshBus 是 extraBufferCapacity=32 的 MutableSharedFlow，用 tryEmit 发送。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspacePreviewRefreshBus.kt:14"
+  },
+  {
+    "fact": "WorkspaceReadOnlyDocumentPreview 按 pdf/Word/表格路由到不同预览器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:97"
+  },
+  {
+    "fact": "rememberWorkspacePreviewFileState 以 path/lastModified/workspaceEnv 为 key 缓存预览源文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:122"
+  },
+  {
+    "fact": "SAF 环境先经 read_file_binary 把文件拷贝到缓存目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:353"
+  },
+  {
+    "fact": "文档预览缓存目录为 cacheDir/workspace_document_preview。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:372"
+  },
+  {
+    "fact": "文档预览缓存文件名格式为 path.hashCode()_lastModified.扩展名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:375"
+  },
+  {
+    "fact": "Word/表格经 DocumentConversionUtil 转 HTML 后用 WebView 展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:410"
+  },
+  {
+    "fact": "PDF 用 PdfRenderer 逐页 2 倍渲染成 Bitmap 纵向排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:487"
+  },
+  {
+    "fact": "只读 HTML 预览的 baseURL 为 https://workspace-preview.local/。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:289"
+  },
+  {
+    "fact": "文档预览 WebView 开启 javaScriptEnabled 与 allowFileAccess。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt:277"
+  },
+  {
+    "fact": "WorkspaceScreen 按 currentChat.workspace 是否非空三选一：WorkspaceManager / WorkspaceSetup / 提示选择会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceScreen.kt:24"
+  },
+  {
+    "fact": "WorkspaceSetup 接收 chatId 与 onBindWorkspace(path, env) 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:41"
+  },
+  {
+    "fact": "bindSafLauncher 用 OpenDocumentTree 并 takePersistableUriPermission 做持久授权。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:110"
+  },
+  {
+    "fact": "bindBuiltInWorkspace 调 createAndGetDefaultWorkspace 后以 (path, null) 回调绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:122"
+  },
+  {
+    "fact": "导入工具包模板先 createAndResetWorkspaceDirectory，失败时删除目录回滚。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:140"
+  },
+  {
+    "fact": "SAF 绑定成功后以 (\"/\", \"repo:书签名\") 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:220"
+  },
+  {
+    "fact": "SAF 书签名做忽略大小写的重复检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:207"
+  },
+  {
+    "fact": "项目类型对话框用 ProjectTypeCard 逐个列出各项目类型（如 Web、Android 等），点击即绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceSetup.kt:337"
+  },
+  {
+    "fact": "WorkspaceFileChange 含 relativePath 与 kind，kind 有 CREATED/MODIFIED/DELETED/MOVED 四种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:5"
+  },
+  {
+    "fact": "DepthLimitedFileObserver 监听 CREATE/DELETE/MODIFY/CLOSE_WRITE/MOVED_FROM/MOVED_TO/DELETE_SELF/MOVE_SELF 八种事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:28"
+  },
+  {
+    "fact": "maxDepth 用 coerceAtLeast(0) 保证非负。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:33"
+  },
+  {
+    "fact": "start() 幂等，根目录不存在或非目录时直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:43"
+  },
+  {
+    "fact": "addExistingDirectories 递归 watch 现有子目录，depth 达到 maxDepth 停止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:79"
+  },
+  {
+    "fact": "新建目录自动加 watch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:145"
+  },
+  {
+    "fact": "删除或移走的目录移除其下全部 observer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:152"
+  },
+  {
+    "fact": "kindFor 把 CREATE/MOVED_TO 映射为 CREATED，DELETE/MOVED_FROM 为 DELETED，MODIFY/CLOSE_WRITE 为 MODIFIED，DELETE_SELF/MOVE_SELF 为 MOVED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/DepthLimitedFileObserver.kt:113"
+  },
+  {
+    "fact": "GitIgnoreFilter 默认排除 backup/.backup/.operit 三个目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:16"
+  },
+  {
+    "fact": "parseRulesFromContent 去空行与 # 注释，目录规则同时保留去掉尾斜杠的版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:57"
+  },
+  {
+    "fact": "matchesRule 对 ! 开头的否定规则直接返回 false，即暂不支持否定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:171"
+  },
+  {
+    "fact": "matchPattern 支持 **/ 前缀（任意层级）与 /** 后缀（目录下全部）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:211"
+  },
+  {
+    "fact": "matchWildcard 把 * 转 .*、? 转 . 后用正则匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:234"
+  },
+  {
+    "fact": "loadRules 从工作区根的 .gitignore 文件加载规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:109"
+  },
+  {
+    "fact": "shouldEnterDirectory 供调用方在遍历时剪枝跳过忽略目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt:158"
+  },
+  {
+    "fact": "generateWorkspaceAttachment 拼装环境标识、初始目录结构与变更列表的纯文本附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceAttachmentProcessor.kt:7"
+  },
+  {
+    "fact": "变更行格式为 - {变更类型显示名} {相对路径}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceAttachmentProcessor.kt:23"
+  },
+  {
+    "fact": "escapeText 转义 & < > \" ' 五个字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceAttachmentProcessor.kt:48"
+  },
+  {
+    "fact": "WorkspaceChangeTracker 是进程单例（getInstance 双重检查锁）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:22"
+  },
+  {
+    "fact": "updateOwner 在 chatId/workspacePath 为空或 workspaceEnv 非空时移除该 owner 的绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:65"
+  },
+  {
+    "fact": "consumeChanges 取出变更后清空 changes、omittedCount、initialRootStructure 与 aiChangedPaths。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:107"
+  },
+  {
+    "fact": "ignoreAiChanges 把 AI 改过的路径记入 aiChangedPaths 并从待报告变更中移除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:126"
+  },
+  {
+    "fact": "createMonitor 读取 watch 配置，禁用时不建监控。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:156"
+  },
+  {
+    "fact": "recordChange 在变更数达到 maxChangedFiles 后只累加 omittedCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:215"
+  },
+  {
+    "fact": "buildRootLevelStructure 生成根目录树形清单，目录排前面，空目录显示“工作区为空”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt:243"
+  },
+  {
+    "fact": "WORKSPACE_RULE_FILE_NAMES 为 AGENT.md 与 AGENTS.md。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceRuleFileReader.kt:12"
+  },
+  {
+    "fact": "readWorkspaceRootRuleFile 按顺序用 read_file_full(text_only=true) 读取，首个非空命中返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceRuleFileReader.kt:33"
+  },
+  {
+    "fact": "规则文件读取支持透传 workspaceEnv。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceRuleFileReader.kt:34"
+  },
+  {
+    "fact": "ComputerScreen 要求 API O 及以上（@RequiresApi(Build.VERSION_CODES.O)）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/computer/ComputerScreen.kt:17"
+  },
+  {
+    "fact": "ComputerScreen 用 TerminalManager.getInstance 与 rememberTerminalEnv 创建终端环境。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/computer/ComputerScreen.kt:22"
+  },
+  {
+    "fact": "ComputerScreen 渲染 TerminalScreen，关闭本地输入法处理与进入时检查更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/computer/ComputerScreen.kt:44"
+  },
+  {
+    "fact": "ComputerScreen 根 Box 用 detectTapGestures 消费点击/双击/长按/按压，防止触摸穿透到聊天界面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/computer/ComputerScreen.kt:30"
+  },
+  {
+    "fact": "restoreFromManifestsProvider 第二步对哈希变化的文件从对象库按哈希恢复内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt:981"
+  },
+  {
+    "fact": "HTML 文件预览用 loadDataWithBaseURL 加载，baseUrl 取文件父目录的 file:// 路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:907"
+  },
+  {
+    "fact": "Markdown 文件经 StreamMarkdownRenderer 做流式渲染预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:146"
+  },
+  {
+    "fact": "重命名工作区时若有未保存文件，先提示保存后再允许重命名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1042"
+  },
+  {
+    "fact": "键盘弹起时隐藏工作区悬浮菜单（ExpandableFabMenu），避免遮挡编辑区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:1002"
+  },
+  {
+    "fact": "音频文件走 isAudio 分支预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:811"
+  },
+  {
+    "fact": "视频文件走 isVideo 分支预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt:845"
+  }
+]

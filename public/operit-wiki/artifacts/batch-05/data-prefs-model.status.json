@@ -1,0 +1,12 @@
+{
+  "critic": "独立 critic 初验打回后修错，独立复验通过（data-prefs-model.critic.md）",
+  "id": "data-prefs-model",
+  "issue": 65,
+  "refs_valid": "181/181 引用行号真实存在且 ±5 窗口经独立复验确认有支撑原文，lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "模型与 API 配置（偏好设置）",
+  "approved_by_comment_id": 5926574959,
+  "updated": "2026-10-02"
+}

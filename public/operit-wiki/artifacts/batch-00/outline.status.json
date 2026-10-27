@@ -1,0 +1,10 @@
+{
+  "status": "approved",
+  "issue": 1,
+  "summary": "大纲 v2 定稿：8 章 27 页（llm-local 页删除，mnn/llama/mmd 停止维护不再覆盖），2026-09-30 用户在 Issue #1 确认无问题，git tag outline-v2。",
+  "critic": "用户已批准",
+  "refs_valid": "27/27 页 seed 可定位",
+  "updated": "2026-09-30",
+  "source_repo": "wiki",
+  "source_commit": "9d210f401858b14d1444477edca3f47610378576"
+}

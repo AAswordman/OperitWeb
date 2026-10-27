@@ -1,0 +1,66 @@
+[
+  {
+    "confidence": 0.9,
+    "description": "BubbleAiMessageComposable 在 remember 内用 runBlocking 同步查角色卡头像（findCharacterCardByName 可能是磁盘/数据库 IO），阻塞 UI 线程，角色卡较多或 IO 变慢时会造成掉帧。",
+    "evidence": "                runBlocking {\n                    val characterCard = characterCardManager.findCharacterCardByName(message.roleName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt",
+    "line": 124,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "BubbleUserMessageComposable 在 remember 内用 runBlocking 同步查代发人（proxySender）头像，同样阻塞 UI 线程。",
+    "evidence": "                runBlocking {\n                    val characterCard = characterCardManager.findCharacterCardByName(proxySenderName!!)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt",
+    "line": 137,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "parseMessageContent 在 remember 计算内直接做 Base64.decode 与 ImageBitmapLimiter.decodeDownsampledBitmap，大图时主线程解码位图可能导致卡顿；应移到 Dispatchers.IO 或缓存解码结果。",
+    "evidence": "                val bytes = Base64.decode(it.base64, Base64.DEFAULT)\n                ImageBitmapLimiter.decodeDownsampledBitmap(bytes)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt",
+    "line": 795,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "禁用弹窗时链接行为不一致：气泡风格返回空操作（点击无任何反应），Cursor 风格改用系统浏览器打开。同一开关在不同风格下行为不同，用户难以预期。",
+    "evidence": "        if (!enableDialogs) {\n            { _: String -> }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt",
+    "line": 193,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.95,
+    "description": "parseMessageContent、MessageParseResult、AttachmentData、AttachmentTag 在 bubble/BubbleUserMessageComposable.kt 与 cursor/UserMessageComposable.kt 中重复定义两套，逻辑基本相同，维护时需同步两处。",
+    "evidence": "private fun parseMessageContent(context: android.content.Context, content: String): MessageParseResult {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt",
+    "line": 417,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "rememberBubbleImageBitmap 用 runCatching{}.getOrNull() 静默吞掉图片加载失败，解码失败时无任何日志，排查气泡图片背景不显示的问题困难。",
+    "evidence": "                runCatching {\n                    context.contentResolver.openInputStream(Uri.parse(uriString))?.use { input ->\n                        BitmapFactory.decodeStream(input)?.asImageBitmap()\n                    }\n                }.getOrNull()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt",
+    "line": 102,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "Cursor 风格用户消息中，已过期图片的 AttachmentTag 点击时 onClick 内 bitmap 为 null 分支无任何反馈，用户点击“图片已过期”标签时感觉按钮失灵。",
+    "evidence": "                        onClick = { _ ->\n                            // 当点击图片链接时，如果图片未过期则显示预览\n                            if (imageLink.bitmap != null) {\n                                selectedImageBitmap.value = imageLink.bitmap\n                                showImagePreview.value = true\n                            }\n                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt",
+    "line": 199,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.75,
+    "description": "HiddenUserMessagePlaceholderContent 的 220.dp 占位宽上限与三处 320.dp 气泡宽上限（BubbleUserMessageComposable.kt:408、:553，cursor/UserMessageComposable.kt:246）为硬编码常量，未随主题/字体缩放配置，难以统一调整。",
+    "evidence": "        modifier = modifier.fillMaxWidth().widthIn(max = 220.dp),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/common/HiddenUserMessagePlaceholderContent.kt",
+    "line": 28,
+    "severity": "suggestion"
+  }
+]

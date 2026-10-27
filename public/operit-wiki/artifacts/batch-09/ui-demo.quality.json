@@ -1,0 +1,92 @@
+[
+ {
+  "title": "Shizuku 状态监听被重复注册，状态变更触发双重刷新",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt",
+  "line": 82,
+  "severity": "warn",
+  "confidence": "medium",
+  "evidence": "DisposableEffect(Unit) {\n    val shizukuListener: () -> Unit = {\n        scope.launch(Dispatchers.IO) { viewModel.refreshStatus(context) }\n    }\n    ShizukuAuthorizer.addStateChangeListener(shizukuListener)\n    onDispose { ShizukuAuthorizer.removeStateChangeListener(shizukuListener) }\n}",
+  "detail": "ShizukuDemoScreen 的 DisposableEffect 里又注册了一个 Shizuku 状态监听，而 DemoStateManager 的 init 块已经注册过一个。两个监听都调 refreshStatus()，每次 Shizuku 状态变化都会触发两次完整的 refreshStatusAsync（十二项权限检测加环境探测），浪费 IO 并可能造成 UI 抖动。"
+ },
+ {
+  "title": "onInstallFromStore 回调被传入但从未使用",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/ShizukuWizardCard.kt",
+  "line": 27,
+  "severity": "warn",
+  "confidence": "high",
+  "evidence": "onInstallFromStore: () -> Unit,\nonInstallFromStore 参数在 ShizukuWizardCard 全文件仅第 27 行声明处出现，\n步骤一（第 175-203 行）唯一的安装按钮 onClick = onInstallBundled",
+  "detail": "ShizukuWizardCard 接收 onInstallFromStore 参数（屏幕侧实现为打开 shizuku.rikka.app 下载页），但向导卡步骤一的 UI 里只放了调 onInstallBundled 的安装内置按钮，没有任何按钮调用 onInstallFromStore。从商店安装的入口实际不可达。"
+ },
+ {
+  "title": "DebuggerPermissionSection 用无 key 的 remember 缓存 Shizuku 更新检查",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt",
+  "line": 967,
+  "severity": "warn",
+  "confidence": "medium",
+  "evidence": "// 检查Shizuku是否需要更新\nval isShizukuUpdateNeeded = remember {\n    try {\n        com.ai.assistance.operit.core.tools.system.ShizukuInstaller.isShizukuUpdateNeeded(\n                context\n        )\n    } catch (e: Exception) {\n        false\n    }\n}",
+  "detail": "DebuggerPermissionSection 里 isShizukuUpdateNeeded = remember { ShizukuInstaller.isShizukuUpdateNeeded(context) } 没有 key，组合后只计算一次。屏幕侧手动刷新只清了 ShizukuInstaller 缓存再刷新状态，但这个 remember 不会重算，更新提示可能长期过期。同屏的版本三元组用的是 remember(uiState.isRefreshing.value)。"
+ },
+ {
+  "title": "refreshStatusAsync 无互斥，并发监听回调可能重叠执行",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt",
+  "line": 75,
+  "severity": "warn",
+  "confidence": "low",
+  "evidence": "fun refreshStatus() {\n   coroutineScope.launch {\n       refreshStatusAsync()\n   }\n}",
+  "detail": "shizukuListener 与 rootListener 每次触发都经 refreshStatus() 启动一个新协程跑 refreshStatusAsync，没有 Mutex 或任务去重。状态变更密集时多个完整刷新（终端里跑 pnpm/python/pip 探测）会并发执行，_uiState 的多次 update 虽线程安全但结果顺序不可预期。"
+ },
+ {
+  "title": "isInitialized 只写不读的死变量",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/screens/ShizukuDemoScreen.kt",
+  "line": 93,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "var isInitialized by remember { mutableStateOf(false) }\n// 全文件仅第 107 行 isInitialized = true 一次写入，无读取",
+  "detail": "ShizukuDemoScreen 里 var isInitialized 在 LaunchedEffect 末尾置 true，但全文件没有任何读取它的地方。预加载空 UI 状态避免卡顿的意图没有实际生效点。"
+ },
+ {
+  "title": "registerStateChangeListeners 是空实现，命名误导",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt",
+  "line": 200,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "private fun registerStateChangeListeners() {\n    // Implementation of registerStateChangeListeners method\n}",
+  "detail": "initialize() 与 initializeAsync() 都调用 registerStateChangeListeners()，但它是个空函数；真正的监听注册在 init 块里。阅读者会误以为监听在这里注册，维护时容易漏掉 init 块的注册点。"
+ },
+ {
+  "title": "updateOutputText 是为兼容保留的空函数",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/state/DemoStateManager.kt",
+  "line": 99,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "fun updateOutputText(text: String) {\n    // This function is kept for compatibility but might be repurposed or removed.\n}",
+  "detail": "updateOutputText(text: String) 函数体为空，注释说保留作兼容。没有调用方传值进来产生效果，长期保留增加维护噪音。"
+ },
+ {
+  "title": "Admin 提示卡硬编码琥珀色，深色模式下观感异常",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt",
+  "line": 846,
+  "severity": "suggestion",
+  "confidence": "medium",
+  "evidence": "Surface(\n        color = Color(0xFFFFF8E1), // 浅琥珀色背景\n        shape = RoundedCornerShape(8.dp),\n        border = BorderStroke(1.dp, Color(0xFFFFB74D)) // 琥珀色边框",
+  "detail": "AdminPermissionSection 的版本不支持提示卡直接写死 Color(0xFFFFF8E1) 背景、0xFFFFB74D 边框、0xFFFF9800 图标、0xFFE65100 文字，不跟随 MaterialTheme。深色模式下浅底深字对比失调。"
+ },
+ {
+  "title": "无障碍风险确认的英文句硬编码在代码里",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/wizards/AccessibilityWizardCard.kt",
+  "line": 282,
+  "severity": "suggestion",
+  "confidence": "high",
+  "evidence": "val expectedTextEn = \"I understand and acknowledge the risks of account bans and restricted account functions caused by accessibility permissions, and I bear the consequences myself\"",
+  "detail": "AccessibilityWizardCard 的风险确认框里中文确认句走 R.string.a11y_wizard_risk_acknowledgment，英文确认句 expectedTextEn 直接写死在 Kotlin 源码里。后续改文案要改代码，且不符合项目字符串资源化的惯例。"
+ },
+ {
+  "title": "同包下有两个 PermissionStatusItem 重载，容易混淆",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/demo/components/PermissionLevelCard.kt",
+  "line": 534,
+  "severity": "suggestion",
+  "confidence": "medium",
+  "evidence": "// PermissionLevelCard.kt:534\nfun PermissionStatusItem(title: String, isGranted: Boolean, onClick: () -> Unit) {\n// PermissionStatusItem.kt:17\nfun PermissionStatusItem(\n        title: String,\n        isGranted: Boolean,\n        onClick: () -> Unit,\n        isHighlighted: Boolean = false\n)",
+  "detail": "PermissionLevelCard.kt 第 534 行定义了 (title, isGranted, onClick) 三参版本，PermissionStatusItem.kt 第 17 行定义了 (title, isGranted, onClick, isHighlighted = false) 四参版本。Kotlin 允许重载且默认参数让三参调用总命中无默认值版本，但两个同名函数分处两文件，调用点难以一眼看出用的是哪一个。"
+ }
+]

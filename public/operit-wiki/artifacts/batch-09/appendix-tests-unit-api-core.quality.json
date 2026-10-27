@@ -1,0 +1,65 @@
+[
+  {
+    "confidence": "high",
+    "evidence": "val serialize = ClaudeProvider::class.java.getDeclaredMethod(\n            \"buildSerializedHistory\", List::class.java, Boolean::class.javaPrimitiveType",
+    "file": "app/src/test/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeOrderedToolHistoryTest.kt",
+    "line": 90,
+    "severity": "suggestion",
+    "title": "反射测试把私有方法签名写死（3 个文件）",
+    "detail": "ClaudeOrderedToolHistoryTest 用 getDeclaredMethod(\"buildSerializedHistory\", List::class.java, Boolean::class.javaPrimitiveType) 把私有方法名与参数类型写死；DeepseekProviderMediaRoleTest（parameterCount == 7）与 GeminiThinkingConfigTest（parameterCount == 3）用参数个数锁定签名。主代码对私有 API 的无害重构（改名、加参、改参数类型）会直接打红测试，而功能并未回归。建议通过 internal 可见性或测试替身解耦。"
+  },
+  {
+    "confidence": "high",
+    "evidence": "buildInitRuntimeModules(\n                operitDownloadDir = \"/operit/downloads\",\n                operitCleanOnExitDir = \"/operit/clean\"\n            ).first { it.fileName == \"quickjs/init/runtime-tool-call.js\" }.source\n\n        assertTrue(source.contains(\"'callToolAsync'\"))",
+    "file": "app/src/test/java/com/ai/assistance/operit/core/tools/javascript/JsRuntimeToolCallTest.kt",
+    "line": 11,
+    "severity": "suggestion",
+    "title": "JsRuntimeToolCallTest 断言生成的 JS bundle 源码字符串",
+    "detail": "该测试用 buildInitRuntimeModules(...).first { it.fileName == \"quickjs/init/runtime-tool-call.js\" }.source contains 'callToolAsync' 验证行为，断言的是生成的 JS bundle 源码字符串。JS 源码改名、压缩或改写措辞会打红测试；且 .first{} 在文件改名时抛 NoSuchElementException 而非清晰的断言失败，定位成本高。建议断言模块注册表结构而非源码文本。"
+  },
+  {
+    "confidence": "medium",
+    "evidence": "@Test(expected = IllegalArgumentException::class)\n    fun `unexpected character throws`()",
+    "file": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParserTest.kt",
+    "line": 313,
+    "severity": "suggestion",
+    "title": "@Test(expected=...) 无法定位异常来源",
+    "detail": "@Test(expected = IllegalArgumentException::class) 写法下，测试方法内任意一行抛出的异常都会让用例通过，无法定位异常来自目标调用还是前置构造代码。ExpressionParserTest 有 10 处以上该写法。建议改用 assertThrows 包裹目标调用并校验 message。"
+  },
+  {
+    "confidence": "medium",
+    "evidence": "@Test fun `division by zero returns infinity`（ExpressionParserEdgeCaseTest:16）与 @Test fun `binary division by zero returns infinity`（ExpressionNodeTest:60）：同一除零语义在两个文件重复断言；modulo、未闭合模板字符串等场景同样在两边出现",
+    "file": "app/src/test/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParserEdgeCaseTest.kt",
+    "line": 16,
+    "severity": "suggestion",
+    "title": "ExpressionParserTest 与 EdgeCase 测试场景大量重叠",
+    "detail": "ExpressionParserTest（96 用例）与 ExpressionParserEdgeCaseTest（56 用例）合计 152 个用例，除零、modulo 符号、未闭合模板字符串、链式比较等场景在两边重复出现。改一处求值行为要同步两处用例，重复劳动且易遗漏。建议合并或明确分工（Parser 测语法、EdgeCase 只测边界语义）。"
+  },
+  {
+    "confidence": "medium",
+    "evidence": "private fun createManager(vararg engines: JsEngine): ToolPkgManager {\n        val availableEngines = ArrayDeque(engines.toList())\n        return ToolPkgManager(mock<Context>()) {\n            availableEngines.removeFirst()\n        }\n    }",
+    "file": "app/src/test/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManagerTest.kt",
+    "line": 109,
+    "severity": "suggestion",
+    "title": "ToolPkgManagerTest 引擎工厂用 removeFirst() 分发 mock",
+    "detail": "createManager 里用 availableEngines.removeFirst() 分发 mock 引擎。若被测代码多申请一次引擎，测试抛 NoSuchElementException，失败信息与真实问题无关，定位成本高。建议用 getOrElse 抛带上下文的 AssertionError。"
+  },
+  {
+    "confidence": "medium",
+    "evidence": "@Test\n    fun `keeps every tool result while bounding each result independently`() // 全文件唯一 @Test",
+    "file": "app/src/test/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManagerResultLimitTest.kt",
+    "line": 12,
+    "severity": "suggestion",
+    "title": "结果限长逻辑只有一个用例，边界未钉住",
+    "detail": "ConversationMarkupManager 的结果限长逻辑（超长 tool 结果截断）只由单个用例覆盖，边界行为（恰好等于上限、差一字符）没有钉住，off-by-one 回归时测试发现不了。建议补充边界用例。"
+  },
+  {
+    "confidence": "high",
+    "evidence": "internal var onMessagePersistedDispatchedForTest: ((chatId: String, message: ChatMessage) -> Unit)? = null\n\n    fun dispatchMessagePersisted(chatId: String, message: ChatMessage) {\n        onMessagePersistedDispatchedForTest?.invoke(chatId, message)",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridge.kt",
+    "line": 38,
+    "severity": "suggestion",
+    "title": "生产代码为测试保留可变钩子（仅被新补测试使用）",
+    "detail": "ToolPkgChatMessageHookBridge 在生产代码里挂了一个 @Volatile 可变属性 onMessagePersistedDispatchedForTest，dispatchMessagePersisted 每次派发都要检查一次；该钩子只被 ToolPkgChatMessageHookBridgeTest.dispatchMessagePersisted 使用（test 里 set 后 finally 恢复 null）。纯测试用途的可变全局状态进了生产二进制，且每次派发多一次 null 检查。建议用方法参数注入监听器，或把桥接逻辑拆成可测的纯函数。"
+  }
+]

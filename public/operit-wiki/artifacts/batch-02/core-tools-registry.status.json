@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 9,
+  "refs_valid": "79/79 引用行号真实存在（抽查 6/6），lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "工具注册与执行框架：AIToolHandler 注册表与执行调用链、Hook 机制、执行限额、进度总线、ToolPackage 数据模型、ToolResultData 结果类型体系、代理调用。",
+  "updated": "2026-09-30",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914838853,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

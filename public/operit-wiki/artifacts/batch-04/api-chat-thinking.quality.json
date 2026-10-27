@@ -1,0 +1,42 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt",
+    "line": 197,
+    "title": "control 拼写错误静默降级为 UNSUPPORTED",
+    "severity": "suggestion",
+    "category": "robustness",
+    "confidence": "high",
+    "evidence": "                control = when (json.optString(\"control\", \"unsupported\").trim().lowercase(Locale.US)) {\n                    \"levels\" -> ThinkingQualityControl.LEVELS\n                    \"toggle_only\", \"toggle\" -> ThinkingQualityControl.TOGGLE_ONLY\n                    else -> ThinkingQualityControl.UNSUPPORTED",
+    "description": "control 字段解析用 when 收尾 else -> UNSUPPORTED；配置里把 control 写成 \"level\" 等拼写错误时，规则静默变成不支持，thinking 开关直接消失且无任何提示。建议在 validateConfigurations 里对未知 control 值报错。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt",
+    "line": 233,
+    "title": "模型正则每次匹配都重新编译",
+    "severity": "suggestion",
+    "category": "performance",
+    "confidence": "high",
+    "evidence": "        return modelPrefix.any { model.startsWith(it) } ||\n            modelContains.any { model.contains(it) } ||\n            modelSuffix.any { model.endsWith(it) } ||\n            modelRegex.any { Regex(it, RegexOption.IGNORE_CASE).containsMatchIn(modelName) } ||\n            firstSegment.any { first == it } ||",
+    "description": "ThinkingModelMatcher.matches 里对 modelRegex/lastSegmentRegex 每次调用都 new Regex(...)；每次发请求解析映射时重复编译。建议在 fromJson 时预编译缓存。另：配置里写了非法正则会在匹配时直接抛异常，可在 validateConfigurations 阶段拦截。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt",
+    "line": 450,
+    "title": "putJsonPath 中间路径被占用时整个 action 静默丢弃",
+    "severity": "suggestion",
+    "category": "correctness",
+    "confidence": "high",
+    "evidence": "    for (segment in parts.dropLast(1)) {\n        val next = current.opt(segment)\n        current = when {\n            next is JSONObject -> next\n            current.has(segment) && !overwrite -> return\n            else -> JSONObject().also { current.put(segment, it) }",
+    "description": "putJsonPath 逐段下钻时，若中间段已存在且不是 JSONObject、overwrite=false，直接 return，整个 ThinkingQualityJsonAction 被丢弃且无日志。请求体里已有同名标量字段时会让 thinking 参数静默失效，排查困难。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt",
+    "line": 359,
+    "title": "Number 型选项值小数被 toInt 截断",
+    "severity": "suggestion",
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "            val wireValue = when (value) {\n                is Number -> ThinkingQualityWireValue.Number(value.toInt())\n                is String -> ThinkingQualityWireValue.Text(value)\n                else -> ThinkingQualityWireValue.Omitted\n            }",
+    "description": "wireValue 映射里 is Number -> ThinkingQualityWireValue.Number(value.toInt())；配置里写 1024.5 会被静默截成 1024。建议保留原始数值或在校验阶段拒绝小数。"
+  }
+]

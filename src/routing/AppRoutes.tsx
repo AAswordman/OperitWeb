@@ -13,6 +13,7 @@ const GuidePage = lazy(() => import('../pages/GuidePage'));
 const GuideIndex = lazy(() => import('../pages/GuideIndex'));
 const GuideNewPage = lazy(() => import('../pages/GuideNewPage'));
 const GuideNewContent = lazy(() => import('../pages/GuideNewContent'));
+const OperitWikiPage = lazy(() => import('../pages/OperitWikiPage'));
 const GuideV2Page = lazy(() => import('../pages/GuideV2Page'));
 const GuideContent = lazy(() => import('../pages/GuideContent'));
 const MarkdownRenderer = lazy(() => import('../components/MarkdownRenderer'));
@@ -44,6 +45,7 @@ export default function AppRoutes(preferences: SitePreferences) {
         <Route index element={<HomePage darkMode={darkMode} language={language} />} />
         <Route path="download" element={<ProductDownloadPage generation="v1" language={language} />} />
         <Route path="guide">
+          <Route path="wiki/*" element={<OperitWikiPage language={language} />} />
           <Route element={<GuideNewPage darkMode={darkMode} language={language} basePath={PRODUCTS.v1.guidePath} />}>
             <Route index element={<MarkdownRenderer file={`${PRODUCTS.v1.markdownRoot}/index`} language={language} />} />
             <Route path="beginner-tutorial/:slug" element={<GuideNewContent language={language} />} />

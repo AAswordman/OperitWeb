@@ -1,0 +1,330 @@
+[
+  {
+    "fact": "VectorIndexManager 是泛型类，类型参数 T 约束为 hnswlib 的 Item<Id, FloatArray>，Id 约束为 Any。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:14"
+  },
+  {
+    "fact": "VectorIndexManager 构造函数接收 dimensions、maxElements 和可选的 indexFile 三个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:14"
+  },
+  {
+    "fact": "内部 index 字段类型为 HnswIndex<Id, FloatArray, T, Float>?，初始为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:19"
+  },
+  {
+    "fact": "init 块在构造时立即调用 initIndex() 初始化索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:22"
+  },
+  {
+    "fact": "initIndex 在 indexFile 存在时用 ObjectInputStream 反序列化加载已保存的索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:29"
+  },
+  {
+    "fact": "反序列化结果用 unchecked cast 转为 HnswIndex<Id, FloatArray, T, Float>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:29"
+  },
+  {
+    "fact": "索引加载失败时记日志、删除加载失败的索引文件，然后新建空索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:33"
+  },
+  {
+    "fact": "新建索引使用 DistanceFunctions.FLOAT_COSINE_DISTANCE 作为距离函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:35"
+  },
+  {
+    "fact": "新建索引的构建器调用 withRemoveEnabled() 启用删除能力。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:36"
+  },
+  {
+    "fact": "addItem 先调用 ensureCapacity(size() + 1) 预留容量再 add。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:48"
+  },
+  {
+    "fact": "removeItem 的 version 参数默认值为 Long.MAX_VALUE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:54"
+  },
+  {
+    "fact": "findNearest 返回 List<T>，内部用 it.item() 只取条目、丢弃距离值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:59"
+  },
+  {
+    "fact": "size() 在 index 为 null 时返回 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:63"
+  },
+  {
+    "fact": "maxItemCount() 在 index 为 null 时回退到构造参数 maxElements。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:65"
+  },
+  {
+    "fact": "ensureCapacity 只在 minCapacity 超过当前 maxItemCount 时调用 resize 扩容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:67"
+  },
+  {
+    "fact": "save() 只在 indexFile 和 index 都非空时才执行写出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:75"
+  },
+  {
+    "fact": "save() 先为父目录执行 mkdirs，再用 ObjectOutputStream 把整个索引对象序列化写出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:80"
+  },
+  {
+    "fact": "save() 捕获 IOException 并记日志，不向调用方抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:82"
+  },
+  {
+    "fact": "close() 只是把 index 置为 null，不做任何持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:88"
+  },
+  {
+    "fact": "IndexItem 是 data class，包装 id、vector、version 和一个泛型 value 引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:11"
+  },
+  {
+    "fact": "IndexItem 的 id 和 vector 是 private 的，value 是公开字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:12"
+  },
+  {
+    "fact": "IndexItem 的 version 字段默认值为 0L。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:14"
+  },
+  {
+    "fact": "IndexItem 的 value 注释说明可指向 Memory 或 DocumentChunk 等原始对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:15"
+  },
+  {
+    "fact": "IndexItem 实现 hnswlib 的 Item<Id, FloatArray> 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:11"
+  },
+  {
+    "fact": "IndexItem.dimensions() 直接返回 vector.size。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:20"
+  },
+  {
+    "fact": "IndexItem.equals 只比较 id，忽略 vector 和 version 的差异。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:27"
+  },
+  {
+    "fact": "IndexItem.hashCode 只返回 id.hashCode()，与 equals 保持一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt:32"
+  },
+  {
+    "fact": "NativeRipgrep 是 internal object，包内可见。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:3"
+  },
+  {
+    "fact": "NativeRipgrep 的 init 块调用 System.loadLibrary(\"operit_ripgrep\") 加载 native 库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:5"
+  },
+  {
+    "fact": "searchJson 是 @JvmStatic 的 external JNI 函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:9"
+  },
+  {
+    "fact": "searchJson 的 JNI 参数含 path、patterns、filePattern、caseInsensitive、literal、contextLines、maxResults。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:12"
+  },
+  {
+    "fact": "Rust JNI 入口函数全名为 Java_com_ai_assistance_operit_util_ripgrep_NativeRipgrep_searchJson。",
+    "ref": "tools/native_ripgrep/src/lib.rs:49"
+  },
+  {
+    "fact": "JNI 入口用 extern \"system\" 调用约定并标记 #[no_mangle]。",
+    "ref": "tools/native_ripgrep/src/lib.rs:48"
+  },
+  {
+    "fact": "Rust 侧把 literal 参数命名为 _literal，实际完全忽略。",
+    "ref": "tools/native_ripgrep/src/lib.rs:56"
+  },
+  {
+    "fact": "搜索流程出错时返回 success=false 的 SearchResponse JSON，而不是抛异常。",
+    "ref": "tools/native_ripgrep/src/lib.rs:73"
+  },
+  {
+    "fact": "返回的 JSON 字段名用 serde rename_all 转为 camelCase。",
+    "ref": "tools/native_ripgrep/src/lib.rs:19"
+  },
+  {
+    "fact": "SearchBlock 结构体字段为 filePath、firstMatchLine、lineContent、matchContext、matchCount。",
+    "ref": "tools/native_ripgrep/src/lib.rs:26"
+  },
+  {
+    "fact": "path 为空字符串时返回 \"path is required\" 错误。",
+    "ref": "tools/native_ripgrep/src/lib.rs:126"
+  },
+  {
+    "fact": "空白 pattern 会被过滤，过滤后为空则返回 \"pattern is required\" 错误。",
+    "ref": "tools/native_ripgrep/src/lib.rs:125"
+  },
+  {
+    "fact": "max_results 为 0 时直接返回成功空结果，不做遍历。",
+    "ref": "tools/native_ripgrep/src/lib.rs:150"
+  },
+  {
+    "fact": "目录遍历用 ignore::WalkBuilder，且 hidden(false) 表示不跳过隐藏文件。",
+    "ref": "tools/native_ripgrep/src/lib.rs:160"
+  },
+  {
+    "fact": "遍历同时启用 git_ignore、git_global、git_exclude 和 parents 规则。",
+    "ref": "tools/native_ripgrep/src/lib.rs:161"
+  },
+  {
+    "fact": "遍历中只处理普通文件，非文件条目直接跳过。",
+    "ref": "tools/native_ripgrep/src/lib.rs:169"
+  },
+  {
+    "fact": "is_probably_binary 读取文件前 8192 字节，含 NUL 字节即判为二进制并跳过。",
+    "ref": "tools/native_ripgrep/src/lib.rs:260"
+  },
+  {
+    "fact": "filePattern 为空或 \"*\" 时不过滤文件类型，全部候选文件都参与搜索。",
+    "ref": "tools/native_ripgrep/src/lib.rs:212"
+  },
+  {
+    "fact": "filePattern 不含路径分隔符时会自动追加 \"**/\" 前缀的第二套 glob。",
+    "ref": "tools/native_ripgrep/src/lib.rs:221"
+  },
+  {
+    "fact": "固定排除 .backup、.operit、backup 三个目录及其嵌套变体。",
+    "ref": "tools/native_ripgrep/src/lib.rs:230"
+  },
+  {
+    "fact": "命中文件数达到 maxResults 后立即停止遍历。",
+    "ref": "tools/native_ripgrep/src/lib.rs:182"
+  },
+  {
+    "fact": "匹配器用 grep-regex 的 RegexMatcherBuilder 构建，支持 case_insensitive 开关。",
+    "ref": "tools/native_ripgrep/src/lib.rs:201"
+  },
+  {
+    "fact": "非法正则表达式会返回 \"invalid regex\" 错误。",
+    "ref": "tools/native_ripgrep/src/lib.rs:206"
+  },
+  {
+    "fact": "每行用 from_utf8_lossy 解码并去掉行尾的 \\r。",
+    "ref": "tools/native_ripgrep/src/lib.rs:283"
+  },
+  {
+    "fact": "单行匹配器 is_match 出错时按不匹配处理（unwrap_or(false)）。",
+    "ref": "tools/native_ripgrep/src/lib.rs:287"
+  },
+  {
+    "fact": "匹配行的上下文行号用 BTreeSet 去重合并后按行号顺序拼接。",
+    "ref": "tools/native_ripgrep/src/lib.rs:305"
+  },
+  {
+    "fact": "单匹配文件时 lineContent 为该行截断到 300 字符的内容。",
+    "ref": "tools/native_ripgrep/src/lib.rs:318"
+  },
+  {
+    "fact": "多匹配文件时 lineContent 为 \"N matches: ...\" 摘要，只取前 5 个匹配各 80 字符。",
+    "ref": "tools/native_ripgrep/src/lib.rs:323"
+  },
+  {
+    "fact": "matchContext 总长度被截断到 4000 字符。",
+    "ref": "tools/native_ripgrep/src/lib.rs:334"
+  },
+  {
+    "fact": "clip_text 按字符数（非字节数）截断并在末尾追加 \"...\"。",
+    "ref": "tools/native_ripgrep/src/lib.rs:339"
+  },
+  {
+    "fact": "JSON 序列化失败时的手工兜底字符串只转义反斜杠和双引号。",
+    "ref": "tools/native_ripgrep/src/lib.rs:348"
+  },
+  {
+    "fact": "JNI 返回字符串构造失败时返回空指针（null jstring）。",
+    "ref": "tools/native_ripgrep/src/lib.rs:87"
+  },
+  {
+    "fact": "Rust crate 名为 operit_ripgrep，版本 0.1.0。",
+    "ref": "tools/native_ripgrep/Cargo.toml:1"
+  },
+  {
+    "fact": "crate-type 为 cdylib，即编译成动态链接库。",
+    "ref": "tools/native_ripgrep/Cargo.toml:8"
+  },
+  {
+    "fact": "Rust 依赖包括 jni 0.21、serde/serde_json、ignore、grep-regex、globset。",
+    "ref": "tools/native_ripgrep/Cargo.toml:15"
+  },
+  {
+    "fact": "MemoryRepository 用 VectorIndexManager<IndexItem<Long, Long>, Long> 构建记忆向量索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:375"
+  },
+  {
+    "fact": "createMemoryIndexItem 用 memory.id 同时做 id 和 value，version 取 memory.updatedAt.time。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:332"
+  },
+  {
+    "fact": "记忆没有 embedding 或向量为空时 createMemoryIndexItem 返回 null，不入索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:332"
+  },
+  {
+    "fact": "createChunkIndexItem 的 version 和 value 都取 chunk.id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:346"
+  },
+  {
+    "fact": "记忆索引文件名格式为 memory_hnsw_<profile>_<dimension>.idx，放在 vectorIndexDir() 下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:293"
+  },
+  {
+    "fact": "文档块索引文件名格式为 doc_index_<profile>_<memoryId>_<dimension>.hnsw。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:297"
+  },
+  {
+    "fact": "重建记忆索引时先删除旧索引文件，再全量 addItem。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:376"
+  },
+  {
+    "fact": "重建完成后调用 save() 落盘并 close()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:383"
+  },
+  {
+    "fact": "语义检索调用 findNearest(queryVector, availableCount)，把全量候选一次取出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:590"
+  },
+  {
+    "fact": "getSemanticMemoryCandidatesFromIndex 用向量索引条目的 value（即记忆 id）回查 memoryBox，再逐条重算 cosineSimilarity，返回 (memory, 相似度) 对列表；函数内不做排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:600"
+  },
+  {
+    "fact": "getSemanticMemoryCandidatesFromIndex 的调用方对返回的 (memory, 相似度) 对按相似度降序排列（sortedByDescending { it.second }）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1433"
+  },
+  {
+    "fact": "searchNativeRipgrepBlocks 在 Dispatchers.IO 上执行 JNI 调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:276"
+  },
+  {
+    "fact": "Kotlin 侧调用 searchJson 时固定传 literal=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:282"
+  },
+  {
+    "fact": "Kotlin 侧对 contextLines 和 maxResults 用 coerceAtLeast(0) 钳制为非负。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:285"
+  },
+  {
+    "fact": "parseNativeRipgrepBlocks 在 success=false 时抛 IllegalStateException，错误信息来自 error 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:294"
+  },
+  {
+    "fact": "RipgrepBlock 是 protected 的 data class，含 5 个字段与 Rust 的 SearchBlock 对应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:162"
+  },
+  {
+    "fact": "grepCodeWithNativeRipgrep 在 maxResults=0 时直接返回空结果的 ToolResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:543"
+  },
+  {
+    "fact": "grep_code 工具的执行入口最终调用 grepCodeWithNativeRipgrep。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4658"
+  },
+  {
+    "fact": "build_native_ripgrep.ps1 把编译出的 liboperit_ripgrep.so 拷贝到 app/src/main/jniLibs/<abi>/ 下。",
+    "ref": "tools/native_ripgrep/build_native_ripgrep.ps1:69"
+  },
+  {
+    "fact": "hnswlib-core 依赖版本为 1.2.1，在 app/build.gradle.kts 中声明。",
+    "ref": "app/build.gradle.kts:579"
+  }
+]

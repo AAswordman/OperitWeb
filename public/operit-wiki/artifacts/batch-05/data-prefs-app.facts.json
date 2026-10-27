@@ -1,0 +1,982 @@
+[
+  {
+    "fact": "DisplayPreferencesManager 使用 DataStore（Preferences）做持久化，实例名为 \"display_preferences\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:18"
+  },
+  {
+    "fact": "DisplayPreferencesManager 构造器私有，对外经伴生对象 getInstance 获取单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:26"
+  },
+  {
+    "fact": "DisplayPreferencesManager.getInstance 采用 @Volatile + synchronized 双重检查锁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:29"
+  },
+  {
+    "fact": "DisplayPreferencesManager.getInstance 传入的是 context.applicationContext，避免持有 Activity 引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:34"
+  },
+  {
+    "fact": "showFpsCounter 读取键 \"show_fps_counter\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:82"
+  },
+  {
+    "fact": "enableReplyNotification 读取键 \"enable_reply_notification\"，默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:91"
+  },
+  {
+    "fact": "enableReplyNotificationSound 读取键 \"enable_reply_notification_sound\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:100"
+  },
+  {
+    "fact": "enableReplyNotificationVibration 读取键 \"enable_reply_notification_vibration\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:109"
+  },
+  {
+    "fact": "enableEnterToSend 读取键 \"enable_enter_to_send\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:118"
+  },
+  {
+    "fact": "enableNavigationAnimation 读取键 \"enable_navigation_animation\"，默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:127"
+  },
+  {
+    "fact": "startWithNewChat 读取键 \"start_with_new_chat\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:136"
+  },
+  {
+    "fact": "globalUserAvatarUri 与 globalUserName 为可空 String，无默认值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:144"
+  },
+  {
+    "fact": "enableBackgroundKeepAlive 读取键 \"enable_background_keep_alive\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:157"
+  },
+  {
+    "fact": "enableExperimentalVirtualDisplay 读取键 \"enable_experimental_virtual_display\"，默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:162"
+  },
+  {
+    "fact": "hideRuntimeTaskView 读取键 \"hide_runtime_task_view\"，默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:167"
+  },
+  {
+    "fact": "screenshotFormat 读取键 \"screenshot_format\"，默认 \"JPG\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:172"
+  },
+  {
+    "fact": "screenshotQuality 读取键 \"screenshot_quality\"，默认 75。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:177"
+  },
+  {
+    "fact": "screenshotScalePercent 读取键 \"screenshot_scale_percent\"，默认 75。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:182"
+  },
+  {
+    "fact": "visitWebWaitSeconds 读取键 \"visit_web_wait_seconds\"，默认 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:187"
+  },
+  {
+    "fact": "toolPkgHookTimeoutSeconds 读取键 \"toolpkg_hook_timeout_seconds\"，默认 10。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:192"
+  },
+  {
+    "fact": "virtualDisplayBitrateKbps 读取键 \"virtual_display_bitrate_kbps\"，默认 3000。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:197"
+  },
+  {
+    "fact": "toolCollapseMode 读取键 \"tool_collapse_mode\"，经 ToolCollapseMode.fromValue 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:202"
+  },
+  {
+    "fact": "saveDisplaySettings 为 suspend 函数，共 19 个全可空、默认为 null 的参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:210"
+  },
+  {
+    "fact": "saveDisplaySettings 仅对非空参数执行写入（?.let 包裹）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:231"
+  },
+  {
+    "fact": "visitWebWaitSeconds 写入时做 coerceAtLeast(0) 下限钳制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:261"
+  },
+  {
+    "fact": "toolPkgHookTimeoutSeconds 写入时被钳制到 1..60 区间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:262"
+  },
+  {
+    "fact": "toolCollapseMode 写入时存储的是 it.value 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:266"
+  },
+  {
+    "fact": "isExperimentalVirtualDisplayEnabled 等 7 个同步 getter 内部用 runBlocking { flow.first() } 实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:270"
+  },
+  {
+    "fact": "resetDisplaySettings 对部分键写入显式值、对另一部分键执行 remove。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:315"
+  },
+  {
+    "fact": "resetDisplaySettings 把 KEY_ENABLE_NAVIGATION_ANIMATION remove，使其回落到 Flow 默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:322"
+  },
+  {
+    "fact": "resetDisplaySettings 把截图格式/质量/缩放、访问等待、hook 超时、虚拟屏码率、折叠模式键 remove。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt:329"
+  },
+  {
+    "fact": "ThemePreferenceValues 与 ThemePreferenceSnapshot 定义在同一文件 ThemePreferenceSnapshot.kt 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:3"
+  },
+  {
+    "fact": "ThemePreferenceValues 含 strings/booleans/ints/floats 四个 Map 字段，默认均为 emptyMap()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:3"
+  },
+  {
+    "fact": "ThemePreferenceValues 提供 string/boolean/int/float 四个可空读取函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:9"
+  },
+  {
+    "fact": "ThemePreferenceValues 提供 requiredString/requiredBoolean/requiredFloat，缺失时抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:17"
+  },
+  {
+    "fact": "ThemePreferenceValues 没有 requiredInt 读取器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:17"
+  },
+  {
+    "fact": "ThemePreferenceValues.withString 与 withInt 在 value 为 null 时删除该键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:23"
+  },
+  {
+    "fact": "defaultVisual() 在伴生对象中定义，提供 strings/booleans/floats 三类默认值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:49"
+  },
+  {
+    "fact": "defaultVisual() 默认 theme_mode 为 UserPreferencesManager.THEME_MODE_LIGHT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:53"
+  },
+  {
+    "fact": "defaultVisual() 默认 use_system_theme=true、use_custom_colors=false、use_background_image=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:71"
+  },
+  {
+    "fact": "defaultVisual() 默认 chat_style=CHAT_STYLE_CURSOR、input_style=INPUT_STYLE_AGENT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:57"
+  },
+  {
+    "fact": "defaultVisual() 默认 font_type=FONT_TYPE_SYSTEM、font_scale=1f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:61"
+  },
+  {
+    "fact": "defaultVisual() 默认 background_image_opacity=0.3f、background_blur_radius=10f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:123"
+  },
+  {
+    "fact": "defaultVisual() 默认 avatar_shape=AVATAR_SHAPE_CIRCLE、avatar_corner_radius=8f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:125"
+  },
+  {
+    "fact": "defaultVisual() 默认 bubble_image_render_mode=BUBBLE_IMAGE_RENDER_MODE_TILED_NINE_SLICE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:67"
+  },
+  {
+    "fact": "defaultVisual() 默认 show_thinking_process=true、show_status_tags=true、show_model_provider=false、show_model_name=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:106"
+  },
+  {
+    "fact": "ThemePreferenceSnapshot 的字段为 source、sourceId（可空）、values。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:154"
+  },
+  {
+    "fact": "ThemePreferenceSnapshot 的 customPrimaryColor/customSecondaryColor 等颜色属性为可空 Int。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt:162"
+  },
+  {
+    "fact": "ThemeScopeMigrationPolicy 为 internal object，仅含一个公开函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicy.kt:3"
+  },
+  {
+    "fact": "ThemeScopeMigrationPolicy.shouldCopyLegacyThemeToDefaultCharacter 接收 migrationCompleted 等 6 个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicy.kt:4"
+  },
+  {
+    "fact": "migrationCompleted、hasDefaultCharacterTheme、hasAnyScopedTheme 任一为真即返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicy.kt:12"
+  },
+  {
+    "fact": "shouldCopyLegacyThemeToDefaultCharacter 否则返回 defaultCharacterWasCreated || activeCharacterCardId == defaultCharacterId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeScopeMigrationPolicy.kt:16"
+  },
+  {
+    "fact": "ThemeTargetOperationCoordinator 为 internal class，持有一个 Mutex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeTargetOperationCoordinator.kt:6"
+  },
+  {
+    "fact": "ThemeTargetOperationCoordinator.runTransition 在 mutex.withLock 内执行传入的 action。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemeTargetOperationCoordinator.kt:9"
+  },
+  {
+    "fact": "角色卡主题键前缀为 \"character_card_theme_<id>_\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:797"
+  },
+  {
+    "fact": "角色组主题键前缀为 \"character_group_theme_<id>_\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:800"
+  },
+  {
+    "fact": "UserPreferencesManager.observeThemePreferenceSnapshot 的 source 取值为 \"character_card\" 或 \"character_group\"，两目标皆空时抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1225"
+  },
+  {
+    "fact": "readThemePreferenceValues 先以 defaultVisual() 为基底，再叠加 DataStore 中带前缀的实际值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:939"
+  },
+  {
+    "fact": "copyThemeValues 的 sourcePrefix 可为 null，为 null 时读取无前缀的旧全局键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:863"
+  },
+  {
+    "fact": "migrateLegacyDefaultCharacterThemeIfEligible 无论是否执行迁移，都会写 CHARACTER_THEME_DEFAULT_MIGRATION_COMPLETED=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1172"
+  },
+  {
+    "fact": "UserPreferencesManager.replaceThemeForPrompt 把视觉值与元数据写入目标前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1051"
+  },
+  {
+    "fact": "UserPreferencesManager.mutateThemeForPrompt 对快照做变换后写回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1062"
+  },
+  {
+    "fact": "UserPreferencesManager.resetVisualThemeForPrompt 先清空视觉值再写元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1074"
+  },
+  {
+    "fact": "UserPreferencesManager.resolveThemePreferenceSnapshot 是 observeThemePreferenceSnapshot 的一次读取版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:1238"
+  },
+  {
+    "fact": "SpeechServicesPreferences 的 DataStore 名称为 \"speech_services_preferences\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:21"
+  },
+  {
+    "fact": "SpeechServicesPreferences 类注释声明新代码经由 SpeechServiceProfilesPreferences 管理画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:27"
+  },
+  {
+    "fact": "SpeechServicesPreferences 类注释声明本存储是\"活跃画像投影\"（active-profile projection）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:28"
+  },
+  {
+    "fact": "TtsHttpConfig.urlTemplate 为必填 String 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:37"
+  },
+  {
+    "fact": "TtsHttpConfig.headers 类型为 Map<String, String>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:39"
+  },
+  {
+    "fact": "TtsHttpConfig.httpMethod 默认值为 \"GET\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:40"
+  },
+  {
+    "fact": "TtsHttpConfig.requestBody 默认 \"\"，注释说明支持 {text} 占位符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:41"
+  },
+  {
+    "fact": "TtsHttpConfig.contentType 默认值为 \"application/json\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:42"
+  },
+  {
+    "fact": "TtsHttpConfig.responsePipeline 类型为 List<HttpTtsResponsePipelineStep>，默认空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:46"
+  },
+  {
+    "fact": "VitsTtsPackageConfig.packagePath 默认值为空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:51"
+  },
+  {
+    "fact": "SttHttpConfig 仅含 endpointUrl、apiKey、modelName 三个必填字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:57"
+  },
+  {
+    "fact": "TTS 服务类型键名为 \"tts_service_type\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:65"
+  },
+  {
+    "fact": "TTS 清理正则键名为 \"tts_cleaner_regexs\"，类型为 stringSet。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:68"
+  },
+  {
+    "fact": "语速键名为 \"tts_speech_rate\"，类型为 float。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:69"
+  },
+  {
+    "fact": "STT 服务类型键名为 \"stt_service_type\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:73"
+  },
+  {
+    "fact": "默认 TTS 服务类型为 VoiceServiceType.SIMPLE_TTS（Android 系统 TTS）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:77"
+  },
+  {
+    "fact": "默认 STT 服务类型为 SpeechServiceType.SHERPA_NCNN（本地识别）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:78"
+  },
+  {
+    "fact": "默认 TTS 语速为 1.0f，默认 TTS 音调为 1.0f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:80"
+  },
+  {
+    "fact": "默认 STT HTTP 预设 endpoint 为 \"https://api.openai.com/v1/audio/transcriptions\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:100"
+  },
+  {
+    "fact": "默认 STT HTTP 预设 apiKey 为空字符串，无硬编码密钥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:101"
+  },
+  {
+    "fact": "默认 STT HTTP 预设模型名为 \"whisper-1\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:102"
+  },
+  {
+    "fact": "默认 TTS 清理正则包含英文括号正则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:106"
+  },
+  {
+    "fact": "默认 TTS 清理正则包含中文括号正则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:108"
+  },
+  {
+    "fact": "parseSttServiceType 把旧值 \"SHERPA_MNN\" 映射为 SHERPA_NCNN（MNN 为停止维护方案）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:113"
+  },
+  {
+    "fact": "parseSttServiceType 对无法识别的存储值回退到 DEFAULT_STT_SERVICE_TYPE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:115"
+  },
+  {
+    "fact": "ttsHttpConfigFlow 在 JSON 解析失败时回退到 DEFAULT_HTTP_TTS_PRESET。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:132"
+  },
+  {
+    "fact": "sttHttpConfigFlow 在 JSON 解析失败时回退到 DEFAULT_STT_HTTP_PRESET。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:176"
+  },
+  {
+    "fact": "saveTtsSettings 写入清理正则前过滤掉空白字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:199"
+  },
+  {
+    "fact": "saveTtsSettings 仅当 serviceType == VITS_TTS 时才写入 VITS 包配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:205"
+  },
+  {
+    "fact": "saveSttSettings 的 SHERPA_NCNN 分支为空，不写 HTTP 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:227"
+  },
+  {
+    "fact": "saveSttSettings 仅在 OPENAI_STT/DEEPGRAM_STT 时写入 STT_HTTP_CONFIG。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt:229"
+  },
+  {
+    "fact": "语音画像 DataStore 名称为 \"speech_service_profiles\"，schema 当前版本为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:24"
+  },
+  {
+    "fact": "TtsProfile 含 id、name、serviceType、httpConfig、vitsConfig、cleanerRegexs、speechRate、pitch、createdAt、updatedAt 共 10 个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:41"
+  },
+  {
+    "fact": "SttProfile 含 id、name、serviceType、httpConfig、createdAt、updatedAt 共 6 个字段，无语速/音调/清理正则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:55"
+  },
+  {
+    "fact": "迁移用 TTS 画像固定 id 为 \"legacy-tts-profile\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:65"
+  },
+  {
+    "fact": "当前 TTS 画像 id 键名为 \"current_tts_profile_id\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:70"
+  },
+  {
+    "fact": "schema 迁移版本 0 会读取 legacy SpeechServicesPreferences 的全部 TTS/STT 配置生成画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:84"
+  },
+  {
+    "fact": "迁移时若已存在画像列表则不插入 legacy 画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:113"
+  },
+  {
+    "fact": "迁移时若存储的 current TTS id 无效，则回退为画像列表首个 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:120"
+  },
+  {
+    "fact": "getCurrentTtsProfile 找不到画像时抛 error(\"Current TTS profile is missing: $id\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:186"
+  },
+  {
+    "fact": "createTtsProfile 的新画像 id 使用 UUID.randomUUID().toString()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:204"
+  },
+  {
+    "fact": "createTtsProfile 创建后立即把新画像设为当前 active 画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:212"
+  },
+  {
+    "fact": "updateTtsProfile 要求 speechRate 与 pitch 必须大于 0（requirePositive）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:225"
+  },
+  {
+    "fact": "updateTtsProfile 保留画像原 createdAt，只刷新 updatedAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:234"
+  },
+  {
+    "fact": "deleteTtsProfile 用 check 禁止删除当前 active 的 TTS 画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:313"
+  },
+  {
+    "fact": "deleteSttProfile 用 check 禁止删除当前 active 的 STT 画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:327"
+  },
+  {
+    "fact": "projectTtsProfile 调用 legacy saveTtsSettings 把 active 画像写回旧存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:346"
+  },
+  {
+    "fact": "projectSttProfile 调用 legacy saveSttSettings 把 active 画像写回旧存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:357"
+  },
+  {
+    "fact": "requireProfileName 对名称 trim 后为空抛 \"Speech profile name is empty\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:365"
+  },
+  {
+    "fact": "唤醒词 DataStore 名称为 \"wake_word_preferences\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:21"
+  },
+  {
+    "fact": "WakeRecognitionMode 枚举值 STT 表示用 STT 识别唤醒词。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:36"
+  },
+  {
+    "fact": "WakeRecognitionMode 枚举值 PERSONAL_TEMPLATE 表示用个人声纹模板唤醒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:37"
+  },
+  {
+    "fact": "PersonalWakeTemplate 仅含 features: List<Float> 一个字段（声纹特征向量）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:42"
+  },
+  {
+    "fact": "常听开关 always_listening_enabled 默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:64"
+  },
+  {
+    "fact": "唤醒词正则开关 wake_phrase_regex_enabled 默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:63"
+  },
+  {
+    "fact": "唤醒识别模式默认值字符串为 \"stt\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:65"
+  },
+  {
+    "fact": "语音通话无操作超时 voice_call_inactivity_timeout_seconds 默认 5 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:66"
+  },
+  {
+    "fact": "唤醒问候开关 wake_greeting_enabled 默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:67"
+  },
+  {
+    "fact": "唤醒建新群开关默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:69"
+  },
+  {
+    "fact": "语音自动附加开关 voice_auto_attach_enabled 默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:85"
+  },
+  {
+    "fact": "wakeRecognitionModeFlow 对存储值做 lowercase() 后匹配，未知值回退 STT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:186"
+  },
+  {
+    "fact": "saveWakeRecognitionMode 按模式存小写字符串 \"stt\" / \"personal_template\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:270"
+  },
+  {
+    "fact": "个人唤醒模板 flow 在 JSON 为空或解析失败时返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:200"
+  },
+  {
+    "fact": "VoiceAutoAttachType 共 4 个枚举值：SCREEN_OCR、NOTIFICATIONS、LOCATION、TIME。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:152"
+  },
+  {
+    "fact": "VoiceAutoAttachItem.enabled 默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:163"
+  },
+  {
+    "fact": "VoiceAutoAttachItem.params 类型为 Map<String, String>，默认空 Map。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:165"
+  },
+  {
+    "fact": "默认自动附加项含 id 为 \"screen_ocr\" 的屏幕 OCR 项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:96"
+  },
+  {
+    "fact": "默认自动附加项含 id 为 \"notifications\" 的通知项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:101"
+  },
+  {
+    "fact": "默认自动附加项含 id 为 \"location\" 的位置项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:107"
+  },
+  {
+    "fact": "默认自动附加项含 id 为 \"time\" 的时间项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:113"
+  },
+  {
+    "fact": "schema 迁移 0→1 仅补齐缺失类型的默认附加项，不删除已有项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:141"
+  },
+  {
+    "fact": "voiceAutoAttachItemsFlow 解析失败时回退到默认 4 项而非空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt:244"
+  },
+  {
+    "fact": "记忆搜索 prefs 文件名为 \"memory_search_settings_$profileId\"，云配置独立文件名为 \"cloud_embedding_settings_$profileId\"，两者均按 profileId 隔离。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:10"
+  },
+  {
+    "fact": "记忆搜索打分默认值为 scoreMode=BALANCED、keywordWeight=10.0f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:21"
+  },
+  {
+    "fact": "记忆搜索打分默认值为 tagWeight=0.0f、vectorWeight=0.0f、edgeWeight=0.4f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:23"
+  },
+  {
+    "fact": "MemorySearchSettingsPreferences.load() 与 save() 都会调用 MemorySearchConfig.normalized() 对权重做归一化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:27"
+  },
+  {
+    "fact": "记忆自动保存间隔默认 5 分钟，读写时均用 coerceIn(1, 30) 钳制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:46"
+  },
+  {
+    "fact": "saveAutoSaveIntervalMinutes() 会同步把下次运行时间写为当前时间 + 间隔毫秒数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:55"
+  },
+  {
+    "fact": "loadNextAutoSaveRunAtMs() 默认返回 0L，saveNextAutoSaveRunAtMs() 用 coerceAtLeast(0L) 钳制负值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:78"
+  },
+  {
+    "fact": "云端 embedding 配置默认关闭，endpoint/apiKey/model 默认均为空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:89"
+  },
+  {
+    "fact": "记忆抽取自定义规则默认空字符串，读取时用 requireNotNull 断言非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:63"
+  },
+  {
+    "fact": "scoreMode 以枚举 ordinal 持久化读取（MemoryScoreMode.entries[getInt(...)]）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt:21"
+  },
+  {
+    "fact": "UserPreferencesManager 使用 DataStore \"user_preferences\" 做持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:30"
+  },
+  {
+    "fact": "UserPreferencesManager.getInstance 采用 @Volatile + synchronized 双重检查锁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:67"
+  },
+  {
+    "fact": "顶层 preferencesManager 全局访问器在实例未初始化时抛 IllegalStateException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:38"
+  },
+  {
+    "fact": "活跃记忆空间 id 键为 \"active_memory_space_id\"，默认空间 id 为 \"default\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:78"
+  },
+  {
+    "fact": "记忆空间列表键为 \"memory_space_list\"，存 JSON 编码的 id 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:79"
+  },
+  {
+    "fact": "应用语言键为 \"app_language\"，默认值为 LanguageCodes.AUTO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:82"
+  },
+  {
+    "fact": "saveAppLanguage 为 suspend 函数，同步版 getCurrentLanguage 用 runBlocking 读取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:351"
+  },
+  {
+    "fact": "activeMemorySpaceIdFlow 默认返回 DEFAULT_PROFILE_ID（\"default\"）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:394"
+  },
+  {
+    "fact": "getMemorySpaceFlow 找不到目标空间元数据时抛 requireNotNull 异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:425"
+  },
+  {
+    "fact": "setActiveMemorySpace 对未知空间 id 用 require 抛 \"Unknown memory space\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:460"
+  },
+  {
+    "fact": "deleteMemorySpace 禁止删除默认空间（直接 return）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:472"
+  },
+  {
+    "fact": "deleteMemorySpace 会把绑定到该空间的角色卡重置为 FOLLOW_GLOBAL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:474"
+  },
+  {
+    "fact": "deleteMemorySpace 同时删除 MemorySpaceProfileDocumentRepository 中的文档与 ObjectBox 数据库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:488"
+  },
+  {
+    "fact": "THEME_MODE_LIGHT 常量值为 \"light\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:256"
+  },
+  {
+    "fact": "CHAT_STYLE_CURSOR 常量值为 \"cursor\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:274"
+  },
+  {
+    "fact": "INPUT_STYLE_CLASSIC 常量值为 \"classic\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:277"
+  },
+  {
+    "fact": "SOFTWARE_IDENTITY_OPERIT 常量值为 \"operit_ai\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:271"
+  },
+  {
+    "fact": "softwareIdentity 默认回落到 SOFTWARE_IDENTITY_OPERIT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:602"
+  },
+  {
+    "fact": "uiAccessibilityMode 默认 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:590"
+  },
+  {
+    "fact": "isUiAccessibilityModeEnabled 用 runBlocking 对外提供同步读取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:382"
+  },
+  {
+    "fact": "最近使用颜色 recentColorsFlow 以逗号分隔的 Int 字符串存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:643"
+  },
+  {
+    "fact": "addRecentColor 把新颜色放最前并限制最多保留 14 个。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:670"
+  },
+  {
+    "fact": "长粘贴文本转文件阈值默认 3000 字符（DEFAULT_LONG_PASTED_TEXT_FILE_THRESHOLD）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:341"
+  },
+  {
+    "fact": "convertLongPastedTextToFile 默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:631"
+  },
+  {
+    "fact": "aiMarkdownParagraphSpacing 默认 12f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:621"
+  },
+  {
+    "fact": "resetLayoutSettings 以 remove 键的方式重置布局设置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:721"
+  },
+  {
+    "fact": "migrateLegacyProfilesToMemorySpaces 迁移后删除旧 profile_ 前缀键与 6 个分类锁定键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:544"
+  },
+  {
+    "fact": "migrateLegacyProfilesToMemorySpaces 把旧分类锁定转换为 memory space 的 profileAutoUpdateLocked。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt:572"
+  },
+  {
+    "fact": "协议接受的判定条件是存储的版本号字符串等于 CURRENT_AGREEMENT_VERSION。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AgreementPreferences.kt:22"
+  },
+  {
+    "fact": "当前打包的协议版本常量为 \"2026-07-15\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AgreementPreferences.kt:35"
+  },
+  {
+    "fact": "acceptCurrentAgreement() 写入当前版本号并把 StateFlow 置为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AgreementPreferences.kt:27"
+  },
+  {
+    "fact": "AgreementPreferences 对外暴露 StateFlow<Boolean> 供 UI 层观察协议接受状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AgreementPreferences.kt:17"
+  },
+  {
+    "fact": "AgreementPreferences 使用文件名 \"agreement_preferences\" 的 MODE_PRIVATE SharedPreferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AgreementPreferences.kt:11"
+  },
+  {
+    "fact": "自定义表情按 ActivePrompt 类型分目标，key 前缀为 character_card_custom_emoji_<id>_ 或 character_group_custom_emoji_<id>_。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:58"
+  },
+  {
+    "fact": "内置表情类别共 9 个：happy、sad、angry、surprised、confused、crying、like_you、miss_you、speechless。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:47"
+  },
+  {
+    "fact": "CustomEmojiPreferences JSON 解码失败时记日志并返回空列表，不抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:74"
+  },
+  {
+    "fact": "getAllCategories() 返回内置类别在前、自定义类别按字母序在后。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:135"
+  },
+  {
+    "fact": "deleteCategory() 同时删除该类别下表情与类别记录，类别删空时移除整个 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:118"
+  },
+  {
+    "fact": "clearLegacyGlobalStorage() 清理旧全局 key：custom_emojis、all_categories、builtin_emojis_initialized。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:208"
+  },
+  {
+    "fact": "表情文件本身存储在 filesDir/custom_emoji/<target>/ 目录下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CustomEmojiPreferences.kt:26"
+  },
+  {
+    "fact": "schema 版本号存于 key \"__operit_preferences_schema_version\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:12"
+  },
+  {
+    "fact": "迁移按版本号逐版本递增执行，完成后写回当前版本号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:84"
+  },
+  {
+    "fact": "版本号缺失时视为版本 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:97"
+  },
+  {
+    "fact": "存储的版本号大于代码声明版本时抛 PreferencesSchemaVersionTooNewException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:71"
+  },
+  {
+    "fact": "versionedPreferencesDataStore 的 currentVersion 必须为非负数，否则 require 抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:35"
+  },
+  {
+    "fact": "申请的 GitHub OAuth scope 为 notifications,public_repo,user:email,read:user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:42"
+  },
+  {
+    "fact": "GitHub 认证会话有效的判定是 authVersion>=3 且已授权 scope 包含全部必需 scope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:90"
+  },
+  {
+    "fact": "会话失效时 accessTokenFlow、userInfoFlow、getCurrentAccessToken 均返回 null，不暴露旧凭证。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:102"
+  },
+  {
+    "fact": "saveAuthInfo() 写入登录态/版本号/授权 scope，无 refreshToken 时移除旧值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:139"
+  },
+  {
+    "fact": "GitHubAuthPreferences.logout() 清空整个 github_auth_preferences DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:227"
+  },
+  {
+    "fact": "isTokenExpired() 在无 token_expires_at 记录时返回 false（视为未过期）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:179"
+  },
+  {
+    "fact": "getAuthorizationHeader() 返回 \"Bearer <token>\" 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:271"
+  },
+  {
+    "fact": "进行中的 OAuth 事务过期后 getActiveOAuthTransaction() 自动清理并返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:250"
+  },
+  {
+    "fact": "GitHubAuthBus 是 Kotlin object 单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthBus.kt:6"
+  },
+  {
+    "fact": "GitHubAuthBus 的 auth code 经 MutableStateFlow<String?> 对外暴露为只读 StateFlow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthBus.kt:7"
+  },
+  {
+    "fact": "GitHubAuthBus 全文件无任何持久化代码，code 只驻留内存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthBus.kt:1"
+  },
+  {
+    "fact": "外部 HTTP API 默认端口为 8094。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:109"
+  },
+  {
+    "fact": "外部 HTTP API 开关默认关闭（enabled 默认 false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:31"
+  },
+  {
+    "fact": "setPort() 用 isValidPort() 校验端口范围 1..65535。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:50"
+  },
+  {
+    "fact": "token 为空时 ensureBearerToken() 生成去横线的随机 UUID 作为 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:57"
+  },
+  {
+    "fact": "token 生成算法为 UUID.randomUUID().toString().replace(\"-\", \"\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:130"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences 另提供 runBlocking 包装的同步读取版本 getConfigSync/getEnabled/getPort/getBearerToken。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:92"
+  },
+  {
+    "fact": "免费额度等待期为指数退避：第 n 次使用后等待 2^(n-1) 天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:138"
+  },
+  {
+    "fact": "防作弊验证文件位于公共 Downloads 目录下的 Operit/usage_verification.dat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:91"
+  },
+  {
+    "fact": "generateVerificationHash() 名为哈希，实际返回明文拼接 \"$totalUsage|$nextDate\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:120"
+  },
+  {
+    "fact": "外部文件与 prefs 不一致时，取两者使用计数的最大值恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:67"
+  },
+  {
+    "fact": "新用户 next_available_date 默认为当天，可直接使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:37"
+  },
+  {
+    "fact": "canUseFreeTier() 判定为今天不早于下次可用日期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:125"
+  },
+  {
+    "fact": "远程公告展示新公告的判定为 version > 已确认版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/RemoteAnnouncementPreferences.kt:14"
+  },
+  {
+    "fact": "远程公告已确认版本默认值 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/RemoteAnnouncementPreferences.kt:11"
+  },
+  {
+    "fact": "远程公告只持久化一个 int 值 acknowledged_version。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/RemoteAnnouncementPreferences.kt:19"
+  },
+  {
+    "fact": "当前市场协议版本为 \"2026-08-08.1\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MarketAgreementPreferences.kt:26"
+  },
+  {
+    "fact": "市场协议接受判定为存储版本等于当前版本，与 AgreementPreferences 同模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MarketAgreementPreferences.kt:14"
+  },
+  {
+    "fact": "skill 可见性存储 key 由 skill 名 trim 后取 SHA-256、前 16 位 hex，加前缀 skill_visible_ 派生。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SkillVisibilityPreferences.kt:20"
+  },
+  {
+    "fact": "旧 skill 可见性 key 格式仍兼容，命中后自动迁移到新 key 并删除旧 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SkillVisibilityPreferences.kt:50"
+  },
+  {
+    "fact": "skill 名为空白时 isSkillVisibleToAi 直接返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SkillVisibilityPreferences.kt:44"
+  },
+  {
+    "fact": "未显式设置过的 skill 默认对 AI 可见。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SkillVisibilityPreferences.kt:57"
+  },
+  {
+    "fact": "ToolCollapseMode 共三个折叠模式：read_only、all、full。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ToolCollapseMode.kt:4"
+  },
+  {
+    "fact": "ToolCollapseMode.fromValue() 对未知字符串回落为 ALL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ToolCollapseMode.kt:9"
+  },
+  {
+    "fact": "ToolCollapseMode 枚举值携带字符串 value 字段用于持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ToolCollapseMode.kt:3"
+  },
+  {
+    "fact": "EnvPreferences 取值顺序：SharedPreferences 非空值优先，否则回落 System.getenv（异常时返回 null）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:24"
+  },
+  {
+    "fact": "EnvPreferences 的空 key get/set/remove 调用直接返回 null 或忽略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:26"
+  },
+  {
+    "fact": "EnvPreferences.getAllEnv() 只返回非空 String 值，过滤空 key 与空值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:55"
+  },
+  {
+    "fact": "EnvPreferences.setAllEnv() 先 clear 再全量写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:64"
+  },
+  {
+    "fact": "AndroidPermissionPreferences 的 DataStore 名为 `android_permission_preferences`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:17"
+  },
+  {
+    "fact": "RootCommandExecutionMode 枚举的三个值是 AUTO、FORCE_LIBSU、FORCE_EXEC。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:19"
+  },
+  {
+    "fact": "RootCommandExecutionMode.fromString 遇到未知字符串回落为 AUTO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:25"
+  },
+  {
+    "fact": "全局单例经 initAndroidPermissionPreferences 初始化，用 @Volatile 标记加 synchronized 做双重检查锁，重复调用直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:40"
+  },
+  {
+    "fact": "DEFAULT_SU_COMMAND 常量为 `su`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:57"
+  },
+  {
+    "fact": "normalizeSuCommand 把空或纯空白的自定义 su 命令归一化为 `su`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:65"
+  },
+  {
+    "fact": "三个存储键分别是 preferred_permission_level、root_execution_mode、custom_su_command。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:60"
+  },
+  {
+    "fact": "preferredPermissionLevelFlow 在未设置时发射 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:71"
+  },
+  {
+    "fact": "rootExecutionModeFlow 在未设置时发射 RootCommandExecutionMode.AUTO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:77"
+  },
+  {
+    "fact": "customSuCommandFlow 在未设置时发射归一化后的 `su`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:82"
+  },
+  {
+    "fact": "getPreferredPermissionLevel 用 runBlocking 包装 preferredPermissionLevelFlow.first() 做同步读取，异常时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:117"
+  },
+  {
+    "fact": "同步 getter 的文档注明这是阻塞调用，应在非 UI 线程使用或谨慎使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:114"
+  },
+  {
+    "fact": "resetPermissionLevel 删除 preferred_permission_level 键以清除设置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:166"
+  },
+  {
+    "fact": "resetRootExecutionSettings 同时删除 root_execution_mode 与 custom_su_command 两个键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:173"
+  },
+  {
+    "fact": "三个 save 方法都会先记一条 AppLogger.d 日志再写 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt:92"
+  }
+]

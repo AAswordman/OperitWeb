@@ -1,0 +1,38 @@
+[
+ {
+  "confidence": "medium",
+  "evidence": "                while (isActive) {\n                    val latestAnimations =\n                        avatarController.availableAnimations\n                            .map { animationName -> animationName.trim() }\n                            .filter { animationName -> animationName.isNotBlank() }\n                            .distinct()\n\n                    if (latestAnimations != availableAnimations) {\n                        availableAnimations = latestAnimations\n                    }\n\n                    delay(300)\n                }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt",
+  "line": 136,
+  "severity": "warn",
+  "title": "可用动画列表 300ms 无限轮询",
+  "detail": "AvatarConfigSection 用 while(isActive)+delay(300) 无限轮询 avatarController.availableAnimations，每 300ms 在主线程做 map/filter/distinct。预览区折叠或页面不可见时轮询仍在继续，没有按需停止的逻辑，属于可避免的常驻开销。"
+ },
+ {
+  "confidence": "medium",
+  "evidence": "    fun updateScale(scale: Float) {\n        val currentConfig = _uiState.value.config ?: return\n        val avatarId = _uiState.value.currentAvatarConfig?.id ?: return\n        val updatedConfig = currentConfig.copy(scale = scale)\n        viewModelScope.launch { repository.updateAvatarSettings(avatarId, updatedConfig) }\n    }\n    // AvatarRepository.updateAvatarSettings:\n    fun updateAvatarSettings(avatarId: String, newSettings: AvatarInstanceSettings) {\n        val updatedSettings = _instanceSettings.value.toMutableMap()\n        updatedSettings[avatarId] = newSettings\n        _instanceSettings.value = updatedSettings\n        saveInstanceSettingsToPrefs(updatedSettings)\n    }\n    private fun saveInstanceSettingsToPrefs(settings: Map<String, AvatarInstanceSettings>) {\n        val json = gson.toJson(settings)\n        prefs.edit { putString(KEY_INSTANCE_SETTINGS, json) }\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt",
+  "line": 138,
+  "severity": "warn",
+  "title": "滑杆拖动在主线程高频做 JSON 序列化落盘",
+  "detail": "缩放/位移滑杆每次 onValueChange 都经 viewModelScope（Main 线程）调用 repository.updateAvatarSettings，而 AvatarRepository.updateAvatarSettings 同步执行 gson.toJson(整个实例设置 Map) 并写 SharedPreferences。拖动滑杆会产生大量主线程 JSON 序列化与落盘，容易掉帧。应做防抖或切到 IO 线程。"
+ },
+ {
+  "confidence": "low",
+  "evidence": "                    onCreate(\n                        WakeWordPreferences.VoiceAutoAttachItem(\n                            id = \"item_${System.currentTimeMillis()}\",\n                            type = t,\n                            enabled = true,\n                            keywords = \"\"\n                        )\n                    )",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt",
+  "line": 360,
+  "severity": "suggestion",
+  "title": "附件条目 id 用毫秒时间戳，存在碰撞可能",
+  "detail": "新建语音附件条目用 \"item_${System.currentTimeMillis()}\" 做 id。若同一毫秒内创建两条（例如批量恢复/快速连点），id 重复会导致 LazyVerticalGrid 的 key 冲突。建议用 UUID。"
+ },
+ {
+  "confidence": "low",
+  "evidence": "    val newEditorUrl = \"https://www.loongbones.com/\"\n    val oldEditorUrl = \"https://www.egret.uk/download/\"",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt",
+  "line": 39,
+  "severity": "suggestion",
+  "title": "第三方编辑器 URL 硬编码在 UI 层",
+  "detail": "导入教程区把两个第三方编辑器地址硬编码在 Composable 里（loongbones.com、egret.uk/download）。若对方站点变更或下线，按钮将失效且需要发版修复。"
+ }
+]

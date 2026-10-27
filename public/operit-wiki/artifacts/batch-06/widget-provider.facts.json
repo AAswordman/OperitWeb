@@ -1,0 +1,586 @@
+[
+  {
+    "fact": "ToolPkgDesktopWidgetReceiver 继承自 GlanceAppWidgetReceiver。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetReceiver.kt:8"
+  },
+  {
+    "fact": "ToolPkgDesktopWidgetReceiver 的 glanceAppWidget 返回 ToolPkgDesktopGlanceWidget() 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetReceiver.kt:10"
+  },
+  {
+    "fact": "ToolPkgDesktopWidgetReceiver.onDeleted 会逐个清理被删除小组件的配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetReceiver.kt:14"
+  },
+  {
+    "fact": "onDeleted 会跳过 INVALID_APPWIDGET_ID 的 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetReceiver.kt:15"
+  },
+  {
+    "fact": "ToolPkgDesktopGlanceWidget 继承自 GlanceAppWidget。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:30"
+  },
+  {
+    "fact": "provideGlance 调用 GlanceAppWidgetManager.getAppWidgetId 把 GlanceId 换算成 appWidgetId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:32"
+  },
+  {
+    "fact": "provideGlance 调用 ToolPkgDesktopWidgetHost.resolveSelection 读取用户选择。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:33"
+  },
+  {
+    "fact": "provideGlance 有选择时才调用 loadToolPkgDesktopWidgetRenderData 加载渲染数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:36"
+  },
+  {
+    "fact": "provideGlance 用 provideContent 渲染 ToolPkgDesktopWidgetContent。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:42"
+  },
+  {
+    "fact": "小组件背景白天为 0xFFF6F4EE、夜间为 0xFF1F242B。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:62"
+  },
+  {
+    "fact": "小组件标题颜色白天为 0xFF1E2A35、夜间为 0xFFF4F6F8。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:69"
+  },
+  {
+    "fact": "小组件正文颜色白天为 0xFF52606D、夜间为 0xFFD0D7DE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:76"
+  },
+  {
+    "fact": "小组件强调色白天为 0xFF1E88E5、夜间为 0xFF64B5F6。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:83"
+  },
+  {
+    "fact": "有选择时点击小组件按所选 routeId 构造启动 Intent。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:89"
+  },
+  {
+    "fact": "无选择时点击小组件打开配置 Activity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:94"
+  },
+  {
+    "fact": "小组件根布局为 fillMaxSize、14dp 内边距、整体可点击的 Box。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:101"
+  },
+  {
+    "fact": "未配置状态显示 toolpkg_widget_unconfigured_title 与 subtitle 两行文字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:109"
+  },
+  {
+    "fact": "有 DSL 渲染树时调用 RenderToolPkgDesktopWidgetDsl 渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:125"
+  },
+  {
+    "fact": "渲染失败时显示 renderData.errorMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:143"
+  },
+  {
+    "fact": "无渲染树时显示小组件标题、副标题与打开标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopGlanceWidget.kt:136"
+  },
+  {
+    "fact": "工具包小组件最小尺寸为 110dp。",
+    "ref": "app/src/main/res/xml/toolpkg_desktop_widget_info.xml:4"
+  },
+  {
+    "fact": "工具包小组件 updatePeriodMillis 为 0，不做系统定时刷新。",
+    "ref": "app/src/main/res/xml/toolpkg_desktop_widget_info.xml:9"
+  },
+  {
+    "fact": "工具包小组件分类为 home_screen。",
+    "ref": "app/src/main/res/xml/toolpkg_desktop_widget_info.xml:10"
+  },
+  {
+    "fact": "工具包小组件的 configure 指向 ToolPkgDesktopWidgetConfigActivity。",
+    "ref": "app/src/main/res/xml/toolpkg_desktop_widget_info.xml:12"
+  },
+  {
+    "fact": "ToolPkgDesktopWidgetHost 的 SharedPreferences 文件名为 toolpkg_desktop_widget_host。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:18"
+  },
+  {
+    "fact": "buildSelectionKey 把容器包名与小组件 ID 拼成“包名:ID”并做 trim。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:36"
+  },
+  {
+    "fact": "listAvailableWidgets 调用 PackageManager.getToolPkgDesktopWidgets 获取可用小组件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:41"
+  },
+  {
+    "fact": "resolveSelection 在 appWidgetId 非法时直接返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:47"
+  },
+  {
+    "fact": "resolveSelection 优先用当前可用列表中的同名小组件，找不到才用持久化快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:58"
+  },
+  {
+    "fact": "saveSelection 用 commit() 同步写入 10 个偏好键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:79"
+  },
+  {
+    "fact": "clearSelection 用 apply() 删除 10 个偏好键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:96"
+  },
+  {
+    "fact": "buildLaunchIntent 目标为 MainActivity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:105"
+  },
+  {
+    "fact": "buildLaunchIntent 的 flags 为 NEW_TASK、CLEAR_TOP 与 SINGLE_TOP。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:106"
+  },
+  {
+    "fact": "buildLaunchIntent 把 routeId 放进 EXTRA_OPEN_ROUTE_ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:108"
+  },
+  {
+    "fact": "buildConfigIntent 目标为 ToolPkgDesktopWidgetConfigActivity 并携带 EXTRA_APPWIDGET_ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:117"
+  },
+  {
+    "fact": "refreshAll 用 runBlocking 调用 ToolPkgDesktopGlanceWidget().updateAll。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:123"
+  },
+  {
+    "fact": "loadPersistedSelection 中 renderRouteId 为空时回退为 routeId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:140"
+  },
+  {
+    "fact": "loadPersistedSelection 中图标为空字符串时记为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:159"
+  },
+  {
+    "fact": "loadPersistedSelection 重建的 ToolPkgDesktopWidget 的 toolPkgId 取容器包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt:150"
+  },
+  {
+    "fact": "ToolPkgDesktopWidgetConfigActivity 继承自 ComponentActivity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:45"
+  },
+  {
+    "fact": "onCreate 从 Intent 读取 EXTRA_APPWIDGET_ID，非法则直接 finish。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:57"
+  },
+  {
+    "fact": "onCreate 默认 setResult(RESULT_CANCELED)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:58"
+  },
+  {
+    "fact": "onSelect 中 saveSelection 失败则按 RESULT_CANCELED 结束。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:74"
+  },
+  {
+    "fact": "onSelect 成功后置 shouldRefreshAfterFinish 并按 RESULT_OK 结束。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:81"
+  },
+  {
+    "fact": "onStop 仅在正在结束且需要刷新时延迟 300ms 后调 refreshAll。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:103"
+  },
+  {
+    "fact": "配置页的小组件列表在 Dispatchers.IO 上加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:115"
+  },
+  {
+    "fact": "无可用小组件时显示 toolpkg_widget_picker_empty_title 与 body。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:149"
+  },
+  {
+    "fact": "列表项以 buildSelectionKey 作为 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:169"
+  },
+  {
+    "fact": "卡片上显示标题、副标题、容器包名与描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:192"
+  },
+  {
+    "fact": "点击卡片即选中并回调 onSelect。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetConfigActivity.kt:184"
+  },
+  {
+    "fact": "ToolPkgDesktopWidgetRenderData 包含 renderRouteId、renderResult 与 errorMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:33"
+  },
+  {
+    "fact": "渲染路由按容器包名与 routeId 忽略大小写匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:49"
+  },
+  {
+    "fact": "找不到渲染路由时返回“widget render route not found”错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:59"
+  },
+  {
+    "fact": "找不到渲染脚本时返回“widget render script not found”错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:69"
+  },
+  {
+    "fact": "JS 引擎执行上下文键格式为 toolpkg_widget:<appWidgetId>:<容器包名>:<模块ID>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:81"
+  },
+  {
+    "fact": "渲染调用 acquireToolPkgExecutionEngine 获取 JS 引擎。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:84"
+  },
+  {
+    "fact": "runtimeOptions 包含 __operit_ui_package_name 等内部键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:94"
+  },
+  {
+    "fact": "runtimeOptions 的 state 与 memo 传入空 Map。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:100"
+  },
+  {
+    "fact": "DSL 脚本经 executeComposeDslScript 执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:102"
+  },
+  {
+    "fact": "脚本结果解析失败时返回“invalid widget render result”错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:108"
+  },
+  {
+    "fact": "根节点 onLoad 属性存在时再执行一次 onLoad 动作得到最终树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:122"
+  },
+  {
+    "fact": "onLoad 结果解析失败时回退用初始解析树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:129"
+  },
+  {
+    "fact": "JS 引擎在 finally 中释放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:145"
+  },
+  {
+    "fact": "column、lazycolumn、scaffold、surface 节点渲染为 Column。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:164"
+  },
+  {
+    "fact": "box、card、elevatedcard、outlinedcard 节点渲染为 Box。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:176"
+  },
+  {
+    "fact": "按钮类节点渲染为蓝色背景的 Box 加白色文字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:200"
+  },
+  {
+    "fact": "linearprogressindicator 渲染为百分比文字而非真实进度条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:223"
+  },
+  {
+    "fact": "circularprogressindicator 渲染为“Loading”文字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:239"
+  },
+  {
+    "fact": "未知类型节点将其子节点拍平成 Column。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:250"
+  },
+  {
+    "fact": "collectWidgetChildren 合并节点的 children 与 slots。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:282"
+  },
+  {
+    "fact": "extractNodeText 优先取 text 属性，其次拼接子节点文字，最后回退节点类型名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:291"
+  },
+  {
+    "fact": "节点可点击或有显式 onClick 时绑定路由点击动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:338"
+  },
+  {
+    "fact": "padding 支持数字、horizontal/vertical Map 与 paddingHorizontal/Vertical 属性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:353"
+  },
+  {
+    "fact": "颜色 token primary 对应 0xFF1E88E5。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:393"
+  },
+  {
+    "fact": "颜色 token surface 对应 0xFFF6F4EE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:395"
+  },
+  {
+    "fact": "parseColorString 先试 token 再试 AndroidColor.parseColor。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:407"
+  },
+  {
+    "fact": "bold、semibold、medium 字重统一映射为 FontWeight.Bold。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt:418"
+  },
+  {
+    "fact": "VoiceAssistantGlanceWidget 继承自 GlanceAppWidget。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:42"
+  },
+  {
+    "fact": "点击语音小组件直接启动 FloatingChatService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:75"
+  },
+  {
+    "fact": "启动时带上 INITIAL_MODE 为 FULLSCREEN 与自动进入语音聊天标志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:72"
+  },
+  {
+    "fact": "Android O 及以上用 startForegroundService 启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:82"
+  },
+  {
+    "fact": "语音小组件背景白天为 0xCC2196F3、夜间为 0xCC1976D2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:63"
+  },
+  {
+    "fact": "语音小组件图标为 R.drawable.ic_microphone，尺寸 48dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:95"
+  },
+  {
+    "fact": "语音小组件显示“Operit”标题与语音助手副标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantGlanceWidget.kt:106"
+  },
+  {
+    "fact": "VoiceAssistantWidgetReceiver 的 glanceAppWidget 返回 VoiceAssistantGlanceWidget()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/widget/VoiceAssistantWidgetReceiver.kt:14"
+  },
+  {
+    "fact": "MemoryDocumentsProvider 继承自 DocumentsProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:28"
+  },
+  {
+    "fact": "MemoryDocumentsProvider 的 authority 为 ${applicationId}.documents.memory。",
+    "ref": "app/src/main/AndroidManifest.xml:180"
+  },
+  {
+    "fact": "MemoryDocumentsProvider 的 ROOT_ID 为 memory_root。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:35"
+  },
+  {
+    "fact": "文档 ID 前缀为 profile:、dir:、mem:。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:38"
+  },
+  {
+    "fact": "根查询返回“Operit Memory Library”标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:233"
+  },
+  {
+    "fact": "根声明的 MIME 类型为 application/json、text/plain 与 */*。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:226"
+  },
+  {
+    "fact": "根 flags 包含 FLAG_SUPPORTS_CREATE 与 FLAG_SUPPORTS_IS_CHILD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:229"
+  },
+  {
+    "fact": "根的 AVAILABLE_BYTES 硬编码为 0L。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:236"
+  },
+  {
+    "fact": "根的子文档为各记忆空间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:262"
+  },
+  {
+    "fact": "记忆空间的子文档为顶层文件夹与直属记忆条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:288"
+  },
+  {
+    "fact": "文件夹的子文档为子文件夹与该文件夹的记忆条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:312"
+  },
+  {
+    "fact": "openDocument 只接受 Memory 类型文档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:351"
+  },
+  {
+    "fact": "读模式把记忆 JSON 写进 memory_doc_read_<uuid>_<时间戳>.json 临时文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:366"
+  },
+  {
+    "fact": "读模式临时文件在关闭回调中删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:369"
+  },
+  {
+    "fact": "写模式的回写在 writeBackExecutor 单线程池中执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:382"
+  },
+  {
+    "fact": "写回时解析 JSON 的标题、正文、类型、来源、可信度与重要度字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:776"
+  },
+  {
+    "fact": "文档型记忆节点写回非 JSON 内容会被忽略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:792"
+  },
+  {
+    "fact": "普通记忆节点写回非 JSON 文本按纯文本保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:797"
+  },
+  {
+    "fact": "写回永不改变记忆的文件夹路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:788"
+  },
+  {
+    "fact": "createDocument 拒绝在记忆条目下与根下创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:404"
+  },
+  {
+    "fact": "displayName 含空白、斜杠或冒号会被拒绝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:419"
+  },
+  {
+    "fact": "新建记忆的来源标记为 documents_provider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:451"
+  },
+  {
+    "fact": "新建记忆的正文为空、类型为 text/plain。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:450"
+  },
+  {
+    "fact": "删除文件夹会按 uuid 批量删除整个子树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:489"
+  },
+  {
+    "fact": "重命名记忆空间会更新其名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:509"
+  },
+  {
+    "fact": "重命名文件夹前会做目标冲突检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:529"
+  },
+  {
+    "fact": "moveDocument 禁止跨记忆空间移动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:170"
+  },
+  {
+    "fact": "moveDocument 禁止把文件夹移进自己内部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:174"
+  },
+  {
+    "fact": "文件夹移动成功返回新文档 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:190"
+  },
+  {
+    "fact": "记忆条目显示名为可见标题加 .json 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:830"
+  },
+  {
+    "fact": "buildMemoryJson 序列化 13 个字段并缩进 2 格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:843"
+  },
+  {
+    "fact": "文件夹文档 ID 格式为 dir:<空间ID>:<Base64 路径>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:1120"
+  },
+  {
+    "fact": "文件夹路径用 Base64 URL_SAFE 编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:1151"
+  },
+  {
+    "fact": "含斜杠的文档 ID 按显示名逐级解析为合成树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:917"
+  },
+  {
+    "fact": "filterDirectMemories 排除 .folder_placeholder 占位条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:1101"
+  },
+  {
+    "fact": "MemoryRepository 按空间 ID 缓存且同步访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:1030"
+  },
+  {
+    "fact": "loadAllMemories 用 searchMemories(\"*\") 全量加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt:1061"
+  },
+  {
+    "fact": "OperitDataDocumentsProvider 继承自 DocumentsProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:14"
+  },
+  {
+    "fact": "OperitDataDocumentsProvider 的 authority 为 ${applicationId}.documents.data。",
+    "ref": "app/src/main/AndroidManifest.xml:191"
+  },
+  {
+    "fact": "OperitDataDocumentsProvider 运行在 :repair 进程。",
+    "ref": "app/src/main/AndroidManifest.xml:194"
+  },
+  {
+    "fact": "数据根目录取自 applicationInfo.dataDir 的 canonical 路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:54"
+  },
+  {
+    "fact": "根标题为“Operit Data”，摘要为 canonical 路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:74"
+  },
+  {
+    "fact": "根的 AVAILABLE_BYTES 取自 usableSpace。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:77"
+  },
+  {
+    "fact": "子文档按目录优先再按名称排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:98"
+  },
+  {
+    "fact": "openDocument 拒绝打开目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:113"
+  },
+  {
+    "fact": "删除目录使用递归删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:152"
+  },
+  {
+    "fact": "moveDocument 校验源父目录确实包含源文档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:194"
+  },
+  {
+    "fact": "ensureInsideDataRoot 越界时抛 SecurityException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:307"
+  },
+  {
+    "fact": "isSameOrChild 用 canonical 路径加分隔符判断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:315"
+  },
+  {
+    "fact": "resolveChildFile 拒绝空白名、斜杠与空字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:293"
+  },
+  {
+    "fact": "根文档显示名为包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:243"
+  },
+  {
+    "fact": "MIME 类型用 MimeTypeMap 解析，失败回退 octet-stream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/OperitDataDocumentsProvider.kt:256"
+  },
+  {
+    "fact": "WorkspaceDocumentsProvider 继承自 DocumentsProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:24"
+  },
+  {
+    "fact": "WorkspaceDocumentsProvider 的 authority 为 ${applicationId}.documents.workspace。",
+    "ref": "app/src/main/AndroidManifest.xml:169"
+  },
+  {
+    "fact": "workspace 根为 filesDir/workspace，不存在则自动创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:61"
+  },
+  {
+    "fact": "根标题为“Operit Workspace”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:81"
+  },
+  {
+    "fact": "queryChildDocuments 遇到非目录只记警告并返回空结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:105"
+  },
+  {
+    "fact": "deleteDocument 用非递归的 file.delete()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:172"
+  },
+  {
+    "fact": "isChildDocument 用 canonicalPath.startsWith 判断且未加分隔符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:193"
+  },
+  {
+    "fact": "getFileForDocId 直接拼接路径，无越界校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:270"
+  },
+  {
+    "fact": "renameDocument 用 File(parent, displayName) 且未消毒名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt:179"
+  }
+]

@@ -1,0 +1,422 @@
+[
+  {
+    "fact": "CodeEditor 是 Compose 可组合入口，签名包含 code、language、onCodeChange、modifier、readOnly、showLineNumbers、enableCompletion、editorRef 八个参数",
+    "ref": "CodeEditor.kt:54"
+  },
+  {
+    "fact": "CodeEditor 内部用 AndroidView 托管原生 NativeCodeEditor 视图，而非纯 Compose 绘制",
+    "ref": "CodeEditor.kt:95"
+  },
+  {
+    "fact": "AndroidView 的 factory 回调里创建 NativeCodeEditor(context) 实例",
+    "ref": "CodeEditor.kt:106"
+  },
+  {
+    "fact": "补全弹窗的垂直偏移量为 6.dp，加在光标屏幕坐标上",
+    "ref": "CodeEditor.kt:66"
+  },
+  {
+    "fact": "软键盘弹出时编辑器底部预留 24.dp 高度的避让区",
+    "ref": "CodeEditor.kt:69"
+  },
+  {
+    "fact": "补全弹窗锚点 = 编辑器在窗口中的偏移 + 光标屏幕坐标 + 6.dp 垂直偏移",
+    "ref": "CodeEditor.kt:79"
+  },
+  {
+    "fact": "底部符号工具条高度为 40.dp",
+    "ref": "CodeEditor.kt:185"
+  },
+  {
+    "fact": "符号工具条共 24 个符号：{} () [] = . , ; : \" ' + - * / _ < > & | ! ?",
+    "ref": "CodeEditor.kt:198"
+  },
+  {
+    "fact": "点击符号按钮调用 editorRefState.value?.insertSymbol(symbol) 插入原文字符，不做括号配对",
+    "ref": "CodeEditor.kt:203"
+  },
+  {
+    "fact": "NativeCodeEditor 继承自 ViewGroup，是 Compose 与 CanvasCodeEditorView 之间的包装层",
+    "ref": "CodeEditor.kt:233"
+  },
+  {
+    "fact": "NativeCodeEditor.insertSymbol 转调 canvasEditorView.insertSymbol",
+    "ref": "CodeEditor.kt:334"
+  },
+  {
+    "fact": "NativeCodeEditor.getCursorScreenPosition 在 isReleased 时返回 Point(0, 0)，否则返回画布视图的光标位置",
+    "ref": "CodeEditor.kt:348"
+  },
+  {
+    "fact": "NativeCodeEditor.release() 置 isReleased=true 并 removeAllViews()",
+    "ref": "CodeEditor.kt:351"
+  },
+  {
+    "fact": "NativeCodeEditor 的所有公开 setter 都有 isReleased 守卫，释放后调用直接返回",
+    "ref": "CodeEditor.kt:245"
+  },
+  {
+    "fact": "CanvasCodeEditorView 的最小缩放 0.5f、最大缩放 3.0f",
+    "ref": "CanvasCodeEditorView.kt:62"
+  },
+  {
+    "fact": "CanvasCodeEditorView 默认字号 14sp",
+    "ref": "CanvasCodeEditorView.kt:64"
+  },
+  {
+    "fact": "CanvasCodeEditorView 内部私有常量 TAB_SPACES=4，与 EditorDocument.kt:7 的 EDITOR_TAB_SPACES 含义相同（Tab 占 4 格）但各自独立定义",
+    "ref": "CanvasCodeEditorView.kt:65"
+  },
+  {
+    "fact": "选择菜单的菜单项 id 常量为 MENU_COPY=1、MENU_CUT=2、MENU_PASTE=3、MENU_SELECT_ALL=4",
+    "ref": "CanvasCodeEditorView.kt:66"
+  },
+  {
+    "fact": "EditorMetrics 初始化时使用 DEFAULT_TEXT_SIZE_SP(14f) 计算字符度量",
+    "ref": "CanvasCodeEditorView.kt:148"
+  },
+  {
+    "fact": "fling 动画在主线程用 Choreographer 逐帧步进，注释说明因部分机型在渲染线程调 OverScroller.computeScrollOffset 会抛 looper 异常(#798)",
+    "ref": "CanvasCodeEditorView.kt:279"
+  },
+  {
+    "fact": "CanvasCodeEditorView.release() 置 isReleased、移除 fling 回调、停渲染线程、结束 ActionMode、释放高亮器",
+    "ref": "CanvasCodeEditorView.kt:308"
+  },
+  {
+    "fact": "applyCompletion(item) 用 completionPrefix.length 做前缀长度，把 item.insertText 写入文档",
+    "ref": "CanvasCodeEditorView.kt:432"
+  },
+  {
+    "fact": "getCursorScreenPosition() 返回 offsetToPoint(document.selectionEnd)，即光标的屏幕坐标",
+    "ref": "CanvasCodeEditorView.kt:442"
+  },
+  {
+    "fact": "surfaceCreated 回调里启动渲染线程",
+    "ref": "CanvasCodeEditorView.kt:444"
+  },
+  {
+    "fact": "onCheckIsTextEditor 返回 !readOnly，只读模式下不被识别为文本编辑器",
+    "ref": "CanvasCodeEditorView.kt:479"
+  },
+  {
+    "fact": "onCreateInputConnection 设置多行文本输入类型与 IME_FLAG_NO_FULLSCREEN，返回内部 EditorInputConnection",
+    "ref": "CanvasCodeEditorView.kt:488"
+  },
+  {
+    "fact": "双指缩放后的新比例被钳制在 MIN_SCALE..MAX_SCALE 区间内",
+    "ref": "CanvasCodeEditorView.kt:785"
+  },
+  {
+    "fact": "startRenderThread 创建并启动渲染线程（类 RenderThread，线程名见其定义）",
+    "ref": "CanvasCodeEditorView.kt:868"
+  },
+  {
+    "fact": "refreshPaints 里字号取 theme.fontSize.value（>0 才有效），否则回退 DEFAULT_TEXT_SIZE_SP",
+    "ref": "CanvasCodeEditorView.kt:953"
+  },
+  {
+    "fact": "选择浮动菜单含“复制/剪切/粘贴/全选”，只读模式下不提供剪切和粘贴",
+    "ref": "CanvasCodeEditorView.kt:1576"
+  },
+  {
+    "fact": "shouldRenderWithSystemGlyphs 对 0x1F000..0x1FAFF 等 emoji/符号区间改用系统字体绘制",
+    "ref": "CanvasCodeEditorView.kt:1733"
+  },
+  {
+    "fact": "loadEditorTypeface 尝试加载 jetbrains_mono_nerd_font_regular，失败时回退 Typeface.MONOSPACE",
+    "ref": "CanvasCodeEditorView.kt:1725"
+  },
+  {
+    "fact": "EditorInputConnection 继承 BaseInputConnection(dummyMode=true)",
+    "ref": "CanvasCodeEditorView.kt:1760"
+  },
+  {
+    "fact": "渲染线程类名为 RenderThread，线程名 CanvasCodeEditorRenderer",
+    "ref": "CanvasCodeEditorView.kt:1892"
+  },
+  {
+    "fact": "isDirty 标志控制渲染线程是否重绘，该字段没有 @Volatile 注解",
+    "ref": "CanvasCodeEditorView.kt:168"
+  },
+  {
+    "fact": "getExtractedText 返回全文 text、selectionStart/End，不做分片（partialStartOffset=-1）",
+    "ref": "CanvasCodeEditorView.kt:1852"
+  },
+  {
+    "fact": "commitText 忽略 newCursorPosition 参数，提交后光标固定在插入文本末尾",
+    "ref": "CanvasCodeEditorView.kt:1761"
+  },
+  {
+    "fact": "EditorDocument 的 EDITOR_TAB_SPACES=4",
+    "ref": "EditorDocument.kt:7"
+  },
+  {
+    "fact": "MAX_SYMBOL_BACKTRACK_CODE_POINTS=12，限制符号回溯的最大码点数",
+    "ref": "EditorDocument.kt:10"
+  },
+  {
+    "fact": "editorCellWidth(char)：制表符占 4 格",
+    "ref": "EditorDocument.kt:12"
+  },
+  {
+    "fact": "editorCellWidth(codePoint)：CJK 与 emoji 占 2 格",
+    "ref": "EditorDocument.kt:19"
+  },
+  {
+    "fact": "editorNextSymbolOffset 按字素簇推进，正确处理 ZWJ 序列、变音符、emoji 修饰符、区域指示符、keycap",
+    "ref": "EditorDocument.kt:100"
+  },
+  {
+    "fact": "editorPreviousSymbolOffset 向前按字素簇回退，避免把代理对/Surrogate 拆半",
+    "ref": "EditorDocument.kt:125"
+  },
+  {
+    "fact": "EditorEditCommand 记录 before/after 文本与 before/after 选区起止",
+    "ref": "EditorDocument.kt:256"
+  },
+  {
+    "fact": "文档底层 buffer 是 SpannableStringBuilder",
+    "ref": "EditorDocument.kt:267"
+  },
+  {
+    "fact": "undo/redo 用两个 ArrayDeque<EditorEditCommand> 双栈实现",
+    "ref": "EditorDocument.kt:268"
+  },
+  {
+    "fact": "textString() 返回 buffer.toString()",
+    "ref": "EditorDocument.kt:292"
+  },
+  {
+    "fact": "lineCount() 至少为 1，空文档也算一行",
+    "ref": "EditorDocument.kt:296"
+  },
+  {
+    "fact": "setText(newText, clearHistory=true) 默认清空历史",
+    "ref": "EditorDocument.kt:311"
+  },
+  {
+    "fact": "applyCompletion(prefixLength, replacement) 替换前缀并插入补全文本",
+    "ref": "EditorDocument.kt:370"
+  },
+  {
+    "fact": "insertNewlineWithIndent 回车时复制当前行缩进，行尾为 { [ ( 时额外加 4 空格",
+    "ref": "EditorDocument.kt:504"
+  },
+  {
+    "fact": "selectWordAt(offset) 选中光标处的单词",
+    "ref": "EditorDocument.kt:555"
+  },
+  {
+    "fact": "undo()/redo() 返回 Boolean 表示是否有可撤销/重做操作",
+    "ref": "EditorDocument.kt:588"
+  },
+  {
+    "fact": "getLineEnd：末行返回 buffer.length，非末行返回指向行尾换行符的位置",
+    "ref": "EditorDocument.kt:623"
+  },
+  {
+    "fact": "getOffsetForLineAndCellColumn 按半格四舍五入把列映射回字符偏移",
+    "ref": "EditorDocument.kt:655"
+  },
+  {
+    "fact": "EditorSyntaxHighlighter 的 HighlightSnapshot 含 version 与 colors 两个字段",
+    "ref": "EditorSyntaxHighlighter.kt:13"
+  },
+  {
+    "fact": "高亮默认语言为 javascript",
+    "ref": "EditorSyntaxHighlighter.kt:23"
+  },
+  {
+    "fact": "高亮在单线程 executor 上执行，经主线程 Handler 回调，用 AtomicInteger latestRequestedVersion 丢弃过期版本",
+    "ref": "EditorSyntaxHighlighter.kt:26"
+  },
+  {
+    "fact": "标识符起点用 Character.isJavaIdentifierStart 判断",
+    "ref": "EditorSyntaxHighlighter.kt:167"
+  },
+  {
+    "fact": "consumeNumber 把数字、小数点、e/E、-、+ 无条件吞入同一个数字 token",
+    "ref": "EditorSyntaxHighlighter.kt:254"
+  },
+  {
+    "fact": "CodeFormatter.format(code, language) 按语言小写名分发格式化器",
+    "ref": "CodeFormatter.kt:17"
+  },
+  {
+    "fact": "不支持的语言打 AppLogger.w 日志并原样返回输入",
+    "ref": "CodeFormatter.kt:24"
+  },
+  {
+    "fact": "格式化抛异常时打 AppLogger.e 日志并返回原文",
+    "ref": "CodeFormatter.kt:29"
+  },
+  {
+    "fact": "LanguageDetector.detectLanguage(fileName) 按文件扩展名映射语言",
+    "ref": "LanguageDetector.kt:12"
+  },
+  {
+    "fact": "未知扩展名映射为 text",
+    "ref": "LanguageDetector.kt:80"
+  },
+  {
+    "fact": "dart 扩展名映射为 dart 语言",
+    "ref": "LanguageDetector.kt:68"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：关键字 #569CD6",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：函数 #DCDCAA",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：字符串 #CE9178",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：数字 #B5CEA8",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：注释 #6A9955",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：类型 #4EC9B0",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "LanguageSupport 伴生对象定义 VSCode Dark+ 配色常量：变量 #9CDCFE",
+    "ref": "language/LanguageSupport.kt:66"
+  },
+  {
+    "fact": "KotlinSupport 在 companion object 的 init 块里调用 LanguageSupportRegistry.register 自注册（其余三类同）",
+    "ref": "language/KotlinSupport.kt:35"
+  },
+  {
+    "fact": "LanguageFactory.init() 以引用四个语言实现类的方式触发其类初始化",
+    "ref": "language/LanguageFactory.kt:10"
+  },
+  {
+    "fact": "LanguageSupportRegistry.init() 是空实现，注释称“将在各个语言实现类中调用”",
+    "ref": "language/LanguageSupportRegistry.kt:49"
+  },
+  {
+    "fact": "CompletionProviderFactory.getProvider 按语言小写分发 kotlin/javascript/html/dart 四个专用 provider",
+    "ref": "completion/CompletionProviderFactory.kt:12"
+  },
+  {
+    "fact": "默认补全触发字符为 '.' 和 ':'",
+    "ref": "completion/CompletionProvider.kt:52"
+  },
+  {
+    "fact": "getPrefix 从光标向前扫描字母、数字、下划线得到补全前缀",
+    "ref": "completion/CompletionProvider.kt:82"
+  },
+  {
+    "fact": "CompletionPopup 的 Popup 设 focusable=false、dismissOnBackPress/ClickOutside=true、clippingEnabled=false",
+    "ref": "completion/CompletionPopup.kt:47"
+  },
+  {
+    "fact": "补全弹窗宽 260.dp、最大高 220.dp",
+    "ref": "completion/CompletionPopup.kt:60"
+  },
+  {
+    "fact": "DefaultCompletionProvider 用正则 \\b(var|let|const|val)\\s+([a-zA-Z_][a-zA-Z0-9_]*) 从文本提取变量名",
+    "ref": "completion/DefaultCompletionProvider.kt:32"
+  },
+  {
+    "fact": "KotlinCompletionProvider 的 fun 代码片段为 fun ${1}(${2}) {\\n  ${3}\\n}，含 ${n} 占位符",
+    "ref": "completion/KotlinCompletionProvider.kt:63"
+  },
+  {
+    "fact": "KotlinCompletionProvider 的 if 代码片段为 if (${1}) {\\n  ${2}\\n}",
+    "ref": "completion/KotlinCompletionProvider.kt:71"
+  },
+  {
+    "fact": "HtmlCompletionProvider 在属性上下文插入 $it=\"$1\" 形式",
+    "ref": "completion/HtmlCompletionProvider.kt:49"
+  },
+  {
+    "fact": "HtmlCompletionProvider 在普通位置插入 <$it>$1</$it> 的标签对",
+    "ref": "completion/HtmlCompletionProvider.kt:60"
+  },
+  {
+    "fact": "EditorTheme 是 data class，含 background/textColor/cursorColor/selectionColor 等基础主题色",
+    "ref": "theme/EditorTheme.kt:13"
+  },
+  {
+    "fact": "EditorTheme 还含语法高亮色（keyword/type/string/comment/number 等）与 fontSize 字体大小",
+    "ref": "theme/EditorTheme.kt:39"
+  },
+  {
+    "fact": "getThemeForLanguage(_language: String) 忽略语言参数，恒返回 DarkTheme",
+    "ref": "theme/EditorTheme.kt:105"
+  },
+  {
+    "fact": "EditorMetrics.charWidth = ceil(measureText(\"M\"))，以大写 M 的宽度为等宽基准",
+    "ref": "EditorMetrics.kt:27"
+  },
+  {
+    "fact": "EditorMetrics.lineHeight = charHeight * 1.25f",
+    "ref": "EditorMetrics.kt:30"
+  },
+  {
+    "fact": "EditorMetrics.baseline 让文本在行高内垂直居中",
+    "ref": "EditorMetrics.kt:31"
+  },
+  {
+    "fact": "EditorCompletionCallback 接口定义 showCompletions/hideCompletions/isCompletionVisible 三个方法",
+    "ref": "CanvasCodeEditorView.kt:49"
+  },
+  {
+    "fact": "setTextContent 重置高亮快照、清空补全前缀与选区偏好列、滚动归零，并 restartInput 通知输入法",
+    "ref": "CanvasCodeEditorView.kt:393"
+  },
+  {
+    "fact": "onDocumentMutated 统一处理：清偏好列、保证光标可见、通知选区、请求高亮、请求渲染、更新补全、回调文本变化",
+    "ref": "CanvasCodeEditorView.kt:896"
+  },
+  {
+    "fact": "updateCompletion 在只读/未启用/有选区时直接隐藏补全",
+    "ref": "CanvasCodeEditorView.kt:921"
+  },
+  {
+    "fact": "ACTION_UP 判定 isTap = 未超 touchSlop 且非多指且非缩放中，点选时收拢选区并弹起软键盘",
+    "ref": "CanvasCodeEditorView.kt:561"
+  },
+  {
+    "fact": "长按走 document.selectWordAt(offset) 选中单词并弹出选择菜单",
+    "ref": "CanvasCodeEditorView.kt:253"
+  },
+  {
+    "fact": "选择手柄命中检测阈值为 handleRadiusPx * 2.25f，两手柄都命中时取距离近者",
+    "ref": "CanvasCodeEditorView.kt:1523"
+  },
+  {
+    "fact": "粘贴时把 \\r\\n 和 \\r 统一替换为 \\n",
+    "ref": "CanvasCodeEditorView.kt:1693"
+  },
+  {
+    "fact": "复制到剪贴板用 ClipData.newPlainText(\"Code\", selectedText)",
+    "ref": "CanvasCodeEditorView.kt:1672"
+  },
+  {
+    "fact": "drawTextForLine 对连续的单格同色字符做批量 drawText，emoji/变宽字符逐个绘制",
+    "ref": "CanvasCodeEditorView.kt:1275"
+  },
+  {
+    "fact": "只绘制首尾可见行，firstVisibleLine/lastVisibleLine 由 scrollOffsetY 与行高算出",
+    "ref": "CanvasCodeEditorView.kt:1053"
+  },
+  {
+    "fact": "缩进参考线按每 TAB_SPACES 格画一条，x 位置为 level * TAB_SPACES * charWidth - charWidth*0.5",
+    "ref": "CanvasCodeEditorView.kt:1156"
+  },
+  {
+    "fact": "双击走 document.selectWordAt(offset) 选中单词并弹出选择菜单",
+    "ref": "CanvasCodeEditorView.kt:266"
+  }
+]

@@ -1,0 +1,478 @@
+[
+  {
+    "fact": "OperitApplication 继承 android.app.Application，同时实现 Coil 的 ImageLoaderFactory 与 WorkManager 的 WorkConfiguration.Provider 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:73"
+  },
+  {
+    "fact": "OperitApplication 的 companion object 持有全局单例 instance，供全应用访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:88"
+  },
+  {
+    "fact": "OperitApplication.appStartupTimeMs 记录应用进程启动时刻，用于启动耗时统计。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:84"
+  },
+  {
+    "fact": "OperitApplication.onCreate 只做轻量初始化（异常处理器、JSON、图片加载器），重量级初始化延迟到 initializeMainApplication。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:118"
+  },
+  {
+    "fact": "initializeMainApplication 用 synchronized(mainInitializationLock) 加 mainApplicationInitialized 标志保证主初始化只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:143"
+  },
+  {
+    "fact": "应用冷启动时（非崩溃报告恢复）会重置上一轮日志文件，避免日志无限增长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:160"
+  },
+  {
+    "fact": "configureOpenMpEnvironment 在 Android 5.0+ 上设置 KMP_AFFINITY=disabled 与 OMP_PROC_BIND=false，禁用 OpenMP 线程亲和。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:108"
+  },
+  {
+    "fact": "ensureWorkManagerInitialized 先尝试 WorkManager.getInstance，抛 IllegalStateException 时才手动调用 WorkManager.initialize。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:414"
+  },
+  {
+    "fact": "WorkManager 日志级别随构建类型变化：DEBUG 构建用 AppLogger.DEBUG，Release 构建用 AppLogger.INFO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:409"
+  },
+  {
+    "fact": "启动后异步清理两处 cleanOnExit 临时目录：SD 卡路径保留根目录 .nomedia，缓存路径整体清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:426"
+  },
+  {
+    "fact": "图片请求的 OkHttp 客户端配置为连接超时 30 秒、读取超时 60 秒、写入超时 30 秒，连接失败自动重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:302"
+  },
+  {
+    "fact": "全局图片加载器的磁盘缓存目录为 filesDir/image_cache，上限 50MB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:322"
+  },
+  {
+    "fact": "全局图片加载器的内存缓存上限为应用可用内存的 15%。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:327"
+  },
+  {
+    "fact": "GIF 解码按系统版本选择：Android P 及以上用 ImageDecoderDecoder，否则用 GifDecoder。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:310"
+  },
+  {
+    "fact": "启动后延迟 800ms 让首屏先渲染，再在后台串行执行图片池预加载、媒体池预加载与默认工具注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:345"
+  },
+  {
+    "fact": "WorkflowSchedulerInitializer.initialize 在应用启动流程中异步调用，重排所有已启用的工作流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:364"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences 开启每日备份时排期备份，否则取消排期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:370"
+  },
+  {
+    "fact": "应用启动时异步预绑定无障碍服务（UIHierarchyManager.bindToService），解决后台绑定限制问题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:386"
+  },
+  {
+    "fact": "startGlobalAIForegroundServiceIfNeeded 仅在常听唤醒词或外部 HTTP API 开启时才启动 AIForegroundService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:505"
+  },
+  {
+    "fact": "attachBaseContext 在基础上下文附加前应用语言设置，经 createConfigurationContext 创建新的语言上下文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:570"
+  },
+  {
+    "fact": "initializeAppLanguage 中 Android 13+ 用 AppCompatDelegate.setApplicationLocales 设置语言，旧版本改 Configuration。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:547"
+  },
+  {
+    "fact": "onTerminate 时停止 AIForegroundService，避免进程退出后服务残留。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:607"
+  },
+  {
+    "fact": "onTerminate 时销毁 Terminal 管理器的所有终端会话与 SSH 连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:619"
+  },
+  {
+    "fact": "onTerminate 时停止正在运行的 LocalWebServer 本地 Web 服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:630"
+  },
+  {
+    "fact": "onTerminate 时隐藏所有 VirtualDisplayOverlay 虚拟屏幕。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:639"
+  },
+  {
+    "fact": "onTerminate 时关闭 ShowerController，断开 Shower WebSocket 连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:644"
+  },
+  {
+    "fact": "onLowMemory 与 onTrimMemory 把内存压力事件派发给 AppLifecycleHookPluginRegistry 插件钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:650"
+  },
+  {
+    "fact": "启动流程中调用 ActivityLifecycleManager.initialize(this) 注册 Activity 生命周期回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:196"
+  },
+  {
+    "fact": "启动流程中初始化 AIMessageManager 并注册内置插件，同时派发 APPLICATION_CREATE 插件钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:200"
+  },
+  {
+    "fact": "启动流程中启动 MemoryAutoSaveScheduler 长期记忆自动保存轮询器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:224"
+  },
+  {
+    "fact": "启动时在后台协程调用 TokenUsageRepository.ensureInitialized，迁移旧版本遗留的 Token 统计数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:183"
+  },
+  {
+    "fact": "启动流程中初始化 AndroidShellExecutor 上下文，供 shell 工具使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:236"
+  },
+  {
+    "fact": "启动流程中把 ShowerEnvironment.shellRunner 设为 OperitShowerShellRunner，并把 Shower 日志桥接到 AppLogger。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:240"
+  },
+  {
+    "fact": "ShowerEnvironment.emitToSystemLog 设为 false，避免 Shower 日志重复写入系统日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:265"
+  },
+  {
+    "fact": "ActivityLifecycleManager 是实现 Application.ActivityLifecycleCallbacks 的单例对象，用标准回调跟踪前台 Activity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:26"
+  },
+  {
+    "fact": "ActivityLifecycleManager.initialize 注册生命周期回调并缓存应用上下文与 ApiPreferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:51"
+  },
+  {
+    "fact": "getCurrentActivity 返回当前前台 Activity，无前台页面时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:59"
+  },
+  {
+    "fact": "当前 Activity 用 WeakReference 持有，暂停或销毁时清空引用，避免内存泄漏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:165"
+  },
+  {
+    "fact": "onActivityResumed 更新当前 Activity，并节流（2500ms）调用 AIForegroundService.ensureMicrophoneForeground 保活麦克风前台服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:163"
+  },
+  {
+    "fact": "onActivityPaused 时若被暂停的正是跟踪中的 Activity，则清空其引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:188"
+  },
+  {
+    "fact": "前后台判定用 startedActivityCount 计数：从 0 变为大于 0 视为进入前台。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:150"
+  },
+  {
+    "fact": "前后台判定用 startedActivityCount 计数：回落到 0 视为进入后台。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:219"
+  },
+  {
+    "fact": "进入前台时调用 ExternalChatHttpAutoStarter.ensureRunningIfEnabled，理由为 application_foreground。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:152"
+  },
+  {
+    "fact": "进入前台时向插件注册表派发 APPLICATION_FOREGROUND 钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:157"
+  },
+  {
+    "fact": "进入后台时向插件注册表派发 APPLICATION_BACKGROUND 钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:222"
+  },
+  {
+    "fact": "checkAndApplyKeepScreenOn 遵循用户偏好开关，forceKeepScreenOn 强制加减常亮请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:69"
+  },
+  {
+    "fact": "常亮请求分偏好计数与强制计数两类，总和大于 0 才给当前窗口加 FLAG_KEEP_SCREEN_ON，否则清除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:108"
+  },
+  {
+    "fact": "最后一个 Activity 被销毁时（activityCount<=0）关闭 VirtualDisplayOverlay 虚拟屏幕。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:253"
+  },
+  {
+    "fact": "最后一个 Activity 被销毁时关闭 ShowerController，断开 Shower 连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:262"
+  },
+  {
+    "fact": "每个 Activity 生命周期回调都会向 AppLifecycleHookPluginRegistry 派发对应钩子，并附带 Activity 类名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ActivityLifecycleManager.kt:121"
+  },
+  {
+    "fact": "ForegroundServiceCompat.buildTypes 默认 dataSync=true，按参数拼装前台服务类型位掩码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ForegroundServiceCompat.kt:10"
+  },
+  {
+    "fact": "Android Q 以下 buildTypes 直接返回 0，不使用前台服务类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ForegroundServiceCompat.kt:15"
+  },
+  {
+    "fact": "specialUse 类型仅在 Android 14（UPSIDE_DOWN_CAKE）及以上才拼入位掩码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ForegroundServiceCompat.kt:25"
+  },
+  {
+    "fact": "startForeground 在 Android Q+ 且类型非 0 时用三参数重载，否则用两参数重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ForegroundServiceCompat.kt:30"
+  },
+  {
+    "fact": "startForegroundWithFallback 在主类型抛 SecurityException 时降级到备用类型或无类型启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/ForegroundServiceCompat.kt:51"
+  },
+  {
+    "fact": "PerformanceMonitorManager 是性能分析界面的采样引擎单例，界面打开时 start、关闭时 stop。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:76"
+  },
+  {
+    "fact": "采样实体分三类：APP（主进程）、PLUGIN（ToolPkg 容器）、TERMINAL（PTY 会话进程树）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:33"
+  },
+  {
+    "fact": "采样周期固定 1000ms，历史窗口上限 180 条快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:84"
+  },
+  {
+    "fact": "采样状态经由 MutableStateFlow 发布，包含运行态、暂停态、最新快照与历史序列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:116"
+  },
+  {
+    "fact": "CPU 口径为占整机全部核心的百分比（与 Windows 任务管理器一致），上限 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:37"
+  },
+  {
+    "fact": "APP 实体的内存口径为 PSS（Debug.MemoryInfo.totalPss）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:267"
+  },
+  {
+    "fact": "PLUGIN 实体的内存口径为 QuickJS JS 堆已用字节数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:291"
+  },
+  {
+    "fact": "TERMINAL 实体的内存口径为进程树 RSS 页数之和。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:322"
+  },
+  {
+    "fact": "网络速率只有软件（UID）与整机有值；插件与终端和主进程共享同一 UID，流量天然计入软件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:40"
+  },
+  {
+    "fact": "主进程 CPU 经由读取 /proc/self/stat 的 utime/stime 差分计算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:241"
+  },
+  {
+    "fact": "采样间隔超过 5000ms（暂停恢复或进程被冻结）时差分失去当前值意义，只重置基数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:91"
+  },
+  {
+    "fact": "/proc stat 文件的时钟滴答固定按 100（USER_HZ）换算为秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:87"
+  },
+  {
+    "fact": "stat 解析从最后一个右括号之后取字段，进程名含空格时仍能正确定位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:381"
+  },
+  {
+    "fact": "/proc stat 路径必须用绝对路径，相对路径会被解析到应用工作目录导致读取失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:238"
+  },
+  {
+    "fact": "插件采样按引擎线程 tid 读取 /proc/self/task/<tid>/stat，差分基数按 tid 记录，线程销毁重建不会串量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:274"
+  },
+  {
+    "fact": "终端采样先枚举本 UID 可读的进程树，再按 PTY 会话 pid 收集后代进程计算 CPU 与 RSS。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt:300"
+  },
+  {
+    "fact": "性能分析界面在打开时调用 start，关闭时 onDispose 调用 stop，暂停按钮调用 setPaused。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:90"
+  },
+  {
+    "fact": "WorkflowExecutor.executeWorkflow 是 suspend 函数，整个执行过程跑在 Dispatchers.IO 上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:527"
+  },
+  {
+    "fact": "每次工作流执行生成唯一的 runId，并产出 WorkflowExecutionRecord（含起止时间、日志条目、失败阶段）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:534"
+  },
+  {
+    "fact": "prepareRuntime 在执行前注册默认工具；当 ExecuteNode 的 actionType 含冒号时预热包管理器可用包列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:165"
+  },
+  {
+    "fact": "prepareRuntime 失败时返回 shouldRetry=true、失败阶段为 RUNTIME_INITIALIZATION，留给调度器重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:585"
+  },
+  {
+    "fact": "执行入口为全部 TriggerNode：指定 triggerNodeId 时只执行该触发节点，否则只执行 triggerType=manual 的触发节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:622"
+  },
+  {
+    "fact": "触发节点本身不执行，直接标记为 Success，其结果为 triggerExtras 的 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:669"
+  },
+  {
+    "fact": "buildDependencyGraph 把显式连接与参数引用依赖合并建边，自环与重复边会被过滤。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:726"
+  },
+  {
+    "fact": "detectCycle 用 DFS 三色标记检测有向环，发现环直接拒绝执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:760"
+  },
+  {
+    "fact": "拓扑执行先算触发节点可达子图，再用 Kahn 算法按入度逐个执行节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:801"
+  },
+  {
+    "fact": "节点执行前检查入边条件：success/ok/on_success 要求源成功，error/failed/on_error 要求源失败，true/false 按布尔匹配，空白默认要求源成功。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:895"
+  },
+  {
+    "fact": "入边条件也支持把正则表达式直接作用于源节点结果字符串做匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:912"
+  },
+  {
+    "fact": "条件不满足的节点标记为 Skipped，其后继节点的入度照常递减。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:940"
+  },
+  {
+    "fact": "失败节点若存在 error 条件边且目标节点最终执行成功，则该失败被视为已处理，不再导致整体失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1005"
+  },
+  {
+    "fact": "NodeExecutionState 有五种状态：Pending、Running、Success、Skipped、Failed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:44"
+  },
+  {
+    "fact": "ExecuteNode 的参数由 resolveParameters 解析静态值与节点引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1258"
+  },
+  {
+    "fact": "ExecuteNode 经由 AIToolHandler.executeTool 执行工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1275"
+  },
+  {
+    "fact": "引用已失败节点的参数会直接抛 IllegalStateException，引用未完成节点同样抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:190"
+  },
+  {
+    "fact": "ConditionNode 支持 EQ/NE/GT/GTE/LT/LTE/CONTAINS/NOT_CONTAINS/IN/NOT_IN，数值能解析时优先按数字比较。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:199"
+  },
+  {
+    "fact": "ConditionNode 的 IN 算子支持 JSON 数组或逗号分隔列表，混用数字与字符串会抛类型不匹配异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:278"
+  },
+  {
+    "fact": "LogicNode 对入边成功节点的结果做 AND/OR 布尔聚合，输入为空时 AND 为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1147"
+  },
+  {
+    "fact": "ExtractNode 支持 REGEX、JSON 路径、SUB 子串、CONCAT 拼接、RANDOM_INT、RANDOM_STRING 六种提取模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1189"
+  },
+  {
+    "fact": "CancellationException 在各节点执行分支中被重新抛出，保证协程取消能向上传播。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:87"
+  },
+  {
+    "fact": "WorkflowExecutionRetryableException 是标记可重试的异常类型，供 WorkflowWorker 映射为 WorkManager 重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:73"
+  },
+  {
+    "fact": "WorkflowScheduler 支持 interval、specific_time、cron 三种调度类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:30"
+  },
+  {
+    "fact": "周期调度的最小间隔被钳制为 15 分钟，受 WorkManager 限制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:97"
+  },
+  {
+    "fact": "周期任务用 enqueueUniquePeriodicWork 入队，任务名为 workflow_<workflowId>，冲突策略为 REPLACE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:121"
+  },
+  {
+    "fact": "重试退避策略为指数退避，基准延迟 1 分钟。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:27"
+  },
+  {
+    "fact": "定时调度支持 yyyy-MM-dd'T'HH:mm:ss 等四种日期格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:318"
+  },
+  {
+    "fact": "定时调度的目标时间已过（delay < 0）则拒绝排期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:147"
+  },
+  {
+    "fact": "cron 是简化实现，仅支持每日定时、每 N 小时、每 N 分钟三种模式，其他模式返回 null 并记录警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:396"
+  },
+  {
+    "fact": "cron 周期模式下若计算出的间隔小于 15 分钟，降级为一次性任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:214"
+  },
+  {
+    "fact": "cancelWorkflow 按 workflow_<id> 唯一任务名取消排期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:290"
+  },
+  {
+    "fact": "isWorkflowScheduled 查询唯一任务的 WorkInfo，ENQUEUED 或 RUNNING 即视为已排期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:298"
+  },
+  {
+    "fact": "getNextExecutionTime 按调度类型分别计算下次执行时间，interval 类型为当前时间加间隔。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt:462"
+  },
+  {
+    "fact": "WorkflowWorker 是 CoroutineWorker 子类，负责在后台实际执行被调度的工作流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowWorker.kt:17"
+  },
+  {
+    "fact": "WorkflowWorker 从 inputData 读取 workflow_id 与 trigger_node_id 两个键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowWorker.kt:22"
+  },
+  {
+    "fact": "workflow_id 缺失时 WorkflowWorker 直接返回 Result.failure()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowWorker.kt:29"
+  },
+  {
+    "fact": "执行结果为 WorkflowExecutionRetryableException 时 WorkflowWorker 返回 Result.retry()，由 WorkManager 按退避策略重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowWorker.kt:46"
+  },
+  {
+    "fact": "执行失败且非可重试异常时 WorkflowWorker 返回 Result.failure()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowWorker.kt:49"
+  },
+  {
+    "fact": "WorkflowSchedulerInitializer.initialize 在 IO 协程中读取全部工作流，为每个 enabled 的工作流调用 scheduleWorkflow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowSchedulerInitializer.kt:35"
+  },
+  {
+    "fact": "WorkflowSchedulerInitializer 会统计并记录本次启动成功重排的工作流数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowSchedulerInitializer.kt:46"
+  },
+  {
+    "fact": "PerformanceMonitorScreen 分 CPU/内存/网络三个 Tab 展示历史曲线与实体列表；无采样数据时显示 SamplingHint 提示；暂停按钮挂在 TopAppBar 的 actions 上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:80"
+  },
+  {
+    "fact": "工作流执行完成后只做两件事：saveExecutionRecord 存执行记录、updateExecutionStatistics 更新统计；没有向通知栏或聊天推送结果的代码路径（阴性结论：core/workflow/ 四个文件全文无 Notification/NotificationManager/notify 引用）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:639"
+  },
+  {
+    "fact": "notifyWorkflowsChanged 只是 workflowUpdateEvents.tryEmit(Unit) 的界面刷新事件，用于刷新工作流列表 UI，不是向用户发送通知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:82"
+  },
+  {
+    "fact": "执行节点把 actionType 原样装进 AITool（name = actionType），交由 toolHandler 执行任意已注册工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt:1261"
+  },
+  {
+    "fact": "send_notification 系统工具真实存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:2282"
+  },
+  {
+    "fact": "send_notification 的实现经 NotificationManager 以高优先级通道发通知；因此工作流可通过末尾执行节点拼装出“执行完发通知”的用法，但这不是引擎内置的自动触达行为。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt:153"
+  }
+]

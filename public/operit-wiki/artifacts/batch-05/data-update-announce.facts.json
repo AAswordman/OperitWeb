@@ -1,0 +1,522 @@
+[
+  {
+    "fact": "UpdateStatus 是密封类，表达更新检查状态：Initial、Checking、Available；已移除下载相关状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:16"
+  },
+  {
+    "fact": "UpdateStatus 另有 PatchAvailable、UpToDate、Error 三种状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:28"
+  },
+  {
+    "fact": "UpdateStatus.Available 携带 newVersion、updateUrl、releaseNotes、downloadUrl 四个字段，downloadUrl 保留用于浏览器打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:19"
+  },
+  {
+    "fact": "UpdateStatus.PatchAvailable 携带 newVersion、updateUrl、releaseNotes、patchUrl、metaUrl 五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:25"
+  },
+  {
+    "fact": "UpdateManager 是私有构造函数的类，禁止外部直接实例化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:37"
+  },
+  {
+    "fact": "UpdateManager.getInstance 使用双重检查锁实现应用内单例，保存的是 applicationContext。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:51"
+  },
+  {
+    "fact": "UpdateManager.updateStatus 是 LiveData<UpdateStatus>，供 UI 层观察更新状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:41"
+  },
+  {
+    "fact": "parseVersion 支持 1.7.0+1 形式的版本号：先去 v 前缀，再取 + 后缀作 patchIndex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:72"
+  },
+  {
+    "fact": "compareVersions 按 major、minor、patch、patchIndex 依次比较两个版本号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:91"
+  },
+  {
+    "fact": "UpdateManager 伴生对象提供 checkForUpdates(context, currentVersion) 静态入口，供 MainActivity 直接检查更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:98"
+  },
+  {
+    "fact": "checkForUpdatesSilently 只在检查结果为 Available 或 PatchAvailable 时才推送到 updateStatus。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:109"
+  },
+  {
+    "fact": "checkForUpdatesSilently 捕获所有异常，仅记日志，不向 UI 推送错误状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:112"
+  },
+  {
+    "fact": "checkForUpdates 先推送 Checking 状态，再推送检查结果；异常时推送 Error 状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:118"
+  },
+  {
+    "fact": "checkForUpdatesInternal 在 IO 线程执行，beta 开关读取自 UserPreferencesManager.isBetaPlanEnabled()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:134"
+  },
+  {
+    "fact": "beta 开关读取抛异常时静默视为未开启，跳过补丁通道检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:143"
+  },
+  {
+    "fact": "正式版仓库信息从字符串资源 about_website 中用正则提取 GitHub owner 与仓库名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:165"
+  },
+  {
+    "fact": "仓库信息解析失败时默认使用 AAswordman/Operit。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:174"
+  },
+  {
+    "fact": "正式版检查经由 GithubReleaseUtil.fetchLatestReleaseInfo 获取最新 release 信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:179"
+  },
+  {
+    "fact": "远端 release 版本大于当前版本时判为 Available，否则判为 UpToDate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:185"
+  },
+  {
+    "fact": "补丁与正式版同时可用时取版本号更新者；版本号相等时取正式版。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:196"
+  },
+  {
+    "fact": "tryFetchLatestPatchUpdate 只查询 AAswordman/OperitNightlyRelease 仓库第 1 页前 20 个 release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:228"
+  },
+  {
+    "fact": "补丁源仓库的 owner 与 repo 硬编码为 AAswordman 与 OperitNightlyRelease。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:226"
+  },
+  {
+    "fact": "补丁检查跳过 draft 状态的 release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:248"
+  },
+  {
+    "fact": "补丁只在与当前版本相同 base version（x.y.z）内有效，防止跨基础版本打补丁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:255"
+  },
+  {
+    "fact": "补丁 meta 附件优先匹配 patch_ 开头 .json 结尾，否则退为任意 .json 附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:267"
+  },
+  {
+    "fact": "补丁包附件优先匹配 apkrawpatch_ 开头 .zip 结尾，否则退为任意 .zip 附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:270"
+  },
+  {
+    "fact": "同一 base version 内选择版本号最高的补丁作为 best 候选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:288"
+  },
+  {
+    "fact": "补丁候选的 patchUrl 取自补丁附件的 browser_download_url，metaUrl 取自 meta 附件的 browser_download_url。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/UpdateManager.kt:294"
+  },
+  {
+    "fact": "FullUpdateInstaller 是 object 单例，负责完整 APK 包下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:22"
+  },
+  {
+    "fact": "FullUpdateInstaller.Stage 只有 DOWNLOADING_APK 与 READY_TO_INSTALL 两个阶段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:23"
+  },
+  {
+    "fact": "FullUpdateInstaller.ProgressEvent 只有 StageChanged 与 DownloadProgress 两种事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:28"
+  },
+  {
+    "fact": "FullUpdateInstaller 的 OkHttp 超时为连接 30 秒、读取 120 秒、写入 30 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:38"
+  },
+  {
+    "fact": "完整包工作目录名为 full_update，位于应用 cacheDir 下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:43"
+  },
+  {
+    "fact": "完整包下载使用 6 线程分段下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:44"
+  },
+  {
+    "fact": "downloadAndPrepareUpdate 下载完成后触发 READY_TO_INSTALL 并返回 APK 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:46"
+  },
+  {
+    "fact": "prepareCleanWorkDir 每次先递归删除旧工作目录再重建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:70"
+  },
+  {
+    "fact": "下载前要求服务端返回有效 Content-Length，否则抛 IllegalStateException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:165"
+  },
+  {
+    "fact": "下载前用 Range: bytes=0-0 探测，要求服务端返回 206，否则抛异常拒绝下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:171"
+  },
+  {
+    "fact": "下载前用 RandomAccessFile.setLength 预分配与 Content-Length 等长的空文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:89"
+  },
+  {
+    "fact": "另起协程每 300ms 上报已下载字节数与实时速度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:108"
+  },
+  {
+    "fact": "分片按总量除以线程数均分，余数字节补给前几个分片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:186"
+  },
+  {
+    "fact": "任一分片请求返回非 206 即抛异常，中断整个下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:212"
+  },
+  {
+    "fact": "分片下载使用 128KB 缓冲区逐块写入 RandomAccessFile 的对应区间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/FullUpdateInstaller.kt:219"
+  },
+  {
+    "fact": "PatchUpdateInstaller 是 object 单例，负责增量补丁更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:38"
+  },
+  {
+    "fact": "补丁链最大步数 MAX_CHAIN_STEPS 为 64。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:40"
+  },
+  {
+    "fact": "补丁包下载线程数 PATCH_DOWNLOAD_THREAD_COUNT 为 6。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:41"
+  },
+  {
+    "fact": "PatchUpdateInstaller.Stage 含 SELECTING_MIRROR、DOWNLOADING_META、DOWNLOADING_PATCH、APPLYING_PATCH、VERIFYING_APK、READY_TO_INSTALL 六个阶段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:43"
+  },
+  {
+    "fact": "MirrorProbeSummary 记录镜像探测结果：ok、latencyMs、speedBytesPerSec、error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:51"
+  },
+  {
+    "fact": "PatchUpdateInstaller.ProgressEvent 含 MirrorProbeStarted、MirrorProbeResult、MirrorSelected、ChainScanProgress 四种镜像与链路事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:58"
+  },
+  {
+    "fact": "镜像探测单次超时 PROBE_TIMEOUT_MS 为 2500 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:81"
+  },
+  {
+    "fact": "releaseAssetUrlRegex 只接受 github.com 的 releases/download 附件链接，用于反解析仓库 owner 与名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:82"
+  },
+  {
+    "fact": "补丁工作目录名为 patch_update，位于应用 cacheDir 下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:91"
+  },
+  {
+    "fact": "installApk 在 Android N 及以上用 FileProvider 生成 content URI 并授予读权限，低版本用 Uri.fromFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:107"
+  },
+  {
+    "fact": "installApk 用 ACTION_VIEW 打开 application/vnd.android.package-archive 调起系统安装器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:114"
+  },
+  {
+    "fact": "downloadAndPreparePatchUpdateWithProgress 先测速选镜像，再走内部补丁流程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:139"
+  },
+  {
+    "fact": "downloadAndPreparePatchUpdateWithProgressUsingMirror 跳过测速，直接使用调用方指定的镜像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:153"
+  },
+  {
+    "fact": "补丁流程开始前调用 prepareCleanWorkDir 清空并重建工作目录（WORK_DIR_NAME 为 patch_update）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:548"
+  },
+  {
+    "fact": "补丁基底是当前已安装 APK（applicationInfo.sourceDir）拷贝成的 current.apk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:182"
+  },
+  {
+    "fact": "目标 meta 的 format 字段必须为 apkraw-1，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:201"
+  },
+  {
+    "fact": "补丁链的起点是本地计算的当前 APK 的 SHA-256 哈希。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:205"
+  },
+  {
+    "fact": "每一步开始前校验 meta 的 baseSha256 与当前 APK 实测哈希一致，不一致抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:256"
+  },
+  {
+    "fact": "补丁 zip 用多线程下载，meta JSON 用单线程下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:278"
+  },
+  {
+    "fact": "下载的补丁包实测 SHA-256 必须与 meta 的 patchSha256 一致，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:282"
+  },
+  {
+    "fact": "打完补丁的新 APK 实测 SHA-256 必须与 meta 的 targetSha256 一致，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:312"
+  },
+  {
+    "fact": "每步产出的 next.apk 重命名为 current.apk，作为下一步的基底；重命名失败抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:331"
+  },
+  {
+    "fact": "全部步骤完成后只保留 rebuilt.apk，工作目录其余文件全部删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:528"
+  },
+  {
+    "fact": "resolvePatchChain 从 GitHub 拉取该仓库最多 100 个 release 用于拼链。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:377"
+  },
+  {
+    "fact": "拼链时跳过 draft 的 release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:403"
+  },
+  {
+    "fact": "补丁链中间步骤的 meta 解析自 release 正文的 JSON，而非下载附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:415"
+  },
+  {
+    "fact": "同一条 baseSha256→targetSha256 边只保留 toPatchIndex 更大者；相等时保留目标版本号更新者。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:428"
+  },
+  {
+    "fact": "走链时每一步在候选边中选 toPatchIndex 最大者；相等时选目标版本号更新者。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:452"
+  },
+  {
+    "fact": "补丁链用 seenEdges 集合做环检测，重复边抛 Patch chain loop detected。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:465"
+  },
+  {
+    "fact": "补丁链超过 64 步抛异常终止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:470"
+  },
+  {
+    "fact": "selectMirrorUrl 在 mirrorKey 为 GitHub 时直接返回原 URL，否则查镜像映射表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:556"
+  },
+  {
+    "fact": "镜像测速对补丁 URL 与 meta URL 的全部镜像并发探测，含 GitHub 直连。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:585"
+  },
+  {
+    "fact": "镜像速度取 patch 与 meta 两次探测速度的较小值，速度优先、延迟次之选最快镜像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:627"
+  },
+  {
+    "fact": "全部镜像探测失败时回退 GitHub 直连。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:640"
+  },
+  {
+    "fact": "单线程下载每 300ms 上报一次进度与速度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:716"
+  },
+  {
+    "fact": "applyApkrawPatch 按 meta 的 apkRawEntries 逐条目处理：copy 从基底 APK 搬运 local record，add 从补丁 zip 取 record 写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:903"
+  },
+  {
+    "fact": "打完所有条目后把补丁 zip 里的尾文件（默认 tail.bin）拼到输出 APK 末尾。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:941"
+  },
+  {
+    "fact": "readCentralDirectory 从基底 APK 末尾 65557 字节反向扫描 EOCD 签名定位中央目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:956"
+  },
+  {
+    "fact": "找不到 EOCD 签名时抛 EOCD not found 异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:972"
+  },
+  {
+    "fact": "中央目录文件名按 flag 0x800 决定用 UTF-8 还是 ISO-8859-1 解码，目录条目跳过不记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:999"
+  },
+  {
+    "fact": "copyLocalRecord 按 central directory 条目定位 local header，搬运文件名与压缩数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:1013"
+  },
+  {
+    "fact": "local header 的 flag 含 0x08（data descriptor）时，按有无可选签名分别搬运 16 或 12 字节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:1035"
+  },
+  {
+    "fact": "sha256Hex 用 MessageDigest SHA-256 以 1MB 缓冲流式计算文件哈希。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/updates/PatchUpdateInstaller.kt:1064"
+  },
+  {
+    "fact": "AnnouncementPointer 是公告指针 JSON：schemaVersion、latestVersion、latestFile、updatedAt、notes。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:20"
+  },
+  {
+    "fact": "RemoteAnnouncementPayload 默认 enabled=false、type=modal、priority=normal、countdownSec=0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:29"
+  },
+  {
+    "fact": "AnnouncementTarget 含 minAppVersionCode、maxAppVersionCode、channels、locale，locale 默认 all。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:44"
+  },
+  {
+    "fact": "AnnouncementSchedule 只有 startAt 与 endAt 两个可选排期字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:52"
+  },
+  {
+    "fact": "AnnouncementContent 的 defaultLocale 默认 zh-CN，locales 按语言 key 存放多语言文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:58"
+  },
+  {
+    "fact": "AnnouncementLocaleContent 含 title、body、acknowledge，acknowledge 默认 OK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:64"
+  },
+  {
+    "fact": "RemoteAnnouncementDisplay 是剥离后的展示模型：id、version、title、body、acknowledgeText、countdownSec。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:76"
+  },
+  {
+    "fact": "公告指针默认 URL 为 https://operit.app/announcements/latest.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:259"
+  },
+  {
+    "fact": "公告 HTTP 客户端连接、读取、写入超时各 8 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:91"
+  },
+  {
+    "fact": "fetchDisplayableAnnouncement 全程 runCatching，失败只记日志返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:96"
+  },
+  {
+    "fact": "公告请求头带 Cache-Control: no-cache。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:125"
+  },
+  {
+    "fact": "每次公告请求拼接 ts=毫秒时间戳参数破坏缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:248"
+  },
+  {
+    "fact": "公告展示需同时满足六重条件：enabled、version>0、版本区间、渠道、语言、排期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:136"
+  },
+  {
+    "fact": "公告标题或正文为空时不展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:145"
+  },
+  {
+    "fact": "公告 id 为空时回退为 announcement-{version}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:148"
+  },
+  {
+    "fact": "公告 countdownSec 被钳制在 0 到 30 秒之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:153"
+  },
+  {
+    "fact": "渠道为空视为全渠道；非空时需命中当前构建类型的别名集合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:164"
+  },
+  {
+    "fact": "渠道别名规则：release 构建对应 stable，nightly 对应 beta，debug 同时对应 stable、beta、dev。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:170"
+  },
+  {
+    "fact": "语言匹配先归一化（小写、_ 转 -），再比对 language 或完整语言标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:185"
+  },
+  {
+    "fact": "排期 startAt/endAt 为空视为无限制；当前时间早于 startAt 或晚于 endAt 则不展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:194"
+  },
+  {
+    "fact": "排期解析先试 Instant.parse，失败再试 OffsetDateTime 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:218"
+  },
+  {
+    "fact": "多语言文案选择顺序：完整 tag、language、defaultLocale、第一个可用语言。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:212"
+  },
+  {
+    "fact": "latestFile 为绝对 URL 时直接使用，相对路径时按指针 URL 做 URI.resolve。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/announcement/RemoteAnnouncementRepository.kt:226"
+  },
+  {
+    "fact": "GithubReleaseUtil 内置 34 个 GitHub 镜像前缀用于加速下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:39"
+  },
+  {
+    "fact": "getMirroredUrls 只对同时包含 github.com 与 /releases/download/ 的 URL 生成镜像地址。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:80"
+  },
+  {
+    "fact": "镜像探测对每个 URL 发带 Range: bytes=0-262143 的 GET 请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:119"
+  },
+  {
+    "fact": "镜像探测每个 URL 最多实测下载 256KB，据此计算速度与延迟。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:106"
+  },
+  {
+    "fact": "fetchLatestReleaseInfo 取 perPage=1 的首个 release 作为最新版。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:178"
+  },
+  {
+    "fact": "最新 release 的下载地址优先取 .apk 附件的直链，无附件时回退到 release 页面 URL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:199"
+  },
+  {
+    "fact": "MainActivity 在 updateStatus 观察者中只在 Available 或 PatchAvailable 时弹更新通知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:750"
+  },
+  {
+    "fact": "MainActivity 启动 3 秒后自动检查更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:764"
+  },
+  {
+    "fact": "启动自动检查调用 checkForUpdatesSilently，仅提示不自动下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:784"
+  },
+  {
+    "fact": "关于页中完整包的 downloadUrl 为空或非 .apk 结尾时，直接用浏览器打开 updateUrl。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:718"
+  },
+  {
+    "fact": "关于页应用内下载完整包走 FullUpdateInstaller.downloadAndPrepareUpdate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:679"
+  },
+  {
+    "fact": "关于页补丁更新走 PatchUpdateInstaller，完成后调 installApk 调起系统安装器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:620"
+  },
+  {
+    "fact": "OperitApp 在网络可用时拉取公告，仅当 version 大于已确认版本才弹窗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:409"
+  },
+  {
+    "fact": "用户确认公告后记下该版本号，同版本公告不再弹出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:361"
+  },
+  {
+    "fact": "公告对话框标题用纯 Text 渲染，不解析 HTML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/announcement/RemoteAnnouncementDialog.kt:49"
+  },
+  {
+    "fact": "公告对话框正文用纯 Text 渲染，不解析 HTML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/announcement/RemoteAnnouncementDialog.kt:57"
+  },
+  {
+    "fact": "GitHubApiService 是 GitHub REST 客户端：base 为 https://api.github.com，OkHttp 30 秒超时，User-Agent 为 Operit-MCP-Client；读接口无 token 也可调用（有则附带提配额），写接口必须有 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:149"
+  },
+  {
+    "fact": "GitHubApiService 的写能力：createRepository 建库、createTextFile 写文件（内容 Base64，带 sha 即更新）、release 的创建/更新/删除、uploadReleaseAsset 走 uploads.github.com 上传附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:456"
+  },
+  {
+    "fact": "GitHubApiService 的 JSON 解析配 ignoreUnknownKeys + isLenient；全部接口为 suspend 且切 Dispatchers.IO，统一返回 Result。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:141"
+  },
+  {
+    "fact": "关于页镜像测速选优：pickBestMirrorKey 在可用镜像中按速度优先、延迟次之挑选；镜像列表按可用优先、速度降序、延迟升序展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:268"
+  },
+  {
+    "fact": "远程公告弹窗的确认按钮默认 5 秒倒计时后才可点击（文案显示剩余秒数），且 onDismissRequest 为空实现——返回键与点击外部都关不掉，必须点确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/announcement/RemoteAnnouncementDialog.kt:27"
+  }
+]

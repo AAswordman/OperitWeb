@@ -1,0 +1,58 @@
+[
+  {
+    "confidence": "high",
+    "description": "WebView 对 AI 生成的 <html> 内容开启 JavaScript 并允许 file:// 页面跨域访问文件，同时放行混合内容（MIXED_CONTENT_ALWAYS_ALLOW），而内容未经任何消毒直接拼接进文档再 loadDataWithBaseURL。AI 输出的 HTML 可直接执行任意 JS，叠加 allowUniversalAccessFromFileURLs 存在存储型 XSS 及读取本地文件的风险。",
+    "evidence": "javaScriptEnabled = true\n                        javaScriptCanOpenWindowsAutomatically = true\n                        domStorageEnabled = true\n                        databaseEnabled = true\n                        allowFileAccess = true\n                        allowContentAccess = true\n                        allowFileAccessFromFileURLs = true\n                        allowUniversalAccessFromFileURLs = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt",
+    "line": 1433,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "renderToolResult 的 file-diff 分支中有三处恒等替换 .replace(\"<\", \"<\").replace(\">\", \">\").replace(\"&\", \"&\")，把字符替换成自己本身，是死代码。疑似本意是实体解码（如 &lt;）却写错了方向，差异内容里的转义实体会原样显示。",
+    "evidence": "diffContent\n                            .replace(\"<\", \"<\")\n                            .replace(\">\", \">\")\n                            .replace(\"&\", \"&\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt",
+    "line": 1271,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "AttachmentViewerDialog 写媒体池预览缓存时文件名直接用 mediaPoolId 拼接：File(dir, \"$mediaPoolId.$ext\")，而 mediaPoolId 取自 attachment.id 去掉 media_pool: 前缀，未做路径分隔符校验。恶意构造的 id 可穿越到 cacheDir 以外位置写文件。",
+    "evidence": "val outFile = File(dir, \"$mediaPoolId.$ext\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt",
+    "line": 126,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "FileDiffDisplay 用 startsWith(\"+\")/startsWith(\"-\") 逐行统计增删数，会把 unified diff 的 --- / +++ 文件头行也计入增删行数，摘要数字偏大。",
+    "evidence": "val additions = diffLines.count { it.startsWith(\"+\") }\n        val deletions = diffLines.count { it.startsWith(\"-\") }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FileDiffDisplay.kt",
+    "line": 52,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "unescapeXmlForDisplay 中 if (result.endsWith(\"]]>\") ) 无条件截掉末尾 3 个字符，即使内容不是 CDATA 包裹。合法文本尾部恰好是 ]]> 会被误吃掉。",
+    "evidence": "    if (result.endsWith(\"]]>\") ) {\n        result = result.substring(0, result.length - 3)\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt",
+    "line": 320,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "XML 实体/CDATA 解码逻辑在 ParamVisualizer.unescapeXml 与 ToolDisplayComponents.unescapeXmlForDisplay 各实现一份，语义接近但细节不一致（如截尾 bug 只出现在后者），后续修一处易漏另一处。",
+    "evidence": "private fun unescapeXml(input: String): String {\n    var result = input\n\n    if (result.startsWith(\"<![CDATA[\") && result.endsWith(\"]]>\") ) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ParamVisualizer.kt",
+    "line": 26,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "ContentDetailDialog 用 LaunchedEffect(lines.size) 在打开时自动滚动到最后一行，对 diff 或长代码文本的查看是反直觉的 UX（用户通常想从文件头开始看）。",
+    "evidence": "LaunchedEffect(lines.size) {\n                        if (lines.isNotEmpty()) dialogListState.animateScrollToItem(lines.lastIndex)\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt",
+    "line": 121,
+    "severity": "suggestion"
+  }
+]

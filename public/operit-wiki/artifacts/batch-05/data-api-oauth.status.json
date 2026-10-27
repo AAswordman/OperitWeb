@@ -1,0 +1,12 @@
+{
+  "critic": "独立 critic 逐条核引用通过（data-api-oauth.critic.md）：160 facts 全过、14 条走查 evidence 逐字命中、高危 2 条分级合理；轻微 3 项已处理（lint.md 自指措辞改写，其余两项经复验为 critic 误标、原引用窗口有支撑）",
+  "id": "data-api-oauth",
+  "issue": 71,
+  "refs_valid": "198/198 引用行号真实存在（程序化逐条验真），lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "OAuth 与外部 API 客户端",
+  "approved_by_comment_id": 5926577387,
+  "updated": "2026-10-02"
+}

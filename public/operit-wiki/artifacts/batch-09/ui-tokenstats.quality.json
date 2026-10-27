@@ -1,0 +1,152 @@
+[
+ {
+  "category": "performance",
+  "confidence": "medium",
+  "evidence": "if (show) {\n    drawContext.canvas.nativeCanvas.drawText(\n        label, x + barW / 2, chartBottomPx + labelReservePx - 4f * d,\n        android.graphics.Paint().apply {\n            color = style.labelColor.toArgb()\n            textSize = (if (tooltipCard) 10f else 7f) * d * density.fontScale\n            textAlign = android.graphics.Paint.Align.CENTER\n            isAntiAlias = true\n        }\n    )\n}",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt",
+  "line": 205,
+  "severity": "suggestion",
+  "title": "图表绘制时每个可见桶标签都新建一个 Paint 对象",
+  "detail": "TokenStatsStackedBarChart 与 TokenStatsLineChart 在 Canvas draw 作用域的 buckets.forEachIndexed 循环内，对每个可见标签执行 android.graphics.Paint().apply{...} 再调 nativeCanvas.drawText。draw 作用域每帧都会重跑，等于每帧按标签数分配 Paint（含 native 对象），可用 remember 或复用单个 Paint 避免。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "low",
+  "evidence": "LaunchedEffect(actionMessage) {\n    actionMessage?.let { message ->\n        Toast.makeText(context, message.text, Toast.LENGTH_SHORT).show()\n        viewModel.consumeActionMessage()\n    }\n}",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt",
+  "line": 90,
+  "severity": "suggestion",
+  "title": "连续两条 actionMessage 会吞掉第一条",
+  "detail": "LaunchedEffect(actionMessage) 里 Toast 显示后才 consumeActionMessage。若第二条消息在 effect 执行前到达，_actionMessage.value 被直接覆盖，第一条 Toast 永远不会显示。错误提示（如定价保存失败）可能因此丢失。"
+ },
+ {
+  "category": "correctness",
+  "confidence": "medium",
+  "evidence": "fun setManualRate(rate: Double): Boolean {\n    if (!rate.isFinite() || rate <= 0.0) return false\n    viewModelScope.launch(dispatcher) {\n        settings.saveRate(rate)\n        load()\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt",
+  "line": 362,
+  "severity": "suggestion",
+  "title": "手动汇率只有下限校验，没有上限",
+  "detail": "setManualRate 只拒绝非有限或 <=0 的汇率，1e308 这类极大值会被接受并持久化。费用按 manualRate 换算后可能溢出为 Infinity，formatMoney 会直接打出 \"¥Infinity\" 之类的文案。"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "medium",
+  "evidence": "Text(\n    text = summary,\n    style = MaterialTheme.typography.titleMedium,\n    fontWeight = FontWeight.SemiBold,\n    color = colors.cardAccent,\n    maxLines = 1,\n    modifier = Modifier.clickable(onClick = onClick),\n)",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt",
+  "line": 668,
+  "severity": "suggestion",
+  "title": "趋势卡汇总数字可点击但无无障碍语义",
+  "detail": "TokenStatsTrendMetricSummary 的汇总 Text 用 Modifier.clickable(onClick = onClick) 触发指标详情弹窗，但没有 role 也没有 contentDescription，无障碍服务会把它当普通文本朗读，用户不知道可点。"
+ },
+ {
+  "category": "performance",
+  "confidence": "medium",
+  "evidence": "val (label, show) = bucketLabel(\n    bucket.bucketStartMs, granularity, zone, i, buckets.size, maxLabels,\n)\nif (show) {\n    drawContext.canvas.nativeCanvas.drawText(\n        label, i * barAreaPx + barAreaPx / 2, chartBottomPx + labelReservePx - 4f * d,\n        android.graphics.Paint().apply {",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt",
+  "line": 384,
+  "severity": "suggestion",
+  "title": "折线图同样在循环内逐标签新建 Paint",
+  "detail": "TokenStatsLineChart 与堆叠柱状图存在同一模式：第 384 行在 buckets.forEachIndexed 内为每个可见 X 轴标签新建 android.graphics.Paint()。两处可一并复用。"
+ },
+ {
+  "title": "JsScripts 内硬编码了一个 DeepSeek Bearer token，找不到本地 token 时直接使用",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt",
+  "line": 77,
+  "severity": "high",
+  "category": "security",
+  "detail": "getApiKeysScript 与 deleteKeyScript 在 localStorage/sessionStorage 找不到 token 时，用写死在源码里的 token（trP/KIrtNAMNnQxN1P1YMivruoy0STI5onzNhCdzo8iOM7CObxaGhjg+w+JPm/jC）作为 Authorization: Bearer 发给 DeepSeek API，并把它写回页面的 localStorage。源码即公开仓库可读，该 token 实质已泄露；且所有用户共用同一 token 查询/删除密钥，服务端可关联到同一账号。",
+  "evidence": "                // If no token found in storage, use hardcoded token\n                if (!token) {\n                    token = \"trP/KIrtNAMNnQxN1P1YMivruoy0STI5onzNhCdzo8iOM7CObxaGhjg+w+JPm/jC\";\n                    console.log('Using hardcoded token');\n                    // Save for future use\n                    try {\n                        localStorage.setItem('auth_token', token);\n                    } catch (e) {",
+  "confidence": "high"
+ },
+ {
+  "title": "WebView 全局开启 setWebContentsDebuggingEnabled(true)，release 包也可被 adb 调试",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt",
+  "line": 77,
+  "severity": "high",
+  "category": "security",
+  "detail": "createWebView 无条件调用 WebView.setWebContentsDebuggingEnabled(true)，这是进程级开关：任何有 adb 权限的人都能用 chrome://inspect 查看和修改登录 WebView 的页面、拦截请求、读取用户输入的 DeepSeek 账号密码与 token。应只在 BuildConfig.DEBUG 下开启。",
+  "evidence": "            // Enable WebView debugging\n            WebView.setWebContentsDebuggingEnabled(true)",
+  "confidence": "high"
+ },
+ {
+  "title": "登录/支付 WebView 显式允许混合内容（MIXED_CONTENT_ALWAYS_ALLOW）",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt",
+  "line": 37,
+  "severity": "warn",
+  "category": "security",
+  "detail": "mixedContentMode 设为 MIXED_CONTENT_ALWAYS_ALLOW，HTTPS 页面里的 HTTP 子资源（脚本、图片、XHR）会被直接加载。同一 WebView 承载 DeepSeek 登录与充值页，中间人可通过 HTTP 子资源注入脚本窃取会话。这是支付场景最忌讳的配置。",
+  "evidence": "                // 显式允许混合内容（对于支付场景很重要）\n                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {\n                    mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW\n                }",
+  "confidence": "high"
+ },
+ {
+  "title": "地理位置权限全部自动批准",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt",
+  "line": 182,
+  "severity": "warn",
+  "category": "security",
+  "detail": "onGeolocationPermissionsShowPrompt 里对任何 origin 直接 callback.invoke(origin, true, false)，不弹系统授权框、不区分站点。任意页面（含用户在 UrlConfigDialog 里配的任意 URL）都能静默拿到设备定位。",
+  "evidence": "                        override fun onGeolocationPermissionsShowPrompt(\n                                origin: String,\n                                callback: android.webkit.GeolocationPermissions.Callback\n                        ) {\n                            callback.invoke(origin, true, false)\n                        }",
+  "confidence": "high"
+ },
+ {
+  "title": "allowFileAccess 与 JS 同开，且 WebView 可加载用户任意配置的 URL",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt",
+  "line": 31,
+  "severity": "warn",
+  "category": "security",
+  "detail": "javaScriptEnabled 与 allowFileAccess 同时为 true，而 UrlConfigDialog 允许用户填任意 URL（含攻击者控制的页面）。file:// URL 的 JS 可读取应用私有文件并外传；应至少关掉 allowFileAccess（API 30+ 默认 false，但这里显式打开了），或对 file 域做白名单。",
+  "evidence": "                javaScriptEnabled = true\n                domStorageEnabled = true\n                databaseEnabled = true\n                setSupportMultipleWindows(true)\n                javaScriptCanOpenWindowsAutomatically = true\n                allowContentAccess = true\n                allowFileAccess = true",
+  "confidence": "medium"
+ },
+ {
+  "title": "onKeyCreated 把新建 API 密钥原文记入 debug 日志",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/DeepseekJsInterface.kt",
+  "line": 29,
+  "severity": "warn",
+  "category": "security",
+  "detail": "AppLogger.d(TAG, \"Key created: $key\") 把刚创建的 API key 明文写入日志。用户反馈问题时若导出日志，密钥随日志外泄；与 onKeysReceived 只记前 100 字符的谨慎做法不一致。",
+  "evidence": "    fun onKeyCreated(key: String) {\n        try {\n            AppLogger.d(TAG, \"Key created: $key\")\n            onKeyCreated.invoke(key)",
+  "confidence": "high"
+ },
+ {
+  "title": "injectTokenExtractorScript 全局劫持 fetch，会捕获任意页面的 Bearer token",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt",
+  "line": 263,
+  "severity": "suggestion",
+  "category": "security",
+  "detail": "脚本把 window.fetch 包一层，任何请求的 Authorization: Bearer 头都被存进 localStorage 的 auth_token 并被 getApiKeysScript 复用。而这个 WebView 可加载用户任意配置的 URL：若用户配了别的站点，该站点的 token 会被误抓并拿去调 DeepSeek API，造成跨站 token 混用。",
+  "evidence": "                                    if (authHeader && authHeader.startsWith('Bearer ')) {\n                                        const token = authHeader.substring(7);\n                                        console.log('Captured Bearer token (length: ' + token.length + ')');\n                                        try {\n                                            localStorage.setItem('auth_token', token);",
+  "confidence": "medium"
+ },
+ {
+  "title": "onJsAlert/onJsConfirm/onJsPrompt 全部自动点确定",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt",
+  "line": 186,
+  "severity": "suggestion",
+  "category": "correctness",
+  "detail": "三个 JS 弹窗回调都只记日志然后 result?.confirm()，用户看不到任何确认框。DeepSeek 页面若用 confirm 做二次确认（如删 key），等于被自动点了'确定'；至少 confirm 类应弹原生对话框让用户决策。",
+  "evidence": "                        override fun onJsAlert(\n                                view: WebView?,\n                                url: String?,\n                                message: String?,\n                                result: android.webkit.JsResult?\n                        ): Boolean {\n                            AppLogger.d(\"WebViewJS\", \"Alert: $message\")\n                            result?.confirm()\n                            return true",
+  "confidence": "medium"
+ },
+ {
+  "title": "UrlConfigDialog 确认时永远写入 4 个 tab，空白 tab 不会被过滤",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/components/UrlConfigDialog.kt",
+  "line": 142,
+  "severity": "suggestion",
+  "category": "correctness",
+  "detail": "确认按钮无条件 listOf 四个 TabConfig，即使用户把某 tab 的标题和 URL 都留空。下游按 tabs 渲染导航时会多出空白页签；应在组装前过滤 title/url 皆空的项。",
+  "evidence": "                    val newConfig = UrlConfig(\n                        name = name,\n                        signInUrl = signInUrl,\n                        tabs = listOf(\n                            TabConfig(tab1Title, tab1Url),\n                            TabConfig(tab2Title, tab2Url),\n                            TabConfig(tab3Title, tab3Url),\n                            TabConfig(tab4Title, tab4Url)\n                        )\n                    )",
+  "confidence": "medium"
+ },
+ {
+  "title": "UrlConfig 默认参数在构造时调 OperitApplication.instance.getString，单测环境可能空指针",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt",
+  "line": 24,
+  "severity": "suggestion",
+  "category": "correctness",
+  "detail": "data class 的默认 tabs 在每次无参构造时求值，直接调 OperitApplication.instance.getString。单测或反序列化（UrlConfig() 无参调用）时 instance 为 null 即 NPE；本地化标题应移到 localizePresetTabNames 这类显式步骤，而非默认参数。",
+  "evidence": "data class UrlConfig(\n    val name: String = \"DeepSeek\",\n    val signInUrl: String = \"https://platform.deepseek.com/sign_in\",\n    val tabs: List<TabConfig> = listOf(\n        TabConfig(OperitApplication.instance.getString(R.string.url_config_api_key), \"https://platform.deepseek.com/api_keys\"),",
+  "confidence": "medium"
+ }
+]

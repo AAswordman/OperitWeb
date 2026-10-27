@@ -1,0 +1,90 @@
+[
+ {
+  "fact": "JS 沙盒包的元数据只认文件顶部第一个匹配 /\\*\\s*METADATA\\s*([\\s\\S]*?)\\*/ 的注释块，找不到则视为空 {}。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2466"
+ },
+ {
+  "fact": "METADATA 块内容按 Hjson 解析，未知 key 直接忽略（ignoreUnknownKeys）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2258"
+ },
+ {
+  "fact": "每个工具的 script 字段由解析器自动填为整个文件内容，作者不需要手写。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2296"
+ },
+ {
+  "fact": "工具注册名为 包名:工具名，改包名等于所有工具改名。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3458"
+ },
+ {
+  "fact": "enabledByDefault 缺省为 false，用户没手动启用工具不会进 AI 工具表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:301"
+ },
+ {
+  "fact": "advice: true 的工具不注册为可执行工具，只把 description 塞进 prompt 当建议。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3452"
+ },
+ {
+  "fact": "工具函数存在性校验只认 async function 名(/function 名(/exports.名 =/const-let-var 名 = 五种形态，不满足只记 warning 不阻断。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2444"
+ },
+ {
+  "fact": "脚本被包进 CommonJS 模块壳执行，可直接用 module/exports/require；require 解析顺序 x→x.js→x.json→x/index.js。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:298"
+ },
+ {
+  "fact": "目标函数查找顺序：module.exports[工具名] → globalThis[工具名]，都找不到则调用失败并列出可用函数名。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:370"
+ },
+ {
+  "fact": "调用签名固定为 targetFunction(params)，单个对象参数，不存在多参数或回调参数。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1386"
+ },
+ {
+  "fact": "async 函数自动 await；同步 return 任意可 JSON 序列化的值即为工具结果。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:582"
+ },
+ {
+  "fact": "complete(value)/done(value) 主动结束并回传，调完后再调无效。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:566"
+ },
+ {
+  "fact": "emit/delta/log/update/sendIntermediateResult 是同一实现，推送中间结果但不结束调用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:611"
+ },
+ {
+  "fact": "函数抛错或 Promise reject 则工具调用失败，错误信息（含 stack）回传给 AI。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:582"
+ },
+ {
+  "fact": "单次工具调用主超时 1800 秒（30 分钟），预超时提前 5 秒触发。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTimeoutConfig.kt:1"
+ },
+ {
+  "fact": "env 在 METADATA 里声明 {name, description, required, defaultValue}；required 为 true 的变量缺失时包无法激活。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:303"
+ },
+ {
+  "fact": "getEnv 读取环境变量，未设置返回 undefined；建议先做 typeof getEnv 防御。",
+  "ref": "app/src/main/assets/packages/github.js:285"
+ },
+ {
+  "fact": "states 激活时按顺序求值 condition，首个命中的 state 生效；都不命中则按无 state 处理。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3468"
+ },
+ {
+  "fact": "condition 求值上下文是能力快照，可用 key 仅限 platform.*/android.*/ui.*，写别的 key 永远为假。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3497"
+ },
+ {
+  "fact": "states 工具合并规则：inheritTools=true 先继承基础工具 → excludeTools 剔除 → state.tools 覆盖/新增。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3489"
+ },
+ {
+  "fact": "沙盒全局对象每次执行前由 JsLibraries 注入，直接用无需 import：OkHttp、Java/Kotlin、Android 系、Tools、CryptoJS、Jimp、UINode、pako 等。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:20"
+ },
+ {
+  "fact": "console.log/info/warn/error 进入本次调用的日志上下文，可在包管理界面查看。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:611"
+ }
+]

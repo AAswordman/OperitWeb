@@ -1,0 +1,450 @@
+[
+  {
+    "fact": "`SpeechService` 是语音识别服务统一接口，所有引擎实现它",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:8"
+  },
+  {
+    "fact": "`RecognitionState` 枚举含 `UNINITIALIZED`、`IDLE`、`PREPARING` 三个初始态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:14"
+  },
+  {
+    "fact": "RecognitionState 枚举含 `RECOGNIZING`、`PROCESSING`、`ERROR` 三个运行态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:20"
+  },
+  {
+    "fact": "`RecognitionResult` 含 `text`、`isFinal`（默认 false）、`confidence`（默认 0f）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:32"
+  },
+  {
+    "fact": "`RecognitionError` 含 `code` 与 `message` 两个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:38"
+  },
+  {
+    "fact": "`isInitialized` 以 `StateFlow` 对外发布引擎是否初始化完成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:41"
+  },
+  {
+    "fact": "`recognitionStateFlow`、`recognitionResultFlow`、`recognitionErrorFlow` 分别发布状态、结果、错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:53"
+  },
+  {
+    "fact": "`volumeLevelFlow` 以 0.0 到 1.0 发布麦克风音量级别",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:59"
+  },
+  {
+    "fact": "`startRecognition` 默认语言 zh-CN、非连续模式、返回部分结果、录音源 `VOICE_COMMUNICATION`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:78"
+  },
+  {
+    "fact": "`recognize(audioData)` 识别预先录制的浮点 PCM 音频数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechService.kt:110"
+  },
+  {
+    "fact": "`SpeechServiceFactory` 是 object 单例工厂，创建与管理语音识别服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:12"
+  },
+  {
+    "fact": "`SpeechServiceType` 有 `SHERPA_NCNN`、`OPENAI_STT`、`DEEPGRAM_STT` 三种",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:17"
+  },
+  {
+    "fact": "`createSpeechService(context)` 经 `runBlocking` 读取当前 STT profile 后创建实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:32"
+  },
+  {
+    "fact": "`createWakeSpeechService` 把 `OPENAI_STT`、`DEEPGRAM_STT` 强制映射为 `SHERPA_NCNN`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:42"
+  },
+  {
+    "fact": "`OPENAI_STT` 类型经 `runBlocking` 构造 `OpenAISttProvider`，参数取自 `httpConfig`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:69"
+  },
+  {
+    "fact": "`DEEPGRAM_STT` 类型经 `runBlocking` 构造 `DeepgramSttProvider`，参数取自 `httpConfig`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:79"
+  },
+  {
+    "fact": "`SpeechServiceLease` 用 `AtomicBoolean` 保证 `shutdown` 只触发一次释放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:95"
+  },
+  {
+    "fact": "`acquireLocalSpeechService` 加锁；已有不同类型本地服务在用时抛 `IllegalStateException`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:117"
+  },
+  {
+    "fact": "本地服务用 `refCount` 引用计数，归零才真正释放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:155"
+  },
+  {
+    "fact": "getInstance 捕获 `IllegalStateException` 时保留旧实例并打日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:199"
+  },
+  {
+    "fact": "`resetInstance` 清空单例与 profile 记录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt:222"
+  },
+  {
+    "fact": "`SpeechPrerollStore` 是 object 单例，环形缓冲保存最近麦克风音频",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:10"
+  },
+  {
+    "fact": "16kHz 采样、2500ms 容量，`capacitySamples` 为 40000 采样的 `ring` 缓冲",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:18"
+  },
+  {
+    "fact": "`appendPcm` 用 `writePos` 循环覆盖写入环形缓冲",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:37"
+  },
+  {
+    "fact": "`capturePending` 默认截取 `windowMs` 为 1600ms 的尾部快照",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:48"
+  },
+  {
+    "fact": "consumePending 未 armPending 直接返回 null，超 `maxAgeMs` 丢弃快照",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:84"
+  },
+  {
+    "fact": "`armPending` 只在已有快照时把 `pendingArmed` 置 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:99"
+  },
+  {
+    "fact": "`setPendingWakePhrase` 暂存唤醒词文本与 `regexEnabled` 开关",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:105"
+  },
+  {
+    "fact": "`consumePendingWakePhrase` 取出并清空，超 10 秒丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:114"
+  },
+  {
+    "fact": "`recordOneTemplate` 最长录 6000ms、最短语音 250ms、尾部静音 350ms 结束",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeEnrollment.kt:16"
+  },
+  {
+    "fact": "注册录音用 `AudioRecord` 混合 `MIC` 音源，16kHz 单声道 16bit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeEnrollment.kt:27"
+  },
+  {
+    "fact": "注册时 VAD 用 `Mode.NORMAL`，`speechDurationMs` 60ms、`silenceDurationMs` 300ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeEnrollment.kt:41"
+  },
+  {
+    "fact": "`seenSpeech` 为 false 或 `speechMs` 不足时直接返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeEnrollment.kt:81"
+  },
+  {
+    "fact": "注册最终产出 `extractFeatures` 的特征向量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeEnrollment.kt:88"
+  },
+  {
+    "fact": "`Config` 默认帧长 `frameSize` 400、帧移 `hopSize` 160、FFT `fftSize` 512",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:16"
+  },
+  {
+    "fact": "Config 默认 `melBins` 40、`numMfcc` 13、`maxFrames` 64、频带 `fMin` 20 到 `fMax` 4000",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:20"
+  },
+  {
+    "fact": "extractFeatures 流水线：`preEmphasis`、`applyHann`、`fftMagSquared`、mel 对数能量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:44"
+  },
+  {
+    "fact": "帧数超限经 `limitFrames` 做均值池化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:62"
+  },
+  {
+    "fact": "`computeMfcc` 取 13 维 MFCC，一阶 `computeDelta` 与二阶差分拼成 39 维",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:64"
+  },
+  {
+    "fact": "拼接后做 `cmvnInPlace` 倒谱均值方差归一化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:80"
+  },
+  {
+    "fact": "`cosineSimilarity` 计算两特征向量余弦相似度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt:186"
+  },
+  {
+    "fact": "唤醒阈值 `similarityThreshold` 0.865，动态阈值下限 `minDynamicThresholdFloor` 0.84",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:32"
+  },
+  {
+    "fact": "`dtwBand` 为 4，语音段时长比限制在 `minDurationRatio` 0.75 到 `maxDurationRatio` 1.25",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:37"
+  },
+  {
+    "fact": "`minRms` 0.003 做音量门限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:39"
+  },
+  {
+    "fact": "runLoop 每帧调 `SpeechPrerollStore.appendPcm` 续写环形缓冲",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:99"
+  },
+  {
+    "fact": "静音时段用 EMA 更新 `noiseRmsEma` 估计环境噪声",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:106"
+  },
+  {
+    "fact": "语音段超过 `maxSegmentMs` 强制 `flushSegmentIfNeeded` 并重置分段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:123"
+  },
+  {
+    "fact": "尾部静音超过 `endSilenceMs` 触发 `flushSegmentIfNeeded`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:133"
+  },
+  {
+    "fact": "唤醒配置默认值：`maxSegmentMs` 1600ms、`endSilenceMs` 350ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:28"
+  },
+  {
+    "fact": "flushSegmentIfNeeded 用 `rmsGate` 取 `minRms` 与噪声加余量之大过滤弱音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:186"
+  },
+  {
+    "fact": "模板维度非法直接丢弃并提示需重新注册",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:211"
+  },
+  {
+    "fact": "注册模板两两比对，`intraMin` 低于 `minIntraSimilarity` 打 warn 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:236"
+  },
+  {
+    "fact": "动态阈值 `dynThreshold` 取 `minDynamicThresholdFloor` 下限、`similarityThreshold`、`intraMin` 减 `dynamicThresholdMargin` 三者钳制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:250"
+  },
+  {
+    "fact": "每模板算 `dtwSimilarity`，相似度达标计一次 `hits`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:264"
+  },
+  {
+    "fact": "命中数达标且 `gapOk` 时调 `onTriggered` 回调最佳相似度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:284"
+  },
+  {
+    "fact": "`dtwSimilarity` 是带宽约束 DTW，帧代价为余弦距离",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:344"
+  },
+  {
+    "fact": "`stop` 把 `running` 置 false 结束循环",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeListener.kt:161"
+  },
+  {
+    "fact": "`Mode` 有 `OFF`、`NORMAL`、`AGGRESSIVE`、`VERY_AGGRESSIVE` 四档",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:31"
+  },
+  {
+    "fact": "默认 VAD 模型路径 `modelAssetPath` 为 models/silero_vad.onnx",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:22"
+  },
+  {
+    "fact": "模型从 assets 拷到 cache 建 ORT 会话，`setIntraOpNumThreads` 与 `setInterOpNumThreads` 均为 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:69"
+  },
+  {
+    "fact": "音频输入名在 input、audio、x 中自动探测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:79"
+  },
+  {
+    "fact": "按需探测 `sr`、`state`、`h`、`c` 辅助输入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:90"
+  },
+  {
+    "fact": "16kHz 配 512 帧时 `inputWindowSize` 取模型形状，另有 64 采样上下文重叠",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:112"
+  },
+  {
+    "fact": "判决阈值 `Mode.NORMAL` 0.5、`Mode.AGGRESSIVE` 0.8、`Mode.VERY_AGGRESSIVE` 0.95",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:315"
+  },
+  {
+    "fact": "`isSpeech` 用 `require` 要求帧长精确等于 `frameSize`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:171"
+  },
+  {
+    "fact": "连续语音帧超 `maxSpeechFramesCount` 才判有话，带迟滞",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:197"
+  },
+  {
+    "fact": "`reset` 清空 h、c、`state` 与计数器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OnnxSileroVad.kt:152"
+  },
+  {
+    "fact": "本地模型为 sherpa-ncnn-streaming-zipformer-bilingual-zh-en-2023-02-13 中英双语",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:132"
+  },
+  {
+    "fact": "解码 `greedy_search`、`numActivePaths` 4，`numThreads` 4，`useGPU` false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:172"
+  },
+  {
+    "fact": "`enableEndpoint` 为 true，端点规则 `rule1MinTrailingSilence` 2.4s、`rule2MinTrailingSilence` 1.2s、`rule3MinUtteranceLength` 20.0s",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:180"
+  },
+  {
+    "fact": "`initialize` 用 `initializeMutex` 防并发初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:100"
+  },
+  {
+    "fact": "启动时先 `consumePending` 取预卷音频注入 `acceptSamples`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:252"
+  },
+  {
+    "fact": "音量按 `log10` dB 公式映射归一",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:213"
+  },
+  {
+    "fact": "非 VAD 路径靠 `isEndpoint` 判端点出最终结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:355"
+  },
+  {
+    "fact": "VAD 路径按 `vadFrameSize` 512 帧切分",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:328"
+  },
+  {
+    "fact": "语音结束调 `inputFinished()` 后取 `finalText` 吐最终结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:406"
+  },
+  {
+    "fact": "`recognize` 不支持批处理，报 -10 错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:546"
+  },
+  {
+    "fact": "`getSupportedLanguages` 返回 zh、en",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:534"
+  },
+  {
+    "fact": "模型为 sherpa-mnn-streaming-zipformer-bilingual-zh-en-2023-02-20，int8 mnn，`numThreads` 2",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:133"
+  },
+  {
+    "fact": "端点规则 `rule1` 2.4s、`rule2` 1.2s、`rule3` 20s",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:145"
+  },
+  {
+    "fact": "initialize 时 VAD 创建失败不影响整体初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:82"
+  },
+  {
+    "fact": "每次 startRecognition 释放旧 `stream` 并 `createStream` 建新流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:306"
+  },
+  {
+    "fact": "预卷经 `acceptWaveform` 按 16000 采样率注入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:314"
+  },
+  {
+    "fact": "无 VAD 时降级直送识别器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:455"
+  },
+  {
+    "fact": "停止时等录音协程结束后在 IO 线程调 `inputFinished()` 取最终结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:525"
+  },
+  {
+    "fact": "cancelRecognition 不释放 `stream`，注释称防 recordingJob 并发使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:602"
+  },
+  {
+    "fact": "构造参数 `endpointUrl`、`apiKey`、`model`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:37"
+  },
+  {
+    "fact": "超时 `DEFAULT_TIMEOUT_SECONDS` 60 秒，录音上限 `MAX_FILE_BYTES` 25MB",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:46"
+  },
+  {
+    "fact": "initialize 要求 URL 含 `/audio/transcriptions` 且 scheme 为 http 或 https",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:109"
+  },
+  {
+    "fact": "录音写 cache 下 openai_stt 随机 wav，先占 `WAV_HEADER_SIZE` 44 字节头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:166"
+  },
+  {
+    "fact": "VAD 门控写入，`preRollSamples` 为 0.5 秒预卷缓冲",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:209"
+  },
+  {
+    "fact": "说话后出现静音自动触发 `stopRecognition`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:289"
+  },
+  {
+    "fact": "录音超 25MB 抛 `IOException` 中断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:296"
+  },
+  {
+    "fact": "解析返回 JSON 的 `text` 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:590"
+  },
+  {
+    "fact": "`mapLanguage` 把 zh 开头映为 zh、en 开头映为 en",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:550"
+  },
+  {
+    "fact": "recognize 把浮点音频转 16bit PCM 写 wav 后转写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:408"
+  },
+  {
+    "fact": "解析 results.channels[0].alternatives[0] 的 `transcript` 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/DeepgramSttProvider.kt:580"
+  },
+  {
+    "fact": "`filled` 计数按 `minOf` 封顶不溢出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechPrerollStore.kt:42"
+  },
+  {
+    "fact": "`startRecognition` 用 `recognitionMutex` 防并发启动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:228"
+  },
+  {
+    "fact": "`VOLUME_SMOOTHING_FACTOR` 为 0.1 做音量平滑",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:92"
+  },
+  {
+    "fact": "每帧调 `vadInstance.isSpeech` 门控语音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:386"
+  },
+  {
+    "fact": "`reset(false)` 重置识别器，`vadInstance.reset()` 重置 VAD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:415"
+  },
+  {
+    "fact": "停止时先置 `PROCESSING` 状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:458"
+  },
+  {
+    "fact": "停止时调 `inputFinished()` 取最终文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:469"
+  },
+  {
+    "fact": "停止完成后回 `IDLE` 并清零音量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaSpeechProvider.kt:476"
+  },
+  {
+    "fact": "自带 VAD 已禁用，`createVad` 直接置 `vad` 为 null 并留 TODO",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt:166"
+  },
+  {
+    "fact": "`transcribeWavFile` 用 multipart 发送 `file`、`model`、`language` 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:564"
+  },
+  {
+    "fact": "加 `response_format` json 与 `Bearer` 认证头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt:570"
+  },
+  {
+    "fact": "校验 `endpointUrl` 非空且 scheme 为 http 或 https",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/DeepgramSttProvider.kt:105"
+  },
+  {
+    "fact": "校验 `apiKey`、`model` 非空，不要求 transcription 路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/DeepgramSttProvider.kt:110"
+  },
+  {
+    "fact": "`transcribeWavFile` 用 query 参数 model、`smart_format`、`punctuate`、language",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/DeepgramSttProvider.kt:547"
+  },
+  {
+    "fact": "请求用 `Token` 认证头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/speech/DeepgramSttProvider.kt:558"
+  }
+]

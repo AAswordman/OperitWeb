@@ -1,0 +1,1298 @@
+[
+  {
+    "fact": "McpConfigImportParser.parse 是标准 MCP 配置的公开解析入口，输入 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:42"
+  },
+  {
+    "fact": "配置根节点必须是 JSON 对象，否则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:49"
+  },
+  {
+    "fact": "解析器要求配置中存在 mcpServers 字段且为对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:50"
+  },
+  {
+    "fact": "mcpServers 不能为空对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:51"
+  },
+  {
+    "fact": "解析分支的依据是服务器配置对象是否含有 \"command\" 字段：有则走 stdio，否则走远程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:66"
+  },
+  {
+    "fact": "stdio 服务器声明的 type 只能为空或等于 \"stdio\"，否则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:78"
+  },
+  {
+    "fact": "STREAMABLE_HTTP_TYPE 常量值为 \"streamable_http\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:38"
+  },
+  {
+    "fact": "\"streamable_http\" 被映射为内部连接类型 \"httpStream\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:98"
+  },
+  {
+    "fact": "\"sse\" 保持为 \"sse\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:99"
+  },
+  {
+    "fact": "声明 type=stdio 却没有 command 时抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:100"
+  },
+  {
+    "fact": "requiredNonBlankString 对字段值做 trim 后返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:127"
+  },
+  {
+    "fact": "McpConfigImport 是解析结果的数据类，包含 servers 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:12"
+  },
+  {
+    "fact": "StdioMcpImportedServer 携带 command、args、env、autoApprove、disabled 五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:23"
+  },
+  {
+    "fact": "RemoteMcpImportedServer 携带 endpoint、connectionType、headers、disabled 四个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/McpConfigImportParser.kt:31"
+  },
+  {
+    "fact": "MCPLocalServer 是私有构造的单例，是 MCP 配置的统一管理中心。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:47"
+  },
+  {
+    "fact": "MCP_CONFIG_FILE 常量为 \"mcp_config.json\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:54"
+  },
+  {
+    "fact": "SERVER_STATUS_FILE 常量为 \"server_status.json\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:55"
+  },
+  {
+    "fact": "配置目录 configBaseDir 来自 OperitPaths.mcpPluginsDir()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:75"
+  },
+  {
+    "fact": "serverPath StateFlow 对外暴露配置目录的绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:85"
+  },
+  {
+    "fact": "pluginMetadata 是从 _mcpConfig 派生出的 StateFlow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:92"
+  },
+  {
+    "fact": "_serverStatus 保存 serverId 到 ServerStatus 的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:97"
+  },
+  {
+    "fact": "MCPConfig 包含 mcpServers 与 pluginMetadata 两个可变 map。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:116"
+  },
+  {
+    "fact": "ServerConfig 的字段为 command、args、disabled、autoApprove、env。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:123"
+  },
+  {
+    "fact": "ServerConfig.command 是必填字段（无默认值）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:125"
+  },
+  {
+    "fact": "PluginMetadata 包含 id、name、description、logoUrl、author。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:147"
+  },
+  {
+    "fact": "PluginMetadata 还包含 isInstalled、version、updatedAt、longDescription、repoUrl。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:157"
+  },
+  {
+    "fact": "PluginMetadata.type 取值 \"local\" 或 \"remote\"，默认为 \"local\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:164"
+  },
+  {
+    "fact": "PluginMetadata.connectionType 默认为 \"httpStream\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:168"
+  },
+  {
+    "fact": "PluginMetadata.bearerToken 保存远程服务的鉴权令牌。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:173"
+  },
+  {
+    "fact": "PluginMetadata.installedPath 记录本地插件的安装路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:178"
+  },
+  {
+    "fact": "PluginMetadata.marketConfig 保存市场下发的配置 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:183"
+  },
+  {
+    "fact": "ServerStatus 的字段为 serverId、lastStartTime、lastStopTime、errorMessage、cachedTools、toolsCachedTime。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:195"
+  },
+  {
+    "fact": "CachedToolInfo 的字段为 name、description、inputSchema、cachedAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:210"
+  },
+  {
+    "fact": "reloadConfigurations 重新加载全部配置文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:226"
+  },
+  {
+    "fact": "autoFillMissingMetadata 为 mcpServers 中缺元数据的服务器自动创建默认元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:291"
+  },
+  {
+    "fact": "自动创建的元数据 isInstalled=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:307"
+  },
+  {
+    "fact": "自动创建的元数据 type=\"local\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:312"
+  },
+  {
+    "fact": "displayNameForServerId 把 serverId 中的下划线和连字符转空格并首字母大写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:330"
+  },
+  {
+    "fact": "sanitizeServerConfig 会丢弃 command 为空的服务器配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:370"
+  },
+  {
+    "fact": "resetRuntimeState 注销 \"$serverId:\" 前缀的工具、调用 mcpManager.unregisterServer 并删除服务器状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:398"
+  },
+  {
+    "fact": "initializeMissingServerStatus 为新配置的服务器补初始 ServerStatus。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:473"
+  },
+  {
+    "fact": "saveMCPConfig 把 _mcpConfig 写回 mcp_config.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:502"
+  },
+  {
+    "fact": "saveServerStatus 把 _serverStatus 写回 server_status.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:515"
+  },
+  {
+    "fact": "addOrUpdateMCPServer 用 require 保证 command 非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:530"
+  },
+  {
+    "fact": "removeMCPServer 删除 mcpServers 条目的同时清理元数据与状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:580"
+  },
+  {
+    "fact": "mergeConfigFromJson 返回 Result<Int>，值为导入的服务器数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:598"
+  },
+  {
+    "fact": "配置导入时 stdio 服务器写入 mcpServers。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:623"
+  },
+  {
+    "fact": "导入时远程服务器从 newServers 移除、元数据写入 newMetadata。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:660"
+  },
+  {
+    "fact": "createRemoteMetadata 把导入的远程服务器 bearerToken 置为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:359"
+  },
+  {
+    "fact": "getConfigFilePath 返回 mcp_config.json 的绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:693"
+  },
+  {
+    "fact": "getMCPServer 按 id 获取单个 ServerConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:698"
+  },
+  {
+    "fact": "getAllMCPServers 返回全部 ServerConfig 的拷贝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:705"
+  },
+  {
+    "fact": "addOrUpdatePluginMetadata 把元数据写入 pluginMetadata。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:714"
+  },
+  {
+    "fact": "getPluginMetadata 按 id 获取插件元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:753"
+  },
+  {
+    "fact": "getAllPluginMetadata 返回全部插件元数据的拷贝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:760"
+  },
+  {
+    "fact": "cacheServerTools 缓存指定服务器的工具列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:797"
+  },
+  {
+    "fact": "getCachedTools 获取指定服务器缓存的工具列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:805"
+  },
+  {
+    "fact": "hasValidToolCache 判断指定服务器的工具缓存是否有效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:812"
+  },
+  {
+    "fact": "工具缓存有效期为 1 天（24*60*60*1000L 毫秒）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:823"
+  },
+  {
+    "fact": "isServerLikelyRunning 用 lastStartTime/lastStopTime 时间戳推断服务是否处于运行态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:855"
+  },
+  {
+    "fact": "isServerEnabled：本地插件读 ServerConfig.disabled，远程插件读 metadata.disabled。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:864"
+  },
+  {
+    "fact": "setServerEnabled：本地走 addOrUpdateMCPServer 写入 disabled=!enabled，远程写入元数据拷贝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:882"
+  },
+  {
+    "fact": "getPluginRuntimeDirectory 返回 \"~/mcp_plugins/<pluginId 尾段>\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:929"
+  },
+  {
+    "fact": "isPluginRuntimeReady：远程服务直接视为就绪；npx/uvx/uv 只要求目录存在；其他要求目录非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:954"
+  },
+  {
+    "fact": "getPluginConfig 返回单插件的 MCPConfig JSON（兼容旧接口）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1019"
+  },
+  {
+    "fact": "savePluginConfig 先按完整 MCPConfig 解析，失败再按单个 ServerConfig 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1038"
+  },
+  {
+    "fact": "exportConfigAsJson 导出 mcpConfig、serverStatus、exportTime、version。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1070"
+  },
+  {
+    "fact": "importConfigFromJson 从 JSON 导入配置并回写文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1083"
+  },
+  {
+    "fact": "getConfigDirectory 返回配置目录的绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1115"
+  },
+  {
+    "fact": "cleanupInvalidConfigurations 清理没有元数据的服务器配置与服务器状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt:1120"
+  },
+  {
+    "fact": "MCPRepository 统一管理 MCP 插件的 UI 状态、安装与卸载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:50"
+  },
+  {
+    "fact": "PLUGINS_DIR_NAME 常量为 \"mcp_plugins\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:58"
+  },
+  {
+    "fact": "OPERIT_DIR_NAME 常量为 \"Operit\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:59"
+  },
+  {
+    "fact": "pluginsBaseDir 优先使用 Download/Operit/mcp_plugins 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:77"
+  },
+  {
+    "fact": "Download 目录不可写时回退到应用私有目录（externalFilesDir 或 filesDir）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:88"
+  },
+  {
+    "fact": "下载连接超时 CONNECT_TIMEOUT=10000 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:56"
+  },
+  {
+    "fact": "下载读取超时 READ_TIMEOUT=15000 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:57"
+  },
+  {
+    "fact": "needsPhysicalInstallation 判断插件是否需要物理安装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:201"
+  },
+  {
+    "fact": "commandNeedsPhysicalInstallation：npx、uvx、uv 不需要物理安装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:213"
+  },
+  {
+    "fact": "checkConfigNeedsPhysicalInstallation 解析 JSON 判断导入配置是否需要物理安装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:227"
+  },
+  {
+    "fact": "isPluginInstalled：remote 类型直接视为已安装，否则检查物理目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:259"
+  },
+  {
+    "fact": "getInstalledPluginPath：npx/uvx/uv 类型返回 \"virtual://$serverId\" 虚拟路径标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:273"
+  },
+  {
+    "fact": "installMCPServer 按 pluginId 安装插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:296"
+  },
+  {
+    "fact": "installMCPServerWithObject 按 PluginMetadata 对象安装插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:323"
+  },
+  {
+    "fact": "installMCPServerFromZip 从本地 ZIP 文件安装插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:346"
+  },
+  {
+    "fact": "uninstallMCPServer 删除插件目录并移除其配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:396"
+  },
+  {
+    "fact": "installPluginInternal 先删除已存在的插件目录，再下载解压。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:429"
+  },
+  {
+    "fact": "installPluginFromZipInternal 从 content URI 复制到缓存文件再解压。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:490"
+  },
+  {
+    "fact": "本地 ZIP 的缓存文件名为 mcp_${server.id}_local.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:507"
+  },
+  {
+    "fact": "downloadRepositoryZip 先查询默认分支再下载仓库 ZIP。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:552"
+  },
+  {
+    "fact": "仓库 ZIP 下载地址为 https://github.com/$owner/$repoName/archive/refs/heads/$defaultBranch.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:565"
+  },
+  {
+    "fact": "仓库默认分支经由 GitHub API https://api.github.com/repos/$owner/$repoName 查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:582"
+  },
+  {
+    "fact": "仓库 ZIP 的缓存文件名为 mcp_${serverId}_repo.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:623"
+  },
+  {
+    "fact": "extractZipFile 解压时跳过 __MACOSX 与 .DS_Store 条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:706"
+  },
+  {
+    "fact": "extractOwnerAndRepo 用正则从 GitHub URL 提取 owner 与 repo 名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:785"
+  },
+  {
+    "fact": "hasPluginRequiredFiles 要求目录含 mcp.config.json、README.md、package.json、index.js、index.py、main.py、main.js 之一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:817"
+  },
+  {
+    "fact": "savePluginMetadata 把 type 置为 \"local\" 并记录 installedPath 与 installedTime。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:842"
+  },
+  {
+    "fact": "addRemoteServer 只写入元数据，不创建本地进程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:856"
+  },
+  {
+    "fact": "updateRemoteServer 只更新 remote 类型的 endpoint、connectionType、bearerToken、headers。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:893"
+  },
+  {
+    "fact": "removeRemoteServer 删除远程服务器配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:907"
+  },
+  {
+    "fact": "syncBridgeStatus 把 bridge 的服务活跃态同步回本地状态（lastStartTime/lastStopTime）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:970"
+  },
+  {
+    "fact": "syncInstalledStatus 重新从 MCPLocalServer 加载插件安装状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1001"
+  },
+  {
+    "fact": "initialize 重新加载插件状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1015"
+  },
+  {
+    "fact": "getInstalledPluginInfo 按 id 获取已安装插件的元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1025"
+  },
+  {
+    "fact": "generatePluginDescription 用 EnhancedAIService 按工具描述生成插件描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1050"
+  },
+  {
+    "fact": "getRemoteToolNames 返回远程服务的工具名列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1105"
+  },
+  {
+    "fact": "getRemoteToolNames 在发现到工具且插件未禁用时触发 registerToolsForPlugin。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1116"
+  },
+  {
+    "fact": "refreshPluginList 先 reloadConfigurations 再重载插件列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1167"
+  },
+  {
+    "fact": "registerToolsForLoadedPlugins 为加载成功的插件批量注册工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1183"
+  },
+  {
+    "fact": "registerToolsForPlugin 把插件接入 MCPManager 并把工具注册到 AIToolHandler。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1201"
+  },
+  {
+    "fact": "本地运行时的 endpoint 形如 \"mcp://plugin/<serviceName>\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1216"
+  },
+  {
+    "fact": "registerServer 把服务器配置与运行时描述符一起注册到 MCPManager。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1223"
+  },
+  {
+    "fact": "注册到 AI 运行时的工具名带 \"$pluginId:\" 前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1238"
+  },
+  {
+    "fact": "registerToolsForPlugin 跳过已注册过的工具名，保证重复调用幂等。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1240"
+  },
+  {
+    "fact": "unregisterToolsForPlugins 移除 \"$pluginId:\" 前缀的工具并注销服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1267"
+  },
+  {
+    "fact": "getToolsForPlugin 优先用缓存：getCachedTools 返回非空即直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1293"
+  },
+  {
+    "fact": "无缓存时经 MCPPackage.loadFromServer 动态获取工具列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1311"
+  },
+  {
+    "fact": "createRuntimeDescriptor：local 生成 McpRuntimeDescriptor.Local，remote 生成 Remote，其他类型抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1340"
+  },
+  {
+    "fact": "本地描述符的 serviceName 从配置提取，缺失时 requireNotNull 抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1345"
+  },
+  {
+    "fact": "远程描述符的 endpoint 缺失时 requireNotNull 抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:1351"
+  },
+  {
+    "fact": "MCPBridge 是私有构造的单例，负责与 TCP 桥接器通信。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:43"
+  },
+  {
+    "fact": "BRIDGE_PORT=8752 是 bridge 监听的端口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:47"
+  },
+  {
+    "fact": "CLIENT_PORT=8751 是 Android 客户端连接的端口（SSH 转发）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:48"
+  },
+  {
+    "fact": "TERMUX_BRIDGE_PATH=\"~/bridge\" 是 bridge 在终端中的部署路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:49"
+  },
+  {
+    "fact": "START_COMMAND_THROTTLE_MS=4000L 对桥接器启动命令做节流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:50"
+  },
+  {
+    "fact": "COMMAND_CONNECTION_KEEP_MS=3500L 是命令连接的保活时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:51"
+  },
+  {
+    "fact": "DETECT_PORT_CACHE_MS=3500L 是端口探测结果的缓存时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:52"
+  },
+  {
+    "fact": "detectPort 优先尝试 8752，失败则用 8751，结果缓存 3500 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:111"
+  },
+  {
+    "fact": "isPortAvailable 用 500 毫秒超时快速探测端口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:143"
+  },
+  {
+    "fact": "deployBridge 把 assets/bridge/index.js 与 spawn-helper.js 复制到终端。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:205"
+  },
+  {
+    "fact": "startBridge 在终端以后台方式执行 `cd ~/bridge && node index.js $port &`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:361"
+  },
+  {
+    "fact": "4000 毫秒内重复发送的启动命令会被跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:373"
+  },
+  {
+    "fact": "启动 bridge 后等待 2 秒，再用 listMcpServices 最多验证 3 次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:390"
+  },
+  {
+    "fact": "reset 关闭所有服务并清空注册表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:427"
+  },
+  {
+    "fact": "sendCommand 未指定端口时自动调用 detectPort。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:499"
+  },
+  {
+    "fact": "spawn 命令走独立 TCP 连接，soTimeout 为 180000 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:518"
+  },
+  {
+    "fact": "命令连接在 3500 毫秒内可复用，超期则关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:181"
+  },
+  {
+    "fact": "scheduleCommandConnectionCloseLocked 延迟关闭空闲的命令连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:190"
+  },
+  {
+    "fact": "registerMcpService 注册新的本地 MCP 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:609"
+  },
+  {
+    "fact": "unregisterMcpService 取消注册 MCP 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:630"
+  },
+  {
+    "fact": "listMcpServices 列出已注册服务或查询单个服务状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:635"
+  },
+  {
+    "fact": "spawnMcpService 启动 MCP 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:640"
+  },
+  {
+    "fact": "unspawnMcpService 停止 MCP 服务但保留注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:661"
+  },
+  {
+    "fact": "listTools 获取服务的工具列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:666"
+  },
+  {
+    "fact": "callTool 调用指定工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:672"
+  },
+  {
+    "fact": "toolcall 是 callTool 的 Map 参数简化版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:677"
+  },
+  {
+    "fact": "getServiceStatus 查询指定 MCP 服务的状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:689"
+  },
+  {
+    "fact": "getServiceLogs 获取指定服务的日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:700"
+  },
+  {
+    "fact": "resetBridge 关闭所有服务、清空注册表和池子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt:709"
+  },
+  {
+    "fact": "buildRegisterLocalCommand 构造 type=local 的 register 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:19"
+  },
+  {
+    "fact": "buildUnregisterCommand 构造 unregister 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:54"
+  },
+  {
+    "fact": "buildListServicesCommand 构造 list 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:62"
+  },
+  {
+    "fact": "buildSpawnCommand 构造 spawn 命令，可携带 timeoutMs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:72"
+  },
+  {
+    "fact": "buildUnspawnCommand 构造 unspawn 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:109"
+  },
+  {
+    "fact": "buildListToolsCommand 构造 listtools 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:117"
+  },
+  {
+    "fact": "buildToolCallCommand 构造 toolcall 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:132"
+  },
+  {
+    "fact": "buildLogsCommand 构造 logs 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:153"
+  },
+  {
+    "fact": "buildResetCommand 构造 reset 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:161"
+  },
+  {
+    "fact": "DEFAULT_SPAWN_TIMEOUT_MS=180000L 是默认的 spawn 超时。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:17"
+  },
+  {
+    "fact": "connect 先 ping，失败则查 serviceInfo，再尝试 spawnBlocking。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:212"
+  },
+  {
+    "fact": "isConnected 读取 AtomicBoolean 的连接标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:277"
+  },
+  {
+    "fact": "ping 要求服务 active 且 ready 同时为真才算连通。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:290"
+  },
+  {
+    "fact": "pingSync 是 ping 的 runBlocking 同步版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:311"
+  },
+  {
+    "fact": "spawnBlocking 默认 180 秒超时发送 spawn 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:314"
+  },
+  {
+    "fact": "unspawn 停止服务进程但保留其注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:349"
+  },
+  {
+    "fact": "isActive 查询 serviceInfo 的 active 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:372"
+  },
+  {
+    "fact": "callTool 在未连接时先自动 connect。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:377"
+  },
+  {
+    "fact": "callTool 遇到连接类错误时标记断开、重连并重试一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:435"
+  },
+  {
+    "fact": "getTools 解析响应 result.tools 数组为工具列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:518"
+  },
+  {
+    "fact": "getServiceInfo 在 services 数组中按 name 匹配当前服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:580"
+  },
+  {
+    "fact": "getToolDescriptions 返回 \"name: description\" 格式的字符串列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:630"
+  },
+  {
+    "fact": "disconnect 只把 isConnected 标记置为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:654"
+  },
+  {
+    "fact": "ServiceInfo 数据类包含 name、active、ready、toolCount、toolNames。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridgeClient.kt:660"
+  },
+  {
+    "fact": "BridgeMcpRuntimeSession 实现 McpRuntimeSession，背后走 Node bridge。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:11"
+  },
+  {
+    "fact": "BridgeMcpRuntimeSession.connect 委托给 bridgeClient.connect。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:17"
+  },
+  {
+    "fact": "BridgeMcpRuntimeSession.listTools 过滤掉名称为空的工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:23"
+  },
+  {
+    "fact": "BridgeMcpRuntimeSession.callTool 把参数 Map 转为 JSONObject 再调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:34"
+  },
+  {
+    "fact": "bridge 无响应时 callTool 返回 McpRuntimeCallResult(false, null, \"MCP bridge returned no response\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:40"
+  },
+  {
+    "fact": "BridgeMcpRuntimeSession.close 断开 bridgeClient。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:51"
+  },
+  {
+    "fact": "toJsonObject 把 Map<String, Any?> 转换为 JSONObject。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:56"
+  },
+  {
+    "fact": "toJsonValue 递归处理 Map、Iterable 与基本类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/BridgeMcpRuntimeSession.kt:60"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession 用 Kotlin MCP SDK 与 Ktor 直连远程服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:29"
+  },
+  {
+    "fact": "REMOTE_RESULT_TIMEOUT_MILLIS=60000 是远程结果的超时毫秒数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:36"
+  },
+  {
+    "fact": "远程会话的连接超时 15 秒，请求与 socket 超时 60 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:41"
+  },
+  {
+    "fact": "\"httpStream\" 使用 StreamableHttpClientTransport。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:58"
+  },
+  {
+    "fact": "\"sse\" 使用 SseClientTransport。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:63"
+  },
+  {
+    "fact": "MCP 客户端标识为 Implementation(\"Operit\", \"mcp-runtime\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:71"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.isConnected 要求 connected 且 client 非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:89"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.isActive 等同于 isConnected。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:91"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.listTools 用 nextCursor 分页拉取全部工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:99"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.callTool 的 success 取值为 isError != true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:117"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.callTool 异常时置 connected=false 并重抛。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:120"
+  },
+  {
+    "fact": "RemoteMcpRuntimeSession.close 关闭 client 与 httpClient。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:128"
+  },
+  {
+    "fact": "requireClient 在未连接时抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:142"
+  },
+  {
+    "fact": "applyHeaders 用 bearerToken 拼接 Authorization Bearer 头，自定义 headers 先 remove 再 append。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:149"
+  },
+  {
+    "fact": "Tool.toRuntimeTool 保留 type、properties、required、$defs 四个 schema 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/RemoteMcpRuntimeSession.kt:157"
+  },
+  {
+    "fact": "MCPSharedSession 是管理共享终端会话的 object 单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:15"
+  },
+  {
+    "fact": "SESSION_NAME 常量为 \"mcp-shared\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:18"
+  },
+  {
+    "fact": "MCPSharedSession 用 Mutex 实现双重检查锁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:22"
+  },
+  {
+    "fact": "getOrCreateSharedSession 获取或创建共享的终端会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:30"
+  },
+  {
+    "fact": "共享会话用 terminal.createSession(SESSION_NAME) 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:48"
+  },
+  {
+    "fact": "getCurrentSessionId 返回当前共享会话 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:63"
+  },
+  {
+    "fact": "clearSession 只清除引用，不会实际关闭会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:69"
+  },
+  {
+    "fact": "hasActiveSession 判断是否存在共享会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt:79"
+  },
+  {
+    "fact": "MCPStarter 协调本地 bridge stdio 插件与 Kotlin SDK 远程插件的启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:29"
+  },
+  {
+    "fact": "starterDispatcher 是 limitedParallelism(6) 的 IO 调度器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:35"
+  },
+  {
+    "fact": "PluginInitStatus 包含 SUCCESS、TERMINAL_SERVICE_UNAVAILABLE、NODEJS_MISSING、BRIDGE_FAILED、OTHER_ERROR。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:41"
+  },
+  {
+    "fact": "PluginStartProgressListener 定义插件启动进度回调接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:50"
+  },
+  {
+    "fact": "isPnpmInstalled 用 `command -v pnpm` 检查终端是否装了 pnpm。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:71"
+  },
+  {
+    "fact": "initBridge：bridge 已运行则直接返回，否则检查终端与 pnpm，部署并启动 bridge。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:99"
+  },
+  {
+    "fact": "startPlugin 调用 startPluginInternal 并要求先初始化 bridge。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:150"
+  },
+  {
+    "fact": "本地插件运行目录未就绪时自动走 MCPDeployer 部署。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:199"
+  },
+  {
+    "fact": "虚拟路径（npx/uvx/uv）插件的部署命令为空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:201"
+  },
+  {
+    "fact": "未启用的插件拒绝启动并回调 \"Plugin not enabled by user\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:253"
+  },
+  {
+    "fact": "远程插件启动时注册 runtime 描述符并创建会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:273"
+  },
+  {
+    "fact": "本地插件启动时从配置读取 command、args、env。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:292"
+  },
+  {
+    "fact": "本地插件经由 bridge.registerMcpService 用 command、args、env、cwd 注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:340"
+  },
+  {
+    "fact": "本地插件注册成功后在 MCPManager 中注册 McpRuntimeDescriptor.Local。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:354"
+  },
+  {
+    "fact": "startAllDeployedPlugins 把已安装插件按启用与禁用分区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:370"
+  },
+  {
+    "fact": "禁用插件的工具在批量启动时被反注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:388"
+  },
+  {
+    "fact": "批量启动用 Semaphore(4) 限制并发处理数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:417"
+  },
+  {
+    "fact": "processPlugin 创建会话、缓存工具并注册工具到 AI 运行时。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:508"
+  },
+  {
+    "fact": "registerPlugin 在本地插件运行目录未就绪时先自动部署。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:545"
+  },
+  {
+    "fact": "cacheToolsFromService 在无有效缓存时从服务拉取工具并缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:684"
+  },
+  {
+    "fact": "generateMissingDescriptions 用 EnhancedAIService.generatePackageDescription 为空描述插件生成描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:769"
+  },
+  {
+    "fact": "verifyAllMcpPlugins 逐个检查已启用插件是否响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:802"
+  },
+  {
+    "fact": "extractServerNameFromConfig 取 mcpServers 的第一个 key 作为服务名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:850"
+  },
+  {
+    "fact": "StartStatus 包含 NotStarted、InProgress、Success、Error、TerminalServiceUnavailable、PnpmMissing。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:876"
+  },
+  {
+    "fact": "VerificationResult 包含 pluginId、serviceName、isResponding、responseTime、details。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPStarter.kt:891"
+  },
+  {
+    "fact": "MCPDeployer 协调项目分析、命令生成与配置生成完成插件部署。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:25"
+  },
+  {
+    "fact": "DeploymentStatus 包含 NotStarted、InProgress、Success、Error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:40"
+  },
+  {
+    "fact": "部署输出按 3500 字符分块，借助状态回调上报。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:50"
+  },
+  {
+    "fact": "executeCommandWithStreaming 用 terminal.executeCommandFlow 流式接收命令输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:71"
+  },
+  {
+    "fact": "deployPluginWithCommands 支持用自定义命令列表部署插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:94"
+  },
+  {
+    "fact": "virtual:// 路径的插件走最小化部署，只创建运行目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:109"
+  },
+  {
+    "fact": "最小化部署完成后关闭部署用的终端会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:139"
+  },
+  {
+    "fact": "有市场配置时部署优先使用 marketConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:163"
+  },
+  {
+    "fact": "无市场配置时分析项目结构并生成 MCP 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:175"
+  },
+  {
+    "fact": "saveMCPConfigToLocalServer 把生成的配置存入 MCPLocalServer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:196"
+  },
+  {
+    "fact": "getDeployCommands 先分析项目结构再生成部署命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:227"
+  },
+  {
+    "fact": "executeDeployCommands 为每个插件创建独立的 \"deploy-<短名>\" 终端会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:265"
+  },
+  {
+    "fact": "部署时先在终端执行 mkdir -p 创建插件运行目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:290"
+  },
+  {
+    "fact": "部署用 AIToolHandler 的 copy_file 工具做 Android 到 Linux 的递归复制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:316"
+  },
+  {
+    "fact": "部署时跳过 python -m、node 启动命令、npm start 与 # 注释行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:347"
+  },
+  {
+    "fact": "pnpm config（含 set 与前缀匹配）、含 || true、pnpm install -g 的命令被视为非关键命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:362"
+  },
+  {
+    "fact": "非关键命令执行失败也继续部署。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:383"
+  },
+  {
+    "fact": "部署结束无论成败都会延迟后关闭部署会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:428"
+  },
+  {
+    "fact": "saveMCPConfigToLocalServer 解析 mcpServers 的第一个服务器并写入配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPDeployer.kt:440"
+  },
+  {
+    "fact": "MCPCommandGenerator 负责生成插件的部署与启动命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:11"
+  },
+  {
+    "fact": "generateDeployCommands 按项目类型生成部署命令列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:24"
+  },
+  {
+    "fact": "PYTHON 项目先执行 python3 -m venv venv 并 source venv/bin/activate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:32"
+  },
+  {
+    "fact": "README 中的特定 pip install 命令优先于自动推断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:35"
+  },
+  {
+    "fact": "有 requirements.txt 时执行 pip install -r requirements.txt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:44"
+  },
+  {
+    "fact": "有 pyproject.toml 或 setup.py 时执行 pip install -e .。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:49"
+  },
+  {
+    "fact": "只有 requirements.txt 时尝试 pip install -e . || echo 'Package install skipped'。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:53"
+  },
+  {
+    "fact": "TYPESCRIPT 项目用 pnpm 并把 registry 换为淘宝镜像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:67"
+  },
+  {
+    "fact": "TYPESCRIPT 项目用 pnpm install --ignore-scripts 禁用脚本执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:70"
+  },
+  {
+    "fact": "TYPESCRIPT 优先转换 prepare 脚本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:77"
+  },
+  {
+    "fact": "prepare 脚本缺失时，按 build、compile、tsc 的顺序兜底转换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:107"
+  },
+  {
+    "fact": "无可用脚本时默认执行 node ./node_modules/typescript/bin/tsc -p ./tsconfig.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:123"
+  },
+  {
+    "fact": "有 TypeScript 依赖时执行 pnpm exec tsc -p ./tsconfig.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:127"
+  },
+  {
+    "fact": "NODEJS 项目同样换淘宝镜像源并执行 pnpm install。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:147"
+  },
+  {
+    "fact": "NODEJS 有 mainJsFile 则 node $mainFile，否则执行 pnpm start。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:151"
+  },
+  {
+    "fact": "findSpecificPipInstallCommand 从 README 内容中查找特定的 pip install 命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:168"
+  },
+  {
+    "fact": "pip 命令正则排除 pip install .、-r、-e 三种形式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:176"
+  },
+  {
+    "fact": "convertNpmScriptToDirectCommand 把 npm 脚本转换为直接命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:221"
+  },
+  {
+    "fact": "pnpm run xxx 形式的脚本被转为 ##PNPM_RUN_SCRIPT:name## 标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:245"
+  },
+  {
+    "fact": "tsc 被替换为 pnpm exec tsc。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:250"
+  },
+  {
+    "fact": "npx xxx 被替换为 pnpm exec xxx。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPCommandGenerator.kt:260"
+  },
+  {
+    "fact": "MCPProjectAnalyzer 负责分析插件项目结构。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:12"
+  },
+  {
+    "fact": "CODE_BLOCK_REGEX 匹配 ``` 包裹的代码块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:18"
+  },
+  {
+    "fact": "JSON_CONFIG_REGEX 匹配含 mcpServers 的 JSON 片段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:21"
+  },
+  {
+    "fact": "analyzeProjectStructure 是项目结构分析的入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:31"
+  },
+  {
+    "fact": "分析时检查 requirements.txt、pyproject.toml、setup.py、package.json、tsconfig.json 的存在性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:34"
+  },
+  {
+    "fact": "分析时查找主 Python、JS、TS 入口文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:50"
+  },
+  {
+    "fact": "分析时解析 tsconfig.json 提取 outDir 与 rootDir。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:107"
+  },
+  {
+    "fact": "分析时解析 pyproject.toml 提取 Python 包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:115"
+  },
+  {
+    "fact": "分析时从 README 提取配置示例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:121"
+  },
+  {
+    "fact": "项目类型判定优先级：TYPESCRIPT 高于 NODEJS，高于 PYTHON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:127"
+  },
+  {
+    "fact": "提取到的配置示例经 validateConfigExample 校验可信度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:140"
+  },
+  {
+    "fact": "parseTsConfig 移除注释后解析 compilerOptions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:166"
+  },
+  {
+    "fact": "parsePyprojectToml 按 project.scripts、packages、project name 三路提取包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:205"
+  },
+  {
+    "fact": "findMainPythonModule 按 src 包、main/app/server.py、__main__.py 的顺序查找。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:266"
+  },
+  {
+    "fact": "findMainJsFile 优先读 package.json 的 main 字段，其次查 index/server/app/main.js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:314"
+  },
+  {
+    "fact": "findMainTsFile 支持从 bin 字段推断 src/stdio.ts 等源文件位置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:341"
+  },
+  {
+    "fact": "extractConfigExample 先扫描代码块，再用 JSON 正则兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:428"
+  },
+  {
+    "fact": "validateConfigExample 校验配置示例的可信度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:451"
+  },
+  {
+    "fact": "JS/Node/TS 项目的配置示例不含 \"@\" 字符时被过滤。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:457"
+  },
+  {
+    "fact": "Python 项目的配置示例含 path/to 或 pathto/ 占位符时被一票否决。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:465"
+  },
+  {
+    "fact": "findReadmeFile 按 README.md、readme.md、INSTALL.md、docs 目录、任意 md 文件的顺序查找。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPProjectAnalyzer.kt:476"
+  },
+  {
+    "fact": "MCPConfigGenerator 负责生成插件的 MCP 配置文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:14"
+  },
+  {
+    "fact": "generateMcpConfig 是配置生成的入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:29"
+  },
+  {
+    "fact": "README 中的配置示例会作为生成配置的基础。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:37"
+  },
+  {
+    "fact": "PYTHON 项目使用 \"$pluginDirPath/venv/bin/python\" 作为启动命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:97"
+  },
+  {
+    "fact": "Python 启动参数为 -m <模块名>，优先级为 pyproject 包名、mainPythonModule、pluginId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:103"
+  },
+  {
+    "fact": "TYPESCRIPT 项目强制使用 node 作为启动命令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:125"
+  },
+  {
+    "fact": "TypeScript 的 outDir 默认为 dist，rootDir 默认为 src。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:131"
+  },
+  {
+    "fact": "TypeScript 按 rootDir 与 outDir 推断编译后的 JS 路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:160"
+  },
+  {
+    "fact": "找不到主 TS 文件时使用 $outDir/index.js 作为默认路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:176"
+  },
+  {
+    "fact": "NODEJS 项目 command=node，args 为 mainJsFile 或 index.js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:191"
+  },
+  {
+    "fact": "UNKNOWN 类型默认使用 venv 中的 python。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:200"
+  },
+  {
+    "fact": "生成的配置默认带空的 autoApprove 数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:216"
+  },
+  {
+    "fact": "传入的 environmentVariables 被写入配置的 env。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:221"
+  },
+  {
+    "fact": "saveMcpConfig 把配置写到 <serverPath>/plugins/<pluginId>/config.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:261"
+  },
+  {
+    "fact": "extractEnvironmentVariables 从配置中提取 env 映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPConfigGenerator.kt:304"
+  },
+  {
+    "fact": "ProjectType 枚举含 PYTHON、NODEJS、TYPESCRIPT、UNKNOWN 四种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/ProjectStructure.kt:5"
+  },
+  {
+    "fact": "ProjectStructure 数据类记录项目类型、入口文件、配置文件等结构信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/ProjectStructure.kt:9"
+  },
+  {
+    "fact": "McpRuntimeDescriptor 是 sealed interface，含 Local 与 Remote 两种运行时描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:7"
+  },
+  {
+    "fact": "McpRuntimeDescriptor.Local 只携带 serviceName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:8"
+  },
+  {
+    "fact": "McpRuntimeDescriptor.Remote 携带 endpoint、connectionType、bearerToken、headers。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:10"
+  },
+  {
+    "fact": "McpRuntimeTool 是传输无关的 MCP 工具定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:20"
+  },
+  {
+    "fact": "McpRuntimeCallResult 包含 success、result、errorMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:28"
+  },
+  {
+    "fact": "McpRuntimeSession 接口定义 connect、isConnected、isActive、listTools、callTool、close。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:38"
+  },
+  {
+    "fact": "McpRuntimeSession.getToolDescriptions 有默认实现，格式为 \"name: description\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:47"
+  },
+  {
+    "fact": "MCPManager.registerRuntime 缓存运行时描述符，描述符变更时关闭旧会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:509"
+  },
+  {
+    "fact": "MCPManager.getOrCreateSession：缓存会话可重连则复用，否则按描述符创建新会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:519"
+  },
+  {
+    "fact": "MCPManager 按描述符类型创建会话：Local 走 BridgeMcpRuntimeSession，Remote 走 RemoteMcpRuntimeSession。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:546"
+  },
+  {
+    "fact": "MCPManager.registerServer 同时写入服务器配置缓存并注册 runtime。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:578"
+  },
+  {
+    "fact": "MCPManager.unregisterServer 清理三份缓存并关闭会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:592"
+  },
+  {
+    "fact": "Node 桥接器默认绑定 127.0.0.1。",
+    "ref": "app/src/main/assets/bridge/index.js:196"
+  },
+  {
+    "fact": "桥接器用 server.listen(config.port, config.host) 启动 TCP 服务。",
+    "ref": "app/src/main/assets/bridge/index.js:1135"
+  },
+  {
+    "fact": "桥接器请求超时 REQUEST_TIMEOUT 为 180000 毫秒（3 分钟）。",
+    "ref": "app/src/main/assets/bridge/index.js:178"
+  },
+  {
+    "fact": "桥接器服务闲置超时 IDLE_TIMEOUT_MS 为 5 分钟。",
+    "ref": "app/src/main/assets/bridge/index.js:192"
+  },
+  {
+    "fact": "桥接器单个服务最多重启 5 次（MAX_RESTART_ATTEMPTS）。",
+    "ref": "app/src/main/assets/bridge/index.js:190"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "description": "flushSettings 在每次保存 API 设置时调用 AppLogger.d，把 API Key 的前 5 个字符（apiKey.take(5)）连同端点、模型名一起写入应用日志。日志通常可被 adb logcat 或崩溃上报读取，Key 前缀泄露会显著降低暴力猜解空间。",
+    "evidence": "            AppLogger.d(\n                TAG,\n                \"保存API设置: apiKey=${state.apiKey.take(5)}..., endpoint=${state.apiEndpoint}, model=${state.modelName}, providerType=${state.provider.name}\"\n            )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt",
+    "line": 330,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "ApiKeyVisualTransformation 对长度小于等于 8 的 Key 直接返回原文、不做任何遮盖。8 位以内的短 Key（含测试 Key、部分厂商的短 token）在设置页输入框失焦后仍以明文完整呈现，旁边有人即可直接抄走。",
+    "evidence": "        } else {\n            // 长度较短时直接显示原文，避免过度遮挡\n            originalText\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ApiKeyVisualTransformation.kt",
+    "line": 21,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "exportKeyPoolToUri 把 Key 池中全部 Key 用换行符拼接成明文（joinToString(\"\\n\") { it.key }），直接写入用户经由 CreateDocument 选定的文件。导出的文本文件里是完整可用的 Key 明文，一旦被转发、备份到云端或落入他人之手，所有 Key 同时泄露。",
+    "evidence": "    fun exportKeyPoolToUri(uri: Uri) {\n        scope.launch {\n            try {\n                val content = apiKeyPool.joinToString(\"\\n\") { it.key }\n                context.contentResolver.openOutputStream(uri)?.use { outputStream ->\n                    outputStream.write(content.toByteArray())\n                } ?: throw IllegalStateException(\"openOutputStream returned null\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt",
+    "line": 173,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "API Key 输入框在获得焦点时（isApiKeyFocused）把 visualTransformation 设为 VisualTransformation.None，即聚焦编辑期间 Key 全程明文显示。用户在公共场合点开输入框修改 Key 时，完整 Key 会直接暴露在屏幕上。",
+    "evidence": "                        visualTransformation = if (isApiKeyFocused || apiKeyInput.isEmpty()) VisualTransformation.None else ApiKeyVisualTransformation(),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt",
+    "line": 761,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "flushAllInBackground 用 runCatching 包裹 flushAll 调用，但没有任何 onFailure 处理：后台刷盘失败时异常被静默吞掉，用户收不到任何提示，可能误以为设置已保存，实际磁盘上还是旧配置。",
+    "evidence": "    fun flushAllInBackground(showSuccess: Boolean = false) {\n        modelConfigSaveCoordinatorScope.launch {\n            runCatching {\n                flushAll(showSuccess)\n            }\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt",
+    "line": 99,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "请求队列的每分钟限流、最大并发数输入框把非法输入静默归 0：toIntOrNull() 失败或负数时直接写成 0，没有任何错误提示。用户输错一个字符（如多打了空格）会导致限流被关掉而不自知。",
+    "evidence": "                requestLimitPerMinute = requestLimitPerMinuteInput.toIntOrNull()?.coerceAtLeast(0) ?: 0,\n                maxConcurrentRequests = maxConcurrentRequestsInput.toIntOrNull()?.coerceAtLeast(0) ?: 0",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt",
+    "line": 157,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "Key 池列表每一项都显示 \"${keyInfo.name} (...${keyInfo.key.takeLast(4)})\"，即每个 Key 的末 4 位长期暴露在列表页。末 4 位常被用作 Key 的辨识指纹，批量展示等于把全部 Key 的指纹一次性公开。",
+    "evidence": "            text = \"${keyInfo.name} (...${keyInfo.key.takeLast(4)})\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt",
+    "line": 640,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "Key 编辑对话框的默认名称直接取 \"API Key ${key.takeLast(4)}\"，Key 末 4 位被写进可同步/可导出的名称字段。名称的传播面比 Key 本体更广（列表、日志、导出），末 4 位随之扩散。",
+    "evidence": "                    val finalName = \"API Key ${key.takeLast(4)}\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt",
+    "line": 710,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "TemperatureRecommendationRow 把推荐值 \"1.3\" 硬编码为 Text 写死在界面里。推荐值随模型迭代会变化，硬编码意味着每次调整都要改代码重新发版，不能经由配置或远端下发更新。",
+    "evidence": "            Text(\n                    text = \"1.3\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt",
+    "line": 1479,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "exportTavernPngBytes 状态自声明起只被赋过 null（多处重置），从未被赋过有效字节数组，也从未被读取。属于残留的死状态：占着 remember 名额却不产生任何行为，后续维护者容易误以为导出 PNG 流程依赖它。",
+    "evidence": "    var exportTavernPngBytes by remember { mutableStateOf<ByteArray?>(null) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt",
+    "line": 170,
+    "severity": "suggestion"
+  }
+]

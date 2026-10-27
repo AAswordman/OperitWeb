@@ -1,0 +1,72 @@
+[
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "severity": "high",
+    "title": "豆包 TTS Authorization 头写成 Bearer;{apiKey}，分号应为空格",
+    "detail": "DoubaoVoiceProvider.buildHttpConfig() 中 Authorization 头模板是 \"Bearer;{apiKey}\"（分号），而不是标准的 \"Bearer {apiKey}\"（空格）。Authorization: Bearer <token> 的 scheme 与 token 之间必须用空格分隔，分号会导致服务端鉴权解析失败，豆包 TTS 每次调用都会 401。",
+    "evidence": "headers = config.headers + mapOf(\"Authorization\" to \"Bearer;{apiKey}\"),",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt",
+    "line": 73
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "severity": "warning",
+    "title": "硅基流动请求体手写 JSON 拼接，仅转义双引号",
+    "detail": "SiliconFlowVoiceProvider.buildRequestBody 用 buildString 手写 JSON，用户文本仅 replace 双引号，反斜杠、换行符、控制字符等均未转义。文本中若含这些字符会生成非法 JSON 导致请求失败，甚至有 JSON 注入风险。正确做法是用 org.json.JSONObject 或 Gson/Kotlinx 序列化。",
+    "evidence": "append(\"\\\"input\\\":\\\"${strippedInput.replace(\"\\\"\", \"\\\\\\\"\")}\\\",\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt",
+    "line": 240
+  },
+  {
+    "category": "performance",
+    "confidence": "high",
+    "severity": "warning",
+    "title": "HttpVoiceProvider 音频缓存无上限、无淘汰、无 TTL",
+    "detail": "audioCache 为无上限 ConcurrentHashMap，每次 fetchAudioFile 落盘一个 tts_<uuid>.bin 文件并常驻内存引用；clearCache() 只在 shutdown() 中被调用。长期不重启的进程中缓存条目只增不减，磁盘与内存占用持续增长。",
+    "evidence": "private val audioCache = ConcurrentHashMap<String, File>()",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt",
+    "line": 88
+  },
+  {
+    "category": "performance",
+    "confidence": "medium",
+    "severity": "warning",
+    "title": "executeBinaryRequest 全量读入响应字节，无大小上限",
+    "detail": "executeBinaryRequest 成功路径调用 responseBody.bytes() 把整个响应一次性读进内存，且调用前没有任何 Content-Length 校验或上限。异常大的音频响应会造成 OOM；网络流式场景也应边读边写文件。",
+    "evidence": "bytes = responseBody.bytes(),",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt",
+    "line": 596
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "severity": "warning",
+    "title": "VoiceServiceFactory.getInstance 读写单例无同步，并发可创建双实例",
+    "detail": "instance/currentProfileId 的读-判-写在 getInstance() 里没有任何同步。两个线程同时进入且 profile 变化时，会各自 shutdown(null)/createVoiceService，造成其中一个实例泄漏（未被 shutdown）且另一个被后续覆盖。",
+    "evidence": "if (instance == null || selectedProfileId != currentProfileId) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt",
+    "line": 126
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "severity": "warning",
+    "title": "硅基流动 debug 日志打印含用户原文的完整请求体",
+    "detail": "speak() 内 AppLogger.d(TAG, \"TTS请求体: $requestBody\") 把包含用户朗读原文的完整请求体打进 debug 日志。TTS 输入常为用户私密文本（聊天、备忘），logcat 可被其他应用/调试工具读取，属隐私泄露面。",
+    "evidence": "AppLogger.d(TAG, \"TTS请求体: $requestBody\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt",
+    "line": 269
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "severity": "warning",
+    "title": "generateCacheKey 用 text.hashCode()，哈希碰撞会返回错误音频",
+    "detail": "缓存键用 \"${text.hashCode()}_...\" 拼接，String.hashCode() 是 32 位哈希，两个不同文本碰撞概率不可忽略。一旦碰撞，fetchAudioFile 会直接返回错文本的缓存音频，且无任何二次校验。",
+    "evidence": "return \"${text.hashCode()}_${rate}_${pitch}_${voiceId ?: \"default\"}_$paramsString\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt",
+    "line": 977
+  }
+]

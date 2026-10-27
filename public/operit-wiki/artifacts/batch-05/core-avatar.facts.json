@@ -1,0 +1,454 @@
+[
+  {
+    "fact": "AvatarType 枚举定义了 6 种虚拟形象技术路线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/AvatarType.kt:9"
+  },
+  {
+    "fact": "AvatarModel 是接口，定义形象模型的统一抽象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/AvatarModel.kt:7"
+  },
+  {
+    "fact": "AvatarModel.id 是形象的唯一标识。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/AvatarModel.kt:9"
+  },
+  {
+    "fact": "AvatarModel.name 是形象的显示名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/AvatarModel.kt:12"
+  },
+  {
+    "fact": "AvatarModel.type 返回该形象的 AvatarType 类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/AvatarModel.kt:15"
+  },
+  {
+    "fact": "ISkeletalAvatarModel.skeletonPath 指向骨骼定义文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/ISkeletalAvatarModel.kt:11"
+  },
+  {
+    "fact": "ISkeletalAvatarModel.textureAtlasPath 指向纹理图集描述文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/ISkeletalAvatarModel.kt:14"
+  },
+  {
+    "fact": "ISkeletalAvatarModel.texturePath 指向纹理图片文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/ISkeletalAvatarModel.kt:17"
+  },
+  {
+    "fact": "IFrameSequenceAvatarModel.animationPath 指向逐帧动画资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/IFrameSequenceAvatarModel.kt:11"
+  },
+  {
+    "fact": "IFrameSequenceAvatarModel.shouldLoop 接口默认值为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/IFrameSequenceAvatarModel.kt:14"
+  },
+  {
+    "fact": "IFrameSequenceAvatarModel.repeatCount 接口默认值为 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/model/IFrameSequenceAvatarModel.kt:18"
+  },
+  {
+    "fact": "AvatarEmotion 定义 7 种情绪，从 IDLE 起。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarEmotion.kt:9"
+  },
+  {
+    "fact": "内置 mood angry 的 promptHint 描述用户表达侮辱、不公、责备、生气时使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:22"
+  },
+  {
+    "fact": "内置 mood angry 的 fallbackEmotion 是 AvatarEmotion.SAD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:23"
+  },
+  {
+    "fact": "内置 mood happy 的 fallbackEmotion 是 AvatarEmotion.HAPPY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:30"
+  },
+  {
+    "fact": "内置 mood shy 的 fallbackEmotion 是 AvatarEmotion.CONFUSED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:37"
+  },
+  {
+    "fact": "内置 mood aojiao 的 fallbackEmotion 是 AvatarEmotion.CONFUSED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:44"
+  },
+  {
+    "fact": "内置 mood cry 的 fallbackEmotion 是 AvatarEmotion.SAD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:51"
+  },
+  {
+    "fact": "AvatarMoodTypes.normalizeKey 对 mood 键做归一化处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:62"
+  },
+  {
+    "fact": "AvatarMoodTypes.builtInFallbackEmotion 按键查找内置 mood 的兜底情绪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarMoodType.kt:81"
+  },
+  {
+    "fact": "AvatarState.emotion 默认值为 AvatarEmotion.IDLE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarState.kt:14"
+  },
+  {
+    "fact": "AvatarState.currentAnimation 记录当前播放的动画名，可为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarState.kt:15"
+  },
+  {
+    "fact": "AvatarState.isLooping 标记当前动画是否无限循环。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarState.kt:16"
+  },
+  {
+    "fact": "AvatarState.playbackNonce 是单调递增的播放令牌，用于重播同一动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/state/AvatarState.kt:17"
+  },
+  {
+    "fact": "AvatarController.state 是 AvatarState 的 StateFlow，供渲染器订阅。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:14"
+  },
+  {
+    "fact": "AvatarController.availableAnimations 列出该形象可用的动画名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:17"
+  },
+  {
+    "fact": "AvatarController.setEmotion 切换当前情绪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:26"
+  },
+  {
+    "fact": "AvatarController.playEmotion 的 loop 参数默认值为 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:34"
+  },
+  {
+    "fact": "AvatarController.playAnimation 的 loop 参数默认值为 1，0 表示无限循环。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:45"
+  },
+  {
+    "fact": "AvatarController.estimateEmotionDurationMillis 预估情绪动画时长，算不出返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:51"
+  },
+  {
+    "fact": "AvatarController.playTrigger 接收模型返回的 <mood> 标签值并播放对应动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:55"
+  },
+  {
+    "fact": "AvatarController.estimateTriggerDurationMillis 预估 trigger 动画时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:64"
+  },
+  {
+    "fact": "AvatarController.lookAt 让形象看向屏幕指定点，不支持的类型直接空实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:74"
+  },
+  {
+    "fact": "AvatarController.updateSettings 接收设置键值对，默认空实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:82"
+  },
+  {
+    "fact": "AvatarController.updateEmotionAnimationMapping 更新情绪到动画名的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:88"
+  },
+  {
+    "fact": "AvatarController.updateTriggerAnimationMapping 更新 trigger 键到动画名的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarController.kt:94"
+  },
+  {
+    "fact": "AvatarSettingKeys.SCALE 的键名字符串是 \"scale\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarSettingKeys.kt:4"
+  },
+  {
+    "fact": "AvatarSettingKeys 定义 MMD 初始旋转角键 mmd.initialRotationX。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarSettingKeys.kt:8"
+  },
+  {
+    "fact": "AvatarSettingKeys 定义 MMD 相机距离键 mmd.cameraDistanceScale。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarSettingKeys.kt:11"
+  },
+  {
+    "fact": "AvatarSettingKeys 定义 glTF 相机俯仰角键 gltf.cameraPitch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarSettingKeys.kt:14"
+  },
+  {
+    "fact": "AvatarSettingKeys 定义 FBX 相机俯仰角键 fbx.cameraPitch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/control/AvatarSettingKeys.kt:19"
+  },
+  {
+    "fact": "AvatarView 经 rendererFactory.createRenderer(model) 获取渲染器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/view/AvatarView.kt:32"
+  },
+  {
+    "fact": "AvatarView 在渲染器为 null 时回调 onError 并显示错误文字兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/common/view/AvatarView.kt:40"
+  },
+  {
+    "fact": "AvatarModelFactoryImpl.createModel 按 AvatarType 分发构造 6 种模型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:25"
+  },
+  {
+    "fact": "AvatarModelFactoryImpl.createModelFromData 能识别数据层的 DragonBonesModel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:36"
+  },
+  {
+    "fact": "AvatarModelFactoryImpl.createModelFromData 能识别 Map 形式的数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:40"
+  },
+  {
+    "fact": "AvatarModelFactoryImpl.createDefaultModel 对 FBX 类型返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:97"
+  },
+  {
+    "fact": "文件名含 idle/default/normal/standby 的 WebP/MP4 资源被推断为 IDLE 情绪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:356"
+  },
+  {
+    "fact": "文件名含 listening/talking/speak/speaking/chat 的资源被推断为 LISTENING 情绪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:357"
+  },
+  {
+    "fact": "文件名含 sad/cry/crying/angry/mad 的资源被推断为 SAD 情绪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt:360"
+  },
+  {
+    "fact": "AvatarControllerFactoryImpl.createController 按类型构造控制器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarControllerFactoryImpl.kt:24"
+  },
+  {
+    "fact": "DragonBones 控制器要求模型实现 ISkeletalAvatarModel，否则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarControllerFactoryImpl.kt:79"
+  },
+  {
+    "fact": "AvatarRendererFactoryImpl.createRenderer 按类型返回渲染 Composable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarRendererFactoryImpl.kt:25"
+  },
+  {
+    "fact": "AvatarRendererFactoryImpl 把各渲染器的 onError 回调设为空实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarRendererFactoryImpl.kt:35"
+  },
+  {
+    "fact": "DragonBonesAvatarModel 把骨骼文件名拼成基于 folderPath 的绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/model/DragonBonesAvatarModel.kt:29"
+  },
+  {
+    "fact": "DragonBones 控制器经 JniBridge.getAnimationDuration 估算情绪动画时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/control/DragonBonesAvatarController.kt:69"
+  },
+  {
+    "fact": "DragonBones 控制器的 lookAt 是空实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/control/DragonBonesAvatarController.kt:99"
+  },
+  {
+    "fact": "DragonBones 控制器把 scale 钳制在 0.1 到 5.0 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/control/DragonBonesAvatarController.kt:110"
+  },
+  {
+    "fact": "DragonBones 控制器把位移 translateX 钳制在 -2000 到 2000 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/control/DragonBonesAvatarController.kt:122"
+  },
+  {
+    "fact": "DragonBones 情绪解析先查情绪映射，找不到再试情绪名小写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/control/DragonBonesAvatarController.kt:155"
+  },
+  {
+    "fact": "DragonBones 渲染器桥接 ui.components 的 ManagedDragonBonesView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/dragonbones/view/DragonBonesRenderer.kt:38"
+  },
+  {
+    "fact": "WebPAvatarModel.animationPathFor 的兜底链是指定文件、情绪文件、IDLE 文件、首个可用文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/model/WebPAvatarModel.kt:37"
+  },
+  {
+    "fact": "WebPAvatarModel.animationFileForEmotion 按情绪查文件名映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/model/WebPAvatarModel.kt:51"
+  },
+  {
+    "fact": "WebPAvatarModel.createStandard 按常规命名生成 7 情绪到 webp 文件的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/model/WebPAvatarModel.kt:81"
+  },
+  {
+    "fact": "WebP 控制器初始化时按当前情绪、IDLE、首个可用文件的顺序选初始动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/control/WebPAvatarController.kt:44"
+  },
+  {
+    "fact": "WebP 非循环动画播完后 onAnimationPlaybackCompleted 切回 IDLE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/control/WebPAvatarController.kt:129"
+  },
+  {
+    "fact": "WebP 渲染在 API 28 及以上用 ImageDecoder 从字节解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/view/WebPRenderer.kt:85"
+  },
+  {
+    "fact": "WebP 循环播放使用 AnimatedImageDrawable.REPEAT_INFINITE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/view/WebPRenderer.kt:99"
+  },
+  {
+    "fact": "WebP 非循环播放注册 Animatable2.AnimationCallback 监听播完。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/view/WebPRenderer.kt:110"
+  },
+  {
+    "fact": "WebP 渲染在 API 28 以下只显示首帧静态图。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/view/WebPRenderer.kt:118"
+  },
+  {
+    "fact": "MP4 控制器用 MediaMetadataRetriever.METADATA_KEY_DURATION 读取视频时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/control/Mp4AvatarController.kt:93"
+  },
+  {
+    "fact": "MP4 渲染器把 ExoPlayer 音量设为 0 实现静音播放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt:56"
+  },
+  {
+    "fact": "MP4 渲染器设置 playWhenReady 为 true 自动开始播放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt:57"
+  },
+  {
+    "fact": "MP4 循环播放用 REPEAT_MODE_ONE，非循环用 REPEAT_MODE_OFF。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt:80"
+  },
+  {
+    "fact": "MP4 渲染用 StyledPlayerView 且关闭播放器控件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt:113"
+  },
+  {
+    "fact": "MP4 非绝对路径的资源经 asset:/// scheme 定位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt:133"
+  },
+  {
+    "fact": "MmdAvatarModel 含 basePath、modelFile、motionFile/motionFiles。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/model/MmdAvatarModel.kt:10"
+  },
+  {
+    "fact": "MMD 控制器用 MmdNative.nativeReadMotionMaxFrame 读取动作最大帧数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/control/MmdAvatarController.kt:81"
+  },
+  {
+    "fact": "MMD 时长按 30fps 把最大帧数换算成毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/control/MmdAvatarController.kt:86"
+  },
+  {
+    "fact": "MMD 相机距离倍数被钳制在 0.02 到 12.0 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/control/MmdAvatarController.kt:142"
+  },
+  {
+    "fact": "MMD 相机目标高度被钳制在 -2.0 到 2.0 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/control/MmdAvatarController.kt:147"
+  },
+  {
+    "fact": "MMD 渲染器使用 com.ai.assistance.mmd 包的 MmdGlSurfaceView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/view/MmdRenderer.kt:27"
+  },
+  {
+    "fact": "MMD 渲染器跟随 Lifecycle 在 onResume/onPause 时恢复与暂停渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/view/MmdRenderer.kt:65"
+  },
+  {
+    "fact": "MMD 渲染器把模型旋转与相机参数下发给 MmdGlSurfaceView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/view/MmdRenderer.kt:99"
+  },
+  {
+    "fact": "MMD 渲染出错时在底部显示红色提示条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/view/MmdRenderer.kt:120"
+  },
+  {
+    "fact": "GltfAvatarModel 含 basePath、modelFile、defaultAnimation 与 declaredAnimationNames。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/model/GltfAvatarModel.kt:10"
+  },
+  {
+    "fact": "GltfAvatarModel.isBinaryGlb 标记模型是否为二进制 glb。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/model/GltfAvatarModel.kt:22"
+  },
+  {
+    "fact": "glTF 控制器经 updateAnimationMetadata 合并渲染器发现的动画名与时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/control/GltfAvatarController.kt:55"
+  },
+  {
+    "fact": "GltfSurfaceView 在初始化 Filament 前调用 Utils.init()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:87"
+  },
+  {
+    "fact": "glTF data-URI 资源被规范化到 context.cacheDir 下 gltf_prepared/<hash> 工作区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:624"
+  },
+  {
+    "fact": "glTF 贴图按字节魔数嗅探真实 mime 类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:497"
+  },
+  {
+    "fact": "glTF 对无纹理绑定的材质按文件名自动补 baseColorTexture。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:707"
+  },
+  {
+    "fact": "glTF 自动补纹理时把 metallicFactor 归零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:713"
+  },
+  {
+    "fact": "glTF 自动补纹理时把 roughnessFactor 下限抬到 0.82。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:716"
+  },
+  {
+    "fact": "glTF 自动补纹理的材质被强制加上 KHR_materials_unlit 扩展。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:723"
+  },
+  {
+    "fact": "glTF baseColor 按 1.22 倍提亮，上限 1.6。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:767"
+  },
+  {
+    "fact": "glTF 加载完成后经 onAnimationsDiscoveredListener 回传动画名与时长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:1121"
+  },
+  {
+    "fact": "glTF 灯光写死三点光源，skybox 置 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:1239"
+  },
+  {
+    "fact": "glTF 主光源强度为 175000。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:1243"
+  },
+  {
+    "fact": "glTF 相机轨道优先用反射获取 ModelViewer 的 Manipulator，失败走模型空间绕转兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt:1310"
+  },
+  {
+    "fact": "FbxAvatarModel.modelPath 由 basePath 与 modelFile 拼成绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/model/FbxAvatarModel.kt:19"
+  },
+  {
+    "fact": "FbxAvatarModel.normalizedDeclaredAnimationNames 对声明动画名做去空白去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/model/FbxAvatarModel.kt:22"
+  },
+  {
+    "fact": "FBX 控制器经 updateAnimationMetadata 合并渲染器发现的动画元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/control/FbxAvatarController.kt:51"
+  },
+  {
+    "fact": "FBX 相机俯仰角被钳制在 -89 到 89 度之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/control/FbxAvatarController.kt:156"
+  },
+  {
+    "fact": "FBX 相机偏航角被钳制在 -180 到 180 度之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/control/FbxAvatarController.kt:161"
+  },
+  {
+    "fact": "FBX 渲染器使用 com.ai.assistance.fbx 包的 FbxGlSurfaceView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/view/FbxRenderer.kt:88"
+  },
+  {
+    "fact": "FBX 渲染器顶部带有 Suppress(\"DEPRECATION\") 注解。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/view/FbxRenderer.kt:33"
+  },
+  {
+    "fact": "FBX 渲染出错时经 setOnRenderErrorListener 回调并显示错误条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/fbx/view/FbxRenderer.kt:90"
+  },
+  {
+    "fact": "ConversationService 用 AvatarModelFactoryImpl 初始化 AvatarRepository。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:84"
+  },
+  {
+    "fact": "助手配置页的 AvatarPreviewSection 用 AvatarView 做形象预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:119"
+  },
+  {
+    "fact": "悬浮窗语音界面下发情绪到动画的映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/screen/FloatingFullscreenScreen.kt:271"
+  },
+  {
+    "fact": "悬浮窗语音界面调用 playTrigger 播放模型返回的 mood 标签动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/screen/FloatingFullscreenScreen.kt:293"
+  },
+  {
+    "fact": "悬浮窗语音界面调用 playEmotion 播放情绪动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/screen/FloatingFullscreenScreen.kt:309"
+  }
+]

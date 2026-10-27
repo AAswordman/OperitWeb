@@ -1,0 +1,326 @@
+[
+  {
+    "fact": "DeepseekProvider 继承自 OpenAIProvider，类文档声明其特别处理 reasoning_content 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:25"
+  },
+  {
+    "fact": "构造函数默认 providerType 为 ApiProviderType.DEEPSEEK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:30"
+  },
+  {
+    "fact": "构造函数默认 supportsVision、supportsAudio、supportsVideo、enableToolCall 均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:33"
+  },
+  {
+    "fact": "伴生对象 create() 按 DeepseekRouting.protocolFor(config.apiEndpoint) 的结果选择协议分支",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:69"
+  },
+  {
+    "fact": "协议为 CHAT_COMPLETIONS 时实例化 DeepseekProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:71"
+  },
+  {
+    "fact": "协议为 RESPONSES 时实例化 DeepseekResponsesProvider，且 enableWebSearch 取自 config.enableDeepSeekWebSearch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:90"
+  },
+  {
+    "fact": "createRequestBody 被重写，方法文档声明其支持 DeepSeek 的 reasoning_content 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:105"
+  },
+  {
+    "fact": "请求体固定写入 model 和 stream 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:130"
+  },
+  {
+    "fact": "流式请求时额外写入 stream_options.include_usage=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:133"
+  },
+  {
+    "fact": "注释声明 DeepSeek Thinking Mode 默认开启，关闭时也必须显式发送 thinking.type=disabled",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:136"
+  },
+  {
+    "fact": "Thinking 参数经 ThinkingConfigurationApplier.apply 注入请求体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:115"
+  },
+  {
+    "fact": "只有 isEnabled 的模型参数才会被写入请求体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:144"
+  },
+  {
+    "fact": "INT、FLOAT、STRING、BOOLEAN 类型参数按 valueType 强转后写入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:149"
+  },
+  {
+    "fact": "OBJECT 类型参数尝试解析为 JSONObject 或 JSONArray，解析失败则回退为原始字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:162"
+  },
+  {
+    "fact": "OBJECT 参数解析失败时记 AppLogger.w 警告日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:160"
+  },
+  {
+    "fact": "effectiveEnableToolCall 要求 enableToolCall 为真且工具列表非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:179"
+  },
+  {
+    "fact": "工具启用时请求体写入 tools 数组和 tool_choice=auto",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:186"
+  },
+  {
+    "fact": "历史先经 prepareHistoryForProvider 预处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:192"
+  },
+  {
+    "fact": "calculateAndStoreInputTokens 统计输入 token 时固定 preserveThinkInHistory=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:195"
+  },
+  {
+    "fact": "消息数组由私有的 buildMessagesWithReasoning 构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:219"
+  },
+  {
+    "fact": "写请求日志前把 tools 数组替换为 [N tools omitted for brevity] 占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:205"
+  },
+  {
+    "fact": "日志前经 sanitizeImageDataForLogging 脱敏图片数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:208"
+  },
+  {
+    "fact": "最终请求体以 tag DeepseekProvider 和前缀 Final DeepSeek reasoning mode request body 打日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:209"
+  },
+  {
+    "fact": "createRequestBody 返回 createJsonRequestBody(jsonObject.toString())",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:212"
+  },
+  {
+    "fact": "tool call 的 id 由 generatedToolCallId(nextToolCallOrdinal++) 本地顺序生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:259"
+  },
+  {
+    "fact": "emitQueuedToolCallsIfNeeded 把攒下的 assistant 文本、推理内容和 tool_calls 一次性发出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:271"
+  },
+  {
+    "fact": "攒发的 assistant 消息始终带 reasoning_content 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:275"
+  },
+  {
+    "fact": "攒发的 assistant 文本为空时 content 字段置 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:280"
+  },
+  {
+    "fact": "flushOpenToolCallsAsUnmatched 在边界处把未匹配的 tool_calls 转成 role=tool 的占位消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:306"
+  },
+  {
+    "fact": "占位 tool 消息的内容来自 StructuredToolCallBridge.unmatchedToolResultContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:309"
+  },
+  {
+    "fact": "历史遍历用 comparableContentForTurn(turn, preserveThinkInHistory=true) 取可比内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:322"
+  },
+  {
+    "fact": "ASSISTANT 回合用 ChatUtils.extractThinkingContent 拆分 thinking 标签内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:347"
+  },
+  {
+    "fact": "空的 assistant 内容用 [Empty] 占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:367"
+  },
+  {
+    "fact": "TOOL_RESULT 回合用 parseXmlToolResults 解析工具结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:411"
+  },
+  {
+    "fact": "工具结果经 StructuredToolCallBridge.consumeMatchingToolCalls 与 openToolCalls 匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:417"
+  },
+  {
+    "fact": "匹配上的工具结果以 role=tool、tool_call_id 对应的消息发出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:425"
+  },
+  {
+    "fact": "未匹配的 tool_result 只记一条警告日志，内容被丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:432"
+  },
+  {
+    "fact": "历史遍历结束后以 history_end 为原因做最后一次未匹配 tool_calls 冲刷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:534"
+  },
+  {
+    "fact": "sendMessage 直接委托给 super.sendMessage，不做任何改写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:554"
+  },
+  {
+    "fact": "DeepseekApiProtocol 枚举只有 CHAT_COMPLETIONS 和 RESPONSES 两个值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:558"
+  },
+  {
+    "fact": "protocolFor 对 endpoint 做 trim、去 # 后缀、去 query 和 fragment、去尾部斜杠",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:568"
+  },
+  {
+    "fact": "规范化后以 /responses 结尾（忽略大小写）走 RESPONSES，否则走 CHAT_COMPLETIONS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:574"
+  },
+  {
+    "fact": "toResponsesRequest 把 max_tokens 改写为 max_output_tokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:585"
+  },
+  {
+    "fact": "toResponsesRequest 把 response_format 搬到 text.format 下",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:591"
+  },
+  {
+    "fact": "reasoning_effort 被搬到 reasoning.effort，已有 effort 时不覆盖",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:789"
+  },
+  {
+    "fact": "function 类型工具被转成 responses 的扁平格式（type/name/description/parameters/strict）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:806"
+  },
+  {
+    "fact": "chat 风格的 messages 数组被转成 responses 的 input 数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:607"
+  },
+  {
+    "fact": "parseNonStreamingResponse 按 item 的 type 分发：type=message 时走消息分支（区分普通与旁白 commentary）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:630"
+  },
+  {
+    "fact": "type=reasoning 时标记 reasoningObserved 并收集推理元数据标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:665"
+  },
+  {
+    "fact": "type=function_call 时经 convertFunctionCallItemToChatToolCall 转成聊天工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:682"
+  },
+  {
+    "fact": "type=web_search_call 时经 OpenAIResponsesPayloadAdapter.createOutputItemMetadataTag 收集输出元数据标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:689"
+  },
+  {
+    "fact": "phase 为 commentary 的消息转为元数据标签，不作为第二段思考块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:632"
+  },
+  {
+    "fact": "createReasoningMetadataTag 要求条目 type 为 reasoning 且有非空 id 和 reasoning_text 内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:719"
+  },
+  {
+    "fact": "推理元数据 payload 经 Base64 编码后由 ChatMarkupRegex.openAiResponsesReasoningMetaTag 生成标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:733"
+  },
+  {
+    "fact": "commentary 消息重放为 reasoning_text 而非 output_text，否则 DeepSeek 返回 400",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1189"
+  },
+  {
+    "fact": "convertFunctionCallItemToChatToolCall 把 responses 的 function_call 转回 chat 风格 tool_call",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1240"
+  },
+  {
+    "fact": "转回的 tool_call 取 name、arguments（缺省 {}）、call_id 或 id 作为 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1244"
+  },
+  {
+    "fact": "convertMessagesToResponsesInput 把 role=tool 的消息转成 function_call_output 条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:851"
+  },
+  {
+    "fact": "convertMessagesToResponsesInput 把 system 角色映射为 developer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:922"
+  },
+  {
+    "fact": "文本内容块被统一转成 input_text 类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:960"
+  },
+  {
+    "fact": "图片内容块被转成 input_image 类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:978"
+  },
+  {
+    "fact": "sanitizeResponsesMessageText 剥离 OpenAI responses 协议标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1012"
+  },
+  {
+    "fact": "推理元数据 Base64 解码失败时记 AppLogger.w 警告并跳过该条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1099"
+  },
+  {
+    "fact": "DeepseekResponsesProvider 的 useResponsesApi 固定为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1290"
+  },
+  {
+    "fact": "DeepseekResponsesProvider 的 bufferResponsesOutputTextUntilItemDone 固定为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1291"
+  },
+  {
+    "fact": "isResponsesCommentaryMessage 以 phase 等于 commentary（忽略大小写）为准",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1294"
+  },
+  {
+    "fact": "convertChatRequestToResponsesRequest 委托给 DeepseekResponsesPayloadAdapter.toResponsesRequest",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1298"
+  },
+  {
+    "fact": "responses 路径下关闭 thinking 时先用 stripOpenAiResponsesReasoningMetaTurns 清理历史中的推理元数据回合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1328"
+  },
+  {
+    "fact": "customizeFinalRequestObject 在 enableWebSearch 为真时追加 web_search 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1359"
+  },
+  {
+    "fact": "appendWebSearchTool 在已存在 web_search 工具时只设 tool_choice=auto，不重复添加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1400"
+  },
+  {
+    "fact": "formatResponsesWebSearchDisplayXml 只处理 type 为 web_search_call 的条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1369"
+  },
+  {
+    "fact": "搜索结果渲染为 <search provider=\"deepseek\"> 开头的 XML，含 query 和 source 子节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1416"
+  },
+  {
+    "fact": "escapeXmlAttribute 转义 & < > \" ' 五个字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:1447"
+  },
+  {
+    "fact": "DEEPSEEK 供应商的默认端点是 https://api.deepseek.com/v1/chat/completions（Chat Completions 协议）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:75"
+  },
+  {
+    "fact": "DEEPSEEK 在配置页只提供两个端点选项：Chat Completions（…/v1/chat/completions）和 Responses（…/v1/responses）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:76"
+  },
+  {
+    "fact": "Responses 端点选项为 https://api.deepseek.com/v1/responses，走 Responses 协议并支持联网搜索等 responses 专属能力",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:82"
+  },
+  {
+    "fact": "create() 按 DeepseekRouting.protocolFor(config.apiEndpoint) 的结果选择实例化 DeepseekProvider 或 DeepseekResponsesProvider，端点选错则协议走错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:65"
+  },
+  {
+    "fact": "protocolFor 先规范化 endpoint（trim、去 # 后缀、截掉 query 和 fragment、去尾部斜杠），以 /responses 结尾（忽略大小写）走 RESPONSES，否则走 CHAT_COMPLETIONS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:572"
+  },
+  {
+    "fact": "ChatMarkupRegex.toolCallPattern 只匹配 Operit 内部 <tool … name=\"…\">…</tool …> 形态标签，DeepSeek DSML 原生标签不在匹配范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:27"
+  },
+  {
+    "fact": "parseXmlToolCalls 未命中正则时原样返回 content（raw 标签留在正文），命中时才转 tool_calls 并剔除标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1733"
+  },
+  {
+    "fact": "DeepseekProvider 在拼装 ASSISTANT 回合与 TOOL_CALL 历史时均调用 parseXmlToolCalls，DSML 标签泄漏会污染多轮历史，需回滚/重生成/开新对话重置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DeepseekProvider.kt:348"
+  }
+]

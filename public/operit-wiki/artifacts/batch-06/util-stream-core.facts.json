@@ -1,0 +1,666 @@
+[
+  {
+    "fact": "StreamLogger 是 object 单例，日志 TAG 为 \"StreamFramework\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:16"
+  },
+  {
+    "fact": "StreamLogger 默认开启日志（enabled=true），详细日志默认关闭（verboseEnabled=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:18"
+  },
+  {
+    "fact": "StreamLogger.d 把消息以 \"[component] message\" 格式交给 AppLogger.d 输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:31"
+  },
+  {
+    "fact": "StreamLogger.v 仅在 enabled 与 verboseEnabled 同时为 true 时才输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:45"
+  },
+  {
+    "fact": "Stream 接口定义 isLocked、bufferedCount、lock、unlock、clearBuffer 与 collect。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:71"
+  },
+  {
+    "fact": "Stream.collect(onEach) 提供默认实现，把挂起 lambda 包装成 StreamCollector。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:91"
+  },
+  {
+    "fact": "StreamCollector 接口只定义一个方法：suspend fun emit(value: T)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:104"
+  },
+  {
+    "fact": "AbstractStream 用 Mutex、AtomicBoolean 与 ConcurrentLinkedQueue 实现锁定与缓冲。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:110"
+  },
+  {
+    "fact": "AbstractStream.isLocked 直接取自 isLockedFlag 的原子值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:116"
+  },
+  {
+    "fact": "AbstractStream.bufferedCount 返回缓冲队列的 size。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:117"
+  },
+  {
+    "fact": "AbstractStream.lock() 在 Mutex 内仅当未锁定且未关闭时才置位锁定标志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:119"
+  },
+  {
+    "fact": "AbstractStream.unlock() 用 compareAndSet(true, false) 原子地解除锁定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:130"
+  },
+  {
+    "fact": "unlock 排空缓冲时先把缓冲拷贝为临时列表并清空原队列，再逐个发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:136"
+  },
+  {
+    "fact": "AbstractStream.clearBuffer() 清空缓冲队列并打日志记录清空数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:156"
+  },
+  {
+    "fact": "tryBuffer 仅在流已锁定且未关闭时把值 offer 进缓冲并返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:163"
+  },
+  {
+    "fact": "markClosed() 是 protected 方法，用于标记流已关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:179"
+  },
+  {
+    "fact": "FlowAsStream 把 Kotlin Flow 包装成 Stream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:191"
+  },
+  {
+    "fact": "FlowAsStream 在 finally 中标记流关闭（markClosed）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:206"
+  },
+  {
+    "fact": "FlowAsStream 关闭时若仍处于锁定状态，尝试 unlock 排空缓冲。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:210"
+  },
+  {
+    "fact": "FlowAsStream.emitBufferedItem 即使流已关闭也尝试经 activeCollector 发送缓冲项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:221"
+  },
+  {
+    "fact": "StreamAsFlow 把 Stream 包装成 Kotlin Flow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:228"
+  },
+  {
+    "fact": "Flow.asStream() 扩展函数把 Flow 转换为 Stream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:237"
+  },
+  {
+    "fact": "Stream.asFlow() 扩展函数把 Stream 转换为 Flow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:240"
+  },
+  {
+    "fact": "Stream.launchIn(scope, onEach) 在给定协程作用域启动收集并返回 Job。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt:243"
+  },
+  {
+    "fact": "SharedStream 接口定义 subscriptionCount、replayCache、completionCause 三个只读属性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:13"
+  },
+  {
+    "fact": "MutableSharedStream 接口定义 emit、tryEmit、resetReplayCache。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:25"
+  },
+  {
+    "fact": "StateStream 接口暴露当前值 value。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:37"
+  },
+  {
+    "fact": "MutableStateStream 覆盖 var value 并定义 compareAndSet(expect, update)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:43"
+  },
+  {
+    "fact": "MutableSharedStreamImpl 的 replay 参数经 coerceAtLeast(0) 钳制为非负。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:76"
+  },
+  {
+    "fact": "SharedEvent 是 private 密封接口，只有 Value(payload) 与 Completion(cause) 两种事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:71"
+  },
+  {
+    "fact": "MutableSharedStreamImpl 用 linkedMapOf<Long, Channel> 按订阅者 id 管理通道。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:78"
+  },
+  {
+    "fact": "热流的 isLocked 恒为 false，lock/unlock/clearBuffer 均为空操作（仅打日志）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:87"
+  },
+  {
+    "fact": "SharedStream.replayCache 返回重放缓冲的快照列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:109"
+  },
+  {
+    "fact": "MutableSharedStreamImpl.emit 把值追加进重放缓冲并向所有订阅者通道发送 Value 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:114"
+  },
+  {
+    "fact": "tryEmit 用 trySend 非挂起发送。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:140"
+  },
+  {
+    "fact": "tryEmit 在流已关闭时直接返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:132"
+  },
+  {
+    "fact": "resetReplayCache 清空重放缓冲。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:146"
+  },
+  {
+    "fact": "close(cause) 标记流关闭，向各订阅者通道发送 Completion 事件并关闭通道。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:152"
+  },
+  {
+    "fact": "MutableSharedStreamImpl.collect 先向收集器重放缓冲快照，再注册为订阅者。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:170"
+  },
+  {
+    "fact": "collect 注册订阅者时用 nextSubscriberId++ 分配自增 id 并更新订阅计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:185"
+  },
+  {
+    "fact": "collect 在 finally 中取消订阅者通道并从映射移除、递减订阅计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:217"
+  },
+  {
+    "fact": "appendToReplayBufferLocked 在超出 replayLimit 时从头部丢弃最旧的值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:227"
+  },
+  {
+    "fact": "MutableStateStreamImpl 包装 MutableStateFlow 实现可变状态流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:239"
+  },
+  {
+    "fact": "MutableStateStreamImpl.completionCause 恒为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:274"
+  },
+  {
+    "fact": "MutableStateStreamImpl.resetReplayCache 为空实现，因为 StateFlow 恒持有当前值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:284"
+  },
+  {
+    "fact": "MutableSharedStream 工厂函数默认 replay=0、onBufferOverflow=BufferOverflow.SUSPEND。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:298"
+  },
+  {
+    "fact": "MutableStateStream(initialValue) 工厂函数创建可变状态流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:314"
+  },
+  {
+    "fact": "Stream.share 把冷 Stream 转为可被多订阅者消费的 SharedStream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:319"
+  },
+  {
+    "fact": "share 的 EAGERLY 模式立即在 scope 启动上游收集。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:335"
+  },
+  {
+    "fact": "share 的 EAGERLY 模式在结束或异常时 close 共享流并调用 onComplete。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:365"
+  },
+  {
+    "fact": "share 的 LAZILY 模式在订阅计数归零时取消上游收集任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:370"
+  },
+  {
+    "fact": "Stream.state 把冷 Stream 转为持有最新值的 StateStream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:401"
+  },
+  {
+    "fact": "state 的 EAGERLY 模式把上游每个值直接写入 stateStream.value。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:410"
+  },
+  {
+    "fact": "StreamStart 枚举只有 EAGERLY（立即启动）与 LAZILY（有订阅者时启动）两个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt:444"
+  },
+  {
+    "fact": "emptyStream() 的 collect 不发射任何值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:9"
+  },
+  {
+    "fact": "streamOf(value) 从单个值创建流，收集时发射该值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:23"
+  },
+  {
+    "fact": "streamOf(vararg values) 逐个发射多个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:42"
+  },
+  {
+    "fact": "Collection.asStream() 遍历集合逐个发射元素。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:64"
+  },
+  {
+    "fact": "Sequence.asStream() 遍历序列发射元素并在日志中计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:87"
+  },
+  {
+    "fact": "stream { block } 构建器内部用 wrappedCollector 包装发射，先经过 tryBuffer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:112"
+  },
+  {
+    "fact": "stream 构建器让 CancellationException 直接向上传播，其他异常打日志后重抛。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:128"
+  },
+  {
+    "fact": "stream 构建器在 finally 中 markClosed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:136"
+  },
+  {
+    "fact": "stream 构建器关闭时若仍锁定则尝试 unlock 排空缓冲。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:140"
+  },
+  {
+    "fact": "intervalStream(period, initialDelay) 按固定周期发射递增的 Long 计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:159"
+  },
+  {
+    "fact": "rangeStream(start, count) 发射从 start 开始的 count 个整数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:173"
+  },
+  {
+    "fact": "streamError(exception) 在收集时直接抛出给定异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamBuilders.kt:185"
+  },
+  {
+    "fact": "StreamProcessor<T, R> 接口定义 suspend fun process(stream: Stream<T>): R。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:12"
+  },
+  {
+    "fact": "CompositeStreamProcessor 先依次执行中间处理器，最后执行最终处理器并返回其结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:26"
+  },
+  {
+    "fact": "CompositeStreamProcessor.compose 是可变参数工厂方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:39"
+  },
+  {
+    "fact": "StreamGroup 持有 tag、stream: Stream<String>、可选 processor 与 children 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:57"
+  },
+  {
+    "fact": "StreamGroup.collect(collector: suspend (String) -> Unit) 对每个值调用回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:67"
+  },
+  {
+    "fact": "StreamGroup.addChild 返回自身以支持链式调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:90"
+  },
+  {
+    "fact": "StreamGroup.processRecursively 对自身及所有子组递归执行 action。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:99"
+  },
+  {
+    "fact": "StreamGroup.processWithBoundProcessor 在没有绑定处理器时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:108"
+  },
+  {
+    "fact": "StreamGroup.toPair 返回 tag to stream 的 Pair。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:116"
+  },
+  {
+    "fact": "StreamGroupBuilder.build 要求 tag 非空，否则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:165"
+  },
+  {
+    "fact": "StreamGroupBuilder.build 要求 stream 非空，否则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:168"
+  },
+  {
+    "fact": "streamGroup(init) 是用构建器 DSL 创建 StreamGroup 的便捷函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:182"
+  },
+  {
+    "fact": "Stream.asNestedGroup 把流包装为带标签的 StreamGroup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:187"
+  },
+  {
+    "fact": "Pair.asStreamGroup 把 Pair<TAG, Stream<String>> 转为 StreamGroup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:201"
+  },
+  {
+    "fact": "StreamInterceptor.interceptedStream 对上游每个值应用 onEach 变换后发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:211"
+  },
+  {
+    "fact": "StreamInterceptor.setOnEach 可替换变换函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamGroup.kt:219"
+  },
+  {
+    "fact": "TextStreamEvent 是数据类，携带 eventType 与 id 两个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:5"
+  },
+  {
+    "fact": "TextStreamEventType 只有 SAVEPOINT 与 ROLLBACK 两种事件类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:10"
+  },
+  {
+    "fact": "TextStreamEventCarrier 暴露 eventChannel: SharedStream<TextStreamEvent>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:15"
+  },
+  {
+    "fact": "StreamRollbackPrefix 是 internal 接口，标记回滚替换流中回滚前已渲染的内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:20"
+  },
+  {
+    "fact": "RevisableTextStream 同时是 Stream<String> 与 TextStreamEventCarrier。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:24"
+  },
+  {
+    "fact": "RevisableSharedTextStream 同时是 SharedStream<String> 与 RevisableTextStream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:26"
+  },
+  {
+    "fact": "RevisableCharStream 同时是 Stream<Char> 与 TextStreamEventCarrier。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:28"
+  },
+  {
+    "fact": "DelegatingRevisableTextStream 把全部 Stream 操作委托给上游流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:30"
+  },
+  {
+    "fact": "Stream.withEventChannel 在已是相同事件通道的 RevisableTextStream 时直接返回自身。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:125"
+  },
+  {
+    "fact": "SharedStream<String>.withEventChannel 同理具有幂等性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:132"
+  },
+  {
+    "fact": "Stream<Char>.withTextEventChannel 幂等地为字符流附加事件通道。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:141"
+  },
+  {
+    "fact": "withRollbackPrefix 是 internal 的幂等包装函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:148"
+  },
+  {
+    "fact": "shareRevisable 返回的共享文本流同时携带共享后的事件通道。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:155"
+  },
+  {
+    "fact": "shareRevisable 把事件通道以 replay=Int.MAX_VALUE 共享，保证新订阅者能收到历史修订事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt:172"
+  },
+  {
+    "fact": "TextStreamRevisionTracker 用 SmartString 做内容缓冲，用 linkedMapOf<String, Int> 存 savepoint。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:7"
+  },
+  {
+    "fact": "savepoint(id) 只记录当前内容长度（savepoints[id] = contentBuffer.length）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:14"
+  },
+  {
+    "fact": "savepoint 的注释说明回滚只丢弃后缀，字符索引即完整修订状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:14"
+  },
+  {
+    "fact": "rollback(id) 把内容截断到保存长度并删除其后的 savepoint。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:20"
+  },
+  {
+    "fact": "rollback 遇到未知 id 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:20"
+  },
+  {
+    "fact": "replace(content) 整体替换内容并删除超出新长度的 savepoint。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTracker.kt:27"
+  },
+  {
+    "fact": "String.stream() 把字符串转为逐字符发射的 Stream<Char>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StringExtensions.kt:5"
+  },
+  {
+    "fact": "StreamKmpMatchResult 是密封类，表示单字符处理结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpMatchResult.kt:5"
+  },
+  {
+    "fact": "NoMatch 表示字符未参与任何匹配且状态被重置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpMatchResult.kt:8"
+  },
+  {
+    "fact": "InProgress 表示字符属于潜在的进行中匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpMatchResult.kt:11"
+  },
+  {
+    "fact": "Match 携带 groups: Map<Int, String> 与 isFullMatch 标志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpMatchResult.kt:13"
+  },
+  {
+    "fact": "map 对流中每个元素做变换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:19"
+  },
+  {
+    "fact": "filter 按挂起谓词过滤元素。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:24"
+  },
+  {
+    "fact": "take(count) 只发射前 count 个元素。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:33"
+  },
+  {
+    "fact": "drop(count) 丢弃前 count 个元素。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:44"
+  },
+  {
+    "fact": "flatMap 把每个元素展成子流再逐个发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:56"
+  },
+  {
+    "fact": "onEach 对每个元素执行副作用后原样传递。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:61"
+  },
+  {
+    "fact": "timeout 在两次发射间隔超过时限时抛 TimeoutException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:69"
+  },
+  {
+    "fact": "merge 用 coroutineScope 加两个 launch 并发收集两个流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:82"
+  },
+  {
+    "fact": "combine 缓存双方最新值，仅当双方都有值时才发射 transform 结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:90"
+  },
+  {
+    "fact": "concatWith 先收完第一个流再收集第二个流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:142"
+  },
+  {
+    "fact": "catch 捕获除 CancellationException 外的异常并执行 action。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:148"
+  },
+  {
+    "fact": "finally 无论正常完成还是异常都会执行 action。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:160"
+  },
+  {
+    "fact": "throttleFirst 在每个时间窗口内只发射第一个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:169"
+  },
+  {
+    "fact": "distinctUntilChanged 用 NoValue 哨兵过滤连续重复元素。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:181"
+  },
+  {
+    "fact": "chunked(size) 要求 size 为正数，按块发射元素列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:198"
+  },
+  {
+    "fact": "chunked 在流结束时把不足一块的尾部元素也作为一块发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:210"
+  },
+  {
+    "fact": "Stream<Char>.splitBy(plugins) 按插件匹配状态把字符流切分为 StreamGroup 流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:226"
+  },
+  {
+    "fact": "splitBy 中未匹配任何插件的字符归入 tag 为 null 的默认文本组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:221"
+  },
+  {
+    "fact": "splitBy 在评估态把字符缓入 evaluationBuffer，插件进入 PROCESSING 后回放缓冲。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:405"
+  },
+  {
+    "fact": "splitBy 的 WAITFOR 状态在退出时把缓冲字符返还到 pendingChars 重新评估。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:360"
+  },
+  {
+    "fact": "Stream<String>.splitBy 先用 flatMap 拆成字符流再复用字符版实现（@JvmName(\"splitByString\")）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:465"
+  },
+  {
+    "fact": "TimeoutException 是公开的异常类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:496"
+  },
+  {
+    "fact": "delay(duration) 让每个元素延迟指定时长后再发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:499"
+  },
+  {
+    "fact": "debounce 每次新值都取消前一次计时，仅在超时无新值时发射最后一个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:507"
+  },
+  {
+    "fact": "sample(period) 按固定周期发射最新值，即使没有新值也会重复发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:530"
+  },
+  {
+    "fact": "throttleLast 在每个时间窗口内只发射最后一个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:556"
+  },
+  {
+    "fact": "fixedRate 首个元素立即发射，之后按固定节拍发射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:583"
+  },
+  {
+    "fact": "timeoutTrigger 每次新值重置计时器，超时则发射 timeoutValue 并抛 TimeoutException 终止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt:613"
+  },
+  {
+    "fact": "KmpCondition 接口定义 matches(c: Char) 与 getDescription()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:5"
+  },
+  {
+    "fact": "KmpCondition 用 + 表示或组合、用 * 表示与组合、用 not() 取反。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:14"
+  },
+  {
+    "fact": "KmpCondition.toRegexPattern 默认返回 \".\"，子类应覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:18"
+  },
+  {
+    "fact": "CharCondition 只匹配指定字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:21"
+  },
+  {
+    "fact": "CharRangeCondition 匹配指定范围内的字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:32"
+  },
+  {
+    "fact": "CharSetCondition 匹配字符集中任一字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:40"
+  },
+  {
+    "fact": "NotCondition 对被包装条件的匹配结果取反。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:55"
+  },
+  {
+    "fact": "OrCondition 任一子条件满足即匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:72"
+  },
+  {
+    "fact": "AndCondition 全部子条件满足才匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:84"
+  },
+  {
+    "fact": "PredicateCondition 用自定义谓词函数匹配字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:93"
+  },
+  {
+    "fact": "GreedyStarCondition 是 internal 的贪心星号条件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:124"
+  },
+  {
+    "fact": "GroupCondition 是构建器标记类，直接调用 matches 会抛 UnsupportedOperationException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:132"
+  },
+  {
+    "fact": "KmpNode 有 id、depth、isFinal，并用 transitions 映射维护条件到目标节点的跳转。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:155"
+  },
+  {
+    "fact": "KmpNode.getNextNode 返回首个匹配条件的目标节点，无匹配返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:168"
+  },
+  {
+    "fact": "StreamKmpGraph 构造时创建起始节点并设为当前节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:200"
+  },
+  {
+    "fact": "StreamKmpGraph.processChar 把每个字符追加进 characterStreamBuffer 再做状态转移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:247"
+  },
+  {
+    "fact": "processChar 走失败路径时沿 failureNode 链回跳并按 searchNode.depth + 1 调整匹配长度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:261"
+  },
+  {
+    "fact": "processChar 到达终态节点时调用 performRegexMatchingIfNeeded 做正则二次确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:280"
+  },
+  {
+    "fact": "performRegexMatchingIfNeeded 用 pattern 转出的正则在全量字符缓冲上 find。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:292"
+  },
+  {
+    "fact": "performRegexMatchingIfNeeded 按 groupIds 顺序从正则捕获组提取各组内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:307"
+  },
+  {
+    "fact": "StreamKmpGraph.processText 总是先 reset，再返回完整匹配的结束位置列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:325"
+  },
+  {
+    "fact": "StreamKmpGraph.reset 把当前节点、字符缓冲、匹配长度全部清零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:341"
+  },
+  {
+    "fact": "StreamKmpGraph.findMatches 返回输入文本中所有非重叠匹配的子串列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:362"
+  },
+  {
+    "fact": "StreamKmpGraphBuilder.build 把 KmpPattern 编译为图，标记终态节点并设置失败转移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:415"
+  },
+  {
+    "fact": "构建贪心星号时，循环条件自动排除紧随其后的下一个条件以避免歧义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:457"
+  },
+  {
+    "fact": "setupFailureTransitions 是简化实现：所有非起始节点的失败转移都指向起始节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:476"
+  },
+  {
+    "fact": "KmpPattern 是模式 DSL，持有 conditions 列表与 groupIds。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:493"
+  },
+  {
+    "fact": "KmpPattern.group(id, builder) 定义捕获组并记录组 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:511"
+  },
+  {
+    "fact": "KmpPattern.toRegexPattern 把各条件转出的正则直接拼接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:518"
+  },
+  {
+    "fact": "KmpPattern.greedyStar 要求子条件非空，否则 require 失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:625"
+  },
+  {
+    "fact": "KmpPattern.repeat(count, builder) 把子模式的条件直接追加 count 次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt:640"
+  }
+]

@@ -1,0 +1,774 @@
+[
+  {
+    "fact": "OperitBackupDirs.operitRootDir() 直接委托给 OperitPaths.operitRootDir()，是全部备份目录的根。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:8"
+  },
+  {
+    "fact": "OperitBackupDirs.backupRootDir() 返回 <operitRoot>/backup，不存在则自动创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:12"
+  },
+  {
+    "fact": "OperitBackupDirs.rawSnapshotDir() 返回 backup/raw_snapshot，存放原始快照 zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:16"
+  },
+  {
+    "fact": "OperitBackupDirs.roomDbDir() 返回 backup/room_db，存放 Room 数据库备份与修复归档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:20"
+  },
+  {
+    "fact": "OperitBackupDirs.preferencesDir() 返回 backup/preferences，存放配置修复前的源文件归档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:24"
+  },
+  {
+    "fact": "OperitBackupDirs.chatDir() 返回 backup/chat，是聊天记录导出的落盘目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:28"
+  },
+  {
+    "fact": "OperitBackupDirs.memoryDir() 返回 backup/memory 子目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:32"
+  },
+  {
+    "fact": "OperitBackupDirs.modelConfigDir() 返回 backup/model_config 子目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:36"
+  },
+  {
+    "fact": "OperitBackupDirs.characterCardsDir() 返回 backup/character_cards，角色卡备份文件落在这里。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:40"
+  },
+  {
+    "fact": "OperitBackupDirs.ensureDir() 在目录不存在时调用 mkdirs() 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/OperitBackupDirs.kt:44"
+  },
+  {
+    "fact": "OperitPaths.operitRootDir() 指向公共外部存储的 Download/Operit 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:31"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 判定快照合法性的包名前缀是 com.ai.assistance.operit。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:34"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 的快照格式版本 FORMAT_VERSION = 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:40"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 的快照文件名前缀 ZIP_PREFIX = operit_raw_snapshot_。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:41"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 的 manifest 条目名 ENTRY_MANIFEST = manifest.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:43"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 的 payload 分五个前缀：payload/files/、payload/external_files/、payload/shared_prefs/、payload/datastore/、payload/databases/。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:46"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 默认排除的终端顶层目录是 usr、tmp、bin。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:52"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.Manifest 包含 formatVersion、packageName、createdAt、includes、includeTerminalData 五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:57"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.SnapshotOptions.includeTerminalData 默认值为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:65"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.ExportProgress 定义 8 个导出阶段：PREPARING 到 FINALIZING。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:69"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.RestoreProgress 定义 9 个恢复阶段：PREPARING 到 FINALIZING。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:86"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.exportToBackupDir 是 suspend 函数，执行在 Dispatchers.IO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:105"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.exportToBackupDir 全程包裹在 TokenUsageRepository.withDatabaseAccess 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:110"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出的快照文件名为 operit_raw_snapshot_yyyy-MM-dd_HH-mm-ss.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:115"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时先写 .tmp 临时文件，完成后才发布为正式文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:116"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出前对 Room 数据库执行 PRAGMA wal_checkpoint(FULL)，失败只记日志不中断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:132"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 把 manifest.json 作为 zip 的第一个条目写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:153"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 在 includeTerminalData=false 时把终端顶层目录加入排除名单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:157"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 发布快照时优先 rename，失败则回退为 copyTo 再删除临时文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:253"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.restoreFromBackupUri 是 suspend 函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:263"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.restoreFromBackupUri 全程包裹在 TokenUsageRepository.withDatabaseRestore 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:268"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复时先把 uri 内容完整拷贝到 cacheDir 的临时 zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:269"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复前先关闭 AppDatabase 与 ObjectBoxManager。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:287"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 把快照解压到 cacheDir/raw_snapshot_restore_work 工作目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:270"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复时用快照的 files 负载整体替换应用 filesDir。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:315"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复时替换 shared_prefs、datastore、databases 三个目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:324"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复结束（无论成败）在 finally 中删除缓存 zip 与工作目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:336"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 读取 manifest 时上限 512KB，超限抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:368"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 解压时校验条目 canonical 路径必须位于工作目录内，否则抛错（防 zip-slip）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:382"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 要求 manifest.formatVersion 等于 1，否则拒绝恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:408"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 要求 manifest.packageName 以 com.ai.assistance.operit 开头，否则拒绝恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:412"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时跳过 objectbox 目录下的 lock.mdb 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:506"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时跳过 sherpa-ncnn- 开头的语音模型目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:518"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时跳过顶层的 ubuntu-*.tar.xz 终端 rootfs 包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:525"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时跳过顶层的 memory_hnsw_*.idx 向量索引文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:531"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出时跳过顶层的 doc_index_*.hnsw 文档索引文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:534"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 导出遇到重复的 zip 条目名时跳过并记警告日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:453"
+  },
+  {
+    "fact": "RawSnapshotBackupManager.replaceDirContents 会删除目标目录中快照里不存在的旧条目（完整恢复点语义）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:588"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复 DataStore 配置文件时使用 AtomicFile 写入，避免瞬时空文件被持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:628"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 恢复时若快照不含终端数据，则保留现有的 usr、tmp、bin 顶层目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:301"
+  },
+  {
+    "fact": "RawSnapshotBackupManager 的导出进度回调经 Handler 抛到主线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt:172"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 备份的数据库名 DB_NAME = app_database。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:23"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 自动备份文件名前缀是 room_db_backup_。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:24"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 手动备份文件名前缀是 room_db_manual_backup_。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:25"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager.BackupResult 包含 performed、backupFile、skippedReason 三个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:27"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager.pruneExcessBackups 对外暴露清理超量备份的入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:33"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager.backupIfNeeded 包裹在 TokenUsageRepository.withDatabaseAccess 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:42"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 在每日备份未启用且非强制时返回 skippedReason=disabled。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:47"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager.backupIfNeeded(context, force=true) 走手动备份分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:51"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 当天已备份过则返回 skippedReason=already_backed_up_today。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:59"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 自动备份成功后调用 markSuccess 记录当天日期与成功时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:63"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 自动备份文件名是 room_db_backup_<ISO日期>.zip，同一天重复备份会覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:84"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 手动备份文件名是 room_db_manual_backup_<yyyy-MM-dd_HH-mm-ss>.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:126"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 备份前对数据库执行 PRAGMA wal_checkpoint(FULL)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:77"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 的备份 zip 内含 app_database、app_database-wal、app_database-shm 三个条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:94"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager.enforceMaxBackupCount 把保留数钳制在 1..100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:156"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 清理时同时扫描 room_db 新目录与 operit 根旧目录，并按文件名去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:155"
+  },
+  {
+    "fact": "RoomDatabaseBackupManager 清理时按 lastModified 倒序保留最新的 N 个，多余的删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:180"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences 的 DataStore 文件名是 database_backup_settings。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:17"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences 默认开启每日备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:32"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences 默认保留 10 个备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:33"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences 定义 5 个键：开关、上次备份日、上次成功时间、上次错误、最大保留数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:35"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences.markSuccess 会同时清空上一次的错误记录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:63"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences.markFailure 记录错误字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:71"
+  },
+  {
+    "fact": "RoomDatabaseBackupPreferences.setMaxBackupCount 把输入钳制在 1..100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupPreferences.kt:78"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler 周期任务的唯一名是 room_db_daily_backup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:17"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler 手动任务的唯一名是 room_db_manual_backup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:18"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler.ensureScheduled 用 PeriodicWorkRequestBuilder 以 24 小时为周期注册 RoomDatabaseBackupWorker。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:27"
+  },
+  {
+    "fact": "ensureScheduled 给备份 WorkRequest 加 Constraints，要求存储空间不低（setRequiresStorageNotLow(true)）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:22"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler 把周期任务的首次延迟对齐到下一个凌晨 3 点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:25"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler 周期任务使用 ExistingPeriodicWorkPolicy.UPDATE 策略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:35"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler.cancelScheduled 取消周期备份任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:40"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler.enqueueManualBackup 排入一次性任务并携带 KEY_FORCE 参数标明是否强制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:45"
+  },
+  {
+    "fact": "RoomDatabaseBackupScheduler 手动备份任务使用 ExistingWorkPolicy.REPLACE 策略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupScheduler.kt:58"
+  },
+  {
+    "fact": "RoomDatabaseBackupWorker.KEY_FORCE 的键名是 force。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupWorker.kt:15"
+  },
+  {
+    "fact": "RoomDatabaseBackupWorker.doWork 读取 KEY_FORCE 参数，缺省为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupWorker.kt:19"
+  },
+  {
+    "fact": "RoomDatabaseBackupWorker.doWork 调用 RoomDatabaseBackupManager.backupIfNeeded 执行备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupWorker.kt:23"
+  },
+  {
+    "fact": "RoomDatabaseBackupWorker 捕获异常后调用 markFailure 记录错误并返回 Result.failure()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupWorker.kt:33"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager 恢复的目标数据库名是 app_database。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:24"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager.listRecentAutoBackups 默认取 3 个，扫描新旧两目录并按文件名倒序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:29"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager.listRecentBackups 默认取 3 个，按 lastModified 倒序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:45"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager.isRoomDatabaseBackupFile 要求文件名有备份前缀且以 .zip 结尾。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:63"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager.restoreFromBackupUri 先把 uri 内容拷贝到 cache 临时文件再恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:68"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager 的恢复全程包裹在 TokenUsageRepository.withDatabaseRestore 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:78"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager 恢复时若 zip 缺少 app_database 条目则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:150"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager 在目标存在 wal/shm 但备份缺对应条目时抛 IOException 中断恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:154"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager.atomicallyReplace 使用 Files.move 的 ATOMIC_MOVE 做原子替换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:187"
+  },
+  {
+    "fact": "RoomDatabaseRestoreManager 恢复失败时删除 tmpDb/tmpWal/tmpShm 临时文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt:169"
+  },
+  {
+    "fact": "PreferencesHealthManager 扫描的文件后缀是 .preferences_pb。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:37"
+  },
+  {
+    "fact": "PreferencesHealthManager.inspect 与 repair 共用 operationMutex 串行执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:104"
+  },
+  {
+    "fact": "PreferencesHealthManager.Status 有 HEALTHY、NEEDS_REPAIR、MANUAL_RECOVERY_REQUIRED 三态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:44"
+  },
+  {
+    "fact": "PreferencesHealthManager.Report.canRepair 要求状态为 NEEDS_REPAIR 且可修复文件名非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:68"
+  },
+  {
+    "fact": "PreferencesHealthManager.RepairFailedException 携带修复前的源文件归档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:83"
+  },
+  {
+    "fact": "PreferencesHealthManager.validateCopy 把源文件拷到随机临时目录，再用 PreferenceDataStoreFactory 打开校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:326"
+  },
+  {
+    "fact": "PreferencesHealthManager 捕获 CorruptionException 后判定为 CopyValidation.Corrupt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:341"
+  },
+  {
+    "fact": "PreferencesHealthManager 对以 { 或 [ 开头的字符串值做 JSON 解析，坏 JSON 记为 DomainIssue。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:354"
+  },
+  {
+    "fact": "PreferencesHealthManager.repair 要求主进程已停止，否则抛错拒绝执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:121"
+  },
+  {
+    "fact": "PreferencesHealthManager 修复前把源文件打成 preferences_repair_source_<时间>_<uuid8>.zip 存入 preferencesDir。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:404"
+  },
+  {
+    "fact": "PreferencesHealthManager 删除损坏文件前会二次校验其仍为 Corrupt 或 DomainIssues，否则中止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:130"
+  },
+  {
+    "fact": "PreferencesHealthManager 修复完成后重新 inspect 生成新的健康报告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:150"
+  },
+  {
+    "fact": "PreferencesHealthManager.hasExpectedPath 用 canonical 路径校验防止目录穿越。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/PreferencesHealthManager.kt:433"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 检查的数据库名是 app_database。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:30"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 用正则识别纯索引损坏：row N missing from index 与 wrong # of entries in index。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:31"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.RepairAction 只有 REBUILD_INDEXES 与 RUN_ROOM_MIGRATIONS 两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:47"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.inspect 用 operationMutex 保证串行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:86"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 检查前先调用 AppDatabase.closeDatabase() 释放 Room 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:136"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 以只读方式打开数据库并挂 PreservingCorruptionHandler 记录损坏回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:237"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 用 PRAGMA quick_check 做完整性检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:526"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 判定为纯索引损坏时登记 REBUILD_INDEXES 修复动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:291"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 用 PRAGMA user_version 读取数据库版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:535"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 用 PRAGMA foreign_key_check 统计外键违规数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:542"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.isIndexOnlyQuickCheckFailure 是 internal 可见，供测试调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:551"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.rebuildIndexes 执行 REINDEX 重建索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:574"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.runRoomMigrations 以打开 Room 数据库的方式触发自动迁移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:581"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 修复前把数据库文件归档为 room_db_repair_source_<时间>_<uuid8>.zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:607"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager.repair 要求主进程已停止。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:663"
+  },
+  {
+    "fact": "RoomDatabaseHealthManager 用 AppDatabase.validateRecoveryCopy 在隔离拷贝上验证 Room schema。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt:456"
+  },
+  {
+    "fact": "AppDatabase.DATABASE_VERSION = 21，是健康检查比对 user_version 的基准。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:49"
+  },
+  {
+    "fact": "HtmlExporter.exportSingle 把单个对话导出为完整 HTML 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:23"
+  },
+  {
+    "fact": "HtmlExporter.exportMultiple 把多个对话导出为单个 HTML 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:32"
+  },
+  {
+    "fact": "HtmlExporter 提供 writeMultipleHeader、writeConversationSeparator、writeConversationToWriter、writeMultipleFooter 四个流式写入函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:51"
+  },
+  {
+    "fact": "HtmlExporter.escapeHtml 转义 &、<、>、双引号、单引号五个字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:334"
+  },
+  {
+    "fact": "HtmlExporter 把 ``` 代码围栏转换为 <pre><code> 代码块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:346"
+  },
+  {
+    "fact": "HtmlExporter 内容按 64KB 分块写入 Writer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:16"
+  },
+  {
+    "fact": "HtmlExporter 每处理 256KB 字符触发一次进度回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:17"
+  },
+  {
+    "fact": "HtmlExporter 按 message.sender 区分 user 与 assistant 的消息样式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:168"
+  },
+  {
+    "fact": "HtmlExporter 在 modelName 为空、markdown 或 unknown 时不显示模型徽标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:179"
+  },
+  {
+    "fact": "MarkdownExporter.exportSingle 把单个对话导出为 Markdown 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:19"
+  },
+  {
+    "fact": "MarkdownExporter 在文件头写入 <!-- chat-info: id/title/created/updated/group --> 结构化注释。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:32"
+  },
+  {
+    "fact": "MarkdownExporter 在注释之后写入 YAML front matter（title/created/updated/group/messages）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:36"
+  },
+  {
+    "fact": "MarkdownExporter 每条消息前写 <!-- msg: user/ai, model=..., timestamp=... --> 注释。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:114"
+  },
+  {
+    "fact": "MarkdownExporter 用 ## 👤 User 与 ## 🤖 Assistant 作为消息二级标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:119"
+  },
+  {
+    "fact": "MarkdownExporter 的消息正文原样写入，不做转义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:129"
+  },
+  {
+    "fact": "MarkdownExporter.exportMultiple 在会话之间用 --- 分隔并逐个嵌入 exportSingle 的结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:71"
+  },
+  {
+    "fact": "TextExporter.exportSingle 把单个对话导出为纯文本字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:22"
+  },
+  {
+    "fact": "TextExporter.exportMultiple 把多个对话导出为单个纯文本字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:31"
+  },
+  {
+    "fact": "TextExporter 用 60 字符宽的 = 与 - 分隔线排版。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:59"
+  },
+  {
+    "fact": "TextExporter.center() 把标题按指定宽度居中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:194"
+  },
+  {
+    "fact": "TextExporter 用 [👤 User] 与 [🤖 Assistant] 标记消息角色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:161"
+  },
+  {
+    "fact": "TextExporter 内容按 64KB 分块写入并触发进度回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:16"
+  },
+  {
+    "fact": "TextExporter 提供 writeMultipleHeader、writeConversationSeparator、writeSingleToWriter、writeMultipleFooter 流式写入函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:52"
+  },
+  {
+    "fact": "ChatHistoryManager.exportChatHistoriesToDownloads 是聊天记录导出的统一入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1894"
+  },
+  {
+    "fact": "ChatHistoryManager 聊天导出文件的落盘目录是 OperitBackupDirs.chatDir()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1940"
+  },
+  {
+    "fact": "ExportFormat 定义 JSON、MARKDOWN、HTML、TXT、CSV 五种导出格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormat.kt:38"
+  },
+  {
+    "fact": "ChatFormat 定义 OPERIT、CHATGPT、CHATBOX、CLAUDE、MARKDOWN、GENERIC_JSON、CSV、PLAIN_TEXT、UNKNOWN 九种格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormat.kt:6"
+  },
+  {
+    "fact": "ChatHistoryManager 的 MARKDOWN 导出为 chat_backup_<时间>.zip，每个会话一个 .md 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1946"
+  },
+  {
+    "fact": "ChatHistoryManager 导出时把标题中的非法字符替换为下划线、截断到 50 字符并保证文件名唯一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1953"
+  },
+  {
+    "fact": "ChatHistoryManager 的 JSON 导出写入 archiveType、formatVersion、exportedAt 与 chats 数组，逐会话流式 flush。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:213"
+  },
+  {
+    "fact": "ChatHistoryManager 的 CSV 导出经 ChatHistoryCsv 逐会话逐消息流式写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:246"
+  },
+  {
+    "fact": "ChatHistoryManager 对长文本的 HTML/TXT 导出走 exportLongTextHistories 流式写入并上报字符级进度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2050"
+  },
+  {
+    "fact": "ChatHistoryManager 导出失败时删除未完成的导出文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2038"
+  },
+  {
+    "fact": "ChatHistoryManager.importChatHistoriesFromUri 是聊天记录导入的统一入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2164"
+  },
+  {
+    "fact": "ChatHistoryManager 导入 MARKDOWN 时先尝试按 zip 解析其中的 .md 文件，失败再按单文件处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2170"
+  },
+  {
+    "fact": "ChatHistoryManager.importOperitChatHistoriesStream 用流式 JsonReader 解析，兼容归档对象与旧版数组两种 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:364"
+  },
+  {
+    "fact": "ChatHistoryManager.convertToOperitFormat 按格式分发到 ChatGPT、ChatBox、Markdown、通用 JSON 转换器，CLAUDE 回退到通用 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2290"
+  },
+  {
+    "fact": "ChatHistoryManager 导入时按 id 去重：已存在记更新、不存在记新增、空消息记跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2247"
+  },
+  {
+    "fact": "ChatHistoryManager.ChatImportResult 包含 new、updated、skipped 三个计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2882"
+  },
+  {
+    "fact": "TokenUsageRepository.withDatabaseAccess 用 Mutex 串行化数据库访问，注释说明目的是防止恢复替换文件期间被访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:28"
+  },
+  {
+    "fact": "TokenUsageRepository.withDatabaseRestore 直接委托给 withDatabaseAccess。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt:31"
+  },
+  {
+    "fact": "OperitPaths.rawSnapshotExcludedFilesTopLevelDirNames 固定排除语音模型、向量索引、图片池、媒体池、技能仓库 zip 池五个目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt:111"
+  },
+  {
+    "fact": "AppDatabase.validateRecoveryCopy 把源库拷到随机名文件再走 Room 打开，验证完整 schema 与迁移链。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:455"
+  },
+  {
+    "fact": "AppDatabase.closeDatabase 关闭 Room 实例并置空单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:548"
+  },
+  {
+    "fact": "ObjectBoxManager.closeAll 关闭全部 ObjectBox store。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:54"
+  },
+  {
+    "fact": "OperitApplication 启动时按每日备份开关异步装配或取消 Room 数据库周期备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:370"
+  },
+  {
+    "fact": "ChatBackupSettingsScreen 调用 RawSnapshotBackupManager.exportToBackupDir 发起原始快照导出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:989"
+  },
+  {
+    "fact": "ChatBackupSettingsScreen 调用 RoomDatabaseBackupManager.backupIfNeeded(force=true) 发起手动数据库备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:812"
+  },
+  {
+    "fact": "ChatBackupSettingsScreen 调用 RoomDatabaseRestoreManager.restoreFromBackupFile/restoreFromBackupUri 恢复数据库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1417"
+  },
+  {
+    "fact": "ChatBackupSettingsScreen 调用 RawSnapshotBackupManager.restoreFromBackupUri 恢复原始快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1487"
+  },
+  {
+    "fact": "ChatBackupSettingsScreen 调用 RoomDatabaseBackupScheduler.ensureScheduled/cancelScheduled 开关每日备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:728"
+  },
+  {
+    "fact": "DataRecoveryViewModel.exportRawSnapshot 封装原始快照导出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:107"
+  },
+  {
+    "fact": "DataRecoveryViewModel.restoreRawSnapshot 封装原始快照恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:137"
+  },
+  {
+    "fact": "DataRecoveryViewModel.inspectStorage 与 repairStorage 封装存储健康检查与修复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:165"
+  },
+  {
+    "fact": "DataRecoveryActivity 在 AndroidManifest 中声明 android:process=:repair，运行在独立进程。",
+    "ref": "app/src/main/AndroidManifest.xml:289"
+  },
+  {
+    "fact": "MarkdownConverter 把整个 Markdown 文件视为一个对话（已明确禁用按 --- 切分）；支持 YAML front matter 与 <!-- chat-info: --> 元数据、<!-- msg: role=.. --> 消息分隔。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/MarkdownConverter.kt:42"
+  },
+  {
+    "fact": "MarkdownConverter.parseRole 严格匹配：system 映射为 user，model/ai 映射为 ai，无法识别返回 null 不瞎猜；缺 role 时默认 user，缺时间戳按 baseTimestamp + index*100ms 合成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/MarkdownConverter.kt:258"
+  },
+  {
+    "fact": "Markdown 导入的消息 provider 记为 Imported、modelName 缺省为 markdown，分组为 markdown_import_from 字符串资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/MarkdownConverter.kt:272"
+  },
+  {
+    "fact": "AppDatabase 含 5 个实体（Chat/Message/MessageVariant/TokenUsageRecord/TokenStatsModel），20 个 Migration 串起 v1→v21；MIGRATION_20_21 建 token_usage_records/token_stats_models 表并从 messages/message_variants 回填历史 token 数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:240"
+  },
+  {
+    "fact": "AppDatabase.validateRecoveryCopy 校验前删掉 room_master_table，强制 Room 做真实表/列/外键/索引比对而非信任哈希，并连带拷贝 wal/shm/journal sidecar。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:485"
+  },
+  {
+    "fact": "ChatHistoryManager 的 HTML/TXT 导出在总字符数超过 4_000_000 时自动切换为流式导出，避免大聊天记录导出时 OOM。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:96"
+  },
+  {
+    "fact": "ChatHistoryManager.importChatHistoriesFromUri 导入 Markdown 时先尝试按 Zip 解包（对应导出的 markdown zip），失败再回退为纯文本解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2176"
+  },
+  {
+    "fact": "DataRecoveryActivity 的恢复屏包含 SQL 控制台、配置/数据库健康报告、查询结果面板；恢复完成后 restartMainApp 用 launch intent + finishAffinity + killProcess 做硬重启。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:717"
+  },
+  {
+    "fact": "DataRecoveryViewModel.sanitizeSql 只做 trim 与去尾部分号；非 select/with/pragma 语句直接走 writableDatabase().execSQL 执行，写后用 SELECT changes() 取影响行数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:361"
+  },
+  {
+    "fact": "DataRecoveryViewModel 内置三条诊断查询（按内容字节数倒序取前 50 的消息/变体/会话）；查询结果中 BLOB 单元格渲染为 BLOB(size) 占位而非原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:429"
+  }
+]

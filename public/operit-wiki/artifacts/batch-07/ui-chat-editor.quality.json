@@ -1,0 +1,110 @@
+[
+  {
+    "confidence": "高",
+    "detail": "drawEditor 运行在 RenderThread(渲染线程)上，直接读取 document.lineCount()/text()/getLineStart() 等；而主线程经 onDocumentMutated/handleKeyEvent/commitText/insertSymbol 修改同一份 buffer（EditorDocument.kt:267 的 SpannableStringBuilder，非线程安全）。全文件 4 处 synchronized 均只锁 renderSignal 的 wait/notify（:863/:883/:1904/:1920），没有任何锁或 happens-before 保护 document 本身。快速连续输入时渲染线程可能读到撕裂状态，触发 StringIndexOutOfBoundsException 或绘制错乱。",
+    "evidence": "    private fun drawEditor(canvas: Canvas) {\n        canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), backgroundPaint)\n\n        val lineCount = document.lineCount()",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 1039,
+    "severity": "high",
+    "title": "渲染线程与主线程对 EditorDocument 无锁并发访问"
+  },
+  {
+    "confidence": "高",
+    "detail": "参数命名为 _language（Kotlin 约定表示刻意不用），函数体恒返回 DarkTheme。CanvasCodeEditorView.setLanguage 里仍按“按语言换主题”的语义调用它，未来接入浅色主题时极易被误认为已支持按语言切换。",
+    "evidence": "fun getThemeForLanguage(_language: String): EditorTheme {\n    return DarkTheme\n}",
+    "file": "theme/EditorTheme.kt",
+    "line": 105,
+    "severity": "warn",
+    "title": "getThemeForLanguage 忽略语言参数恒返回深色主题"
+  },
+  {
+    "confidence": "高",
+    "detail": "只要从数字开头，`1-2` 会被当成一个数字 token（整段染成数字色），`1e+foo`、`3-abc` 同理。没有校验 e/E 后是否跟数字、-/+ 是否紧跟在 e 后，科学计数法解析过于宽松。",
+    "evidence": "    private fun consumeNumber(text: String, startIndex: Int): Int {\n        var index = startIndex\n        while (\n            index < text.length &&\n            (text[index].isDigit() || text[index] == '.' || text[index] == 'e' || text[index] == 'E' || text[index] == '-' || text[index] == '+')\n        ) {",
+    "file": "EditorSyntaxHighlighter.kt",
+    "line": 254,
+    "severity": "warn",
+    "title": "consumeNumber 把 -/+/e/E 无条件吞入数字 token，高亮误染"
+  },
+  {
+    "confidence": "高",
+    "detail": "CanvasCodeEditorView.kt:65 的 TAB_SPACES 与 EditorDocument.kt:7 的 EDITOR_TAB_SPACES 是两个独立常量，含义相同（Tab 占 4 格，键盘 Tab 键插入 4 空格、缩进参考线按 4 格画线）。两者一旦改了一处没改另一处，Tab 插入宽度与缩进参考线/自动缩进错位。应统一引用一处。",
+    "evidence": "        private const val TAB_SPACES = 4",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 65,
+    "severity": "warn",
+    "title": "TAB_SPACES=4 在 CanvasCodeEditorView 与 EditorDocument 各自定义一份"
+  },
+  {
+    "confidence": "中",
+    "detail": "IME 传入的 newCursorPosition 被完全忽略，提交后光标恒定位于插入文本末尾。语音输入、手势连滑等依赖该参数定位光标的输入法会出现光标错位。",
+    "evidence": "        override fun commitText(text: CharSequence?, newCursorPosition: Int): Boolean {\n            if (readOnly) {\n                return true\n            }\n            val normalized = text?.toString()?.replace(\"\\r\\n\", \"\\n\")?.replace('\\r', '\\n') ?: \"\"\n            document.replaceSelection(normalized, recordHistory = true)\n            document.finishComposingText()\n            onDocumentMutated()\n            return true",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 1761,
+    "severity": "warn",
+    "title": "commitText 忽略 newCursorPosition 参数"
+  },
+  {
+    "confidence": "中",
+    "detail": "注册机制依赖各实现类 companion object init 块的副作用（KotlinSupport.kt:35-37 调 LanguageSupportRegistry.register），LanguageFactory.init 必须手动列出每个类。新增语言时若忘记在此加一行，该语言静默不可用，无任何报错。",
+    "evidence": "    fun init() {\n        // 触发所有语言支持类的静态初始化\n        JavaScriptSupport\n        KotlinSupport\n        HtmlSupport\n        DartSupport",
+    "file": "language/LanguageFactory.kt",
+    "line": 10,
+    "severity": "warn",
+    "title": "LanguageFactory.init 靠引用类名触发伴生对象自注册，新增语言易遗漏"
+  },
+  {
+    "confidence": "高",
+    "detail": "函数体为空，注释描述的行为实际发生在各实现类的 companion init 里。保留该空方法会让后来者误以为注册逻辑缺失或应补在这里。",
+    "evidence": "    fun init() {\n        // 这里会在应用启动时注册所有语言支持\n        // 将在各个语言实现类中调用\n    }",
+    "file": "language/LanguageSupportRegistry.kt",
+    "line": 49,
+    "severity": "suggestion",
+    "title": "LanguageSupportRegistry.init() 是空实现，注释已过时"
+  },
+  {
+    "confidence": "中",
+    "detail": "编辑器模块直接引用 terminal 模块的 R.font 资源，模块耦合；资源缺失时静默回退 MONOSPACE，用户无感知。字体资源宜下沉到被引用的公共模块或本模块。",
+    "evidence": "    private fun loadEditorTypeface(): Typeface {\n        return try {\n            resources.getFont(com.ai.assistance.operit.terminal.R.font.jetbrains_mono_nerd_font_regular)\n        } catch (_: Exception) {\n            Typeface.MONOSPACE\n        }",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 1725,
+    "severity": "suggestion",
+    "title": "loadEditorTypeface 跨模块引用 terminal 包的 R.font"
+  },
+  {
+    "confidence": "中",
+    "detail": "isDirty 在主线程写入（requestRender）、渲染线程读取（RenderThread.run 循环）。虽有 renderSignal 的 monitor 同步兜底且 wait(24L) 超时掩盖了可见性延迟，但按 Java 内存模型该字段应标 @Volatile（同文件 RenderThread.running 就标了）。",
+    "evidence": "    private var isDirty = true",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 168,
+    "severity": "suggestion",
+    "title": "isDirty 跨线程读写但无 @Volatile"
+  },
+  {
+    "confidence": "中",
+    "detail": "无论 request.hintMaxChars/howMuch，直接把整个文档塞给输入法。万行级文件下每次输入法查询都是一次全量拷贝与 Binder 传输，应按请求做分片/截断。",
+    "evidence": "        override fun getExtractedText(request: ExtractedTextRequest?, flags: Int): ExtractedText {\n            return ExtractedText().apply {\n                text = document.text()",
+    "file": "CanvasCodeEditorView.kt",
+    "line": 1852,
+    "severity": "suggestion",
+    "title": "getExtractedText 返回全文不分片，大文件拖慢输入法"
+  },
+  {
+    "confidence": "中",
+    "detail": "点“{”只插入一个“{”，不像主流移动端编辑器那样自动补全“}”并把光标放中间。insertNewlineWithIndent 虽有回车缩进，但括号配对缺失让符号栏的输入效率打折。",
+    "evidence": "                            \"{\", \"}\", \"(\", \")\", \"[\", \"]\", \"=\", \".\", \",\", \";\", \":\",\n                            \"\\\"\", \"'\", \"+\", \"-\", \"*\", \"/\", \"_\", \"<\", \">\", \"&\", \"|\",\n                            \"!\", \"?\"",
+    "file": "CodeEditor.kt",
+    "line": 198,
+    "severity": "suggestion",
+    "title": "符号工具条只插入单个字符，不做括号自动配对"
+  },
+  {
+    "confidence": "中",
+    "detail": "注释说明设 false 是为了不抢焦点，但代价是外接键盘方向键无法在候选项间移动、TalkBack 焦点也进不去弹窗。触屏点击可用，但键盘与无障碍用户被排除在外。",
+    "evidence": "            focusable = false, // 设置为false，避免抢占焦点\n            dismissOnBackPress = true,\n            dismissOnClickOutside = true,\n            clippingEnabled = false // 允许在父布局边界外绘制，防止截断",
+    "file": "completion/CompletionPopup.kt",
+    "line": 47,
+    "severity": "suggestion",
+    "title": "CompletionPopup 设 focusable=false，键盘/无障碍无法操作候选项"
+  }
+]

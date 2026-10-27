@@ -1,0 +1,74 @@
+[
+  {
+    "confidence": 0.85,
+    "description": "rangeData 对每个时间桶单独调用一次 dao.aggregateModelsInRange（N+1 查询）。配合 TokenStatsTimeRange.MAX_BUCKETS=10000 的上限，自定义大范围 + DAILY 粒度可产生上千次 Room 聚合查询，统计页滚动卡顿风险。",
+    "evidence": "val buckets = starts.mapIndexed { index, bucketStart ->\n    val bucketEnd = minOf(\n        range.endMs,\n        TokenStatsTimeRanges.bucketEndMs(starts, index, granularity, zone),\n    )\n    val bucketRows = dao.aggregateModelsInRange(\n        startMs = maxOf(range.startMs, bucketStart),",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsQueryService.kt",
+    "line": 52,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "loadTimeRange 在 start 缺失时优雅返回 null，但在 end 缺失时用 checkNotNull 直接抛错。DataStore 半写入/不一致时统计页崩溃而非降级为默认范围。",
+    "evidence": "val startMs = preferences[TIME_RANGE_START] ?: return null\nval endMs = checkNotNull(preferences[TIME_RANGE_END])",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt",
+    "line": 85,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "loadRateWithEstimate 对已存非法汇率（非有限或 <=0）用 require 抛错；经 saveRate 校验的新值不会再非法，但历史脏数据/手动篡改 DataStore 会导致费用换算路径直接崩溃而非回退默认值。",
+    "evidence": "require(stored.isFinite() && stored > 0.0) { \"stored exchange rate is invalid\" }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsPreferences.kt",
+    "line": 45,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "finish() 用 require(separator > 0 && separator < providerModel.lastIndex) 校验 providerModel 含 \":\" 分隔且两侧非空，畸形值会抛 IllegalArgumentException。调用点（collect() 的 try 块）显示该异常发生在遥测收集路径，可能中断正常流收集——遥测失败应 fail-open 而非中断主流程。",
+    "evidence": "val separator = providerModel.indexOf(':')\nrequire(separator > 0 && separator < providerModel.lastIndex) {\n    \"provider:model is required for token usage events\"\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt",
+    "line": 279,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "迁移期同一模型出现多组不同的旧价格设置时，require(settings.size == 1) 直接抛错。ensureInitialized 是 suspend 一次性迁移，持续抛错会导致统计初始化永久失败（每次启动重试都失败），用户需手动清 DataStore 才能恢复。",
+    "evidence": "require(settings.size == 1) { \"Conflicting released prices for ${identity.first}:${identity.second}\" }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt",
+    "line": 562,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.8,
+    "description": "ModelThinkingConfigDefaultsCollect.forProvider 每次调用都重新 new JSONArray(DEFAULT_JSON) 全量解析规则数组，再逐条过滤。规则表是静态常量，解析一次缓存即可，高频调用场景浪费 CPU。",
+    "evidence": "val source = JSONArray(DEFAULT_JSON)\nval target = JSONArray()\nfor (index in 0 until source.length()) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt",
+    "line": 406,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.9,
+    "description": "ScrapedModelPricingRowsCollect 是硬编码的抓取价格表（548 行），代码中无自动更新/版本校验机制；只有 DeepSeek 块带了同步日期标注（2026-05-07），其余厂商价格会随时间静默过期，导致费用换算偏差。",
+    "evidence": "val rows: String = listOf(\n    \"\"\"\n    OPENAI|chatgpt-4o-latest|TOKEN|15|45|0|USD",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/collects/ScrapedModelPricingRowsCollect.kt",
+    "line": 4,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.85,
+    "description": "DefaultModelPricingCollect.getDefaultPricing 对完全未知模型静默回退到 token 单价全 0 的 zeroPricing，费用显示为“未知”而非显式提示“无定价”。建议与真正无定价区分，避免用户误以为已免费。",
+    "evidence": "return providerFallbacks[provider]\n    ?: if (isDomesticProvider(provider)) {\n        zeroPricing(PricingCurrency.CNY)\n    } else {\n        zeroPricing(PricingCurrency.USD)\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelPricingDefaultsCollect.kt",
+    "line": 229,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "TokenStatsSettingsManager.toPriceSetting 用 BillingMode.valueOf/PricingCurrency.valueOf 直接解析数据库存的字符串，脏数据（历史版本枚举名变更/手动改库）会抛 IllegalArgumentException。建议降级到默认值。",
+    "evidence": "billingMode = billingMode?.let { BillingMode.valueOf(it) } ?: defaults.billingMode,\ncurrency = currency?.let { PricingCurrency.valueOf(it) } ?: defaults.currency,",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenStatsSettingsManager.kt",
+    "line": 181,
+    "severity": "suggestion"
+  }
+]

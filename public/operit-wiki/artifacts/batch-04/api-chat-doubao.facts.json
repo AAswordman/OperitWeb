@@ -1,0 +1,46 @@
+[
+  {
+    "fact": "DoubaoAIProvider 是针对豆包模型的特定 API Provider，继承 OpenAIProvider，特别处理 thinking 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:11"
+  },
+  {
+    "fact": "providerType 是可覆盖的构造参数（private val），缺省为 ApiProviderType.DOUBAO",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:20"
+  },
+  {
+    "fact": "customHeaders 缺省为空 Map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:19"
+  },
+  {
+    "fact": "supportsVision、supportsAudio、supportsVideo、enableToolCall 四个能力开关缺省均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:22"
+  },
+  {
+    "fact": "thinkingConfigurations 与 thinkingOptionId 缺省为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:25"
+  },
+  {
+    "fact": "构造参数列表中没有流式 usage 开关 includeUsageInStream（与 XaiProvider 显式传入不同）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:33"
+  },
+  {
+    "fact": "父类 OpenAIProvider 的 includeUsageInStream 构造参数缺省为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:100"
+  },
+  {
+    "fact": "注释说明按官方文档建议始终显式传入 thinking 的 enabled/disabled",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:45"
+  },
+  {
+    "fact": "用私有字段 configuredApiEndpoint 保存构造传入的 apiEndpoint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:41"
+  },
+  {
+    "fact": "createRequestBody 先调用父类 createRequestBodyInternal 生成标准 OpenAI 格式请求体 JSON 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:57"
+  },
+  {
+    "fact": "再经 ThinkingConfigurationApplier.apply 注入 thinking 配置，providerTypeId 取构造参数 providerType.name 而非硬编码",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt:60"
+  }
+]

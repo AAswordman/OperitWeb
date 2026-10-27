@@ -1,0 +1,310 @@
+[
+  {
+    "fact": "OpenAIResponsesProvider 是 open class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:17"
+  },
+  {
+    "fact": "OpenAIResponsesProvider 继承 OpenAIProvider（类头 super 类型调用）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:32"
+  },
+  {
+    "fact": "responsesProviderType 默认 ApiProviderType.OPENAI_RESPONSES",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:24"
+  },
+  {
+    "fact": "responsesProviderType 作为 providerType 透传给父类构造函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:38"
+  },
+  {
+    "fact": "customHeaders 默认空 Map；supportsVision/supportsAudio/supportsVideo/supportsFiles/enableToolCall 默认 false；thinkingConfigurations/thinkingOptionId 默认空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:27"
+  },
+  {
+    "fact": "构造函数把 apiEndpoint/apiKeyProvider/modelName/client/customHeaders 等全部参数透传给 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:37"
+  },
+  {
+    "fact": "override val useResponsesApi = true，标记走 Responses API",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:47"
+  },
+  {
+    "fact": "createRequestBody 重写：enableThinking=false 时用 ChatUtils.stripOpenAiResponsesReasoningMetaTurns 剥离推理元回合；true 时用原历史",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:60"
+  },
+  {
+    "fact": "请求体先调 super.createRequestBodyInternal 生成 chat 风格 JSON，再包成 JSONObject",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:72"
+  },
+  {
+    "fact": "applyResponsesReasoningEffort 把思考配置应用到请求 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:74"
+  },
+  {
+    "fact": "思考配置经 ThinkingConfigurationApplier.apply 应用，传入 providerTypeId、modelName、apiEndpoint、thinkingConfigurations、optionId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:118"
+  },
+  {
+    "fact": "请求日志中 tools 数组被替换为 \"[N tools omitted for brevity]\" 省略",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:79"
+  },
+  {
+    "fact": "日志前用 sanitizeImageDataForLogging 清理图片数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:81"
+  },
+  {
+    "fact": "用 logLargeString 输出 \"Final Responses request body: \" 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:85"
+  },
+  {
+    "fact": "customizeFinalRequestObject：shouldAttachPromptCacheKey() 为 false 直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:96"
+  },
+  {
+    "fact": "请求对象已含 prompt_cache_key 则跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:100"
+  },
+  {
+    "fact": "buildPromptCacheKey 返回 null 则不附加 prompt_cache_key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:104"
+  },
+  {
+    "fact": "附加后 AppLogger.d 打 \"Responses API自动附加prompt_cache_key\" 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:106"
+  },
+  {
+    "fact": "shouldAttachPromptCacheKey 只在 responsesProviderType == OPENAI_RESPONSES 时返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:126"
+  },
+  {
+    "fact": "messages 为空且 toolsJson 为空/空白时 buildPromptCacheKey 返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:134"
+  },
+  {
+    "fact": "遍历消息：遇到 assistant/tool 角色置 assistantOrToolSeen=true 并停止",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:148"
+  },
+  {
+    "fact": "system/developer 角色的消息以 \"role:content\" 加入 anchorParts 并继续",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:153"
+  },
+  {
+    "fact": "user 角色的消息加入 anchor 后停止",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:158"
+  },
+  {
+    "fact": "anchorParts 为空且见过 assistant/tool 时，取首条消息做 anchor",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:164"
+  },
+  {
+    "fact": "缓存键摘要输入以 \"operit:responses_prompt_cache:v1\" 开头，拼接 model/toolCall/tools/anchors",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:178"
+  },
+  {
+    "fact": "SHA-256 摘要转 hex 取前 48 字符，加前缀 \"operit_resp_\" 作为 prompt_cache_key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:191"
+  },
+  {
+    "fact": "object OpenAIResponsesPayloadAdapter 是单例对象",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:195"
+  },
+  {
+    "fact": "UsageCounts 是 data class，四个 Long 字段：totalInputTokens、actualInputTokens、cachedInputTokens、outputTokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:197"
+  },
+  {
+    "fact": "ParsedResponseOutput 含 textChunks、reasoningChunks、reasoningMetadataTags、outputItemMetadataTags、reasoningObserved、toolCalls、usage 七个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:206"
+  },
+  {
+    "fact": "mapParameterNameForResponses 只把 \"max_tokens\" 映射为 \"max_output_tokens\"，其余参数名原样返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:216"
+  },
+  {
+    "fact": "parseUsageCounts(null) 返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:222"
+  },
+  {
+    "fact": "按字段存在判断 usage 是否有效：显式全零 payload 也算已观察到的 usage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:226"
+  },
+  {
+    "fact": "usage 兼容两套字段名：prompt_tokens/input_tokens、completion_tokens/output_tokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:228"
+  },
+  {
+    "fact": "cached_tokens 支持顶层字段，也支持 prompt_tokens_details/input_tokens_details 嵌套",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:231"
+  },
+  {
+    "fact": "actualInputTokens = totalInputTokens - cachedInputTokens，各计数下限为 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:242"
+  },
+  {
+    "fact": "toResponsesRequest 先深拷贝一份 chat 风格请求再转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:248"
+  },
+  {
+    "fact": "有 max_tokens 且无 max_output_tokens 时，把值搬到 max_output_tokens 并删除 max_tokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:250"
+  },
+  {
+    "fact": "response_format 被搬到 text.format 并删除 response_format",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:257"
+  },
+  {
+    "fact": "moveReasoningEffortToReasoningObject：删除顶层 reasoning_effort 并搬入 reasoning.effort；reasoning.effort 已存在时不覆盖",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:294"
+  },
+  {
+    "fact": "tools 数组经 convertToolsToResponsesFormat 转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:268"
+  },
+  {
+    "fact": "messages 经 convertMessagesToResponsesInput 转为 input 并删除 messages",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:275"
+  },
+  {
+    "fact": "parseNonStreamingResponse 遍历响应的 output 数组，按 type 分发",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:310"
+  },
+  {
+    "fact": "message 项用 phase 字段忽略大小写比对 \"commentary\" 判定 commentary 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:316"
+  },
+  {
+    "fact": "commentary 消息的文本归 reasoningChunks 并置 reasoningObserved=true，否则归 textChunks",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:328"
+  },
+  {
+    "fact": "内容段 output_text/text 取文本；reasoning_text 归 reasoningChunks",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:335"
+  },
+  {
+    "fact": "reasoning 项：reasoningObserved=true；createReasoningMetadataTag 产出 reasoningMetadataTags；summary 数组文本入 reasoningChunks",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:352"
+  },
+  {
+    "fact": "function_call 项经 convertFunctionCallItemToChatToolCall 转为 chat 风格 tool_call",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:362"
+  },
+  {
+    "fact": "web_search_call 项经 createOutputItemMetadataTag 产出 outputItemMetadataTags",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:369"
+  },
+  {
+    "fact": "usage 由 parseUsageCounts(jsonResponse.optJSONObject(\"usage\")) 解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:382"
+  },
+  {
+    "fact": "convertToolsToResponsesFormat：非 function 类型的工具原样保留",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:391"
+  },
+  {
+    "fact": "function 工具缺少 function 对象时原样保留",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:395"
+  },
+  {
+    "fact": "function 工具扁平化为 {type:\"function\", name, description?, parameters?, strict?}，只保留 description/parameters/strict 三个可选字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:408"
+  },
+  {
+    "fact": "tool 角色且 tool_call_id 非空时转为 {type:\"function_call_output\", call_id, output}，output 经 extractToolOutputContent 提取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:437"
+  },
+  {
+    "fact": "assistant 消息先追加推理项（appendReasoningItemsFromAssistantMessage）再追加输出项（appendOutputItemsFromAssistantMessage）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:447"
+  },
+  {
+    "fact": "assistant 的 tool_calls 转为 {type:\"function_call\", name, arguments, call_id?}，无 call_id 时不放该字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:462"
+  },
+  {
+    "fact": "消息内容经 convertMessageContentForResponses 转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:473"
+  },
+  {
+    "fact": "system 角色映射为 developer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:484"
+  },
+  {
+    "fact": "有内容的消息生成 {type:\"message\", role, content}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:496"
+  },
+  {
+    "fact": "convertMessageContentForResponses：null 返回空字符串；String 剥离协议控制标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:504"
+  },
+  {
+    "fact": "text/output_text/input_text 段剥离控制标记后转为 input_text",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:512"
+  },
+  {
+    "fact": "image_url/input_image 段转为 input_image{image_url}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:536"
+  },
+  {
+    "fact": "input_audio 段原样搬运为 input_audio",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:550"
+  },
+  {
+    "fact": "input_file 段需 file_data 与 filename 都非空，转为 input_file{filename, file_data}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:556"
+  },
+  {
+    "fact": "video_url/input_video 段转为 input_video{video_url}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:574"
+  },
+  {
+    "fact": "未知类型的内容段取其 text 字段转为 input_text",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:584"
+  },
+  {
+    "fact": "stripResponsesControlMarkupForInput 委托 ChatUtils.stripOpenAiResponsesProtocolMarkup",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:602"
+  },
+  {
+    "fact": "extractToolOutputText：JSONArray 中 text/output_text/input_text 段用换行拼接；无文本段则返回 content.toString()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:618"
+  },
+  {
+    "fact": "extractToolOutputContent：JSONArray 先尝试转 Responses 内容格式，无内容则回退文本提取；String 直接剥离控制标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:636"
+  },
+  {
+    "fact": "createReasoningMetadataTag：非 reasoning 类型，或 id/encrypted_content 为空时返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:650"
+  },
+  {
+    "fact": "推理元数据 payload 为 {reasoning_id, encrypted_content, summary}，Base64 编码后经 ChatMarkupRegex.openAiResponsesReasoningMetaTag 生成标记；summary 空数组合法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:658"
+  },
+  {
+    "fact": "createOutputItemMetadataTag：仅处理 web_search_call；id 为空返回 null；整项 Base64 编码后经 ChatMarkupRegex.openAiResponsesOutputItemMetaTag 生成标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:673"
+  },
+  {
+    "fact": "appendReasoningItemsFromAssistantMessage：String 内容用 ChatMarkupRegex.extractOpenAiResponsesReasoningPayloads 提取；Base64 解码失败记 AppLogger.w 日志不抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:689"
+  },
+  {
+    "fact": "appendOutputItemsFromAssistantMessage：同理提取 output item payloads，解码失败只记日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:707"
+  },
+  {
+    "fact": "appendReasoningItemFromMetadata：id 或 encrypted_content 为空则跳过；否则生成 {type:\"reasoning\", id, encrypted_content, summary}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:749"
+  },
+  {
+    "fact": "appendOutputItemFromMetadata：仅 web_search_call 且 id 非空时原样放入 input",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:763"
+  },
+  {
+    "fact": "convertFunctionCallItemToChatToolCall：name 为空返回 null；arguments 缺省 \"{}\"；call_id 优先取 call_id 其次取 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:774"
+  },
+  {
+    "fact": "生成的 tool_call 为 {id?, type:\"function\", function:{name, arguments}}，无 call_id 时不放 id 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIResponsesProvider.kt:781"
+  }
+]

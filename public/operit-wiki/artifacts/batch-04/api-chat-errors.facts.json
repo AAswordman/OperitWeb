@@ -1,0 +1,130 @@
+[
+  {
+    "fact": "RateLimitedAIService 是 AIService 的装饰器：构造参数为 delegate、nullable SlidingWindowRateLimiter、nullable Semaphore，用 `AIService by delegate` 委托",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:14"
+  },
+  {
+    "fact": "queuedRequests 是 ConcurrentHashMap.newKeySet<AtomicBoolean>，cancellationEpoch 由 cancellationLock 保护",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:19"
+  },
+  {
+    "fact": "cancelStreaming 把 cancellationEpoch 加 1 并标记所有排队请求为已取消，再调 delegate.cancelStreaming()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:23"
+  },
+  {
+    "fact": "sendMessage 在构造冷流之前先快照 requestEpoch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:46"
+  },
+  {
+    "fact": "冷流在采集开始前可被取消：流体构建时把 `AtomicBoolean` 注册进 `queuedRequests` 并在锁内比较 epoch，epoch 已变则标记取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:50"
+  },
+  {
+    "fact": "throwIfCancelled 在 cancelled 为 true 时抛 CancellationException(\"AI request was cancelled\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:59"
+  },
+  {
+    "fact": "awaitRateLimit 循环调 limiter.tryAcquire()：retryAfterMs>0 则 delay(min(retryAfterMs,50ms))，<=0 即放行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:63"
+  },
+  {
+    "fact": "acquireConcurrency 循环调 semaphore.tryAcquire()：成功置 concurrencyAcquired=true，失败 delay 50ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:73"
+  },
+  {
+    "fact": "sendMessage 内顺序：throwIfCancelled → awaitRateLimit → throwIfCancelled → acquireConcurrency → throwIfCancelled → delegate.sendMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:88"
+  },
+  {
+    "fact": "finally 块：仅当 concurrencyAcquired 为 true 时释放信号量，并在锁内把请求移出 queuedRequests",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:114"
+  },
+  {
+    "fact": "CANCELLATION_POLL_INTERVAL_MS = 50L（取消轮询间隔）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:123"
+  },
+  {
+    "fact": "onUsageFinalized 回调被包装：先 throwIfCancelled() 再调用户回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt:105"
+  },
+  {
+    "fact": "RateLimiterRegistry 是 object 单例，内部 ConcurrentHashMap<String, SlidingWindowRateLimiter>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimiterRegistry.kt:5"
+  },
+  {
+    "fact": "RateLimiterRegistry.getOrCreate 要求 maxRequestsPerMinute > 0，否则 require 抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimiterRegistry.kt:8"
+  },
+  {
+    "fact": "RateLimiterRegistry.getOrCreate 用 compute 原子化：已有且配置相同则复用，配置变化则重建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimiterRegistry.kt:11"
+  },
+  {
+    "fact": "SlidingWindowRateLimiter(maxRequestsPerMinute, windowMs=60_000L)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt:8"
+  },
+  {
+    "fact": "tryAcquire 先在 Mutex 内淘汰早于 windowMs 的时间戳",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt:18"
+  },
+  {
+    "fact": "tryAcquire 满窗时返回距最老记录过期剩余毫秒（下限 1ms）；未满则记录当前时间戳并返回 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt:23"
+  },
+  {
+    "fact": "tryAcquire 在 maxRequestsPerMinute <= 0 时直接返回 0（不限流）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt:18"
+  },
+  {
+    "fact": "acquire() 循环 tryAcquire + delay 直到放行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt:33"
+  },
+  {
+    "fact": "RequestConcurrencyRegistry 是 object 单例；私有 Entry(maxConcurrentRequests, semaphore)；map 为 ConcurrentHashMap<String, Entry>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RequestConcurrencyRegistry.kt:6"
+  },
+  {
+    "fact": "RequestConcurrencyRegistry.getOrCreate 要求 maxConcurrentRequests > 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RequestConcurrencyRegistry.kt:14"
+  },
+  {
+    "fact": "RequestConcurrencyRegistry.getOrCreate 返回按 key 共享的 Semaphore(maxConcurrentRequests)，配置变化重建 Entry",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RequestConcurrencyRegistry.kt:22"
+  },
+  {
+    "fact": "LlmRetryPolicy 是 internal object；MAX_RETRY_ATTEMPTS = 5",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlmRetryPolicy.kt:4"
+  },
+  {
+    "fact": "LlmRetryPolicy.RETRY_BASE_DELAY_MS = 1_000L，RETRY_MAX_DELAY_MS = 16_000L",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlmRetryPolicy.kt:5"
+  },
+  {
+    "fact": "LlmRetryPolicy.nextDelayMs 为指数退避：base * 2^(attempt-1)，attempt 下限 1，指数上限 4，总上限 16_000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlmRetryPolicy.kt:8"
+  },
+  {
+    "fact": "HttpStatusCodeException 是 internal 接口，只有一个属性 val statusCode: Int",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/HttpStatusCodeException.kt:5"
+  },
+  {
+    "fact": "shouldSuppressKeyPoolRateLimitNotice：非 HttpStatusCodeException 或状态码非 429 直接返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/HttpStatusCodeException.kt:9"
+  },
+  {
+    "fact": "shouldSuppressKeyPoolRateLimitNotice：候选密钥数 > 1 时压住 429 中间提示（多密钥轮询会试其他密钥），并记一条 warning 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/HttpStatusCodeException.kt:17"
+  },
+  {
+    "fact": "MultiServiceManager 按配置装配：requestLimitPerMinute/maxConcurrentRequests 经 coerceAtLeast(0)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:320"
+  },
+  {
+    "fact": "MultiServiceManager：两项配额都为 0 时直接返回原 service，不包 RateLimitedAIService",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:323"
+  },
+  {
+    "fact": "MultiServiceManager：限流/并发 key 取自 config.id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:331"
+  }
+]

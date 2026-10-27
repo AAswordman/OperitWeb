@@ -1,0 +1,110 @@
+[
+  {
+    "confidence": "高",
+    "detail": "loadAppPermissions 每次调用都起一个新协程去跑 dumpsys，协程之间没有任何取消或串行化。用户快速点 A 应用再点 B 应用时，A 的协程可能后完成，把 A 的权限列表写进 selectedAppPermissions，而此时 selectedApp 已经是 B——界面会短暂显示错乱的权限归属。写入前也没有校验 selectedApp?.packageName 是否仍等于请求的包名。",
+    "evidence": "    fun loadAppPermissions(packageName: String) {\n        isPermissionLoading = true\n        coroutineScope.launch {\n            try {\n                val permissions = getAppPermissions(packageName, context)\n                selectedAppPermissions = permissions\n            } catch (e: Exception) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt",
+    "line": 144,
+    "severity": "warn",
+    "title": "切换应用时权限加载协程竞态，可能显示错应用的权限"
+  },
+  {
+    "confidence": "高",
+    "detail": "AutoGlmViewModel 构造 PhoneAgent 时写死 cleanupOnFinish = false。PhoneAgent.run 结束后的清理分支（VirtualDisplayOverlay.hide(agentId)、ShowerController.shutdown(agentId)）只在 cleanupOnFinish 为 true 时执行，因此每次任务跑完虚拟显示屏与自动化悬浮层都不会被释放。同一 session 内复用同一块虚拟屏，多次执行后显示资源常驻，耗内存且悬浮层可能残留可视。",
+    "evidence": "                val agent = PhoneAgent(\n                    context = context,\n                    config = agentConfig,\n                    uiService = uiService, // Directly pass the specialized AIService\n                    actionHandler = actionHandler,\n                    agentId = agentIdForRun,\n                    cleanupOnFinish = false\n                )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt",
+    "line": 126,
+    "severity": "warn",
+    "title": "AutoGLM 任务结束不清理虚拟屏与悬浮层"
+  },
+  {
+    "confidence": "高",
+    "detail": "API Key 输入框是普通的单行 OutlinedTextField，没有设置 visualTransformation。用户粘贴或输入 Key 后，Key 以明文完整显示在屏幕上，旁边有人即可直接看到。设置页其他 Key 输入一般会做掩码，这里漏了。",
+    "evidence": "                OutlinedTextField(\n                    value = apiKeyInput,\n                    onValueChange = { apiKeyInput = it.trim() },\n                    modifier = Modifier.fillMaxWidth(),\n                    placeholder = {\n                        Text(stringResource(R.string.autoglm_api_key_placeholder))\n                    },\n                    singleLine = true\n                )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt",
+    "line": 326,
+    "severity": "warn",
+    "title": "AutoGLM API Key 输入框无掩码，明文可见"
+  },
+  {
+    "confidence": "中",
+    "detail": "copyDocumentTreeTo 对源目录下每一个条目都执行 File(destDir, docFile.name!!)。虽然上层过滤 html 时判了空，但这个递归函数处理的是全部文件；SAF 在某些异常返回下 DocumentFile.name 可能为 null，此时直接抛 NPE 导致整个导出流程崩溃。外层 try/catch 包的是协程体，NPE 会进 catch 显示失败，但属于可预防的崩溃。",
+    "evidence": "    sourceDoc.listFiles().forEach { docFile ->\n        val destFile = File(destDir, docFile.name!!)\n        if (docFile.isDirectory) {\n            copyDocumentTreeTo(context, docFile, destFile)\n        } else {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt",
+    "line": 338,
+    "severity": "warn",
+    "title": "copyDocumentTreeTo 对 docFile.name 用 !!，异常时 NPE"
+  },
+  {
+    "confidence": "高",
+    "detail": "togglePermission 直接拼出 pm grant/pm revoke <包名> <权限> 交给 shell 执行。只要 Operit 自身有 shell/Root 权限，任意危险权限（如 READ_SMS、CAMERA、RECORD_AUDIO）都可以不经过 Android 运行时权限弹窗、不经过用户逐项确认就授予任意应用。这是工具箱的设计目的，但在 UI 上没有任何二次确认或风险提示，用户可能误触开关就放行敏感权限。",
+    "evidence": "                            AndroidShellExecutor.executeShellCommand(\n                                    \"pm $action $packageName ${permission.rawName}\"\n                            )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt",
+    "line": 169,
+    "severity": "warn",
+    "title": "pm grant/revoke 绕开系统运行时权限确认，无二次确认"
+  },
+  {
+    "confidence": "高",
+    "detail": "第 160 行定义的 fun togglePermission(permission: PermissionInfo) 在全文件没有任何调用处。权限条目开关实际走的是第 706 行附近 PermissionItem onToggle 里的内联协程 lambda（单条目就地更新），reset 按钮走 resetAppPermissions。外层 togglePermission 是废弃残留，留着会误导后人以为开关走整列表刷新。",
+    "evidence": "    // 修改应用权限函数\n    fun togglePermission(permission: PermissionInfo) {\n        val packageName = selectedApp?.packageName ?: return\n        val action = if (permission.granted) \"revoke\" else \"grant\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt",
+    "line": 160,
+    "severity": "suggestion",
+    "title": "外层 togglePermission 函数已无人调用，死代码"
+  },
+  {
+    "confidence": "高",
+    "detail": "extractTagContent 用正则提取 <tag></tag> 内容，但在 AutoGlmViewModel.kt 全文件没有第二处引用（定义在第 214 行）。疑似早期解析模型输出标签的残留，现在 onStep 日志走 StepResult 结构化字段，已不再需要。",
+    "evidence": "    private fun extractTagContent(text: String, tag: String): String? {\n        val pattern = Regex(\"\"\"<$tag>(.*?)</$tag>\"\"\", RegexOption.DOT_MATCHES_ALL)\n        return pattern.find(text)?.groupValues?.getOrNull(1)?.trim()\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt",
+    "line": 214,
+    "severity": "suggestion",
+    "title": "extractTagContent 定义后从未被调用"
+  },
+  {
+    "confidence": "高",
+    "detail": "executeTask 里创建了 pausedState = MutableStateFlow(false) 并传给 agent.run 的 isPausedFlow，但 ViewModel 与界面上没有任何地方把它置为 true，也没有暂停按钮。暂停能力只存在于参数层面，对用户不可见、不可达。",
+    "evidence": "                var stepIndex = 1\n                val pausedState = kotlinx.coroutines.flow.MutableStateFlow(false)\n",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt",
+    "line": 141,
+    "severity": "suggestion",
+    "title": "pausedState 永不置 true，暂停机制有名无实"
+  },
+  {
+    "confidence": "中",
+    "detail": "ToolCard 点击后 delay(100) 才调 onClick，isPressed 在这 100ms 内保持 true 但没有任何防重入。若用户在这 100ms 内再点一次，会又起一个协程，onClick（即导航跳转）被执行两次，可能压入重复的导航栈。",
+    "evidence": "                onClick = {\n                        isPressed = true\n                        // 使用rememberCoroutineScope来启动协程\n                        scope.launch {\n                                delay(100)\n                                tool.onClick()\n                                isPressed = false\n                        }\n                },",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt",
+    "line": 125,
+    "severity": "suggestion",
+    "title": "ToolCard 快速连点可能触发两次导航"
+  },
+  {
+    "confidence": "高",
+    "detail": "ToolboxScreen 声明了 navController: NavController 参数但函数体内从未使用，靠 @Suppress(\"UNUSED_PARAMETER\") 压警告。所有跳转都走 onNavigationEntrySelected 回调，这个参数可以删掉或真正用起来。",
+    "evidence": "@OptIn(ExperimentalMaterial3Api::class)\n@Suppress(\"UNUSED_PARAMETER\")\n@Composable\nfun ToolboxScreen(\n        navController: NavController,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt",
+    "line": 54,
+    "severity": "suggestion",
+    "title": "ToolboxScreen 的 navController 参数未使用"
+  },
+  {
+    "confidence": "中",
+    "detail": "每次执行 REMOVE/RESTORE 都会把一条 ProcessLimitRecord 插到 operationHistory 头部，列表没有任何上限。用户反复点按钮做测试时列表无限增长，每条还持有完整的 CommandResult（含 stdout/stderr 全文）。",
+    "evidence": "                // 添加到历史记录\n                operationHistory = listOf(record) + operationHistory\n                lastResult = record",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt",
+    "line": 137,
+    "severity": "suggestion",
+    "title": "进程限制操作历史无上限"
+  },
+  {
+    "confidence": "中",
+    "detail": "导出完成对话框里点“打开文件”会构造 open_file 工具并调用 toolHandler.executeTool(openFileTool)，但这是普通函数调用而非挂起调用，返回值被直接丢弃。打开失败时用户得不到任何反馈。",
+    "evidence": "                onOpenFile = { filePath ->\n                    val openFileTool = AITool(\n                        name = \"open_file\",\n                        parameters = listOf(ToolParameter(\"path\", filePath))\n                    )\n                    toolHandler.executeTool(openFileTool)\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt",
+    "line": 318,
+    "severity": "suggestion",
+    "title": "导出产物“打开文件”的执行结果被丢弃"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "critic": "critic2-PASS",
+  "id": "ui-chat-input",
+  "issue": 91,
+  "refs_valid": "79；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "聊天输入区：agent（OutlinedTextField+模型胶囊+双弹窗）与 classic（BasicTextField+右下角齿轮 280dp 设置菜单）两种样式由 inputStyle 切换；common 共享 ChatInputHookRegistry（三事件+ALLOW/BLOCK/REPLACE/CONSUME 裁决，AIChatScreen 接线执行）、InputMenuTogglePluginRegistry（6 槽位开关插件）、MentionVisualTransformation、PendingMessageQueuePanel、ThinkingQualitySlider、ToolPromptManagerDialog；输入增强：空输入 Mic 走全屏语音、附件面板（classic 内嵌/agent 弹窗）、工具权限三段开关与工具提示词管理；走查 11 条（警告 7：sendButtonEnabled 恒 true 死逻辑、透明双分支布局重复等）。",
+  "title": "聊天输入区",
+  "approved_by_comment_id": 5927195505,
+  "updated": "2026-10-02"
+}

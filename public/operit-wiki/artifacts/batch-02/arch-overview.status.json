@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 2,
+  "refs_valid": "82/82 引用行号真实存在（抽查 10/10），lint 硬失败 0/警告 0；2026-10-02 v2 死链回炉：正文 [[ ]] wikilink 与裸 slug 全部转为 entry.html 真链接并补细页索引，内容变更打回待评审；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "整体架构（总览）：Gradle 9 模块划分与依赖方向、构建变体与签名轮换体系、构建前置资产同步与原生库校验、JniBridge/FbxNative/NativeRipgrep 三种 JNI 桥接、全站 11 章 116 页地图。",
+  "updated": "2026-10-02",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914916282,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

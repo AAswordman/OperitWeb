@@ -1,0 +1,706 @@
+[
+ {
+  "fact": "app/src/androidTest 共 67 个文件：38 个 .kt 测试类/辅助文件 + 29 个 .js 脚本，是独立于主源码的双轨测试资产",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/ExampleInstrumentedTest.kt:1"
+ },
+ {
+  "fact": "38 个 kt 文件中 37 个是测试类、1 个是辅助文件 StreamTestExtensions.kt（只提供 String.asCharStream() 扩展，无 @Test）",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamTestExtensions.kt:4"
+ },
+ {
+  "fact": "kt 测试共 199 个 @Test 方法；全部测试类用 @RunWith(AndroidJUnit4)，HotStreamAndroidTest、StreamAndroidTest、StreamKmpGraphTest、StreamSplitByTest 另加 @MediumTest",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/HotStreamAndroidTest.kt:30"
+ },
+ {
+  "fact": "ExampleInstrumentedTest 只有 1 个方法 useAppContext，断言 targetContext.packageName == \"com.ai.assistance.operit\"，是模板测试无业务断言",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/ExampleInstrumentedTest.kt:14"
+ },
+ {
+  "fact": "FileBindingServiceTest 有 6 个方法，被测主类 api.chat.enhance.FileBindingService；setUp 用反射打开私有方法 applyLineBasedPatch(String,String)，断言 [START-DELETE/REPLACE/INSERT] 行补丁自底向上应用后全文精确相等",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/enhance/FileBindingServiceTest.kt:14"
+ },
+ {
+  "fact": "ToolExecutionManagerTest 只有 1 个方法 extractToolInvocations_shouldKeepAllToolBlocksInSameChunk，断言同一 chunk 内 3 个 <tool_X name=\"visit_web\"> 块全被提取且 url 参数顺序为 baidu/bing/github",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManagerTest.kt:11"
+ },
+ {
+  "fact": "MediaLinkBuilderAndroidTest 有 12 个方法，被测 api.chat.llmprovider.MediaLinkBuilder，精确断言 <link type=\"image\" id=\"img1\">图片</link> 等三种媒体标签",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilderAndroidTest.kt:11"
+ },
+ {
+  "fact": "MediaLinkBuilderFormatAndroidTest 有 3 个方法，断言本地化标签 >图片</link>、>音频</link>、>视频</link>",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilderFormatAndroidTest.kt:11"
+ },
+ {
+  "fact": "MediaLinkBuilderIdAndroidTest 有 3 个方法，断言 id 含连字符（img-1/aud-1/vid-1）能原样嵌入",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilderIdAndroidTest.kt:11"
+ },
+ {
+  "fact": "MediaLinkBuilderStructureAndroidTest 有 3 个方法，断言输出以 <link 开头",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkBuilderStructureAndroidTest.kt:11"
+ },
+ {
+  "fact": "WorkflowExecutorAndroidTest 有 2 个方法 nodeFailureShouldNotStopWorkflowExecution / onErrorBranchShouldExecuteWhenNodeFails，被测 core.workflow.WorkflowExecutor；断言空 actionType 的 ExecuteNode 失败不阻断并行 ConditionNode，on_error/on_success 连接条件下失败节点走 error 分支而 success 分支为 Skipped",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/core/workflow/WorkflowExecutorAndroidTest.kt:19"
+ },
+ {
+  "fact": "EnhancedTableBlockAndroidTest 用 createComposeRule() 做 Compose UI 测试，1 个方法 streamingContentUpdate_keepsHorizontalScrollInteractive；240dp 宽容器内渲染超宽表格，两次 swipe 后截图 Bitmap.sameAs 断言位移生效，流式追加更新后截图不变再 swipe 仍可交互",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlockAndroidTest.kt:31"
+ },
+ {
+  "fact": "MarkdownPlainTextRendererAndroidTest 有 7 个方法，被测 ui.common.markdown.markdownToPlainTextForCopy；断言加粗/斜体/删除线/链接转纯文本、代码块包分隔符、表格转 tab 分隔、LaTeX 批量回调只调 1 次且捕获 18 个公式、代码块内 LaTeX 不转换",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRendererAndroidTest.kt:12"
+ },
+ {
+  "fact": "ColorQrCodeUtilAndroidTest 有 2 个方法，被测 util.ColorQrCodeUtil；断言 2/4/8/16 色下 generate→decode 往返 payload 字节精确一致，decode 可自动识别色数",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/ColorQrCodeUtilAndroidTest.kt:10"
+ },
+ {
+  "fact": "CrashRecoveryStateAndroidTest 有 12 个方法，被测 util.CrashRecoveryState；SharedPreferences 文件名 crash_recovery_state、键 preserve_logs_for_crash_report，mark 用 commit 同步落盘、consume 删键且只首次返回 true、无关 key 不受影响",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/CrashRecoveryStateAndroidTest.kt:11"
+ },
+ {
+  "fact": "CrashRecoveryStateLifecycleAndroidTest 有 3 个方法，从 prefs 直接读验证 mark/consume 生命周期",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/CrashRecoveryStateLifecycleAndroidTest.kt:11"
+ },
+ {
+  "fact": "CrashRecoveryStatePrefsAndroidTest 有 1 个方法 otherPreferenceKey_survivesMarkAndConsume，断言 mark+consume 后同文件内无关 int key（count=2）保留",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/CrashRecoveryStatePrefsAndroidTest.kt:11"
+ },
+ {
+  "fact": "CrashRecoveryStateRepeatAndroidTest 有 2 个方法，断言重复消费语义（mark 后消费两次只有第一次返回 true）",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/CrashRecoveryStateRepeatAndroidTest.kt:11"
+ },
+ {
+  "fact": "IntRangeSerializerAndroidTest 有 2 个方法，断言 5..5 往返、{\"start\":5,\"endInclusive\":3} 解出 IntRange(5,3)（保留逆序边界）",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/IntRangeSerializerAndroidTest.kt:10"
+ },
+ {
+  "fact": "IntRangeSerializerShapeAndroidTest 有 2 个方法，断言编码含 \"start\":1 与 \"endInclusive\":2 字段",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/IntRangeSerializerShapeAndroidTest.kt:10"
+ },
+ {
+  "fact": "LocalDateTimeSerializerAndroidTest 有 2 个方法，断言 2025-01-01T00:00 与 2025-12-31T23:59:59 往返相等",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/LocalDateTimeSerializerAndroidTest.kt:10"
+ },
+ {
+  "fact": "LocalDateTimeSerializerFormatAndroidTest 有 2 个方法，断言编码含 T 分隔符与 2024- 年份前缀",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/LocalDateTimeSerializerFormatAndroidTest.kt:10"
+ },
+ {
+  "fact": "LocaleUtilsConfigurationAndroidTest 有 4 个方法，被测 LocaleUtils.createLocaleOverrideConfiguration；断言 override 只设 locales、orientation/屏幕尺寸保持 UNDEFINED；日语 override 第二语言为英语；日语 context 下 R.string.nav_settings 取到“設定”、缺失的日文串回退英文 \"Show Model Selector\"",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/LocaleUtilsConfigurationAndroidTest.kt:11"
+ },
+ {
+  "fact": "PathMapperAndroidTest 有 15 个方法，覆盖 mapLinuxPath（根/空串/普通/嵌套/相对/多前导斜杠/尾斜杠/空格路径）+ isLinuxEnvironment + resolvePath；ubuntuRoot = filesDir/usr/var/lib/proot-distro/installed-rootfs/ubuntu",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/PathMapperAndroidTest.kt:11"
+ },
+ {
+  "fact": "PathMapperLinuxEnvAndroidTest 有 3 个方法，断言 LiNuX 通过、\"\" 与 \" \" 拒绝",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/PathMapperLinuxEnvAndroidTest.kt:10"
+ },
+ {
+  "fact": "PathMapperLinuxPathAndroidTest 有 2 个方法，断言 /bin/bash、/usr/lib 映射到 ubuntuRoot 下",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/PathMapperLinuxPathAndroidTest.kt:10"
+ },
+ {
+  "fact": "PathMapperResolveAndroidTest 有 3 个方法，断言环境名大小写不敏感、null/空环境原样返回",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/PathMapperResolveAndroidTest.kt:10"
+ },
+ {
+  "fact": "SerializerAndroidTest 有 11 个方法，覆盖 UriSerializer（非空/空串互转、http/content Uri 往返）、IntRangeSerializer（1..3 精确编码 {\"start\":1,\"endInclusive\":3}、负区间）、LocalDateTimeSerializer（\"2024-01-02T03:04:05\" 精确编码、毫秒小数往返）",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/SerializerAndroidTest.kt:11"
+ },
+ {
+  "fact": "SerializerRoundTripAndroidTest 有 3 个方法，三类序列化器往返相等断言",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/SerializerRoundTripAndroidTest.kt:11"
+ },
+ {
+  "fact": "UriSerializerAndroidTest 有 2 个方法，断言 file:///sdcard/test.txt 与 operit://open/chat 往返",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/UriSerializerAndroidTest.kt:10"
+ },
+ {
+  "fact": "UriSerializerNullAndroidTest 有 2 个方法，断言 null 编码为 \"\"、\"\" 解码为 null",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/UriSerializerNullAndroidTest.kt:10"
+ },
+ {
+  "fact": "UriSerializerSchemeAndroidTest 有 2 个方法，断言 content/file scheme 往返保留",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/UriSerializerSchemeAndroidTest.kt:10"
+ },
+ {
+  "fact": "HotStreamAndroidTest 有 6 个方法，被测 util.stream 包的 MutableSharedStream（replay 缓存、resetReplayCache）、MutableStateStream（compareAndSet）、share/state 的 EAGERLY/LAZILY 启动模式；断言 replay=2 时新订阅者收到 [2,3]、LAZILY 下无订阅者时 replayCache 为空",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/HotStreamAndroidTest.kt:30"
+ },
+ {
+  "fact": "StreamAndroidTest 有 12 个方法，覆盖 streamOf/asStream/map/filter/take/drop/flatMap/onEach/concatWith/catch/distinctUntilChanged/asFlow/finally/throttleFirst；断言 catch 捕获后 collected=[开始]、Flow/Stream 互转、finally 正常与异常路径都执行",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamAndroidTest.kt:24"
+ },
+ {
+  "fact": "StreamKmpGraphTest 有 24 个方法，覆盖 CharCondition/CharRangeCondition/CharSetCondition/Not/Or/And/PredicateCondition、kmpPattern DSL、StreamKmpGraphBuilder.build/processChar/processText、失败转移、分组捕获；断言 processText(\"ababcabc\")==[5,8]",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamKmpGraphTest.kt:14"
+ },
+ {
+  "fact": "StreamRealTimeSplitTest 有 2 个方法 testRealTimeSplitByProcessing / testRealTimeSplitByWithSlowProducer，被测 splitBy + StreamXmlPlugin 大文本流式处理；两个方法均只 println 打时间戳、无任何断言",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamRealTimeSplitTest.kt:48"
+ },
+ {
+  "fact": "StreamSplitByTest 有 8 个方法，被测 splitBy(listOf(StreamXmlPlugin))；断言文本/XML/文本切 3 组且 tag 用 assertSame 判定插件身份、不完整 XML 归为 XML 组、空输入 0 组、emoji 变体选择符后仍能识别 XML 起始",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/StreamSplitByTest.kt:16"
+ },
+ {
+  "fact": "StreamJsonPluginTest 有 9 个方法，被测 stream.plugins.StreamJsonPlugin（提取完整 JSON）与 StreamPureJsonPlugin（提取并过滤为纯文本）；Pure 版把 {\"key\":\"value\",\"number\":123} 压成 \"keyvalue123\"",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/plugins/StreamJsonPluginTest.kt:11"
+ },
+ {
+  "fact": "StreamMarkdownPluginTest 有 16 个方法，覆盖 13 种 markdown 插件；断言 includeAsterisks=false 时粗体内容不含 **、多插件联用长分隔符优先、边缘用例（不闭合粗体、####### 非标题、不完整链接）",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPluginTest.kt:11"
+ },
+ {
+  "fact": "StreamXmlPluginTest 有 8 个方法，被测 StreamXmlPlugin 状态机；逐字符 processChar 驱动 IDLE->TRYING->PROCESSING->IDLE，'<' 后跟空格回 IDLE",
+  "ref": "app/src/androidTest/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPluginTest.kt:11"
+ },
+ {
+  "fact": "js/lib/harness.js 是共享断言/运行器，导出 assert/assertEq/test/runTests；test(name,fn) 只做 {name,fn} 打包；runTests 支持 options.only 精确单测与 options.startAt 起始位过滤，返回 {success,passed,failed,durationMs,failures,selectedCount}",
+  "ref": "app/src/androidTest/js/lib/harness.js:79"
+ },
+ {
+  "fact": "29 个 js 文件中没有任何一个被 kt 测试自动加载执行（全仓库 grep 仅 tools/adb/JS_ADB_README.md 提到）；执行靠 tools/adb/execute_js_dir 把整个 app/src/androidTest/js 目录推送到真机、调用指定导出函数，或 run_sandbox_script 做顶层 script-mode 执行",
+  "ref": "tools/adb/JS_ADB_README.md:125"
+ },
+ {
+  "fact": "JS 运行时模块机制：JsExecutionScriptBuilder 用 new Function('module','exports','require',...) 创建模块工厂，支撑脚本间 require 相对路径引用；宿主完成函数 complete(value) 负责序列化并回传结果",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:301"
+ },
+ {
+  "fact": "browser_tool_smoke.js 是冒烟脚本，module.exports={main}；main(params.mode) 先写 fixture 到 /sdcard/Download/Operit/browser_tool_smoke/smoke.html 并 file:// 导航；mode 分支：snapshot/handle_dialog/file_upload/resize/tabs/close/close_all/run_code",
+  "ref": "app/src/androidTest/js/browser_tool_smoke.js:157"
+ },
+ {
+  "fact": "browser_tool_suite_probe.js 是轻量探针，module.exports={main}；main(mode) 写 /sdcard/Download/Operit/browser_tool_suite_probe/browser_tool_suite.html，固定做 navigate+snapshot，mode=run_code 时跑 browser_run_code 取 page.title",
+  "ref": "app/src/androidTest/js/browser_tool_suite_probe.js:103"
+ },
+ {
+  "fact": "browser/main.js 是 browser 工具全量套件，27 个 test()，exports.run；fixture 含 click/log/alert/hover/drag/type/fill/check/select/fileTrigger/delayed 等控件与 dataset 埋点；覆盖 navigate/snapshot/click/hover/drag/type/press_key/fill_form/select_option/evaluate/console_messages/wait_for/handle_dialog/file_upload/resize/take_screenshot/run_code/close/close_all；支持 params.only/startAt 过滤",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/defaultTool/standard/browser/main.js:1"
+ },
+ {
+  "fact": "browser/probe.js 是 browser 工具轻量探针，exports.run(params)；mode 分支 snapshot/resize/tabs/run_code，输出 {success,mode,results:[{step,out}]} 步骤数组",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/defaultTool/standard/browser/probe.js:85"
+ },
+ {
+  "fact": "ffmpeg/ffmpeg_probe.js 是 ffmpeg 工具探针，module.exports={run}；依次调 ffmpeg_info、ffmpeg_execute（lavfi 生成 64x64 蓝色 0.2s 简单 mp4）与 filter_complex 缩放 32x32 复杂 mp4；success = 两次 ok 且输出文件存在且 length>0",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/defaultTool/standard/ffmpeg/ffmpeg_probe.js:94"
+ },
+ {
+  "fact": "bridge_contract/common.js 是各契约 suite 的共享前置，导出 assert/test/runSuite 及 Java.type 绑定（File/Thread/Runnable/Callable/FutureTask/StringBuilder/ArrayList/HashMap/JSONObject/JSONArray 等）与 runThreadAndJoin/runFutureTask 辅助；被 6 个 suite require('./common')",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/common.js:1"
+ },
+ {
+  "fact": "bridge_contract/bridge_contract.js 是总入口，exports.run 串行执行 6 个 suite（basic_syntax/host_runtime/interfaces/java_to_js/js_to_java/suspend_await）并汇总 {success,passed,failed,durationMs,failures,suites[]}；同时单独导出 6 个 run* 供单跑",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/bridge_contract.js:40"
+ },
+ {
+  "fact": "bridge_contract/basic_syntax.js 有 21 个 test，Java 桥语法糖契约：Java.type/use/importClass/package、三种构造、实例方法/字段糖 vs call()、静态字段/方法糖、嵌套类 outer$inner、package 链 Java.java.io.File、Java.getApplicationContext() 包名断言 com.ai.assistance.operit",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/basic_syntax.js:18"
+ },
+ {
+  "fact": "bridge_contract/host_runtime.js 有 10 个 test，宿主运行时契约：Tools.System.sleep / toolCall 四种调用形、NativeInterface.callTool 同步返回 JSON {success,data}、空工具名同步与异步错误文案均为 'Tool name cannot be empty'、Promise.all 三 sleep 保序、并发 sleep 总耗时显著小于串行证明重叠执行",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/host_runtime.js:49"
+ },
+ {
+  "fact": "bridge_contract/interfaces.js 有 15 个 test，Java 接口实现契约：Java.implement(Runnable,{run})/字符串接口+SAM 函数/SAM 简写/Java.proxy/回调位直接传对象或裸函数等 8 种写法均能在 new Thread(...).join 后执行；Callable 经 FutureTask 返回值",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/interfaces.js:17"
+ },
+ {
+  "fact": "bridge_contract/java_to_js.js 有 12 个 test，Java→JS 返回值归一化语义：Map→plain object、List/JSONArray/Java 数组→JS array（含嵌套递归）、Class/Enum→string、普通 Java 对象保持 proxy、但 new ArrayList(...) 构造的仍是 proxy（区别于 Arrays.asList 的归一化）",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/java_to_js.js:17"
+ },
+ {
+  "fact": "bridge_contract/js_to_java.js 有 12 个 test，JS→Java 入参转换语义：plain object→new JSONObject/HashMap 构造入参（递归）、JS array→new JSONArray/ArrayList、JS array 展开为 Java varargs、string→Enum.valueOf 的 Class 参数、Java proxy 回传保持同一对象",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/js_to_java.js:17"
+ },
+ {
+  "fact": "bridge_contract/suspend_await.js 有 7 个 test，suspend 桥接语义：Java.callSuspend 顶层形式、类代理 callSuspend、实例代理 listener.callSuspend('isAvailable') 三种 await Kotlin suspend 函数；boolean 结果解包；Promise.all 批量 await；stream.callSuspend('collect',{emit}) 在 await 期间泵送 Java→JS 回调收齐 'abc'；全部包 withTimeout 2000ms",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/suspend_await.js:57"
+ },
+ {
+  "fact": "bridge_contract/completion_contract.js 是脚本完成值契约目录非 test() 套件，catalog() 列 14 个函数；return* 与 complete* 成对覆盖 plain JSON、Java proxy(File)、嵌套 proxy、callback proxy(Runnable)、混合结构、proxy 数组、Class+Enum，用于验证顶层 return 返回值 vs complete() 显式完成的序列化契约",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_contract/completion_contract.js:3"
+ },
+ {
+  "fact": "bridge_edges/bridge_edges.js 有 53 个 test，分 4 组 runSpec(28)/runConversion(14)/runHostInterop(8)/runExploratory(3)；spec 覆盖构造/方法/字段/静态/嵌套类语法糖与 implement 回调；conversion 覆盖 NativeInterface 低阶桥与 Map/List/JSON 归一化；另导出 inspect*/measure*/explicitComplete* 序列化边缘探针（循环引用、BigInt、undefined/function、Date/RegExp、Map/Set、Symbol、toJSON 抛错、emit 事件形状）",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/bridge_edges/bridge_edges.js:640"
+ },
+ {
+  "fact": "script_mode_contract/await_return.js 顶层 await Promise.resolve(42) 后 return {success,mode:'script-mode-await-return',value}，验证 script-mode 顶层 await+return 完成路径",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/await_return.js:3"
+ },
+ {
+  "fact": "script_mode_contract/delayed_complete.js 在 setTimeout 50ms 后调 complete({success,mode:'script-mode-delayed-complete'})，验证异步延迟完成路径（无顶层 return）",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/delayed_complete.js:9"
+ },
+ {
+  "fact": "script_mode_contract/parallel_sleep.js 对比 toolCall('sleep') 并发(3×100ms) vs 串行 vs Tools.System.sleep 并发，断言并行总耗时+60ms < 串行，验证 script-mode 下工具调用真正重叠",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/parallel_sleep.js:66"
+ },
+ {
+  "fact": "script_mode_contract/promise_then_complete.js 用 Promise.resolve(payload).then(complete)，验证 promise 链式 complete 路径",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/promise_then_complete.js:3"
+ },
+ {
+  "fact": "script_mode_contract/return_java_proxy.js 顶层 return 含 File proxy 的对象（file/nested.child/files[]），验证返回值中 Java proxy 序列化",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/return_java_proxy.js:5"
+ },
+ {
+  "fact": "script_mode_contract/return_plain.js 顶层 return 纯 JSON {nested:{value:7},items:[1,2,3]}，是序列化基线对照",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/return_plain.js:3"
+ },
+ {
+  "fact": "script_mode_contract/return_special_values.js 顶层 return 含 Date/RegExp/BigInt(12345678901234567890n)/Map/Set/Symbol/undefined/函数 的 payload，验证特殊值序列化边缘",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/return_special_values.js:3"
+ },
+ {
+  "fact": "script_mode_contract/tool_error_surface.js 断言同步 NativeInterface.callTool('default','',...) 与异步 toolCall 空名错误均含 'Tool name cannot be empty'，验证错误表面一致性",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/tool_error_surface.js:8"
+ },
+ {
+  "fact": "script_mode_contract/unhandled_rejection.js 仅 3 行，顶层 await Promise.reject(Error('script-mode unhandled rejection sentinel'))，验证未处理拒绝的上报路径",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/unhandled_rejection.js:3"
+ },
+ {
+  "fact": "script_mode_contract/download_file_probe.js 是 download_file 三种调用路径探针：同步 NativeInterface.callTool、原生异步 NativeInterface.callToolAsync（globalThis 回调 id 映射）、高级 toolCall；3 个成功 URL（cdn.jsdelivr.net 上 Operit@main 的 .d.ts）+1 个 404 URL；先串行后并行，校验落盘文件存在且 length>0",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/download_file_probe.js:108"
+ },
+ {
+  "fact": "script_mode_contract/download_file_stress_probe.js 是并发压力探针，27 个下载（3 个 docs md + 24 个 examples/types/*.d.ts）经 Promise.all 并发走 rawAsync 路径，统计 rawFailureCount/malformedRawCount，对失败抽样再用高级 toolCall 重试；强依赖外网 CDN",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/core/tools/javascript/script_mode_contract/download_file_stress_probe.js:88"
+ },
+ {
+  "fact": "util/ttscleaner/ttscleaner.js 是 TTS 清洗契约脚本，exports.run，31 个 test；直调 TtsCleaner.INSTANCE.clean 与 WaifuMessageProcessor.INSTANCE.cleanContentForWaifu 组成 cleanForSpeech 管线；覆盖正则括号清洗、<think>/<thinking>/<search> 闭合/未闭合/多行/嵌套块；大写 <THINK>/<SEARCH> 与带属性 <think type=\"hidden\"> 三个用例明确断言“当前会泄漏内部文本”（已知行为锁定）",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/util/ttscleaner/ttscleaner.js:143"
+ },
+ {
+  "fact": "util/waifusplitter/main.js 是 Waifu 分句契约脚本，exports.run/runPrototype，29 个 test；createKotlinAdapter 直调 WaifuMessageProcessor.INSTANCE 的 splitMessageBySentences/splitStableMessageSegments/StreamingSession；createJsPrototypeAdapter 在 Kotlin 结果上叠 JS 启发式；覆盖小数/版本号/URL/邮箱不断句、标题/加粗/链接/代码块/表格/LaTeX/引用/列表保护、流式会话增量语义",
+  "ref": "app/src/androidTest/js/com/ai/assistance/operit/util/waifusplitter/main.js:620"
+ },
+ {
+  "fact": "templates/ 下共 9 个子模板目录、193 个文件：android 41、flutter 123、go 4、java 8、node 4、office 2、python 4、typescript 5、web 2，是聊天工作区的项目脚手架库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:31"
+ },
+ {
+  "fact": "模板消费入口唯一：WorkspaceUtils.createAndGetDefaultWorkspace 按 projectType 字符串映射到模板目录（android/flutter/node/typescript/python/java/go/office/blank，缺省走 web），每个分支先 copyTemplateFiles 再 createProjectConfigIfNeeded",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:31"
+ },
+ {
+  "fact": "copyTemplateFiles 从 APK assets 的 templates/$templateName 递归复制到内部存储工作区 /data/data/com.ai.assistance.operit/files/workspace/{chatId}；无下载、无解压（assets 内已是散文件）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:682"
+ },
+ {
+  "fact": "复制时特殊处理：根目录下名为 gitignore（无点）的文件重命名为 .gitignore，因为 Android 构建工具会排除 assets 中的 .gitignore 文件；9 个模板根目录的 gitignore 全部无点",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:691"
+ },
+ {
+  "fact": "不存在占位符替换机制：WorkspaceUtils.kt 全文件无 replace/占位符逻辑；模板按原样复制，用户需手工改包名/应用名（如 com.java.myapplication、com.example.operit_flutter_project）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:700"
+ },
+ {
+  "fact": "不存在模板版本号与更新机制：templates 内无版本文件，代码中无模板版本检查；模板随 APK assets 发布，仅随 App 升级更新",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:710"
+ },
+ {
+  "fact": "README 引用的 .operit/config.json 不在模板内，而是由 createProjectConfigIfNeeded 按 ProjectType 枚举动态生成（generate*ProjectConfig 内嵌各模板的命令按钮 JSON），已存在则跳过",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WorkspaceUtils.kt:754"
+ },
+ {
+  "fact": "QuickPluginCreatorSetupSupport 与 assets/templates 无关：runQuickPluginCreatorSetup 从 cdn.jsdelivr.net/gh/AAswordman/Operit@main/tools/sandboxpackage_dev_install_or_update.js 下载 JS 到 Download/Operit/skills/SandboxPackage_DEV/scripts/install_or_update.js，再经 operit_editor:debug_run_sandbox_script 工具执行；由 PackageManagerScreen 的“快速创建插件”入口触发",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:20"
+ },
+ {
+  "fact": "android 模板是 Jetpack Compose + Material3 脚手架：app/build.gradle.kts namespace/applicationId=com.java.myapplication，compileSdk=35，minSdk=24，targetSdk=35，versionCode=1，versionName=1.0",
+  "ref": "app/src/main/assets/templates/android/app/build.gradle.kts:7"
+ },
+ {
+  "fact": "android 模板依赖版本：AGP 9.0.0、Kotlin 2.3.10、composeBom 2026.01.01、coreKtx 1.10.1、activityCompose 1.8.0、junit 4.13.2；Gradle wrapper 指向 gradle-9.1.0-bin.zip；settings.gradle.kts 仓库顺序为阿里云/华为云/google/mavenCentral",
+  "ref": "app/src/main/assets/templates/android/gradle/libs.versions.toml:2"
+ },
+ {
+  "fact": "android 模板 app/build.gradle.kts 用 resolutionStrategy 强制把 com.android.tools.build:aapt2 换成 linux-aarch64 classifier；gradle.properties 设 android.aapt2.process.daemon=false 适配 proot/Termux",
+  "ref": "app/src/main/assets/templates/android/app/build.gradle.kts:50"
+ },
+ {
+  "fact": "android 与 flutter/android 各内置一份 ARM64 aapt2 二进制（ELF64 aarch64，4706040 字节），sha256 均为 e5b5ff7f0d4f6ecd7fa5d05d77fed3f09f6f1bf80f078b8aada82bc578848561，与 android/README.md 声称的 SHA-256 完全一致",
+  "ref": "app/src/main/assets/templates/android/README.md:169"
+ },
+ {
+  "fact": "android/setup_android_env.sh 约 630 行：测速选镜像（tuna/bfsu/aliyun/tencent），装 OpenJDK17，下载 cmdline-tools，sdkmanager 装 platform-35/build-tools 35.0.0，备好 Gradle 9.1.0 并改写 wrapper distributionUrl 为本地 file URL，校验 SHA 后把内置 aapt2 替换进 SDK build-tools、Gradle 缓存 jar 内与 transforms 解压目录",
+  "ref": "app/src/main/assets/templates/android/setup_android_env.sh:1"
+ },
+ {
+  "fact": "flutter 模板是 flutter create 标准六平台工程：pubspec.yaml name=operit_flutter_project，version=1.0.0+1，Dart SDK ^3.9.0，cupertino_icons ^1.0.8，flutter_lints ^6.0.0；lib/main.dart 与 test/widget_test.dart 为官方计数器示例及 smoke test",
+  "ref": "app/src/main/assets/templates/flutter/pubspec.yaml:1"
+ },
+ {
+  "fact": "flutter/android/app/build.gradle.kts：namespace/applicationId=com.example.operit_flutter_project，AGP 8.11.1，Kotlin 2.2.20，Gradle wrapper 8.14；settings.gradle.kts 强制从 local.properties 读 flutter.sdk，缺失则 require 抛异常",
+  "ref": "app/src/main/assets/templates/flutter/android/settings.gradle.kts:7"
+ },
+ {
+  "fact": "flutter/android/setup_android_env.sh 约 1300 行：Gradle 8.14，按 releases_linux.json 自动安装 Flutter stable，装 NDK 28.2.13676358、CMake 3.22.1，ARM64 主机用 box64 包裹 x86_64 cmake/ndk 工具链，sdkmanager 装 platform-36/build-tools 36.0.0，写 local.properties，跑 flutter precache 与 pub get",
+  "ref": "app/src/main/assets/templates/flutter/android/setup_android_env.sh:1"
+ },
+ {
+  "fact": "flutter 模板有 28 个 0 字节图片占位：ios AppIcon 15 个 PNG、ios LaunchImage 3 个 PNG、macos AppIcon 7 个 PNG、web maskable 图标 2 个、windows app_icon.ico 1 个；其余图片真实",
+  "ref": "app/src/main/assets/templates/flutter/web/manifest.json:23"
+ },
+ {
+  "fact": "web/manifest.json 引用的两个 maskable 图标（Icon-maskable-192.png/Icon-maskable-512.png）为 0 字节",
+  "ref": "app/src/main/assets/templates/flutter/web/manifest.json:23"
+ },
+ {
+  "fact": "go 模板：go.mod module operit-go-project，go 1.21；main.go 打印欢迎语、数组求和，无第三方依赖",
+  "ref": "app/src/main/assets/templates/go/go.mod:1"
+ },
+ {
+  "fact": "node 模板：package.json name=operit-node-project 1.0.0，scripts start/dev 均为 node index.js；index.js 用 http 模块在 127.0.0.1:3000 起服务并返回中文 HTML 页",
+  "ref": "app/src/main/assets/templates/node/package.json:1"
+ },
+ {
+  "fact": "python 模板：main.py 打印欢迎语与求和；requirements.txt 仅注释无依赖；README 要求用虚拟环境",
+  "ref": "app/src/main/assets/templates/python/requirements.txt:1"
+ },
+ {
+  "fact": "typescript 模板：package.json name=operit-typescript-project，devDependencies typescript ^5.3.0、@types/node ^20.0.0，scripts build=tsc、start=node dist/index.js、dev=tsc --watch、clean=rm -rf dist；tsconfig.json strict=true、target ES2020、module commonjs、outDir dist/rootDir src",
+  "ref": "app/src/main/assets/templates/typescript/package.json:1"
+ },
+ {
+  "fact": "java 模板：build.gradle.kts 用 java+application 插件，Java 17，junit-jupiter 5.10.0，mavenCentral+阿里云，fat jar 打包 runtimeClasspath，mainClass=com.operit.app.Main，run 任务接 stdin；Main.java+Calculator.java（含除零抛 ArithmeticException）+CalculatorTest.java（JUnit5）；无 gradle wrapper",
+  "ref": "app/src/main/assets/templates/java/build.gradle.kts:1"
+ },
+ {
+  "fact": "web 模板仅 2 文件：index.html（单文件渐变落地页，无构建步骤）+ gitignore；无 README.md",
+  "ref": "app/src/main/assets/templates/web/index.html:1"
+ },
+ {
+  "fact": "office 模板仅 2 文件：README.md（Pandoc/XeLaTeX 文档转换手册）+ gitignore；无任何可执行脚手架文件",
+  "ref": "app/src/main/assets/templates/office/README.md:1"
+ },
+ {
+  "fact": "flutter 模板 README 记录：先跑 bash android/setup_android_env.sh（自动装 Flutter stable、写 ~/.bashrc 的 FLUTTER_STORAGE_BASE_URL/PUB_HOSTED_URL），再 flutter pub get；web 预览用 flutter run -d web-server --web-port 5013",
+  "ref": "app/src/main/assets/templates/flutter/README.md:1"
+ },
+ {
+  "fact": "linux 模板：CMakeLists BINARY_NAME/APPLICATION_ID=com.example.operit_flutter_project，gtk+-3.0，cxx_std_14，-Wall -Werror；windows 模板：cxx_std_17，/W4 /WX，Runner.rc 内嵌版本信息 CompanyName=com.example",
+  "ref": "app/src/main/assets/templates/flutter/linux/CMakeLists.txt:1"
+ },
+ {
+  "fact": "app/src/main/res/values/strings.xml 共 8507 行，含 7716 个 <string> 条目、1 个 <plurals>、0 个 <string-array>，是全应用文案的唯一默认语言源（中文）",
+  "ref": "app/src/main/res/values/strings.xml:1"
+ },
+ {
+  "fact": "app_name = \"Operit AI\"",
+  "ref": "app/src/main/res/values/strings.xml:2"
+ },
+ {
+  "fact": "全文件唯一的 <plurals name=\"chat_delete_selected_messages_confirm\"> 只有 quantity=\"other\" 一个分支（中文无复数形态，other 覆盖全部）",
+  "ref": "app/src/main/res/values/strings.xml:3342"
+ },
+ {
+  "fact": "values/colors.xml 共 9 行：purple_200 #FFBB86FC、purple_500 #FF6200EE、purple_700 #FF3700B3、teal_200 #FF03DAC5、teal_700 #FF018786、black、white",
+  "ref": "app/src/main/res/values/colors.xml:1"
+ },
+ {
+  "fact": "values/themes.xml 共 17 行：Theme.Operit 继承 Theme.MaterialComponents.DayNight.DarkActionBar；colorPrimary=@color/purple_500、colorPrimaryVariant=purple_700、colorOnPrimary=white、colorSecondary=@color/teal_200、colorSecondaryVariant=teal_700、colorOnSecondary=black；android:windowLayoutInDisplayCutoutMode=shortEdges",
+  "ref": "app/src/main/res/values/themes.xml:1"
+ },
+ {
+  "fact": "values-night/themes.xml 同名 Theme.Operit：colorPrimary 改为 @color/purple_200、colorSecondaryVariant 改为 teal_200，新增 android:statusBarColor=?attr/colorPrimaryVariant",
+  "ref": "app/src/main/res/values-night/themes.xml:1"
+ },
+ {
+  "fact": "xml/locales_config.xml 声明 9 个 locale：zh、en、ja、ko、es、ms、id、pt-BR、ro",
+  "ref": "app/src/main/res/xml/locales_config.xml:1"
+ },
+ {
+  "fact": "各语言 strings.xml 条目数：默认 7716；en 7710；es 7555；id 7475；ja 278；ko 7475；ms 7555；pt-rBR 7474；ro 7555",
+  "ref": "app/src/main/res/values-en/strings.xml:1"
+ },
+ {
+  "fact": "language_info = \"更改语言后，应用将自动重启以应用新的语言设置\"",
+  "ref": "app/src/main/res/values/strings.xml:1160"
+ },
+ {
+  "fact": "语言切换是整应用重启而非 Activity recreate：LanguageSettingsScreen 调用 LocaleUtils.setAppLanguage 后用 FLAG_ACTIVITY_NEW_TASK|FLAG_ACTIVITY_CLEAR_TASK 启动 MainActivity；切换中显示 language_changing",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LanguageSettingsScreen.kt:95"
+ },
+ {
+  "fact": "LocaleUtils.createCompatLocaleList 对日语做特殊处理：ja → LocaleListCompat \"ja,en\"，日语未翻译项回退到英语资源，永不显示中文默认资源",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:93"
+ },
+ {
+  "fact": "createPlatformLocaleList 同样对日语特殊处理：LocaleList(ja, ENGLISH)，其余语言单 locale",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:105"
+ },
+ {
+  "fact": "LocaleUtils.LanguageCodes：AUTO=\"system\" 及 zh/en/ja/ko/es/ms/id/pt-BR/ro；legacy 别名 pt→pt-BR、in→id；supportedLanguages 共 10 项（含跟随系统）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:20"
+ },
+ {
+  "fact": "setAppLanguage 用 runBlocking(Dispatchers.IO) 保存语言到 UserPreferencesManager；Android 13+ 用 AppCompatDelegate.setApplicationLocales(createCompatLocaleList(...))，旧版本用 resources.updateConfiguration",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:180"
+ },
+ {
+  "fact": "应用启动时在 attachBaseContext 包装 locale override：OperitApplication 与 MainActivity 均实现",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:570"
+ },
+ {
+  "fact": "key 首 token 前缀分组共 592 个不同组，Top10：workflow 347、chat 255、mcp 245、speech 208、backup 174、settings 171、memory 160、workspace 159、permission 157、market 140",
+  "ref": "app/src/main/res/values/strings.xml:2"
+ },
+ {
+  "fact": "占位符以索引式 %1$s 为主，但混用非索引式：engine_init_failed 用 \"%s\"；tts_speech_rate、tts_speech_pitch 用 \"%sx\"",
+  "ref": "app/src/main/res/values/strings.xml:2067"
+ },
+ {
+  "fact": "字面百分号转义正确：plugin_complete_with_failures 用 \"%1$d%%\"；全文件未发现行尾孤立 % 错误转义",
+  "ref": "app/src/main/res/values/strings.xml:696"
+ },
+ {
+  "fact": "典型 R.string 引用：AboutScreen 用 stringResource(id = R.string.app_name)；ExportDialogs 用 context.getString(R.string.app_name)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:877"
+ },
+ {
+  "fact": "res/xml 下共 10 个 xml 资源，含 accessibility_service_config、locales_config、shortcuts、voice_assistant_widget_info 等",
+  "ref": "app/src/main/res/xml/locales_config.xml:1"
+ },
+ {
+  "fact": "仓库 commit dbf71916（v1.12.2）下 tools/ 共 114 个文件、examples/ 共 540 个文件；examples 顶层 48 个 .ts 与 49 个 .js，.ts 为源码、.js 为编译/打包产物",
+  "ref": "examples/github/package.json:1"
+ },
+ {
+  "fact": "examples/README.md 是 VSCode F5 直连设备的 JS 调试说明（调 tools/adb/execute_js）+ Tool Package 格式说明（.js 首选、Promise 异步；.hjson 遗留兼容），包结构=顶部 METADATA 块+工具函数+exports",
+  "ref": "examples/README.md:1"
+ },
+ {
+  "fact": "tools/adb/ 是 Android 端 JS 运行/调试入口：execute_js.sh 把单个 JS 推到设备后发 am broadcast（ACTION=com.ai.assistance.operit.EXECUTE_JS，带 file_path/function_name/params_file_path/result_file_path）让 Operit JS runtime 执行导出函数并回写结构化结果；execute_js_dir 支持目录 bundle+本地 require；run_sandbox_script 执行顶层脚本模式（不用导出函数，用 complete()/console.log()/emit()）",
+  "ref": "tools/adb/execute_js.sh:216"
+ },
+ {
+  "fact": "tools/adb/deepseek_harness_probe.js 运行于 Operit JS 沙箱内的诊断脚本，用 Tools.System.terminal.create('deepseek_harness_runtime_probe') 建终端会话，采集 DeepSeek Harness 的 PID 文件状态、进程存活、日志与服务端口",
+  "ref": "tools/adb/deepseek_harness_probe.js:6"
+ },
+ {
+  "fact": "tools/compose_dsl/ 从 Gradle 缓存的 Compose Material3/Foundation source jar 生成三样产物：Kotlin 渲染器注册表 ToolPkgComposeDslGeneratedRegistry.kt、渲染器 ToolPkgComposeDslGeneratedRenderers.kt、TS 绑定 examples/types/compose-dsl.material3.generated.d.ts；核心复杂节点（TextField/Icon/Card/Surface 等）保留手写渲染器；调用 python tools/compose_dsl/generate_compose_dsl_artifacts.py",
+  "ref": "tools/compose_dsl/README.md:1"
+ },
+ {
+  "fact": "tools/example_packages/ 的 packages_whitelist.txt（40 个条目）列出允许同步的官方示例包（12306、code_runner、browser、deepsearching、apktool、windows_control、linux_ssh、message_insert/translation、remote_operit、worldbook 等）；sync_example_packages.py 把示例包按 syncable 后缀（.js/.toolpkg）同步进设备端 Operit（debug 版 com.ai.assistance.operit.debug / release 版 com.ai.assistance.operit）",
+  "ref": "tools/example_packages/sync_example_packages.py:7"
+ },
+ {
+  "fact": "tools/ffmpeg/ 的 build_ffmpeg_kit_wsl.sh 在 WSL 用 ffmpeg-kit 源码构建 Android 版；import_local_ffmpeg_kit.ps1 把本地构建的 aar 导入 app/libs（ffmpeg-kit-local.aar）与 app/src/main/jniLibs",
+  "ref": "tools/ffmpeg/build_ffmpeg_kit_wsl.sh:1"
+ },
+ {
+  "fact": "tools/github/commit_ai.py 用 git diff 生成 AI commit message：读环境变量 AI_API_KEY（缺失则报错退出）、调 OpenAI 兼容 /chat/completions 接口、把建议的提交信息打印出来；token 只走环境变量",
+  "ref": "tools/github/commit_ai.py:183"
+ },
+ {
+  "fact": "tools/github/import_anthropic_skills.py 并发抓取 Anthropic 官方 skills 列表页，把 skill 下载为 zip 后导入到目标 GitHub 仓库（repo/tree/blob 三种目标形态）",
+  "ref": "tools/github/import_anthropic_skills.py:15"
+ },
+ {
+  "fact": "tools/github/list_issues.py 用 urllib 直调 GitHub REST API 列 issues，支持 .env 文件加载、--github-tls12 与 --github-insecure 开关（默认走系统 CA 校验）",
+  "ref": "tools/github/list_issues.py:33"
+ },
+ {
+  "fact": "tools/hotbuild/ 是 OTA 热补丁流水线：自研二进制差分格式 OPATCH1（MAGIC=OPATCH1\\0，OP_END=0/OP_COPY=1/OP_ADD=2，单块最大 4MB），build_patch.py 生成补丁、apply_patch.py 应用补丁（双端 sha256 校验），versionName 形如 1.12.2+3；nightly_auto.py 做 nightly 自动构建；install_from_adb.bat 用 adb install -r -d 安装",
+  "ref": "tools/hotbuild/build_patch.py:19"
+ },
+ {
+  "fact": "tools/mcp_bridge/ 把 STDIO 型本地 MCP 服务器桥接到 TCP（默认端口 8752），让无法访问命名管道的 Android 客户端能连接；支持并发连接、崩溃自动重启、spawn 超时检测、请求超时；构建产物同步到 app/src/main/assets/bridge/（index.js、spawn-helper.js）",
+  "ref": "tools/mcp_bridge/README.md:1"
+ },
+ {
+  "fact": "tools/mcp_bridge/spawn-helper.ts 每个本地 MCP 服务 fork 一个 helper 子进程，用 @modelcontextprotocol/sdk 的 StdioClientTransport 建 MCP Client；npx 命令会被改写为 pnpm dlx（去掉 -y/--yes）；默认注入 npm_config_cache、npm_config_prefer_offline、UV_LINK_MODE=copy、Linux 下 NODE_OPTIONS=--openssl-legacy-provider；有 uncaughtException 兜底",
+  "ref": "tools/mcp_bridge/spawn-helper.ts:36"
+ },
+ {
+  "fact": "tools/mcp_bridge/index.ts 检测到 stderr 含 'environment variable .* is required' 或 'api[_-]?key.*required' 类文本时判定为致命启动错误、不再自动重启（避免缺 key 死循环重启）",
+  "ref": "tools/mcp_bridge/index.ts:299"
+ },
+ {
+  "fact": "tools/native_ripgrep/ 是 Rust cdylib（operit_ripgrep），用 grep-regex/grep-matcher 做正则匹配、ignore crate 做目录遍历（尊重 .gitignore）、globset 做文件过滤、jni 0.21 暴露 JNI；JNI 入口 Java_com_ai_assistance_operit_util_ripgrep_NativeRipgrep_searchJson 返回 JSON（含 filesSearched/blocks）；默认排除 .backup/.operit/backup 目录；二进制判定为前 8KB 含 NUL 则跳过；长行截断（300/400/4000 字符）",
+  "ref": "tools/native_ripgrep/src/lib.rs:56"
+ },
+ {
+  "fact": "tools/shell_identity_launcher/ 是 C++ setuid helper：必须以 root(uid 0)/shell(uid 2000) 启动；root 时先 setgroups/setgid(2000)/setuid(2000) 降级到 shell 身份，再经移植自 Shizuku 的 SELinux helper 把 SELinux 域切到 u:r:shell:s0；最后解析 KEY=VALUE 前缀设环境变量后 execvp 目标命令；降级失败（最终 uid/gid 非 2000）直接 return 1；用途是让 DisplayManagerService 的 'packageName must match the calling uid' 校验通过",
+  "ref": "tools/shell_identity_launcher/native-lib.cpp:130"
+ },
+ {
+  "fact": "tools/sandboxpackage_dev_install_or_update.js 在设备端 /sdcard/Download/Operit/skills/SandboxPackage_DEV/ 下安装/更新开发版 SandboxPackage，从 CDN（cdn.jsdelivr.net/gh/AAswordman/Operit@main）拉取 references/types/scripts/examples 与 22 个 .d.ts 类型文件（android/chat/compose-dsl/core/cryptojs/ffmpeg/files/index/java-bridge/jimp/memory/network/okhttp/pako/quickjs-runtime/results/software_settings/system/tasker/tool-types/toolpkg/ui），下载并发 8",
+  "ref": "tools/sandboxpackage_dev_install_or_update.js:5"
+ },
+ {
+  "fact": "tools/string/ 是 Android 字符串国际化工具集：count_ui_strings.py 统计需国际化的中文字符串（排除注释/日志/大段提示词）；fill_missing_translations.py 以 zh strings.xml 为基准补全其他语言缺失项并删除源已删的 key；add_string.py/check_strings.py/search_string.py 做增/查/搜",
+  "ref": "tools/string/count_ui_strings.py:1"
+ },
+ {
+  "fact": "tools/toolpkg/ 的 debug_toolpkg 把 ToolPkg 调试安装到 debug/release 版 Operit 并 tail logcat；toolpkg_hook_runner.js 在宿主外本地模拟运行 ToolPkg hooks（system_prompt/prompt_finalize/prompt_input/prompt_history/message_processing/chat_input/tool_lifecycle/summary_generate），支持 --payload/--fixtures mock",
+  "ref": "tools/toolpkg/toolpkg_hook_runner.js:8"
+ },
+ {
+  "fact": "tools/shower/ 是独立 Android 应用（包名 com.ai.assistance.shower），scrcpy 式思路：编译出 APK 后 adb push 到 /data/local/tmp 改名为 shower-server.jar，用 CLASSPATH=... app_process / com.ai.assistance.shower.Main 在 adb shell 身份下启动，无需安装 APK；当前是 Binder-only 架构：main() 打日志 'server started (Binder only mode)'，通过 Shizuku 式 binder 握手（ACTION_SHOWER_BINDER_READY）把 IShowerService binder 传给主应用",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/Main.java:401"
+ },
+ {
+  "fact": "shower Main.java 每个 DisplaySession 维护 MediaCodec H.264 编码循环（encodeLoop），输出帧经 IShowerVideoSink.onVideoFrame(byte[]) 回调给客户端；支持多虚拟显示器 ensureDisplay(width,height,dpi,bitrateKbps)；无活跃 sink 超过 CLIENT_IDLE_TIMEOUT_MS 则 System.exit(0) 自杀",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/Main.java:244"
+ },
+ {
+  "fact": "shower IShowerService.java 是 aidl 风格手工 Binder 接口：ensureDisplay/destroyDisplay/launchApp、tap/swipe/touchDown/touchMove/touchUp/injectTouchEvent 全套触摸注入、injectKey/injectKeyWithMeta 按键注入、requestScreenshot 截图、setVideoSink 注册视频回调；IShowerVideoSink 只有一个 onVideoFrame(byte[]) 回调；Stub/Proxy 均为手写 Parcel 序列化",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/IShowerService.java:11"
+ },
+ {
+  "fact": "shower DisplayCapture.java 对指定 displayId 用 ImageReader 创建 Surface→建 VirtualDisplay→抓一帧转 PNG byte[]（单张截图路径，IMAGE_WAIT_TIMEOUT_MS=1000）",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/DisplayCapture.java:29"
+ },
+ {
+  "fact": "shower InputController.java 经反射拿 android.hardware.input.InputManager.injectInputEvent 实现跨 display 触摸/按键注入；默认开启 human-like 抖动（fuzzingEnabled=true）：tap 位置抖动 1.5px、压力/面积抖动 0.06、tap 抬起延迟 25-60ms、swipe 步数 8-14、时长抖动 45ms，用于反自动化检测",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/InputController.java:17"
+ },
+ {
+  "fact": "shower ShowerBinderContainer.java（44 行）是 Parcelable 包装类，只包一个 IBinder（writeStrongBinder/readStrongBinder），用于经 Intent extra 跨进程传递 binder；wrappers/ 下是系统服务的反射包装；shell/ 下 FakeContext/Workarounds 解决 app_process 无应用上下文的问题",
+  "ref": "tools/shower/app/src/main/java/com/ai/assistance/shower/ShowerBinderContainer.java:1"
+ },
+ {
+  "fact": "shower 与主应用关系：shower 是独立投屏/操控服务端，主应用（Operit）作为 Binder 客户端调用 IShowerService 实现虚拟屏创建、视频流接收、触摸注入——是 AI 侧“眼睛和手”的底层能力来源之一",
+  "ref": "tools/shower/run_shower_server.bat:1"
+ },
+ {
+  "fact": "examples 自动化助手类：automatic_ui_base（UI 自动化的点击/滑动/输入基础工具）、automatic_ui_subagent（基于 UI 控制器模型的自然语言多步操作子代理）、automatic_baidu_map_assistant（百度地图地点搜索/路线规划/周边查询）、automatic_bilibili_assistant（B 站视频搜索播放/评论/关注）、automatic_xiaohongshu_assistant（小红书浏览/搜索/评论/发布）、browser（对齐 Playwright MCP 默认 browser 工具面的浏览器自动化）",
+  "ref": "examples/automatic_ui_base.ts:1"
+ },
+ {
+  "fact": "examples 搜索类：duckduckgo（DuckDuckGo 搜索+抓取）、google_search（Google 普通+Scholar 学术）、various_search（必应/百度/搜狗/夸克多平台+图片搜索）、tavily（Tavily AI 搜索/提取/爬取/站点地图）、zhipu_search（智谱独立搜索 API）、crossref（Crossref DOI/关键词/作者学术元数据）",
+  "ref": "examples/duckduckgo.ts:1"
+ },
+ {
+  "fact": "examples AI 绘画类：minimax_draw（MiniMax /v1/image_generation，存 /sdcard/Download/Operit/plugin）、openai_draw（OpenAI /v1/images/generations）、qwen_draw（阿里百炼/DashScope 异步轮询）、siliconflow_draw（SiliconFlow 图+视频）、xai_draw（xAI 图+视频）、zhipu_draw（智谱）、nanobanana_draw（经 grsai.com 的 Nano Banana API，本地图先上传图床再图生图）",
+  "ref": "examples/minimax_draw.ts:1"
+ },
+ {
+  "fact": "examples 开发工具类：code_runner（JS/Python/Ruby/Go/Rust/C/C++ 多语言代码执行）、java_bridge（Java/Kotlin bridge 测试套件）、reader/code_reader（文件夹代码搜索抓取）、hex_editor（file 类，二进制 hex 查看/按偏移写/模式搜索）、github（GitHub REST 工具集，需 GITHUB_TOKEN）、network_test（OkHttp3 GET/POST/PUT/DELETE 测试）、quick_start（greeter_tool_v2 教学包）",
+  "ref": "examples/code_runner.ts:1"
+ },
+ {
+  "fact": "examples 媒体/生活类：12306（12306 余票/中转/经停，1014 行 33 个工具）、baidu_map（百度地图 AOI 边界/路线规划）、bilibili_tools（B 站字幕/弹幕/评论/搜索）、douyin_download（抖音无水印下载）、jmcomic（JMComic 搜索/下载+新漫反爬解码）、beeimg_image_uploader（BeeIMG 图床上传）、ffmpeg（自定义 FFmpeg 参数执行）、file_converter（音视频/图像/文档互转）、pdf_vision_parser（PDF 逐页渲染调识图模型解析）、daily_life（时间/电量/天气/闹钟/短信/电话/微信/QQ 单发/朋友圈/手电筒/截图/拍照/定时唤醒 AI）",
+  "ref": "examples/12306.ts:1"
+ },
+ {
+  "fact": "examples 系统/平台类：super_admin（terminal=Ubuntu 环境 + shell=Shizuku/Root 直执行 Android 命令）、system_tools（系统设置/应用安装卸载启动/通知/位置/Intent 广播）、tasker（向 Tasker 发事件）、workflow（工作流 CRUD/触发/on_success-on_error 分支/语音触发）、vflow_trigger（触发 VFlow app 工作流）、operit_editor（直改 Operit 平台配置：MCP/Skill/Package/角色卡/模型绑定/TTS-STT）、extended_*（chat/file_tools/http_tools/memory_tools 四个拓展包）",
+  "ref": "examples/super_admin.ts:1"
+ },
+ {
+  "fact": "examples 通信/社交类：ai_chat（AI 间对话）、extended_chat（对话管理+角色卡绑定发送）、qqbot（ToolPkg 目录版，腾讯 QQ Bot Gateway WebSocket 收消息+C2C/群发，env QQBOT_APP_ID/SECRET）、qq_intelligent（实验性 QQ UI 自动化助手）",
+  "ref": "examples/qqbot/src/packages/qqbot.ts:1"
+ },
+ {
+  "fact": "apktool（ToolPkg，manifest toolpkg_id=com.operit.apk_reverse_toolkit v1.1.0，main=dist/main.js）：基于内置 dex-jar 运行时的 APK 逆向工具包，工具含 usage_advice/apk_reverse_selftest/inspect/decode/jadx/search_text/search_address/build/sign；JADX 默认 isolated 独立进程运行（子进程 OOM 不拖死宿主，支持断点续跑）",
+  "ref": "examples/apktool/manifest.json:1"
+ },
+ {
+  "fact": "apktool manifest 声明 4 个 resource jar：apktool-runtime-android.jar（5,190,028 字节，brut.androlib.* + Android aapt2）、android-framework.jar（4,488,013）、jadx-runtime-android.jar（14,332,003）、apk-reverse-helper-runtime-android.jar（3,185,571）；README 注明 .jar 是本地构建产物、不再进 git",
+  "ref": "examples/apktool/resources/apktool/README.md:1"
+ },
+ {
+  "fact": "apktool runtime_helper/ 有 10 个 Java 源码：ApkReverseHelperFacade 外观门面 + ApkArchiveSupport/ManifestSupport/ElfSupport/SearchSupport + ApktoolBridgeSupport/JadxBridgeSupport + IsolatedJadxMain/IsolatedJadxRunner + ReflectionSupport；describeRuntime 返回 capabilities：inspect_apk/decode_apk/build_apk/decompile_jadx/search_text/search_address/sign_apk",
+  "ref": "examples/apktool/runtime_helper/src/main/java/com/operit/apkreverse/runtime/ApkReverseHelperFacade.java:21"
+ },
+ {
+  "fact": "apktool runtime_patch_src/ 是对第三方源码的最小补丁：brut/androlib/res/AaptManager.java、decoder/ResNinePatchStreamDecoder.java、jadx/core/dex/visitors/SaveCode.java、jadx/zip/parser/ZipDeflate.java；打包时剔除 jadx 桌面 GUI/jadx-script 与 Win/Linux/mac aapt2，只留 Android 可加载的 dex-jar",
+  "ref": "examples/apktool/resources/apktool/README.md:1"
+ },
+ {
+  "fact": "apktool 的 Java 桥接链路：JS 侧 ToolPkg.readResource 取 jar → Java.loadJar(...,{childFirstPrefixes:[...]}) 加载 dex-jar → Java.type('com.operit.apkreverse.runtime.ApkReverseHelperFacade') 直调静态方法；JADX 走 IsolatedJadxMain 经 app_process 独立进程启动（VMRuntime.clearGrowthLimit() 解除 256MB heapgrowthlimit 上限），stdout 最后一行 OPERIT_JADX_PAYLOAD: 为结果载荷",
+  "ref": "examples/apktool/runtime_helper/src/main/java/com/operit/apkreverse/runtime/IsolatedJadxMain.java:5"
+ },
+ {
+  "fact": "context_limiter_c 截取最近 N 层上下文（保留 SYSTEM+最近 N 层 USER/ASSISTANT），env CTX_LIMITER_C_FLOOR_LIMIT（默认 5）/CTX_LIMITER_C_ENABLED 调节，主用于无缓存 API",
+  "ref": "examples/context_limiter_c/src/packages/ctx_limiter_c.ts:1"
+ },
+ {
+  "fact": "custom_ai_provider 演示 ToolPkg.registerAiProvider 注册自定义 AI 供应商（示例 id example_openai_compatible_provider），走 OpenAI 兼容 /chat/completions，可直接在模型设置里被选中",
+  "ref": "examples/custom_ai_provider/README.md:1"
+ },
+ {
+  "fact": "debug_msg_dump 每次发给模型的完整消息列表落盘，用于调试",
+  "ref": "examples/debug_msg_dump/src/main.ts:1"
+ },
+ {
+  "fact": "deepsearching 是多子 Agent 深度搜索调度 + 菜单深度搜索开关；src/ 下有 main.ts/prompt-turns.ts/plugin/planning/i18n/ui，是较重的 TS 工程（非单文件包）",
+  "ref": "examples/deepsearching/src/main.ts:1"
+ },
+ {
+  "fact": "desktop_widget_demo 演示 ToolPkg 注册可配置桌面小组件，点击打开 compose_dsl 页面",
+  "ref": "examples/desktop_widget_demo/manifest.json:1"
+ },
+ {
+  "fact": "dino_runner 是 Chrome 小恐龙 WebView 全屏小游戏示例，宿主只留最少 DSL 控件，用 bridge 同步分数",
+  "ref": "examples/dino_runner/manifest.json:1"
+ },
+ {
+  "fact": "linux_ssh 基于 terminal 集成的 SSH 连接 + tmux 长任务 + 远程文件操作，env LINUX_SSH_HOST/PORT/USERNAME/PASSWORD/PRIVATE_KEY_PATH",
+  "ref": "examples/linux_ssh/src/packages/linux_ssh.ts:1"
+ },
+ {
+  "fact": "message_insert 在用户消息发送时把时间/电量/天气/位置/前台应用/屏幕文本/通知/记忆等作为显性附件注入，带工具箱设置 UI 与菜单开关",
+  "ref": "examples/message_insert/src/main.ts:1"
+ },
+ {
+  "fact": "message_translation 给聊天消息长按菜单加翻译入口，用 ToolPkg Compose DSL 弹窗展示原文/译文",
+  "ref": "examples/message_translation/src/main.ts:1"
+ },
+ {
+  "fact": "plan_mode 是聊天内计划模式开关 + PLAN.md 协作工具（get_plan/complete_plan）+ <plantodo> 渲染与一键开始实施",
+  "ref": "examples/plan_mode/src/packages/plan_mode_tools.ts:1"
+ },
+ {
+  "fact": "remote_operit 经局域网 HTTP API 调用另一台设备的 Operit（env REMOTE_OPERIT_BASE_URL/REMOTE_OPERIT_TOKEN/REMOTE_OPERIT_TIMEOUT_MS）",
+  "ref": "examples/remote_operit/src/packages/remote_operit.ts:1"
+ },
+ {
+  "fact": "subagent 是被动式 subagent_run 工具，主 agent 委托任务后内部以子任务模式调 AI，用轻量 XML 协议返回启动/进度/最终总结",
+  "ref": "examples/subagent/src/packages/subagent.ts:1"
+ },
+ {
+  "fact": "template_try 演示 ToolPkg 工作流模板与工作区模板的注册/展示/导入（resources 下有 workflow_template.json 与 workspaces 样例）",
+  "ref": "examples/template_try/resources/workflow_template.json:1"
+ },
+ {
+  "fact": "thinking_guidance 是输入菜单开关，给非思考模型注入 <think> 思考引导",
+  "ref": "examples/thinking_guidance/manifest.json:1"
+ },
+ {
+  "fact": "toolpkg_wasm_demo 演示 TS 入口调 AssemblyScript 编译的 WASM（质数算法）：src/wasm/core.as.ts 为热逻辑、core.ts 为类型门面，manifest 声明 wasm_modules，npm run pack:toolpkg 产出 .toolpkg",
+  "ref": "examples/toolpkg_wasm_demo/README.md:1"
+ },
+ {
+  "fact": "windows_control 经 HTTP 调 Operit PC Agent 控制 Windows（执行 PowerShell/CMD 并回显输出），附带一键配置 UI 与 resources/pc_agent 下的完整 operit-pc-agent 前端工程；env OPERIT_PC_AGENT_URL 必填",
+  "ref": "examples/windows_control/src/packages/windows_control.ts:1"
+ },
+ {
+  "fact": "worldbook（v1.2.0）是世界书/知识库插件，条目 CRUD + 关键词/正则/常驻激活自动注入系统提示词或用户消息",
+  "ref": "examples/worldbook/src/packages/worldbook_tools.ts:1"
+ },
+ {
+  "fact": "sidebar_* 系列（6 个）是侧边栏宿主插件：account_book（记账本，React 本地页 + 终端起后端）、bing_action（action 函数直执行不跳转路由）、deepseek_harness（承载本机 Linux Runtime 的 DeepSeek Harness Web，127.0.0.1:3081，node-pty 无 ARM64 预编译故本地编译 pty.node）、model_sites（聚合大模型官网入口的 WebView）、opencode（本地 OpenCode Web + 全局配置编辑工具）、sillytavern（侧边栏直开本地 SillyTavern）",
+  "ref": "examples/sidebar_deepseek_harness/README.md:1"
+ },
+ {
+  "fact": "【社群经验·非代码事实】华为鸿蒙（HarmonyOS）设备上 Operit 内置终端无法正常启动、报错或崩溃，依赖本地终端的 MCP 插件无法运行；社群结论是鸿蒙底层对 ptrace 等系统调用存在限制导致 proot 无法初始化（源码无此断言，代码侧仅能关联 PathMapper 的 proot-distro 路径映射事实）",
+  "ref": "教程区 issue #134《鸿蒙系统终端兼容性说明》"
+ },
+ {
+  "fact": "【社群经验·非代码事实】部分鸿蒙版本移除了无线调试功能且无障碍权限受限，无法提 Shizuku/ADB，Operit 只能以 Standard 权限运行；“鸿蒙→卓翼通→虚拟机→Operit”套娃方案实测不可行；基础 AI 对话与云端 API 可用，完整功能建议标准 Android 设备，完整适配待 Operit2",
+  "ref": "教程区 issue #134《鸿蒙系统终端兼容性说明》"
+ }
+]

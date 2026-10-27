@@ -21,9 +21,10 @@ export default function VersionHubPage({ language, section }: { language: Langua
           return <article className="version-card" key={id}>
             <div className="version-card-top"><span className="version-number">{product.number}</span><span className="version-status">{product.status[language]}</span></div>
             <h2>{product.name}</h2><p>{product.description[language]}</p>
-            {guides && id === 'v1' && <p className="version-card-note">{zh ? '教程式文档与完整参考手册均保留在一代专区。' : 'Tutorials and the full reference manual are both in the generation-one section.'}</p>}
+            {guides && id === 'v1' && <p className="version-card-note">{zh ? '入门教程、完整参考手册与源码知识库均保留在一代专区。' : 'Tutorials, the full reference manual and the source knowledge base are in the generation-one section.'}</p>}
             {guides && id === 'v2' && <p className="version-card-note">{zh ? '二代教程专区已独立建立，正式使用教程将随版本发布补充。' : 'Generation-two docs have their own section. Usage tutorials will follow the release.'}</p>}
             <Link className="version-primary-link" to={guides ? product.guidePath : product.downloadPath}>{guides ? <BookOutlined /> : <DownloadOutlined />}{zh ? `进入${product.number === 1 ? '一' : '二'}代${guides ? '教程' : '下载'}` : `${product.name} ${guides ? 'guides' : 'downloads'}`}<ArrowRightOutlined /></Link>
+            {guides && id === 'v1' && <Link className="version-secondary-link" to="/v1/guide/wiki">{zh ? '源码知识库' : 'Source knowledge base'}<ArrowRightOutlined /></Link>}
             <Link className="version-secondary-link" to={product.homePath}>{zh ? '了解产品' : 'Explore product'}<ArrowRightOutlined /></Link>
           </article>;
         })}

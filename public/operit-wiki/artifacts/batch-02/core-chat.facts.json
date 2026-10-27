@@ -1,0 +1,538 @@
+[
+ {
+  "fact": "AIMessageManager 是 object 单例，负责管理与 EnhancedAIService 的所有通信",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:80"
+ },
+ {
+  "fact": "AIMessageManager 的 KDoc 设计原则声明为“无状态”：自身不持有任何特定聊天的状态，所有需要的数据都通过方法参数传入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:75"
+ },
+ {
+  "fact": "AIMessageManager 职责明确：仅处理与 AI 服务的交互，UI 更新和数据持久化由调用方负责",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:76"
+ },
+ {
+  "fact": "AIMessageManager.initialize(context) 初始化 toolHandler（AIToolHandler 单例）、packageManager、apiPreferences",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:105"
+ },
+ {
+  "fact": "MESSAGE_PROCESS_TIMING_TAG 常量为 \"MessageProcessTiming\"；messageTimingNow/logMessageTiming 做分阶段耗时打点",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:45"
+ },
+ {
+  "fact": "buildUserMessageContent 先调 InputProcessor.processUserInput 处理用户原始输入（含输入钩子）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:144"
+ },
+ {
+  "fact": "proxySenderTag：代理发送者名转义双引号后包成 <proxy_sender name=\"…\"/> 标签",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:156"
+ },
+ {
+  "fact": "replyTag：被回复消息剥离 XML 标签并截断为 100 字符预览，包成 <reply_to sender timestamp> 标签",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:172"
+ },
+ {
+  "fact": "工作区变更经 WorkspaceChangeTracker.consumeChanges(chatId, path, env) 消费",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:192"
+ },
+ {
+  "fact": "工作区附件由 WorkspaceAttachmentProcessor.generateWorkspaceAttachment 生成 <workspace_attachment> 标签内容",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:195"
+ },
+ {
+  "fact": "启用直接图片处理时，图片附件经 ImagePoolManager.addImage 入池",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:219"
+ },
+ {
+  "fact": "图片 link 由 MediaLinkBuilder.image 生成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:233"
+ },
+ {
+  "fact": "PDF 附件经 MediaPoolManager.addMedia 入池后由 MediaLinkBuilder.file 生成文件 link",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:255"
+ },
+ {
+  "fact": "音频附件由 MediaLinkBuilder.audio 生成 link",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:262"
+ },
+ {
+  "fact": "视频附件由 MediaLinkBuilder.video 生成 link",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:281"
+ },
+ {
+  "fact": "finalMessageContent 由 proxySenderTag、处理后文本、附件标签、工作区标签、回复标签过滤非空后拼接而成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:315"
+ },
+ {
+  "fact": "sendMessage 先经 getMemoryFromMessages 把 ChatMessage 历史转成 PromptTurn 记忆",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:380"
+ },
+ {
+  "fact": "历史图片 link 按 maxImageHistoryUserTurns 只保留最近 N 轮用户消息的，旧图片 link 被移除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:612"
+ },
+ {
+  "fact": "历史音视频 link 按 maxMediaHistoryUserTurns 同理裁剪",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:406"
+ },
+ {
+  "fact": "sendMessage 先询问 MessageProcessingPluginRegistry.createExecutionIfMatched 是否有插件接管",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:431"
+ },
+ {
+  "fact": "插件接管时把其 controller 登记到 activeMessageProcessingControllerByChatId 并直接返回插件流",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:450"
+ },
+ {
+  "fact": "无插件接管时调用 enhancedAiService.sendMessage(SendMessageOptions(…)) 走普通模式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:484"
+ },
+ {
+  "fact": "响应流经 shareRevisable 共享重放，且 completionCause 不向其他订阅者传播",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:511"
+ },
+ {
+  "fact": "calculateStableContextWindow 内调 enhancedAiService.estimateRequestWindowFromMemory 估算请求窗口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:569"
+ },
+ {
+  "fact": "summarizeMemory 找到最后一条 sender==\"summary\" 的消息，只总结之后的新消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:684"
+ },
+ {
+  "fact": "没有新消息需要总结时 summarizeMemory 返回 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:700"
+ },
+ {
+  "fact": "群聊总结时逐条拼 speakerLabel（按 sender 取 user/AI 角色名）打包多角色对话",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1002"
+ },
+ {
+  "fact": "总结正文经 enhancedAiService.generateSummary(conversationToSummarize, previousSummary, summaryConfig) 生成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1046"
+ },
+ {
+  "fact": "总结结果包成 ChatMessage(sender=\"summary\", roleName=\"system\")",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1091"
+ },
+ {
+  "fact": "dialogueReviewEnabled 时总结尾部追加对话回顾段落（formatDialogueReviewHeader + conversationReviewEntries）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1063"
+ },
+ {
+  "fact": "buildPackageWarmupBlock 取用得最多的 2 个工具包并调 usePackage 预热，把工具提示拼进总结",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1111"
+ },
+ {
+  "fact": "shouldGenerateSummary：当前 token 使用率 >= tokenUsageThreshold 时触发总结",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1298"
+ },
+ {
+  "fact": "shouldGenerateSummary：自上次总结后的 user 消息数 >= summaryMessageCountThreshold 时触发总结",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1314"
+ },
+ {
+  "fact": "getMemoryFromMessages 取最后一条 summary 之后的消息转成 PromptTurn 列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1331"
+ },
+ {
+  "fact": "角色隔离模式 = splitByRole 为 true 且 targetRoleName 非空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1347"
+ },
+ {
+  "fact": "processAiMessage：非隔离模式下 AI 消息直接作为 assistant PromptTurn 返回",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1390"
+ },
+ {
+  "fact": "角色隔离模式下其他角色的 AI 消息转成带 \"[From role: X]\" 前缀的 user PromptTurn",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1425"
+ },
+ {
+  "fact": "processUserMessage：群组编排+隔离模式下给用户消息加 \"[From user]\" 前缀",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:1444"
+ },
+ {
+  "fact": "AIMessageManager.cancelOperation(chatId)：取消插件执行 + service.cancelConversation + 取消该 chat 的 ToolPkg JS 执行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:644"
+ },
+ {
+  "fact": "cancelCurrentOperation() 取消 lastActiveChatKey 对应的操作",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:640"
+ },
+ {
+  "fact": "cancelAllOperations 遍历 activeEnhancedAiServiceByChatId 与 controller 映射的全部 chatKey 逐个取消",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt:669"
+ },
+ {
+  "fact": "MessageProcessingDelegate 构造注入 getFullChatHistory/getRuntimeChatHistory/hasUserMessage/addMessageToChat/saveCurrentChat/showErrorMessage/updateChatTitle/getChatTitle/onTurnComplete/onTokenLimitExceeded/getIsAutoReadEnabled/speakMessageHandler 等回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:54"
+ },
+ {
+  "fact": "ChatRuntime 是每会话运行时状态：sendJob、responseStream、activeStreamingTurn、streamCollectionJob、stateCollectionJob、currentTurnOptions、requestSentAt、turnSequence、activeTurnId、cancellationMutex、isLoading",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:203"
+ },
+ {
+  "fact": "chatRuntimes 是 ConcurrentHashMap<String, ChatRuntime>，按会话隔离运行时",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:221"
+ },
+ {
+  "fact": "chatKey 规则：chatId ?: \"__DEFAULT_CHAT__\"",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:226"
+ },
+ {
+  "fact": "STREAM_SCROLL_THROTTLE_MS=200L：流式滚动事件节流；STREAM_PERSIST_INTERVAL_MS=1000L：流式落库快照间隔",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:80"
+ },
+ {
+  "fact": "sendUserMessage：空文本+无附件+非自动续写+非群组编排时直接忽略",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:711"
+ },
+ {
+  "fact": "同一 chat 正在处理中（isLoading）时新的发送被忽略并记警告日志",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:719"
+ },
+ {
+  "fact": "每轮 turnId = chatRuntime.turnSequence.incrementAndGet() 并写入 activeTurnId，用于取消时识别过期回合",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:726"
+ },
+ {
+  "fact": "effectivePersistTurn = turnOptions.persistTurn，控制本轮是否落库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:746"
+ },
+ {
+  "fact": "shouldAddUserMessageToChat 综合 persistTurn、suppressUserMessageInHistory、自动续写空消息、群组编排空消息决定是否落库用户消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:815"
+ },
+ {
+  "fact": "首条用户消息先用 fallbackConversationTitle（附件名或“新会话”）占位标题",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:111"
+ },
+ {
+  "fact": "launchConversationTitleGeneration 异步生成真实标题，仅当标题仍为占位时才更新",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:116"
+ },
+ {
+  "fact": "有 workspacePath 时挂载 WorkspaceBackupManager.WorkspaceToolHookSession 临时工具钩子，发送结束卸载",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:846"
+ },
+ {
+  "fact": "取 AI 服务优先 EnhancedAIService.getChatInstance(context, activeChatId)，缺失回退 getEnhancedAiService()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:917"
+ },
+ {
+  "fact": "stateCollectionJob 监听 service.inputProcessingState 映射到 per-chat 状态，Error 去重后才弹 showErrorMessage",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:943"
+ },
+ {
+  "fact": "群组编排且内容非空时，发给模型的请求消息加 \"[From user]\" 前缀",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1039"
+ },
+ {
+  "fact": "群组编排时从传给模型的 chatHistory 剥离末尾已预落库的用户消息（subList 去掉最后一条），避免模型收到两份",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1096"
+ },
+ {
+  "fact": "onToolInvocation 回调触发 incrementCurrentTurnToolInvocationCount(chatId)，统计本轮工具调用次数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1118"
+ },
+ {
+  "fact": "流收集协程实例化 TextStreamRevisionTracker 处理修订事件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1231"
+ },
+ {
+  "fact": "claimStreamingSnapshot 每 1000ms 落库一次流快照，避免每个字符都写库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1283"
+ },
+ {
+  "fact": "自动朗读走 WaifuMessageProcessor.streamTtsText 把字符流转成朗读文本流",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1237"
+ },
+ {
+  "fact": "朗读切句用 TtsSegmenter.nextSegmentEnd 在标点处断句",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1265"
+ },
+ {
+  "fact": "waifu 模式用 streamSegmentsWithTypingQueue 按字延迟分段 emitWaifuSegment，逐段落库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1307"
+ },
+ {
+  "fact": "回合结束从 service 读取 getCurrentInputTokenCount/getCurrentOutputTokenCount 回填本轮统计",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1428"
+ },
+ {
+  "fact": "detachStreamingAiMessage：取消时把流消息固化（contentStream 置空、content 取最终文本）再落库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:436"
+ },
+ {
+  "fact": "cancelMessage 保留部分回复（keepPartialResponse=true）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:564"
+ },
+ {
+  "fact": "cancelMessageForDestructiveMutation 不保留部分回复（keepPartialResponse=false）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:575"
+ },
+ {
+  "fact": "cancelMessageInternal 用 cancellationMutex 加锁并校验 activeTurnId，旧取消不会误伤新回合",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:496"
+ },
+ {
+  "fact": "setChatInputProcessingState：会话 loading 中时拒收 Idle/Completed 终态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:266"
+ },
+ {
+  "fact": "状态切换到非 ExecutingTool/Summarizing 时清空 ToolProgressBus 进度",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:281"
+ },
+ {
+  "fact": "updateGlobalLoadingState 聚合各 chat 的 isLoading 得到全局 _isLoading 与 _activeStreamingChatIds",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:249"
+ },
+ {
+  "fact": "用户输入草稿按 chatId 存在 userMessageDraftsByChatId，setActiveDraftChat 切换会话时保存/恢复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:154"
+ },
+ {
+  "fact": "reportNonFatalError 经 _nonFatalErrorEvent 发出，宿主 hook 超时提示走此通道",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:180"
+ },
+ {
+  "fact": "turnCompleteCounterByChatId 对外暴露每会话的回合完成计数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:189"
+ },
+ {
+  "fact": "finalizeMessageAndNotify 用 resolveFinalContent（重放缓存优先）重建最终文本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1895"
+ },
+ {
+  "fact": "resolveFinalContent：有事件通道缓存用 aiMessage.content，否则拼接 SharedStream 的 replayCache",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:360"
+ },
+ {
+  "fact": "notifyTurnComplete：回合计数+1、重算 nextWindowSize、回调 onTurnComplete",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1862"
+ },
+ {
+  "fact": "cleanupRuntimeAfterSend 清理 jobs/流/turnOptions/时间戳并复位 isLoading",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1955"
+ },
+ {
+  "fact": "regenerateAiMessageVariant 按 targetMessageTimestamp 重生成，经 onVariantPreviewStarted/onVariantReady 回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1604"
+ },
+ {
+  "fact": "重生成时会话正忙抛 IllegalStateException(chat_regenerate_busy)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1627"
+ },
+ {
+  "fact": "CurrentChatWindowController 维护展示窗口：displayStart/EndTimestamp 起止时间戳 + hasOlder/hasNewerPersistedHistory 持久层标志",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/CurrentChatWindowController.kt:14"
+ },
+ {
+  "fact": "对外暴露三个 StateFlow：hasOlderDisplayHistory、hasNewerDisplayHistory、isLoadingDisplayWindow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/CurrentChatWindowController.kt:22"
+ },
+ {
+  "fact": "applyMessages 把消息写入 chatHistoryFlow 并更新窗口起止时间戳",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/CurrentChatWindowController.kt:53"
+ },
+ {
+  "fact": "消息为空时清掉 persisted 与 display 的更早/更新标志",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/CurrentChatWindowController.kt:68"
+ },
+ {
+  "fact": "beginLoadingDisplayWindow 已在加载时返回 false，防止重复加载窗口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/CurrentChatWindowController.kt:90"
+ },
+ {
+  "fact": "MessageProcessingPluginRegistry 是 object 单例，plugins 为 CopyOnWriteArrayList",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:38"
+ },
+ {
+  "fact": "register 先按 id 注销旧插件再添加，保证同 id 不重复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:42"
+ },
+ {
+  "fact": "createExecutionIfMatched 返回首个匹配插件的 MessageProcessingExecution（含 controller 与 stream）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:52"
+ },
+ {
+  "fact": "MessageProcessingHookParams 携带 context、enhancedAIService、chatId、messageContent、chatHistory(List<PromptTurn>)、workspacePath、maxTokens、tokenUsageThreshold、onNonFatalError",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:9"
+ },
+ {
+  "fact": "MessageProcessingPlugin 接口只有 id 与 createExecutionIfMatched 两个成员",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/plugins/MessageProcessingPluginRegistry.kt:30"
+ },
+ {
+  "fact": "ChatRuntimeHookEvent 目前仅 STATE_CHANGED 一个事件（wireName=\"state_changed\"）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:15"
+ },
+ {
+  "fact": "ChatRuntimeHookContext 携带 chatId、slot、state、activeChatIds、本轮工具调用数、活跃会话数、当前会话工具数、时间戳",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:19"
+ },
+ {
+  "fact": "registerHook 先按 id 注销再添加，保证同 id 不重复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:45"
+ },
+ {
+  "fact": "dispatch 逐个调用钩子 onEvent，单个钩子异常只记日志不中断分发",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:55"
+ },
+ {
+  "fact": "dispatchAsync 走 SupervisorJob + Dispatchers.Default 的独立协程域异步分发",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt:72"
+ },
+ {
+  "fact": "ChatTurnOptions 默认：persistTurn=true、notifyReply=null、hideUserMessage=false、disableWarning=false",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatTurnOptions.kt:3"
+ },
+ {
+  "fact": "TokenStatisticsDelegate 对外暴露 cumulativeInputTokensFlow 与 cumulativeOutputTokensFlow 累计 token 流",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:26"
+ },
+ {
+  "fact": "TokenStatisticsDelegate 对外暴露 currentWindowSizeFlow（当前窗口）与 perRequestTokenCountFlow（单次请求）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:32"
+ },
+ {
+  "fact": "token 累计按 chatKey（chatId ?: \"__DEFAULT_CHAT__\"）分会话存放",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:52"
+ },
+ {
+  "fact": "setupCollectors 订阅默认 AI 服务的 perRequestTokenCounts 与 requestWindowEstimateFlow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:102"
+ },
+ {
+  "fact": "bindChatService 按会话绑定 AI 服务并建立独立的收集协程",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:130"
+ },
+ {
+  "fact": "setActiveChatId 切换活跃会话后从缓存刷新 UI 流",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:125"
+ },
+ {
+  "fact": "updateCumulativeStatistics 把服务当前计数累加到该会话累计值",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:183"
+ },
+ {
+  "fact": "resetTokenStatistics 清空累计并调用各服务的 resetTokenCounters",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:161"
+ },
+ {
+  "fact": "setTokenCounts 写入值经 coerceAtLeast(0L) 防止负数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:215"
+ },
+ {
+  "fact": "getLastCurrentWindowSize 返回最近一次的实际上下文窗口大小",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/TokenStatisticsDelegate.kt:246"
+ },
+ {
+  "fact": "ChatHistoryDelegate 构造回调含 onTokenStatisticsLoaded、getChatStatistics、ensureAiServiceAvailable 等",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:36"
+ },
+ {
+  "fact": "selectionMode 默认 FOLLOW_GLOBAL（跟随全局当前会话），另有 LOCAL_ONLY（悬浮窗本地会话）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:35"
+ },
+ {
+  "fact": "内存 _chatHistory 只放当前展示窗口的消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:65"
+ },
+ {
+  "fact": "_chatHistories 放会话列表，_currentChatId 放当前会话 id",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:524"
+ },
+ {
+  "fact": "展示窗口分页查询批量为 80 条（DISPLAY_WINDOW_QUERY_BATCH_SIZE）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:44"
+ },
+ {
+  "fact": "loadChatMessages：加载最新 1 页展示窗口 + 回填 token 统计 + 开场白同步",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:618"
+ },
+ {
+  "fact": "getChatHistory 读全量持久历史，getRuntimeChatHistory 读运行时历史",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:336"
+ },
+ {
+  "fact": "collectNewestDisplayPages 倒序批量拉取直到凑够 pageCount 页",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:157"
+ },
+ {
+  "fact": "loadOlderMessagesForCurrentChat 按展示窗口起始时间戳向前翻一页",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:416"
+ },
+ {
+  "fact": "loadNewerMessagesForCurrentChat 按展示窗口结束时间戳向后翻一页",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:455"
+ },
+ {
+  "fact": "revealMessageForCurrentChat 按 targetTimestamp 定位所在页并加载对应窗口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:372"
+ },
+ {
+  "fact": "addMessageToChat 经 historyUpdateMutex 串行执行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1408"
+ },
+ {
+  "fact": "变体预览消息（isVariantPreview）只进内存不落库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1414"
+ },
+ {
+  "fact": "非当前会话只走 chatHistoryManager.updateMessage，不碰内存展示窗口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1427"
+ },
+ {
+  "fact": "每次消息持久化后经 ToolPkgChatMessageHookBridge.dispatchMessagePersisted 通知插件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1428"
+ },
+ {
+  "fact": "saveCurrentChat 调 updateChatTokenCounts 把 token 统计持久化到会话元数据",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1227"
+ },
+ {
+  "fact": "createNewChat 继承当前会话分组、绑定角色卡，非群组模式写开场白",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:775"
+ },
+ {
+  "fact": "开场白消息用 provider=\"\"/modelName=\"\" 空值标记为非 AI 生成",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:749"
+ },
+ {
+  "fact": "switchChat 切换时 allowAddMessage=false 禁止写入，流程结束恢复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:864"
+ },
+ {
+  "fact": "deleteChatHistory 删当前会话前先迁到同角色卡/群组的最新会话，找不到则建新会话",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1061"
+ },
+ {
+  "fact": "createBranch 按时间戳创建分支，分支继承父会话的 token 统计",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:905"
+ },
+ {
+  "fact": "addSummaryMessage 在前后锚点时间戳之间插入总结消息（addSummaryMessageBetweenSliceNeighbors）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1580"
+ },
+ {
+  "fact": "findProperSummaryPosition 返回最后一条 AI 消息之后的位置",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1659"
+ },
+ {
+  "fact": "syncOpeningStatementIfNoUserMessage：无用户消息时同步角色卡开场白，群组会话跳过",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:665"
+ },
+ {
+  "fact": "updateChatOrderAndGroup 拖拽排序防抖 350ms 后持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1530"
+ },
+ {
+  "fact": "破坏性历史变更前后调用 before/afterDestructiveHistoryMutation 钩子（供取消流转用）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:73"
+ },
+ {
+  "fact": "遇到 SAVEPOINT/ROLLBACK 事件时回滚到保存点，保证最终文本与流修订一致",
+  "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageProcessingDelegate.kt:1327"
+ }
+]

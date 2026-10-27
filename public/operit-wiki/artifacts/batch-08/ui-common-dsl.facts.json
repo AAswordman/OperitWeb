@@ -1,0 +1,690 @@
+[
+  {
+    "fact": "ComposeDslFilePickerMode 枚举定义 6 种文件选择模式：DOCUMENT/IMAGE/VIDEO/MEDIA/DIRECTORY/CAMERA，各自带 wireName（document/image/video/media/directory/camera）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:220"
+  },
+  {
+    "fact": "supportsMultiple 仅 DOCUMENT/IMAGE/VIDEO/MEDIA 为 true；DIRECTORY 与 CAMERA 不支持多选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:228"
+  },
+  {
+    "fact": "supportsPersistablePermission 仅 DOCUMENT/DIRECTORY 为 true，用于决定是否调用 takePersistableUriPermission。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:231"
+  },
+  {
+    "fact": "visualMediaType() 把 IMAGE/VIDEO/MEDIA 映射为 PickVisualMedia 的 ImageOnly/VideoOnly/ImageAndVideo；DOCUMENT/DIRECTORY/CAMERA 调用则直接 error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:233"
+  },
+  {
+    "fact": "parseComposeDslFilePickerRequest(JSONObject) 对文件选择请求做严格校验，非法组合直接 require 抛错，而不是静默降级。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:286"
+  },
+  {
+    "fact": "文件选择请求必须携带非空 executionContextKey，否则 require 失败，请求被拒绝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:288"
+  },
+  {
+    "fact": "mimeTypes 参数仅允许 DOCUMENT 模式使用，其他模式传入 mimeTypes 直接校验失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:318"
+  },
+  {
+    "fact": "require(pickerMode.supportsMultiple || !allowMultiple)：不支持多选的模式请求多选会直接报错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:343"
+  },
+  {
+    "fact": "require(pickerMode.supportsPersistablePermission || !hasPersistPermission)：不支持持久权限的模式请求持久权限会直接报错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:347"
+  },
+  {
+    "fact": "ComposeDslFilePickerHostRegistry.unbind(executionContextKey) 按执行上下文解绑文件选择 launcher，防止路由销毁后残留。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:389"
+  },
+  {
+    "fact": "ComposeDslFilePickerHostRegistry.openPicker 把选择器启动投递到主线程 Handler（composeDslFilePickerMainHandler.post），保证 launcher 调用在主线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:418"
+  },
+  {
+    "fact": "sanitizeComposeDslPickedFileName 把文件名中的 [\\\\/:*?\"<>|\\u0000-\\u001F] 替换为下划线，空白回退为 picked_file，并只保留末尾 120 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:492"
+  },
+  {
+    "fact": "extractComposeDslPickedFileExtension 取最后一个点后的扩展名（限 16 字符），必须匹配 [A-Za-z0-9_-]+ 否则丢弃扩展名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:501"
+  },
+  {
+    "fact": "stageComposeDslPickedFile 把选中的 Uri 内容复制到 OperitPaths.cleanOnExitDir()/compose_file_picker 暂存目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:515"
+  },
+  {
+    "fact": "暂存文件名格式为 picked_<毫秒时间戳>_<12位uuid>[.ext]，既防重名也防路径穿越。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:521"
+  },
+  {
+    "fact": "buildComposeDslExecutionContextKey 拼出 toolpkg_compose_dsl:<包名>:<ui模块>:<路由实例>，空白段回退为 default。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:630"
+  },
+  {
+    "fact": "normalizeToken 按 Locale.ROOT 转小写、去掉 - 与 _、再 trim，是组件类型名与属性 token 的统一归一化函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:637"
+  },
+  {
+    "fact": "buildZeroArgGetterByToken 用反射为 typography/alignment/arrangement/fontWeight/colorScheme 构建 token→getter 的懒映射，DSL 里写字符串就能取到 Compose 对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:642"
+  },
+  {
+    "fact": "ToolPkgComposeDslToolScreen 是工具包 DSL 屏的主入口 composable，负责 JS 引擎、渲染、动作派发的完整生命周期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:703"
+  },
+  {
+    "fact": "renderMutex（remember { Mutex() }）把整轮渲染串行化，防止并发重渲染互相打架。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:716"
+  },
+  {
+    "fact": "PackageManager.getInstance(context, AIToolHandler.getInstance(context)) 用于获取工具包执行引擎的包管理器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:731"
+  },
+  {
+    "fact": "filePickerLauncher（文档选择）、visualMediaPickerSingleLauncher（图片单选，:806）、visualMediaPickerMultiLauncher（图片多选，:819）、cameraPickerLauncher（拍照，:832）四个 ActivityResultLauncher 分工承接四种选择器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:748"
+  },
+  {
+    "fact": "jsEngine = packageManager.acquireToolPkgExecutionEngine(...) 为当前工具包获取 JS 执行引擎，DSL 脚本跑在它上面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:871"
+  },
+  {
+    "fact": "isDispatching/dispatchingCount 是 remember 的 UI 状态，对外展示当前是否有动作正在派发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:884"
+  },
+  {
+    "fact": "hasDispatchedInitialOnLoad 标记保证根节点的 onLoad 动作在整个路由生命周期只派发一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:886"
+  },
+  {
+    "fact": "settledDispatchTickets: MutableSet<Long> 记录已结算的派发 ticket，用于丢弃迟到的旧中间渲染结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:892"
+  },
+  {
+    "fact": "requiresWebViewImeResize 从渲染结果读取，为真时把窗口设为 SOFT_INPUT_ADJUST_RESIZE（:1248），保证 WebView 里键盘不遮挡输入框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:893"
+  },
+  {
+    "fact": "topBarTitleNodes 取自渲染树 slots[\"topBarTitle\"]，在 :1225 处作为顶栏标题单独渲染，节点路径为 0:topBarTitle。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:897"
+  },
+  {
+    "fact": "每次拿到渲染结果都会调用 ToolPkgComposeDslDebugSnapshotStore.update，把脚本、渲染树、状态记入调试快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:941"
+  },
+  {
+    "fact": "requestComposeDslTreeRerender(immediate=false) 请求重渲染；非立即时在 :1034 经 withFrameNanos 等到下一帧再执行，避免一帧内多次渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1029"
+  },
+  {
+    "fact": "渲染主体在 renderMutex.withLock 内执行，与动作派发的中间结果处理互斥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1036"
+  },
+  {
+    "fact": "文本输入队列的 onAllSettled 回调是 requestComposeDslTreeRerender(false)：队列排空后才触发一次重渲染，而不是每击键一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1049"
+  },
+  {
+    "fact": "flushTextInputSyncsAndRerender 先把所有文本输入同步刷掉再重渲染，供失焦等场景调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1057"
+  },
+  {
+    "fact": "dispatchActionInternal(actionId, payload) 是动作派发的内部入口，带 ticket 机制防止旧中间结果覆盖新状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1064"
+  },
+  {
+    "fact": "派发开始时 dispatchingCount += 1 且 isDispatching = dispatchingCount > 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1096"
+  },
+  {
+    "fact": "中间渲染结果到来时若其 ticket 已在 settledDispatchTickets 中则直接丢弃，防止旧结果覆盖新状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1105"
+  },
+  {
+    "fact": "settledDispatchTickets 超过 64 个时只保留 ticket 最大的 32 个，防止集合无限增长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1146"
+  },
+  {
+    "fact": "dispatchTextInputAction(actionId, text) 把文本输入走串行队列派发，保证击键顺序不乱。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1185"
+  },
+  {
+    "fact": "文本输入派发的 payload 带 __composeTextFieldPayload=true 与 __no_render=true，单次击键不触发整树重渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1195"
+  },
+  {
+    "fact": "dispatchActionAwait 是动作派发的可挂起版本，供需要等待 JS 结果的手势/修饰符动作调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1205"
+  },
+  {
+    "fact": "CompositionLocal 注入四个处理器：LocalComposeDslActionHandler、LocalComposeDslTextInputActionHandler、LocalComposeDslFlushTextInputHandler、LocalComposeDslSuspendingActionHandler，供子树节点调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1229"
+  },
+  {
+    "fact": "suspend fun render() 是整屏的渲染入口：经 jsEngine.executeComposeDslScript 执行 DSL 脚本，再用 ToolPkgComposeDslParser.parseRenderResult 解析为渲染树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1310"
+  },
+  {
+    "fact": "onDispose 释放资源：解绑文件选择器（:1467）、清调试快照（:1472）、清 WebView host 上下文（:1473）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1461"
+  },
+  {
+    "fact": "根节点的 onLoad actionId 从 props 提取，LaunchedEffect 里配合 hasDispatchedInitialOnLoad 置 true（:1499）只派发一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1491"
+  },
+  {
+    "fact": "ToolPkgComposeDslDialogHost(request: ChatMessageMenuDialogRequest) 是对话框变体宿主，没有文件选择器绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1560"
+  },
+  {
+    "fact": "对话框宿主经由 LocalComposeDslDialogDismissHandler provides onDismiss 把关闭回调注入组合树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:1999"
+  },
+  {
+    "fact": "RenderToolPkgComposeDslNode 是对外公开的单节点嵌入 API；对话框场景下 LocalComposeDslWebViewHost 固定为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2014"
+  },
+  {
+    "fact": "renderComposeDslNode 是节点分发的总入口，默认 modifierResolver 为 defaultComposeDslModifierResolver。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2075"
+  },
+  {
+    "fact": "节点分发优先级：aichat→adaptivesidepanel→canvas→webview→markdown→alertdialog→dialog 均为手写渲染，之后才查自动生成的 registry，未知类型显示 Text(\"Unsupported node: ...\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2092"
+  },
+  {
+    "fact": "未知节点类型直接渲染 Text(\"Unsupported node: ${node.type}\")，用 bodySmall 样式提示开发者，而不是崩溃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2129"
+  },
+  {
+    "fact": "renderMarkdownNode / renderComposeDslAlertDialogNode（:2190）/ renderComposeDslDialogNode（:2362）分别是 markdown、alertdialog、dialog 三种手写节点的渲染函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2136"
+  },
+  {
+    "fact": "节点布局信息经 ToolPkgComposeDslDebugSnapshotStore.updateLayout 上报，供调试快照记录每个节点的实际位置尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2455"
+  },
+  {
+    "fact": "renderAiChatNode 直接嵌入 AIChatScreen(embedded = true)，把完整聊天屏当作一个 DSL 节点使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2482"
+  },
+  {
+    "fact": "renderAdaptiveSidePanelNode 渲染自适应侧边面板；onOpenChanged 动作 id 为空时 require 直接抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2498"
+  },
+  {
+    "fact": "侧边面板宽窄屏断点默认 600dp，可经 props[\"breakpoint\"] 覆盖；宽屏用 Row+可拖拽分隔条，窄屏用 scrim+端部面板。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2508"
+  },
+  {
+    "fact": "宽屏下分隔条用 detectDragGestures 实现拖拽调宽，面板宽度会被钳制在 min/max 范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2556"
+  },
+  {
+    "fact": "侧边面板的 slot 要求恰好 1 个子节点，require(slotNodes.size == 1) 不满足就抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2639"
+  },
+  {
+    "fact": "canvas 画刷目前只支持 verticalgradient 类型且 colors 不能为空，否则 require 抛错；画刷类型缺失则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2690"
+  },
+  {
+    "fact": "renderCanvasNode 支持 line/rect/roundrect/drawroundrect/circle/text/drawtext 等绘图指令与 path 子操作（moveto/lineto/cubicto/quadto/close），坐标单位支持 fraction/dp/px（fraction 按画布宽高换算）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2730"
+  },
+  {
+    "fact": "canvas 缩放用 detectTransformGestures 实现，localScale 被钳制在 0.6f..2f；手势信息经带 __no_render 的动作回传 JS。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:2779"
+  },
+  {
+    "fact": "applyCommonModifier 解析 width/height、fillMaxSize/fillMaxHeight/fillMaxWidth（互斥链）、padding、backgroundBrush/backgroundColor、zIndex 等通用修饰。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:3076"
+  },
+  {
+    "fact": "通用修饰最后经 applyProxyModifierOps(modifier, props[\"modifier\"]) 叠加代理修饰符链。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:3138"
+  },
+  {
+    "fact": "applyProxyModifierOps 读取容器 __modifierOps 列表逐条应用约 40 种 op：fill/size/padding/offset/bounds/wrap/aspectratio/alpha/rotate/scale/zindex/background/border/clip/shadow/clickable/combinedclickable/各类手势/onsizechanged/imepadding 等。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:3298"
+  },
+  {
+    "fact": "未知的 modifier op 走 else -> modifier 被静默忽略，不会报错，写错 token 时难以察觉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:3597"
+  },
+  {
+    "fact": "dispatchComposeDslModifierAction 及其 Await 版把手势类 modifier 动作打日志后转发给 onAction，是手势与 JS 动作的桥梁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:3612"
+  },
+  {
+    "fact": "popupPropertiesFromValue 把 DSL map 转为 PopupProperties（focusable/dismissOnBackPress/dismissOnClickOutside/clippingEnabled/usePlatformDefaultWidth）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4422"
+  },
+  {
+    "fact": "horizontalAlignmentFromToken 把 center/centerhorizontally→CenterHorizontally、end/right→End，其余回退 Start。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4455"
+  },
+  {
+    "fact": "boxAlignmentFromToken 支持近 20 种对齐 token（center/topcenter/topend/centerstart/centerend/bottomstart/bottomcenter/bottomend 等），默认 TopStart。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4488"
+  },
+  {
+    "fact": "imageModelOrNull 按 url→uri→path→fileUri→src 顺序取图片源：http(s) 留字符串，content/file/android.resource 转 Uri，绝对路径转 File。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4515"
+  },
+  {
+    "fact": "webViewMixedContentMode：neverallow→NEVER_ALLOW、compatibilitymode→COMPATIBILITY_MODE，默认 ALWAYS_ALLOW。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4539"
+  },
+  {
+    "fact": "composeDslTextFieldStyleFromValue 从 map 解析 fontSize（默认14f）、fontWeight（默认 SemiBold）、color（默认 colorScheme.primary）、fontFamily。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4638"
+  },
+  {
+    "fact": "iconFromName 经 MaterialIconNameResolver.resolveOrNull 解析图标名，空名或解析失败回退为 Icons.Default.Info。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt:4704"
+  },
+  {
+    "fact": "ToolPkgComposeDslGeneratedRenderers.kt 文件头声明 AUTO-GENERATED：由 Compose Material3/Foundation 组件绑定自动生成，禁止手工编辑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:57"
+  },
+  {
+    "fact": "defaultComposeDslModifierResolver(base, props) 直接委托给 applyCommonModifier，是所有生成渲染器的默认修饰解析器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:61"
+  },
+  {
+    "fact": "applyScopedCommonModifier = 先走 modifierResolver 再包一层调试布局修饰（applyComposeDslNodeDebugLayoutModifier），调试时可看到节点边界。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:119"
+  },
+  {
+    "fact": "renderComposeDslNodes 逐个渲染子节点，子节点路径为 \"$nodePath/$index\"，保证整树路径唯一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:137"
+  },
+  {
+    "fact": "slotChildren(slotName, fallbackToChildren=false)：取命名 slot 的子节点；fallbackToChildren 为 true 时回退到普通 children。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:161"
+  },
+  {
+    "fact": "lazyItemRenderKey：显式 key → \"$parentNodePath:key:<key>\"，否则 \"$parentNodePath/$index:<归一化类型>\"，供 LazyColumn/LazyRow 做条目复用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:176"
+  },
+  {
+    "fact": "renderSlotChildren 用 \"$nodePath:$slotName\" 作为 slot 子树的节点路径前缀，与普通子节点的 / 分隔形成区分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:198"
+  },
+  {
+    "fact": "autoScrollSignature() 对整棵子树做 31 进制递归哈希，内容任何变化都会改变签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:244"
+  },
+  {
+    "fact": "renderSpacerNode 渲染 Spacer 节点，支持 width/height 属性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:348"
+  },
+  {
+    "fact": "renderLazyColumnNode：autoScrollToEnd 默认 false；开启时用内容签名做 LaunchedEffect 的 key，内容变化即自动滚动到首项（reverseLayout）或末项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:383"
+  },
+  {
+    "fact": "renderLazyRowNode 渲染 LazyRow 节点，同样支持 key 与自动滚动签名机制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:414"
+  },
+  {
+    "fact": "renderTextFieldNode 是大函数：echo guard 与派发队列协作防回声；失焦时经 LocalComposeDslFlushTextInputHandler 刷出文本状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:466"
+  },
+  {
+    "fact": "renderSnackbarHostNode 目前只是 Spacer 占位，SnackbarHost 的真实悬浮提示能力尚未实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:983"
+  },
+  {
+    "fact": "renderImageNode：有 imageModel 时用 coil 的 rememberAsyncImagePainter 加载，否则用 rememberVectorPainter(iconFromName(...)) 画 Material 矢量图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt:3327"
+  },
+  {
+    "fact": "ToolPkgComposeDslGeneratedRegistry.kt 头部注明 AUTO-GENERATED，由 tools/compose_dsl/generate_compose_dsl_artifacts.py 生成，禁止手改。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRegistry.kt:3"
+  },
+  {
+    "fact": "composeDslGeneratedNodeRendererRegistry: Map<String, ComposeDslNodeRenderer> 是“归一化类型名→渲染函数”的分发表，是自动生成组件与手写节点的分界线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRegistry.kt:7"
+  },
+  {
+    "fact": "registry 键为 normalizeToken(\"Column\") 等归一化 token，值是调用 renderXxxNode 的 lambda；覆盖约 80 个 Material3/Foundation 组件（Column/Row/Box/Spacer/LazyColumn/LazyRow/Text/TextField/Switch/Checkbox/Button/IconButton/Card/MaterialTheme/Surface/Icon/LinearProgressIndicator/CircularProgressIndicator/SnackbarHost/AssistChip/Badge/BadgedBox/抽屉系/Divider/DropdownMenu/各 Elevated/Filled/Outlined 变体/FilterChip/FAB 系/HorizontalDivider/IconToggleButton/InputChip/LeadingIconTab/ListItem/Modal 系/NavigationBar/NavigationRail/TabRow 系/ProvideTextStyle/PullToRefreshBox/RadioButton/Scaffold/Snackbar/Tab/TextButton/TimePickerDialog/VerticalDivider/VerticalDragHandle/WideNavigationRail/BoxWithConstraints/BasicText/DisableSelection/Image/SelectionContainer）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRegistry.kt:10"
+  },
+  {
+    "fact": "ComposeDslTextFieldEchoGuard.ExternalUpdate 三态：CONVERGED（已收敛）/OWN_ECHO（自己的回声）/EXTERNAL_CHANGE（外部变更）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:18"
+  },
+  {
+    "fact": "pendingEchoTexts: ArrayDeque<String> 按派发顺序记录尚未回显的本地编辑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:33"
+  },
+  {
+    "fact": "onLocalEditDispatched(text) 把本地派发的文本追加到回声队列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:37"
+  },
+  {
+    "fact": "reconcile(externalText, fieldText, isFocused) 判定外部文本更新的性质，决定输入框是否采用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:40"
+  },
+  {
+    "fact": "externalText == fieldText 时清空回声队列并返回 CONVERGED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:42"
+  },
+  {
+    "fact": "聚焦状态下 externalText 等于上次同步文本、或在回声队列中命中时判为 OWN_ECHO；命中时把该条及更早的回声全部丢弃（快照按派发顺序产生，更早的不会再到）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:50"
+  },
+  {
+    "fact": "其他情况清空队列、更新 lastSyncedText 并返回 EXTERNAL_CHANGE，输入框采用外部文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:58"
+  },
+  {
+    "fact": "ComposeDslTextInputDispatchQueue 把文本派发串行化：单 in-flight，保证 JS 运行时按击键顺序应用编辑，运行时状态始终是编辑序列的前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:74"
+  },
+  {
+    "fact": "Entry(actionId, text) 每个条目带一个 CompletableDeferred<Unit> completion，调用方可以 await 单次派发的完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:79"
+  },
+  {
+    "fact": "awaitAll() 等待所有未结算条目完成，单个条目失败用 runCatching 吞掉不影响其他。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:88"
+  },
+  {
+    "fact": "completeAll() 在重渲染或销毁时直接完成所有条目、不再继续派发，避免泄漏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:94"
+  },
+  {
+    "fact": "enqueue 入队后经 pump() 驱动：已有在途派发则等待，否则立即启动队首条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:103"
+  },
+  {
+    "fact": "onEntrySettled 移除已结算条目并完成其 completion；队列空则调用 onAllSettled，否则继续 pump 下一条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:119"
+  },
+  {
+    "fact": "文档注明 ComposeDslTextInputDispatchQueue 的所有方法都应在主线程调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt:72"
+  },
+  {
+    "fact": "三档超时常量：导航操作 5s、资源拦截 3s、JS 桥调用 20s。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:70"
+  },
+  {
+    "fact": "composeDslWebViewMainHandler 是 lazy 初始化的主线程 Handler，所有 WebView 操作都经它投递。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:74"
+  },
+  {
+    "fact": "内部 JS 桥名 __ComposeDslWebViewHostBridge__；注入脚本用 data-operit-webview-bridge-runtime=\"1\" 标记，HTML 里已有标记则跳过注入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:68"
+  },
+  {
+    "fact": "ComposeDslWebViewControllerDescriptor(key, routeInstanceId, executionContextKey) 标识一个可被 JS 侧命令控制的 WebView。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:84"
+  },
+  {
+    "fact": "ComposeDslWebViewStateSnapshot 记录 url/title/loading/progress/canGoBack/canGoForward，可经 toPayload 转为动作 payload。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:93"
+  },
+  {
+    "fact": "ComposeDslWebViewActionLane 是单线程守护线程池（线程名 OperitComposeDslWebView:<label>），JS 桥的阻塞调用都在上面跑，避免占主线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:128"
+  },
+  {
+    "fact": "ActionLane.runBlocking(timeoutMs) 把任务提交到 lane 线程并限时等待结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:137"
+  },
+  {
+    "fact": "ComposeDslWebViewHostContext 持有 routeInstanceId/executionContextKey/jsEngine，是桥回调回 JS 的执行上下文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:160"
+  },
+  {
+    "fact": "executeActionBlocking 经 jsEngine.executeComposeDslAction 执行 DSL 动作：中间结果与最终结果都会走 applyRenderResult 回推渲染，错误信息经 extractJsExecutionErrorMessage 提取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:168"
+  },
+  {
+    "fact": "ComposeDslWebViewHostRegistry 用 executionContextKey→controllerKey 两级 ConcurrentHashMap 管理 WebView 绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:222"
+  },
+  {
+    "fact": "bind 注册 WebView 与 stateRef，并把执行上下文预注册的 JS 接口方法同步到 binding 上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:232"
+  },
+  {
+    "fact": "unbind 仅当传入的 WebView 与当前绑定是同一实例才移除，防止误删别人的绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:270"
+  },
+  {
+    "fact": "clearExecutionContext 一次清掉整个执行上下文的 WebView 绑定与 JS 接口注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:278"
+  },
+  {
+    "fact": "markPendingRewrite/consumePendingRewrite 用“待重写 URL”做一次性消费，防止重写后的导航被拦截器二次处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:306"
+  },
+  {
+    "fact": "findJavascriptInterfaceActionId 按接口名+方法名查动作 id：先查已绑定实例的表，再查执行上下文预注册表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:333"
+  },
+  {
+    "fact": "registerJavascriptInterface 注册 JS 接口：接口名/方法名/actionId 全部 trim，空值条目被过滤掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:372"
+  },
+  {
+    "fact": "unregisterJavascriptInterface 同时清 binding 与预注册表，内层 map 空了逐层回收。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:417"
+  },
+  {
+    "fact": "listJavascriptInterfaces 返回接口名→排序后的方法名列表，供页面 JS 做接口发现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:413"
+  },
+  {
+    "fact": "handleControllerCommand 是 JS 侧控制 WebView 的总入口，支持 loadUrl/loadHtml/reload/stopLoading/goBack/goForward/clearHistory/evaluateJavascript/getState/addJavascriptInterface/removeJavascriptInterface。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:465"
+  },
+  {
+    "fact": "loadUrl 等导航命令经 runOnMainBlocking(5s) 在主线程执行；evaluateJavascript 用 20s 超时在 lane 线程阻塞等待返回值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:518"
+  },
+  {
+    "fact": "未绑定 controller 时 getState 返回成功空值，add/removeJavascriptInterface 走预注册逻辑，其余命令直接报错“未绑定”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:437"
+  },
+  {
+    "fact": "injectComposeDslWebViewBridgeRuntimeIntoHtml 把桥运行时 <script> 插到 </head> 之前；无 head 则插到 <head> 之后或 <html> 之后；已有标记直接返回原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:878"
+  },
+  {
+    "fact": "桥运行时 JS 经隐藏桥 listInterfaces 拉取接口描述，为每个接口在 window 上建宿主对象、方法用 defineReadonly 只读安装；调用经 hiddenBridge.invoke 并解开 {success,data} 信封；window.__operitInstallComposeDslJavascriptInterfaces 供刷新时重装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:771"
+  },
+  {
+    "fact": "LocalComposeDslWebViewHost 是 staticCompositionLocalOf，默认 null；对话框嵌入场景下不提供 WebView host。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1389"
+  },
+  {
+    "fact": "ComposeDslWebViewCallbackIds 定义 13 个回调动作 id：onPageStarted/onPageFinished/onReceivedError/onReceivedHttpError/onReceivedSslError/onDownloadStart/onConsoleMessage/onUrlChanged/onProgressChanged/onStateChanged/onLifecycleEvent/onShouldOverrideUrlLoading/onInterceptRequest。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:940"
+  },
+  {
+    "fact": "buildComposeDslWebViewRequest：无 controller 时必须有 url 或 html，否则 require 抛错；headers 被归一化为 String 映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:956"
+  },
+  {
+    "fact": "renderWebViewNode：仅当 props.bool(\"nestedScrollInterop\", false) 为真时才接 nestedScroll，默认不启用嵌套滚动互通。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1397"
+  },
+  {
+    "fact": "controller  descriptor 只有当其 executionContextKey/routeInstanceId 与当前 host 一致（或为空）时才会被绑定，否则忽略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1436"
+  },
+  {
+    "fact": "WebView 经 WebViewConfig.createWebView 创建，并 addJavascriptInterface(pageBridge, 内部桥名) 挂上页面桥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1621"
+  },
+  {
+    "fact": "若系统支持 DOCUMENT_START_SCRIPT，会经 WebViewCompat.addDocumentStartJavaScript 向所有源(*)注入接口运行时脚本，保证页面 JS 在 documentStart 即可用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1628"
+  },
+  {
+    "fact": "shouldOverrideUrlLoading：命中 pendingRewrite 则消费放行；否则用 5s 超时阻塞调 JS 动作；决策 allow→放行、cancel→拦截、external→外部浏览器打开、rewrite→记 pending 并合并 header 后重新 loadUrl。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1652"
+  },
+  {
+    "fact": "shouldInterceptRequest：用 3s 超时阻塞调 JS 动作；allow→走默认、block→返回 204 空响应、rewrite→用 HttpURLConnection 抓取改写后的 URL、respond→按三选一的 body 构造响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1752"
+  },
+  {
+    "fact": "respond 决策要求 text/base64/filePath 恰好其一有值，否则决策被判无效",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1116"
+  },
+  {
+    "fact": "mimeType 为 text/html 的 body 会经 injectComposeDslWebViewBridgeRuntimeIntoHtml 注入桥运行时脚本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1174"
+  },
+  {
+    "fact": "fetchComposeDslRewrittenResource 用 HttpURLConnection 跟随重定向，连接/读取超时各 10s，原请求头与改写头合并后发出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1211"
+  },
+  {
+    "fact": "ComposeDslWebViewPageBridge 的 @JavascriptInterface 方法 listInterfaces/invoke：invoke 在 lane 上 20s 阻塞执行接口方法对应的 DSL 动作，超时或异常都转为桥错误 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1274"
+  },
+  {
+    "fact": "launchComposeDslExternalUri 用 ACTION_VIEW + FLAG_ACTIVITY_NEW_TASK 打开外部链接，失败只打日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1376"
+  },
+  {
+    "fact": "doUpdateVisitedHistory 更新快照并上报 onUrlChanged（isMainFrame=true）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1820"
+  },
+  {
+    "fact": "onPageStarted：更新快照、重装 JS 接口（installJavascriptInterfacesIfPossible）、上报 onPageStarted 生命周期",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1841"
+  },
+  {
+    "fact": "onPageCommitVisible：上报 pageCommitVisible 生命周期",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1869"
+  },
+  {
+    "fact": "onReceivedSslError 只上报 onReceivedSslError 动作，不调用 handler.proceed()/cancel()，保持系统默认的取消加载行为。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1977"
+  },
+  {
+    "fact": "onPageFinished：上报 onPageFinished 生命周期",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1886"
+  },
+  {
+    "fact": "onRenderProcessGone 上报 renderProcessGone 生命周期事件（含 didCrash）并返回 true 表示已处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:1995"
+  },
+  {
+    "fact": "onProgressChanged：进度<100 时 loading 置 true；每次都上报 onProgressChanged。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2047"
+  },
+  {
+    "fact": "onShowFileChooser 经 ActivityResultLauncher 打开系统文件选择器；上一个未完成的 callback 先 onReceiveValue(null) 取消，避免泄漏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2069"
+  },
+  {
+    "fact": "onPermissionRequest 直接 grant(request.resources)：页面请求的权限（摄像头/麦克风等）全部自动授予。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2104"
+  },
+  {
+    "fact": "onGeolocationPermissionsShowPrompt 直接 callback.invoke(origin, true, false)：自动授予定位权限且不记住选择。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2108"
+  },
+  {
+    "fact": "onJsAlert/onJsConfirm 直接 confirm()，onJsPrompt 用 confirm(defaultValue)：页面弹窗全部被静默确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2115"
+  },
+  {
+    "fact": "setDownloadListener 只上报 onDownloadStart（含 suggestedFileName），不自动下载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2147"
+  },
+  {
+    "fact": "DisposableEffect 负责绑定/解绑 registry，上报 created/disposed 生命周期；销毁时依次 removeJavascriptInterface、stopLoading、loadUrl(about:blank)、clearHistory、removeAllViews、destroy，并 shutdown actionLane。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2166"
+  },
+  {
+    "fact": "LaunchedEffect 按 props 配置 WebView：javaScriptEnabled/domStorage/javaScriptCanOpenWindowsAutomatically/supportMultipleWindows 默认 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2253"
+  },
+  {
+    "fact": "allowFileAccess/allowContentAccess/allowFileAccessFromFileURLs/allowUniversalAccessFromFileURLs 默认 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2261"
+  },
+  {
+    "fact": "首次加载：有 url 则 loadUrl（带 header 用重载）；否则 html 经 loadDataWithBaseURL 加载（先注入桥脚本）；两者皆无则 about:blank。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2289"
+  },
+  {
+    "fact": "mediaPlaybackRequiresUserGesture 默认 false；cacheMode 走 props.webViewCacheMode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2273"
+  },
+  {
+    "fact": "runOnMainBlocking：已在主线程直接执行，否则 post 到主线程 + CountDownLatch 限时等待，超时抛 TimeoutException，主线程异常会被重新抛出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:658"
+  },
+  {
+    "fact": "safeBrowsingEnabled 默认 true（API 26+）；acceptThirdPartyCookies 默认 true（API 21+）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:2281"
+  },
+  {
+    "fact": "evaluateJavascriptBlocking 显式 check 不在主线程调用；JS 返回值经 parsePlainJsonValueOrRawString 还原为 JSON 或原字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt:683"
+  },
+  {
+    "fact": "ToolPkgComposeDslDebugSnapshot 字段：routeInstanceId/containerPackageName/uiModuleId/fallbackTitle/scriptScreenPath/scriptSource/phase/rawRenderResultText/renderResult/errorMessage/isLoading/isDispatching/updatedAtMillis。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:16"
+  },
+  {
+    "fact": "ToolPkgComposeDslLayoutSnapshot 字段：routeInstanceId/nodePath/nodeType/nodeKey/rootX/rootY/width/height/windowX/windowY/updatedAtMillis。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:32"
+  },
+  {
+    "fact": "DEBUG_DIR = \"debug/compose_dsl_dump/current\"，调试转储的固定相对目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:47"
+  },
+  {
+    "fact": "update() 写入快照；用 collectNodePaths（根路径 \"0\"）算出有效节点路径，裁掉已不存在节点的布局快照；同时更新 active/latest 指向。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:55"
+  },
+  {
+    "fact": "updateLayout() 按 route+nodePath 记录布局快照；clear() 移除快照与布局，active/latest 回退为剩余最后一个。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:69"
+  },
+  {
+    "fact": "dumpCurrentSnapshot(context)：externalFilesDir 不可用直接 requireNotNull 抛错；输出目录先 deleteRecursively 再 mkdirs，每次转储都是全新的。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:92"
+  },
+  {
+    "fact": "无活动快照时只写 dump_manifest.json（success=false），直接返回目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:100"
+  },
+  {
+    "fact": "manifest 含 routeInstanceId/containerPackageName/uiModuleId/fallbackTitle/scriptScreenPath/phase/isLoading/isDispatching/errorMessage/updatedAtMillis/updatedAt（yyyy-MM-dd HH:mm:ss.SSS）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:120"
+  },
+  {
+    "fact": "转储文件清单：dump_manifest.json、layout_nodes.json/.txt、source_script.js、raw_render_result.txt/.json、parsed_render_result.json、state.json、memo.json、compose_tree.json/.txt、compose_layout_tree.txt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:142"
+  },
+  {
+    "fact": "collectNodePathsInto：普通子节点路径 \"$nodePath/$index\"，slot 子节点路径 \"$nodePath:$slotName/$index\"，与渲染侧路径规则一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:209"
+  },
+  {
+    "fact": "valueToJson：JSONObject/JSONArray/Node/Map/List/Array/布尔数字字符串直写，其他类型 toString()，null→JSONObject.NULL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:286"
+  },
+  {
+    "fact": "Float.format2() 用 Locale.ROOT 按 \"%.2f\" 格式化，保证调试文本小数点不受系统语言影响。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt:441"
+  }
+]

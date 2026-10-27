@@ -1,0 +1,330 @@
+[
+ {
+  "fact": "settings.gradle.kts 声明 rootProject.name = \"Operit\"",
+  "ref": "settings.gradle.kts:20"
+ },
+ {
+  "fact": "依赖解析仓库模式为 RepositoriesMode.FAIL_ON_PROJECT_REPOS：禁止各子模块私自声明仓库，仓库只在根配置中统一声明",
+  "ref": "settings.gradle.kts:9"
+ },
+ {
+  "fact": "pluginManagement 仓库：google()、gradlePluginPortal()、mavenCentral()",
+  "ref": "settings.gradle.kts:3"
+ },
+ {
+  "fact": "dependencyResolutionManagement 声明 6 个仓库：google()、mavenCentral()、jitpack、Shizuku 的 bintray、xposed、sonatype snapshots",
+  "ref": "settings.gradle.kts:11"
+ },
+ {
+  "fact": "工程共声明 9 个 Gradle 模块：:app、:dragonbones、:terminal、:mnn、:llama、:mmd、:fbx、:showerclient、:quickjs",
+  "ref": "settings.gradle.kts:21"
+ },
+ {
+  "fact": ":dragonbones 模块重定向到目录 avator/dragonbones（DragonBones 骨骼动画 Native 封装）",
+  "ref": "settings.gradle.kts:23"
+ },
+ {
+  "fact": ":terminal 模块使用默认目录 terminal/",
+  "ref": "settings.gradle.kts:24"
+ },
+ {
+  "fact": ":mnn 模块重定向到目录 llm/mnn（MNN 端侧推理封装）",
+  "ref": "settings.gradle.kts:26"
+ },
+ {
+  "fact": ":llama 模块重定向到目录 llm/llama（Llama 端侧推理封装）",
+  "ref": "settings.gradle.kts:28"
+ },
+ {
+  "fact": ":mmd 模块重定向到目录 avator/mmd（MMD 端侧渲染封装）",
+  "ref": "settings.gradle.kts:30"
+ },
+ {
+  "fact": ":fbx 模块重定向到目录 avator/fbx（FBX 模型预览 Native 封装）",
+  "ref": "settings.gradle.kts:32"
+ },
+ {
+  "fact": ":showerclient 模块使用默认目录 showerclient/",
+  "ref": "settings.gradle.kts:33"
+ },
+ {
+  "fact": ":quickjs 模块使用默认目录（QuickJS 脚本引擎封装）",
+  "ref": "settings.gradle.kts:34"
+ },
+ {
+  "fact": "app 模块应用 8 个 Gradle 插件：android.application、kotlin.android、kotlin.compose、kotlin.serialization、kotlin.kapt、kotlin.parcelize、io.objectbox、kotlin-kapt",
+  "ref": "app/build.gradle.kts:16"
+ },
+ {
+  "fact": "app 模块 namespace = \"com.ai.assistance.operit\"",
+  "ref": "app/build.gradle.kts:360"
+ },
+ {
+  "fact": "app 模块 compileSdk = 36",
+  "ref": "app/build.gradle.kts:361"
+ },
+ {
+  "fact": "app 模块 applicationId = \"com.ai.assistance.operit\"，minSdk = 26，targetSdk = 34",
+  "ref": "app/build.gradle.kts:397"
+ },
+ {
+  "fact": "app 模块 versionCode = 51，versionName = \"1.12.2\"",
+  "ref": "app/build.gradle.kts:400"
+ },
+ {
+  "fact": "NDK abiFilters 只保留 arm64-v8a：唯一的原生 ABI",
+  "ref": "app/build.gradle.kts:410"
+ },
+ {
+  "fact": "externalNativeBuild 走 CMake，脚本路径 src/main/cpp/CMakeLists.txt",
+  "ref": "app/build.gradle.kts:392"
+ },
+ {
+  "fact": "CMake 编译参数 cppFlags(\"-std=c++17\")",
+  "ref": "app/build.gradle.kts:415"
+ },
+ {
+  "fact": "buildFeatures 同时启用 compose、aidl、buildConfig",
+  "ref": "app/build.gradle.kts:483"
+ },
+ {
+  "fact": "release 构建类型：isMinifyEnabled = false 且 isShrinkResources = false（未启用代码混淆与资源压缩）",
+  "ref": "app/build.gradle.kts:425"
+ },
+ {
+  "fact": "debug 构建类型：applicationIdSuffix = \".debug\"，用 debug 签名，app 名为 \"Operit Debug\"",
+  "ref": "app/build.gradle.kts:436"
+ },
+ {
+  "fact": "clone 构建类型：initWith(debug)，applicationIdSuffix = \".clone\"，app 名为 \"Operit Clone\"，matchingFallbacks 为 debug",
+  "ref": "app/build.gradle.kts:440"
+ },
+ {
+  "fact": "clone 构建在 release 签名配置存在时改用 release 签名（与正式版同签名、可并存安装）",
+  "ref": "app/build.gradle.kts:443"
+ },
+ {
+  "fact": "nightly 构建类型：isMinifyEnabled = false，matchingFallbacks 为 release",
+  "ref": "app/build.gradle.kts:449"
+ },
+ {
+  "fact": "nightly 构建最终 signingConfig 被覆盖为 debug 签名（代码中先按 release 条件赋值、随后被 debug 签名覆盖）",
+  "ref": "app/build.gradle.kts:460"
+ },
+ {
+  "fact": "nightly 产物文件名固定为 app-nightly.apk，clone 产物固定为 app-clone.apk",
+  "ref": "app/build.gradle.kts:467"
+ },
+ {
+  "fact": "assembleRelease 完成后自动 finalizedBy signRotatedReleaseApk 做签名轮换；assembleNightly 同理",
+  "ref": "app/build.gradle.kts:556"
+ },
+ {
+  "fact": "signApkWithRotation 用 apksigner 做签名轮换：--v1-signing-enabled false、--v2-signing-enabled true、--v3-signing-enabled true、--v4-signing-enabled false",
+  "ref": "app/build.gradle.kts:112"
+ },
+ {
+  "fact": "签名轮换的 --rotation-min-sdk-version = 28：API 28 以下设备从 V2 块取旧签名者，API 28+ 理解 proof-of-rotation",
+  "ref": "app/build.gradle.kts:117"
+ },
+ {
+  "fact": "签名密钥口令不进命令行明文：经环境变量 env:OPERIT_OLD_STORE_PASSWORD 等传入 apksigner",
+  "ref": "app/build.gradle.kts:121"
+ },
+ {
+  "fact": "签名后对轮换产物执行 apksigner verify --verbose --print-certs，校验通过才替换原 APK",
+  "ref": "app/build.gradle.kts:140"
+ },
+ {
+  "fact": "打包前必须存在外部构建的原生库：src/main/jniLibs/arm64-v8a/liboperit_ripgrep.so（为空或缺失则 verifyExternallyBuiltNativeLibraries 任务直接失败）",
+  "ref": "app/build.gradle.kts:152"
+ },
+ {
+  "fact": "FFmpeg 能力来自本地 aar：libs/ffmpeg-kit-local.aar",
+  "ref": "app/build.gradle.kts:155"
+ },
+ {
+  "fact": "verifyExternallyBuiltNativeLibraries 要求 ffmpeg-kit-local.aar 内含 10 个 arm64-v8a 的 .so（libavcodec/libavformat/libavutil/libswscale 等）",
+  "ref": "app/build.gradle.kts:156"
+ },
+ {
+  "fact": "preBuild 强制依赖 syncMainAssets 与 verifyExternallyBuiltNativeLibraries：资产同步与原生库校验是构建前置",
+  "ref": "app/build.gradle.kts:563"
+ },
+ {
+  "fact": "syncSttModelAssets 按 config/stt-model-assets.properties 清单下载端侧 STT 模型资产",
+  "ref": "app/build.gradle.kts:289"
+ },
+ {
+  "fact": "清单每行要求恰好 6 个 | 分隔字段，否则构建脚本抛错",
+  "ref": "app/build.gradle.kts:231"
+ },
+ {
+  "fact": "verifySttModelAsset 用文件字节数 + SHA-256 双重校验模型资产",
+  "ref": "app/build.gradle.kts:247"
+ },
+ {
+  "fact": "STT 资产下载请求头 User-Agent 为 \"Operit Android build STT asset sync\"",
+  "ref": "app/build.gradle.kts:268"
+ },
+ {
+  "fact": "app 模块 implementation 依赖全部 8 个兄弟模块：:dragonbones、:terminal、:mnn、:llama、:mmd、:fbx、:showerclient、:quickjs",
+  "ref": "app/build.gradle.kts:580"
+ },
+ {
+  "fact": "glTF 运行时渲染用 Google Filament 三件：filament-android、gltfio-android、filament-utils-android，版本 1.69.2",
+  "ref": "app/build.gradle.kts:590"
+ },
+ {
+  "fact": "root 能力来自 libsu：core/service/nio 三件，版本 6.0.0",
+  "ref": "app/build.gradle.kts:637"
+ },
+ {
+  "fact": "Shizuku 接入：shizuku.api 与 shizuku.provider 两个依赖",
+  "ref": "app/build.gradle.kts:736"
+ },
+ {
+  "fact": "Tasker 自动化集成：com.joaomgcd:taskerpluginlibrary:0.4.10",
+  "ref": "app/build.gradle.kts:740"
+ },
+ {
+  "fact": "本地 HTTP 服务：NanoHTTPD（WebChat 本地聊天桥接的底层）",
+  "ref": "app/build.gradle.kts:781"
+ },
+ {
+  "fact": "MCP 客户端：libs.mcp.sdk.client + ktor-client-okhttp",
+  "ref": "app/build.gradle.kts:818"
+ },
+ {
+  "fact": "桌面小组件：Glance appwidget + glance.material3（Compose for Widgets）",
+  "ref": "app/build.gradle.kts:843"
+ },
+ {
+  "fact": "持久化双引擎：Room（runtime/ktx + kapt compiler）与 ObjectBox（kotlin + kapt processor）并存",
+  "ref": "app/build.gradle.kts:710"
+ },
+ {
+  "fact": "UI 栈：Compose BOM 统一版本 + material3 + navigation.compose",
+  "ref": "app/build.gradle.kts:721"
+ },
+ {
+  "fact": "OCR 用 ML Kit：text.recognition 基础包 + 中文/日文/韩文/天城文四个语言包",
+  "ref": "app/build.gradle.kts:608"
+ },
+ {
+  "fact": "中文分词：jieba；向量检索：hnswlib-core/utils；端侧 embedding：onnxruntime-android 1.17.1",
+  "ref": "app/build.gradle.kts:696"
+ },
+ {
+  "fact": "网络栈：OkHttp + okhttp-sse（流式）+ jsoup；API 客户端：Retrofit 2.9.0 + Moshi",
+  "ref": "app/build.gradle.kts:746"
+ },
+ {
+  "fact": "偏好设置：DataStore preferences（preferences + preferences.core）",
+  "ref": "app/build.gradle.kts:751"
+ },
+ {
+  "fact": "安全：androidx.security:security-crypto:1.1.0-alpha06；BouncyCastle 固定用 bcprov-jdk18on:1.78（排除 bcprov-jdk15to18 防类重复）",
+  "ref": "app/build.gradle.kts:827"
+ },
+ {
+  "fact": "文档处理：Apache POI 三件（poi/poi-ooxml/poi-scratchpad）+ itextg/pdfbox/zip4j",
+  "ref": "app/build.gradle.kts:771"
+ },
+ {
+  "fact": "JniBridge 是 package com.dragonbones 下的 Kotlin object，DragonBones 骨骼动画的 JNI 声明层",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:3"
+ },
+ {
+  "fact": "JniBridge 的 init 块加载原生库 \"dragonbones_native\"",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:5"
+ },
+ {
+  "fact": "JniBridge 共声明 17 个 external JNI 函数（init 起、stopAnimation 止）",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:8"
+ },
+ {
+  "fact": "loadDragonBones(skeletonData, textureJsonData, texturePngData) 一次传入骨骼数据、纹理 JSON、纹理 PNG 三个 ByteArray 完成装载",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:11"
+ },
+ {
+  "fact": "动画控制四件：getAnimationNames、getAnimationDuration(animationName)、fadeInAnimation(name, layer, loop, fadeInTime)、stopAnimation(name)",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:29"
+ },
+ {
+  "fact": "骨骼级操控：overrideBonePosition(boneName, x, y) 直接改写骨骼位置，resetBone(boneName) 复位",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:41"
+ },
+ {
+  "fact": "containsPoint(x, y) 做点击命中测试，返回命中的骨骼/插槽名（可空）",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:35"
+ },
+ {
+  "fact": "生命周期与渲染回调：onPause/onResume/onDestroy + onSurfaceCreated/onSurfaceChanged/onDrawFrame",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:17"
+ },
+ {
+  "fact": "世界变换：setWorldScale(scale) 缩放、setWorldTranslation(x, y) 平移",
+  "ref": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt:37"
+ },
+ {
+  "fact": "FbxNative 是 package com.ai.assistance.fbx 下的 Kotlin object，FBX 模型预览的 JNI 声明层",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:3"
+ },
+ {
+  "fact": "FbxNative 的 init 经 FbxLibraryLoader.loadLibraries() 加载原生库（非直接 System.loadLibrary）",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:6"
+ },
+ {
+  "fact": "可用性三件：nativeIsAvailable()、nativeGetUnavailableReason()、nativeGetLastError()——调用前可先探针",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:9"
+ },
+ {
+  "fact": "nativeInspectModel(pathModel): String? 检查模型文件并返回 JSON 描述（可空）",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:15"
+ },
+ {
+  "fact": "预览会话是句柄模式：nativeCreatePreviewSession(pathModel) 返回 Long 句柄，nativeDestroyPreviewSession(sessionHandle) 释放",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:17"
+ },
+ {
+  "fact": "nativeBuildPreviewFrame(sessionHandle, animationName, timeSeconds): FloatArray? 按动画名+时间戳构建一帧骨骼数据",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:23"
+ },
+ {
+  "fact": "nativeReadEmbeddedTextureBytes(sessionHandle, textureIndex): ByteArray? 读取模型内嵌纹理字节",
+  "ref": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxNative.kt:29"
+ },
+ {
+  "fact": "NativeRipgrep 是 internal object（包 com.ai.assistance.operit.util.ripgrep），模块内可见的 ripgrep JNI 声明层",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:3"
+ },
+ {
+  "fact": "NativeRipgrep 的 init 加载原生库 \"operit_ripgrep\"（与构建脚本校验的 jniLibs .so 同名）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:5"
+ },
+ {
+  "fact": "searchJson(path, patterns, filePattern, caseInsensitive, literal, contextLines, maxResults): String 是唯一 JNI 入口：参数进、JSON 字符串结果出",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt:9"
+ },
+ {
+  "fact": "大纲 v3 共 11 章 116 页：架构总览 1、工具系统 13、聊天与消息 2、云端 Chat API 32、语音服务 2、数据层 14、引擎其他 4、系统服务与集成 6、工具函数库 6、用户界面 32、附录 4",
+  "ref": "outline/outline-v3.yaml:20"
+ },
+ {
+  "fact": "云端 Chat API 章 32 页 = 20 个供应商封装页 + 云端接入总览 + Key 池轮询 + 供应商基础设施 + thinking 配置 + 参数模型 + 错误限流重试 + 工具调用与流式协议 + Token 统计 + 多模态能力 + 对话编排运行时 + 对话增强管线 + 会话记忆与上下文总结",
+  "ref": "outline/outline-v3.yaml:240"
+ },
+ {
+  "fact": "MNN 与 Llama 两个端侧供应商页标注\"已停止维护\"，仅存档封装层实现",
+  "ref": "outline/outline-v3.yaml:299"
+ },
+ {
+  "fact": "大纲覆盖口径：app 模块 1362 个 kt 文件中覆盖 1359 个；仅排除 core/avatar/impl/mmd 下 3 个 kt（373 行，mmd 端侧渲染已停止维护）",
+  "ref": "outline/outline-v3.yaml:6"
+ },
+ {
+  "fact": "5 个总览页在大纲中状态均为 approved：arch-overview、core-tools、core-chat、api-chat、data-model",
+  "ref": "outline/outline-v3.yaml:22"
+ }
+]

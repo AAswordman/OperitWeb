@@ -1,0 +1,686 @@
+[
+  {
+    "fact": "ConversationMarkupManager 负责生成会话中标准化的 XML 状态消息、工具调用格式与工具结果展示文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:14"
+  },
+  {
+    "fact": "TOOL_RESULT_TRUNCATION_SUFFIX 是工具结果截断后缀文本，内容为换行加\"[工具结果过长，已截断]\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:18"
+  },
+  {
+    "fact": "createToolErrorStatus(toolName, errorMessage) 生成 error 状态的工具结果 XML，内容体为 <content><error>…</error></content>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:28"
+  },
+  {
+    "fact": "createWarningStatus(warningMessage) 生成 <status type=\"warning\">…</status> 格式的警告消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:39"
+  },
+  {
+    "fact": "formatToolResultForMessage(result)：成功时先经 splitImageLinksForModel 拆分图片链接，再用 createBoundedToolResultXml 限长组装；失败时把 error 与 result 拼成错误载荷。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:55"
+  },
+  {
+    "fact": "splitImageLinksForModel：无图片链接时原样返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:91"
+  },
+  {
+    "fact": "splitImageLinksForModel：有时把图片 id 转成 <link type=\"image\" id=\"…\"></link> 行，文本前加 \"Image attached as multimodal input.\" 提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:96"
+  },
+  {
+    "fact": "buildToolResultMessage(results)：空列表返回空串；每个结果独立受 ToolExecutionLimits.MAX_SINGLE_TOOL_RESULT_MESSAGE_CHARS 限制，整批不限长。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:110"
+  },
+  {
+    "fact": "createMultipleToolsWarning(context, toolName) 用 `R.string.conversation_markup_multiple_tools_warning` 字符串资源生成多工具警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:129"
+  },
+  {
+    "fact": "createToolNotAvailableError(toolName, details)：未传 details 时默认文案为 The tool `$toolName` is not available.。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:141"
+  },
+  {
+    "fact": "createToolResultXml 经 ChatMarkupRegex.generateRandomToolResultTagName 生成随机标签名，拼出 <标签名 name=\"…\" status=\"…\">…</标签名>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:147"
+  },
+  {
+    "fact": "createBoundedToolResultXml：载荷预算 = MAX_SINGLE_TOOL_RESULT_MESSAGE_CHARS 减去空 XML 长度，下限钳到 0，再经 truncatePayload 截断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:162"
+  },
+  {
+    "fact": "truncatePayload：超长时保留前 maxChars 减后缀长度个字符并 trimEnd，再拼接截断后缀；后缀比预算还长时只取后缀的前 maxChars 个字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:173"
+  },
+  {
+    "fact": "appendImageLinksWithinResultLimit：按剩余字符预算逐行追加图片链接，单行超预算就跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:203"
+  },
+  {
+    "fact": "ConversationRoundManager 用 roundContents（轮号到 SmartString 的映射）存每轮内容，currentResponseRound（AtomicInteger）跟踪当前轮号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:21"
+  },
+  {
+    "fact": "initializeNewConversation() 把轮号重置为 0 并清空全部轮内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:29"
+  },
+  {
+    "fact": "updateContent(content) 替换当前轮的全部内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:42"
+  },
+  {
+    "fact": "appendChunk(content) 直接向当前轮追加文本块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:49"
+  },
+  {
+    "fact": "startNewRound() 把轮号加一并为新轮创建空 SmartString，返回新轮号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:59"
+  },
+  {
+    "fact": "appendContent(content) 向当前轮追加换行加去空白后的文本，返回展示文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:72"
+  },
+  {
+    "fact": "getDisplayContent() 按轮号升序拼接各轮内容，轮间换行分隔。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:86"
+  },
+  {
+    "fact": "getDisplayContent() 的轮外内容（key 为 -1）追加在末尾。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:94"
+  },
+  {
+    "fact": "getRawContent() 在每轮内容前插入 --- Round N --- 形式的分隔符（ROUND_SEPARATOR_FORMAT）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:119"
+  },
+  {
+    "fact": "getCurrentRoundContent() 返回当前轮的文本内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:99"
+  },
+  {
+    "fact": "getCurrentRound() 返回当前轮号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:136"
+  },
+  {
+    "fact": "clearContent() 清空全部轮内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt:141"
+  },
+  {
+    "fact": "ConversationService 处理会话相关功能，包括会话总结、偏好处理和对话切割准备；构造参数为 context 与 customEmojiRepository。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:60"
+  },
+  {
+    "fact": "APPLY_FILE_TOOL_NAME 常量值为 apply_file。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:67"
+  },
+  {
+    "fact": "fileRequestContentRegex 从 file-request-content 标签的 CDATA 段中提取内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:69"
+  },
+  {
+    "fact": "generateSummary(messages, multiServiceManager) 把消息转成 turns 后转调 generateSummaryFromPromptTurns。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:99"
+  },
+  {
+    "fact": "generateSummary 的第二个重载额外接受 previousSummary（上一次总结，可为 null）一并传入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:113"
+  },
+  {
+    "fact": "generateSummaryFromPromptTurns 是总结的主入口，接受 PromptTurn 列表、previousSummary、multiServiceManager 与可选的 summaryConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:114"
+  },
+  {
+    "fact": "总结系统提示词由 FunctionalPrompts.buildSummarySystemPrompt(previousSummary, useEnglish, summaryConfig) 构建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:126"
+  },
+  {
+    "fact": "总结前对消息做两层清洗：先 stripGeminiThoughtSignatureMetaTurns，再 stripOpenAiResponsesProtocolMarkupTurns。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:131"
+  },
+  {
+    "fact": "总结用的模型参数与 AIService 取自 FunctionType.SUMMARY：getModelParametersForFunction 与 getServiceForFunction。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:140"
+  },
+  {
+    "fact": "总结提示词准备前派发 before_prepare_summary_prompt 阶段的 SummaryHookRegistry.dispatchSummaryGenerateHooks。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:150"
+  },
+  {
+    "fact": "发给模型前派发 before_send_to_model 阶段的总结钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:177"
+  },
+  {
+    "fact": "总结生成后派发 after_generate_summary 阶段钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:302"
+  },
+  {
+    "fact": "总结内容可用 after_generate_summary 返回的 summaryResult 覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:320"
+  },
+  {
+    "fact": "总结开始时经 ToolProgressBus.SUMMARY_PROGRESS_TOOL_NAME 上报 0.05 的准备进度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:209"
+  },
+  {
+    "fact": "流式总结分阶段推进进度：写标题 0.20、核心任务 0.40。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:223"
+  },
+  {
+    "fact": "交互 0.55、进展 0.70。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:233"
+  },
+  {
+    "fact": "关键信息 0.85、收尾 0.95。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:243"
+  },
+  {
+    "fact": "总结完成时上报 1.0 进度并标记完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:286"
+  },
+  {
+    "fact": "总结内容经 ChatUtils.removeThinkingContent 去除思考过程；token 统计取 summaryService 的 inputTokenCount、cachedInputTokenCount、outputTokenCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:294"
+  },
+  {
+    "fact": "总结结果为空白时返回固定文案 Conversation Summary: Unable to generate valid summary.。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:324"
+  },
+  {
+    "fact": "总结过程抛异常时记日志后原样 rethrow，不吞掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:330"
+  },
+  {
+    "fact": "对话标题用 FunctionType.TITLE_GENERATION 对应的模型参数与服务生成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:358"
+  },
+  {
+    "fact": "标题生成请求使用 stream=false、enableRetry=false 的非流式调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:364"
+  },
+  {
+    "fact": "sanitizeConversationTitle 取首个非空行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:386"
+  },
+  {
+    "fact": "sanitizeConversationTitle 去除 markdown 符号、控制字符与首尾引号标点，截断到 40 个字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:394"
+  },
+  {
+    "fact": "buildSummaryPreparedHistory 拼出三段结构：SYSTEM 系统提示 + 历史消息 + USER 总结提问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:408"
+  },
+  {
+    "fact": "serializeSummaryHookModelParameters 把模型参数序列化为 map，包含 id、name、apiName、description、defaultValue、currentValue。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:421"
+  },
+  {
+    "fact": "序列化 map 另包含 isEnabled、valueType、minValue、maxValue、category、isCustom。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:427"
+  },
+  {
+    "fact": "prepareConversationHistory 在准备历史前派发 before_prepare_history 阶段的 dispatchHistoryHooks。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:477"
+  },
+  {
+    "fact": "历史准备完成后派发 after_prepare_history 阶段钩子，返回 afterContext.preparedHistory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:661"
+  },
+  {
+    "fact": "历史准备全程在 conversationMutex.withLock 互斥锁内执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:504"
+  },
+  {
+    "fact": "没有 SYSTEM 轮时，用 SystemPromptConfig.getSystemPromptWithCustomPrompts 组装系统提示词，传入工具可见性与角色卡工具权限解析结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:579"
+  },
+  {
+    "fact": "最终系统提示词按顺序拼接：avatarMoodRulesText、systemPrompt、proxyRolePrompt（包在 assistant_role 标签内）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:605"
+  },
+  {
+    "fact": "waifuRulesText、user_profile 拼在系统提示词后段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:612"
+  },
+  {
+    "fact": "replacePromptPlaceholders 把 {{user}} 替换为全局用户名（取不到时为 User），{{char}} 替换为 AI 名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1069"
+  },
+  {
+    "fact": "ASSISTANT 消息中检测到 XML 标签时，经 processChatMessageWithTools 按标签重组为多轮消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:645"
+  },
+  {
+    "fact": "TOOL_RESULT 轮在准备历史时经 normalizeToolResultMarkupForModel 做标记归一化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:650"
+  },
+  {
+    "fact": "splitXmlTag 委托 NativeXmlSplitter.splitXmlTag 提取内容中的 XML 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:674"
+  },
+  {
+    "fact": "normalizeConversationHistoryForModel 对 ASSISTANT、TOOL_CALL、TOOL_RESULT 三种轮做工具结果标记归一化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:678"
+  },
+  {
+    "fact": "normalizeToolResultMarkupForModel 只改写 apply_file 工具的结果：把 file-request-content 的 CDATA 真实请求内容抽出来替换原 body。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:700"
+  },
+  {
+    "fact": "extractApplyFileRequestContent 从工具结果 body 的 content 标签内提取 file-request-content 的 CDATA。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:709"
+  },
+  {
+    "fact": "processChatMessageWithTools 是带 XML 标签消息的重组主入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:718"
+  },
+  {
+    "fact": "标签分派规则：text 与 think/thinking 归为 ASSISTANT；status 含 type=complete 或 wait_for_user_need 归 ASSISTANT，其余 status 归 USER。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:754"
+  },
+  {
+    "fact": "tool_result 归 TOOL_RESULT；tool 归 TOOL_CALL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:768"
+  },
+  {
+    "fact": "text（else 分支）归 ASSISTANT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:778"
+  },
+  {
+    "fact": "重组后连续同角色的片段合并为一条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:785"
+  },
+  {
+    "fact": "TOOL_CALL 与 TOOL_RESULT 不参与合并。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:793"
+  },
+  {
+    "fact": "createToolFromJson：Map 参数逐项转为工具参数对象；Double 无小数部分时转为 Int 字符串避免解析错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:946"
+  },
+  {
+    "fact": "字符串形式参数的回退只处理 press_key、set_input_text、start_app 三种类型，其余类型得不到参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:959"
+  },
+  {
+    "fact": "flattenUiInfo 把层级 UI 节点拍平：可点击节点视为原子单元。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:851"
+  },
+  {
+    "fact": "可点击节点收集 id、desc、class、bounds。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:868"
+  },
+  {
+    "fact": "不可点击节点只收文本；文本去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:883"
+  },
+  {
+    "fact": "buildWaifuRulesText 按表情、自拍、自定义提示词三个开关拼接 waifu 额外规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:974"
+  },
+  {
+    "fact": "buildAvatarMoodRulesText 拼接当前头像启用的自定义 mood 定义，生成 <mood> 标签规则文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1023"
+  },
+  {
+    "fact": "shouldInjectMoodRules 仅当提示功能类型为 VOICE、开启语音头像且存在当前头像时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1047"
+  },
+  {
+    "fact": "translateText 按 LocaleUtils.getCurrentLanguage 选择目标语言，取不到映射时默认翻译为中文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1095"
+  },
+  {
+    "fact": "翻译走 FunctionType.TRANSLATION 对应的 AI 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1116"
+  },
+  {
+    "fact": "generatePackageDescription：工具描述列表为空直接返回空串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1151"
+  },
+  {
+    "fact": "generatePackageDescription：生成结果为空白也返回空串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1194"
+  },
+  {
+    "fact": "analyzeImageWithIntent 把图片加入 ImagePoolManager 池；入池失败返回 Failed to load image。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1222"
+  },
+  {
+    "fact": "analyzeImageWithIntent 分析后 removeImage 清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1248"
+  },
+  {
+    "fact": "analyzeAudioWithIntent 用 MediaPoolManager.addMedia 登记音频，取不到 mime 时兜底 audio/*。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1267"
+  },
+  {
+    "fact": "analyzeVideoWithIntent 取不到 mime 时兜底 video/*。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1310"
+  },
+  {
+    "fact": "analyzeVideoWithIntent 分析后 removeMedia 清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:1335"
+  },
+  {
+    "fact": "processFileBinding：原内容非空且 AI 代码不含 [START- 块时拒绝整文件覆写，返回原内容与操作指引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:74"
+  },
+  {
+    "fact": "AI 代码含 [START- 块时走 applyFuzzyPatch 模糊打补丁，成功后生成 diff 返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:86"
+  },
+  {
+    "fact": "无结构块时默认整文件替换（先统一换行符并 trim），同时生成 diff。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:103"
+  },
+  {
+    "fact": "processFileBindingOperations：空操作列表直接报错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:115"
+  },
+  {
+    "fact": "processFileBindingOperations：old 或 new 为 blank 的操作被过滤掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:121"
+  },
+  {
+    "fact": "generateUnifiedDiff 输出 Changes: +N -M lines 统计。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:181"
+  },
+  {
+    "fact": "generateUnifiedDiff 输出带行号的 hunks（前缀 -行号| / +行号| / 空格行号|）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:210"
+  },
+  {
+    "fact": "applyFuzzyOperations 对每个 OLD 块调用 findBestMatchRange 找最佳行区间；找不到匹配（start==-1）则整体失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:270"
+  },
+  {
+    "fact": "同一 OLD 块在目标文件中有多个完美匹配时中止打补丁，避免歧义替换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:280"
+  },
+  {
+    "fact": "多个编辑操作按起始行降序从下往上应用，避免行号漂移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:287"
+  },
+  {
+    "fact": "tryApplyBoundaryPreservingEdit 保留匹配段首尾行落在 OLD 块之外的前后缀，只替换中间部分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:348"
+  },
+  {
+    "fact": "单行对单行的 REPLACE 中，若新行没有缩进则沿用原行的缩进前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:311"
+  },
+  {
+    "fact": "parseEditOperations 解析 [START-REPLACE]/[START-DELETE] 到 [END-…] 之间的 [OLD]/[NEW] 块；old 为 blank 的操作跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:392"
+  },
+  {
+    "fact": "findBestMatchRange 用 3-gram Jaccard 相似度（buildNgrams 默认 n=3）做匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:691"
+  },
+  {
+    "fact": "findBestMatchRange 的阶段二做并行滑动窗口搜索。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:502"
+  },
+  {
+    "fact": "findBestMatchRange 的窗口尺寸容差为目标行数的 20% 加 2 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:494"
+  },
+  {
+    "fact": "模糊匹配只接受相似度大于 0.9 的结果，否则视为未找到。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:666"
+  },
+  {
+    "fact": "某分片找到 100% 匹配时经 foundPerfectMatch 提前结束该分片的搜索。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:600"
+  },
+  {
+    "fact": "hasMultiplePerfectMatches 用去空白后的子串出现次数判断是否存在多个完美匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt:711"
+  },
+  {
+    "fact": "InputProcessor.processUserInput 派发 before_process 阶段输入钩子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/InputProcessor.kt:30"
+  },
+  {
+    "fact": "processUserInput 派发 after_process 阶段输入钩子；结果层层回退：afterContext.processedInput、processedInput、原始 input。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/InputProcessor.kt:42"
+  },
+  {
+    "fact": "MultiServiceManager 为每种功能类型缓存 AIService 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:22"
+  },
+  {
+    "fact": "ServiceLease 携带 service、modelConfig、modelParameters 与 closeAction。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:28"
+  },
+  {
+    "fact": "ServiceLease.close() 用 AtomicBoolean.compareAndSet 保证 closeAction 只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:36"
+  },
+  {
+    "fact": "getServiceForFunction 命中 serviceInstances 缓存直接返回，否则按功能映射的配置创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:129"
+  },
+  {
+    "fact": "CHAT 功能创建的服务实例同时被记为 defaultService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:143"
+  },
+  {
+    "fact": "getServiceForConfig 用 configId 与归一化索引拼缓存键，索引下限钳到 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:152"
+  },
+  {
+    "fact": "acquireServiceForFunction 取服务时 activeLeases 加一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:100"
+  },
+  {
+    "fact": "lease 关闭时经 releaseLease 减一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:262"
+  },
+  {
+    "fact": "refreshServiceForFunction 移除指定功能的缓存并 retire；刷新 CHAT 时还会清空全部自定义配置实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:225"
+  },
+  {
+    "fact": "refreshAllServices 清空全部缓存并以 cancelStreaming=true 关闭所有服务实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:250"
+  },
+  {
+    "fact": "closeRetiredServiceLocked 只有关闭已 retire 且 activeLeases 为 0 的服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:274"
+  },
+  {
+    "fact": "createServiceFromConfig 用 getValidModelIndex 计算有效模型索引；越界时打警告并用第一个模型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:298"
+  },
+  {
+    "fact": "requestLimitPerMinute 与 maxConcurrentRequests 先钳到不小于 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:322"
+  },
+  {
+    "fact": "两项限流都为 0 时直接返回裸服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:325"
+  },
+  {
+    "fact": "按配置 id 注册限流器（RateLimiterRegistry.getOrCreate）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:331"
+  },
+  {
+    "fact": "按配置注册并发信号量（RequestConcurrencyRegistry）并用 RateLimitedAIService 包装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:340"
+  },
+  {
+    "fact": "hasImageRecognitionConfigured 检查模型配置的 enableDirectImageProcessing 是否开启。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:398"
+  },
+  {
+    "fact": "cancelAllStreaming 遍历全部服务实例（含 retired 与 default）逐个 cancelStreaming。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:181"
+  },
+  {
+    "fact": "cancelAllStreaming 单个服务失败只记日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/MultiServiceManager.kt:188"
+  },
+  {
+    "fact": "ToolExecutionBatch 承载同一次工具执行的最终结果：同一份 XML 既发布给已保存流，也供下一次模型请求使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResults.kt:9"
+  },
+  {
+    "fact": "OrderedToolResults 用定长 results/markup 数组与 next 指针，按原始调用下标保序发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResults.kt:15"
+  },
+  {
+    "fact": "complete(index, result)：重复完成同一位置会抛错；markup 只生成一次；按序发布已完成的前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResults.kt:25"
+  },
+  {
+    "fact": "finish() 要求全部结果已发布，message 为各位置 markup 用换行拼接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/OrderedToolResults.kt:36"
+  },
+  {
+    "fact": "ReferenceManager.extractReferences 用 Markdown 链接正则提取 http(s) 链接，转为 AiReference 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ReferenceManager.kt:18"
+  },
+  {
+    "fact": "ensureOwnLine 给注入的工具轮 XML 块前后补换行，保证其独占一行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:63"
+  },
+  {
+    "fact": "resolveToolTarget：package_proxy 与 CliToolModeSupport.PROXY_TOOL_NAME 按 tool_name 参数解析出真实目标工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:68"
+  },
+  {
+    "fact": "isJsPackageTool 判定工具名为 包名:工具名 且包名在 jsPackageNames 集合中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:94"
+  },
+  {
+    "fact": "injectPackageCallContext 给 JS 包工具调用补上调用者名称、会话 id、角色卡 id 三个上下文参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:131"
+  },
+  {
+    "fact": "addPackageContextParamIfMissing 已有同名参数时不覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:113"
+  },
+  {
+    "fact": "isInvocationAllowedForRoleCard：搜索工具恒允许。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:156"
+  },
+  {
+    "fact": "proxy 工具按 resolveToolTarget 解析后的目标判定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:159"
+  },
+  {
+    "fact": "use_package 检查包来源（isExternalSourceAllowed）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:163"
+  },
+  {
+    "fact": "package_proxy 先查内置允许，再按解析目标名判定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:170"
+  },
+  {
+    "fact": "包名:工具名形式检查外部来源；其余工具检查内置工具允许。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:184"
+  },
+  {
+    "fact": "buildToolExposureDeniedResult：CLI 模式下调用非公开工具被拒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:219"
+  },
+  {
+    "fact": "FULL 模式下调用 CLI 公开工具提示该模式不可用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:227"
+  },
+  {
+    "fact": "resolveProxyParameters 把 params JSON 逐键转为 ToolParameter，null 值转为 null 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:287"
+  },
+  {
+    "fact": "extractToolInvocations 用 StreamXmlPlugin 把字符流按 XML 块切分（splitBy(plugins) 收集）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:310"
+  },
+  {
+    "fact": "切分出的 XML 块按 ChatMarkupRegex.toolCallPattern 提取工具名与原文位置，参数体按 MessageContentParser.toolParamPattern 提取参数名与参数值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:321"
+  },
+  {
+    "fact": "unescapeXml 剥离 CDATA 包裹标记（首尾 <![CDATA[ 与 ]]>）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:360"
+  },
+  {
+    "fact": "unescapeXml 用 .replace 链还原 &lt;/&gt;/&amp;/&quot;/&apos; 五种 XML 转义字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:374"
+  },
+  {
+    "fact": "executeToolSafely：参数校验失败（!validationResult.valid）直接返回失败的 ToolResult（含 Invalid parameters 错误信息）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:394"
+  },
+  {
+    "fact": "executeToolSafely：执行异常被 .catch 捕获，转为失败的 ToolResult，并调用 toolHandler.notifyToolExecutionError 通知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:407"
+  },
+  {
+    "fact": "checkToolPermission：CLI 公开工具（SEARCH/PROXY_TOOL_NAME）自动放行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:448"
+  },
+  {
+    "fact": "checkToolPermission：调用原文含 deny_tool 时跳过权限检查直接放行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:490"
+  },
+  {
+    "fact": "executeInvocations 是工具执行的总装配，第一阶段做顶层工具暴露模式拦截（buildToolExposureDeniedResult）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:542"
+  },
+  {
+    "fact": "第二阶段做角色卡工具权限拦截（优先于权限弹窗与包自动激活）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:551"
+  },
+  {
+    "fact": "第三阶段做 Hook 拦截与权限检查（checkToolInterception + checkToolPermission）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:570"
+  },
+  {
+    "fact": "第四阶段按并行/串行对工具分组（parallelizableToolNames 白名单 partition）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:620"
+  },
+  {
+    "fact": "第五阶段执行工具并收集聚合结果：并行工具 async 启动，串行工具顺序执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:632"
+  },
+  {
+    "fact": "执行工具前在 Dispatchers.Default 上调用 toolHandler.registerDefaultTools() 确保默认工具已注册（幂等可重入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:521"
+  },
+  {
+    "fact": "可并行执行的工具白名单：list_files、read_file、read_file_part、read_file_full、file_exists、find_files、file_info、grep_code、calculate、ffmpeg_info、visit_web、download_file。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:621"
+  },
+  {
+    "fact": "executeTool 在 ToolRuntimeContext 的 ThreadLocal 上下文中执行单个工具调用；取不到执行器时构造工具不可用错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:678"
+  },
+  {
+    "fact": "aggregateToolResults：空结果集返回固定错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:717"
+  },
+  {
+    "fact": "aggregateToolResults：多段结果用换行拼接，success 取最后一段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:726"
+  },
+  {
+    "fact": "buildToolNotAvailableErrorMessage：点号写法（无冒号）提示改用 packName:toolName 格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:746"
+  },
+  {
+    "fact": "冒号写法先判断包或 MCP server 是否存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:752"
+  },
+  {
+    "fact": "包存在时区分建议型工具（advice-only 不可执行）与包已激活但工具不存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:768"
+  },
+  {
+    "fact": "包未激活时提示 auto-activation 失败，建议用 use_package 查看。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:777"
+  },
+  {
+    "fact": "裸包名（直接把包名当工具名）提示先用 use_package 激活该包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt:785"
+  }
+]

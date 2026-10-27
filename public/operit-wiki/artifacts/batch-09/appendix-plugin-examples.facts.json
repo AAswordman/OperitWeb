@@ -1,0 +1,46 @@
+[
+ {
+  "fact": "最小可运行包：METADATA 声明工具 + 同名 async 函数 + exports.工具名 导出，params 为单个对象参数。",
+  "ref": "app/src/main/assets/packages/time.js:1"
+ },
+ {
+  "fact": "一文件可放多个工具，解析器把整个文件内容填进每个工具的 script，调用时是独立执行上下文。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2296"
+ },
+ {
+  "fact": "env 防御读取写法：typeof getEnv === \"function\" ? getEnv(name) : void 0。",
+  "ref": "app/src/main/assets/packages/github.js:285"
+ },
+ {
+  "fact": "required: true 的 env 缺失时包无法激活，工具根本不会出现。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:303"
+ },
+ {
+  "fact": "网络请求用沙盒注入的 OkHttp.newClient()，无需 import。",
+  "ref": "app/src/main/assets/packages/duckduckgo.js:46"
+ },
+ {
+  "fact": "complete({success, message, data}) 是长流程统一回传格式；调完后函数即结束。",
+  "ref": "app/src/main/assets/packages/duckduckgo.js:200"
+ },
+ {
+  "fact": "states 条件工具集示例：automatic_ui_subagent.js 用 states[] 按 ui.virtual_display 等条件暴露不同工具。",
+  "ref": "app/src/main/assets/packages/automatic_ui_subagent.js:1"
+ },
+ {
+  "fact": "advice: true 的工具只进 prompt 不注册为可执行，是“给 AI 的说明书”的标准做法。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3452"
+ },
+ {
+  "fact": "长任务用提交+轮询模式，单次调用上限 30 分钟，轮询必须设自己的 deadline 并把 taskId 返回给 AI。",
+  "ref": "app/src/main/assets/packages/minimax_draw.js:1"
+ },
+ {
+  "fact": "多工具共享逻辑放 IIFE 闭包里，工具函数保持干净；导出时名字必须等于 tools[].name。",
+  "ref": "app/src/main/assets/packages/time.js:33"
+ },
+ {
+  "fact": "包导入方式：包管理界面导入，或放进 Android/data/<应用包名>/files/packages/。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2482"
+ }
+]

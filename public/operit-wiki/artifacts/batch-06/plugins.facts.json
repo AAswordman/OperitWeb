@@ -1,0 +1,726 @@
+[
+  {
+    "fact": "OperitPlugin 接口只定义两个成员：val id: String 与 fun register()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:9"
+  },
+  {
+    "fact": "PluginRegistry 是 Kotlin object 单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:15"
+  },
+  {
+    "fact": "PluginRegistry 用 CopyOnWriteArrayList 保存已注册的 OperitPlugin。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:16"
+  },
+  {
+    "fact": "PluginRegistry 用 ConcurrentHashMap.newKeySet() 跟踪已安装的插件 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:17"
+  },
+  {
+    "fact": "PluginRegistry.register 先移除同 id 的旧插件再追加，实现同 id 覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:23"
+  },
+  {
+    "fact": "PluginRegistry.initializeBuiltins 用 builtinsInitialized 标志保证只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:29"
+  },
+  {
+    "fact": "initializeBuiltins 注册的三个内置插件是 ToolboxPlugin、ToolPkgCommonBridgePlugin、WorkflowLifecyclePlugin。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:33"
+  },
+  {
+    "fact": "initializeBuiltins 注册完内置插件后调用 installAll()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:36"
+  },
+  {
+    "fact": "installAll 只对 installedPluginIds.add 成功的插件调用 register()，保证每个插件只安装一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:40"
+  },
+  {
+    "fact": "OperitApplication.onCreate 中调用 PluginRegistry.initializeBuiltins() 启动插件体系。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt:201"
+  },
+  {
+    "fact": "ChatMessageMenuItemParams 携带 context、chatId、messageIndex、message 四个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:11"
+  },
+  {
+    "fact": "ChatMessageMenuDialogRequest 包含 containerPackageName、screenPath、title、state、moduleSpec。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:18"
+  },
+  {
+    "fact": "ChatMessageMenuItemClickResult 的 dialog 缺省为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:26"
+  },
+  {
+    "fact": "ChatMessageMenuItemDefinition 含 id、title、icon、order、onClick，onClick 缺省返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:30"
+  },
+  {
+    "fact": "ChatMessageMenuItemPlugin 接口要求实现 id 属性与 createMenuItems(params) 方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:41"
+  },
+  {
+    "fact": "ChatMessageMenuItemRegistry 用 CopyOnWriteArrayList 保存插件，并用 changeVersion StateFlow 广播变更。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:44"
+  },
+  {
+    "fact": "ChatMessageMenuItemRegistry.register 先按 id 注销旧插件再添加，并递增变更版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:50"
+  },
+  {
+    "fact": "ChatMessageMenuItemRegistry.unregister 只在确实移除插件时才通知变更。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:57"
+  },
+  {
+    "fact": "createMenuItems 把全部插件的菜单项合并后按 order、title、id 排序返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt:68"
+  },
+  {
+    "fact": "ChatViewEvent 只有 VIEW_OPENED、VIEW_UPDATED、VIEW_CLOSED 三个枚举值，wireName 分别为 view_opened、view_updated、view_closed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:11"
+  },
+  {
+    "fact": "ChatViewHookParams 包含 viewId、chatId、workspacePath、workspaceEnv、runtime、title。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:17"
+  },
+  {
+    "fact": "ChatViewHookPlugin 接口要求 id 属性与 suspend onEvent(event, params) 方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:27"
+  },
+  {
+    "fact": "ChatViewHookPluginRegistry 用 LinkedHashMap 记录当前打开的视图参数用于回放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:41"
+  },
+  {
+    "fact": "ChatViewHookPluginRegistry.dispatch 先记录可回放状态再逐个调用插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:55"
+  },
+  {
+    "fact": "dispatch 中单个插件抛异常只记日志，不中断后续插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:62"
+  },
+  {
+    "fact": "dispatchAsync 把事件派发抛到 SupervisorJob + Dispatchers.Default 的后台协程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:71"
+  },
+  {
+    "fact": "VIEW_OPENED 与 VIEW_UPDATED 更新打开视图记录，VIEW_CLOSED 删除对应记录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:90"
+  },
+  {
+    "fact": "getReplayableOpenViewParams 返回当前打开视图的参数快照列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/chatview/ChatViewHookPluginRegistry.kt:79"
+  },
+  {
+    "fact": "AppLifecycleEvent 共 12 个枚举值，覆盖应用与 Activity 两级生命周期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:23"
+  },
+  {
+    "fact": "AppLifecycleEvent 的 wireName 直接取自 packTool 包的 TOOLPKG_EVENT_* 常量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:24"
+  },
+  {
+    "fact": "TOOLPKG_EVENT_APPLICATION_ON_CREATE 常量值为 \"application_on_create\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:5"
+  },
+  {
+    "fact": "AppLifecycleHookParams 包含 context 与缺省为空 Map 的 extras。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:38"
+  },
+  {
+    "fact": "AppLifecycleReplayEvent 由 event 与 params 组成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:43"
+  },
+  {
+    "fact": "AppLifecycleHookPlugin 接口要求 id 属性与 suspend onEvent(event, params)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:48"
+  },
+  {
+    "fact": "AppLifecycleHookPluginRegistry.dispatch 对每个插件 try/catch，失败只记日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:81"
+  },
+  {
+    "fact": "dispatchAsync 在后台协程中执行 dispatch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:90"
+  },
+  {
+    "fact": "getReplayableApplicationEvents 只回放 APPLICATION_CREATE 与 APPLICATION_FOREGROUND 两个事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:99"
+  },
+  {
+    "fact": "记录回放状态时 APPLICATION_BACKGROUND 会清空已保存的前台参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/lifecycle/AppLifecycleHookPluginRegistry.kt:136"
+  },
+  {
+    "fact": "ToolPkgAppLifecycleHookPlugin 是 ToolboxPlugin.kt 文件内的私有 object。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:23"
+  },
+  {
+    "fact": "ToolPkgAppLifecycleHookPlugin 的插件 id 是 \"builtin.toolbox.toolpkg-app-lifecycle\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:29"
+  },
+  {
+    "fact": "ToolPkgAppLifecycleHookPlugin.onEvent 用事件 wireName 去空格转小写做 key 查 hook 表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:36"
+  },
+  {
+    "fact": "syncToolPkgRegistrations 从各容器的 appLifecycleHooks 收集注册，按事件分组并按 toolpkg 加载顺序排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:41"
+  },
+  {
+    "fact": "syncToolPkgRegistrations 的返回值只包含本轮新增的 hook（过滤上一轮已存在的）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:72"
+  },
+  {
+    "fact": "dispatchHooks 在 Dispatchers.IO 上逐个调用 PackageManager.runToolPkgMainHook，事件载荷只带 extras。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:99"
+  },
+  {
+    "fact": "ToolboxPlugin 的插件 id 是 \"builtin.toolbox\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:137"
+  },
+  {
+    "fact": "ToolboxPlugin.register 用 AtomicBoolean.compareAndSet 保证只安装一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:146"
+  },
+  {
+    "fact": "ToolboxPlugin.register 把 ToolPkgAppLifecycleHookPlugin 注册进 AppLifecycleHookPluginRegistry。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:149"
+  },
+  {
+    "fact": "ToolboxPlugin.register 向 PackageManager 添加 ToolPkgRuntimeChangeListener 监听容器变化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:153"
+  },
+  {
+    "fact": "容器变化时只把新增的 lifecycle hook 回放给已记录的可回放应用事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt:156"
+  },
+  {
+    "fact": "WorkflowAppLifecycleHookPlugin 是 WorkflowLifecyclePlugin.kt 文件内的私有 object。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:11"
+  },
+  {
+    "fact": "WorkflowAppLifecycleHookPlugin 的 id 是 \"builtin.workflow.app-lifecycle\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:15"
+  },
+  {
+    "fact": "APPLICATION_CREATE 事件把 firstActivityStartHandled 重置为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:25"
+  },
+  {
+    "fact": "首次 ACTIVITY_START 调用 WorkflowRepository.triggerWorkflowsByColdStartAppOpen，extras 逐值转 String。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:34"
+  },
+  {
+    "fact": "WorkflowLifecyclePlugin 的 id 是 \"builtin.workflow.lifecycle\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:51"
+  },
+  {
+    "fact": "WorkflowLifecyclePlugin.register 只做一件事：向 AppLifecycleHookPluginRegistry 注册内部 hook 插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:53"
+  },
+  {
+    "fact": "写插件的最小形态：实现 OperitPlugin（id + register），在 register() 里向目标注册表注册具体 hook——WorkflowLifecyclePlugin 即示例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt:50"
+  },
+  {
+    "fact": "插件经 PluginRegistry.register 登记后，由 installAll() 调用其 register() 生效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/PluginRegistry.kt:40"
+  },
+  {
+    "fact": "ToolPkgCommonBridgePlugin 的 id 是 \"builtin.toolpkg.common-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:889"
+  },
+  {
+    "fact": "ToolPkgCommonBridgePlugin.register() 共完成 12 处桥接注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:907"
+  },
+  {
+    "fact": "ToolPkgMessageProcessingBridgePlugin 的 id 是 \"builtin.toolpkg.message-processing-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:90"
+  },
+  {
+    "fact": "ToolPkgMessageProcessingBridgePlugin.replaceHooks 直接替换内部 hook 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:94"
+  },
+  {
+    "fact": "createExecutionIfMatched 先以 probeOnly=true 的载荷逐个试探 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:123"
+  },
+  {
+    "fact": "试探结果 matched 的 hook 才创建流式执行并立即返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:177"
+  },
+  {
+    "fact": "所有 hook 都不匹配时 createExecutionIfMatched 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:185"
+  },
+  {
+    "fact": "消息处理执行 id 格式为 \"toolpkg-msg:<包名>:<插件id>:<uuid>\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:286"
+  },
+  {
+    "fact": "流式执行用 Channel<String>(UNLIMITED) 把 JS 中间结果转发为文本 chunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:301"
+  },
+  {
+    "fact": "执行结束的 finally 块关闭 chunk 队列并从取消注册表注销执行 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:346"
+  },
+  {
+    "fact": "试探返回 Boolean true 视为匹配但无 chunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:364"
+  },
+  {
+    "fact": "试探返回非空 String 视为匹配，内容作为单个 chunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:373"
+  },
+  {
+    "fact": "试探返回 JSONObject 时 matched 字段缺省为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:383"
+  },
+  {
+    "fact": "extractMessageChunks 从 chunk、chunks、text、content 四个键提取文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:396"
+  },
+  {
+    "fact": "RegisteredMessageProcessingController.cancel 委托给 ToolPkgMessageProcessingCancellationRegistry.cancel(executionId)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:444"
+  },
+  {
+    "fact": "ToolPkgXmlRenderBridgePlugin 的 id 是 \"builtin.toolpkg.xml-render-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:454"
+  },
+  {
+    "fact": "replaceHooksByTag 在 hook 表变化时调用 XmlRenderPluginRegistry.notifyChanged()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:458"
+  },
+  {
+    "fact": "supports 按 tag 去空格转小写后查 hook 表是否非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:468"
+  },
+  {
+    "fact": "resolve 逐个 hook 调用 runToolPkgMainHook(TOOLPKG_EVENT_XML_RENDER)，载荷含 xmlContent 与 tagName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:476"
+  },
+  {
+    "fact": "hook 返回 handled=false 时跳过该 hook 继续下一个。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:527"
+  },
+  {
+    "fact": "composeDsl 结果转为 XmlRenderResult.ComposeDslScreen。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:530"
+  },
+  {
+    "fact": "纯文本结果转为 XmlRenderResult.Text。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:542"
+  },
+  {
+    "fact": "composeDsl 解析要求 screen 非空，否则整个结果作废。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:585"
+  },
+  {
+    "fact": "ToolPkgInputMenuToggleBridgePlugin 的 id 是 \"builtin.toolpkg.input-menu-toggle-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:639"
+  },
+  {
+    "fact": "replaceHooks 重置缓存并递增 hookRegistryVersion，通知注册表变更。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:655"
+  },
+  {
+    "fact": "开关缓存键为 \"$runtime|$chatId\"，参数变化时清空缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:694"
+  },
+  {
+    "fact": "缓存未命中时返回 id 为 \"toolpkg_input_menu_loading\" 的禁用加载开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:745"
+  },
+  {
+    "fact": "onToggle：已在 featureStates 中的规格走平台切换（params.onToggleFeature）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:714"
+  },
+  {
+    "fact": "onToggle：不在 featureStates 中的规格调用 JS hook 的 toggle 动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:725"
+  },
+  {
+    "fact": "loadSpecs 对每个 hook 调用 runToolPkgMainHook(action=\"create\") 拉取开关定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:797"
+  },
+  {
+    "fact": "开关定义解析要求 id 与 title 均非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:867"
+  },
+  {
+    "fact": "同步从各容器的 messageProcessingPlugins 收集消息处理 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:922"
+  },
+  {
+    "fact": "同步从各容器的 xmlRenderPlugins 收集 xml 渲染 hook，tag 统一小写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:938"
+  },
+  {
+    "fact": "同步从各容器的 inputMenuTogglePlugins 收集输入菜单开关 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:964"
+  },
+  {
+    "fact": "三类 hook 全部按 toolpkg 容器加载顺序排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt:932"
+  },
+  {
+    "fact": "ChatInput 桥接的 id 是 \"builtin.toolpkg.chat-input-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:31"
+  },
+  {
+    "fact": "ChatInput 桥接 register 向 ChatInputHookRegistry 注册 Bridge，并用当前启用的容器立即同步一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:38"
+  },
+  {
+    "fact": "无 hook 时 dispatchChatInputHooks 直接返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:54"
+  },
+  {
+    "fact": "一次输入事件的所有 hook 共享同一个 ToolPkgHookExecutionBudget。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:59"
+  },
+  {
+    "fact": "每个 hook 调用带 timeoutMillis=budget.remainingMillis()，预算耗尽则跳过剩余 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:63"
+  },
+  {
+    "fact": "SUBMIT_REQUESTED 超时时生成超时提示消息并中断后续 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:72"
+  },
+  {
+    "fact": "非 SUBMIT_REQUESTED 事件的 hook 解析结果被直接丢弃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:132"
+  },
+  {
+    "fact": "BLOCK 或 CONSUME 动作直接返回解析结果并终止 hook 链。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:137"
+  },
+  {
+    "fact": "REPLACE 动作把文本替换后继续执行后续 hook，效果链式累积。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:139"
+  },
+  {
+    "fact": "SUBMIT_REQUESTED 最终返回 ALLOW，附带累积后的文本与超时提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:153"
+  },
+  {
+    "fact": "输入事件载荷含 chatId、text、选区、附件数、isProcessing、inputStyle、source、submitSource。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:183"
+  },
+  {
+    "fact": "hook 返回字符串视为 REPLACE 动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:198"
+  },
+  {
+    "fact": "action 缺失但含 text 字段时也视为 REPLACE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatInputHookBridge.kt:218"
+  },
+  {
+    "fact": "ChatView 桥接 id 是 \"builtin.toolpkg.chat-view-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:30"
+  },
+  {
+    "fact": "ChatView 桥接 register 把自身注册进 ChatViewHookPluginRegistry 并立即同步回放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:36"
+  },
+  {
+    "fact": "onEvent 在 Dispatchers.IO 上逐个 hook 调用 runToolPkgMainHook(TOOLPKG_EVENT_CHAT_VIEW)，eventName 取事件 wireName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:61"
+  },
+  {
+    "fact": "ChatView 桥接同步时只回放新增的 hook（新旧差集）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:96"
+  },
+  {
+    "fact": "回放对每个当前打开的视图用 VIEW_OPENED 的 wireName 重新触发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:129"
+  },
+  {
+    "fact": "视图事件载荷含 viewId、chatId、workspacePath、workspaceEnv、runtime、title。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatViewHookBridge.kt:148"
+  },
+  {
+    "fact": "ToolPkgChatMessageHookBridge.register 只添加运行时监听器并同步，不向外部注册表注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridge.kt:27"
+  },
+  {
+    "fact": "ChatHistoryDelegate 在消息落盘处调用 dispatchMessagePersisted 驱动该桥接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1191"
+  },
+  {
+    "fact": "dispatchMessagePersisted 在后台协程中逐个 hook 异步派发，eventName 固定为 \"message_persisted\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridge.kt:40"
+  },
+  {
+    "fact": "消息事件载荷含 chatId、timestamp、sender、content、token 计数、displayMode 等 17 个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridge.kt:95"
+  },
+  {
+    "fact": "ChatMessage 菜单项桥接 id 是 \"builtin.toolpkg.chat-message-menu-item-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:33"
+  },
+  {
+    "fact": "createMenuItems 按 item.senders 过滤，空列表表示匹配所有 sender。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:52"
+  },
+  {
+    "fact": "菜单项 id 拼为 \"<包名>:<itemId>\"，标题为空时回退到 itemId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:55"
+  },
+  {
+    "fact": "同步注册后调用 ChatMessageMenuItemRegistry.notifyChanged() 触发 UI 刷新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:92"
+  },
+  {
+    "fact": "点击在 Dispatchers.IO 上调用 runToolPkgMainHook(TOOLPKG_EVENT_CHAT_MESSAGE_MENU_ITEM)，eventName 为 \"chat_message_menu_item_click\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:107"
+  },
+  {
+    "fact": "hook 执行失败时菜单项点击直接返回 null，无任何反馈。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:121"
+  },
+  {
+    "fact": "对话框请求的 moduleSpec 中 runtime 固定为 TOOLPKG_RUNTIME_COMPOSE_DSL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt:166"
+  },
+  {
+    "fact": "ChatRuntime 桥接 id 是 \"builtin.toolpkg.chat-runtime-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:27"
+  },
+  {
+    "fact": "ChatRuntime 桥接 register 调用 ChatRuntimeHookRegistry.registerHook(this) 注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:29"
+  },
+  {
+    "fact": "onEvent 在 Dispatchers.IO 上逐个 hook 调用 runToolPkgMainHook(TOOLPKG_EVENT_CHAT_RUNTIME)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:57"
+  },
+  {
+    "fact": "载荷中 slot 取小写，state 经 stateName 映射为 11 种字符串之一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:95"
+  },
+  {
+    "fact": "stateIsActive 对 idle、completed、error 返回 false，其余为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:149"
+  },
+  {
+    "fact": "载荷中的 activeChatIds 已排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatRuntimeHookBridge.kt:101"
+  },
+  {
+    "fact": "ToolPkgToolLifecycleBridge 实现 AIToolHook，init 块启动单消费者协程串行处理 dispatchChannel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:40"
+  },
+  {
+    "fact": "register 向 AIToolHandler.addToolHook(this) 注册工具生命周期 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:50"
+  },
+  {
+    "fact": "onToolCallRequested 把 \"tool_call_requested\" 事件异步入队。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:60"
+  },
+  {
+    "fact": "onToolCallIntercept 是同步调用：hook 执行失败直接返回 Block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:86"
+  },
+  {
+    "fact": "拦截返回值非法也直接返回 Block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:99"
+  },
+  {
+    "fact": "拦截决策只认 action 为 \"block\" 且 reason 为字符串的结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:203"
+  },
+  {
+    "fact": "无拦截决策时 onToolCallIntercept 返回 Allow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:107"
+  },
+  {
+    "fact": "onToolExecutionResult 入队的载荷含 success、errorMessage、resultText、resultJson。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:127"
+  },
+  {
+    "fact": "enqueue 用 trySend 投递，失败记 warn 日志 \"dropped\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:156"
+  },
+  {
+    "fact": "deliver 逐个 hook 串行调用，无超时预算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:168"
+  },
+  {
+    "fact": "基础载荷含 toolName、parameters（参数名到值的映射）、description。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt:225"
+  },
+  {
+    "fact": "ToolPkgAiProviderRegistry.get(providerId) 调用前先执行 register()，按 trim+小写查 providersById。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgAiProviderRegistry.kt:25"
+  },
+  {
+    "fact": "releasedTokenProviderAliases 对别名冲突用 require 抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgAiProviderRegistry.kt:40"
+  },
+  {
+    "fact": "每个 AI provider 注册 4 对 JS 处理器：listModels、sendMessage、testConnection、calculateInputTokens（函数名+内联源码）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgAiProviderRegistry.kt:62"
+  },
+  {
+    "fact": "token 别名包含 id、TOOLPKG_<id>、TOOLPKG_<小写id>、displayName 四种形式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:126"
+  },
+  {
+    "fact": "ToolPkg*Registration 注册数据类系列起于 ToolPkgAppLifecycleHookRegistration。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:14"
+  },
+  {
+    "fact": "注册数据类系列末个为 ToolPkgAiProviderRegistration。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:103"
+  },
+  {
+    "fact": "toolPkgPackageManager() 用应用 context 构造 PackageManager 单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:133"
+  },
+  {
+    "fact": "decodeToolPkgHookResult：空字符串返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:140"
+  },
+  {
+    "fact": "decodeToolPkgHookResult：检测到 JS 执行错误信息时抛 IllegalStateException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:146"
+  },
+  {
+    "fact": "decodeToolPkgHookResult：JSON 解析失败时回退返回原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:151"
+  },
+  {
+    "fact": "jsonObjectToMap 经 JsJavaBridgeDelegates.decodePlainJsonValue 转换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:158"
+  },
+  {
+    "fact": "sortedByToolPkgLoadOrder 先按容器加载顺序，再按包名小写，最后按注册 id 排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:170"
+  },
+  {
+    "fact": "排序时未知包名的容器排在最后（Int.MAX_VALUE）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookBridgeSupport.kt:177"
+  },
+  {
+    "fact": "hook 执行超时秒数来自 DisplayPreferencesManager.getToolPkgHookTimeoutSeconds()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookExecutionBudget.kt:23"
+  },
+  {
+    "fact": "remainingMillis 耗尽返回 null，否则至少 1ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookExecutionBudget.kt:33"
+  },
+  {
+    "fact": "logTimeoutIfPresent 只把含 \"timed out\"（忽略大小写）的失败判为超时。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookExecutionBudget.kt:66"
+  },
+  {
+    "fact": "logDeadlineReached 在预算耗尽跳过 hook 时记 warn 日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookExecutionBudget.kt:44"
+  },
+  {
+    "fact": "取消注册表 register 的 executionId 为空时返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgMessageProcessingCancellationRegistry.kt:16"
+  },
+  {
+    "fact": "register 时若已有待处理的取消请求，立即执行取消并返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgMessageProcessingCancellationRegistry.kt:24"
+  },
+  {
+    "fact": "cancel 在找不到控制器时把 id 记入 pendingCancels，待注册时补取消。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgMessageProcessingCancellationRegistry.kt:53"
+  },
+  {
+    "fact": "PromptInputBridge 的 id 是 \"builtin.toolpkg.prompt-input-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:53"
+  },
+  {
+    "fact": "PromptHistoryBridge 的 id 是 \"builtin.toolpkg.prompt-history-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:66"
+  },
+  {
+    "fact": "PromptEstimateHistoryBridge 的 id 是 \"builtin.toolpkg.prompt-estimate-history-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:79"
+  },
+  {
+    "fact": "SystemPromptComposeBridge 的 id 是 \"builtin.toolpkg.system-prompt-compose-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:92"
+  },
+  {
+    "fact": "ToolPromptComposeBridge 的 id 是 \"builtin.toolpkg.tool-prompt-compose-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:105"
+  },
+  {
+    "fact": "PromptFinalizeBridge 的 id 是 \"builtin.toolpkg.prompt-finalize-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:118"
+  },
+  {
+    "fact": "PromptEstimateFinalizeBridge 的 id 是 \"builtin.toolpkg.prompt-estimate-finalize-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:131"
+  },
+  {
+    "fact": "ToolPkgPromptHookBridge.register 向 PromptHookRegistry 注册 7 个子桥接并添加容器变化监听器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:143"
+  },
+  {
+    "fact": "dispatchPromptHooks 逐个 hook 串行执行，mutation 链式累加到 context。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:176"
+  },
+  {
+    "fact": "预算耗尽时调用 current.onHookTimeout 告知调用方超时的具体插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:185"
+  },
+  {
+    "fact": "prompt 事件载荷含 stage、chatId、rawInput、processedInput、chatHistory、preparedHistory、systemPrompt、toolPrompt、availableTools、metadata。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:362"
+  },
+  {
+    "fact": "applyMutation 对 null 字段保留原值，metadata 非空时合并。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:388"
+  },
+  {
+    "fact": "prompt-history 阶段返回 JSONArray 时：before_prepare_history 改 chatHistory，否则改 preparedHistory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:422"
+  },
+  {
+    "fact": "prompt-input 阶段返回字符串视为 processedInput。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:410"
+  },
+  {
+    "fact": "system-prompt 阶段返回字符串视为 systemPrompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:441"
+  },
+  {
+    "fact": "parsePromptTurns 遇到未知 kind 时跳过该条消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:515"
+  },
+  {
+    "fact": "availableTools 解析为 List<Map<String, Any?>>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgPromptHookBridge.kt:484"
+  },
+  {
+    "fact": "Summary 桥接 id 是 \"builtin.toolpkg.summary-generate-hook-bridge\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt:30"
+  },
+  {
+    "fact": "Summary 桥接 register 向 SummaryHookRegistry.registerSummaryGenerateHook 注册。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt:41"
+  },
+  {
+    "fact": "字符串返回在 after_generate_summary 阶段视为 summaryResult，否则视为 summaryPrompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt:196"
+  },
+  {
+    "fact": "摘要事件载荷的 functionType 固定为 FunctionType.SUMMARY.name。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt:153"
+  },
+  {
+    "fact": "Summary 桥接超时时直接 break，不像 prompt 桥接那样回调 onHookTimeout。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt:75"
+  }
+]

@@ -1,0 +1,522 @@
+[
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:100",
+    "fact": "runQuickPluginCreatorSetupAndPublishResult 是私有挂起函数，先 onRunningChange(true)、onResult(null) 清空旧结果"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:107",
+    "fact": "环境搭建实际在 withContext(Dispatchers.IO) 里调 runQuickPluginCreatorSetup 执行"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:127",
+    "fact": "PackageManagerScreen 是扩展包管理屏主入口"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:136",
+    "fact": "用 remember 创建 AIToolHandler.getInstance 与 PackageManager.getInstance 单例供全屏复用"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:153",
+    "fact": "visibleImportedPackages 是 UI 展示用的导入状态列表，注释写明与后端状态分离"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:174",
+    "fact": "插件过滤用 derivedStateOf 包一层"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:216",
+    "fact": "requiredEnvByPackage 用 derivedStateOf 聚合已启用包所需的环境变量"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:234",
+    "fact": "requiredEnvKeys 对 requiredEnvByPackage 的变量名去重成集合"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:244",
+    "fact": "搜索输入用 LaunchedEffect 做 320ms 防抖，超时后才把输入写入 pluginSearchQuery"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:275",
+    "fact": "包搜索过滤在 withContext(Dispatchers.Default) 里跑 packageMatchesSearch，避免阻塞主线程"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:290",
+    "fact": "文件选择器用 rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) 实现"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:298",
+    "fact": "导入文件时从 contentResolver 查询 _display_name 列拿到文件名"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:306",
+    "fact": "拿不到文件名则 snackbar 提示 R.string.no_filename 并中止导入"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:320",
+    "fact": "导入前把文件名转小写，PLUGINS 页签只接受 .toolpkg，PACKAGES 页签接受 .js/.ts/.hjson，用 lowerFileName.endsWith 判定"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:346",
+    "fact": "导入时把文件复制到 File(context.cacheDir, fileNameNonNull) 临时文件"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:356",
+    "fact": "复制完成后调 packageManager.addPackageFileFromExternalStorage(tempFile.absolutePath) 导入"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:379",
+    "fact": "导入流程在 finally 里删除临时文件"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:396",
+    "fact": "导入成功的判定是返回消息以 \"Successfully imported\" 开头（忽略大小写）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:401",
+    "fact": "导入结果的 marketOrigin 非空则写入 marketOriginImportNotice，否则 snackbar 提示导入成功"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:410",
+    "fact": "导入失败时把 loadResult.message 与 newPackageLoadErrors 拼成 importErrorMessage"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:437",
+    "fact": "导入异常时把 e.stackTraceToString() 拼入 importErrorMessage 展示"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:446",
+    "fact": "LaunchedEffect(Unit) 在 IO 线程初始加载六组数据"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:479",
+    "fact": "初始加载后从 apiPreferences 读 pluginOrder 与 skillOrder"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:512",
+    "fact": "BindMarketSearchToTopBar 把搜索框绑定到顶栏，切换页签时分发到对应输入"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:527",
+    "fact": "页面脚手架用 CustomScaffold，带 snackbarHost"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:546",
+    "fact": "加载错误 FAB 在 packageLoadErrors 非空时显示，点击置 showPackageLoadErrorsDialog=true"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:577",
+    "fact": "市场浮动按钮的 onClick 是 onNavigateToArtifactMarket"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:585",
+    "fact": "Store 按钮图标为 Icons.Default.Store，contentDescription 是 \"Artifact Market\""
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:593",
+    "fact": "导入 FAB 调 packageFilePicker.launch(\"*/*\") 调起系统文件选择器"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:623",
+    "fact": "TabRow 的 selectedTabIndex 直接取 selectedTab.ordinal"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:780",
+    "fact": "插件页签渲染 PluginTabContent，传入 filteredPluginContainers 与 visibleImportedPackages"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:790",
+    "fact": "拨动插件开关时先乐观更新 visibleImportedPackages"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:797",
+    "fact": "关闭插件时连带移除 details.subpackages，防止子包残留"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:841",
+    "fact": "插件排序保存后双写 packageManager.updateToolPkgPluginOrder 与 apiPreferences.savePluginOrder"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:851",
+    "fact": "包页签渲染 PackageTabContent，传入 filteredAvailablePackages"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:915",
+    "fact": "技能页签渲染 SkillConfigScreen，支持 skillOrder 拖拽排序并持久化到 apiPreferences"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:927",
+    "fact": "MCP 页签渲染 MCPConfigScreen，传入 onNavigateToMCPMarket 与 mcpSearchQuery"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:937",
+    "fact": "showDetails 非空时打开 PackageDetailsDialog，传入 selectedPackage"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1008",
+    "fact": "showScriptExecution 非空时打开 ScriptExecutionDialog，执行完通过 onExecuted 回写 scriptExecutionResult"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1024",
+    "fact": "环境变量按钮打开 PackageEnvironmentVariablesDialog，确认后合并写入 envPreferences"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1052",
+    "fact": "onDeleteSource 在 IO 线程调 packageManager.deleteExternalPackageSource 删除来源文件"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1096",
+    "fact": "导入失败弹 ErrorDialog 展示 importErrorMessage"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1102",
+    "fact": "marketOriginImportNotice 非空时弹 AlertDialog 提示市场来源"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:1156",
+    "fact": "快捷创建确认后以 PluginCreationIntent.Fresh 发起 AI 辅助创建"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:48",
+    "fact": "PackageTabContent 是脚本包页签入口，参数含 packages、enabledPackageNames、onQuickPluginCreatorClick"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:75",
+    "fact": "脚本包按 category 分组，categoryOrder 把展示顺序定死为 Automatic、Experimental、Draw、Other"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:108",
+    "fact": "非搜索态下列表顶部固定 QuickPluginCreatorEntry 快捷创建入口"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:170",
+    "fact": "QuickPluginCreatorEntry 是 ElevatedCard"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:194",
+    "fact": "快捷创建入口卡片使用 Icons.Default.AutoMode 作为图标"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:226",
+    "fact": "PackageListItemWithTag 是带分类标签的包条目"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageTabContent.kt:326",
+    "fact": "包条目的启用 Switch 用 Modifier.scale(0.8f) 缩小"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:55",
+    "fact": "PluginTabContent 是插件页签入口，参数含 plugins、enabledPackageNames、onPluginClick"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:68",
+    "fact": "插件列表按 pluginOrder 换算 orderIndex 排序，无排序时保持原序"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:82",
+    "fact": "长按拖拽排序用 rememberReorderableLazyListState 实现"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:127",
+    "fact": "每条插件用 produceState 异步加载 logo"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:146",
+    "fact": "插件条目用 ReorderableItem 包裹实现长按拖拽"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PluginTabContent.kt:207",
+    "fact": "插件条目用 logoPainter 按 24dp 展示图片，painter 为空时用默认的 Icons.Default.Apps 图标"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:8",
+    "fact": "packageMatchesSearch 定义包搜索匹配"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:22",
+    "fact": "包搜索会搜到工具名、工具描述、参数名、参数类型以及各 state 下的工具"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:36",
+    "fact": "pluginMatchesSearch 定义插件搜索匹配"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:48",
+    "fact": "插件搜索会搜到版本号、apiVersion、依赖的 id/描述/最小版本"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:83",
+    "fact": "addPackageToolSearchText 把工具名、描述、参数名、参数类型拼进待搜文本"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageSearch.kt:32",
+    "fact": "包与插件搜索都用 contains(searchText, ignoreCase=true) 做忽略大小写匹配"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerDialogs.kt:48",
+    "fact": "PackageLoadErrorsDialog 展示包加载错误列表"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerDialogs.kt:107",
+    "fact": "PackageEnvironmentVariablesDialog 按包分组配置环境变量，参数含 requiredEnvByPackage、currentValues"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerDialogs.kt:148",
+    "fact": "环境变量列表用 stickyHeader 按包名分组"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:43",
+    "fact": "PackageDetailsDialog 是包详情对话框入口"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:63",
+    "fact": "详情打开时在 IO 线程用 resolvePackageForDisplay 解析展示信息"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:89",
+    "fact": "详情打开时拉 getToolPkgContainerDetails 取容器详情"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:130",
+    "fact": "详情打开时用 getActivePackageStateId 拿激活状态 id"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:173",
+    "fact": "删除包在 IO 线程调 packageManager.deletePackage，成功后调 onPackageDeleted"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:471",
+    "fact": "子包开关调 packageManager.setToolPkgSubpackageEnabled，乐观更新、失败自愈"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:497",
+    "fact": "子包工具列表用 packageManager.getEffectivePackageTools 取"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:677",
+    "fact": "详情底部操作区有运行监控按钮，点击置 showRuntimeMonitorDialog=true"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:690",
+    "fact": "删除按钮仅在 metaPackage 非内置（!isBuiltIn）时显示"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:831",
+    "fact": "ToolPkgRuntimeMonitorDialog 是运行监控对话框"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:847",
+    "fact": "运行监控每秒轮询 packageManager.getToolPkgRuntimeMonitorSnapshot(packageName)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:1069",
+    "fact": "运行监控支持调 clearToolPkgRuntimeMonitorLogs 清日志"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/PackageDetailsDialog.kt:1499",
+    "fact": "ToolCard 是详情里的工具卡片，参数含 tool、toolIdPrefix、onExecute"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt:40",
+    "fact": "ScriptExecutionDialog 是脚本试运行对话框，参数含 packageName、tool、packageManager"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt:239",
+    "fact": "执行前先算 missingParams：必填参数里 paramValues[it].isNullOrEmpty() 的"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt:245",
+    "fact": "missingParams 非空则直接构造失败的 ToolResult 返回"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt:265",
+    "fact": "执行经 JsToolManager.getInstance 拿解释器调 executeScript(scriptText, aiTool)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/ScriptExecutionDialog.kt:311",
+    "fact": "执行按钮 enabled = !executing，执行中显示转圈"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:78",
+    "fact": "MCPPackageDetailsDialog 是 MCP 插件详情对话框，参数含 server、installedPath"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:256",
+    "fact": "MCPPackageToolCard 是 MCP 工具卡片，参数含 serverId、tool、onExecute"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:363",
+    "fact": "MCPToolExecutionDialog 是 MCP 工具执行对话框"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:575",
+    "fact": "MCP 工具执行前用 isNullOrBlank 校验必填参数，缺失直接返回失败结果"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:602",
+    "fact": "校验通过后经 toolHandler.executeTool 执行工具"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:691",
+    "fact": "loadMcpPackageTools 经 MCPManager.getInstance(context).getOrCreateSession(serverId) 拉工具，单个解析失败跳过"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/MCPPackageDetailsDialog.kt:712",
+    "fact": "McpRuntimeTool.toPackageTool 把 inputSchema 解析为 JSONObject，用 required 数组决定必填参数，空名工具返回 null"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/QuickPluginCreatorDialog.kt:29",
+    "fact": "QuickPluginCreatorDialog 是快捷插件创建对话框，参数含 requirement、setupRunning、setupResult、onRunSetup"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/AutomationPackageDetailsDialog.kt:27",
+    "fact": "AutomationPackageDetailsDialog 是仅提示自动化功能已移除的 AlertDialog，默认文案取 R.string.pkg_automation_removed"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/dialogs/AutomationFunctionExecutionDialog.kt:28",
+    "fact": "AutomationFunctionExecutionDialog 同样是提示自动化功能已移除的占位框"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/EmptyState.kt:15",
+    "fact": "EmptyState 是居中显示的空态组件，参数为 message"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:40",
+    "fact": "MCPInstallProgressDialog 是 MCP 安装/卸载进度对话框"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:52",
+    "fact": "操作未完成且无结果时 onDismissRequest 直接吞掉关闭请求"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:73",
+    "fact": "安装成功时渲染 InstallResult.Success 分支"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:117",
+    "fact": "InstallProgress.Preparing 有独立分支渲染"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:132",
+    "fact": "InstallProgress.Downloading 分支显示下载文案"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:153",
+    "fact": "InstallProgress.Extracting 分支显示解压或删除文件文案"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:175",
+    "fact": "InstallProgress.Finished 分支显示操作完成文案"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MCPInstallProgressDialog.kt:200",
+    "fact": "进行中时 dismissButton 显示禁用的「操作进行中」按钮，result 非空或 Finished 后 confirmButton 才显示可点的确认按钮"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt:54",
+    "fact": "MarketManageScaffold 是市场管理页通用脚手架"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt:73",
+    "fact": "脚手架的 floatingActionButton 在 isLoggedIn 时显示发布按钮（onPublish）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt:131",
+    "fact": "MarketManageItemCard 是市场管理条目卡片，参数含 title、description、isOpen"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt:242",
+    "fact": "MarketManageReviewFlow 是审核进度三段条"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/MarketManageComponents.kt:468",
+    "fact": "MarketManageDeleteDialog 是删除确认对话框，默认文案取 R.string.confirm_delete"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/PackageItem.kt:17",
+    "fact": "PackageItem 是通用包条目卡片，参数有名、描述、是否已导入、点击与开关回调"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/PackageItem.kt:36",
+    "fact": "条目图标用 Icons.Default.Extension"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/PackageTab.kt:3",
+    "fact": "PackageTab 页签枚举定义在第 3 行"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/components/PackageTab.kt:4",
+    "fact": "页签共四个：PLUGINS、PACKAGES、SKILLS、MCP，自动化配置页签被注释隐藏"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/lists/PackageLists.kt:13",
+    "fact": "PackagesList 是通用包列表"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/lists/PackageLists.kt:18",
+    "fact": "PackagesList 用 LazyColumn 渲染，底部留 88dp 边距避免被 FAB 遮挡"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/lists/PackageLists.kt:44",
+    "fact": "AvailablePackagesList 被标记为 Deprecated，提示改用 PackagesList"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/lists/PackageLists.kt:69",
+    "fact": "ImportedPackagesList 同样被标记为 Deprecated，提示改用 PackagesList"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:19",
+    "fact": "MCPViewModel 持有 MCPRepository"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:30",
+    "fact": "暴露 installProgress、installResult、currentServer 三个 StateFlow"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:42",
+    "fact": "init 块在 viewModelScope 里调 repository.syncInstalledStatus 同步已安装状态"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:48",
+    "fact": "installServer 置 InstallProgress.Preparing 后调仓库安装并回调更新进度"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:86",
+    "fact": "installServerFromZip(server, zipFilePath) 从 ZIP 文件安装服务器插件"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:92",
+    "fact": "selectedZipUri 为空则直接置 InstallResult.Error（文案取 R.string.mcp_error_no_zip_selected）并结束"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:119",
+    "fact": "setSelectedZipUri 保存用户选择的 zip Uri"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:124",
+    "fact": "uninstallServer(server) 卸载服务器插件，先置 InstallProgress.Preparing"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:131",
+    "fact": "remote 类型调 repository.removeRemoteServer，其他调 uninstallMCPServer"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:143",
+    "fact": "卸载结束置 InstallProgress.Finished"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:175",
+    "fact": "resetInstallState 一键清空安装进度、结果与当前服务器"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/viewmodel/MCPViewModel.kt:182",
+    "fact": "getInstalledPath 查安装路径，带 installedPathsCache 内存缓存"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/model/MCPCategories.kt:9",
+    "fact": "MCPCategories 定义 MCP 插件九个分类常量：All、Search、API、Generation、File、Database、Web、Document、Other"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/PackageManagerScreen.kt:943",
+    "fact": "onRunScript 回调把 selectedToolPackageName/selectedTool 置位并打开脚本执行对话框"
+  }
+]

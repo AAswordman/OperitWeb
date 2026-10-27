@@ -6,6 +6,15 @@ export interface RouteMetadata { title: string; description: string; locale: str
 export function getRouteMetadata(pathname: string, language: Language): RouteMetadata {
   const zh = language === 'zh';
   const locale = zh ? 'zh_CN' : 'en_US';
+  if (pathname === '/v1/guide/wiki' || pathname.startsWith('/v1/guide/wiki/')) {
+    const section = pathname === '/v1/guide/wiki/graph' ? (zh ? '知识图谱' : 'Knowledge Connections')
+      : pathname === '/v1/guide/wiki/quality' ? (zh ? '代码走查' : 'Code-review Records')
+      : pathname === '/v1/guide/wiki/about' ? (zh ? '来源与完整备份' : 'Sources & Full Archive')
+      : (zh ? '源码知识库' : 'Source Knowledge Base');
+    return { title: `Operit 1 ${section} | Operit`, description: zh
+      ? 'Operit 1 Android 源码知识库：完整知识条目、固定版本源码引用、事实与审核资料、文档关联图和上游代码走查。独立于 Operit 2。'
+      : 'Operit 1 Android source knowledge base: articles, pinned source references, facts and review artifacts, document connections and upstream code-review records. Separate from Operit 2.', locale };
+  }
   const product = getProductFromPath(pathname);
   if (product) {
     const isGuide = pathname === product.guidePath || pathname.startsWith(`${product.guidePath}/`);

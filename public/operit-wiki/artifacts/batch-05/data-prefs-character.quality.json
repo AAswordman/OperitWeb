@@ -1,0 +1,122 @@
+[
+ {
+  "confidence": "high",
+  "description": "工具白名单 JSON 损坏或被篡改导致解析失败时，仅打一条日志就返回默认空配置（enabled=false，即白名单关闭、全部工具开放）。用户配置过的白名单会在 DataStore 损坏时静默失效，安全边界无声消失，没有任何面向用户的告警。",
+  "evidence": "        return runCatching {\n            toolAccessConfigJson.decodeFromString<CharacterCardToolAccessConfig>(raw).normalized()\n        }.getOrElse {\n            AppLogger.e(\"CharacterCardManager\", \"解析角色卡工具白名单失败\", it)\n            CharacterCardToolAccessConfig()\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 282,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "combinePrompts 读取附着标签时吞掉所有异常并返回 null 跳过该标签。标签损坏或丢失时，最终拼给模型的系统提示词会静默缺失一段人格/指令，且没有任何日志或提示，用户难以察觉人格不完整。",
+  "evidence": "        val attachedTags = allTagIds.mapNotNull { tagId ->\n            try {\n                tagManager.getPromptTagFlow(tagId).first()\n            } catch (e: Exception) {\n                // Log or handle error if a tag ID is invalid\n                null\n            }\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 625,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "导入备份时与现有角色卡 id 相同的条目直接覆盖（计为 updated），没有任何二次确认。用户导入来历不明的备份文件时，现有角色卡的人格、提示词、白名单会被静默替换。",
+  "evidence": "            if (existingIds.contains(finalCard.id)) {\n                updatedCount++\n            } else {\n                newCount++\n            }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 863,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "人设卡聊天历史 JSON 解析失败时吞掉异常返回空列表。该槽位的全部对话历史会被静默视为空，用户以为历史丢失，实际数据仍在 DataStore 里但不可读，没有任何修复或告警路径。",
+  "evidence": "        return try {\n            val type = object : TypeToken<List<ChatMessage>>() {}.type\n            gson.fromJson(json, type) ?: emptyList()\n        } catch (e: Exception) {\n            emptyList()\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt",
+  "line": 68,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "群组卡以 Gson JSON 存取，decodeGroup 解析失败返回 null 后被 mapNotNull 直接丢弃。损坏的群组会从列表中静默消失（但其 id 仍残留在 character_group_list 中），用户无法感知也无法恢复。",
+  "evidence": "    private fun decodeGroup(json: String): CharacterGroupCard? {\n        return runCatching {\n            gson.fromJson(json, CharacterGroupCard::class.java)\n        }.getOrNull()?.let { normalizeGroup(it) }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt",
+  "line": 283,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "角色卡改名后用旧名称同步重命名聊天记录中的卡名（renameCharacterCardInChats）。若存在多个同名角色卡，改名会波及所有同名卡的聊天记录，造成串改。",
+  "evidence": "        if (previousName != card.name) {\n            ChatHistoryManager.getInstance(context).renameCharacterCardInChats(previousName, card.name)\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 519,
+  "severity": "warn"
+ },
+ {
+  "confidence": "medium",
+  "description": "PNG 角色卡解析中 chunkLength 是 u32，直接 toInt() 后用于 sliceArray。若遇到畸形 PNG 使块长度超过 2GB，toInt() 溢出为负数，好在外层 createCharacterCardFromTavernPng 的 try/catch 会将其转为 Result.failure，不会崩溃，但错误信息是通用解析失败，不利于定位。",
+  "evidence": "                val chunkData = bytes.sliceArray(offset until offset + chunkLength.toInt())",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 1158,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "setActiveCharacterCard 直接写入活跃 ID，不校验该 id 是否真实存在。可把不存在的角色卡设为活跃，后续 getCharacterCard 会读到全默认值的“幽灵卡”。",
+  "evidence": "    suspend fun setActiveCharacterCard(id: String) {\n        dataStore.edit { preferences ->\n            preferences[ACTIVE_CHARACTER_CARD_ID] = id\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 601,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "活跃目标在 ActivePromptManager.setActivePrompt 层保证群组与角色卡互斥，但底层的 setActiveCharacterCard / setActiveCharacterGroupCard 可被单独调用绕过互斥。一旦两者同时被设置，activePromptFlow 按群组优先静默忽略角色卡的设置。",
+  "evidence": "            when {\n                !groupId.isNullOrBlank() -> ActivePrompt.CharacterGroup(groupId)\n                !cardId.isNullOrBlank() -> ActivePrompt.CharacterCard(cardId)\n                else -> ActivePrompt.CharacterCard(CharacterCardManager.DEFAULT_CHARACTER_CARD_ID)\n            }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt",
+  "line": 23,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "saveWaifuMergeSendDelayMs 直接写入传入的毫秒数，没有任何范围校验。传入负数或极大值会导致合并发送行为异常（立即触发或近乎永不触发）。",
+  "evidence": "    suspend fun saveWaifuMergeSendDelayMs(delayMs: Int) {\n        context.waifuDataStore.edit { preferences ->\n            preferences[WAIFU_MERGE_SEND_DELAY_MS] = delayMs\n        }\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt",
+  "line": 138,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "resetDefaultCharacterCard 只重置默认卡的偏好字段、主题草稿与头像，没有重置其 Waifu 配置。重置后默认卡可能保留用户之前调过的 Waifu 参数，与“恢复默认”预期不符。",
+  "evidence": "    suspend fun resetDefaultCharacterCard() {\n        dataStore.edit { preferences ->\n            setupDefaultCharacterCard(preferences, DEFAULT_CHARACTER_CARD_ID)\n        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 668,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "medium",
+  "description": "酒馆卡导入时 character_book 的全部条目被无截断地拼进一个 FUNCTION 标签的 promptContent。超大世界书会直接膨胀系统提示词，增加 token 消耗且无任何长度告警。",
+  "evidence": "                    val worldBookContent = buildString {\n                        book.entries.forEach { entry ->\n                            if (entry.content.isNotBlank()) {\n                                // 使用更结构化的格式作为提示词\n                                append(\"[${entry.name}]\\n${entry.content}\\n\\n\")\n                            }\n                        }\n                    }.trim()",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt",
+  "line": 974,
+  "severity": "suggestion"
+ },
+ {
+  "severity": "warn",
+  "confidence": "high",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt",
+  "line": 2078,
+  "description": "Waifu 开关与流式效果之间的链路依赖模型传参：全局 enable_waifu_mode 只决定 ConversationService 是否注入 [Extra Rules] 提示词，而逐句发送+打字机真正生效的充要条件是模型在 send_message_to_ai_streaming 调用里显式传 waifu=true（effectiveWaifuMode = waifuMode == true）。注入的规则文本（FunctionalPrompts.waifuEmotionRule/waifuSelfieRule/waifuCustomPromptRule）没有任何一条指示模型传该参数，用户开了开关也可能看到整段输出。",
+  "evidence": "                    val effectiveWaifuMode = waifuMode == true\n                    val waifuPreferences = WaifuPreferences.getInstance(context)\n                    val waifuCharDelay = waifuPreferences.waifuCharDelayFlow.first()\n                    val waifuRemovePunctuation =\n                        if (effectiveWaifuMode) {\n                            waifuPreferences.waifuRemovePunctuationFlow.first()"
+ },
+ {
+  "severity": "warn",
+  "confidence": "high",
+  "file": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt",
+  "line": 1037,
+  "description": "表情包只查自定义表情：getRandomEmojiPath 未命中时返回 null 并只打一条 warning 日志，separateEmotionAndText 直接丢弃该 <emotion> 标签（不保留原文、不回退为文字）。用户开了表情包但没配自定义表情时，模型按规则输出的情绪标签被静默吞掉，回复里的情绪标记凭空消失。",
+  "evidence": "            // 如果自定义表情中没有找到，则直接返回null\n            com.ai.assistance.operit.util.AppLogger.w(\"WaifuMessageProcessor\", \"在自定义表情中未找到对于情绪 '$emotion' 的表情\")\n            return null"
+ },
+ {
+  "severity": "warn",
+  "confidence": "medium",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt",
+  "line": 1681,
+  "description": "合并发送用 buffer 最后一条文本去删“最后一条可见用户消息”，对不上（ChatViewModel.removeLastVisibleUserMessageFromCurrentChat 有专门的 warning 日志，说明是预期内的分支）就直接 return 跳过本轮合并。用户在等待窗口内删消息/切会话时，消息可能迟迟不发出或在下次 effect 重启时重复触发，属状态同步风险点。",
+  "evidence": "        val removedVisibleMessage =\n            actualViewModel.removeLastVisibleUserMessageFromCurrentChat(triggerText)\n        if (!removedVisibleMessage) {\n            return@LaunchedEffect\n        }\n        waifuMergeBuffer.clear()"
+ }
+]

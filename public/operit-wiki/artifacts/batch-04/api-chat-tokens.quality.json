@@ -1,0 +1,32 @@
+[
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt",
+    "line": 279,
+    "title": "providerModel 格式不符时 require 直接抛错",
+    "detail": "finish() 用 require 强制 providerModel 为 \"provider:model\" 格式；若某个 provider 的模型名不带冒号，每次请求在采集完成阶段抛 IllegalArgumentException，而不是跳过落库。",
+    "evidence": "            val separator = providerModel.indexOf(':')\n            require(separator > 0 && separator < providerModel.lastIndex) {\n                \"provider:model is required for token usage events\"\n            }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt",
+    "line": 317,
+    "title": "部分更新合并时标志位可能被 null 覆盖",
+    "detail": "merge 只把 6 个 token 数量字段的 null 保留旧值；reasoningIncludedInOutput、cacheWriteSeparateBilling 等标志位直接取新 update 的值。若某次部分更新没带 reasoningIncludedInOutput(false)，旧的 false 会被 null 覆盖，导致推理 token 不再并入 output 落库。",
+    "evidence": "        private fun merge(\n            previous: ProviderUsageSnapshot?,\n            update: ProviderUsageSnapshot,\n        ): ProviderUsageSnapshot {\n            if (previous == null || update.completeSnapshot) return update\n            return update.copy(\n                uncachedInputTokens = update.uncachedInputTokens ?: previous.uncachedInputTokens,",
+    "confidence": "low"
+  },
+  {
+    "severity": "suggestion",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt",
+    "line": 198,
+    "title": "TrackingStream 与 TrackingRevisableStream 的 collect 完全重复",
+    "detail": "两个私有包装类的 collect() 方法体逐行相同（onStarted→throwIfCancelled→采集→ensureActive→persist→finally onFinished），只有类声明和 eventChannel 不同，可抽成共享函数。",
+    "evidence": "        override suspend fun collect(collector: StreamCollector<String>) {\n            try {\n                onStarted()\n                request.throwIfCancelled()\n                inner.collect { value -> collector.emit(value) }\n                currentCoroutineContext().ensureActive()\n                persist(repository, request, request.finish())\n            } finally {\n                onFinished()\n            }\n        }",
+    "confidence": "high"
+  }
+]

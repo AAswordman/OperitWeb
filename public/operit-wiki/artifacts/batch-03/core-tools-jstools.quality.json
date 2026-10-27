@@ -1,0 +1,52 @@
+[
+  {
+    "category": "performance",
+    "confidence": "medium",
+    "detail": "ScriptExecutionReceiver 每次收到 EXECUTE_JS 广播都 new 一个全新的 JsEngine(context)，而不走 JsToolManager 的 4 引擎共享池。引擎构造会装配整套 JS 运行时与桥接脚本，高频广播会重复支付这笔初始化成本。若广播场景频率较低，目前无实质影响；但在自动化测试等高频场景下会造成资源浪费，建议复用池或复用一个长期实例。",
+    "evidence": "val engine = JsEngine(context)\n                // NOTE: create a fresh engine per execution to keep state isolated across\n                // broadcast-triggered script runs.",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt",
+    "line": 221,
+    "severity": "suggestion",
+    "title": "广播触发执行每次新建 JsEngine，未复用引擎池"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "parseDotCall 用 lastIndexOf('.') 切分（\"a.b.c\"→包 a.b、函数 c），而 parsePackageToolName 用 indexOf(':') 切分（\"a:b:c\"→包 a、工具 b:c）。冒号切分取首段、分号切分取尾段的策略不一致：当包名或工具名里意外出现分隔符时，两种入口切出的包名/工具名不同。按包名不含分隔符的假设目前无害，但两种约定的对立（首次分隔 vs 末尾分隔）会在后续扩展分隔符语义时变成隐患。",
+    "evidence": "private fun parseDotCall(toolName: String): Pair<String, String>? {\n        val index = toolName.lastIndexOf('.')\n        if (index <= 0 || index >= toolName.length - 1) return null\n        return toolName.substring(0, index) to toolName.substring(index + 1)\n    }\n\n    private fun parsePackageToolName(toolName: String): Pair<String, String>? {\n        val index = toolName.indexOf(':')",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt",
+    "line": 65,
+    "severity": "suggestion",
+    "title": "两套工具名切分不对称：点调用取末分隔，冒号取首分隔"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "内联钩子函数源码经 eval('(' + inlineFunctionSource + ')') 直接求值并放入 rootExports/module.exports。求值后虽校验 typeof === 'function'，但 eval 本身执行了任意表达式：若 inlineFunctionSource 来自不可信持久化数据，表达式求值阶段（原型污染、getter 触发）即已发生。当前调用方为可信的工具包系统，风险限于信任边界内的恶意/损坏包，建议加注来源约束。",
+    "evidence": "var inlineFunction = eval('(' + inlineFunctionSource + ')');\n                        if (typeof inlineFunction !== 'function') {\n                            throw new Error('inline hook source did not evaluate to function');\n                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt",
+    "line": 1356,
+    "severity": "warning",
+    "title": "内联钩子函数源码用 eval 求值"
+  },
+  {
+    "category": "robustness",
+    "confidence": "low",
+    "detail": "normalizeParamsJson 对转义引号的非标准载荷做 \"\\\\\\\"\"→\"\\\"\" 全局替换后重试解析并记 warning。替换是基于传输层编码的启发式猜测：若合法参数值本身包含 \\\\\\\" 序列（例如 Windows 路径或已转义的 JSON 字符串参数），替换会破坏原始值。行为上是向后兼容的宽容处理，但静默改写用户数据的语义，建议在日志中记录改写前后差异以便排查。",
+    "evidence": "val unescapedQuotes = trimmed.replace(\"\\\\\\\"\", \"\\\"\")\n        if (unescapedQuotes != trimmed && canParseJsonObject(unescapedQuotes)) {\n            AppLogger.w(TAG, \"Recovered params JSON from quote-escaped transport payload\")\n            return unescapedQuotes\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt",
+    "line": 338,
+    "severity": "suggestion",
+    "title": "转义引号参数载荷的宽容恢复可能改写合法转义值"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "low",
+    "detail": "桥接脚本里的 installGlobal(name, value) 在 globalThis 与 window 两处赋值都被 try/catch 空块吞掉异常。若全局安装失败（例如不可写环境），ToolPkg 等全局对象静默缺失，错误只会在后续 \"ToolPkg is not defined\" 之类更难定位的报错中显现。建议至少在 debug 构建中记录失败。",
+    "evidence": "function installGlobal(name, value) {\n                var key = String(name || '').trim();\n                if (!key || value === undefined) {\n                    return;\n                }\n                try { globalThis[key] = value; } catch (_e) {}\n                try { window[key] = value; } catch (_e2) {}\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt",
+    "line": 216,
+    "severity": "suggestion",
+    "title": "installGlobal 用空 catch 静默吞掉全局安装失败"
+  }
+]

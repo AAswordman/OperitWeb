@@ -1,0 +1,506 @@
+[
+  {
+    "fact": "`ClaudeProvider` 是 Anthropic Claude API 的实现，处理 Claude 特有的 API 格式，类声明为 open。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:43"
+  },
+  {
+    "fact": "`ClaudeProvider` 实现 `AIService` 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:55"
+  },
+  {
+    "fact": "顶层函数 `shouldPropagateClaudeCancellation` 原样返回 `isManuallyCancelled` 参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:41"
+  },
+  {
+    "fact": "构造参数包含 `apiEndpoint`、`apiKeyProvider`、`modelName`、`client`（OkHttpClient）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:44"
+  },
+  {
+    "fact": "`providerType` 缺省为 `ApiProviderType.ANTHROPIC`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:49"
+  },
+  {
+    "fact": "`enableToolCall` 缺省 false，注释说明 Claude 有原生 tool 支持（预留开关）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:50"
+  },
+  {
+    "fact": "`enableClaude1hPromptCache` 缺省 false，控制 prompt cache 是否启用 1 小时 TTL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:51"
+  },
+  {
+    "fact": "请求头 `ANTHROPIC_VERSION` 固定为 \"2023-06-01\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:59"
+  },
+  {
+    "fact": "`DEFAULT_MAX_TOKENS` 为 4096。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:61"
+  },
+  {
+    "fact": "`EMPTY_MESSAGE_TEXT` 为 \"[Empty]\"，用作空白消息的填充文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:62"
+  },
+  {
+    "fact": "`activeCall` / `activeResponse` 保存当前活跃的请求与响应，用于取消流式传输。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:65"
+  },
+  {
+    "fact": "`isManuallyCancelled` 用 @Volatile 修饰，是跨线程可见的手动取消标志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:67"
+  },
+  {
+    "fact": "`HttpStatusException` 携带 `statusCode`，继承自 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:72"
+  },
+  {
+    "fact": "token 计数委托给 `TokenCacheManager`，`inputTokenCount` 等 getter 从它读取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:79"
+  },
+  {
+    "fact": "`providerModel` 返回形如 \"${providerType.name}:$modelName\" 的供应商:模型标识。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:93"
+  },
+  {
+    "fact": "`resetTokenCounts` 委托 `tokenCacheManager.resetTokenCounts()`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:96"
+  },
+  {
+    "fact": "`logLargeString` 对超过 3000 字符的消息按块分片打日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:99"
+  },
+  {
+    "fact": "`cancelStreaming` 先置 `isManuallyCancelled=true`，再关闭 `activeResponse` 中断流读取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:124"
+  },
+  {
+    "fact": "`cancelStreaming` 随后取消 `activeCall` 并置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:143"
+  },
+  {
+    "fact": "`AnthropicUsageCounts` 有五个字段：actualInputTokens、cachedInputTokens、totalInputTokens、outputTokens、cacheCreationInputTokens。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:149"
+  },
+  {
+    "fact": "`sumNumericFields` 递归累加 JSONObject 中的数字字段（含嵌套对象）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:157"
+  },
+  {
+    "fact": "`parseAnthropicUsage` 按字段是否存在判断 usage 是否有效，显式全零 payload 也视为已观察到。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:176"
+  },
+  {
+    "fact": "缓存输入 token 取值优先级：`cache_read_input_tokens` > `input_tokens_details.cached_tokens` > `cached_tokens`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:187"
+  },
+  {
+    "fact": "`cache_creation_input_tokens` 直接读取；`cache_creation` 为对象时递归求和。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:194"
+  },
+  {
+    "fact": "`actualInputTokens` 等于 input_tokens 加 cacheCreation；无 input_tokens 时用 prompt_tokens 减 cached 再加 cacheCreation。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:201"
+  },
+  {
+    "fact": "输出 token 取 `output_tokens`，缺省时取 `completion_tokens`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:208"
+  },
+  {
+    "fact": "`parseOpenAiCompatibleUsage` 兼容 OpenAI 风格的 usage（prompt_tokens / completion_tokens）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:223"
+  },
+  {
+    "fact": "`applyAnthropicUsage` 把解析结果写入 `tokenCacheManager`（`updateActualTokens` 更新实际输入与缓存输入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:260"
+  },
+  {
+    "fact": "`applyAnthropicUsage` 回调 `onTokensUpdated` 上报输入/缓存输入/输出 token 计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:275"
+  },
+  {
+    "fact": "`XmlEscaper.escape` / `unescape` 做 XML 转义与反转义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:309"
+  },
+  {
+    "fact": "`sanitizeToolCallId` 只保留字母、数字、`_`、`-`，其余字符替换为下划线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:322"
+  },
+  {
+    "fact": "`sanitizeToolCallId` 合并连续下划线并去首尾下划线，结果为空时返回 \"toolu\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:332"
+  },
+  {
+    "fact": "`stableIdHashPart` 取字符串 hashCode 的绝对值并转 36 进制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:337"
+  },
+  {
+    "fact": "`parseXmlToolCalls` 在 `enableToolCall=false` 时直接返回原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:349"
+  },
+  {
+    "fact": "`parseXmlToolCalls` 用 `ChatMarkupRegex.toolCallPattern` 查找 XML 工具调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:351"
+  },
+  {
+    "fact": "生成的 tool_use id 形如 `toolu_<工具名>_<hash>_<序号>`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:377"
+  },
+  {
+    "fact": "`parseXmlToolCalls` 把解析出的 tool 标签从文本内容中移除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:389"
+  },
+  {
+    "fact": "`parseXmlToolResults` 用 `ChatMarkupRegex.toolResultAnyPattern` 匹配 tool_result。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:402"
+  },
+  {
+    "fact": "`parseXmlToolResults` 从标签头用 `nameAttr` 取结果名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:421"
+  },
+  {
+    "fact": "`buildToolDefinitionsForClaude` 生成含 name、description、input_schema 的工具定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:435"
+  },
+  {
+    "fact": "工具 description 为 description 与 details 的拼接（details 为空时只用 description）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:441"
+  },
+  {
+    "fact": "`buildSchemaFromStructured` 生成 type 为 object 的 JSON Schema，required 非空时才添加。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:461"
+  },
+  {
+    "fact": "`appendTextContentBlock` 遇到空白文本返回 false，不添加 block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:494"
+  },
+  {
+    "fact": "`nonEmptyContentText` 把空白文本转为 `EMPTY_MESSAGE_TEXT`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:505"
+  },
+  {
+    "fact": "`buildContentArray` 检测到音视频链接时移除并打警告（Claude 格式当前仅支持图片）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:512"
+  },
+  {
+    "fact": "图片链接转为 type=image、source 为 base64 的 content block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:526"
+  },
+  {
+    "fact": "content 为空且不允许空数组时填充 \"[Empty]\" 文本块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:542"
+  },
+  {
+    "fact": "`sanitizeImageDataForLogging` 把日志中图片 base64 替换为 \"[image base64 omitted, length=...]\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:566"
+  },
+  {
+    "fact": "`cacheControlObject` 生成 type=ephemeral 的 cache_control；启用 1 小时缓存时加 ttl=1h。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:605"
+  },
+  {
+    "fact": "`attachCacheControlIfAbsent` 在 block 已有 cache_control 时不覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:614"
+  },
+  {
+    "fact": "`findLastContentBlock` 从后往前找最后一个 content block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:622"
+  },
+  {
+    "fact": "`applyStableCacheBreakpoints` 给 tools 末项、system 末块、最后消息块打缓存断点并返回断点数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:636"
+  },
+  {
+    "fact": "`buildComparableHistory` 生成 (role, 稳定 JSON) 列表供 token 估算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:665"
+  },
+  {
+    "fact": "`stableJsonValue` 对 JSONObject 的键排序后序列化，保证可比性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:685"
+  },
+  {
+    "fact": "`buildSerializedHistory` 先经 `StructuredToolCallBridge.compileHistoryForProvider` 编译历史。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:716"
+  },
+  {
+    "fact": "system 消息用 \"\\n\\n\" 连接后放入 `systemBlocks`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:725"
+  },
+  {
+    "fact": "`generatedToolUseId` 生成 \"toolu_\" + 9 位后缀的 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:748"
+  },
+  {
+    "fact": "preserveThinkInHistory=false 时从 ASSISTANT 历史中移除 thinking 内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:848"
+  },
+  {
+    "fact": "未匹配的 openToolUses 经 `appendUnmatchedOpenToolUses` 生成占位 tool_result。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:812"
+  },
+  {
+    "fact": "TOOL_RESULT 按名称经 `consumeMatchingToolCalls` 匹配 openToolUses 生成 tool_result 块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:926"
+  },
+  {
+    "fact": "非 tool 模式下 ASSISTANT/TOOL_CALL 映射为 \"assistant\"，其余映射为 \"user\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:966"
+  },
+  {
+    "fact": "历史序列化末尾把未匹配的 openToolUses 按 \"history_end\" 原因处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:996"
+  },
+  {
+    "fact": "`buildMessagesAndCountTokens` 返回 Triple(messages, systemBlocks, tokenCount)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1008"
+  },
+  {
+    "fact": "`calculateInputTokens` 用 `updateState=false`，不污染计数状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1062"
+  },
+  {
+    "fact": "`createRequestBody` 写入 `model` 与 `stream` 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1074"
+  },
+  {
+    "fact": "`max_tokens` 优先级：模型参数 > 请求体已有值 > 按模型名解析的官方值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1084"
+  },
+  {
+    "fact": "`enableToolCall` 且有可用工具时把 tools 定义写入请求体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1095"
+  },
+  {
+    "fact": "system 消息通过顶层 `system` 参数传递，而非放进 messages。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1108"
+  },
+  {
+    "fact": "`ThinkingConfigurationApplier.apply` 统一处理 thinking 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1113"
+  },
+  {
+    "fact": "打日志时 tools 字段省略为 \"[N tools omitted]\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1126"
+  },
+  {
+    "fact": "请求体日志先经 `sanitizeImageDataForLogging` 脱敏图片数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1130"
+  },
+  {
+    "fact": "claude-opus-4 / claude-opus-4-1 官方 max_tokens 为 32000。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1144"
+  },
+  {
+    "fact": "claude-sonnet-4 / claude-3-7-sonnet 官方 max_tokens 为 64000。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1145"
+  },
+  {
+    "fact": "claude-3-5-sonnet / claude-3-5-haiku 官方 8192，claude-3-haiku 官方 4096，其余回退 `DEFAULT_MAX_TOKENS`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1151"
+  },
+  {
+    "fact": "`addParameters` 映射 temperature、top_p、top_k、max_tokens。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1163"
+  },
+  {
+    "fact": "`max_tokens_to_sample` 与 `stop_sequences` 单独处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1171"
+  },
+  {
+    "fact": "thinking、budget_tokens、output_config 三个参数被忽略（在特定部分处理）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1182"
+  },
+  {
+    "fact": "其他参数按 INT / FLOAT / STRING / BOOLEAN / OBJECT 类型映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1187"
+  },
+  {
+    "fact": "OBJECT 类型解析失败时回退为原字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1206"
+  },
+  {
+    "fact": "`createRequest` 经 `EndpointCompleter.completeEndpoint` 补全端点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1223"
+  },
+  {
+    "fact": "请求头包含 `x-api-key`、`anthropic-version`、`Content-Type`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1231"
+  },
+  {
+    "fact": "`customHeaders` 逐个加入请求头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1233"
+  },
+  {
+    "fact": "请求 URL 与请求头在打日志前经 `HttpLogSanitizer` 脱敏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1239"
+  },
+  {
+    "fact": "`resolveRetryErrorText` 对超时、未知主机分别取对应错误文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1247"
+  },
+  {
+    "fact": "`handleRetryableError` 遇到取消异常直接抛出，不重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1263"
+  },
+  {
+    "fact": "`isManuallyCancelled` 为 true 时停止重试并抛取消异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1265"
+  },
+  {
+    "fact": "`enableRetry=false` 时直接抛 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1273"
+  },
+  {
+    "fact": "超过最大重试次数时抛 IOException 并记错误日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1278"
+  },
+  {
+    "fact": "重试前调用 `onRetryAccepted`（触发回滚），按 `LlmRetryPolicy.nextDelayMs` 退避等待。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1286"
+  },
+  {
+    "fact": "事件通道为 `MutableSharedStream<TextStreamEvent>(replay = Int.MAX_VALUE)`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1313"
+  },
+  {
+    "fact": "每次 `sendMessage` 重置 `isManuallyCancelled=false` 与输出 token 计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1316"
+  },
+  {
+    "fact": "SAVEPOINT / ROLLBACK 机制：重试时清空 `receivedContent` 并发送 ROLLBACK 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1325"
+  },
+  {
+    "fact": "`parseAnthropicNonStreaming` 拼接 content 中的 text 块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1341"
+  },
+  {
+    "fact": "thinking 块仅在启用 thinking 时转为 `<think>` 标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1352"
+  },
+  {
+    "fact": "`redacted_thinking` 块走空分支直接丢弃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1358"
+  },
+  {
+    "fact": "非流式 `tool_use` 块在 `enableToolCall` 时转为 XML 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1361"
+  },
+  {
+    "fact": "`parseOpenAiNonStreaming` 取 `choices[0].message.content`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1394"
+  },
+  {
+    "fact": "4xx 响应抛 `HttpStatusException`，保留状态码进入统一重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1451"
+  },
+  {
+    "fact": "用 `peekBody(4096)` 预读响应，判断是 JSON 还是 SSE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1468"
+  },
+  {
+    "fact": "stream 下收到纯 JSON（非 SSE）且为多行 JSONL 时走 OpenAI 兼容解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1471"
+  },
+  {
+    "fact": "`processOpenAiCompatibleJsonLines` 逐行解析 JSONL，提取每行 `choices[0].delta.content` 累加输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1485"
+  },
+  {
+    "fact": "读取每行 `finish_reason`，非空（且非 null/none）时确认流式完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1503"
+  },
+  {
+    "fact": "非流式先按 Anthropic 格式解析，结果空白则兜底 OpenAI 格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1493"
+  },
+  {
+    "fact": "结果空白且 usage 未应用时抛 `provider_error_parsing_failed`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1556"
+  },
+  {
+    "fact": "非 SSE 的 JSON 行缓冲上限为 2_000_000 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1621"
+  },
+  {
+    "fact": "SSE 中 \"data: [DONE]\" 确认流式完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1634"
+  },
+  {
+    "fact": "无 `type` 的 OpenAI 风格 chunk 按 choices / delta 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1637"
+  },
+  {
+    "fact": "`message_start` 应用 usage，但不覆盖输出 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1691"
+  },
+  {
+    "fact": "`content_block_start` 的 `tool_use` 分支生成随机 XML 标签名并发出 XML 起始标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1700"
+  },
+  {
+    "fact": "`content_block_start` 时创建 `StreamingJsonXmlConverter`，工具参数 JSON 流式转为 XML 发出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1708"
+  },
+  {
+    "fact": "`content_block_start` 的 thinking 块仅在启用 thinking 时发出 `<think>`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1731"
+  },
+  {
+    "fact": "`content_block_delta` 的 `text_delta` 分支提取文本并累加输出 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1760"
+  },
+  {
+    "fact": "`content_block_delta` 的 `thinking_delta` 在 thinking 块内时提取思考内容并累加输出 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1773"
+  },
+  {
+    "fact": "`content_block_delta` 的 `input_json_delta` 把 `partial_json` 喂给流式 JSON→XML 转换器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1786"
+  },
+  {
+    "fact": "`content_block_stop` 时 flush 流式转换器，发出剩余的工具参数事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1807"
+  },
+  {
+    "fact": "`content_block_stop` 补 XML 结束标签并清除工具调用状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1824"
+  },
+  {
+    "fact": "`message_delta` 应用 usage 并覆盖输出 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1838"
+  },
+  {
+    "fact": "`message_stop` 确认流式完成并退出读取循环。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1847"
+  },
+  {
+    "fact": "缓冲回退：整体 JSON 解析失败时逐行按 JSONL 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1896"
+  },
+  {
+    "fact": "流式未确认完成时抛 `provider_error_network_interrupted`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1993"
+  },
+  {
+    "fact": "请求成功后回调 `onUsageFinalized` 并记录最终输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:1995"
+  },
+  {
+    "fact": "重试异常走 `handleRetryableError`，`onRetryAccepted` 触发 `emitRollback`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:2011"
+  },
+  {
+    "fact": "最终失败抛 `openai_error_connection_timeout`，携带最后一次异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:2025"
+  },
+  {
+    "fact": "`getModelsList` 委托 `ModelListFetcher.getModelsList` 获取模型列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:2040"
+  },
+  {
+    "fact": "`testConnection` 发送 \"Hi\" 短消息验证完整的连接与认证。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:2057"
+  },
+  {
+    "fact": "`testConnection` 中 `CancellationException` 原样传播，不转为 Result.failure。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ClaudeProvider.kt:2072"
+  }
+]

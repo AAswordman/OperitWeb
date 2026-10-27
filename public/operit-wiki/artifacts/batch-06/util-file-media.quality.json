@@ -1,0 +1,122 @@
+[
+  {
+    "confidence": 0.95,
+    "description": "Zip Slip 路径穿越：extractZip 直接用压缩包条目名拼接目标路径（File(targetDir, fileName)），未做 canonical 路径校验，恶意 zip 中 `../../` 条目可写出到目标目录之外。",
+    "evidence": "                        val fileName = currentEntry.name\n                        val newFile = File(targetDir, fileName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt",
+    "line": 151,
+    "severity": "high"
+  },
+  {
+    "confidence": 0.95,
+    "description": "Zip Slip 路径穿越：extractTar 同样直接用 TAR 条目名拼接 File(targetDir, fileName)，`../` 条目可逃逸目标目录。",
+    "evidence": "                    val fileName = currentEntry.name\n                    val newFile = File(targetDir, fileName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt",
+    "line": 215,
+    "severity": "high"
+  },
+  {
+    "confidence": 0.95,
+    "description": "Zip Slip 路径穿越：extract7z 用 SevenZFile 条目名直接拼接目标路径，无 canonical 校验。",
+    "evidence": "                            val fileName = currentEntry.name\n                            val newFile = File(targetDir, fileName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt",
+    "line": 288,
+    "severity": "high"
+  },
+  {
+    "confidence": 0.95,
+    "description": "Zip Slip 路径穿越：extractRar 用 junrar fileHeader.fileName 直接拼接目标路径，无 canonical 校验。",
+    "evidence": "                        val fileName = fileHeader.fileName\n                        val newFile = File(targetDir, fileName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ArchiveUtil.kt",
+    "line": 385,
+    "severity": "high"
+  },
+  {
+    "confidence": 0.9,
+    "description": "路径穿越：mapLinuxPath 仅去掉开头的斜杠就拼接（File(ubuntuRoot, relativePath)），不做 `..` 归一化，输入 `../../x` 可逃逸 proot Ubuntu 根目录。",
+    "evidence": "        return File(ubuntuRoot, relativePath).absolutePath",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt",
+    "line": 34,
+    "severity": "high"
+  },
+  {
+    "confidence": 0.95,
+    "description": "convertPdfToImage 渲染失败时写一个纯文本占位文件（内容为 PDF Preview not available）却返回 true，调用方会误以为得到了真实图片。",
+    "evidence": "                FileOutputStream(targetFile).bufferedWriter().use { writer ->\n                    writer.write(\"PDF Preview not available - this is a placeholder file.\\n\")\n                    writer.write(\"The PDF could not be converted to an image format.\\n\")\n                    writer.write(\"Original PDF: ${sourceFile.name}\")\n                }\n                return true",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt",
+    "line": 230,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "HTML 转 DOC 只是把纯文本文件改名成 .doc（注释自述 just rename the text file to .doc），产出的是假 .doc 文件；DOCX 转 DOC 同样是纯文本改名。",
+    "evidence": "                    // Instead of using FFmpeg, just rename the text file to .doc",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt",
+    "line": 386,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "extractTextFromPdf 遇到加密 PDF 时静默调用 setAllSecurityToBeRemoved(true) 去除安全限制，用户设置的打开密码被绕过且无提示。",
+    "evidence": "                if (document.isEncrypted) {\n                    try {\n                        document.setAllSecurityToBeRemoved(true)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/DocumentConversionUtil.kt",
+    "line": 82,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "checkVideoSize 读取大小异常时 fail-open 返回 true：恶意或损坏的 URI 会跳过 30MB 限额检查。",
+    "evidence": "        // 如果无法检查大小，返回true以避免阻止用户选择\n        return true",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt",
+    "line": 414,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.8,
+    "description": "downloadMulti 失败时只删除目标文件 dest，`文件名.part.N` 分片临时文件可能残留在目标目录造成垃圾堆积。",
+    "evidence": "            try {\n                dest.delete()\n            } catch (_: Exception) {\n            }\n            throw RuntimeException(\"Multi-part download failed\", err)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/HttpMultiPartDownloader.kt",
+    "line": 296,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "keyMutexes 按 key 累积 Mutex 且从不清理，key 空间无界增长会造成内存泄漏。",
+    "evidence": "    private val keyMutexes = ConcurrentHashMap<String, Mutex>()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/SkillRepoZipPoolManager.kt",
+    "line": 22,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "initialize 首次初始化会清空内存池并删除全部磁盘缓存（启动时已清空旧图片池缓存），进程重启后之前缓存的图片全部作废。",
+    "evidence": "        if (shouldResetCache) {\n            imagePool.clear()\n            clearDiskCache()\n            hasResetCacheOnInitialize = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ImagePoolManager.kt",
+    "line": 110,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.85,
+    "description": "limitBase64ForAi 对非 png/webp/jpeg 的 MIME 直接返回 null（compressFormatForMimeType 无匹配时），其他格式图片会被整体丢弃而非透传。",
+    "evidence": "    private fun compressFormatForMimeType(mimeType: String): Bitmap.CompressFormat? {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ImageBitmapLimiter.kt",
+    "line": 130,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.9,
+    "description": "isTextLikeBytes 的文本判定阈值是硬编码的 10% 非文本字符占比，阈值选择随意，无注释说明依据。",
+    "evidence": "        return (nonTextChars.toDouble() / totalChars) < 0.1",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/FileUtils.kt",
+    "line": 212,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "executeCommand 用 AppLogger.d 把完整 FFmpeg 命令（含绝对文件路径）打进日志，调试日志外泄路径信息。",
+    "evidence": "            AppLogger.d(TAG, \"Executing FFmpeg command: $command\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/FFmpegUtil.kt",
+    "line": 23,
+    "severity": "suggestion"
+  }
+]

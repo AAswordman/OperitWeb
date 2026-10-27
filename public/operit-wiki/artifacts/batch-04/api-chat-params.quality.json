@@ -1,0 +1,32 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt",
+    "line": 138,
+    "title": "CHAT 探针不校验回复内容",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "            runCase(ModelConnectionTestType.CHAT) {\n                collectResponse(listOf(PromptTurn(kind = PromptTurnKind.USER, content = \"Hi\")))\n                ModelConnectionTestOutcome.PASSED\n            }",
+    "description": "CHAT 探针只要求 collectResponse 不抛异常，之后无条件记 PASSED；网关返回空回复或乱码时测试同样显示通过。建议至少校验回复非空。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt",
+    "line": 182,
+    "title": "图片注册失败时缓存文件泄漏",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "high",
+    "evidence": "                    val imageFile =\n                        AssetCopyUtils.copyAssetToCache(context, MediaCapabilityProbe.IMAGE_ASSET_PATH)\n                    val imageId = ImagePoolManager.addImage(imageFile.absolutePath)\n                    if (imageId == \"error\") {\n                        throw IllegalStateException(\"Failed to create test image\")\n                    }",
+    "description": "IMAGE 探针先把 assets 拷到缓存，再调 ImagePoolManager.addImage；addImage 返回 \"error\" 时直接抛错，已拷贝的 imageFile 未被删除（删除逻辑只在后面 try 的 finally 里），缓存目录泄漏。AUDIO/VIDEO 探针是同样写法。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt",
+    "line": 52,
+    "title": "UNVERIFIED 被计入测试成功",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "    val success: Boolean\n        get() = items.none { it.outcome == ModelConnectionTestOutcome.FAILED }\n\n    val verified: Boolean\n        get() = items.isNotEmpty() && items.all { it.outcome == ModelConnectionTestOutcome.PASSED }",
+    "description": "report.success 只排除 FAILED；图片/音频/视频探针回复不匹配时记 UNVERIFIED，报告仍显示成功。模型实际不具备多模态能力时用户看到的仍是“测试通过”，语义有歧义。"
+  }
+]

@@ -1,0 +1,82 @@
+[
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "detail": "MIGRATION_10_11 等 10 处迁移用 try/catch(_: Exception){} 包住 ALTER TABLE，失败时静默通过。迁移会被标记为成功，但实际 schema 与 Room 期望不一致，随后在打开数据库做 schema 校验时才会崩溃，错误现场远离真正原因，难以排查。同文件第 101、114、125、129、133、137、141、145、391、435 行均为同类写法。",
+  "evidence": "                    // 向chats表添加workspaceEnv列\n                    try {\n                        db.execSQL(\"ALTER TABLE chats ADD COLUMN `workspaceEnv` TEXT\")\n                    } catch (_: Exception) {\n\n                    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt",
+  "line": 99,
+  "severity": "warning",
+  "title": "迁移中的空 catch 吞掉建表/加列失败"
+ },
+ {
+  "category": "correctness",
+  "confidence": "high",
+  "detail": "insertChat 标注 OnConflictStrategy.REPLACE，冲突时是先删后插。而 messages.message_variants 表都有 FOREIGN KEY(chatId) REFERENCES chats(id) ON DELETE CASCADE（AppDatabase.kt:83、:180），Room 默认启用外键约束，因此对已存在的聊天调用一次 insertChat 会先删掉该聊天的全部消息和变体，再插入聊天行。调用方若把 insertChat 当作“更新”用，会造成数据丢失。",
+  "evidence": "    @Insert(onConflict = OnConflictStrategy.REPLACE) suspend fun insertChat(chat: ChatEntity)",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt",
+  "line": 33,
+  "severity": "warning",
+  "title": "insertChat 用 REPLACE 策略，重插已存在聊天会级联清空其全部消息"
+ },
+ {
+  "category": "correctness",
+  "confidence": "medium",
+  "detail": "materializeMessage 先读首块并拿到总长度，再循环拉后续分块。若在两次查询之间该消息被并发删除，queryMessageContentChunk 返回 null，checkNotNull 直接抛 IllegalStateException（\"Message disappeared while reading content\"），调用链上没有降级处理，会以崩溃形式暴露给用户。更稳妥的做法是把缺失分块当作截断或返回已读部分。",
+  "evidence": "            val chunk =\n                checkNotNull(\n                    queryMessageContentChunk(\n                        row.message.messageId,\n                        startCharacter,\n                        CONTENT_CHUNK_CHARACTER_COUNT,\n                    )\n                ) {\n                    \"Message disappeared while reading content: messageId=${row.message.messageId}\"\n                }",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt",
+  "line": 423,
+  "severity": "warning",
+  "title": "长消息分块读取中途被删会直接抛 IllegalStateException"
+ },
+ {
+  "category": "performance",
+  "confidence": "high",
+  "detail": "查询用 content LIKE '%' || :query || '%'，前导通配符使任何索引失效，每次搜索都是 messages 全表扫描。消息量大时聊天内搜索会变慢。可考虑 FTS 虚拟表或至少限制搜索范围。",
+  "evidence": "    @Query(\"SELECT DISTINCT chatId FROM messages WHERE content LIKE '%' || :query || '%' ESCAPE '\\\\' COLLATE NOCASE\")",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt",
+  "line": 240,
+  "severity": "suggestion",
+  "title": "searchChatIdsByContent 前后通配 LIKE 无法走索引"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "high",
+  "detail": "Room 的 schema 导出被关闭，仓库里没有各版本的建表快照 JSON。排查迁移问题、做迁移自动化测试时缺少可对照的基准，只能靠读迁移代码反推。",
+  "evidence": "    exportSchema = false",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt",
+  "line": 36,
+  "severity": "suggestion",
+  "title": "exportSchema = false，无版本化 schema 快照"
+ },
+ {
+  "category": "correctness",
+  "confidence": "medium",
+  "detail": "复制聊天需要同时调 copyMessagesToChat 和 MessageVariantDao.copyVariantsToChat，DAO 层没有 @Transaction 包装。若调用方只调了前者，复制出的消息 selectedVariantIndex > 0 却找不到对应变体行，展示层会拿到空内容。建议在仓库层用 @Transaction 包成一个原子操作。",
+  "evidence": "    suspend fun copyMessagesToChat(\n        sourceChatId: String,\n        targetChatId: String,\n        upToTimestampInclusive: Long?,\n    )",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt",
+  "line": 191,
+  "severity": "suggestion",
+  "title": "copyMessagesToChat 与 copyVariantsToChat 是两个独立方法，无事务绑定"
+ },
+ {
+  "category": "correctness",
+  "confidence": "medium",
+  "detail": "getSelectedContentCharacterCountsByChat 里 selectedVariantIndex > 0 但变体行不存在时，LENGTH(selectedVariant.content) 为 NULL，被 SUM 直接忽略，该聊天的字符数会被低估且无任何提示。建议对缺失变体回退到主消息长度或记为异常。",
+  "evidence": "                    CASE\n                        WHEN messages.selectedVariantIndex = 0 THEN LENGTH(messages.content)\n                        ELSE LENGTH(selectedVariant.content)\n                    END",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt",
+  "line": 257,
+  "severity": "suggestion",
+  "title": "选中版本缺失时字符统计静默少算"
+ },
+ {
+  "category": "maintainability",
+  "confidence": "low",
+  "detail": "MIGRATION_20_21 从 messages 回填 token_usage_records 时用 WHERE `sender` = 'ai' 过滤。若未来 sender 取值规范变化（如大小写、新增 AI 身份），这段一次性迁移逻辑不会重跑，历史数据会静默漏记。好在迁移只执行一次，风险限于历史数据口径。",
+  "evidence": "                        WHERE `sender` = 'ai'",
+  "file": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt",
+  "line": 329,
+  "severity": "suggestion",
+  "title": "v20→v21 历史 token 回填硬编码 sender = 'ai'"
+ }
+]

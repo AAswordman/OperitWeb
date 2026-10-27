@@ -1,0 +1,32 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "thinking 模式下 createRequestBody 在返回前把完整请求 JSON（含全部用户消息、系统提示词、工具定义，仅图片数据被脱敏）经 logLargeString 打出；logLargeString 直接调 AppLogger.d，而 AppLogger.d 在 enableSystemLog（默认 true）时无条件调 android.util.Log.d。用户聊天内容会完整进入 logcat，任何有 READ_LOGS 权限的应用或连上 adb 的人都能读到。",
+    "evidence": "        val sanitizedLogJson = sanitizeImageDataForLogging(logJson)\n        logLargeString(\"KimiProvider\", sanitizedLogJson.toString(4), \"Final Kimi K2.5 request body: \")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt",
+    "line": 156,
+    "severity": "warning",
+    "title": "thinking 分支的完整请求体无条件写入 logcat"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "useToolCall 分支的 TOOL_RESULT 处理中，当 resultsList 非空但 openToolCalls 为空时走 else 分支：只把文本内容转成 user 消息，结构化工具结果直接丢弃且不记任何日志。与之对比，部分匹配失败时（matchedCalls.size < resultsList.size）会记“发现未匹配的tool_result”警告。工具结果无声丢失会让排查“工具执行了但模型没看到结果”类问题缺少线索。",
+    "evidence": "                            } else {\n                                flushOpenToolCallsAsUnmatched(\"tool_result_without_structured_match\")\n                                if (textContent.isNotEmpty()) {\n                                    messagesArray.put(\n                                        JSONObject().apply {\n                                            put(\"role\", \"user\")\n                                            put(\"content\", buildContentField(context, textContent))\n                                        }\n                                    )\n                                }\n                            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt",
+    "line": 399,
+    "severity": "warning",
+    "title": "TOOL_RESULT 无匹配时结构化工具结果被静默丢弃"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "emitQueuedToolCallsIfNeeded 在攒发文本为空时调 put(\"content\", null)。org.json 的 put(String, Object) 遇到 null 值是把键删掉，而不是写入显式的 JSON null。最终发出的 assistant 消息里 content 字段缺失而非 null，Moonshot/OpenAI 兼容端点大概率同样接受，但语义与代码字面意图（content=null）不一致，值得确认是否为有意为之。",
+    "evidence": "                    if (!queuedAssistantToolText.isNullOrBlank()) {\n                        put(\"content\", buildContentField(context, queuedAssistantToolText!!, role = \"assistant\"))\n                    } else {\n                        put(\"content\", null)\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt",
+    "line": 221,
+    "severity": "suggestion",
+    "title": "put(\"content\", null) 依赖 org.json 的删键语义而非显式 JSON null"
+  }
+]

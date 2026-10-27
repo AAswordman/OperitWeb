@@ -1,0 +1,678 @@
+[
+ {
+  "fact": "`ConnectionMenuDialog` 是管理节点连接的对话框，参数为 `sourceNode` 源节点、`allNodes` 全量节点、`existingConnections` 现有连接，以及创建/删除/更新条件三个回调与 `onDismiss`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:32"
+ },
+ {
+  "fact": "`connectionsFromSource` 只保留 `sourceNodeId == sourceNode.id` 的连接，即从当前源节点出发的连接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:36"
+ },
+ {
+  "fact": "`availableTargets` 排除源节点自身和已连接的目标节点，避免自连与重复连接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:42"
+ },
+ {
+  "fact": "对话框标题显示 `R.string.workflow_manage_connections` 文案与源节点名称。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:53"
+ },
+ {
+  "fact": "连接列表区用 `LazyColumn` 高度限制为 `heightIn(max = 400.dp)`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:113"
+ },
+ {
+  "fact": "`existingConnectionsSection` 在源节点无连接时直接 `return`，不渲染已有连接分组。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:137"
+ },
+ {
+  "fact": "无可用目标且无现有连接时显示 `R.string.workflow_no_connectable_nodes` 提示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:196"
+ },
+ {
+  "fact": "`ExistingConnectionItem` 为已有连接行，卡片背景取 errorContainer 浅色（alpha 0.3f）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:212"
+ },
+ {
+  "fact": "连接项图标按目标节点类型区分：`trigger` 显示 🎯，其他显示 ⚙️。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:237"
+ },
+ {
+  "fact": "`ConnectionConditionMode` 枚举只有三种取值：`DEFAULT`、`FALSE`、`CUSTOM`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:280"
+ },
+ {
+  "fact": "`conditionToDisplayText` 在条件为空时，对条件类节点显示默认走真分支文案，对其他节点显示无条件文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:286"
+ },
+ {
+  "fact": "条件文本经 `c.lowercase()` 匹配：true/false 原样显示，其他非空条件按正则格式文案显示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:300"
+ },
+ {
+  "fact": "条件对话框按 `initialCondition` 推导 `initialMode`：空对应 DEFAULT，false（忽略大小写）对应 FALSE，其余对应 CUSTOM。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:313"
+ },
+ {
+  "fact": "条件对话框确认时 DEFAULT 映射为 null，FALSE 映射为字符串 false，CUSTOM 取输入框去空格后文本（空则为 null）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:390"
+ },
+ {
+  "fact": "已有连接分组是 `LazyListScope` 扩展函数 `existingConnectionsSection`；注释说明拆分组是为避免单个 Compose lambda 耗尽 Kotlin 代码生成器内存。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:133"
+ },
+ {
+  "fact": "编辑条件时按 `editingConnectionId` 从 `connectionsFromSource` 查出连接，再按目标 id 查出目标节点后才弹条件对话框。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:85"
+ },
+ {
+  "fact": "`AvailableTargetItem` 每行右侧是加号按钮，点击调用 `onConnect(targetNode.id)` 创建连接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ConnectionMenu.kt:188"
+ },
+ {
+  "fact": "`DraggableNodeCard` 是可拖动的节点卡片，支持拖动、长按、点击三种手势。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:46"
+ },
+ {
+  "fact": "节点执行状态决定边框色：`Running` 蓝 `0xFF2196F3`、`Success` 绿 `0xFF4CAF50`、`Skipped` 灰 `0xFF9E9E9E`、`Failed` 红 `0xFFF44336`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:61"
+ },
+ {
+  "fact": "`TriggerNode` 为绿色系配 `PlayArrow` 图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:73"
+ },
+ {
+  "fact": "`ExecuteNode` 为蓝色系配 `Settings` 图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:80"
+ },
+ {
+  "fact": "`ConditionNode` 为橙色系，`LogicNode` 为紫色系，未知类型为灰色系。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:88"
+ },
+ {
+  "fact": "`ExtractNode` 为青色系。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:99"
+ },
+ {
+  "fact": "节点卡片固定尺寸为宽 `120.dp`、高 `80.dp`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:119"
+ },
+ {
+  "fact": "长按检测用 `delay(500)` 实现：500ms 后若未发生拖动则触发 `onLongPress`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:136"
+ },
+ {
+  "fact": "拖动结束时用 `delay(100)` 延迟重置 `hasDragged`，避免拖动结束瞬间误触发点击。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:167"
+ },
+ {
+  "fact": "有执行状态时边框宽 `3.dp`，无执行状态时边框宽 `2.dp`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:178"
+ },
+ {
+  "fact": "拖动中卡片阴影为 `12.dp`，静止时为 `3.dp`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:183"
+ },
+ {
+  "fact": "底部执行状态行中 `Running` 分支显示 `CircularProgressIndicator` 转圈。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:252"
+ },
+ {
+  "fact": "底部执行状态行中 `Success` 分支显示绿色对勾图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:265"
+ },
+ {
+  "fact": "`Failed` 分支显示红色关闭图标，文案取 `R.string.workflow_node_failed`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:299"
+ },
+ {
+  "fact": "无执行状态且节点描述非空时，卡片底部显示描述文本（单行省略）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:305"
+ },
+ {
+  "fact": "点击仅在「未长按、未拖动过、当前不在拖动中」三个条件同时满足时触发 `onClick`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/DraggableNodeCard.kt:146"
+ },
+ {
+  "fact": "画布逻辑尺寸常量：`CANVAS_WIDTH = 4000.dp`，`CANVAS_HEIGHT = 3000.dp`，网格单元 `CELL_SIZE = 40.dp`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:51"
+ },
+ {
+  "fact": "`GridWorkflowCanvas` 参数含节点列表、连接列表、可选的 `nodeExecutionStates` 执行状态表，以及位置变更/长按/点击三个回调。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:62"
+ },
+ {
+  "fact": "从 `ExecuteNode` 的 `actionConfig` 值中抽取 `ParameterValue.NodeReference` 形成引用边。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:92"
+ },
+ {
+  "fact": "从 `ConditionNode` 左右值与 `ExtractNode` 源值中的 `ParameterValue.NodeReference` 抽取引用边。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:103"
+ },
+ {
+  "fact": "引用边会跳过自环与端点不在当前节点集合中的边。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:86"
+ },
+ {
+  "fact": "`connectionLabelText` 在条件为空时，条件类节点返回标签 T，其他节点返回 `null` 不显示标签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:132"
+ },
+ {
+  "fact": "连接标签规则：`\"true\"`→`\"T\"`，`\"false\"`→`\"F\"`，其他取前 12 字符加 `…` 前缀 `\"R:\"`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:141"
+ },
+ {
+  "fact": "`parseBooleanLike` 把 `true/1/yes/y/on` 判为真，`false/0/no/n/off` 判为假，其余返回 `null`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:150"
+ },
+ {
+  "fact": "`isConnectionActive` 要求源节点执行成功且结果非跳过原因；条件类节点空条件视为 true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:163"
+ },
+ {
+  "fact": "对非布尔条件做正则匹配，`Regex(effectiveCondition)` 构造失败时返回 false。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:189"
+ },
+ {
+  "fact": "`nodePositions` 用 `remember(nodes)` 初始化为各节点 `node.position` 的像素坐标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:195"
+ },
+ {
+  "fact": "`fitViewportToNodes` 按节点包围盒计算目标缩放并钳制在 `0.25f` 到 `3f` 之间。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:217"
+ },
+ {
+  "fact": "首次布局完成后通过 `LaunchedEffect` 自动调用一次 `fitViewportToNodes`（`hasAutoFitted` 防重复）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:238"
+ },
+ {
+  "fact": "双指缩放手势用 `detectTransformGestures` 实现，新缩放钳制在 `0.25f` 到 `3f`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:257"
+ },
+ {
+  "fact": "双击画布调用 `fitViewportToNodes` 重置视图。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:269"
+ },
+ {
+  "fact": "背景网格点用 `drawPoints` 以 `PointMode.Points` 绘制，随缩放调整笔触宽度。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:296"
+ },
+ {
+  "fact": "引用边用 `referenceLineColor`（橙色）与 `referenceDash`（`PathEffect.dashPathEffect`）画成虚线贝塞尔曲线。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:353"
+ },
+ {
+  "fact": "连接线颜色规则：无执行信息时为蓝色；有执行信息时按目标节点状态着色，非激活用灰色 `inactiveColor`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:458"
+ },
+ {
+  "fact": "连接线宽按激活状态取值：`lineWidth = if (active) 3.5f else 2.5f`，非激活叠加虚线效果。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:469"
+ },
+ {
+  "fact": "连接起点终点取自节点矩形边缘交点（`getEdgePoint` 按方向与四边求交取最近点）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:487"
+ },
+ {
+  "fact": "连接标签画在贝塞尔曲线中点：白色圆角底加线色描边，文字经 `nativeCanvas.drawText` 绘制。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:663"
+ },
+ {
+  "fact": "每条连接线在曲线中点和终点各画一个 18f 实心箭头。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:671"
+ },
+ {
+  "fact": "拖动节点时 `dragOffset += amount / scale`，按当前缩放折算拖动量。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:708"
+ },
+ {
+  "fact": "拖动结束把落点吸附到网格：`snappedX = (finalPosition.x / cellSizePx).roundToInt() * cellSizePx`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:717"
+ },
+ {
+  "fact": "吸附后通过 `onNodePositionChanged(nodeId, finalX, finalY)` 把新坐标回传给调用方持久化。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:724"
+ },
+ {
+  "fact": "缩放不为 1 或有平移时右上角显示缩放百分比指示卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/GridWorkflowCanvas.kt:738"
+ },
+ {
+  "fact": "`NodeActionMenuDialog` 是长按节点弹出的操作菜单，参数含 `nodeName` 与编辑/查看日志/连接/删除/关闭五个回调。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/NodeActionMenu.kt:27"
+ },
+ {
+  "fact": "菜单用 `Dialog` 包 `Card` 实现，阴影 `defaultElevation = 8.dp`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/NodeActionMenu.kt:33"
+ },
+ {
+  "fact": "菜单从上到下依次是：编辑节点、查看日志、创建连接、删除节点（红色）、取消五个按钮。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/NodeActionMenu.kt:43"
+ },
+ {
+  "fact": "除取消外每个按钮点击后都先 `onDismiss()` 再执行对应回调。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/NodeActionMenu.kt:49"
+ },
+ {
+  "fact": "`ScheduleConfigDialog` 是工作流定时配置对话框，`initialScheduleType` 默认 `\"interval\"`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:31"
+ },
+ {
+  "fact": "间隔模式初始值取 `initialConfig[\"interval_ms\"]` 除以 60000 转分钟，取不到时默认 `\"15\"`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:43"
+ },
+ {
+  "fact": "指定时间模式用 `SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\")` 解析 `initialConfig[\"specific_time\"]`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:55"
+ },
+ {
+  "fact": "`scheduleTypes` 只有三种：`interval`（间隔）、`specific_time`（指定时间）、`cron`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:79"
+ },
+ {
+  "fact": "`cronPresets` 提供 10 个常用 cron 预设（每天零点/9 点/正午/18 点、每 2/6 小时、每 15/30 分钟、每周一零点、工作日 9 点）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:91"
+ },
+ {
+  "fact": "确认时按单位换算毫秒：`config[\"interval_ms\"] = (value * multiplier * 60 * 1000).toString()`，小时系数 60、天系数 1440。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:422"
+ },
+ {
+  "fact": "时间选择器用 `TimePickerDialog` 并固定 24 小时制。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:258"
+ },
+ {
+  "fact": "回传的 config 固定含 `schedule_type`、`enabled`、`repeat` 三个键。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:409"
+ },
+ {
+  "fact": "`repeat` 与 `enabled` 两个开关默认都为 `true`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:75"
+ },
+ {
+  "fact": "`remember(initialConfig)` 被用作副作用解析初始日期，而非作为返回值使用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/components/ScheduleConfigDialog.kt:52"
+ },
+ {
+  "fact": "`WorkflowListScreen` 是工作流列表页，`viewModel` 参数默认用 `viewModel()` 构造。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:50"
+ },
+ {
+  "fact": "多选模式状态：`isSelectionMode`、`selectedWorkflowIds`（`Set<String>`）、`showDeleteSelectedDialog`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:60"
+ },
+ {
+  "fact": "`LaunchedEffect` 在多选模式下把已选 id 与现存工作流 id 取交集，列表为空时自动退出多选。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:67"
+ },
+ {
+  "fact": "进入页面时 `LaunchedEffect(Unit)` 调用 `viewModel.loadToolPkgWorkflowTemplates()` 加载工具包模板。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:73"
+ },
+ {
+  "fact": "FAB 展开时图标旋转 `45f`（`animateFloatAsState`），收起回 0。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:163"
+ },
+ {
+  "fact": "FAB 菜单项：新建空白工作流、从模板创建、多选；多选模式下变为删除所选与退出多选。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:100"
+ },
+ {
+  "fact": "空列表时显示 ⚡ 图标、`workflow_start_creation` 标题与新建按钮。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:203"
+ },
+ {
+  "fact": "工作流列表行以 `key = { it.id }` 复用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:262"
+ },
+ {
+  "fact": "`WorkflowSelectionBar` 显示已选数量，提供全选与清空选择按钮。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:422"
+ },
+ {
+  "fact": "`TemplateTypeDialog` 提供 8 种内置模板：intent 广播、聊天、条件、逻辑与/或、提取、错误分支、语音触发。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:457"
+ },
+ {
+  "fact": "工具包模板非空时在对话框中单独分组展示，副标题为包名加描述。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:527"
+ },
+ {
+  "fact": "工作流卡片在禁用状态显示 `workflow_disabled` 红色徽标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:679"
+ },
+ {
+  "fact": "多选模式下卡片右侧为 `Checkbox`，普通模式为 `Switch`（缩放 `0.82f`）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:690"
+ },
+ {
+  "fact": "成功率按 `workflow.successfulExecutions.toFloat() / workflow.totalExecutions * 100` 取整计算。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:724"
+ },
+ {
+  "fact": "状态条中 SUCCESS 配三级色对勾、FAILED 配红色错误图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:796"
+ },
+ {
+  "fact": "RUNNING 状态配主色播放图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:809"
+ },
+ {
+  "fact": "成功率文字颜色：≥80% 三级色，≥50% 主色，否则红色。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:864"
+ },
+ {
+  "fact": "`CreateWorkflowDialog` 是新建工作流对话框，创建按钮仅在名称非空时可用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:875"
+ },
+ {
+  "fact": "新建对话框的创建按钮用 `enabled = name.isNotBlank()` 控制可用性。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:908"
+ },
+ {
+  "fact": "`formatDate` 用 `yyyy-MM-dd HH:mm` 格式化时间戳。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:924"
+ },
+ {
+  "fact": "`formatRelativeTime` 按分钟/小时/天/周四档阈值返回相对时间文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:930"
+ },
+ {
+  "fact": "批量删除确认后调用 `viewModel.deleteWorkflows(idsToDelete)`，成功后清空选择并退出多选。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowListScreen.kt:399"
+ },
+ {
+  "fact": "详情页在 `LaunchedEffect(workflowId)` 中调用 `viewModel.loadWorkflow(workflowId)` 加载数据。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:135"
+ },
+ {
+  "fact": "`isWorkflowRunning` 取自 `runningWorkflowIds` 是否包含当前 `workflowId`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:140"
+ },
+ {
+  "fact": "运行中的工作流 FAB 首项变为「取消」（`cancelWorkflow`），否则为「触发」（`triggerWorkflow`），结果都进 `showTriggerResult` 弹窗。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:190"
+ },
+ {
+  "fact": "FAB 菜单另有查看日志、添加节点、编辑工作流、删除工作流四个动作。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:216"
+ },
+ {
+  "fact": "节点为空时显示 📋 图标与 `workflow_nodes_empty` 提示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:291"
+ },
+ {
+  "fact": "画布 `onNodePositionChanged` 直接调用 `viewModel.updateNodePosition(workflowId, nodeId, x, y)`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:308"
+ },
+ {
+  "fact": "画布节点点击被显式置空（注释说明避免拖动时误触发）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:315"
+ },
+ {
+  "fact": "删除工作流确认后调用 `viewModel.deleteWorkflow(workflowId)`，成功后 `onNavigateBack()`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:371"
+ },
+ {
+  "fact": "`WorkflowExecutionLogDialog` 是执行日志对话框，支持按节点过滤。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:590"
+ },
+ {
+  "fact": "执行日志按 `it.nodeId == nodeId` 过滤，nodeId 为空时显示全量。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:603"
+ },
+ {
+  "fact": "执行日志时间戳格式为 `HH:mm:ss.SSS`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:594"
+ },
+ {
+  "fact": "`ParameterConfig` 数据类字段为 `key`、`isReference`（引用节点/静态值）、`value`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:688"
+ },
+ {
+  "fact": "把引用参数转 `ParameterValue.NodeReference`、静态值转 `ParameterValue.StaticValue`，空 key 直接丢弃。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:712"
+ },
+ {
+  "fact": "节点对话框用 `isEditMode = node != null` 区分创建与编辑模式。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:727"
+ },
+ {
+  "fact": "`nodeTypes` 映射 5 种节点类型：trigger/execute/condition/logic/extract。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:991"
+ },
+ {
+  "fact": "`triggerTypes` 映射 6 种触发类型：manual/schedule/tasker/intent/speech/app_open。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:999"
+ },
+ {
+  "fact": "工具名候选来自 `AIToolHandler.getInstance(context)`，过滤掉 `package_proxy`、`proxy`、`search`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:754"
+ },
+ {
+  "fact": "工具名下拉按输入模糊过滤并只取前 50 个（`filtered.take(50)`）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:772"
+ },
+ {
+  "fact": "工具名含冒号时按 `toolName.split(\":\", limit = 2)` 拆包名与工具名，走工具包分支。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:808"
+ },
+ {
+  "fact": "参数列表与 schema 合并：schema 内参数按 schema 顺序重排并填默认值，schema 外的自定义参数追加在后。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:874"
+ },
+ {
+  "fact": "引用候选节点为除自身外的全部节点（`workflow.nodes.filter { it.id != node.id }`）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:898"
+ },
+ {
+  "fact": "`ConditionOperator.toDisplayText` 把 EQ/NE/GT/GTE/LT/LTE 显示为比较符号，IN/NOT_IN 显示为 ∈/∉。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:70"
+ },
+ {
+  "fact": "`LogicOperator.toDisplayText` 把 `AND/OR` 显示为 `&&/||`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:80"
+ },
+ {
+  "fact": "`ExtractMode.toDisplayText` 共 6 种：REGEX/JSON/SUB/CONCAT/RANDOM_INT/RANDOM_STRING。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:88"
+ },
+ {
+  "fact": "`WorkflowExecutionFailureStage.toDisplayText` 映射 4 个失败阶段：启动/运行时初始化/执行中/取消。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:100"
+ },
+ {
+  "fact": "切换触发类型时自动填默认配置示例：schedule 填 interval JSON，tasker 填含 `%evtprm()` 的变量 JSON，intent/speech 填各自示例。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:1943"
+ },
+ {
+  "fact": "schedule 类型显示配置定时按钮（`workflow_configure_schedule_trigger`），点击弹定时配置对话框；确认后把返回的 Map 转 JSON 字符串写回 `triggerConfig`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:1959"
+ },
+ {
+  "fact": "app_open 触发类型只显示帮助文本，不提供 JSON 配置框。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:1970"
+ },
+ {
+  "fact": "节点名称为空时自动生成：trigger 按触发类型、execute 按动作类型、condition/logic/extract 用默认名。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:1988"
+ },
+ {
+  "fact": "保存 TriggerNode 时 `triggerConfig` 文本按 `org.json.JSONObject` 解析，解析失败则置空 Map。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:2040"
+ },
+ {
+  "fact": "保存 ExtractNode 时解析失败有兜底：`randomMax` 默认 100，`randomStringLength` 默认 8，`length` 默认 -1。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:2101"
+ },
+ {
+  "fact": "节点操作菜单的四个回调分别打开编辑对话框、加载最新执行记录看日志、打开连接菜单、打开删除确认。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:494"
+ },
+ {
+  "fact": "连接菜单的三个回调 `onCreateConnection`/`onDeleteConnection`/`onUpdateConnectionCondition` 分别经 ViewModel 创建/删除/更新连接条件。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:538"
+ },
+ {
+  "fact": "添加节点对话框确认后调用 `viewModel.addNode(workflowId, node)`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:434"
+ },
+ {
+  "fact": "`EditWorkflowDialog` 含名称/描述输入与启用开关，保存按钮同样要求名称非空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/screens/WorkflowDetailScreen.kt:2239"
+ },
+ {
+  "fact": "`WorkflowViewModel` 继承 `AndroidViewModel`，`repository` 为 `WorkflowRepository(application)`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:46"
+ },
+ {
+  "fact": "对外状态：`workflows` 工作流列表、`isLoading`、`error`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:55"
+ },
+ {
+  "fact": "对外状态还有 `currentWorkflow` 当前工作流与 `latestExecutionRecord` 最新执行记录。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:64"
+ },
+ {
+  "fact": "`toolPkgWorkflowTemplates` 保存工具包提供的工作流模板列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:54"
+ },
+ {
+  "fact": "`_nodeExecutionStates` 是 `MutableStateFlow<Map<String, NodeExecutionState>>`，对外暴露为只读 `StateFlow`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:70"
+ },
+ {
+  "fact": "`runningWorkflowIds` 直接引用 `WorkflowRepository.runningWorkflowIds`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:72"
+ },
+ {
+  "fact": "`init` 中订阅 `WorkflowRepository.workflowStorageWarnings`，警告直接写入 `error`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:77"
+ },
+ {
+  "fact": "订阅 `workflowUpdateEvents`，收到事件后静默重载列表与当前工作流。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:88"
+ },
+ {
+  "fact": "加载用递增 `requestId` 防并发覆盖：只有最新请求的回调能写状态。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:123"
+ },
+ {
+  "fact": "`beginVisibleLoading`/`finishVisibleLoading` 用 `activeVisibleLoadCount` 引用计数管理 `isLoading`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:138"
+ },
+ {
+  "fact": "8 个模板创建函数名形如 `createChatTemplateWorkflow`，名称后缀取当前 `HH:mm:ss` 时间。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:301"
+ },
+ {
+  "fact": "`templateNodePosition` 每列 5 个节点，起点 (120,120)，列间距 720，行间距 420。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:448"
+ },
+ {
+  "fact": "intent 广播模板：intent 触发器监听 `com.ai.assistance.operit.TRIGGER_WORKFLOW`，8 节点链：启动会话→建会话→提取消息→发送→停止→发广播→关虚拟屏。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:477"
+ },
+ {
+  "fact": "聊天模板 6 节点：`start_chat_service` 带 `keep_if_exists` 为 true 与 `initial_mode` 为 WINDOW 参数。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:584"
+ },
+ {
+  "fact": "条件模板：`visit_web` 访问 `https://example.com`，REGEX 提取 visit key，CONTAINS 做分支判断。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:660"
+ },
+ {
+  "fact": "逻辑模板的 false 分支连接条件为字符串 `false`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:712"
+ },
+ {
+  "fact": "条件模板的 false 分支访问 `https://example.org`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:702"
+ },
+ {
+  "fact": "`buildExtractTemplateWorkflow` 演示提取节点的全部能力：固定值、随机整数、固定串、随机串、拼接、截取、比较与 toast 展示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:845"
+ },
+ {
+  "fact": "提取模板用 `ConditionOperator.GT` 演示数值比较。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:934"
+ },
+ {
+  "fact": "提取模板用 `ExtractMode.CONCAT` 演示多值拼接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:908"
+ },
+ {
+  "fact": "提取模板用 `ExtractMode.SUB` 演示子串截取。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:922"
+ },
+ {
+  "fact": "提取模板用固定值 `hello` 演示固定字符串提取。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:889"
+ },
+ {
+  "fact": "错误分支模板用 `condition = \"on_success\"` 与 `condition = \"on_error\"` 区分成功/失败分支。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1019"
+ },
+ {
+  "fact": "语音触发模板的 `pattern` 为中文语音指令正则，`cooldown_ms` 为 3000。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1042"
+ },
+ {
+  "fact": "`createWorkflow` 用 `UUID.randomUUID().toString()` 生成 id 后调 `repository.createWorkflow`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1147"
+ },
+ {
+  "fact": "先乐观更新本地状态（`replaceWorkflowInState`），失败时回滚到旧对象。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1182"
+ },
+ {
+  "fact": "`deleteWorkflows` 逐个删除并记录首个失败信息，全部完成后重载列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1232"
+ },
+ {
+  "fact": "`triggerWorkflow` 先清空节点执行状态，再用 `triggerWorkflowWithCallback` 按节点回调更新 `_nodeExecutionStates`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1283"
+ },
+ {
+  "fact": "触发被取消（`CancellationException`）时清空执行状态并静默重载。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1303"
+ },
+ {
+  "fact": "`cancelWorkflow` 成功后回调文案取 `workflow_cancel_requested`，未运行时取 `workflow_not_running`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1321"
+ },
+ {
+  "fact": "把新节点追加到 `nodes` 末尾并刷新 `updatedAt`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1352"
+ },
+ {
+  "fact": "`deleteNode` 同时删除该节点作为源或目标的所有连接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1374"
+ },
+ {
+  "fact": "`updateNode` 有两个重载：三参版本按 id 替换节点，双参版本委托给三参版本。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1439"
+ },
+ {
+  "fact": "创建前检查同源同目标连接是否已存在（`connectionExists`），存在则报错 `workflow_error_connection_exists`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1462"
+ },
+ {
+  "fact": "`deleteConnection` 按 `connectionId` 过滤连接列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1500"
+ },
+ {
+  "fact": "节点位置更新直接修改 `node.position.x/y` 做落点持久化，失败时静默吞掉。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1548"
+ },
+ {
+  "fact": "用 `connection.copy(condition = condition)` 更新条件并刷新 `updatedAt`。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:278"
+ },
+ {
+  "fact": "`isWorkflowScheduled` 在主线程用 `runBlocking` 同步查询仓库。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1616"
+ },
+ {
+  "fact": "`getNextExecutionTime` 异步查询下次执行时间后通过 `onResult` 回调返回。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/workflow/viewmodel/WorkflowViewModel.kt:1625"
+ }
+]

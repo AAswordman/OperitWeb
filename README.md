@@ -4,7 +4,7 @@
 
 - **技术栈**：React + TypeScript + Vite + Ant Design
 - **路由模式**：HashRouter（URL 形如 `/#/v1/guide/...`）
-- **文档来源**：`public/content/{zh,en}` 下的 Markdown
+- **文档来源**：`public/content/{zh,en}`、`public/newcontent/{zh,en}`、`public/v2content/{zh,en}` 与共享插件文档目录下的 Markdown
 - **在线站点**：`https://operit.aaswordsman.org`
 
 ## 环境要求
@@ -48,6 +48,7 @@ pnpm dev
 | 独立下载 | `/#/v1/download` | `/#/v2/download` |
 | 使用教程 | `/#/v1/guide` | `/#/v2/guide` |
 | 一代完整参考手册 | `/#/v1/guide/reference` | 不复用一代手册 |
+| 一代源码知识库 | `/#/v1/guide/wiki` | 不复用一代源码资料 |
 
 共享入口：
 
@@ -173,3 +174,16 @@ Android 客户端还会在拉取公告时同步拉取插件拒绝列表，用于
 ## License
 
 以仓库内实际 License 文件为准（如需补充请添加）。
+
+## Operit 1 源码知识库
+
+已整合 `jasonluoxray/Operit-wiki` 固定快照的全部 126 个条目（124 篇正文和 2 份大纲），同时保留 14,586 条事实引用、1,033 条上游代码走查记录、审核附件、原文与完整仓库 ZIP。入口：`/#/v1/guide/wiki`。
+
+提供全文搜索、章节目录、文档关联图、走查筛选、固定源码提交链接以及移动端阅读；不影响一代现有教程、参考手册或二代文档。知识库来源、许可证与备份可在 `/#/v1/guide/wiki/about` 查看。
+
+- 导入更新：`pnpm sync:operit-wiki --source <干净的上游仓库路径>`
+- 数据验证：`pnpm test:wiki`
+- 浏览器验证：`pnpm test:wiki:smoke`
+- 完整说明与复现步骤：[docs/OPERIT_WIKI_INTEGRATION.md](docs/OPERIT_WIKI_INTEGRATION.md)
+
+上游批准与风险等级不是本站独立复核结论。旧仓库 Issues 中动态提供的社区教程和评论不在备份中，且原仓库目前不可访问，未伪造或错误映射这些站外数据。

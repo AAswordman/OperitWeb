@@ -1,0 +1,526 @@
+[
+  {
+    "fact": "ChatServiceCore 是聊天服务核心类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:30"
+  },
+  {
+    "fact": "ChatServiceCore 整合所有聊天业务逻辑，可被 FloatingChatService 或 ChatViewModel 使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:31"
+  },
+  {
+    "fact": "ChatServiceCore 的生命周期独立于 ViewModel，绑定到传入的 CoroutineScope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:32"
+  },
+  {
+    "fact": "ChatServiceCore 构造函数接收 context、coroutineScope、selectionMode 三个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:36"
+  },
+  {
+    "fact": "ChatServiceCore 的 selectionMode 缺省值为 ChatSelectionMode.FOLLOW_GLOBAL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:38"
+  },
+  {
+    "fact": "ChatServiceCore 内部聚合 7 个委托：MessageProcessingDelegate、ChatHistoryDelegate、ApiConfigDelegate、TokenStatisticsDelegate、AttachmentDelegate、UiStateDelegate、MessageCoordinationDelegate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:50"
+  },
+  {
+    "fact": "ChatServiceCore 的 workspaceTrackerOwnerId 由 selectionMode.name 与实例 identityHashCode 拼接而成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:66"
+  },
+  {
+    "fact": "ChatServiceCore.sendUserMessage 把发送逻辑转发给 messageCoordinationDelegate（含总结逻辑）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:263"
+  },
+  {
+    "fact": "ChatServiceCore.cancelCurrentMessage 先取消总结，再取消当前聊天的消息处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:279"
+  },
+  {
+    "fact": "ChatServiceCore.switchChatLocal 只切换本地 chatId，不写回全局 currentChatId，悬浮窗内切换会话不影响主界面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:334"
+  },
+  {
+    "fact": "ChatServiceCore.syncCurrentChatIdToGlobal 把本地 chatId 写回全局 currentChatId，用于返回主应用时同步。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:341"
+  },
+  {
+    "fact": "ChatServiceCore.setAdditionalOnTurnComplete 注册回合完成回调，回调参数为 chatId、inputTokens、outputTokens、windowSize。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:518"
+  },
+  {
+    "fact": "ChatServiceCore.setUiBridge 替换 uiBridge 并透传给 messageCoordinationDelegate。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:521"
+  },
+  {
+    "fact": "ChatServiceCore 在 onTurnComplete 回调内调用 additionalOnTurnComplete?.invoke(chatId, inputTokens, outputTokens, windowSize)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:199"
+  },
+  {
+    "fact": "ChatServiceCore 以 get 开头的一组 getter 对外暴露各委托实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceCore.kt:497"
+  },
+  {
+    "fact": "ChatServiceUiBridge 是接口，定义 updateWebServerForCurrentChat、resetAttachmentPanelState、clearReplyToMessage、getReplyToMessage 四个方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceUiBridge.kt:7"
+  },
+  {
+    "fact": "EmptyChatServiceUiBridge 是 ChatServiceUiBridge 的无操作实现，四个方法均为空实现或返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ChatServiceUiBridge.kt:14"
+  },
+  {
+    "fact": "ServiceLifecycleOwner 同时实现 LifecycleOwner、ViewModelStoreOwner、SavedStateRegistryOwner 三个接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ServiceLifecycleOwner.kt:14"
+  },
+  {
+    "fact": "ServiceLifecycleOwner.handleLifecycleEvent 会把生命周期事件封送到主线程再交给 LifecycleRegistry 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/ServiceLifecycleOwner.kt:46"
+  },
+  {
+    "fact": "FloatingChatService 是悬浮聊天前台服务，继承 Service 并实现 FloatingWindowCallback 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:57"
+  },
+  {
+    "fact": "FloatingChatService 的前台通知 ID 为 1001。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:64"
+  },
+  {
+    "fact": "FloatingChatService 的通知渠道 ID 为 floating_chat_channel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:65"
+  },
+  {
+    "fact": "FloatingChatService 定义四个生命周期广播 Action：FLOATING_CHAT_SERVICE_STARTED、FLOATING_CHAT_SERVICE_STOPPED、FLOATING_CHAT_WINDOW_SHOWN、FLOATING_CHAT_WINDOW_SHOW_FAILED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:102"
+  },
+  {
+    "fact": "FloatingChatService.EXTRA_AUTO_ENTER_VOICE_CHAT 的值为 AUTO_ENTER_VOICE_CHAT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:106"
+  },
+  {
+    "fact": "FloatingChatService.EXTRA_WAKE_LAUNCHED 的值为 WAKE_LAUNCHED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:107"
+  },
+  {
+    "fact": "FloatingChatService.EXTRA_AUTO_EXIT_AFTER_MS 的值为 AUTO_EXIT_AFTER_MS。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:108"
+  },
+  {
+    "fact": "FloatingChatService.EXTRA_KEEP_IF_EXISTS 的值为 KEEP_IF_EXISTS。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:109"
+  },
+  {
+    "fact": "FloatingChatService.getInstance 返回进程内单例 instance。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:111"
+  },
+  {
+    "fact": "FloatingChatService.onBind 在服务未就绪时返回 null，避免调用方拿到未初始化的 chatCore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:171"
+  },
+  {
+    "fact": "FloatingChatService.onCreate 发现 service_disabled_due_to_crashes 标记为 true 时直接 stopSelf，不再初始化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:229"
+  },
+  {
+    "fact": "FloatingChatService 的 chatCore 取自 ChatRuntimeHolder.getInstance(applicationContext).getCore(ChatRuntimeSlot.FLOATING)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:239"
+  },
+  {
+    "fact": "FloatingChatService 订阅 chatCore.chatHistory 并同步到本地 chatMessages 状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:246"
+  },
+  {
+    "fact": "FloatingChatService 经由 ForegroundServiceCompat.startForeground 以 dataSync 类型启动为前台服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:301"
+  },
+  {
+    "fact": "FloatingChatService 申请 10 分钟的 PARTIAL_WAKE_LOCK 保活。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:327"
+  },
+  {
+    "fact": "FloatingChatService.handleServiceCrash 用 commit() 同步持久化崩溃计数与时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:190"
+  },
+  {
+    "fact": "FloatingChatService 在 60 秒内崩溃超过 3 次时标记停用并 stopSelf。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:196"
+  },
+  {
+    "fact": "FloatingChatService.onStartCommand 在服务未就绪时发送 WINDOW_SHOW_FAILED 广播并返回 START_NOT_STICKY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:387"
+  },
+  {
+    "fact": "FloatingChatService.onStartCommand 正常路径返回 START_STICKY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:546"
+  },
+  {
+    "fact": "FloatingChatService.onTaskRemoved 会重新 startService，实现任务被划掉后的服务自重启。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:556"
+  },
+  {
+    "fact": "FloatingChatService 收到 WAKE_LAUNCHED 且当前会话没有任何用户消息时，会跳过唤醒自动建新会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:451"
+  },
+  {
+    "fact": "FloatingChatService.scheduleAutoExit 用 Handler.postDelayed 实现超时自动调用 onClose。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:143"
+  },
+  {
+    "fact": "FloatingChatService.onStartCommand 收到 EXTRA_AUTO_EXIT_AFTER_MS 时按指定毫秒数安排自动退出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:469"
+  },
+  {
+    "fact": "FloatingChatService.onDestroy 把 chatCore 的 uiBridge 重置为 EmptyChatServiceUiBridge。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:617"
+  },
+  {
+    "fact": "FloatingChatService.onDestroy 会取消当前正在处理的消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:622"
+  },
+  {
+    "fact": "FloatingChatService.onDestroy 销毁 windowManager 并发送 FLOATING_CHAT_SERVICE_STOPPED 广播。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:656"
+  },
+  {
+    "fact": "FloatingChatService.onDestroy 销毁 windowManager 并重置视图重试计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:656"
+  },
+  {
+    "fact": "FloatingChatService.onDestroy 发送 FLOATING_CHAT_SERVICE_STOPPED 生命周期广播。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:671"
+  },
+  {
+    "fact": "FloatingChatService 支持用 INITIAL_MODE intent 参数指定启动时的初始悬浮窗模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:403"
+  },
+  {
+    "fact": "FloatingChatService 进入全屏模式时会挂起 AIForegroundService 的唤醒词监听。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:417"
+  },
+  {
+    "fact": "FloatingChatService.LocalBinder.getChatCore 对外暴露 ChatServiceCore 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:154"
+  },
+  {
+    "fact": "FloatingChatService 可用 intent 传入配色与字体并持久化到 floating_chat_prefs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt:491"
+  },
+  {
+    "fact": "StatusIndicatorStyle 枚举只有 FULLSCREEN_RAINBOW 与 TOP_BAR 两个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:77"
+  },
+  {
+    "fact": "FloatingWindowCallback 接口定义 onClose、onSendMessage、onCancelMessage、附件、消息、状态等 12 个回调方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:82"
+  },
+  {
+    "fact": "FloatingWindowCallback 接口定义 onClose、onSendMessage、onCancelMessage、附件请求与移除等回调方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:84"
+  },
+  {
+    "fact": "FloatingWindowCallback 接口还定义 getMessages、getAttachments、saveState、配色、字体、输入处理状态与状态指示器样式等获取方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:90"
+  },
+  {
+    "fact": "FloatingWindowManager.show 在视图已添加时直接返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:164"
+  },
+  {
+    "fact": "FloatingWindowManager.destroy 移除悬浮窗视图、焦点遮罩视图并隐藏状态指示器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:197"
+  },
+  {
+    "fact": "createLayoutParams 对 FULLSCREEN/SCREEN_OCR 分支生成全屏窗口尺寸",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:510"
+  },
+  {
+    "fact": "createLayoutParams 对 BALL/VOICE_BALL 分支生成悬浮球尺寸",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:519"
+  },
+  {
+    "fact": "createLayoutParams 对 WINDOW 分支生成窗口尺寸",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:536"
+  },
+  {
+    "fact": "createLayoutParams 对 RESULT_DISPLAY 分支生成结果展示窗口尺寸",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:559"
+  },
+  {
+    "fact": "FloatingWindowManager 全屏模式用 MATCH_PARENT 铺满屏幕。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:511"
+  },
+  {
+    "fact": "FloatingWindowManager 球模式按 ballSize 生成正方形窗口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:521"
+  },
+  {
+    "fact": "FloatingWindowManager 窗口模式按 windowWidth、windowHeight 与 windowScale 计算像素尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:539"
+  },
+  {
+    "fact": "FloatingWindowManager 的全屏模糊半径常量为 48dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:149"
+  },
+  {
+    "fact": "FloatingWindowManager 在 API 31 以下跳过全屏跨窗口模糊。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:608"
+  },
+  {
+    "fact": "FloatingWindowManager 从其他模式切到球模式时延迟 150ms 再改窗口尺寸，与 Compose 淡出动画同步。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:908"
+  },
+  {
+    "fact": "FloatingWindowManager 从球模式切到其他模式时延迟 100ms 再改窗口尺寸，与球淡出动画同步。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:932"
+  },
+  {
+    "fact": "FloatingWindowManager.onMove 在全屏模式下直接返回，禁用拖动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:998"
+  },
+  {
+    "fact": "FloatingWindowManager.setFocusable(true) 会清除 FLAG_NOT_FOCUSABLE 并安排输入法弹出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:1042"
+  },
+  {
+    "fact": "FloatingWindowManager 的输入法弹出最多重试 4 次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:152"
+  },
+  {
+    "fact": "FloatingWindowManager 的输入法首次弹出延迟为 200ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:150"
+  },
+  {
+    "fact": "FloatingWindowManager.setStatusIndicatorAlpha 在非主线程调用时用 CountDownLatch 最多等待 200ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:466"
+  },
+  {
+    "fact": "FloatingWindowManager 的状态指示器按样式渲染全屏彩虹边框或顶部横条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:397"
+  },
+  {
+    "fact": "FloatingWindowManager 的状态指示器窗口带 FLAG_NOT_FOCUSABLE 与 FLAG_NOT_TOUCHABLE，不拦截触摸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:420"
+  },
+  {
+    "fact": "FloatingWindowManager.prepareForExit 先取消输入法焦点再退出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:142"
+  },
+  {
+    "fact": "FloatingWindowManager 的焦点遮罩仅在 WINDOW 模式且窗口可见时显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:258"
+  },
+  {
+    "fact": "FloatingWindowManager.getComposeView 返回当前悬浮窗的 ComposeView 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowManager.kt:1194"
+  },
+  {
+    "fact": "FloatingWindowState 把窗口状态持久化在 floating_chat_prefs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:12"
+  },
+  {
+    "fact": "FloatingWindowState 默认窗口位置为 x=200、y=200。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:19"
+  },
+  {
+    "fact": "FloatingWindowState 默认窗口尺寸为 300dp 宽、400dp 高，缩放 0.8。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:23"
+  },
+  {
+    "fact": "FloatingWindowState 默认模式为 FloatingMode.WINDOW。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:29"
+  },
+  {
+    "fact": "FloatingWindowState 默认球尺寸为 60.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:31"
+  },
+  {
+    "fact": "FloatingWindowState.saveState 用 require 拒绝把非有限数值写入 prefs。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:63"
+  },
+  {
+    "fact": "FloatingWindowState.restoreState 发现存储值为 NaN 时抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:98"
+  },
+  {
+    "fact": "FloatingWindowState.restoreState 遇到非法模式名时回退为 FloatingMode.WINDOW。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:109"
+  },
+  {
+    "fact": "FloatingWindowState 持久化窗口宽高时钳制在 200~maxWindowWidth 与 250~maxWindowHeight 范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:72"
+  },
+  {
+    "fact": "FloatingWindowState 持久化缩放时钳制在 0.3~1.0 范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt:80"
+  },
+  {
+    "fact": "UIDebuggerService 为悬浮窗服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:30"
+  },
+  {
+    "fact": "UIDebuggerService 以 startForeground 启动为前台服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:84"
+  },
+  {
+    "fact": "UIDebuggerService 的通知 ID 为 1337，渠道 ID 为 UIDebuggerChannel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:59"
+  },
+  {
+    "fact": "UIDebuggerService.onCreate 以 BIND_AUTO_CREATE 绑定 FloatingChatService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:77"
+  },
+  {
+    "fact": "UIDebuggerService 经由 viewModel.setWindowInteractionController 控制悬浮窗的可见性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:46"
+  },
+  {
+    "fact": "UIDebuggerService.isServiceRunning 是 MutableStateFlow 布尔状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:137"
+  },
+  {
+    "fact": "UIDebuggerService.onStartCommand 返回 START_NOT_STICKY。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:88"
+  },
+  {
+    "fact": "UIDebuggerService.onDestroy 移除窗口、清空 viewModelStore 并解绑 FloatingChatService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt:96"
+  },
+  {
+    "fact": "UIDebuggerWindowManager 在 API 26 及以上用 TYPE_APPLICATION_OVERLAY，低版本用 TYPE_PHONE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/UIDebuggerWindowManager.kt:56"
+  },
+  {
+    "fact": "UIDebuggerWindowManager 的 isExpanded 初始为 false，窗口初始为悬浮球形态（\"Floating ball position state\"，ballX/ballY 定位）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/UIDebuggerWindowManager.kt:46"
+  },
+  {
+    "fact": "UIDebuggerWindowManager 的悬浮球是 56.dp 的蓝色圆形，带 Build 图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/UIDebuggerWindowManager.kt:175"
+  },
+  {
+    "fact": "UIDebuggerWindowManager 的关闭回调会调用 UIDebuggerService.stopSelf()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/floating/UIDebuggerWindowManager.kt:95"
+  },
+  {
+    "fact": "OperitAssistActivity 收到系统 ASSIST intent 后启动悬浮窗入口并立即 finish 自己。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitAssistActivity.kt:18"
+  },
+  {
+    "fact": "OperitAssistActivity 启动时指定 INITIAL_MODE 为 FULLSCREEN 并设置 AUTO_ENTER_VOICE_CHAT 为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitAssistActivity.kt:37"
+  },
+  {
+    "fact": "OperitAssistActivity 在 API 26 及以上用 startForegroundService，低版本用 startService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitAssistActivity.kt:41"
+  },
+  {
+    "fact": "OperitVoiceInteractionService 继承 VoiceInteractionService，是系统把 Operit 识别为数字助理的核心服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitVoiceInteractionService.kt:14"
+  },
+  {
+    "fact": "OperitVoiceInteractionSessionService.onNewSession 创建 OperitVoiceInteractionSession 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitVoiceInteractionSessionService.kt:30"
+  },
+  {
+    "fact": "OperitVoiceInteractionSession.onShow 启动悬浮窗服务后立即 finish 会话，不使用系统覆盖层。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitVoiceInteractionSessionService.kt:49"
+  },
+  {
+    "fact": "OperitVoiceInteractionSession 启动悬浮窗同样指定 FULLSCREEN 模式并自动进入语音聊天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitVoiceInteractionSessionService.kt:69"
+  },
+  {
+    "fact": "OperitNotificationStore 用 LinkedHashMap 按 key 缓存通知条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:19"
+  },
+  {
+    "fact": "OperitNotificationStore 最多缓存 200 条通知，超限时移除最旧条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:42"
+  },
+  {
+    "fact": "OperitNotificationStore.extractText 合并通知的 title、text、bigText 与 textLines，去重后按换行拼接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:88"
+  },
+  {
+    "fact": "OperitNotificationStore.extractText 合并结果为空时兜底返回通知的 tickerText。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:103"
+  },
+  {
+    "fact": "OperitNotificationStore.snapshot 按时间戳倒序返回前 N 条，可选择是否包含常驻通知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:68"
+  },
+  {
+    "fact": "OperitNotificationListenerService.onListenerConnected 把当前所有活跃通知 upsert 入库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:112"
+  },
+  {
+    "fact": "OperitNotificationListenerService.onNotificationPosted 与 onNotificationRemoved 分别增删缓存条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt:118"
+  },
+  {
+    "fact": "CloudEmbeddingService.generateEmbedding 在配置未就绪或文本为空时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:37"
+  },
+  {
+    "fact": "CloudEmbeddingService.generateEmbeddingOrThrow 在配置不完整或文本为空时抛 CloudEmbeddingException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:51"
+  },
+  {
+    "fact": "CloudEmbeddingService 的请求体为 {model, input} 的 JSON，请求头带 Authorization: Bearer apiKey。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:72"
+  },
+  {
+    "fact": "CloudEmbeddingService 的 HTTP 超时为连接 30 秒、读 60 秒、写 60 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:31"
+  },
+  {
+    "fact": "CloudEmbeddingService.completeEmbeddingsEndpoint 对末尾带 # 的 endpoint 直接去掉 #。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:172"
+  },
+  {
+    "fact": "CloudEmbeddingService.completeEmbeddingsEndpoint 对路径为空的 endpoint 补 /v1/embeddings，对以 /v1 结尾的补 /embeddings。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:181"
+  },
+  {
+    "fact": "CloudEmbeddingService.parseEmbedding 把 data[0].embedding 解析为 FloatArray 向量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:120"
+  },
+  {
+    "fact": "CloudEmbeddingService.truncate 默认把文本转单行并截断到 200 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt:166"
+  },
+  {
+    "fact": "TermuxCommandResultService 继承 Android 已废弃的 IntentService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:16"
+  },
+  {
+    "fact": "TermuxCommandResultService.callbackMap 以 executionId 为键保存命令结果回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:22"
+  },
+  {
+    "fact": "TermuxCommandResultService.registerCallback 注册指定 executionId 的结果回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:29"
+  },
+  {
+    "fact": "TermuxCommandResultService.removeCallback 移除指定 executionId 的结果回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:38"
+  },
+  {
+    "fact": "TermuxCommandResultService.onHandleIntent 从 intent 取 execution_id，-1 视为无效 ID 直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:50"
+  },
+  {
+    "fact": "TermuxCommandResultService 从名为 result 的 Bundle 解析 stdout、stderr、exitCode、errmsg。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:66"
+  },
+  {
+    "fact": "TermuxCommandResultService 以 exitCode == 0 判定命令执行成功。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:75"
+  },
+  {
+    "fact": "TermuxCommandResultService 在回调执行后移除该回调，避免重复调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt:83"
+  },
+  {
+    "fact": "FloatingMode 枚举共 6 个值：WINDOW、BALL、VOICE_BALL、FULLSCREEN、RESULT_DISPLAY、SCREEN_OCR。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:3"
+  }
+]

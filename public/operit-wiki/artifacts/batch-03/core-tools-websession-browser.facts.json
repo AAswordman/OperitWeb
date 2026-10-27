@@ -1,0 +1,362 @@
+[
+  {
+    "fact": "WebSessionBrowserState 是 Compose 不可变 UI 状态，描述单标签页：currentUrl、pageTitle、isLoading、canGoBack/canGoForward、ssl 相关字段、桌面模式、下载汇总与弹窗状态",
+    "kind": "state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHostState.kt:43",
+    "symbol": "WebSessionBrowserState"
+  },
+  {
+    "fact": "WebSessionBrowserHostState 汇聚整个浏览器宿主的 UI 状态：sheet 路由（sheetRoute）、URL 编辑态（urlEdit）、外部打开确认（externalOpen）、下载 UI 状态（downloadsUi）、视口尺寸（viewportSize）",
+    "kind": "state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHostState.kt:105",
+    "symbol": "WebSessionBrowserHostState"
+  },
+  {
+    "fact": "WebSessionBookmark 是 @Serializable 数据类，只存 url/title/createdAt 三个字段，用于持久化书签",
+    "kind": "model",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHostState.kt:120",
+    "symbol": "WebSessionBookmark"
+  },
+  {
+    "fact": "WebSessionHistoryEntry 是 @Serializable 数据类，只存 url/title/visitedAt，用于持久化浏览历史",
+    "kind": "model",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHostState.kt:128",
+    "symbol": "WebSessionHistoryEntry"
+  },
+  {
+    "fact": "WebSessionWebViewHost.attachContainer 把挂载器绑定到指定 FrameLayout 容器",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionWebViewHost.kt:26",
+    "symbol": "attachContainer"
+  },
+  {
+    "fact": "WebSessionWebViewHost.setActiveWebView 切换当前活跃 WebView 并设置其逻辑视口宽高",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionWebViewHost.kt:42",
+    "symbol": "setActiveWebView"
+  },
+  {
+    "fact": "WebSessionWebViewHost.setViewportSize 单独设置逻辑视口尺寸；WebView 按 density-independent pixels 布局，把请求的 CSS 视口乘以 density 得到物理像素布局尺寸，再用 scale/translation 等比缩放居中适配手机屏幕",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionWebViewHost.kt:49",
+    "symbol": "setViewportSize"
+  },
+  {
+    "fact": "WebSessionPermissionRequestCoordinator 用 ConcurrentHashMap<String, PendingRequest> 按请求 id 管理待处理权限请求",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionPermissionRequestActivity.kt:21",
+    "symbol": "WebSessionPermissionRequestCoordinator"
+  },
+  {
+    "fact": "权限请求超时为 30 秒（REQUEST_TIMEOUT_MS = 30_000L），用 withTimeoutOrNull 等待页面授权结果",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionPermissionRequestActivity.kt:21",
+    "symbol": "REQUEST_TIMEOUT_MS"
+  },
+  {
+    "fact": "权限请求超时或失败时全部按拒绝处理，不会自动放行",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionPermissionRequestActivity.kt:57",
+    "symbol": "withTimeoutOrNull"
+  },
+  {
+    "fact": "权限请求走透明 Activity + ActivityResultContracts.RequestMultiplePermissions 系统弹窗；Activity onDestroy 时若结果未交付则取消挂起的 CompletableDeferred",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionPermissionRequestActivity.kt:113",
+    "symbol": "WebSessionPermissionRequestActivity"
+  },
+  {
+    "fact": "WebSessionHistoryStore 是单例（double-checked），用 DataStore web_session_browser_store 存 JSON 持久化书签、历史与桌面模式偏好",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:28",
+    "symbol": "WebSessionHistoryStore"
+  },
+  {
+    "fact": "历史记录上限 500 条（MAX_HISTORY_ENTRIES = 500），超限时保留最新 500 条",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:28",
+    "symbol": "MAX_HISTORY_ENTRIES"
+  },
+  {
+    "fact": "recordVisit 归一化 URL 后记录访问；isReload 时只更新标题不新增条目",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:63",
+    "symbol": "recordVisit"
+  },
+  {
+    "fact": "normalizeUrl 做归一化：小写 scheme/host、去默认端口；过滤掉 about:/blob:/data: 等伪协议，非 http(s) 直接丢弃",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:205",
+    "symbol": "normalizeUrl"
+  },
+  {
+    "fact": "toggleBookmark 切换书签收藏状态；updateTitle 同步更新同 URL 的书签与历史条目标题",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:161",
+    "symbol": "toggleBookmark"
+  },
+  {
+    "fact": "桌面模式偏好默认 true，持久化在 DataStore 中",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionHistoryStore.kt:28",
+    "symbol": "WebSessionHistoryStore"
+  },
+  {
+    "fact": "WebSessionBrowserHost 是悬浮窗宿主：展开时 TYPE_APPLICATION_OVERLAY 全屏，收起时变为 1x1 像素窗口 + 一个 40dp 可拖动小球指示器（WebSessionMinimizedIndicator）",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHost.kt:538",
+    "symbol": "TYPE_APPLICATION_OVERLAY"
+  },
+  {
+    "fact": "收起时子视图仍按全屏尺寸测量（DeceptiveMinimizedLayout），但宿主自身只占 1x1 像素：页面保持渲染与可交互，悬浮层不可见",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHost.kt:538",
+    "symbol": "TYPE_APPLICATION_OVERLAY"
+  },
+  {
+    "fact": "有外部打开确认待处理时，最小化窗口扩大为 248x86 以容纳确认 UI",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHost.kt:769",
+    "symbol": "dp(248)"
+  },
+  {
+    "fact": "WebSessionBrowserHost.Callbacks 接口暴露 35 个回调，是宿主与会话管理层之间的事件总线",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHost.kt:54",
+    "symbol": "Callbacks"
+  },
+  {
+    "fact": "文本选择覆盖层：页面长按选词后，宿主绘制高亮与起止手柄，并提供复制/全选/取消按钮，靠 window.__operitTextSelection JS 桥与页面脚本通信",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/WebSessionBrowserHost.kt:448",
+    "symbol": "__operitTextSelection"
+  },
+  {
+    "fact": "configureWebView 开启 JS、DOM storage、多窗口、safeBrowsing、混合内容兼容模式，并接受 cookie 与第三方 cookie",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:77",
+    "symbol": "StandardBrowserSessionTools.configureWebView"
+  },
+  {
+    "fact": "注入 3 个 JS bridge：BrowserWebDownloadBridge（downloadBase64 下载）、BrowserAsyncBridge（resolve/reject 异步返回值）、BrowserTextSelectionBridge（文本选择）",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:40",
+    "symbol": "BrowserWebDownloadBridge"
+  },
+  {
+    "fact": "WebChromeClient.onCreateWindow 新建 popup 会话；JS alert/confirm/prompt 全部被拦截为 PendingDialog 挂起，不自动处理",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:150",
+    "symbol": "onCreateWindow"
+  },
+  {
+    "fact": "onReceivedSslError 直接 handler.proceed() 放行，仅把 session.hasSslError 标为 true 并在 UI 上显示 SSL 徽章：SSL 错误无条件忽略",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:380",
+    "symbol": "onReceivedSslError"
+  },
+  {
+    "fact": "shouldOverrideUrlLoading：blob: URL 注入 blob 下载脚本、data: URL 走内联下载、intent: 走外部打开确认、其他非 http(s) 进外部打开确认队列",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:339",
+    "symbol": "shouldOverrideUrlLoading"
+  },
+  {
+    "fact": "以 .user.js 结尾的链接触发 userscript 安装流程",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:339",
+    "symbol": "shouldOverrideUrlLoading"
+  },
+  {
+    "fact": "外部打开走 PendingExternalOpenRequest 需用户确认；防 intent 劫持：intent 被 sanitized，component/selector 置空",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:1050",
+    "symbol": "PendingExternalOpenRequest"
+  },
+  {
+    "fact": "shouldInterceptRequest 记录网络请求到事件日志；静态资源（按 Accept 头/扩展名判别）不记录 body",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:588",
+    "symbol": "isStaticRequest"
+  },
+  {
+    "fact": "onRenderProcessGone 时清理会话状态（清快照、取消挂起弹窗与文件选择器、通知状态变更）、关闭会话并 Toast 提示渲染进程崩溃",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:397",
+    "symbol": "onRenderProcessGone"
+  },
+  {
+    "fact": "桌面模式默认开启：UA 伪装为 Chrome/Windows 桌面版（DESKTOP_CHROME_MAJOR_VERSION = 124），并补 UserAgentMetadata 的 brand/platform/x86/64 位信息；视口默认为 1280x720",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserWebViewSupport.kt:1280",
+    "symbol": "setDesktopModeEnabled"
+  },
+  {
+    "fact": "BrowserSnapshot 数据类含 generation/yaml/nodesByRef 三字段：yaml 是可访问性树文本，nodesByRef 是 ref 到节点的映射",
+    "kind": "model",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:19",
+    "symbol": "BrowserSnapshot"
+  },
+  {
+    "fact": "快照是注入 JS 做的可访问性树转 YAML，节点用 aria-ref 引用（e1、e2…），含 role/name/state tokens",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:649",
+    "symbol": "captureSnapshotModel"
+  },
+  {
+    "fact": "locatorExpressionForRef 把快照 ref 转成 Playwright 表达式：role/name 明确时用 page.getByRole，否则回退为 page.locator('[aria-ref=...]')",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:1159",
+    "symbol": "locatorExpressionForRef"
+  },
+  {
+    "fact": "buildBrowserResponse 组装返回 AI 的 Markdown：Ran Playwright code/Open tabs/Page/Snapshot/New console messages/Modal state/Downloads/Result/Error 各节",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:100",
+    "symbol": "buildBrowserResponse"
+  },
+  {
+    "fact": "settleBrowserAction 做动作结算：等待导航完成/文档 ready/弹窗出现/文件选择器/下载触发，超时则 timedOut=true",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:450",
+    "symbol": "settleBrowserAction"
+  },
+  {
+    "fact": "BrowserConsoleEntry/BrowserNetworkRequestEntry 事件日志上限 500 条（MAX_EVENT_LOG_ENTRIES），超限删最旧",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:33",
+    "symbol": "BrowserConsoleEntry"
+  },
+  {
+    "fact": "renderModalState 把当前挂起的 PendingDialog（alert/confirm/prompt/权限请求/文件选择）渲染给 AI",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserToolSupport.kt:286",
+    "symbol": "renderModalState"
+  },
+  {
+    "fact": "runPlaywrightLikeCode 在页面内跑一段 Playwright 风格代码：提供受限的 page 对象（title/url/evaluate/waitForTimeout/locator/getByRole/keyboard.press），page.goto/goBack/setViewportSize 被显式禁用并报错指引改用 browser_* 工具",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2638",
+    "symbol": "runPlaywrightLikeCode"
+  },
+  {
+    "fact": "evaluateJavascriptAsync 用 UUID callId + pendingAsyncJsCalls（ConcurrentHashMap）把 evaluateJavascript 的回调转成可等待的异步结果",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2033",
+    "symbol": "evaluateJavascriptAsync"
+  },
+  {
+    "fact": "typeIntoElementByRef 支持 submit（输完回车）与 slowly（35ms 间隔逐字输入）两种模式",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2260",
+    "symbol": "typeIntoElementByRef"
+  },
+  {
+    "fact": "fillFormFields 按字段类型分发：textbox/slider 走 completeFill，checkbox/radio 走 setChecked，combobox/select 走 selectOptions",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2146",
+    "symbol": "fillFormFields"
+  },
+  {
+    "fact": "takeScreenshot 支持视口/整页/元素三种截图，输出到 cacheDir/browser-output 目录，JPEG 质量 92",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2340",
+    "symbol": "takeScreenshot"
+  },
+  {
+    "fact": "整页截图通过临时放大 WebView 布局尺寸后绘制，布局宽高上限 32768px（MAX_SCREENSHOT_DIMENSION_PX），超限抛异常",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:2404",
+    "symbol": "captureFullPageBitmap"
+  },
+  {
+    "fact": "createDownloadListener 做下载三路分发：blob: 走注入 blob 下载脚本、data: 走内联下载、http(s) 走浏览器下载管理器",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:108",
+    "symbol": "createDownloadListener"
+  },
+  {
+    "fact": "injectDownloadHelper 注入点击拦截脚本：拦截 blob:/data: 链接的点击，用 fetch+FileReader 转 base64 后经 OperitWebDownloadBridge.downloadBase64 交给原生下载",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:884",
+    "symbol": "injectDownloadHelper"
+  },
+  {
+    "fact": "handleInlineDownload 处理 data:/blob: 内联下载：base64 解码后写 .part 临时文件；sanitizeFileName 过滤 \\/:*?\"<>| 为下划线",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:1031",
+    "symbol": "handleInlineDownload"
+  },
+  {
+    "fact": "resolveInlineDownloadFileName：无文件名时按 mimeType 猜扩展名（image/audio/video/pdf/json/xml/csv/zip/html/js/txt），否则用 .bin",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:1092",
+    "symbol": "resolveInlineDownloadFileName"
+  },
+  {
+    "fact": "BrowserDownloadManager 是单例（private constructor + getInstance），任务状态机 QUEUED→CONNECTING→DOWNLOADING→PAUSED/COMPLETED/FAILED/CANCELED",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:214",
+    "symbol": "BrowserDownloadManager"
+  },
+  {
+    "fact": "HTTP 下载先经 HttpMultiPartDownloader.probeDownload 探测：仅当 acceptRanges 且 contentLength>0 时才多线程断点续传，默认 4 线程（DEFAULT_BROWSER_DOWNLOAD_THREADS = 4）",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:38",
+    "symbol": "DEFAULT_BROWSER_DOWNLOAD_THREADS"
+  },
+  {
+    "fact": "多线程下载分段写入 .part.N 临时文件，完成后合并；下载目录为系统公共 Downloads，重名自动加 (n) 后缀",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:562",
+    "symbol": "HttpMultiPartDownloader.probeDownload"
+  },
+  {
+    "fact": "下载任务状态持久化到 browser_download_tasks.json（500ms 节流）；重启后未完成的 HTTP 任务置 PAUSED、内联任务置 FAILED",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:214",
+    "symbol": "BrowserDownloadManager"
+  },
+  {
+    "fact": "下载请求携带页面的 UA、Cookie、Referer 头；下载完成触发 MediaScannerConnection.scanFile 媒体扫描",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:1077",
+    "symbol": "startBrowserManagedDownload"
+  },
+  {
+    "fact": "打开已下载文件经 FileProvider 授权，避免 file:// URI 暴露",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserDownloadSupport.kt:1227",
+    "symbol": "openDownloadedFile"
+  },
+  {
+    "fact": "browser_* 共 22 个工具（browser_click/close/close_all/console_messages/drag/evaluate/file_upload/fill_form/handle_dialog/hover/navigate/navigate_back/network_requests/press_key/resize/run_code/select_option/snapshot/take_screenshot/tabs/type/wait_for），全部经 ToolGetter.getBrowserSessionTools(context).invoke(tool) 分发到 StandardBrowserSessionTools",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1230",
+    "symbol": "browser_click"
+  },
+  {
+    "fact": "getSession 优先用 sessionId 参数，否则用 buildPageRegistry 的 activeSessionId 找当前活跃会话",
+    "kind": "method",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:1132",
+    "symbol": "getSession"
+  },
+  {
+    "fact": "标签页顺序由 sessionOrder（LinkedHashSet 风格的有序集合 + sessionOrderLock 锁）维护，buildPageRegistry 组装 orderedSessionIds/activeSessionId/overlayExpanded/各会话快照",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/browser/BrowserPageExecutionSupport.kt:1915",
+    "symbol": "buildPageRegistry"
+  },
+  {
+    "fact": "默认超时 DEFAULT_TIMEOUT_MS = 10_000L；事件日志上限 MAX_EVENT_LOG_ENTRIES = 500；桌面视口默认 1280x720",
+    "kind": "config",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:76",
+    "symbol": "DEFAULT_TIMEOUT_MS"
+  },
+  {
+    "fact": "会话注册表 sessions 是 ConcurrentHashMap，pendingAsyncJsCalls 也是 ConcurrentHashMap，支持多线程并发访问",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:96",
+    "symbol": "sessions"
+  }
+]

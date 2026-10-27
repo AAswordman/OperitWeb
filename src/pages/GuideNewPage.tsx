@@ -187,6 +187,7 @@ const GuideNewPage: React.FC<{ darkMode: boolean; language: 'zh' | 'en'; basePat
     { key: 'guide-home', label: <Link to={SHARED_PATHS.guides}>{language === 'zh' ? '选择教程版本' : 'Choose generation'}</Link> },
     { key: 'reference', label: <Link to={`${PRODUCTS.v1.guidePath}/reference`}>{language === 'zh' ? '一代参考手册' : 'Generation-one reference'}</Link> },
     { key: 'welcome', label: <Link to={basePath}>{labels.welcome}</Link> },
+    { key: 'source-wiki', label: <Link to="/v1/guide/wiki">{language === 'zh' ? '源码知识库' : 'Source knowledge base'}</Link> },
     {
       key: 'beginner',
       label: labels.beginner,

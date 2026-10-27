@@ -1,0 +1,11 @@
+{
+  "id": "integrations-webchat",
+  "issue": 80,
+  "status": "approved",
+  "source_repo": "operit",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "refs_valid": "153；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "critic": "critic3-verified-6-items-fixed-by-parent",
+  "approved_by_comment_id": 5927192127,
+  "updated": "2026-10-02"
+}

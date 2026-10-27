@@ -1,0 +1,170 @@
+[
+  {
+    "severity": "high",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt",
+    "line": 712,
+    "description": "LocalWebServer 继承 NanoHTTPD(port)（构造未指定 bind 地址，NanoHTTPD 默认监听全网卡），/api/proxy 是无鉴权开放代理：任意能连到 8093 端口的页面或设备可让手机代取任意 http/https URL，且请求会自动附上 WebView CookieManager 里目标站点的 Cookie。攻击面 = SSRF + 会话 Cookie 外发。",
+    "evidence": "        val requestBuilder = Request.Builder().url(targetUrl).method(session.method.name, requestBody)\n        session.headers.forEach { (name, value) ->\n            val lower = name.lowercase(Locale.US)\n            if (lower in setOf(\"host\", \"connection\", \"content-length\", \"accept-encoding\")) return@forEach\n            requestBuilder.addHeader(name, value)\n        }\n\n        val cookie = CookieManager.getInstance().getCookie(targetUrl)\n        if (!cookie.isNullOrBlank()) {\n            requestBuilder.addHeader(\"Cookie\", cookie)\n        }\n) : NanoHTTPD(port) {"
+  },
+  {
+    "severity": "high",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt",
+    "line": 163,
+    "description": "configureWebView 对渲染 AI 生成 HTML 的预览 WebView 开启 JavaScript、放行混合内容，并同时打开 allowFileAccess/allowFileAccessFromFileURLs/allowUniversalAccessFromFileURLs。AI 输出的页面可直接执行 JS，叠加 file:// 跨域文件访问存在存储型 XSS 及读取本地文件的风险。",
+    "evidence": "            settings.apply {\n                // JavaScript支持\n                javaScriptEnabled = true\n                javaScriptCanOpenWindowsAutomatically = true\n\n                // 跨域和混合内容支持\n                mixedContentMode = WebSettings.MIXED_CONTENT_ALWAYS_ALLOW\n                allowContentAccess = true\n                allowFileAccess = true\n                allowFileAccessFromFileURLs = true\n                allowUniversalAccessFromFileURLs = true"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt",
+    "line": 362,
+    "description": "onPermissionRequest 对页面请求的权限直接 grant(request.resources)，不做任何二次确认或按类型过滤，预览页面可静默获得摄像头/麦克风等权限。",
+    "evidence": "            // 处理权限请求\n            override fun onPermissionRequest(request: android.webkit.PermissionRequest?) {\n                request?.grant(request.resources)\n            }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt",
+    "line": 276,
+    "description": "onReceivedSslError 弹警告对话框让用户选择“继续”，用户一点即 handler.proceed() 放行证书错误（过期/自签/域名不匹配），中间人攻击时一次误点即失去 TLS 保护。",
+    "evidence": "                builder.setPositiveButton(context.getString(R.string.continue_action)) { _, _ ->\n                    handler?.proceed()\n                }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt",
+    "line": 817,
+    "description": "addCorsHeaders 默认下发 Access-Control-Allow-Origin: *（代理请求则反射任意请求 origin），同时下发 Access-Control-Allow-Credentials: true。该组合违反 Fetch 规范（浏览器会拒绝 * 与 credentials 同用），反射任意 origin 则把凭据暴露给任意站点。",
+    "evidence": "    private fun Response.addCorsHeaders(origin: String? = null): Response {\n        val allowOrigin = origin ?: \"*\"\n        this.addHeader(\"Access-Control-Allow-Origin\", allowOrigin)\n        this.addHeader(\"Access-Control-Allow-Methods\", \"GET, POST, PUT, DELETE, OPTIONS, HEAD\")\n        this.addHeader(\"Access-Control-Allow-Headers\", \"X-Requested-With, Content-Type, Authorization, Origin, Accept\")\n        this.addHeader(\"Access-Control-Max-Age\", \"3600\")\n        this.addHeader(\"Access-Control-Allow-Credentials\", \"true\")"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt",
+    "line": 549,
+    "description": "版本备份静默跳过所有二进制文件：refreshPathInStateProvider 遇到非文本文件名直接 return。回滚后文本文件回到旧版、二进制文件留在新版，工作区处于“半回滚”的不一致状态，且 UI 没有任何提示。",
+    "evidence": "        val fileName = relativeTarget.substringAfterLast('/')\n        if (!FileUtils.isTextBasedFileName(fileName)) {\n            return\n        }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/GitIgnoreFilter.kt",
+    "line": 170,
+    "description": "GitIgnoreFilter 明确不支持 ! 否定规则（直接返回 false）。用户在 .gitignore 里用 ! 放行的文件仍会被当作忽略：文件建议面板搜不到它，变更追踪也会漏掉它，且无任何告警。",
+    "evidence": "        // 处理否定规则（以 ! 开头）\n        if (pattern.startsWith(\"!\")) {\n            return false // 暂不支持否定规则\n        }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceChangeTracker.kt",
+    "line": 64,
+    "description": "WorkspaceChangeTracker.updateOwner 在 workspaceEnv 非空时直接移除绑定：所有 SAF（repo:）工作区完全没有文件变更追踪，AI 收不到 workspace attachment 变更摘要，该能力对外部目录静默缺失。",
+    "evidence": "        if (chatId.isNullOrBlank() || workspacePath.isNullOrBlank() || !workspaceEnv.isNullOrBlank()) {\n            ownerBindings.remove(ownerId)\n            refreshMonitors()\n            return\n        }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt",
+    "line": 1173,
+    "description": "关闭确认框的“保存”按钮对 saveFile 做 fire-and-forget 调用：saveFile 内部是 coroutineScope.launch 异步写文件，无 await、无错误回传。按钮回调却紧接着就清掉 unsavedFiles 并关标签——write_file 一旦失败，用户的修改会静默丢失。",
+    "evidence": "                    confirmButton = {\n                        TextButton(\n                            onClick = {\n                                saveFile(file)\n                                unsavedFiles = unsavedFiles - file.path\n                                confirmCloseFile(fileToCloseIndex)\n                            }\n                        ) {"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt",
+    "line": 678,
+    "description": "makeRelativePath 用纯字符串 startsWith 判断根目录，没有分隔符边界：workspacePath=/a/b 时，/a/bc/d 会被算成相对路径 c/d。备份/恢复可能把工作区之外的文件算进来或写错位置。",
+    "evidence": "    private fun makeRelativePath(root: String, fullPath: String): String? {\n        val normalizedRoot = root.trimEnd('/')\n        if (normalizedRoot.isBlank()) return null\n        if (!fullPath.startsWith(normalizedRoot)) return null\n        return fullPath.removePrefix(normalizedRoot).trimStart('/').ifBlank { \"\" }\n    }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceManager.kt",
+    "line": 199,
+    "description": "LocalWebServer 是进程级单例（getInstance 按 ServerType 缓存），但启停逻辑在每个聊天的 WorkspaceManager 里：切到 server.enabled=false 的聊天（或 SAF 聊天，其配置恒为默认关闭）会执行 workspaceServer.stop()，把其他聊天正在用的预览服务停掉。",
+    "evidence": "                if (workspaceConfig.server.enabled) {\n                    if (!workspaceServer.isRunning()) {\n                        workspaceServer.start()\n                    }\n                    workspaceServer.updateChatWorkspace(workspacePath, workspaceEnv)\n                } else if (workspaceServer.isRunning()) {\n                    workspaceServer.stop()\n                }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceConfig.kt",
+    "line": 100,
+    "description": "readConfig 吞掉所有解析异常并回退 getDefaultWebConfig()，而默认 web 配置是 server.enabled=true + autoStart=true。一个写坏的 .operit/config.json 会静默启动本地 HTTP 服务，用户无从察觉配置已失效。",
+    "evidence": "        return try {\n            val content = configFile.readText()\n            json.decodeFromString<WorkspaceConfig>(content)\n        } catch (e: Exception) {\n            AppLogger.e(TAG, \"Failed to parse config file: ${e.message}\", e)\n            getDefaultWebConfig()\n        }"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt",
+    "line": 355,
+    "description": "FileManager.deleteFile 直接调 delete_file 且 recursive=true，管理模式长按菜单点“删除”即执行，无二次确认、无回收站，误删目录不可恢复。",
+    "evidence": "                val tool = AITool(\n                    \"delete_file\",\n                    withEnvParams(listOf(ToolParameter(\"path\", filePath), ToolParameter(\"recursive\", \"true\")))\n                )"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt",
+    "line": 589,
+    "description": "injectErudaIntoHtml 把 Eruda 调试器从公网 CDN（cdn.jsdelivr.net）注入到每一个预览的 HTML 页面：离线时预览注入失败，且 CDN 被投毒会直接污染所有工作区预览页。建议随 APK 打包或至少做完整性校验。",
+    "evidence": "                script.src = 'https://cdn.jsdelivr.net/npm/eruda';"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/LocalWebServer.kt",
+    "line": 454,
+    "description": "serveWorkspaceFileViaTool 把整个文件 Base64 解码进内存再服务，大文件（视频/安装包）会造成明显的内存峰值。可考虑流式解码或直接走工具层的流式读取。",
+    "evidence": "            val data = result.result as BinaryFileContentData\n            val base64Content = data.contentBase64\n            val bytes = Base64.decode(base64Content, Base64.DEFAULT)"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceBackupManager.kt",
+    "line": 144,
+    "description": "WorkspaceToolHookSession 的 onToolExecutionStarted/onToolExecutionResult 用 runBlocking(Dispatchers.IO) 桥接挂起函数，会阻塞调用它的 AI 工具执行线程。若工具调度器线程池小，大量文件变更时可能拖慢整条工具链。",
+    "evidence": "            runBlocking(Dispatchers.IO) {\n                if (initialized) return@runBlocking"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceReadOnlyDocumentPreview.kt",
+    "line": 374,
+    "description": "文档预览缓存文件名用 fileInfo.path.hashCode()，32 位哈希存在碰撞可能，两个不同路径可能命中同一缓存文件而串预览；且 cacheDir 下的缓存从不清理，长期占用空间。",
+    "evidence": "        val previewFile = File(\n            previewDir,\n            \"${fileInfo.path.hashCode()}_${fileInfo.lastModified}.$extension\"\n        )"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/WorkspaceImagePreview.kt",
+    "line": 71,
+    "description": "WorkspaceImagePreview 把 Coil 的内存与磁盘缓存全部禁用，每次打开同一张图片都重新经本地服务器加载一次。图片预览页内反复切换时可考虑保留内存缓存。",
+    "evidence": "                        ImageRequest.Builder(context)\n                            .data(previewUri)\n                            .memoryCachePolicy(CachePolicy.DISABLED)\n                            .diskCachePolicy(CachePolicy.DISABLED)\n                            .crossfade(false)\n                            .build()"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/FileManager.kt",
+    "line": 223,
+    "description": "FileBrowser.loadDirectory 吞掉全部异常且失败时“不改变任何状态”，用户停留在旧目录而得不到任何失败提示（无 toast、无空态说明），容易误以为目录就是空的。",
+    "evidence": "                } else {\n                    // 加载失败，不改变任何状态，用户停留在当前页面\n                }\n            } catch (e: Exception) {\n                // 发生异常，同样不改变状态\n            } finally {"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/workspace/process/WorkspaceRuleFileReader.kt",
+    "line": 13,
+    "description": "WorkspaceRuleFileReader 只读工作区根目录的 AGENT.md/AGENTS.md，子目录里的规则文件被忽略。单体仓库（monorepo）多包场景下子包的规则不会生效。",
+    "evidence": "    private val WORKSPACE_RULE_FILE_NAMES = listOf(\"AGENT.md\", \"AGENTS.md\")"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/webview/WebViewHandler.kt",
+    "line": 101,
+    "description": "downloadBlob 对下载大小无限制、无重名确认，FileOutputStream 直接覆盖同名文件。恶意或异常页面可触发超大下载占满存储，或覆盖用户已有的同名文件。",
+    "evidence": "                // 创建文件\n                val file = File(downloadsDir, cleanFileName)\n                FileOutputStream(file).use { it.write(bytes) }"
+  }
+]

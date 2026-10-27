@@ -1,0 +1,12 @@
+{
+  "critic": "",
+  "id": "core-chat-runtime",
+  "issue": 26,
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "聊天运行时（消息管理/Hook/插件）",
+  "refs_valid": "109/109 引用行号真实存在（critic 逐条核引用复验通过），lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "approved_by_comment_id": 5925857538,
+  "updated": "2026-10-02"
+}

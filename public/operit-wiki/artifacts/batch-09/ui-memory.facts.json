@@ -1,0 +1,842 @@
+[
+ {
+  "fact": "`Graph` 是只含 `nodes` 与 `edges` 两个列表的数据类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:5"
+ },
+ {
+  "fact": "`Node.id` 为 String 类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:11"
+ },
+ {
+  "fact": "`Node.label` 为 String 类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:12"
+ },
+ {
+  "fact": "`Node.color` 默认 `Color.LightGray`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:13"
+ },
+ {
+  "fact": "`Node.metadata` 默认为空 Map",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:14"
+ },
+ {
+  "fact": "`Edge.id` 为 Long 类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:18"
+ },
+ {
+  "fact": "`Edge` 通过 `sourceId` 与 `targetId` 指向两端节点",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:19"
+ },
+ {
+  "fact": "`Edge.label` 可空，默认为 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:21"
+ },
+ {
+  "fact": "`Edge.weight` 默认 1.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:22"
+ },
+ {
+  "fact": "`Edge.isCrossFolderLink` 默认 false，用于标记跨文件夹连接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:24"
+ },
+ {
+  "fact": "`ToolTestDialog` 接收 `onDismiss`、`onExecute`、`result`、`isLoading` 四个参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt:32"
+ },
+ {
+  "fact": "对话框内的输入框绑定本地 `query` 状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt:38"
+ },
+ {
+  "fact": "`isLoading` 为 true 时显示 `CircularProgressIndicator`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt:53"
+ },
+ {
+  "fact": "`result` 非空时展示在最大高度 200.dp 的可滚动区域内",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt:62"
+ },
+ {
+  "fact": "确认按钮调用 `onExecute(query)`，加载中禁用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/ToolTestDialog.kt:72"
+ },
+ {
+  "fact": "`DocumentViewDialog` 接收标题、分块列表、分块编辑态与搜索、保存、删除回调共 12 个参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:38"
+ },
+ {
+  "fact": "对话框高度占屏幕 0.85",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:55"
+ },
+ {
+  "fact": "标题区包含可编辑的标题输入框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:58"
+ },
+ {
+  "fact": "有文件夹路径时在标题下方展示路径",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:66"
+ },
+ {
+  "fact": "文档内搜索框为单行，IME 动作为 `ImeAction.Search`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:91"
+ },
+ {
+  "fact": "点击搜索图标或按搜索键都会触发 `onPerformSearch` 并收起键盘",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:86"
+ },
+ {
+  "fact": "无分块且有搜索词时显示无内容提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:101"
+ },
+ {
+  "fact": "分块列表以 `chunk.id` 为 key 渲染",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:108"
+ },
+ {
+  "fact": "每个分块是独立的 `OutlinedTextField`，标签带序号",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:110"
+ },
+ {
+  "fact": "分块内容变化经 `onChunkChange` 回传分块 id 与新内容",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:112"
+ },
+ {
+  "fact": "底部有保存全部与红色删除文档两个按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/DocumentViewDialog.kt:133"
+ },
+ {
+  "fact": "`EditMemoryDialog` 的 `onSave` 回调携带 9 个字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:30"
+ },
+ {
+  "fact": "新建时 `contentType` 默认 `text/plain`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:46"
+ },
+ {
+  "fact": "新建时 `source` 默认 `user_input`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:47"
+ },
+ {
+  "fact": "新建时 `credibility` 默认 0.8f，`importance` 默认 0.5f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:48"
+ },
+ {
+  "fact": "新建时文件夹默认取 `memory_uncategorized` 字符串资源",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:45"
+ },
+ {
+  "fact": "文档节点（`isDocumentNode`）时内容输入框禁用编辑",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:112"
+ },
+ {
+  "fact": "对话框禁用平台默认宽度",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:62"
+ },
+ {
+  "fact": "对话框最大宽 560.dp、高 0.9，并带 `imePadding`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:73"
+ },
+ {
+  "fact": "保存按钮点击时调用 `onSave`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:164"
+ },
+ {
+  "fact": "保存后自动 `onDismiss` 关闭对话框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:175"
+ },
+ {
+  "fact": "`FolderSelector` 是只读的 `ExposedDropdownMenuBox`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:193"
+ },
+ {
+  "fact": "`TagsEditor` 用 `FlowRow` 展示标签",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:234"
+ },
+ {
+  "fact": "标签以 `InputChip` 展示，带删除按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:245"
+ },
+ {
+  "fact": "添加标签时去重，已存在的标签不再添加",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:269"
+ },
+ {
+  "fact": "可信度与重要性滑杆范围均为 0f..1f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/EditMemoryDialog.kt:139"
+ },
+ {
+  "fact": "`MemoryInfoDialog` 展示标题、内容、文件夹、uuid、来源、重要性、可信度、创建与更新时间",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:36"
+ },
+ {
+  "fact": "时间格式为 `yyyy-MM-dd HH:mm:ss`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:43"
+ },
+ {
+  "fact": "空文件夹路径显示为未分类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:58"
+ },
+ {
+  "fact": "详情对话框展示记忆的 `uuid`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:59"
+ },
+ {
+  "fact": "`EdgeInfoDialog` 按 `sourceId` 与 `targetId` 查出两端节点的 label",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:105"
+ },
+ {
+  "fact": "边详情对话框展示边的类型与权重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:113"
+ },
+ {
+  "fact": "`EditEdgeDialog` 类型默认 `related`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:146"
+ },
+ {
+  "fact": "边权重输入解析失败时回退 1.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:162"
+ },
+ {
+  "fact": "`LinkMemoryDialog` 默认类型 `related`、权重 `1.0`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:173"
+ },
+ {
+  "fact": "建边时权重解析失败回退 1.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:204"
+ },
+ {
+  "fact": "`BatchDeleteConfirmDialog` 展示待删除的选中数量",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:219"
+ },
+ {
+  "fact": "批量删除确认框有红色警告文案",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemoryDialogs.kt:230"
+ },
+ {
+  "fact": "`MemorySearchSettingsDialog` 接收搜索配置、云配置、维度用量、重建进度等 12 个参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:54"
+ },
+ {
+  "fact": "关键词与标签权重滑杆范围 0.0f..20.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:125"
+ },
+ {
+  "fact": "向量与边权重滑杆范围 0.0f..2.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:139"
+ },
+ {
+  "fact": "自动保存间隔滑杆上下限取自 `MemorySearchSettingsPreferences` 的 MIN/MAX",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:155"
+ },
+ {
+  "fact": "抽取自定义规则是 minLines=4 的多行输入框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:187"
+ },
+ {
+  "fact": "云配置 `endpoint` 初始化时过滤空白字符",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:82"
+ },
+ {
+  "fact": "云 embedding 配置在保存前调 `normalized()`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:100"
+ },
+ {
+  "fact": "重建按钮在重建中禁用（`rebuildEnabled = !isRebuilding`）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:102"
+ },
+ {
+  "fact": "云开关打开时才显示 endpoint、apiKey、model 三个输入框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:214"
+ },
+ {
+  "fact": "`apiKey` 默认 `PasswordVisualTransformation`，可切换明文",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:235"
+ },
+ {
+  "fact": "保存时若云开关开启且 endpoint 非法则阻止保存并显示错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:335"
+ },
+ {
+  "fact": "endpoint 为空时报 blank 错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:501"
+ },
+ {
+  "fact": "endpoint 非 http(s) 开头时报 scheme 错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:504"
+ },
+ {
+  "fact": "endpoint 含多个 URL 时报 multiple 错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:507"
+ },
+ {
+  "fact": "重置按钮恢复 `BALANCED` 模式与 10.0/0.0/0.0/0.4 四项权重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:369"
+ },
+ {
+  "fact": "重置同时恢复默认自动保存间隔与默认抽取规则",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:374"
+ },
+ {
+  "fact": "保存成功后弹 `settingsSavedMessage` Toast",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:359"
+ },
+ {
+  "fact": "重建进度区显示百分比与 processed/total/failed 及阶段文案",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:308"
+ },
+ {
+  "fact": "`stageText` 映射 preparing 等 6 个阶段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:485"
+ },
+ {
+  "fact": "调试工具区提供打开搜索模拟的按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSettingsDialog.kt:324"
+ },
+ {
+  "fact": "`MemorySearchSimulationDialog` 接收 query、isRunning、result、error 与四个回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:28"
+ },
+ {
+  "fact": "对话框高度占屏幕 0.9",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:37"
+ },
+ {
+  "fact": "查询输入框 minLines=3",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:53"
+ },
+ {
+  "fact": "运行时显示 `CircularProgressIndicator`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:58"
+ },
+ {
+  "fact": "错误信息以 error 色展示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:63"
+ },
+ {
+  "fact": "确认按钮在运行中禁用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:78"
+ },
+ {
+  "fact": "`SummaryCard` 展示 scope 计数、四类匹配数、打分/过阈/阈值与五项权重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:94"
+ },
+ {
+  "fact": "`TokensCard` 展示 keywords 与 lexicalTokens",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:153"
+ },
+ {
+  "fact": "`CandidatesCard` 只取前 30 个候选",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:192"
+ },
+ {
+  "fact": "候选按 `passedThreshold` 标记 PASS 或 DROP",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:214"
+ },
+ {
+  "fact": "每个候选展示 keyword、tag、reverseContainment、semantic、edge、total 六项分数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/dialogs/MemorySearchSimulationDialog.kt:222"
+ },
+ {
+  "fact": "`MemoryAppBar` 接收 profile 列表、名称映射、选中 id 与搜索相关回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:49"
+ },
+ {
+  "fact": "搜索框占剩余宽度、高 46.dp",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:75"
+ },
+ {
+  "fact": "搜索提示使用 `memory_search_hint2` 字符串资源",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:72"
+ },
+ {
+  "fact": "query 非空时显示清除按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:84"
+ },
+ {
+  "fact": "设置按钮触发 `onSettingsClick`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:112"
+ },
+ {
+  "fact": "profile 名称最大宽 100.dp，超出省略",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:127"
+ },
+ {
+  "fact": "profile 下拉菜单列出全部 profile",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryAppBar.kt:132"
+ },
+ {
+  "fact": "`FolderExpandedState` 是可序列化的展开状态数据类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:36"
+ },
+ {
+  "fact": "展开状态用 `rememberLocal` 持久化，key 为 `folder_navigator_expanded_state`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:126"
+ },
+ {
+  "fact": "默认展开集合为空，即全部折叠",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:125"
+ },
+ {
+  "fact": "文件夹侧栏宽 250.dp",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:141"
+ },
+ {
+  "fact": "`ProfileSelector` 是记忆空间选择器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:45"
+ },
+ {
+  "fact": "选择器用 `OutlinedButton` 触发宽 218.dp 的 `DropdownMenu`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:61"
+ },
+ {
+  "fact": "记忆内容仍存于以稳定 space id 为键的 ObjectBox 数据库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:41"
+ },
+ {
+  "fact": "全部选项对应空路径",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:228"
+ },
+ {
+  "fact": "`buildFolderTree` 按 `/` 切分扁平路径构建树",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:472"
+ },
+ {
+  "fact": "空白路径在建树时被跳过",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:474"
+ },
+ {
+  "fact": "树渲染用 `animateItem` 300ms tween 动画",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:350"
+ },
+ {
+  "fact": "`FolderItem` 渲染单个文件夹行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:374"
+ },
+ {
+  "fact": "文件夹缩进为 8 + `level`*16 dp",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:421"
+ },
+ {
+  "fact": "展开箭头旋转目标 90 度、动画时长 200ms",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:400"
+ },
+ {
+  "fact": "有子节点且展开时显示 `FolderOpen`，否则显示 `Folder`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:446"
+ },
+ {
+  "fact": "长按文件夹弹出右键菜单",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:353"
+ },
+ {
+  "fact": "右键菜单与重命名/删除对话框不同时显示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:308"
+ },
+ {
+  "fact": "创建文件夹要求输入非空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:571"
+ },
+ {
+  "fact": "重命名要求新路径非空且与当前路径不同",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:604"
+ },
+ {
+  "fact": "删除文件夹确认框有红色警告文案",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/FolderNavigator.kt:644"
+ },
+ {
+  "fact": "`MemorySearchBar` 含文件夹菜单按钮、搜索框、设置按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:89"
+ },
+ {
+  "fact": "profile 列表来自 `memorySpaceListFlow`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:138"
+ },
+ {
+  "fact": "profile 名称经 `getMemorySpaceFlow(profileId).first()` 加载",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:147"
+ },
+ {
+  "fact": "`selectedProfileId` 跟随 `activeProfileId` 同步",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:155"
+ },
+ {
+  "fact": "`viewModel` 以 `selectedProfileId` 为 key，切换记忆空间时重建",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:158"
+ },
+ {
+  "fact": "进入当前屏时重载图谱与文件夹列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:166"
+ },
+ {
+  "fact": "`uiState.message` 触发 Toast 后调 `clearMessage`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:174"
+ },
+ {
+  "fact": "文件选择器限定 text/*、pdf、doc、docx 四类 MIME",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:305"
+ },
+ {
+  "fact": "文本类文件直接读取文本导入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:206"
+ },
+ {
+  "fact": "非文本文件经 `read_file_full` 工具解析后导入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:229"
+ },
+ {
+  "fact": "临时文件在 finally 中删除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:251"
+ },
+ {
+  "fact": "导入时传入 `fileUri.toString()` 作为文件路径",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:212"
+ },
+ {
+  "fact": "框选模式切换按钮调用 `toggleBoxSelectionMode`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:282"
+ },
+ {
+  "fact": "连接模式切换按钮调用 `toggleLinkingMode`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:296"
+ },
+ {
+  "fact": "新建记忆按钮调用 `startEditing(null)`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:320"
+ },
+ {
+  "fact": "`GraphVisualizer` 始终挂载，避免 loading 切换时重建",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:355"
+ },
+ {
+  "fact": "文件夹导航用 `AnimatedVisibility` 左右滑入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:374"
+ },
+ {
+  "fact": "文件夹的选中、重命名、删除、新建、刷新全部委托 ViewModel",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:382"
+ },
+ {
+  "fact": "切换记忆空间时调 `setActiveMemorySpace`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:397"
+ },
+ {
+  "fact": "搜索设置保存后自动重新搜索",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:420"
+ },
+ {
+  "fact": "文档块编辑态用 `mutableStateMapOf` 暂存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:446"
+ },
+ {
+  "fact": "chunks 变化时 `LaunchedEffect` 同步 `chunkStates`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:451"
+ },
+ {
+  "fact": "文档保存仅更新标题变化与内容变化的 chunk",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:470"
+ },
+ {
+  "fact": "节点详情的编辑入口调 `startEditing` 并 `clearSelection`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:501"
+ },
+ {
+  "fact": "连接模式选满 2 个节点时弹出 `LinkMemoryDialog`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:522"
+ },
+ {
+  "fact": "批量删除确认后调 `deleteSelectedNodes`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/MemoryScreen.kt:584"
+ },
+ {
+  "fact": "`MemoryUiState` 是承载全部界面状态的数据类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:33"
+ },
+ {
+  "fact": "init 时加载搜索设置、云配置、维度用量、图谱与文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:106"
+ },
+ {
+  "fact": "`refreshGraph` 按 `selectedFolderPath` 选择全图或文件夹子图",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:113"
+ },
+ {
+  "fact": "`searchMemories` 用 `searchConfig` 的四类权重调 `repository.searchMemories`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:148"
+ },
+ {
+  "fact": "打开搜索设置对话框时重载搜索设置、云配置与维度用量",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:183"
+ },
+ {
+  "fact": "搜索模拟调 `searchMemoriesDebug` 并限定当前文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:233"
+ },
+ {
+  "fact": "`runSearchSimulation` 在协程中执行搜索模拟",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:218"
+ },
+ {
+  "fact": "`saveSearchSettings` 对配置调 `normalized()` 并钳制自动保存间隔",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:271"
+ },
+ {
+  "fact": "设置持久化走 `Dispatchers.IO`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:283"
+ },
+ {
+  "fact": "`rebuildVectorIndex` 在重建中直接返回以防重入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:328"
+ },
+ {
+  "fact": "重建完成后刷新维度用量并提示完成条数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:351"
+ },
+ {
+  "fact": "`loadFolderPaths` 保持选中空串（全部），不自动跳转",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:397"
+ },
+ {
+  "fact": "`selectFolder` 设置选中路径并刷新图谱",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:419"
+ },
+ {
+  "fact": "`moveSelectedMemoriesToFolder` 把 uuid 转为 memory id 后批量移动",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:438"
+ },
+ {
+  "fact": "`selectNode` 连接模式下未在列表则追加节点 id",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:478"
+ },
+ {
+  "fact": "框选模式下点击节点切换其选中态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:486"
+ },
+ {
+  "fact": "文档节点点击时有全局搜索词则按词搜 chunk，否则取全部 chunk",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:498"
+ },
+ {
+  "fact": "打开文档视图时预填 `documentSearchQuery` 为全局搜索词",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:513"
+ },
+ {
+  "fact": "`performSearchInDocument` 空查询时显示全部 chunk",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:547"
+ },
+ {
+  "fact": "`showToolTestDialog` 打开时清空上次结果",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:566"
+ },
+ {
+  "fact": "`testQueryTool` 确保 `query_memory` 工具已注册后执行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:578"
+ },
+ {
+  "fact": "工具测试结果用 Gson pretty printing 格式化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:591"
+ },
+ {
+  "fact": "`updateChunkContent` 更新后刷新 chunk 列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:613"
+ },
+ {
+  "fact": "`importDocument` 导入到当前选中文件夹并刷新图谱与文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:620"
+ },
+ {
+  "fact": "`createMemory` 用当前选中文件夹作为 folderPath",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:644"
+ },
+ {
+  "fact": "`updateMemory` 对文档节点保持原内容不更新",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:661"
+ },
+ {
+  "fact": "空文件夹路径视为 null（未分类）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:686"
+ },
+ {
+  "fact": "`deleteMemory` 后刷新图谱与文件夹并清空选中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:705"
+ },
+ {
+  "fact": "批量删除调 `deleteMemoriesByUuids`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:746"
+ },
+ {
+  "fact": "`deleteSelectedNodes` 在协程中执行批量删除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:734"
+ },
+ {
+  "fact": "`toggleLinkingMode` 进入时清理框选状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:827"
+ },
+ {
+  "fact": "`toggleBoxSelectionMode` 进入时清理连接状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:847"
+ },
+ {
+  "fact": "`linkMemories` 按 uuid 查到记忆后建边并退出连接模式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:875"
+ },
+ {
+  "fact": "`createFolder` 用 `.folder_placeholder` 记忆占位来创建文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:902"
+ },
+ {
+  "fact": "新建文件夹后自动选中该文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:907"
+ },
+ {
+  "fact": "`renameFolder` 后若选中被改名文件夹则切换到新路径",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:927"
+ },
+ {
+  "fact": "`deleteFolder` 后若选中被删文件夹则回到全部",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:956"
+ },
+ {
+  "fact": "`updateEdge` 调 `repository.updateLink` 并清空选中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:798"
+ },
+ {
+  "fact": "`MemoryViewModelFactory` 按 profileId 构造 `MemoryRepository`",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:975"
+ },
+ {
+  "fact": "`GraphVisualizer` 接收 graph、选中态与节点/边点击、框选完成三组回调",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:212"
+ },
+ {
+  "fact": "节点配色按 surface 亮度 0.42 切换深浅两套",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:228"
+ },
+ {
+  "fact": "节点数超 200 时力导向迭代 150 次，否则 300 次",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:402"
+ },
+ {
+  "fact": "增量更新按 changeScore 取 28/46/72 次迭代",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:409"
+ },
+ {
+  "fact": "增量更新保留已有节点位置，避免全图重置抖动",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:309"
+ },
+ {
+  "fact": "排斥力计算用网格空间分区，只算相邻格节点对",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:451"
+ },
+ {
+  "fact": "理想边长 560f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:418"
+ },
+ {
+  "fact": "排斥强度 380000f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:416"
+ },
+ {
+  "fact": "跨文件夹边吸引力系数 0.45、理想长度为 1.35 倍",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:541"
+ },
+ {
+  "fact": "簇按实线边连通分量 BFS 划分，虚线边不参与",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:95"
+ },
+ {
+  "fact": "节点文字 11.5sp、最大宽 280",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:153"
+ },
+ {
+  "fact": "节点内边距横向 14、纵向 4",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:163"
+ },
+ {
+  "fact": "节点视觉缩放钳制 0.15..2.2",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:181"
+ },
+ {
+  "fact": "跨文件夹边用虚线绘制",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1017"
+ },
+ {
+  "fact": "边宽按 weight 缩放，跨文件夹上限 8f、普通边上限 18f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1004"
+ },
+ {
+  "fact": "选中边用 error 色绘制",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1013"
+ },
+ {
+  "fact": "边标签缩放钳制 0.25..2",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1026"
+ },
+ {
+  "fact": "边标签布局结果用缓存复用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1028"
+ },
+ {
+  "fact": "只渲染至少一端在可见区域内的边",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:964"
+ },
+ {
+  "fact": "只渲染可见区域内的节点",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1070"
+ },
+ {
+  "fact": "可见区域向外扩展 1.5 倍参与布局计算",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:296"
+ },
+ {
+  "fact": "框选模式用 `detectDragGestures` 捕获拖拽",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:822"
+ },
+ {
+  "fact": "普通模式用 `detectTransformGestures` 做平移缩放",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:897"
+ },
+ {
+  "fact": "缩放范围钳制 0.2..5",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:899"
+ },
+ {
+  "fact": "节点点击命中外扩 12px（`NODE_HIT_PADDING_PX`）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:918"
+ },
+ {
+  "fact": "边点击用 `distanceToSegment` 小于 20f 判定",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:930"
+ },
+ {
+  "fact": "框选命中用屏幕矩形相交判定",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:845"
+ },
+ {
+  "fact": "选中节点边框用 secondary 色",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1163"
+ },
+ {
+  "fact": "连接候选节点边框用 error 色",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1162"
+ },
+ {
+  "fact": "框选中的节点用 tertiary 色高亮描边",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:1199"
+ },
+ {
+  "fact": "节点布局缓存随节点增删清理，避免无界增长",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:260"
+ },
+ {
+  "fact": "主题变化时清空节点与边标签布局缓存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/GraphVisualizer.kt:274"
+ },
+ {
+  "fact": "搜索结果经 `getGraphForMemories` 转成子图展示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/viewmodel/MemoryViewModel.kt:167"
+ },
+ {
+  "fact": "`Edge` 默认 weight 为 1.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/memory/screens/graph/model/GraphModels.kt:22"
+ }
+]

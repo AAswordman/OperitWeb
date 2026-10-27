@@ -1,0 +1,286 @@
+[
+  {
+    "fact": "AppLogger 是 object 单例，提供与 android.util.Log 同名的 v/d/i/w/e/wtf/println/isLoggable/getStackTraceString 静态 API。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:22"
+  },
+  {
+    "fact": "AppLogger 每次日志调用先经 writeToFile 投递到后台线程，再由 writeToFileSync 落盘。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:289"
+  },
+  {
+    "fact": "AppLogger 的文件日志写在应用内部 filesDir/logs/operit.log。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:33"
+  },
+  {
+    "fact": "AppLogger 用名为 OperitAppLogger 的守护单线程 executor 执行文件写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:85"
+  },
+  {
+    "fact": "AppLogger 单条日志消息最多保留 12000 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:38"
+  },
+  {
+    "fact": "AppLogger 单条日志的堆栈文本最多保留 24000 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:39"
+  },
+  {
+    "fact": "AppLogger 文件日志行格式为 yyyy-MM-dd HH:mm:ss.SSS 加等级字符与 Tag。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:42"
+  },
+  {
+    "fact": "tag 等于 ToolPkg（忽略大小写）的日志会被镜像到 packageLogs 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:405"
+  },
+  {
+    "fact": "packageLogs 目录位于 OperitPaths.operitRootDir() 之下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:129"
+  },
+  {
+    "fact": "packageLogs 的文件名按应用启动时间格式化为 yyyyMMdd_HHmmss_SSS.log。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:134"
+  },
+  {
+    "fact": "packageLogs 最多保留 20 个文件，超量时按文件名排序删除最旧的。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:147"
+  },
+  {
+    "fact": "镜像到 packageLogs 的日志行会用正则提取 [PKG:]、[SCRIPT:]、[PLUGIN:] 标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:366"
+  },
+  {
+    "fact": "enableFileLogging 设为 false 可彻底关闭文件日志，系统 Log 照常输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:68"
+  },
+  {
+    "fact": "enableSystemLog 设为 false 可关闭 android.util.Log 调用，供纯 JVM 单元测试避开 not mocked 异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:75"
+  },
+  {
+    "fact": "AppLogger.bindContext 只在首次调用时绑定 applicationContext。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:91"
+  },
+  {
+    "fact": "AppLogger.getLogFile() 返回当前日志文件，供调用方导出日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:269"
+  },
+  {
+    "fact": "AppLogger.resetLogFile() 删除日志文件并清空 logFile 与 packageLogFile 缓存引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:272"
+  },
+  {
+    "fact": "AppLogger 写入文件抛 IOException 时会被吞掉，避免递归打日志导致崩溃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt:335"
+  },
+  {
+    "fact": "AnrMonitor 的 ANR 判定阈值为 1000ms，警告阈值为 500ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:47"
+  },
+  {
+    "fact": "AnrMonitor 每 100ms 采样一次主线程健康状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:49"
+  },
+  {
+    "fact": "AnrMonitor 最多保留 10 条堆栈跟踪历史。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:50"
+  },
+  {
+    "fact": "AnrMonitor 的监控协程运行在 Dispatchers.Default 上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:103"
+  },
+  {
+    "fact": "协程启动失败时 AnrMonitor 降级为 ScheduledExecutorService 单线程监控。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:119"
+  },
+  {
+    "fact": "降级监控线程名为 AnrMonitor-Watchdog，最高优先级守护线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:122"
+  },
+  {
+    "fact": "AnrMonitor 向主线程 Handler post 空任务并比对 lastResponseTime 判断阻塞。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:193"
+  },
+  {
+    "fact": "AnrMonitor 分析堆栈时只保留 com.ai.assistance.operit 包的堆栈行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:347"
+  },
+  {
+    "fact": "连续两次 ANR 分析结果相同时，AnrMonitor 去重跳过输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:305"
+  },
+  {
+    "fact": "AnrMonitor.addCallerInfo 允许业务方登记调用者信息以辅助定位 ANR 来源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:186"
+  },
+  {
+    "fact": "AnrMonitor.reportSlowResponse 允许外部上报主线程慢响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:166"
+  },
+  {
+    "fact": "AnrMonitor.stop() 时若发生过 ANR 或警告，会保存 ANR 报告到文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:141"
+  },
+  {
+    "fact": "ANR 报告文件名为 anr_report_yyyyMMdd_HHmmss.txt，存放在外部文件 anr_reports 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:384"
+  },
+  {
+    "fact": "ANR 报告包含 SDK 版本、厂商机型与内存信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt:392"
+  },
+  {
+    "fact": "CrashRecoveryState 用 SharedPreferences crash_recovery_state 存崩溃恢复标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/CrashRecoveryState.kt:6"
+  },
+  {
+    "fact": "CrashRecoveryState.consumePendingCrashReportLaunch 读取标记后会清除它并返回旧值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/CrashRecoveryState.kt:18"
+  },
+  {
+    "fact": "GlobalExceptionHandler 实现 Thread.UncaughtExceptionHandler 处理未捕获异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GlobalExceptionHandler.kt:8"
+  },
+  {
+    "fact": "未捕获异常时 GlobalExceptionHandler 先标记待上报，再拉起 CrashReportActivity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GlobalExceptionHandler.kt:15"
+  },
+  {
+    "fact": "拉起 CrashReportActivity 使用 FLAG_ACTIVITY_NEW_TASK 与 FLAG_ACTIVITY_CLEAR_TASK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GlobalExceptionHandler.kt:18"
+  },
+  {
+    "fact": "GlobalExceptionHandler 最后调用 exitProcess(1) 终止进程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GlobalExceptionHandler.kt:22"
+  },
+  {
+    "fact": "ThrowableTextFormatter.format 默认上限 24000 字符，下限 512 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ThrowableTextFormatter.kt:8"
+  },
+  {
+    "fact": "ThrowableTextFormatter 每个异常最多输出 64 个堆栈帧。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ThrowableTextFormatter.kt:10"
+  },
+  {
+    "fact": "ThrowableTextFormatter 的 cause 链最多展开 8 层。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ThrowableTextFormatter.kt:11"
+  },
+  {
+    "fact": "ThrowableTextFormatter 用 IdentityHashMap 检测循环 cause 并省略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ThrowableTextFormatter.kt:24"
+  },
+  {
+    "fact": "格式化本身抛 OOM 时 ThrowableTextFormatter 降级主要输出类名与 message，并固定追加省略标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ThrowableTextFormatter.kt:52"
+  },
+  {
+    "fact": "HttpLogSanitizer.urlForLog 保留 scheme/host/port，路径只记段数不记内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpLogSanitizer.kt:7"
+  },
+  {
+    "fact": "HttpLogSanitizer.urlForLog 把 query 参数值统一替换为 [omitted]，只留参数名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpLogSanitizer.kt:24"
+  },
+  {
+    "fact": "HttpLogSanitizer.headersForLog 只留请求头名称，值统一替换为 [omitted]。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpLogSanitizer.kt:38"
+  },
+  {
+    "fact": "请求头为空时 HttpLogSanitizer.headersForLog 返回 [empty]。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HttpLogSanitizer.kt:40"
+  },
+  {
+    "fact": "PortProcessKiller.killListeners 用 ss/netstat/lsof 查找监听指定端口的 PID 并 kill -9。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PortProcessKiller.kt:9"
+  },
+  {
+    "fact": "PortProcessKiller.killListeners 返回被杀掉的 PID 列表，失败返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PortProcessKiller.kt:52"
+  },
+  {
+    "fact": "NetworkUtils.isNetworkAvailable 要求有活动网络、INTERNET 能力且传输层为 WiFi/蜂窝/以太网之一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/NetworkUtils.kt:12"
+  },
+  {
+    "fact": "NetworkUtils.getNetworkType 返回 WiFi、移动数据、以太网等本地化连接类型字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/NetworkUtils.kt:26"
+  },
+  {
+    "fact": "GithubReleaseUtil 内置 34 个 GitHub 镜像站。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:40"
+  },
+  {
+    "fact": "getMirroredUrls 只对同时含 github.com 与 /releases/download/ 的 URL 生成镜像地址。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:80"
+  },
+  {
+    "fact": "probeMirrorUrls 并发对各镜像发起 256KB 的 Range 请求测速。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:90"
+  },
+  {
+    "fact": "fetchLatestReleaseInfo 取最新 release，优先找 .apk 资产，否则回退 release 页面地址。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:178"
+  },
+  {
+    "fact": "fetchLatestReleaseInfo 返回的版本号去掉了 tag 的 v 前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt:196"
+  },
+  {
+    "fact": "LocaleUtils 支持 10 种语言（含跟随系统）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:53"
+  },
+  {
+    "fact": "日语未翻译的条目回退显示英文而非中文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:97"
+  },
+  {
+    "fact": "setAppLanguage 在 Android 13 及以上用 AppCompatDelegate.setApplicationLocales 切换语言。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:170"
+  },
+  {
+    "fact": "语言偏好持久化在 UserPreferencesManager，读取失败时回退系统语言。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:146"
+  },
+  {
+    "fact": "LocaleUtils 兼容旧语言别名 pt 映射为 pt-BR、in 映射为 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt:50"
+  },
+  {
+    "fact": "LocationUtils.isDeviceInMainlandChina 不依赖 Google Play Services。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt:35"
+  },
+  {
+    "fact": "地区判断先走免权限启发式：运营商国家码与是否为中国时区。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt:37"
+  },
+  {
+    "fact": "无定位权限且启发式未命中时地区判断直接返回 false，不请求定位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt:42"
+  },
+  {
+    "fact": "Geocoder 反查失败时用经纬度矩形框（纬度 18-54、经度 73-135）判定是否在大陆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt:160"
+  },
+  {
+    "fact": "大陆矩形框判定会排除台湾、香港、澳门的小矩形区域。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt:164"
+  },
+  {
+    "fact": "SerializationSetup.module 把 IntRangeSerializer 注册为 contextual 序列化器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/SerializationSetup.kt:13"
+  },
+  {
+    "fact": "IntRangeSerializer 把 IntRange 序列化为含 start 与 endInclusive 的结构。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/IntRangeSerializer.kt:10"
+  },
+  {
+    "fact": "LocalDateTimeSerializer 用 ISO_LOCAL_DATE_TIME 格式把时间存为字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LocalDateTimeSerializer.kt:14"
+  },
+  {
+    "fact": "UriSerializer 把空字符串反序列化为 null，非空则 Uri.parse。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/UriSerializer.kt:19"
+  },
+  {
+    "fact": "UserCancellationException 继承 kotlinx.coroutines.CancellationException，用于区分用户主动取消与普通错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/exceptions/UserCancellationException.kt:11"
+  }
+]

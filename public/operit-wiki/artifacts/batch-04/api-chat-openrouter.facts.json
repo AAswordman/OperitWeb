@@ -1,0 +1,74 @@
+[
+  {
+    "fact": "OpenRouter chat completions 与 OpenAI 基本兼容，但 reasoning 走统一的 reasoning 对象而非通用 enableThinking 开关",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:12"
+  },
+  {
+    "fact": "OpenRouter 的 reasoning 配置来自模型配置里的可编辑 thinking 规则",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:18"
+  },
+  {
+    "fact": "OpenRouterProvider 为 open 类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:23"
+  },
+  {
+    "fact": "OpenRouterProvider 继承 OpenAIProvider，providerType 默认 ApiProviderType.OPENROUTER",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:31"
+  },
+  {
+    "fact": "构造时 customHeaders 经 mergeOpenRouterHeaders 合并后再传给父类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:41"
+  },
+  {
+    "fact": "openRouterApiEndpoint 与 openRouterProviderType 把构造参数存为私有字段供 reasoning 应用器使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:51"
+  },
+  {
+    "fact": "createRequestBody 先调 super.createRequestBodyInternal 生成基础请求体（不经过 enableThinking）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:61"
+  },
+  {
+    "fact": "基础请求体生成后再由 applyOpenRouterReasoning 按 enableThinking 叠加 reasoning 配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:73"
+  },
+  {
+    "fact": "打日志前把 tools 数组替换为 \"[N tools omitted for brevity]\" 避免刷屏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:82"
+  },
+  {
+    "fact": "日志前用 sanitizeImageDataForLogging 清理图片数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:84"
+  },
+  {
+    "fact": "用 logLargeString 输出完整请求 JSON（缩进 4 格）到日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:85"
+  },
+  {
+    "fact": "最终返回 createJsonRequestBody(jsonObject.toString())",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:91"
+  },
+  {
+    "fact": "applyOpenRouterReasoning 调 ThinkingConfigurationApplier.apply，传入 providerTypeId=openRouterProviderType.name、modelName、apiEndpoint、thinkingConfigurations、enableThinking、optionId=thinkingOptionId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:103"
+  },
+  {
+    "fact": "默认 HTTP-Referer 为 \"ai.assistance.operit\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:112"
+  },
+  {
+    "fact": "默认 X-Title 为 \"Assistance App\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:113"
+  },
+  {
+    "fact": "mergeOpenRouterHeaders 在自定义头缺 HTTP-Referer（不区分大小写）时才补默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:118"
+  },
+  {
+    "fact": "mergeOpenRouterHeaders 在自定义头缺 X-Title（不区分大小写）时才补默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:121"
+  },
+  {
+    "fact": "mergeOpenRouterHeaders 最后 putAll 自定义头，自定义值覆盖默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:125"
+  }
+]

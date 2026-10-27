@@ -1,0 +1,106 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt",
+    "line": 588,
+    "evidence": "                check(existing.deleteRecursively()) {\n                    \"Failed to remove stale snapshot entry: ${existing.absolutePath}\"\n                }",
+    "severity": "high",
+    "confidence": "high",
+    "description": "原始快照恢复采用“先删后拷”：replaceDirContents 先删除目标目录全部现有文件，再拷贝快照内容。若拷贝中途失败（磁盘写满/IO 错误），已删的数据没有任何回滚路径，应用停留在半恢复状态，只能靠用户手动重新选文件恢复。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/stats/TokenUsageRepository.kt",
+    "line": 28,
+    "evidence": "        /** Prevent Room access while a restore replaces database files. */\n        suspend fun <T> withDatabaseAccess(block: suspend () -> T): T =\n            databaseAccessMutex.withLock { block() }",
+    "severity": "high",
+    "confidence": "high",
+    "description": "注释声称该 Mutex 用于“防止恢复替换数据库文件期间被访问”，但只有 TokenUsageRepository 自身的 DAO 调用会持有这把锁；ChatHistoryManager 等其他组件的 DAO 读写不经过此锁。恢复期间（数据库文件正被逐个替换）其他协程仍可打开并读写数据库，存在读到半替换文件的损坏风险。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/util/OperitPaths.kt",
+    "line": 31,
+    "evidence": "    fun operitRootDir(): File {\n        return ensureDir(File(downloadsDir(), OPERIT_DIR_NAME))\n    }",
+    "severity": "high",
+    "confidence": "high",
+    "description": "operitRootDir 指向公共外部存储 Download/Operit（downloadsDir 取自 Environment.DIRECTORY_DOWNLOADS）。原始快照 zip（含 shared_prefs 内各供应商 API Key 与完整数据库）与 Room 数据库备份 zip 均为明文无加密存放在此，任何能读取外部存储的应用都可直接窃取。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt",
+    "line": 57,
+    "evidence": "    data class Manifest(\n        val formatVersion: Int,\n        val packageName: String,",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "快照 manifest 只有格式版本与包名前缀校验，没有任何 payload 哈希或签名。被篡改或静默损坏的快照在恢复前无法验证完整性，只能靠解压/替换阶段报错发现，此时可能已删掉部分现有数据（见先删后拷问题）。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/recovery/RoomDatabaseHealthManager.kt",
+    "line": 136,
+    "evidence": "        try {\n            AppDatabase.closeDatabase()\n        } catch (e: Exception) {",
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "健康检查 inspectLocked 在主进程运行时也会执行 AppDatabase.closeDatabase()（只有 repair 要求主进程停止，检查不要求）。若检查期间有后台读写正在进行，可能抛 IllegalStateException 或拿到正在关闭的连接。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt",
+    "line": 32,
+    "evidence": "        sb.appendLine(\"<!-- chat-info: ${metaParts.joinToString(\", \")} -->\")",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "会话标题原样拼入 HTML 注释与 YAML front matter，未做任何转义。标题含 --> 会提前闭合注释、含换行会破坏 front matter 结构，导致导出的 Markdown 文件结构错乱、回导解析失败。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "line": 989,
+    "evidence": "                                        val outFile = RawSnapshotBackupManager.exportToBackupDir(\n                                            context = context,\n                                            onProgress = { progress ->",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "SnapshotOptions.includeTerminalData 选项在两个 UI 调用点（设置页与 DataRecoveryViewModel.exportRawSnapshot）均未被使用，永远取默认值 false。终端 usr/tmp/bin 数据实际上永远不会被备份，该选项是无入口的死选项。"
+  },
+  {
+    "file": "app/src/main/AndroidManifest.xml",
+    "line": 287,
+    "evidence": "            android:name=\".ui.recovery.DataRecoveryActivity\"\n            android:exported=\"true\"",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "数据恢复 Activity（含任意 SQL 执行入口 DataRecoveryViewModel.runSql）声明为 exported=true，可被设备上第三方应用直接调起。虽然 SQL 执行需要用户手动输入，但高危功能入口对外暴露，多一层被社工利用的面。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt",
+    "line": 348,
+    "evidence": "    private fun extractZipToWorkDir(zipFile: File, workDir: File): Manifest {",
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "除 manifest 限制 512KB 外，payload 解压循环没有任何总大小上限。恶意构造的 zip bomb 可把 cache 分区写满；虽需用户主动选择文件，但恢复入口（文件选择器）对任意文件开放。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt",
+    "line": 195,
+    "evidence": "        } catch (e: AtomicMoveNotSupportedException) {\n            throw IOException(\"Atomic database replacement is unavailable: ${from.name}\", e)",
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "ATOMIC_MOVE 不支持时直接抛错、无降级路径（符合项目无兜底铁律）。数据库在内部存储上一般支持原子移动，风险低；但若未来备份目录迁到外置存储，恢复将必定失败。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt",
+    "line": 194,
+    "evidence": "    private fun String.center(width: Int): String {\n        if (this.length >= width) return this",
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "标题居中按字符数而非显示宽度计算，CJK 字符占两列宽度时视觉上并不居中。纯展示问题，不影响数据。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt",
+    "line": 180,
+    "evidence": "        sorted.drop(safeKeepLatest).forEach { it.delete() }",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "超量清理按文件 lastModified 排序而非解析文件名中的日期戳。时钟回拨、文件拷贝/迁移导致 mtime 变化时，可能误删实际更新的备份。建议按文件名时间戳排序。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt",
+    "line": 68,
+    "evidence": "    suspend fun restoreFromBackupUri(context: Context, uri: Uri) {",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "恢复前把 uri 内容完整拷贝到 cache 临时文件，无输入大小上限。超大文件可能占满缓存分区；风险低（用户主动选择），可考虑先校验文件大小。"
+  }
+]

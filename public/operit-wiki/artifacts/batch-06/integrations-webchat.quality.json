@@ -1,0 +1,154 @@
+[
+  {
+    "confidence": "high",
+    "detail": "服务监听所有网卡而非 127.0.0.1，且 NanoHTTPD 以纯 HTTP 启动，仓库内无任何 TLS/证书配置。Bearer token 以明文 Authorization 头传输，同一局域网内可被嗅探；拿到 token 即可调用全部 /api/web/* 管理接口（含删会话、改权限等级）与 /api/external-chat。",
+    "evidence": "        private const val LISTEN_HOST = \"0.0.0.0\"",
+    "evidence2": "        start(SOCKET_READ_TIMEOUT, false)",
+    "evidence2_line": 60,
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q01",
+    "line": 548,
+    "severity": "high",
+    "title": "HTTP 服务绑定 0.0.0.0 且全程无 TLS，同一 Wi-Fi 下任何人可直连并嗅探 Bearer token"
+  },
+  {
+    "confidence": "high",
+    "detail": "handleApi() 内 assets 路由先于 requireBearerToken 执行，任何知晓 UUID 的人可直接 GET 资源内容。UUID 虽不可猜，但一旦经日志/Referer/浏览器历史泄露即无二次防护；且 readRegisteredAsset 支持 file:// 任意本地路径，放大了泄露后的影响面。",
+    "evidence": "        if (session.uri.startsWith(ASSET_ROUTE_PREFIX)) {\n            return handleRegisteredAsset(session).withCors()\n        }\n\n        val unauthorized = requireBearerToken(session)",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt",
+    "id": "Q02",
+    "line": 111,
+    "severity": "high",
+    "title": "/api/web/assets/<uuid> 路由在 Bearer 校验之前短路返回，完全免鉴权"
+  },
+  {
+    "confidence": "high",
+    "detail": "serve() 把所有非 /api 路径直接交给 serveStatic，其内部只做方法与路径规范化检查、没有任何 token 校验。结合 Q01 的 0.0.0.0 绑定，同一网络任何人打开 http://手机IP:端口 即可加载完整聊天前端（含 bootstrap 能力描述），虽调 API 仍需 token，但暴露了攻击面与版本信息。",
+    "evidence": "            !session.uri.startsWith(API_PREFIX) -> webChatBridge.serveStatic(session)",
+    "evidence2": "    fun serveStatic(session: NanoHTTPD.IHTTPSession): NanoHTTPD.Response {\n        cleanupExpiredEntries()\n\n        if (session.method != NanoHTTPD.Method.GET && session.method != NanoHTTPD.Method.HEAD) {",
+    "evidence2_line": 237,
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q03",
+    "line": 83,
+    "severity": "high",
+    "title": "静态网页 serveStatic 全程无鉴权，聊天 UI 可被局域网任意人打开",
+    "evidence2_file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt"
+  },
+  {
+    "confidence": "high",
+    "detail": "withCors() 被所有成功/失败响应调用（含 401），且 OPTIONS 预检无条件放行。结合 Authorization 被显式允许，任意恶意网页只要骗到 token（或利用用户已在某页面输入过 token 的场景）即可跨域调用删会话、改模型、发消息等接口。建议收敛为固定源或至少不对 /api/* 返回 *。",
+    "evidence": "    private fun Response.withCors(): Response {\n        addHeader(\"Access-Control-Allow-Origin\", \"*\")\n        addHeader(\"Access-Control-Allow-Methods\", \"GET, POST, PATCH, DELETE, OPTIONS\")\n        addHeader(\"Access-Control-Allow-Headers\", \"Authorization, Content-Type, Accept\")\n        addHeader(\"Access-Control-Max-Age\", \"3600\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q04",
+    "line": 538,
+    "severity": "high",
+    "title": "CORS Access-Control-Allow-Origin: * 作用于全部响应，任意网页可跨域携带用户 token 调用 API"
+  },
+  {
+    "confidence": "medium",
+    "detail": "两处 requireBearerToken（server :401、bridge :2644）均用 Kotlin == 做字符串比较，比较时间随公共前缀长度变化。局域网低延迟环境下理论上可逐字节爆破 token。建议改用 MessageDigest.isEqual 做常量时间比较。",
+    "evidence": "        return if (actualToken == expectedToken) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q05",
+    "line": 401,
+    "severity": "warn",
+    "title": "Bearer token 用 == 明文比较，非常量时间，存在计时侧信道"
+  },
+  {
+    "confidence": "high",
+    "detail": "handleUpload 先 session.parseBody(tempFiles) 把整个 multipart 写到临时文件，之后才比较 tempFile.length() > 25MB。攻击者可反复上传数 GB 文件打满 /data 临时分区；且各拒绝分支均未显式删除 tempFile（依赖 NanoHTTPD 会话结束清理）。建议先按 Content-Length 预检再 parseBody。",
+    "evidence": "            session.parseBody(tempFiles)",
+    "evidence2": "            if (tempFile.length() > MAX_UPLOAD_BYTES) {\n                return jsonResponse(\n                    NanoHTTPD.Response.Status.BAD_REQUEST,\n                    WebErrorResponse(\"File exceeds maximum upload size of ${MAX_UPLOAD_BYTES / (1024 * 1024)}MB\")\n                )\n            }",
+    "evidence2_line": 1010,
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt",
+    "id": "Q06",
+    "line": 996,
+    "severity": "warn",
+    "title": "上传大小限制在 parseBody 完整落盘后才检查，超大文件先写满临时磁盘再 400"
+  },
+  {
+    "confidence": "high",
+    "detail": "同步聊天模式直接在 serve() 的调用线程里 runBlocking 等待整轮 Agent 执行（可能数分钟）。NanoHTTPD 默认线程池有限，并发几个 sync 请求即可占满，导致 /api/health 等其他路由也被拖死。建议 sync 模式同样转异步或加并发上限/超时。",
+    "evidence": "        val result = runBlocking {\n            executor.execute(request.toExecutionRequest(resolvedRequestId))\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q07",
+    "line": 237,
+    "severity": "warn",
+    "title": "sync 模式在 NanoHTTPD 请求线程上 runBlocking 等待大模型执行，可耗尽服务器线程池"
+  },
+  {
+    "confidence": "high",
+    "detail": "postCallback 捕获所有异常后仅 AppLogger.e，无重试、无持久化、无通知。callback_url 短暂不可达即永久丢失该次执行结果，而调用方早已收到 202。建议至少加有限重试或把失败写入可查询的任务表。",
+    "evidence": "        } catch (e: Exception) {\n            AppLogger.e(TAG, \"Async callback failed: url=$callbackUrl\", e)\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q08",
+    "line": 430,
+    "severity": "warn",
+    "title": "async_callback 回调失败只打日志，无重试无死信，调用方永远收不到结果"
+  },
+  {
+    "confidence": "high",
+    "detail": "cleanupExpiredEntries() 把过期上传的磁盘文件直接删除，但 AttachmentInfo.filePath（消息历史持久化的是绝对路径）仍指向它。2 小时后回看历史消息，图片/文件附件全部打不开。建议：历史消息引用时把文件转存为永久存储，或 TTL 只清内存索引不删被消息引用的文件。",
+    "evidence": "            uploadsById.remove(entry.key)\n            runCatching { entry.value.storedFile.delete() }",
+    "evidence2": "            val attachmentInfo = AttachmentInfo(\n                filePath = storedFile.absolutePath,",
+    "evidence2_line": 1032,
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt",
+    "id": "Q09",
+    "line": 2618,
+    "severity": "warn",
+    "title": "上传附件 2 小时 TTL 到期删文件，但历史消息里的 filePath 引用不变，之后打开成坏附件"
+  },
+  {
+    "confidence": "high",
+    "detail": "使用 Transfer-Encoding: chunked（无 Content-Length）的 HTTP 客户端调 /api/external-chat 会直接 400。NanoHTTPD 本身能处理分块，这里是人为加严。建议回落到读到流结束。",
+    "evidence": "            }?.value?.trim()?.toLongOrNull()\n                ?: return RequestBodyResult(error = \"Missing or invalid Content-Length\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q10",
+    "line": 439,
+    "severity": "warn",
+    "title": "readRequestBody 强制要求 Content-Length 头，不支持分块传输编码的客户端"
+  },
+  {
+    "confidence": "medium",
+    "detail": "每次 handleStream 都切换 App 全局 currentChatId（手机前台正在看的会话会被顶掉），且两个浏览器标签页同时对不同 chatId 发流式请求时会交替覆盖对方上下文，导致消息串会话。建议 Web 通道使用独立上下文而非复用全局 currentChatId。",
+    "evidence": "    private suspend fun switchAppChatContext(\n        chatId: String,\n        syncActivePromptFromBinding: Boolean = true\n    ): Boolean {",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt",
+    "id": "Q11",
+    "line": 2475,
+    "severity": "warn",
+    "title": "switchAppChatContext 把 Web 请求的副作用打到全局当前会话，多客户端并发会互相抢上下文"
+  },
+  {
+    "confidence": "high",
+    "detail": "两套 SSE 常量（含 SSE_PIPE_BUFFER_SIZE = 64*1024）各自为政。建议抽到 WebChatModels 或公共 internal object 统一。",
+    "evidence": "        private const val STREAM_EVENT_START = \"start\"\n        private const val STREAM_EVENT_DELTA = \"delta\"\n        private const val STREAM_EVENT_DONE = \"done\"\n        private const val STREAM_EVENT_ERROR = \"error\"",
+    "evidence2": "        private const val STREAM_EVENT_START = \"start\"\n        private const val STREAM_EVENT_USER_MESSAGE = \"user_message\"\n        private const val STREAM_EVENT_ASSISTANT_DELTA = \"assistant_delta\"\n        private const val STREAM_EVENT_ASSISTANT_DONE = \"assistant_done\"\n        private const val STREAM_EVENT_ERROR = \"error\"",
+    "evidence2_line": 2910,
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q12",
+    "line": 556,
+    "severity": "suggestion",
+    "title": "SSE 事件名/管道大小等常量在 ExternalChatHttpServer 与 WebChatHttpBridge 各定义一份，易漂移",
+    "evidence2_file": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt"
+  },
+  {
+    "confidence": "medium",
+    "detail": "路由分发前无 IP 限流、无并发计数。结合 Q07 的 sync 阻塞模型，少量并发即可 DoS。建议至少对 /api/external-chat 加信号量上限。",
+    "evidence": "    override fun serve(session: IHTTPSession): Response {\n        return when {\n            session.method == Method.OPTIONS -> handleOptions(session)",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q13",
+    "line": 75,
+    "severity": "suggestion",
+    "title": "serve() 无任何限流/并发控制，局域网内可被轻易打满"
+  },
+  {
+    "confidence": "medium",
+    "detail": "错误信息直接告诉扫描者该服务没配 token（虽然此时任何请求都进不来，但属于信息泄露）。建议统一返回 \"Unauthorized\"，把未配置细节只记日志。",
+    "evidence": "                Response.Status.UNAUTHORIZED,\n                ExternalChatResult(\n                    success = false,\n                    error = \"Bearer token not configured\"\n                )",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "id": "Q14",
+    "line": 383,
+    "severity": "suggestion",
+    "title": "token 未配置时返回 401 而非 403/503，向未授权者泄露了“服务未设密码”这一配置状态"
+  }
+]

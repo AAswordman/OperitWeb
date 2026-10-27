@@ -1,0 +1,12 @@
+{
+  "critic": "独立 critic 初验打回后修错，独立复验通过（data-repo-misc.critic.md）",
+  "id": "data-repo-misc",
+  "issue": 64,
+  "refs_valid": "168/168 引用行号真实存在且 ±5 窗口逐条手工复验均有支撑原文（含复验员修正的 3 处更优锚点），quality 20 条 evidence 逐字命中，lint 硬失败 0/警告 0（单页隔离重跑，独立复验通过后）；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "扩展仓库",
+  "approved_by_comment_id": 5926574682,
+  "updated": "2026-10-02"
+}

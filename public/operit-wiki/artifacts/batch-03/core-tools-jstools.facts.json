@@ -1,0 +1,602 @@
+[
+  {
+    "fact": "JsTimeoutConfig 是 internal object，脚本主超时 MAIN_TIMEOUT_SECONDS = 1800L（30 分钟）",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTimeoutConfig.kt:4",
+    "symbol": "JsTimeoutConfig.MAIN_TIMEOUT_SECONDS"
+  },
+  {
+    "fact": "PRE_TIMEOUT_LEAD_SECONDS = 5L：正式超时前 5 秒先触发预警定时器（JS 侧 preTimeoutMs）",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTimeoutConfig.kt:5",
+    "symbol": "JsTimeoutConfig.PRE_TIMEOUT_LEAD_SECONDS"
+  },
+  {
+    "fact": "SCRIPT_TIMEOUT_MS = MAIN_TIMEOUT_SECONDS * 1000L：毫秒级脚本超时，供 Kotlin 侧 withTimeout 使用",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTimeoutConfig.kt:6",
+    "symbol": "JsTimeoutConfig.SCRIPT_TIMEOUT_MS"
+  },
+  {
+    "fact": "TOOL_CALL_TIMEOUT_MS 直接等于 SCRIPT_TIMEOUT_MS：单次 toolCall 超时与脚本超时同值",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTimeoutConfig.kt:7",
+    "symbol": "JsTimeoutConfig.TOOL_CALL_TIMEOUT_MS"
+  },
+  {
+    "fact": "buildJsExecutionErrorPayload(message) 构造统一错误载荷：{\"success\": false, \"message\": ...} 的 JSON 字符串",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionResultProtocol.kt:11",
+    "symbol": "buildJsExecutionErrorPayload"
+  },
+  {
+    "fact": "extractJsExecutionFailure(raw) 用 JSONTokener 解析结果文本：空串、非 JSON 对象、无 success 键或 success=true 都返回 null",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionResultProtocol.kt:17",
+    "symbol": "extractJsExecutionFailure"
+  },
+  {
+    "fact": "失败解析时提取 message（trim 后）与 data 字段（转字符串），装入 JsExecutionFailure(message, dataText)",
+    "kind": "dataclass",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionResultProtocol.kt:6",
+    "symbol": "JsExecutionFailure"
+  },
+  {
+    "fact": "extractJsExecutionErrorMessage(raw) 只取失败的 message，空消息时返回 null",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionResultProtocol.kt:41",
+    "symbol": "extractJsExecutionErrorMessage"
+  },
+  {
+    "fact": "decodeJsExecutionResultValue(raw)：非字符串原样返回；空串转为 JSONObject.NULL；其余用 JSONTokener 解析",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionResultProtocol.kt:45",
+    "symbol": "decodeJsExecutionResultValue"
+  },
+  {
+    "fact": "JsToolPkgExecutionContext.LogSnapshot 是日志快照数据类：pluginTag（插件标签）、functionName（函数名）、codeSnippet（代码片段）",
+    "kind": "dataclass",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:5",
+    "symbol": "JsToolPkgExecutionContext.LogSnapshot"
+  },
+  {
+    "fact": "capture(script, functionName, params) 为一次执行抓取快照：解析插件标签、trim 函数名、截取代码片段",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:16",
+    "symbol": "JsToolPkgExecutionContext.capture"
+  },
+  {
+    "fact": "withPluginTag(snapshot, message) 给日志消息加 [tag] 前缀，若已带前缀则去重不重复加",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:28",
+    "symbol": "JsToolPkgExecutionContext.withPluginTag"
+  },
+  {
+    "fact": "withCodeContext(snapshot, message) 在消息后追加 \"Execution Function\" 与 \"Code Context\" 代码上下文",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:33",
+    "symbol": "JsToolPkgExecutionContext.withCodeContext"
+  },
+  {
+    "fact": "withTemporaryTextResourceResolver(resolver, block) 在 synchronized 块内临时替换文本资源解析器，finally 中恢复旧值",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:50",
+    "symbol": "JsToolPkgExecutionContext.withTemporaryTextResourceResolver"
+  },
+  {
+    "fact": "resolveTemporaryTextResource：无解析器直接返回 null；解析器抛异常时回调 onResolverFailure 并返回 null",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:65",
+    "symbol": "JsToolPkgExecutionContext.resolveTemporaryTextResource"
+  },
+  {
+    "fact": "resolvePluginTag 按优先级取标签：params 的 __operit_plugin_id → pluginId → hookId，取不到则回退到 functionName:packageName",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:81",
+    "symbol": "JsToolPkgExecutionContext.resolvePluginTag"
+  },
+  {
+    "fact": "包名候选按 toolPkgId → __operit_ui_package_name → __operit_ui_toolpkg_id → packageName 取首个非空；函数名为空时用 \"runtime\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:88"
+  },
+  {
+    "fact": "buildSnippet 用 6 种正则定位函数定义行（function 声明、对象方法、箭头/赋值函数、exports/module.exports），输出 anchorLine=行号加前后各 6 行，上限 2200 字符",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:103",
+    "symbol": "JsToolPkgExecutionContext.buildSnippet"
+  },
+  {
+    "fact": "compactTag 压缩标签：取路径最后一段，去掉 _bundle 与 .toolpkg 后缀，空白则回退 \"runtime\"",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgExecutionContext.kt:139",
+    "symbol": "JsToolPkgExecutionContext.compactTag"
+  },
+  {
+    "fact": "JsToolManager 是 private constructor 声明的单例类",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:18",
+    "symbol": "JsToolManager"
+  },
+  {
+    "fact": "getInstance(context, packageManager) 用 @Volatile + synchronized 双重检查保证唯一实例",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:34",
+    "symbol": "JsToolManager.getInstance"
+  },
+  {
+    "fact": "引擎池：MAX_CONCURRENT_ENGINES = 4，4 个 JsEngine 实例放入 Channel，withEngine 借出后在 finally 中归还",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:29",
+    "symbol": "JsToolManager.MAX_CONCURRENT_ENGINES"
+  },
+  {
+    "fact": "parseDotCall 按最后一个点切分工具名（packageName.functionName）；parsePackageToolName 按第一个冒号切分（packageName:toolName)，分隔符在首尾时返回 null",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:65",
+    "symbol": "JsToolManager.parseDotCall"
+  },
+  {
+    "fact": "buildRuntimeParams 注入运行时参数：__operit_package_state（包状态 id）、__operit_package_name，并强制 __operit_toolpkg_runtime_kind = \"sandbox\"",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:81",
+    "symbol": "JsToolManager.buildRuntimeParams"
+  },
+  {
+    "fact": "调用者三键（__operit_package_caller_name / __operit_package_chat_id / __operit_package_caller_card_id）只保留非空值，空值直接移除",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:91"
+  },
+  {
+    "fact": "子包运行时额外注入：__operit_execution_context_key = \"toolpkg_main:<容器包名>\"、__operit_toolpkg_subpackage_id、containerPackageName、toolPkgId、__operit_ui_package_name、__operit_script_screen",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:107"
+  },
+  {
+    "fact": "withExecutionEngineForPackage：子包走 packageManager.getToolPkgExecutionEngine（contextKey 隔离），普通包走 4 引擎共享池",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:122",
+    "symbol": "JsToolManager.withExecutionEngineForPackage"
+  },
+  {
+    "fact": "convertToolParameters 按包清单做严格参数转换：缺必填参数抛 ToolParameterConversionException（\"Missing required parameters: ...\"）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:151",
+    "symbol": "JsToolManager.convertToolParameters"
+  },
+  {
+    "fact": "参数类型转换规则：number（无点/无e转 Long 否则 Double）、integer（toLong）、boolean（\"true\"/\"1\"→true，\"false\"/\"0\"→false）、array/object 解析 JSON；未知类型原样透传字符串",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:188",
+    "symbol": "JsToolManager.convertToolParameterValue"
+  },
+  {
+    "fact": "类型转换失败走 invalidParameterType：先 AppLogger.w 记录工具名/参数名/期望类型/值预览，再抛 ToolParameterConversionException",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:232",
+    "symbol": "JsToolManager.invalidParameterType"
+  },
+  {
+    "fact": "executeScript(toolName, params) 是点调用形式（packageName.functionName）的同步入口，错误以字符串返回而非 ToolResult",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:319",
+    "symbol": "JsToolManager.executeScript"
+  },
+  {
+    "fact": "点调用入口的三类字符串错误：\"Invalid tool name format ... Expected format: packageName.functionName\"、\"Package not found\"、异常时返回 buildJsExecutionErrorPayload",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:320"
+  },
+  {
+    "fact": "executeScript(script, tool) 是冒号形式（packageName:toolName）的流式入口（channelFlow）：参数转换失败直接 send 失败结果",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:351",
+    "symbol": "JsToolManager.executeScript"
+  },
+  {
+    "fact": "流式入口用 withTimeout(JsTimeoutConfig.SCRIPT_TIMEOUT_MS) 包裹执行；超时捕获 TimeoutCancellationException 并返回 \"Script execution timed out after ...ms\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:393"
+  },
+  {
+    "fact": "流式入口挂 JsExecutionListener：onCallLog → kind=log、onIntermediateResult → kind=intermediate 的 ScriptExecutionTraceData 经 trySend 实时发出",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:368"
+  },
+  {
+    "fact": "执行结果先经 extractJsExecutionFailure 判失败：命中则 failure(dataText, message)，否则 success(value?.toString() ?: \"null\")",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:399"
+  },
+  {
+    "fact": "executeComposeDsl 组装 runtimeOptions（packageName/uiModuleId/toolPkgId/state/memo/moduleSpec）后走共享引擎池的 executeComposeDslScript",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:423",
+    "symbol": "JsToolManager.executeComposeDsl"
+  },
+  {
+    "fact": "destroy() 关闭引擎 Channel 并逐个销毁 JsEngine",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolManager.kt:473",
+    "symbol": "JsToolManager.destroy"
+  },
+  {
+    "fact": "JsExecutionListener 是 internal 接口，onCallLog/onIntermediateResult/onCompleted/onFailed 四个回调全部有默认空实现",
+    "kind": "interface",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:13",
+    "symbol": "JsExecutionListener"
+  },
+  {
+    "fact": "JsExecutionTraceRecorder(scriptPath, functionName, paramsJson, envFilePath) 记录开始时间戳，用 @Synchronized 保护事件列表",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:23",
+    "symbol": "JsExecutionTraceRecorder"
+  },
+  {
+    "fact": "onCallLog 记录 \"LEVEL: message\"：级别转大写、消息做空白折叠，空消息丢弃",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:33"
+  },
+  {
+    "fact": "onIntermediateResult 记录 \"intermediate: <摘要>\"；onCompleted 记录 \"completed: <摘要>\"；onFailed 记录 \"failed: <错误>\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:47"
+  },
+  {
+    "fact": "buildResultData 生成 SandboxScriptExecutionResultData：durationMs = 结束-开始，error 仅在非空时保留，附完整事件列表",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:84",
+    "symbol": "JsExecutionTraceRecorder.buildResultData"
+  },
+  {
+    "fact": "writeTo(file, payload) 自动创建父目录，以 UTF-8 写入 pretty-print 的 JSON 追踪文件",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:111",
+    "symbol": "JsExecutionTraceRecorder.writeTo"
+  },
+  {
+    "fact": "summarizeValue 做防爆摘要：字符串折叠空白后截断 240 字符；容器递归深度上限 2；数组取前 3 项加 \"+N more\"；Map 取前 4 个键值对",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionTrace.kt:158",
+    "symbol": "JsExecutionTraceRecorder.summarizeValue"
+  },
+  {
+    "fact": "ScriptExecutionReceiver 是 BroadcastReceiver，监听 ACTION_EXECUTE_JS = \"com.ai.assistance.operit.EXECUTE_JS\" 广播",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:27",
+    "symbol": "ScriptExecutionReceiver.ACTION_EXECUTE_JS"
+  },
+  {
+    "fact": "三种执行模式：function（默认）、script（整文件）、code（内联代码）",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:48"
+  },
+  {
+    "fact": "function 模式需 file_path + function_name，函数名缺省为 \"main\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:58"
+  },
+  {
+    "fact": "onReceive 用 goAsync + Dispatchers.IO 协程执行，避免阻塞广播主线程",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:82"
+  },
+  {
+    "fact": "finally 中必调 pendingResult.finish()",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:98"
+  },
+  {
+    "fact": "参数 JSON 来自 EXTRA_PARAMS 或 params_file_path 文件；去 BOM；空转 \"{}\"；转义引号的传输载荷会被尝试恢复并记 warning",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:311",
+    "symbol": "ScriptExecutionReceiver.resolveParamsJson"
+  },
+  {
+    "fact": "env 文件按 KEY=VALUE 解析：跳过空行与 # 注释行，值去掉首尾包裹引号；文件不存在记 warning 返回空",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:368",
+    "symbol": "ScriptExecutionReceiver.parseEnvFile"
+  },
+  {
+    "fact": "广播执行强制注入 __operit_toolpkg_runtime_kind = \"sandbox\"，即外部触发的脚本一律按沙盒运行时执行",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:224"
+  },
+  {
+    "fact": "script/code 模式走 engine.executeScriptCode，function 模式走 engine.executeScriptFunction，两者都以 JsExecutionTraceRecorder 为 executionListener",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:233"
+  },
+  {
+    "fact": "每次广播执行新建一个 JsEngine(context)，不走 JsToolManager 的 4 引擎共享池",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:221"
+  },
+  {
+    "fact": "结果文件默认落到 OperitPaths.testDir()/js_results/<脚本>_<函数>_<时间戳>.json；也可用 EXTRA_RESULT_FILE_PATH 指定路径",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:283",
+    "symbol": "ScriptExecutionReceiver.resolveResultFile"
+  },
+  {
+    "fact": "finally 块按 temp_file/temp_params_file/temp_env_file 标记删除临时脚本、临时参数文件、临时 env 文件",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/ScriptExecutionReceiver.kt:274"
+  },
+  {
+    "fact": "ToolPkgMainRegistrationCapture 是 23 个注册桶列表 + marketOrigin 的数据类，是包主模块注册的最终产物",
+    "kind": "dataclass",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:10",
+    "symbol": "ToolPkgMainRegistrationCapture"
+  },
+  {
+    "fact": "RegistrationBucket 枚举定义 23 个注册桶：TOOLBOX_UI、UI_ROUTE、NAVIGATION_ENTRY、DESKTOP_WIDGET、APP_LIFECYCLE、MESSAGE_PROCESSING、XML_RENDER、INPUT_MENU_TOGGLE、CHAT_INPUT、CHAT_VIEW、CHAT_MESSAGE、CHAT_MESSAGE_MENU_ITEM、CHAT_RUNTIME、TOOL_LIFECYCLE、6 种 prompt 钩子、SUMMARY_GENERATE、AI_PROVIDER",
+    "kind": "enum",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:37",
+    "symbol": "RegistrationBucket"
+  },
+  {
+    "fact": "JsToolPkgRegistrationSession.begin() 在锁内重置捕获表与 marketOrigin；isActive() 判捕获表非空；end() 清空两者",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:69",
+    "symbol": "JsToolPkgRegistrationSession.begin"
+  },
+  {
+    "fact": "normalizeRegistrationSpec 要求载荷非空且为 JSON 对象，否则抛异常；存储前用 parsed.toString() 做规范化",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:199",
+    "symbol": "JsToolPkgRegistrationSession.normalizeRegistrationSpec"
+  },
+  {
+    "fact": "finish(executionResult) 先用 extractJsExecutionErrorMessage 检查脚本错误，有错直接抛 IllegalStateException，否则按桶组装 ToolPkgMainRegistrationCapture",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:144",
+    "symbol": "JsToolPkgRegistrationSession.finish"
+  },
+  {
+    "fact": "captureMarketOrigin：会话未激活时直接返回（注册后重复求值也无害）；激活时用 ToolPkgMarketOriginCodec.parse 解析来源标记",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:133",
+    "symbol": "JsToolPkgRegistrationSession.captureMarketOrigin"
+  },
+  {
+    "fact": "buildToolPkgRegistrationBridgeScript() 生成桥接脚本，在 JS 全局安装 ToolPkg 对象（经 __operitToolPkgApi.namespace('ToolPkg', ...)）",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:208",
+    "symbol": "buildToolPkgRegistrationBridgeScript"
+  },
+  {
+    "fact": "桥接脚本的 requireNative(name)：NativeInterface 上缺该函数时抛 'NativeInterface.<name> is unavailable'",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:225"
+  },
+  {
+    "fact": "市场来源标记是 XOR 混淆的字节数组：captureMarketOrigin 校验每个字节与 key 均为 0-255 整数，逐字节异或还原 JSON 后调 captureToolPkgMarketOrigin",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:243"
+  },
+  {
+    "fact": "注册的函数引用必须是可持久化的：已导出函数按导出名引用；未导出的要求函数带 __operit_toolpkg_module_path + __operit_toolpkg_export_name，否则抛 \"function must be exported from a toolpkg module\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:362"
+  },
+  {
+    "fact": "未导出函数生成 __operit_module_ref_hook_<id>_<序号> 的延迟引用：function_source 源码在调用时才 require 对应模块并取导出函数",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:303"
+  },
+  {
+    "fact": "registerChatMessageMenuItem 与 registerChatRuntimeHook 用 toolPkgApi.method().since('1.0.1') 做版本门控，旧版 API 运行时不可用",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:625"
+  },
+  {
+    "fact": "registerAiProvider 把 listModels/sendMessage/testConnection/calculateInputTokens 四个嵌套函数字段逐一规范化为可持久化引用",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:661"
+  },
+  {
+    "fact": "16 种钩子注册（appLifecycle/messageProcessing/xmlRender/inputMenuToggle/chatInput/chatView/chatMessage/toolLifecycle/6 种 prompt/summaryGenerate）统一经 registerWithNative 走 JSON 规范化后调 NativeInterface",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:643"
+  },
+  {
+    "fact": "TOOLPKG_EXECUTION_ENTRY_FUNCTION = \"__operitExecuteScriptFunction\"：JS 侧执行入口的全局函数名常量",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:5",
+    "symbol": "TOOLPKG_EXECUTION_ENTRY_FUNCTION"
+  },
+  {
+    "fact": "buildExecutionPreludeSource 定义执行前奏：sendIntermediateResult/emit/delta/log/update/done/complete/getEnv/getPluginConfigDir/getState/getLang/getCallerName/getChatId/getCallerCardId/__handleAsync/console/reportDetailedError 等调用运行时函数",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:6",
+    "symbol": "buildExecutionPreludeSource"
+  },
+  {
+    "fact": "前奏同时把 Tools、ToolPkg、Java、Android、Intent、PackageManager、ContentProvider、SystemManager、DeviceController、OperitComposeDslRuntime、CryptoJS、Jimp、UINode、OkHttp 系列、pako、_、dataUtils、toolCall 等全局对象引入脚本作用域",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:62"
+  },
+  {
+    "fact": "buildExecutionRuntimeBridgeScript 安装入口函数时先判重：root 上已存在同名函数则直接返回，避免重复安装",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:91"
+  },
+  {
+    "fact": "入口函数签名 __operitExecuteScriptFunction(callId, params, scriptText, targetFunctionName, timeoutSec, preTimeoutMs, toolPkgApi)",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:400"
+  },
+  {
+    "fact": "入口先要求 __operitRegisterCallSession 存在，否则经 NativeInterface.setCallError 返回 \"JS execution runtime bridge is unavailable\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:410"
+  },
+  {
+    "fact": "JS 侧双层超时：safeTimeoutSec = max(1, timeoutSec||1)；preTimeoutMs 到时先设 safetyTimeoutFinal，5 秒后再真正 emitError(\"Script execution timed out after X seconds\")",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:424"
+  },
+  {
+    "fact": "finalizeCall：清掉两个安全定时器，恢复上一个调用的 call id 与 call runtime，最后调 __operitCleanupCallSession(callId)",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:480"
+  },
+  {
+    "fact": "结果上报：成功经 NativeInterface.setCallResult(callId, resultText)，失败经 NativeInterface.setCallError(callId, {\"success\": false, message})，上报后标记 completed 防重复",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:505"
+  },
+  {
+    "fact": "complete() 对返回值做 serializeOrThrow(normalizeComposeResult(value))；序列化失败则上报 \"Result serialization failed: ...\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:560"
+  },
+  {
+    "fact": "handleAsync：返回 Promise 时挂 .then(complete)/.catch(emitError)，非 Promise 直接同步 complete",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:575"
+  },
+  {
+    "fact": "callRuntime 的 emit/delta/log/update/sendIntermediateResult 都走 NativeInterface.sendCallIntermediateResult(callId, safeSerialize(value)) 发中间结果",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:610"
+  },
+  {
+    "fact": "getEnv 经 NativeInterface.getEnvForCall(callId, key) 取环境变量",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:617"
+  },
+  {
+    "fact": "getState 读 __operit_package_state；getLang 缺省 \"en\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:641"
+  },
+  {
+    "fact": "console.log/info/warn/error 被重定向为 NativeInterface.logInfoForCall/logWarnForCall/logErrorForCall(callId, ...)",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:620"
+  },
+  {
+    "fact": "normalizeSerializableValue 防爆序列化：循环引用记 \"[Circular]\"；bigint/function 转字符串；带 __javaHandle/__javaClass 标记的 Java 对象只透传句柄与类名",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:130"
+  },
+  {
+    "fact": "模块解析候选路径：原路径、+ .js、+ .json、+ /index.js、+ /index.json",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:255"
+  },
+  {
+    "fact": "require('lodash')→root._、require('uuid')→v4 垫片",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1266"
+  },
+  {
+    "fact": "require('axios')→经 toolCall('http_request') 的垫片；非相对路径返回空对象",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1283"
+  },
+  {
+    "fact": "工厂缓存键为 kind:identity:源码长度:hashText；模块实例缓存键类似，确保同一脚本只编译一次、同一模块只实例化一次",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:287"
+  },
+  {
+    "fact": "ToolPkg.ipc.call 的 targetRuntime 只能是 main/ui/sandbox/provider 之一；同上下文 main→main 走本地直调，否则经 NativeInterface.invokeToolPkgIpcAsync 异步跨运行时调用",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:843"
+  },
+  {
+    "fact": "ToolPkg.wasm.call(moduleId, exportName, args)：参数类型只允许 i32/i64/f32/f64（i64 超大数必须传字符串），经 NativeInterface.callToolPkgWasm 调用，结果解码处理 NaN/Infinity 字符串",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1152"
+  },
+  {
+    "fact": "主流程阶段打点：compile_main_script → execute_main_script，复用时记 reuse_main_script",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1327"
+  },
+  {
+    "fact": "目标函数按 exports → module.exports → 全局顺序查找",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:372"
+  },
+  {
+    "fact": "目标函数找不到时上报 \"Function '<name>' not found in script. Available functions: ...\" 并列出可用函数名",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1369"
+  },
+  {
+    "fact": "内联钩子函数：__operit_inline_function_name + __operit_inline_function_source 经 eval('(' + source + ')') 求值，必须是函数否则抛错",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1356"
+  },
+  {
+    "fact": "注册模式（__operit_registration_mode=true）下模块缓存每次 fresh",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:671"
+  },
+  {
+    "fact": ".ui.js 模块 require 时返回占位函数而非真实执行",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:1297"
+  },
+  {
+    "fact": "运行时种类判定：显式参数优先；executionContextKey 以 toolpkg_provider: 开头→provider；有子包 id→sandbox；否则 main",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:715"
+  },
+  {
+    "fact": "composeDsl.screen 必须是带模块路径标记的函数，传字符串路径直接抛 \"composeDsl.screen must be a compose_dsl screen function, not a string path\"",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:361"
+  },
+  {
+    "fact": "脚本工厂用 new Function('module', 'exports', 'require', '__operit_call_runtime', 前奏源码 + 脚本源码) 创建，注入 CommonJS 风格的模块参数",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExecutionScriptBuilder.kt:297"
+  },
+  {
+    "fact": "getJsToolsDefinition() 返回的 JS 源码定义全局 var Tools，是 JS 脚本调用 Android 工具的便捷门面",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:4",
+    "symbol": "getJsToolsDefinition"
+  },
+  {
+    "fact": "Tools 按域分组：Files（文件）、Net（网络/浏览器）、System（系统/蓝牙/终端/音乐）、SoftwareSettings、Tasker、UI、Memory、calc、FFmpeg、Workflow、Chat",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:8"
+  },
+  {
+    "fact": "每个便捷方法最终都调 toolCall(\"<工具名>\", params)，把 JS 友好的参数组装成工具调用",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:13"
+  },
+  {
+    "fact": "参数命名映射是各便捷包装内的惯例：JS 侧驼峰转工具侧蛇形（如 duration_ms、start_time、source_type），布尔值统一转 \"true\"/\"false\" 字符串",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:654"
+  },
+  {
+    "fact": "便捷方法自带参数校验：browserClick 要求 ref 或 selector、browserFillForm 要求非空 fields 数组，不满足直接 throw Error，不走到 toolCall",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:200"
+  },
+  {
+    "fact": "Tools.Chat 经 __operitToolPkgApi.namespace(\"Tools.Chat\", {...}) 构建",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:1466"
+  },
+  {
+    "fact": "Tools.Chat.call 用 .since(\"1.0.1\") 版本门控",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:1528"
+  },
+  {
+    "fact": "Tools.Chat.call 要求 functionType 非空字符串且 turns 为数组",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsTools.kt:1533"
+  }
+]

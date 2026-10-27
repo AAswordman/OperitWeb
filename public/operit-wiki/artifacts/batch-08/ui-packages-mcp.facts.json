@@ -1,0 +1,554 @@
+[
+  {
+    "fact": "MCPConfigScreen 是 @Composable 入口（带 StateFlowValueCalledInComposition 压制与 ExperimentalMaterial3Api），参数为 onNavigateToMCPMarket 与 searchQuery",
+    "ref": "screens/MCPConfigScreen.kt:71"
+  },
+  {
+    "fact": "mcpLocalServer = MCPLocalServer.getInstance(context)，mcpRepository = MCPRepository(context)，均用 remember 缓存",
+    "ref": "screens/MCPConfigScreen.kt:77"
+  },
+  {
+    "fact": "MCPViewModel 经 MCPViewModel.Factory(mcpRepository, context).create 创建",
+    "ref": "screens/MCPConfigScreen.kt:86"
+  },
+  {
+    "fact": "MCPDeployViewModel 经 MCPDeployViewModel.Factory(context, mcpRepository).create 创建",
+    "ref": "screens/MCPConfigScreen.kt:89"
+  },
+  {
+    "fact": "serverStatusMap 收集 mcpLocalServer.serverStatus",
+    "ref": "screens/MCPConfigScreen.kt:94"
+  },
+  {
+    "fact": "viewModel 暴露 installProgress、installResult、currentServer 三个 StateFlow",
+    "ref": "screens/MCPConfigScreen.kt:95"
+  },
+  {
+    "fact": "mcpConfigSnapshot 收集 mcpLocalServer.mcpConfig",
+    "ref": "screens/MCPConfigScreen.kt:98"
+  },
+  {
+    "fact": "configuredPluginIds 取自 mcpConfigSnapshot.mcpServers.keys",
+    "ref": "screens/MCPConfigScreen.kt:101"
+  },
+  {
+    "fact": "remotePluginIds 过滤 pluginMetadata 中 type == \"remote\" 的条目",
+    "ref": "screens/MCPConfigScreen.kt:105"
+  },
+  {
+    "fact": "visiblePluginIds = configuredPluginIds + remotePluginIds + discoveredInstalledPluginIds",
+    "ref": "screens/MCPConfigScreen.kt:109"
+  },
+  {
+    "fact": "deploymentStatus、outputMessages、currentDeployingPlugin、environmentVariables 四个 StateFlow 来自 deployViewModel",
+    "ref": "screens/MCPConfigScreen.kt:114"
+  },
+  {
+    "fact": "refreshMcpScreen 是挂起函数：调用 syncBridgeStatus 与 refreshPluginList，并清空 lockedPluginOrder",
+    "ref": "screens/MCPConfigScreen.kt:132"
+  },
+  {
+    "fact": "awaitPluginVisible 用 withTimeoutOrNull(20_000) 等待 mcpConfig 出现目标 pluginId",
+    "ref": "screens/MCPConfigScreen.kt:149"
+  },
+  {
+    "fact": "LaunchedEffect(Unit) 首次执行 refreshMcpScreen 并记录各插件启用状态",
+    "ref": "screens/MCPConfigScreen.kt:165"
+  },
+  {
+    "fact": "selectedPluginId 变化时 LaunchedEffect 经 mcpLocalServer.getPluginConfig 读取配置 JSON",
+    "ref": "screens/MCPConfigScreen.kt:413"
+  },
+  {
+    "fact": "deploymentStatus 为 Success 时 Toast 提示 plugin_deployed_success",
+    "ref": "screens/MCPConfigScreen.kt:420"
+  },
+  {
+    "fact": "详情对话框 onSaveConfig 调用 mcpLocalServer.savePluginConfig，成功/失败分别 Toast config_saved/save_failed",
+    "ref": "screens/MCPConfigScreen.kt:441"
+  },
+  {
+    "fact": "部署确认框 onConfirm 调用 deployViewModel.deployPlugin(pluginId)",
+    "ref": "screens/MCPConfigScreen.kt:476"
+  },
+  {
+    "fact": "自定义命令入口：关闭确认框后显示命令编辑框，若 generatedCommands 为空则先 getDeployCommands",
+    "ref": "screens/MCPConfigScreen.kt:491"
+  },
+  {
+    "fact": "命令编辑确认后调用 deployPluginWithCommands(pluginId, customCommands)",
+    "ref": "screens/MCPConfigScreen.kt:517"
+  },
+  {
+    "fact": "远程编辑保存走 viewModel.updateRemoteServer",
+    "ref": "screens/MCPConfigScreen.kt:542"
+  },
+  {
+    "fact": "部署进度框关闭时调用 deployViewModel.resetDeploymentState，重试调用 deployPlugin",
+    "ref": "screens/MCPConfigScreen.kt:561"
+  },
+  {
+    "fact": "卸载操作判定：InstallResult.Success 且 pluginPath.isEmpty()",
+    "ref": "screens/MCPConfigScreen.kt:583"
+  },
+  {
+    "fact": "导入对话框标题为 import_or_connect_mcp_service，含 4 个 Tab",
+    "ref": "screens/MCPConfigScreen.kt:602"
+  },
+  {
+    "fact": "仓库导入 Tab 含 repo 链接输入框与跳转市场的 get_mcp 按钮",
+    "ref": "screens/MCPConfigScreen.kt:721"
+  },
+  {
+    "fact": "压缩包导入 Tab 的 zip 路径框为只读，文件夹按钮打开 showFilePickerDialog",
+    "ref": "screens/MCPConfigScreen.kt:737"
+  },
+  {
+    "fact": "远程服务 Tab 的连接类型下拉提供 httpStream 与 sse 两种选项",
+    "ref": "screens/MCPConfigScreen.kt:774"
+  },
+  {
+    "fact": "远程服务 Tab 含 Bearer Token 输入框与 RemoteHeadersEditor 自定义头编辑器",
+    "ref": "screens/MCPConfigScreen.kt:811"
+  },
+  {
+    "fact": "配置导入 Tab 支持粘贴 JSON，并可经 ACTION_VIEW 直接打开配置文件",
+    "ref": "screens/MCPConfigScreen.kt:841"
+  },
+  {
+    "fact": "插件名输入框过滤为仅保留字母、数字与下划线",
+    "ref": "screens/MCPConfigScreen.kt:874"
+  },
+  {
+    "fact": "配置导入调用 mcpLocalServer.mergeConfigFromJson，成功 Toast 显示合并的服务器数量",
+    "ref": "screens/MCPConfigScreen.kt:909"
+  },
+  {
+    "fact": "proposedId = pluginNameInput.replace(\" \", \"_\").lowercase()，与 visiblePluginIds 冲突时 Toast plugin_already_exists",
+    "ref": "screens/MCPConfigScreen.kt:929"
+  },
+  {
+    "fact": "导入的 PluginMetadata 默认 version 为 \"1.0.0\"",
+    "ref": "screens/MCPConfigScreen.kt:947"
+  },
+  {
+    "fact": "远程服务 type=\"remote\"，本地插件 type=\"local\"",
+    "ref": "screens/MCPConfigScreen.kt:951"
+  },
+  {
+    "fact": "远程服务走 viewModel.addRemoteServer；仓库导入走 installServerWithObject；压缩包导入走 installServerFromZip",
+    "ref": "screens/MCPConfigScreen.kt:960"
+  },
+  {
+    "fact": "导入后 awaitPluginVisible(importId) 等待插件可见再结束 isImporting",
+    "ref": "screens/MCPConfigScreen.kt:982"
+  },
+  {
+    "fact": "文件选择用 ACTION_GET_CONTENT 且 type 为 application/zip",
+    "ref": "screens/MCPConfigScreen.kt:1045"
+  },
+  {
+    "fact": "选择结果经 DISPLAY_NAME 取文件名，并调用 viewModel.setSelectedZipUri(uri)",
+    "ref": "screens/MCPConfigScreen.kt:1062"
+  },
+  {
+    "fact": "isFullscreenLoading = isToolsLoading ||（无插件且（isAnyLoading 或尚未初始化））",
+    "ref": "screens/MCPConfigScreen.kt:1098"
+  },
+  {
+    "fact": "三个悬浮按钮：启动插件（PlayArrow）、市场（Store）、导入（Add）",
+    "ref": "screens/MCPConfigScreen.kt:1141"
+  },
+  {
+    "fact": "启动按钮依次调用 pluginLoadingState.reset()、show()、initializeMCPServer(context, lifecycleScope)",
+    "ref": "screens/MCPConfigScreen.kt:1122"
+  },
+  {
+    "fact": "状态卡片圆点：无启用插件灰；全部成功绿；部分成功橙 0xFFFFA500；否则红",
+    "ref": "screens/MCPConfigScreen.kt:1211"
+  },
+  {
+    "fact": "状态卡片显示 \"successfulToolRequests/totalEnabledPlugins\"",
+    "ref": "screens/MCPConfigScreen.kt:1220"
+  },
+  {
+    "fact": "每个列表项用 LaunchedEffect(pluginId) 收集 serverStatus 更新运行状态",
+    "ref": "screens/MCPConfigScreen.kt:1265"
+  },
+  {
+    "fact": "每个列表项收集 mcpConfig 更新启用状态",
+    "ref": "screens/MCPConfigScreen.kt:1273"
+  },
+  {
+    "fact": "点击列表项打开 MCPServerDetailsDialog；工具标签点击打开 MCPPackageDetailsDialog",
+    "ref": "screens/MCPConfigScreen.kt:1287"
+  },
+  {
+    "fact": "部署按钮设置 pluginToDeploy 并显示确认框",
+    "ref": "screens/MCPConfigScreen.kt:1306"
+  },
+  {
+    "fact": "开关变化在 scope.launch 中调用 mcpLocalServer.setServerEnabled",
+    "ref": "screens/MCPConfigScreen.kt:1325"
+  },
+  {
+    "fact": "PluginListItem 的 isConfigValid = isRemote || deploySuccessState.value",
+    "ref": "screens/MCPConfigScreen.kt:1330"
+  },
+  {
+    "fact": "空列表显示 no_plugins；有搜索无结果显示 no_matching_plugins_found",
+    "ref": "screens/MCPConfigScreen.kt:1363"
+  },
+  {
+    "fact": "parseMCPServiceToolNames 在 success != true 时返回 emptyMap",
+    "ref": "screens/MCPConfigScreen.kt:1388"
+  },
+  {
+    "fact": "工具名按服务分组并经 distinct 去重",
+    "ref": "screens/MCPConfigScreen.kt:1415"
+  },
+  {
+    "fact": "getPluginDisplayName 优先用已安装插件名，否则按 official_ 前缀等规则拼装",
+    "ref": "screens/MCPConfigScreen.kt:1423"
+  },
+  {
+    "fact": "mcpPluginMatchesSearch 检索 id、名称、描述、作者、版本、repoUrl、type、endpoint 与工具名",
+    "ref": "screens/MCPConfigScreen.kt:1439"
+  },
+  {
+    "fact": "getPluginAsServer：远程直接 copy(isInstalled)，本地先查 mcpRepository.mcpServers 内存列表",
+    "ref": "screens/MCPConfigScreen.kt:1468"
+  },
+  {
+    "fact": "运行中插件图标右上角显示绿色圆点（0xFF4CAF50）",
+    "ref": "screens/MCPConfigScreen.kt:1577"
+  },
+  {
+    "fact": "列表项徽章：official_ 前缀显示官方徽章，remote 类型显示远程徽章",
+    "ref": "screens/MCPConfigScreen.kt:1610"
+  },
+  {
+    "fact": "已部署的本地插件显示 deployed 徽章",
+    "ref": "screens/MCPConfigScreen.kt:1642"
+  },
+  {
+    "fact": "开关缩放 0.8f，enabled 受 isConfigValid 控制",
+    "ref": "screens/MCPConfigScreen.kt:1684"
+  },
+  {
+    "fact": "工具标签只展示前 5 个，超出显示 more+N",
+    "ref": "screens/MCPConfigScreen.kt:1714"
+  },
+  {
+    "fact": "已部署插件按钮文案为 redeploy，否则为 deploy",
+    "ref": "screens/MCPConfigScreen.kt:1778"
+  },
+  {
+    "fact": "工具加载：远程插件走 mcpRepository.getRemoteToolNames(pluginId)",
+    "ref": "screens/MCPConfigScreen.kt:372"
+  },
+  {
+    "fact": "本地插件运行时目录未就绪（isPluginRuntimeReady 为 false）时跳过工具拉取",
+    "ref": "screens/MCPConfigScreen.kt:374"
+  },
+  {
+    "fact": "桥接工具仅在存在本地插件时经 MCPBridge.getInstance(context).listMcpServices() 获取",
+    "ref": "screens/MCPConfigScreen.kt:362"
+  },
+  {
+    "fact": "全屏加载遮罩最多显示 2 秒（delay(2_000) 后关闭）",
+    "ref": "screens/MCPConfigScreen.kt:353"
+  },
+  {
+    "fact": "排序规则：启用且有工具排前，其次启用，再次其他，最后按显示名",
+    "ref": "screens/MCPConfigScreen.kt:282"
+  },
+  {
+    "fact": "lockedPluginOrder 在工具加载完成后锁定列表顺序，防止状态变化跳动",
+    "ref": "screens/MCPConfigScreen.kt:294"
+  },
+  {
+    "fact": "RemoteServerEditDialog 支持 AI 重生成描述，期间显示加载圈",
+    "ref": "screens/MCPConfigScreen.kt:1851"
+  },
+  {
+    "fact": "保存远程服务时 bearerToken 为空则置 null",
+    "ref": "screens/MCPConfigScreen.kt:1968"
+  },
+  {
+    "fact": "EditableHeader 默认 id 为 UUID.randomUUID()",
+    "ref": "screens/MCPConfigScreen.kt:1986"
+  },
+  {
+    "fact": "toHeaderMap 跳过空 key，空集合返回 null",
+    "ref": "screens/MCPConfigScreen.kt:1998"
+  },
+  {
+    "fact": "RemoteHeadersEditor 每行可删除，底部按钮追加空行",
+    "ref": "screens/MCPConfigScreen.kt:2087"
+  },
+  {
+    "fact": "SkillConfigScreen 参数含 skillRepository、snackbarHostState、skillOrder、onSaveSkillOrder",
+    "ref": "screens/SkillConfigScreen.kt:89"
+  },
+  {
+    "fact": "SkillVisibilityPreferences 经 getInstance(context) 获取单例",
+    "ref": "screens/SkillConfigScreen.kt:100"
+  },
+  {
+    "fact": "refreshSkills 在 Dispatchers.IO 调用 skillRepository.getAvailableSkillPackagesSnapshot()",
+    "ref": "screens/SkillConfigScreen.kt:122"
+  },
+  {
+    "fact": "zipPicker 用 GetContent 合同选择压缩包，文件名经 resolveUriDisplayName 解析",
+    "ref": "screens/SkillConfigScreen.kt:136"
+  },
+  {
+    "fact": "attachmentPicker 用 OpenMultipleDocuments 并按 uri 去重",
+    "ref": "screens/SkillConfigScreen.kt:145"
+  },
+  {
+    "fact": "顶部卡片显示 skillRepository.getSkillsDirectoryPath()",
+    "ref": "screens/SkillConfigScreen.kt:214"
+  },
+  {
+    "fact": "无搜索词且 skillOrder 非空时按外部顺序排序，否则按名称排序",
+    "ref": "screens/SkillConfigScreen.kt:236"
+  },
+  {
+    "fact": "空技能列表显示 skillmgr_no_skills_found",
+    "ref": "screens/SkillConfigScreen.kt:245"
+  },
+  {
+    "fact": "拖拽排序后调用 onSaveSkillOrder(newOrder)",
+    "ref": "screens/SkillConfigScreen.kt:259"
+  },
+  {
+    "fact": "拖拽手柄为长按（longPressDraggableHandle），拖拽项带弹簧动画",
+    "ref": "screens/SkillConfigScreen.kt:331"
+  },
+  {
+    "fact": "点击技能在 IO 线程构建详情，并以 absolutePath 校验防止串位",
+    "ref": "screens/SkillConfigScreen.kt:325"
+  },
+  {
+    "fact": "存在加载错误时显示红色错误悬浮按钮",
+    "ref": "screens/SkillConfigScreen.kt:354"
+  },
+  {
+    "fact": "市场悬浮按钮跳转 onNavigateToSkillMarket，加号按钮打开导入对话框",
+    "ref": "screens/SkillConfigScreen.kt:374"
+  },
+  {
+    "fact": "导入对话框有 3 个 Tab：仓库导入、压缩包导入、直接输入",
+    "ref": "screens/SkillConfigScreen.kt:434"
+  },
+  {
+    "fact": "压缩包 Tab 通过 zipPicker.launch(\"application/zip\") 选择文件",
+    "ref": "screens/SkillConfigScreen.kt:494"
+  },
+  {
+    "fact": "直接输入 Tab 含技能 ID、描述、内容输入框与多附件选择",
+    "ref": "screens/SkillConfigScreen.kt:508"
+  },
+  {
+    "fact": "附件区显示数量并支持逐个删除",
+    "ref": "screens/SkillConfigScreen.kt:540"
+  },
+  {
+    "fact": "仓库导入调用 skillRepository.importSkillFromGitHubRepo(url)",
+    "ref": "screens/SkillConfigScreen.kt:635"
+  },
+  {
+    "fact": "压缩包导入仅允许 .zip 后缀，否则提示 skillmgr_only_zip_files",
+    "ref": "screens/SkillConfigScreen.kt:653"
+  },
+  {
+    "fact": "压缩包先复制到 cacheDir 临时文件，导入后在 finally 中删除",
+    "ref": "screens/SkillConfigScreen.kt:659"
+  },
+  {
+    "fact": "直接输入校验 SKILL_ID_PATTERN（^[A-Za-z0-9._-]+$）且排除 \".\" 与 \"..\"",
+    "ref": "screens/SkillConfigScreen.kt:790"
+  },
+  {
+    "fact": "直接输入调用 importSkillFromDirectInput 携带附件 uri 列表",
+    "ref": "screens/SkillConfigScreen.kt:704"
+  },
+  {
+    "fact": "详情对话框删除按钮调用 skillRepository.deleteSkill",
+    "ref": "screens/SkillConfigScreen.kt:759"
+  },
+  {
+    "fact": "删除成功后刷新列表并 Snackbar 提示 skillmgr_deleted",
+    "ref": "screens/SkillConfigScreen.kt:762"
+  },
+  {
+    "fact": "目录预览 walk 统计文件/文件夹数，上限 18 行，超出计入 hiddenEntryCount",
+    "ref": "screens/SkillConfigScreen.kt:830"
+  },
+  {
+    "fact": "详情支持展开查看 SKILL.md 内容（MarkdownTextComposable）",
+    "ref": "screens/SkillConfigScreen.kt:985"
+  },
+  {
+    "fact": "详情分小节展示：描述、目录路径、入口文件、文件数量",
+    "ref": "screens/SkillConfigScreen.kt:911"
+  },
+  {
+    "fact": "加载错误对话框按技能名排序展示错误文本",
+    "ref": "screens/SkillConfigScreen.kt:1044"
+  },
+  {
+    "fact": "SkillListItem 开关绑定 SkillVisibilityPreferences.isSkillVisibleToAi",
+    "ref": "screens/SkillConfigScreen.kt:1077"
+  },
+  {
+    "fact": "导入过程中禁止关闭导入对话框（onDismissRequest 受 isImporting 门控）",
+    "ref": "screens/SkillConfigScreen.kt:400"
+  },
+  {
+    "fact": "MCPServerDetailsDialog 共 9 个参数，mdFontSize 默认 14f",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:46"
+  },
+  {
+    "fact": "supportsLocalConfigEditing = server.type != \"remote\"，远程服务无配置 Tab",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:58"
+  },
+  {
+    "fact": "对话框宽 95%、高 70%，高度限制在 400dp 到屏幕高度 70% 之间",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:74"
+  },
+  {
+    "fact": "仅已安装且支持本地配置编辑时显示详情/配置双 Tab",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:93"
+  },
+  {
+    "fact": "localPluginConfig 每次变化经 LaunchedEffect 回调 onUpdateConfig",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:69"
+  },
+  {
+    "fact": "配置 Tab 仅在已安装、支持编辑且 selectedTabIndex == 1 时显示",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:108"
+  },
+  {
+    "fact": "底部操作区固定在对话框底部（Alignment.BottomCenter）",
+    "ref": "components/dialogs/MCPServerDetailsDialog.kt:130"
+  },
+  {
+    "fact": "有 repoUrl 时显示仓库按钮，点击 ACTION_VIEW 打开，失败记 AppLogger.e",
+    "ref": "components/dialogs/actions/MCPServerDetailsActions.kt:52"
+  },
+  {
+    "fact": "已安装显示红色卸载按钮，未安装显示安装按钮",
+    "ref": "components/dialogs/actions/MCPServerDetailsActions.kt:74"
+  },
+  {
+    "fact": "配置 Tab 显示安装路径面板与占满剩余高度的 JSON 编辑框",
+    "ref": "components/dialogs/content/MCPServerConfigContent.kt:53"
+  },
+  {
+    "fact": "配置 Tab 有生效提示条与右对齐的保存按钮",
+    "ref": "components/dialogs/content/MCPServerConfigContent.kt:114"
+  },
+  {
+    "fact": "详情 Tab 为单条 LazyColumn，描述为空显示 mcp_no_description",
+    "ref": "components/dialogs/content/MCPServerDetailsContent.kt:33"
+  },
+  {
+    "fact": "Header 在 logoUrl 变化时取消旧的图片加载任务",
+    "ref": "components/dialogs/header/MCPServerDetailsHeader.kt:77"
+  },
+  {
+    "fact": "Header 显示名称、作者（by 前缀）与版本（v 前缀），右上角关闭按钮",
+    "ref": "components/dialogs/header/MCPServerDetailsHeader.kt:138"
+  },
+  {
+    "fact": "Tabs 为 32dp 高自定义 TabRow，含详情/配置两项与下划线指示器",
+    "ref": "components/dialogs/tabs/MCPServerDetailsTabs.kt:40"
+  },
+  {
+    "fact": "MCPDeployViewModel 持有 5 个 StateFlow：部署状态、当前插件、输出消息、生成命令、环境变量",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:26"
+  },
+  {
+    "fact": "getDeployCommands 对 virtual:// 路径直接返回空命令列表",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:61"
+  },
+  {
+    "fact": "插件路径为空时置 DeploymentStatus.Error(mcp_deploy_error_cannot_get_path)",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:55"
+  },
+  {
+    "fact": "deployPlugin 对 npx/uvx 虚拟路径直接用空命令部署",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:138"
+  },
+  {
+    "fact": "deployPlugin 在生成命令为空时先获取再部署",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:144"
+  },
+  {
+    "fact": "deployPluginWithCommands 先清空输出并设置当前部署插件",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:182"
+  },
+  {
+    "fact": "状态回调将带输出前缀的 InProgress 消息追加到 outputMessages",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:203"
+  },
+  {
+    "fact": "输出前缀兼容新旧两种 key：mcp_deployment_output_prefix 与 mcp_deploy_output_prefix",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:204"
+  },
+  {
+    "fact": "resetDeploymentState 不重置环境变量（注释说明供多次部署复用）",
+    "ref": "screens/mcp/viewmodel/MCPDeployViewModel.kt:236"
+  },
+  {
+    "fact": "部署确认框提供取消、自定义命令、直接部署三个按钮",
+    "ref": "screens/mcp/components/MCPDeployConfirmDialog.kt:92"
+  },
+  {
+    "fact": "命令编辑框初始文本为 commands.joinToString(\"\\n\")",
+    "ref": "screens/mcp/components/MCPCommandsEditDialog.kt:39"
+  },
+  {
+    "fact": "commands 变化且非空时 LaunchedEffect 同步编辑文本",
+    "ref": "screens/mcp/components/MCPCommandsEditDialog.kt:42"
+  },
+  {
+    "fact": "确认时按行拆分、trim 并过滤空行后回调",
+    "ref": "screens/mcp/components/MCPCommandsEditDialog.kt:222"
+  },
+  {
+    "fact": "进度框在 InProgress 时禁用返回键与点击外部关闭",
+    "ref": "screens/mcp/components/MCPDeployProgressDialog.kt:52"
+  },
+  {
+    "fact": "输出新增时自动滚动到最后一行",
+    "ref": "screens/mcp/components/MCPDeployProgressDialog.kt:42"
+  },
+  {
+    "fact": "日志区最大高度 180dp 并显示行数统计",
+    "ref": "screens/mcp/components/MCPDeployProgressDialog.kt:211"
+  },
+  {
+    "fact": "失败时显示重试按钮；标题按成功/失败/进行中切换",
+    "ref": "screens/mcp/components/MCPDeployProgressDialog.kt:239"
+  },
+  {
+    "fact": "进度框标题栏可打开环境变量管理对话框",
+    "ref": "screens/mcp/components/MCPDeployProgressDialog.kt:278"
+  },
+  {
+    "fact": "环境变量对话框用 mutableStateListOf 管理，LaunchedEffect 同步外部传入值",
+    "ref": "screens/mcp/components/MCPEnvironmentVariablesDialog.kt:36"
+  },
+  {
+    "fact": "删除环境变量按 Pair(key, value) 精确移除",
+    "ref": "screens/mcp/components/MCPEnvironmentVariablesDialog.kt:77"
+  },
+  {
+    "fact": "新增变量要求 key 非空；确认时 associate 转回 Map",
+    "ref": "screens/mcp/components/MCPEnvironmentVariablesDialog.kt:116"
+  }
+]

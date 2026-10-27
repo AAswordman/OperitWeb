@@ -1,0 +1,92 @@
+[
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "evidence": "val publishedAt = requireNotNull(release.published_at)\n        val date = try {\n            val inputFormat = SimpleDateFormat(\"yyyy-MM-dd'T'HH:mm:ss'Z'\", Locale.getDefault())\n            val outputFormat = SimpleDateFormat(\"yyyy-MM-dd\", Locale.getDefault())\n            val parsedDate = inputFormat.parse(publishedAt)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt",
+    "line": 63,
+    "severity": "warn",
+    "title": "release.published_at 为空时 requireNotNull 直接崩溃",
+    "detail": "parseReleaseToUpdateInfo 中对 release.published_at 使用 requireNotNull：若 GitHub API 返回的某条 release 缺少发布时间字段（草稿或异常数据），直接抛 IllegalArgumentException 导致更新历史页崩溃。更稳妥的做法是过滤掉或给默认值。"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "evidence": "} else {\n                    // 如果没有APK下载链接，则直接打开更新页面\n                    val intent = Intent(Intent.ACTION_VIEW).apply {\n                        data = Uri.parse(status.updateUrl)\n                        addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)\n                    }\n                    context.startActivity(intent)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt",
+    "line": 722,
+    "severity": "warn",
+    "title": "更新元数据中的 URL 未校验直接打开",
+    "detail": "handleDownload 中 Available 但无 .apk 链接时，直接用浏览器打开远端下发的 status.updateUrl，未校验 scheme。若更新元数据被劫持/篡改，可诱导打开任意 URL（如钓鱼页）。建议只允许 http/https 并做基本校验。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "if (status.downloadUrl.isNotEmpty() && status.downloadUrl.endsWith(\".apk\")) {\n                    showUpdateDialog = false\n                    pendingFullUpdateMethod = status\n                } else {\n                    val intent = Intent(Intent.ACTION_VIEW).apply {\n                        data = Uri.parse(status.updateUrl)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt",
+    "line": 717,
+    "severity": "suggestion",
+    "title": "空 updateUrl 可能导致 startActivity 异常",
+    "detail": "当 downloadUrl 为空字符串且非 .apk 结尾时，handleDownload 仍会构造 ACTION_VIEW Intent 打开 status.updateUrl；若 updateUrl 同样为空，Uri.parse(\"\") 加 startActivity 可能抛 ActivityNotFoundException。建议在打开前校验 URL 非空。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "evidence": "if (status.releaseNotes.isNotEmpty() && !status.newVersion.contains(\"+\")) {\n                            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))\n                            Text(\n                                stringResource(id = R.string.update_content),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt",
+    "line": 1083,
+    "severity": "suggestion",
+    "title": "版本号含 + 时隐藏更新内容",
+    "detail": "UpdateDialog 中版本号包含 +（如构建元数据版本）时直接跳过 releaseNotes 展示，用户看不到该版本的更新内容说明。这是写死的字符串匹配规则，容易误伤合法版本号。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "evidence": "override fun onReceivedError(\n                    view: WebView?,\n                    errorCode: Int,\n                    description: String?,\n                    failingUrl: String?\n                ) {\n                    super.onReceivedError(view, errorCode, description, failingUrl)\n                    isLoading = false\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt",
+    "line": 50,
+    "severity": "suggestion",
+    "title": "帮助页加载失败无错误提示与重试",
+    "detail": "HelpScreen 的 onReceivedError 只把 isLoading 置 false，没有任何错误提示与重试入口；官网不可达或断网时页面一片空白，用户无法感知发生了什么。建议加错误态与重试按钮。"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "evidence": "fun HelpScreen(onBackPressed: () -> Unit = {}) {\n    val context = LocalContext.current\n    var isLoading by remember { mutableStateOf(true) }\n    val helpUrl = \"https://operit.app\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt",
+    "line": 27,
+    "severity": "suggestion",
+    "title": "帮助地址硬编码",
+    "detail": "帮助地址硬编码为 https://operit.app，分散在 Composable 内部常量中；域名变更或需要按渠道/语言区分时必须改代码发版。建议收敛到统一配置。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "LaunchedEffect(updateStatus) {\n        when (updateStatus) {\n            is UpdateStatus.Available, is UpdateStatus.PatchAvailable, is UpdateStatus.UpToDate, is UpdateStatus.Error -> {\n                showUpdateDialog = true\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt",
+    "line": 512,
+    "severity": "suggestion",
+    "title": "已是最新时也自动弹窗",
+    "detail": "LaunchedEffect(updateStatus) 在 UpToDate 时也自动弹出“已是最新”对话框：每次手动点“检查更新”且无更新时都会弹一次模态框打断用户。是否打扰见仁见智，但当前行为是无条件的。"
+  },
+  {
+    "title": "旋转/进程重建会重置 5 秒强制阅读倒计时",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt",
+    "line": 25,
+    "severity": "suggestion",
+    "category": "correctness",
+    "detail": "remainingSeconds 与 isButtonEnabled 用 remember 保存，LaunchedEffect(Unit) 只防重组重启、不防 Activity 重建：旋转屏幕或进程被杀恢复后状态丢失，倒计时从头再走 5 秒。如需严格保证强制阅读时长，应落盘或用 rememberSaveable。",
+    "evidence": "        var isButtonEnabled by remember { mutableStateOf(false) }\n        var remainingSeconds by remember { mutableStateOf(5) }\n\n        // Timer to enable the button after 5 seconds\n        LaunchedEffect(Unit) {\n                repeat(5) {\n                        delay(1000)\n                        remainingSeconds--",
+    "confidence": "medium"
+  },
+  {
+    "title": "AndroidView 的 update 块每次重组都重新解析长 HTML",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt",
+    "line": 128,
+    "severity": "suggestion",
+    "category": "maintainability",
+    "detail": "严肃版协议的 AndroidView update lambda 在每次重组都执行 textView.text = HtmlCompat.fromHtml(...)，而 agreement_serious_content 是静态长文本；反复解析浪费 CPU，可用 remember 把 Spanned 缓存起来。",
+    "evidence": "                                        update = { textView ->\n                                                textView.text = HtmlCompat.fromHtml(\n                                                        textView.context.getString(R.string.agreement_serious_content),\n                                                        HtmlCompat.FROM_HTML_MODE_COMPACT\n                                                )\n                                        },",
+    "confidence": "medium"
+  }
+]

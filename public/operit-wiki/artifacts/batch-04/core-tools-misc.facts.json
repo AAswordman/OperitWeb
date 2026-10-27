@@ -1,0 +1,626 @@
+[
+  {
+    "fact": "`AgentConfig.maxSteps` 默认 20，即单次任务最多执行 20 步",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:44"
+  },
+  {
+    "fact": "`PhoneAgent.agentId` 默认为 `\"default\"`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:124"
+  },
+  {
+    "fact": "`requiresVirtualScreen` 为真当且仅当 agentId 非空且不等于 \"default\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:137"
+  },
+  {
+    "fact": "`isMainScreenAgent` 为真当且仅当 agentId 为空或等于 \"default\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:138"
+  },
+  {
+    "fact": "主循环条件为 `_stepCount < config.maxSteps`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:507"
+  },
+  {
+    "fact": "步数耗尽后返回字符串 `\"Max steps reached\"`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:566"
+  },
+  {
+    "fact": "超步终止返回字符串 `\"Max steps reached\"`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:566"
+  },
+  {
+    "fact": "每步先经 `ActionHandler.captureScreenshotForAgent()` 截图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:606"
+  },
+  {
+    "fact": "再调 `uiService.sendMessage` 流式获取模型回复",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:621"
+  },
+  {
+    "fact": "模型回复经 `parseThinkingAndAction` 拆出 thinking 与 answer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:637"
+  },
+  {
+    "fact": "answer 经 `parseAgentAction` 解析为 `ParsedAgentAction`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:641"
+  },
+  {
+    "fact": "`parseAgentAction` 返回 `ParsedAgentAction`（metadata+fields）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:691"
+  },
+  {
+    "fact": "再交 `ActionHandler.executeAgentAction` 执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:651"
+  },
+  {
+    "fact": "动作协议两种形式：`finish(message=\"...\")` 表示结束，`do(action=...)` 表示执行动作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:672"
+  },
+  {
+    "fact": "`parseAgentAction` 用 `lastIndexOf` 取回复中最后一个 `finish(`/`do(` 作为动作起点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:693"
+  },
+  {
+    "fact": "ActionHandler 在 966–1142 行的 when 分支里支持 8 种动作动词：Launch、Tap、Type、Swipe、Back、Home、Wait、Take_over",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:966"
+  },
+  {
+    "fact": "Tap 动作取 `element` 字段，经 `parseRelativePoint` 解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1032"
+  },
+  {
+    "fact": "`parseRelativePoint` 解析 `[x,y]` 格式（去括号按逗号切分）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1220"
+  },
+  {
+    "fact": "`parseRelativePoint` 把 0–1000 相对坐标换算为屏幕像素坐标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1220"
+  },
+  {
+    "fact": "Tap 执行时若 `showerCtx.canUseShowerForInput` 为真则走 `ShowerController.tap`，否则回退标准 `tap` 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1033"
+  },
+  {
+    "fact": "Type 动作在 Shower 通道下先 Ctrl+A/删除清空，再经剪贴板粘贴文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1047"
+  },
+  {
+    "fact": "Wait 动作解析 `duration` 字段（可带 \"seconds\" 后缀），缺省等待 1 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1137"
+  },
+  {
+    "fact": "Take_over 动作直接结束任务并返回接管提示消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:1142"
+  },
+  {
+    "fact": "`resolvePrivilegedExecutionState` 中 DEBUGGER/ADMIN/ROOT 权限等级被视为 adb 及以上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt:78"
+  },
+  {
+    "fact": "`PhoneAgentJobRegistry` 按 agentId 用 `ConcurrentHashMap` 维护协程 Job 集合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgentJobRegistry.kt:11"
+  },
+  {
+    "fact": "Job 注册时挂 `invokeOnCompletion`，完成后自动从注册表注销",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgentJobRegistry.kt:26"
+  },
+  {
+    "fact": "`cancelAgent(agentId)` 取消该 agent 下全部 Job",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgentJobRegistry.kt:40"
+  },
+  {
+    "fact": "`cancelAll()` 取消注册表中全部 agent 的全部 Job",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgentJobRegistry.kt:55"
+  },
+  {
+    "fact": "`ShowerController` 用 `ConcurrentHashMap<String, ClientShowerController>` 按 agentId 维护多实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerController.kt:16"
+  },
+  {
+    "fact": "每个操作都有带 agentId 与不带 agentId（默认 \"default\"）两个重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerController.kt:21"
+  },
+  {
+    "fact": "`ShowerController` 是与设备本地 Shower 服务通信的轻量控制器，按 agentId 维护多实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerController.kt:14"
+  },
+  {
+    "fact": "`ShowerBinderReceiver` 监听广播 `com.ai.assistance.operit.action.SHOWER_BINDER_READY`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerBinderReceiver.kt:26"
+  },
+  {
+    "fact": "收到广播后从 `ShowerBinderContainer` 取出 binder，经 `IShowerService.Stub.asInterface` 转换为服务接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerBinderReceiver.kt:18"
+  },
+  {
+    "fact": "转换后的服务存入 `ShowerBinderRegistry.setService`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerBinderReceiver.kt:21"
+  },
+  {
+    "fact": "`ShowerServerManager` 是 `:showerclient` 模块同名实现的 app 层门面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerServerManager.kt:4"
+  },
+  {
+    "fact": "Shower 服务端 jar 打包在 app assets（shower-server.jar），运行时复制到 files 目录后经 app_process 启动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerServerManager.kt:13"
+  },
+  {
+    "fact": "`ShowerVideoRenderer` 是 H.264 解码器，把 Shower 视频流渲染到 Surface",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerVideoRenderer.kt:7"
+  },
+  {
+    "fact": "解码器假定收到的前两个二进制帧是 csd-0/csd-1 编解码配置，后续为常规访问单元",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerVideoRenderer.kt:9"
+  },
+  {
+    "fact": "`VirtualDisplayManager` 为单例，`getInstance` 双重检查锁定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt:25"
+  },
+  {
+    "fact": "虚拟显示器经 `ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2)` 创建 Surface",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt:137"
+  },
+  {
+    "fact": "虚拟显示器命名为 \"OperitVirtualDisplay\"，取真实屏幕宽高并扣除状态栏高度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt:145"
+  },
+  {
+    "fact": "`captureLatestFrameBitmap` 取最新帧并按行跨度裁剪后返回 Bitmap",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt:65"
+  },
+  {
+    "fact": "`captureLatestFrameToFile` 把最新帧压缩为 PNG 写入指定文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt:108"
+  },
+  {
+    "fact": "`Calculator` 是 `JsCalculator` 的适配器，保持旧 API 兼容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/Calculator.kt:5"
+  },
+  {
+    "fact": "`Calculator.evalExpression` 直接委托 `JsCalculator.evaluate`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/Calculator.kt:9"
+  },
+  {
+    "fact": "`JsCalculator.evaluate` 用 `ExpressionParser` 解析为语法树再求值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:18"
+  },
+  {
+    "fact": "`JsCalculator.evaluate` 求值异常包装为 `IllegalArgumentException` 抛出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:25"
+  },
+  {
+    "fact": "`JsCalculator.calc` 返回格式化后的字符串结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:44"
+  },
+  {
+    "fact": "`JsCalculator` 支持 Temperature 单位换算（c/f/k）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:89"
+  },
+  {
+    "fact": "`JsCalculator` 支持 Length/Weight/Volume/Speed 单位换算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:102"
+  },
+  {
+    "fact": "`JsCalculator` 支持的日期函数：today/now/date/date_diff/date_add/weekday/month/year/day",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:117"
+  },
+  {
+    "fact": "`JsCalculator` 支持的统计函数：stats.mean/median/min/max/sum/stdev",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:129"
+  },
+  {
+    "fact": "`JsCalculator` 支持的 JS 特性：三元运算符、Math 函数、模板字符串、JavaScript 关键字（true/false/null/NaN）、赋值运算符、指数运算、字符串索引、array.length",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/JsCalculator.kt:143"
+  },
+  {
+    "fact": "`ExpressionParser.parse()` 先 `nextToken` 再 `parseExpression`，末尾 token 非 EOF 则抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:33"
+  },
+  {
+    "fact": "解析优先级自顶向下：parseTernary → parseAssignment → parseLogicalOr → parseLogicalAnd → parseEquality → parseComparison → parseAdditive → parseMultiplicative → parseExponential → parseUnary → parseArrayAccess → parsePrimary",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:49"
+  },
+  {
+    "fact": "`parseTernary` 解析 `condition ? trueExpr : falseExpr`，缺冒号抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:51"
+  },
+  {
+    "fact": "`parseAssignment` 区分 `=` 赋值与 `==` 相等",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:80"
+  },
+  {
+    "fact": "`parseAssignment` 支持 `+=`/`-=`/`*=`/`/=` 复合赋值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:91"
+  },
+  {
+    "fact": "`parseArrayAccess` 把 `.length` 属性访问转换为 `FunctionCallNode(\"length\", …)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:236"
+  },
+  {
+    "fact": "`parsePrimary` 支持 `Math.`/`stats.` 命名空间调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:297"
+  },
+  {
+    "fact": "`Math.PI`/`Math.E` 无括号时转为变量节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:306"
+  },
+  {
+    "fact": "`convert` 第 2、3 个参数被解析为 fromUnit/toUnit 后直接丢弃，`_convert_from`/`_convert_to` 实际存入的是 Double `0.0`（注释声称\"会被类型转换为字符串\"并不成立）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:287"
+  },
+  {
+    "fact": "ExpressionContext 读取 `_convert_from` 时用 `variables[\"_convert_from\"] as? String`，恒为 null 并抛 \"from_unit not provided\"，导致 convert 永远失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:212"
+  },
+  {
+    "fact": "模板字符串经 `parseTemplate` 解析：`${…}` 内嵌表达式，拼接后生成 `TemplateStringNode`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:401"
+  },
+  {
+    "fact": "模板字符串未闭合时抛 `IllegalArgumentException(\"Unclosed template string\")`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:571"
+  },
+  {
+    "fact": "词法单元类型共 14 种：NONE/NUMBER/IDENTIFIER/OPERATOR/LEFT_PAREN/RIGHT_PAREN/LEFT_BRACKET/RIGHT_BRACKET/COMMA/STRING/TEMPLATE_START/TEMPLATE_MIDDLE/TEMPLATE_END/EOF",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt:14"
+  },
+  {
+    "fact": "`ExpressionNode` 是密封接口，所有节点求值返回 Double",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNode.kt:4"
+  },
+  {
+    "fact": "`ExpressionNode.kt` 内共定义 10 种节点类型（4–151 行）：Number/Variable/BinaryOperation/UnaryOperation/FunctionCall/TernaryOperation/Assignment/CompoundAssignment/ArrayAccess/TemplateString",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNode.kt:4"
+  },
+  {
+    "fact": "比较与逻辑运算符返回 1.0/0.0 表示真假，未知运算符抛 `IllegalArgumentException`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNode.kt:42"
+  },
+  {
+    "fact": "`TemplateStringNode` 拼接后转 Double 失败时返回 `Double.NaN`（JS 行为）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionNode.kt:151"
+  },
+  {
+    "fact": "`ExpressionContext` 是 object 单例，预置常量 PI 与 E",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:14"
+  },
+  {
+    "fact": "`coerceToNumber` 按 JS 风格转换：null→0.0、布尔→1.0/0.0、\"null\"/\"undefined\"→0.0、无效字符串→NaN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:38"
+  },
+  {
+    "fact": "`callFunction` 剥离 `Math.` 前缀后匹配函数名，大小写不敏感",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:104"
+  },
+  {
+    "fact": "日期函数 `now()` 返回当前毫秒时间戳，`today()` 返回天数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:127"
+  },
+  {
+    "fact": "统计函数 `stats.stdev` 计算总体标准差（方差开方）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:202"
+  },
+  {
+    "fact": "`factorial` 负数或大于 20 时抛 `IllegalArgumentException`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:270"
+  },
+  {
+    "fact": "`formatResult` 整数结果不显示小数部分，否则保留最多 6 位小数并去尾零",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:310"
+  },
+  {
+    "fact": "`clearVariables` 清空后重新加入 PI/E 常量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt:300"
+  },
+  {
+    "fact": "`CalculatorTest.runTests` 覆盖算术、指数、三元、Math、变量、复合赋值、模板字符串与日期函数示例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/CalculatorTest.kt:11"
+  },
+  {
+    "fact": "`ToolExposureMode` 分 FULL/CLI 两档；LMSTUDIO、OLLAMA、OPENAI_LOCAL、MNN、LLAMA_CPP 解析为 CLI",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:19"
+  },
+  {
+    "fact": "CLI 工具模式下仅有两个公开工具：`search` 与 `proxy`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:66"
+  },
+  {
+    "fact": "`search` 工具参数：`query` 必填字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:92"
+  },
+  {
+    "fact": "`search` 工具参数：`limit` 可选整数，默认 `DEFAULT_SEARCH_LIMIT`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:140"
+  },
+  {
+    "fact": "`DEFAULT_SEARCH_LIMIT` 值为 8",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:69"
+  },
+  {
+    "fact": "`proxy` 工具参数：`tool_name` 必填，`params` 为转发给隐藏目标工具的 JSON 对象",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:115"
+  },
+  {
+    "fact": "`HiddenToolSourceKind` 共 5 种：BUILTIN、INTERNAL、PACKAGE、MCP、ACTIVATION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:37"
+  },
+  {
+    "fact": "构建隐藏目录时跳过 `use_package` 与保留代理目标（isReservedProxyTarget/isCliPublicTool）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:210"
+  },
+  {
+    "fact": "`search`/`proxy` 为公开工具名常量，`package_proxy` 与二者同列保留代理目标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:71"
+  },
+  {
+    "fact": "隐藏目录先装入内置/内部工具分类（buildBuiltinAndInternalCategories）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:203"
+  },
+  {
+    "fact": "启用的工具包也装入隐藏目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:248"
+  },
+  {
+    "fact": "AI 可见 Skill 装入隐藏目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:280"
+  },
+  {
+    "fact": "MCP 服务器缓存工具装入隐藏目录（sourceKind=MCP）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:582"
+  },
+  {
+    "fact": "无工具的包与无缓存工具的 MCP 服务器生成 ACTIVATION 条目，目标为 `use_package`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:527"
+  },
+  {
+    "fact": "搜索评分：名称精确命中 300、前缀命中 140、包含 100",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:639"
+  },
+  {
+    "fact": "搜索评分：描述/关键词命中 40、参数命中 25",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:646"
+  },
+  {
+    "fact": "搜索 limit 被钳制在 1–20 之间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:349"
+  },
+  {
+    "fact": "`buildCliModePrompt` 明确要求先 search 再 proxy，禁止直接调用隐藏工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/climode/CliToolModeSupport.kt:173"
+  },
+  {
+    "fact": "`ConditionEvaluator.evaluate(expression, capabilities)` 空表达式直接返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:9"
+  },
+  {
+    "fact": "求值抛异常时记 warn 日志并返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:21"
+  },
+  {
+    "fact": "词法支持标识符、字符串、数字、布尔、null 关键字与 `in` 运算符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:57"
+  },
+  {
+    "fact": "Value 分 5 种：Bool/Num/Str/Null/Array，各有 truthiness 规则",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:228"
+  },
+  {
+    "fact": "`&&`/`||` 采用短路求值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:200"
+  },
+  {
+    "fact": "`in` 运算符检查左值是否在右值数组中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:214"
+  },
+  {
+    "fact": "字符串只能与字符串比较，否则抛 `IllegalArgumentException`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:241"
+  },
+  {
+    "fact": "比较运算符基于 `compareTo`，Num 与 Bool 可跨类型按数值比较",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/condition/ConditionEvaluator.kt:231"
+  },
+  {
+    "fact": "`MCPServerConfig` 字段：name、endpoint、description、capabilities、extraData",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPServerConfig.kt:7"
+  },
+  {
+    "fact": "`MCPTool` 字段：name、description、parameters（默认空列表）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPTool.kt:7"
+  },
+  {
+    "fact": "`MCPToolParameter` 字段：name、type、description、required（默认 false）、defaultValue",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt:8"
+  },
+  {
+    "fact": "`convertParameterValue` 按 type 把字符串转为 number/boolean/integer/float/array/object，失败回退原值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt:18"
+  },
+  {
+    "fact": "`smartConvert` 无类型声明时智能猜测：`{…}`→对象、`[…]`→数组、数字正则→数值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt:118"
+  },
+  {
+    "fact": "`smartConvert` 无类型时 \"true\"/\"false\" 字符串转为布尔",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt:127"
+  },
+  {
+    "fact": "`parseArray` 先试 JSON 解析，失败则尝试逗号分隔的标识符列表修复",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt:144"
+  },
+  {
+    "fact": "`McpJson` 配置：ignoreUnknownKeys、encodeDefaults、isLenient 均为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPJson.kt:11"
+  },
+  {
+    "fact": "`McpRuntimeDescriptor` 分 Local(serviceName) 与 Remote(endpoint/connectionType/bearerToken/headers) 两种传输",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:6"
+  },
+  {
+    "fact": "`McpRuntimeSession` 接口方法：connect、isConnected、isActive、listTools",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:41"
+  },
+  {
+    "fact": "`McpRuntimeSession` 接口方法：callTool、close",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:52"
+  },
+  {
+    "fact": "`getToolDescriptions` 默认实现输出 `\"name: description\"` 或仅名称",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:47"
+  },
+  {
+    "fact": "`McpRuntimeCallResult` 字段：success、result、errorMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/McpRuntimeSession.kt:24"
+  },
+  {
+    "fact": "`MCPPackage.loadFromServer` 用 `runBlocking` 建连",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:51"
+  },
+  {
+    "fact": "建连失败返回含错误信息的 `LoadResult`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:54"
+  },
+  {
+    "fact": "服务器连通但无工具时返回含空工具列表的有效包，而非 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:75"
+  },
+  {
+    "fact": "运行时工具经 inputSchema 的 properties/required 转为 `MCPToolParameter`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:102"
+  },
+  {
+    "fact": "空名工具被丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:82"
+  },
+  {
+    "fact": "`toToolPackage` 的包名直接用服务器名（不加 mcp: 前缀），category 为 \"MCP\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:160"
+  },
+  {
+    "fact": "MCP 工具的 script 字段存 `/* MCPJS {\"serverName\",\"toolName\",\"endpoint\"} */` 占位符以便识别",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPPackage.kt:168"
+  },
+  {
+    "fact": "`MCPToolExecutor.invoke` 要求工具名格式为 `server_name:tool_name`，冒号后部分可再含冒号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:414"
+  },
+  {
+    "fact": "调用前检查 `isActive()`，未激活则报错提示先用 `use_package` 激活该包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:298"
+  },
+  {
+    "fact": "参数经 `MCPToolParameter.smartConvert` 按 inputSchema 类型自动转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:397"
+  },
+  {
+    "fact": "`extractContentFromResult` 优先解析标准 content 数组，其次 structuredContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:80"
+  },
+  {
+    "fact": "text 内容若是 JSON 字符串会被格式化为紧凑单行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:113"
+  },
+  {
+    "fact": "image 内容经 `ImagePoolManager.addImageFromBase64` 入池，输出 `<link type=\"image\" id=\"…\">` 引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:121"
+  },
+  {
+    "fact": "resource 内容按 uri/text/mimeType 提取文本或图片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:128"
+  },
+  {
+    "fact": "结果超长（> ToolExecutionLimits.MAX_TEXT_RESULT_LENGTH）时写入文件并返回截断预览加文件路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:43"
+  },
+  {
+    "fact": "超长结果文件名格式：`mcp_<server>_<tool>_<时间戳>_<随机8位>.txt`，存于 cleanOnExitInternalDir",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:62"
+  },
+  {
+    "fact": "`validateParameters` 拦截含 U+FFFD 替换字符的参数，阻止损坏内容写到远端 MCP 服务器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:422"
+  },
+  {
+    "fact": "`MAX_TEXT_RESULT_LENGTH` 值为 5000",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:6"
+  },
+  {
+    "fact": "`MCPManager` 用 `sessionCache` 缓存会话，`getOrCreateSession` 对断连会话尝试重连",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:522"
+  },
+  {
+    "fact": "`registerRuntime` 替换 descriptor 时关闭旧会话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:509"
+  },
+  {
+    "fact": "Local 传输用 `BridgeMcpRuntimeSession`，Remote 用 `RemoteMcpRuntimeSession`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:547"
+  },
+  {
+    "fact": "`unregisterServer` 清理配置、descriptor、失败原因与会话缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:592"
+  },
+  {
+    "fact": "`shutdown` 关闭全部会话并清空三份缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolExecutor.kt:602"
+  },
+  {
+    "fact": "`SkillPackage` 字段：name、description、directory、skillFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillPackage.kt:4"
+  },
+  {
+    "fact": "`SkillManager` 为单例（getInstance 双重检查锁定）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:18"
+  },
+  {
+    "fact": "技能根目录为 Download/Operit/skills（不存在则创建）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:33"
+  },
+  {
+    "fact": "`refreshAvailableSkills` 扫描根目录子文件夹，找 SKILL.md（不存在则找 skill.md）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:63"
+  },
+  {
+    "fact": "缺 SKILL.md 的目录记入 `skillLoadErrors` 并跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:69"
+  },
+  {
+    "fact": "`parseSkillMetadata` 先读 frontmatter 的 name/description，缺失则回退扫描前 40 行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:108"
+  },
+  {
+    "fact": "扫描到重名 skill 时报错并跳过后者",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:84"
+  },
+  {
+    "fact": "`getAvailableSkills` 每次调用都先刷新扫描",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:157"
+  },
+  {
+    "fact": "`importSkillFromZip` 只接受 .zip 文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:268"
+  },
+  {
+    "fact": "导入时解压到临时目录，Zip 条目做 canonical 路径校验防 ZipSlip",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:400"
+  },
+  {
+    "fact": "subDirPathInZip 参数同样做 canonical 越界校验",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:312"
+  },
+  {
+    "fact": "zip 内单层目录自动识别；SKILL.md 按 walkTopDown 取前 10 个候选中的第一个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:330"
+  },
+  {
+    "fact": "目标目录已存在时拒绝导入并报错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:373"
+  },
+  {
+    "fact": "`getSkillSystemPrompt` 组装技能提示词：包名、执行策略、描述、目录树与 SKILL.md 全文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:198"
+  },
+  {
+    "fact": "`deleteSkill` 用 `deleteRecursively` 删除技能目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt:183"
+  }
+]

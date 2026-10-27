@@ -1,0 +1,14 @@
+{
+  "critic": "",
+  "issue": 29,
+  "refs_valid": "126/126 引用行号真实存在（critic 逐条核引用复验通过），lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "Claude 供应商：ClaudeProvider 历史序列化与 system 参数、XML tool call 桥接、prompt cache 断点、token 用量解析、thinking、OpenAI 兼容回退、重试/取消。",
+  "title": "Claude 供应商",
+  "approved_by_comment_id": 5945906388,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 05:07 UTC",
+  "updated": "2026-10-02"
+}

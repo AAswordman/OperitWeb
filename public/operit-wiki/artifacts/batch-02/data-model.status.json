@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 6,
+  "refs_valid": "64/64 引用行号真实存在且 ±5 行内见符号（脚本全量核验），lint 硬失败 0/警告 0；2026-10-02 v2 死链回炉：正文 [[ ]] wikilink 与裸 slug 全部转为 entry.html 真链接并补细页索引，内容变更打回待评审；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "数据模型（总览）：Room AppDatabase（版本 21、5 实体、5 DAO、20 级迁移链、token 用量账本）与 ObjectBox ObjectBoxManager（按 profile 分库）的分工；数据六类（聊天/记忆/配置/统计/实体/备份）的存储地图与读写入口；输入→处理→输出三条调用链；13 个数据章细页索引。",
+  "updated": "2026-10-02",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914918840,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

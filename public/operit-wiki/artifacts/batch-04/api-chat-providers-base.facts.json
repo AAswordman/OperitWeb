@@ -1,0 +1,638 @@
+[
+  {
+    "fact": "AIService 是所有 AI 供应商实现的统一接口，定义了与 AI 提供商交互的标准方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:10"
+  },
+  {
+    "fact": "AIService.inputTokenCount 只统计新增部分的输入 token 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:12"
+  },
+  {
+    "fact": "AIService.cachedInputTokenCount 统计缓存命中的输入 token 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:15"
+  },
+  {
+    "fact": "AIService.outputTokenCount 统计输出 token 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:18"
+  },
+  {
+    "fact": "AIService.providerModel 返回“供应商:模型”标识符，格式如“DEEPSEEK:deepseek-chat”。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:21"
+  },
+  {
+    "fact": "AIService.resetTokenCounts 重置三个 token 计数器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:24"
+  },
+  {
+    "fact": "AIService.cancelStreaming 取消当前流式传输。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:27"
+  },
+  {
+    "fact": "AIService.getModelsList(context) 返回 Result<List<ModelOption>>：成功返回模型列表，失败返回错误信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:36"
+  },
+  {
+    "fact": "AIService.sendMessage 的 chatHistory 必须是已包含本次最新输入的完整聊天历史。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:61"
+  },
+  {
+    "fact": "AIService.sendMessage 的 stream 参数为 true 时流式、false 时非流式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:65"
+  },
+  {
+    "fact": "AIService.sendMessage 的返回值恒为 Stream<String>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:74"
+  },
+  {
+    "fact": "AIService.sendMessage 的 availableTools 为 null 时使用系统提示词中的工具描述（用于 Tool Call API）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:66"
+  },
+  {
+    "fact": "AIService.sendMessage 新增 preserveThinkInHistory 参数，控制是否保留历史中的思考过程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:67"
+  },
+  {
+    "fact": "AIService.sendMessage 的 onTokensUpdated 是 UI 计数通道，可能携带估算值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:68"
+  },
+  {
+    "fact": "AIService.sendMessage 的 onUsageReported 只在解析到 provider 真实 usage 或本地实测计数时回调，估算值不上报。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:72"
+  },
+  {
+    "fact": "AIService.sendMessage 的 onUsageReported 可被多次调用，第二个参数 attempt 从 1 开始，内部重试时递增。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:71"
+  },
+  {
+    "fact": "AIService.sendMessage 的 onUsageFinalized 仅在请求正常完成时回调最终成功的 attempt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:77"
+  },
+  {
+    "fact": "AIService.sendMessage 的 enableRetry 控制是否允许内部重试，默认为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:75"
+  },
+  {
+    "fact": "AIService.sendMessage 的 recordTokenUsage 控制是否把成功的真实 usage 写入 token 统计；测试和探测调用传 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:76"
+  },
+  {
+    "fact": "AIService.testConnection(context) 返回 Result<String>，测试与 AI 服务的连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:86"
+  },
+  {
+    "fact": "AIService.calculateInputTokens 精确计算下一次请求的输入 token 总数（含缓存和新增部分）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:95"
+  },
+  {
+    "fact": "AIService.release 默认空实现；本地模型（如 MNN）需要释放 native 内存和模型资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIService.kt:102"
+  },
+  {
+    "fact": "LlmRequestTraceContext 携带 requestId、provider、model、stream、attempt、endpointLabel，用于请求追踪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:31"
+  },
+  {
+    "fact": "LlmNetworkEventListenerFactory 为每个 OkHttp Call 从请求 tag 取出 LlmRequestTraceContext 创建监听器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:40"
+  },
+  {
+    "fact": "LlmNetworkEventListener 以 [req=... provider=... model=... attempt=... stream=...] 前缀格式化日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:55"
+  },
+  {
+    "fact": "网络追踪日志打 AppLogger.d(\"AIHttpTrace\")，附带自调用开始的毫秒耗时。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:59"
+  },
+  {
+    "fact": "连接失败等错误打 AppLogger.e(\"AIHttpTrace\")，携带异常类名与异常消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:78"
+  },
+  {
+    "fact": "callStart 记录请求方法与完整 URL（含 scheme/host/port/path）及请求体字节数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:94"
+  },
+  {
+    "fact": "dnsStart/dnsEnd 记录域名解析的主机名与返回的 IP 地址列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:98"
+  },
+  {
+    "fact": "connectStart 记录连接目标地址与代理类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:106"
+  },
+  {
+    "fact": "secureConnectEnd 记录 TLS 握手版本与加密套件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:114"
+  },
+  {
+    "fact": "connectFailed 记录失败目标、代理、协议与 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:132"
+  },
+  {
+    "fact": "connectionAcquired/connectionReleased 记录复用的连接路由与协议。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:150"
+  },
+  {
+    "fact": "responseHeadersEnd 记录响应状态码与消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:176"
+  },
+  {
+    "fact": "callEnd/callFailed 分别记录调用正常结束与失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:193"
+  },
+  {
+    "fact": "SharedHttpClient.instance 是全应用共享的 OkHttpClient 单例，用 by lazy 初始化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:196"
+  },
+  {
+    "fact": "共享客户端被 UnsafeModelSsl.apply 包裹，关闭证书链与主机名校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:199"
+  },
+  {
+    "fact": "共享客户端连接超时 60 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:202"
+  },
+  {
+    "fact": "共享客户端读/写超时均为 1000 秒，适配流式长连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:204"
+  },
+  {
+    "fact": "共享客户端挂载 LlmNetworkEventListenerFactory 做全链路网络追踪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:206"
+  },
+  {
+    "fact": "共享客户端连接池 10 个空闲连接、存活 5 分钟（默认 5 个）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:209"
+  },
+  {
+    "fact": "共享客户端协议列表为 HTTP_2、HTTP_1_1，优先 HTTP/2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:212"
+  },
+  {
+    "fact": "AIServiceFactory.createService 用 TokenTrackingAIService 包裹 buildService 的产物，统一统计记录边界。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:276"
+  },
+  {
+    "fact": "TokenTrackingAIService 只在正式 sendMessage 完成且提供真实 usage 时才写入统计账本；测试和探测调用显式跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:261"
+  },
+  {
+    "fact": "buildService 先查 ToolPkgAiProviderRegistry：命中则直接返回 ToolPkgJsAiProviderService。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:287"
+  },
+  {
+    "fact": "ToolPkgAiProviderRegistry 未命中时，providerTypeId 经 ApiProviderType.fromProviderTypeId 解析，找不到则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:297"
+  },
+  {
+    "fact": "config.useMultipleApiKeys 为 true 时用 MultiApiKeyProvider(config.id, modelConfigManager) 做多 Key 轮询，否则用 SingleApiKeyProvider(config.apiKey)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:303"
+  },
+  {
+    "fact": "parseCustomHeaders 把自定义请求头 JSON 字符串解析为 Map；解析失败打日志并返回空 Map。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:224"
+  },
+  {
+    "fact": "buildAndroidLlamaSessionConfig 把 llama 线程数钳制在 1 与 CPU 核心数之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:244"
+  },
+  {
+    "fact": "llama 会话配置固定 nBatch=512、nUBatch=512。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:247"
+  },
+  {
+    "fact": "llama 会话配置 useMmap=false、flashAttention=false、kvUnified=true、offloadKqv=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:250"
+  },
+  {
+    "fact": "supportsVision/supportsAudio/supportsVideo/enableToolCall 四个能力开关直接取自 ModelConfigData。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:312"
+  },
+  {
+    "fact": "XAI 映射到 XaiProvider（OpenAI 兼容的 Chat Completions 协议）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:320"
+  },
+  {
+    "fact": "OPENAI 映射到 OpenAIProvider，且 includeUsageInStream=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:335"
+  },
+  {
+    "fact": "OPENAI_GENERIC 与 OPENAI_LOCAL 同样映射到 OpenAIProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:352"
+  },
+  {
+    "fact": "OPENAI_RESPONSES 与 OPENAI_RESPONSES_GENERIC 映射到 OpenAIResponsesProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:369"
+  },
+  {
+    "fact": "OPENAI_CODEX 映射到 CodexProvider，鉴权走 CodexAuthManager.getInstance(context)，音频/视频支持固定关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:388"
+  },
+  {
+    "fact": "ANTHROPIC 与 ANTHROPIC_GENERIC 映射到 ClaudeProvider，并传入 enableClaude1hPromptCache。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:403"
+  },
+  {
+    "fact": "GOOGLE 与 GEMINI_GENERIC 映射到 GeminiProvider，并传入 enableGoogleSearch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:419"
+  },
+  {
+    "fact": "LMSTUDIO 映射到 OpenAIProvider（OpenAI 兼容格式）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:435"
+  },
+  {
+    "fact": "OLLAMA 映射到 OllamaProvider（OpenAI 兼容格式）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:452"
+  },
+  {
+    "fact": "MNN 映射到 MNNProvider，传入 mnnForwardType 与 mnnThreadCount，是本地推理引擎。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:472"
+  },
+  {
+    "fact": "LLAMA_CPP 映射到 LlamaProvider，传入 buildAndroidLlamaSessionConfig 生成的会话配置，是本地推理引擎。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:481"
+  },
+  {
+    "fact": "ALIYUN 映射到 QwenAIProvider（通义千问）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:493"
+  },
+  {
+    "fact": "BAIDU、XUNFEI、ZHIPU、BAICHUAN、IFLOW、INFINIAI、ALIPAY_BAILING、PPINFRA、NOVITA、MINIMAX、OTHER 统一映射到 OpenAIProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:509"
+  },
+  {
+    "fact": "MOONSHOT 映射到 KimiProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:533"
+  },
+  {
+    "fact": "MIMO 映射到 MimoProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:547"
+  },
+  {
+    "fact": "DEEPSEEK 经由 DeepseekProvider.create 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:561"
+  },
+  {
+    "fact": "MISTRAL 映射到 MistralProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:575"
+  },
+  {
+    "fact": "SILICONFLOW 映射到 QwenAIProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:589"
+  },
+  {
+    "fact": "OPENCODE 经由 OpenCodeProvider.create 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:603"
+  },
+  {
+    "fact": "OPENROUTER 映射到 OpenRouterProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:617"
+  },
+  {
+    "fact": "FOUR_ROUTER 映射到 FourRouterProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:631"
+  },
+  {
+    "fact": "NOUS_PORTAL 映射到 NousPortalProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:645"
+  },
+  {
+    "fact": "DOUBAO 映射到 DoubaoAIProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:659"
+  },
+  {
+    "fact": "NVIDIA 映射到 NvidiaAIProvider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:679"
+  },
+  {
+    "fact": "EndpointCompleter.completeEndpoint 先 trim；URL 末尾带 # 时移除 # 并禁用自动补全。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:21"
+  },
+  {
+    "fact": "基础 URL（如 https://api.example.com）自动补全为 /v1/chat/completions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:35"
+  },
+  {
+    "fact": "路径以 /v1 结尾的 URL（如 .../custom/v1）只补全 /chat/completions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:40"
+  },
+  {
+    "fact": "URL 解析失败时 completeEndpoint 原样返回用户输入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:43"
+  },
+  {
+    "fact": "completeResponsesEndpoint 是私有的 Responses 专用补全函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:51"
+  },
+  {
+    "fact": "completeResponsesEndpoint：空路径补 /v1/responses，/v1 结尾补 /responses。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:64"
+  },
+  {
+    "fact": "OPENAI_RESPONSES 与 OPENAI_RESPONSES_GENERIC 走 completeResponsesEndpoint。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:84"
+  },
+  {
+    "fact": "OPENAI_CODEX 的端点原样返回，不做任何补全。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:87"
+  },
+  {
+    "fact": "ANTHROPIC 系：空路径补 /v1/messages，/anthropic 结尾补 /v1/messages，/v1 结尾补 /messages。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:101"
+  },
+  {
+    "fact": "GOOGLE、GEMINI_GENERIC、OPENCODE、MNN 的端点原样返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:114"
+  },
+  {
+    "fact": "其他 providerType 走 OpenAI 风格的 completeEndpoint(endpoint)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/EndpointCompleter.kt:125"
+  },
+  {
+    "fact": "ModelListFetcher.ANTHROPIC_VERSION 常量为 \"2023-06-01\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:32"
+  },
+  {
+    "fact": "日志脱敏用占位符 API_KEY_LOG_MASK = \"API_KEY_HIDDEN\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:33"
+  },
+  {
+    "fact": "SENSITIVE_QUERY_PARAMETER_NAMES 包含 key、api_key、apikey、access_token、token、authorization、auth、password、secret、client_secret。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:37"
+  },
+  {
+    "fact": "Kimi coding 模式的固定模型列表只有 kimi-for-coding。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:49"
+  },
+  {
+    "fact": "ModelListFetcher 的私有 OkHttpClient 同样被 UnsafeModelSsl.apply 包裹，连接/读/写超时各 30 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:49"
+  },
+  {
+    "fact": "OpenAI 系（OPENAI/XAI/RESPONSES/GENERIC/LOCAL）模型列表 URL 为 baseUrl + /v1/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:68"
+  },
+  {
+    "fact": "Anthropic 系模型列表 URL 为 baseUrl + /v1/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:80"
+  },
+  {
+    "fact": "Gemini 官方端点：已是 /models 结尾则直接用；含 /v1/ 用 v1 否则用 v1beta 拼接 models URL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:87"
+  },
+  {
+    "fact": "Vertex AI 端点：从 URL 中解析 projects 与 locations，拼接为 {location}-aiplatform.googleapis.com 的 publishers/google/models URL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:97"
+  },
+  {
+    "fact": "Vertex 解析失败时回退到 generativelanguage.googleapis.com/v1beta/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:99"
+  },
+  {
+    "fact": "ZHIPU 模型列表 URL 后缀为 /v4/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:105"
+  },
+  {
+    "fact": "DOUBAO 模型列表 URL 后缀为 /v3/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:115"
+  },
+  {
+    "fact": "INFINIAI 后缀为 /maas/v1/models，ALIPAY_BAILING 后缀为 /llm/v1/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:118"
+  },
+  {
+    "fact": "OPENCODE 的模型列表 URL 经 OpenCodeRouting.modelsEndpoint(apiEndpoint) 派生。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:108"
+  },
+  {
+    "fact": "未知提供商默认尝试 OpenAI 兼容格式的 /v1/models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:123"
+  },
+  {
+    "fact": "sanitizeUrlForLog 把 URL 中的 apiKey 替换为 API_KEY_HIDDEN。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:133"
+  },
+  {
+    "fact": "sanitizeUrlForLog 用正则把敏感查询参数的值替换为 API_KEY_HIDDEN（忽略大小写）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:140"
+  },
+  {
+    "fact": "isKimiCodingEndpoint 判定端点是否包含 api.kimi.com/coding/v1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:149"
+  },
+  {
+    "fact": "getModelsList 在 Dispatchers.IO 上执行，最多重试 2 次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:208"
+  },
+  {
+    "fact": "getModelsList 先经 EndpointCompleter.completeEndpoint(apiEndpoint, apiProviderType) 补全端点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:213"
+  },
+  {
+    "fact": "MOONSHOT 且命中 Kimi coding 端点时，直接返回官方固定模型列表，不发网络请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:221"
+  },
+  {
+    "fact": "模型列表 URL 由 getModelsListUrl(completedEndpoint, apiProviderType) 派生。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:226"
+  },
+  {
+    "fact": "是否需要 API Key 由 ApiProviderConfigs.requiresApiKey(apiProviderType, completedEndpoint) 判定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:228"
+  },
+  {
+    "fact": "GOOGLE 系把 apiKey 放进 URL 查询参数 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:242"
+  },
+  {
+    "fact": "OPENROUTER 请求头：Authorization Bearer，外加 HTTP-Referer=ai.assistance.operit 与 X-Title=Assistance App。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:251"
+  },
+  {
+    "fact": "NOUS_PORTAL 沿用与 OpenRouter 相同的兼容请求头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:257"
+  },
+  {
+    "fact": "MIMO 在 apiKey 非空时同时加 Authorization Bearer 与 api-key 两个头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:263"
+  },
+  {
+    "fact": "ANTHROPIC 系请求头：x-api-key（非空时）与 anthropic-version。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:271"
+  },
+  {
+    "fact": "OPENCODE 请求头：Authorization Bearer（非空时）与 User-Agent=Operit/${BuildConfig.VERSION_NAME}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:279"
+  },
+  {
+    "fact": "默认分支：apiKey 非空时加 Bearer；需要 Key 却没给则打日志；允许无 Key 则跳过认证头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:289"
+  },
+  {
+    "fact": "请求以 GET 发出，client.newCall(request).execute() 同步执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:301"
+  },
+  {
+    "fact": "OpenAI 系请求失败且 URL 以 /v1/models 结尾时，尝试去掉 /v1 的兼容路径 /models。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:306"
+  },
+  {
+    "fact": "兼容路径请求成功则解析模型列表返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:320"
+  },
+  {
+    "fact": "兼容路径请求失败则返回带状态码与错误体的 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:330"
+  },
+  {
+    "fact": "响应体为空时返回“响应体为空”的 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:338"
+  },
+  {
+    "fact": "响应解析按提供商分发：OpenAI 系走 parseOpenAIModelResponse，Anthropic 走 parseAnthropicModelResponse，Google 走 parseGoogleModelResponse，其他默认 OpenAI 格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:384"
+  },
+  {
+    "fact": "SocketTimeoutException 触发重试，延迟 1000L*retryCount 毫秒（指数退避）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:401"
+  },
+  {
+    "fact": "IOException 触发重试，延迟同样为 1000L*retryCount 毫秒（指数退避）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:412"
+  },
+  {
+    "fact": "UnknownHostException（域名解析失败）直接失败，不重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:420"
+  },
+  {
+    "fact": "所有重试耗尽后返回 lastException 或“获取模型列表失败”的 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:435"
+  },
+  {
+    "fact": "parseOpenAIModelResponse 要求 JSON 有 data 数组；缺 data 抛 JSONException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:449"
+  },
+  {
+    "fact": "parseOpenAIModelResponse 取每项 id 生成 ModelOption(id, name=id)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:458"
+  },
+  {
+    "fact": "parseOpenAIModelResponse 返回结果按 id 排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:467"
+  },
+  {
+    "fact": "parseAnthropicModelResponse 接受 data 或 models 数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:478"
+  },
+  {
+    "fact": "parseAnthropicModelResponse 中 id 缺失时用 name 回退，无 id 无 name 则跳过；display_name 做显示名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:493"
+  },
+  {
+    "fact": "parseGoogleModelResponse 取每项 name 按 / 取最后一段为 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:523"
+  },
+  {
+    "fact": "Google 模型只保留 supportedGenerationMethods 包含 generateContent 的；缺该字段时默认视为支持。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:536"
+  },
+  {
+    "fact": "Google 模型有 baseModelId 时用它做下拉选项 id，否则用 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:549"
+  },
+  {
+    "fact": "Vertex AI 格式只保留 id 包含 gemini 的模型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:572"
+  },
+  {
+    "fact": "getMnnLocalModels 从公共下载目录 Operit/models/mnn 扫描子文件夹。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:592"
+  },
+  {
+    "fact": "MNN 目录不存在时返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:603"
+  },
+  {
+    "fact": "MNN 子文件夹含 llm.mnn 主文件才算一个模型，id 取文件夹名，显示名附带文件夹总大小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:611"
+  },
+  {
+    "fact": "getLlamaLocalModels 从公共下载目录 Operit/models/llama 扫描 .gguf 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:640"
+  },
+  {
+    "fact": "llama 模型 id 与显示名均取文件名，显示名附带文件大小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:657"
+  },
+  {
+    "fact": "formatFileSize 按 B/KB/MB/GB 分档格式化，GB 保留两位小数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt:676"
+  },
+  {
+    "fact": "LocalUsageReporter.report 用 AtomicBoolean.compareAndSet 保证单次上报只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:18"
+  },
+  {
+    "fact": "LocalUsageReporter 经 ProviderUsageNormalizer.local(uncachedInputTokens, outputTokens, source) 构造快照，attempt 固定为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:25"
+  },
+  {
+    "fact": "LocalUsageReporter 捕获到 CancellationException 会重新抛出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:29"
+  },
+  {
+    "fact": "LocalUsageReporter 其他异常被吞掉：usage 统计绝不能覆盖成功的生成结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:32"
+  },
+  {
+    "fact": "LocalGenerationEnd 是 Llama/MNN 共用的生成结束顺序契约。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:39"
+  },
+  {
+    "fact": "取消优先：cancelled 时直接抛 UserCancellationException，绝不转换/emit 不完整的工具 XML，也不上报 usage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:43"
+  },
+  {
+    "fact": "失败次之：success=false 时由 failWith 终止，失败路径同样绝不转换/emit 工具缓冲或上报 usage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:45"
+  },
+  {
+    "fact": "成功最后：仅 success=true 时 emitToolResult 处理工具缓冲，随后上报 usage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:47"
+  },
+  {
+    "fact": "end(cancelled=true) 时抛 UserCancellationException(cancelMessage)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:76"
+  },
+  {
+    "fact": "end 在 !success 时调用 failWith() 后直接 return。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:80"
+  },
+  {
+    "fact": "end 在成功路径先 emitToolResult() 再 usageReporter.report(inputTokens, outputTokens)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LocalGenerationEnd.kt:83"
+  },
+  {
+    "fact": "UnsafeModelSsl 的文件注释声明：为模型请求统一关闭 HTTPS 证书链与主机名校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:10"
+  },
+  {
+    "fact": "UnsafeModelSsl 是 internal object，对外只暴露 apply(builder)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:13"
+  },
+  {
+    "fact": "自定义 X509TrustManager 的 checkClientTrusted 与 checkServerTrusted 均为空实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:25"
+  },
+  {
+    "fact": "getAcceptedIssuers 返回空数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:27"
+  },
+  {
+    "fact": "SSLContext.getInstance(\"TLS\") 用上述 trust-all 管理器与 SecureRandom 初始化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:31"
+  },
+  {
+    "fact": "apply 把 sslSocketFactory 设为上述上下文，并把 hostnameVerifier 设为恒返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt:36"
+  }
+]

@@ -1,0 +1,694 @@
+[
+  {
+    "fact": "`MainActivity` 是 `ComponentActivity` 子类，是整个应用的唯一 Activity 入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:67"
+  },
+  {
+    "fact": "`MainActivity.ACTION_OPEN_SETTINGS_SHORTCUT` 常量值为 `com.ai.assistance.operit.action.OPEN_SETTINGS_SHORTCUT`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:69"
+  },
+  {
+    "fact": "`MainActivity.backPressedInterval` 为 2000 毫秒，双击返回键超过该间隔才真正退出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:91"
+  },
+  {
+    "fact": "`MainActivity.attachBaseContext` 按 `LocaleUtils.getLocaleAwareContext` 做语言覆盖",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:179"
+  },
+  {
+    "fact": "`MainActivity.onCreate` 先 `window.setBackgroundDrawableResource(android.R.color.black)` 避免白屏闪烁",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:183"
+  },
+  {
+    "fact": "`MainActivity.onCreate` 调用顺序为 `handleIntent` → `restoreRuntimeTaskViewVisibilityIfNeeded` → `OperitApplication.initializeMainApplication` → `initializeComponents`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:188"
+  },
+  {
+    "fact": "`MainActivity.onCreate` 在 `initializeComponents` 之后调用 `anrMonitor.start()` 启动 ANR 监控",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:196"
+  },
+  {
+    "fact": "`MainActivity.onCreate` 中 `setAppContent()` 之后才 `setupUpdateManager()`，避免遮挡首帧",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:198"
+  },
+  {
+    "fact": "`MainActivity.performInitialChecks` 只在 `savedInstanceState == null` 首次创建时执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:201"
+  },
+  {
+    "fact": "`MainActivity.handleIntent` 处理 `ACTION_OPEN_SETTINGS_SHORTCUT` 时直接跳转 `NavItem.Settings` 并返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:246"
+  },
+  {
+    "fact": "桌面小组件打开路由经 `ToolPkgDesktopWidgetHost.EXTRA_OPEN_ROUTE_ID` 与 `EXTRA_OPEN_ROUTE_ARGS_JSON` 传递",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:254"
+  },
+  {
+    "fact": "`MainActivity.parseRouteArgsJson` 用 `JSONObject` 解析路由参数，值为 `JSONObject.NULL` 时转为 null，解析失败返回空 Map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:341"
+  },
+  {
+    "fact": "`MainActivity.handleIntent` 对 `ACTION_VIEW` 的 http/https 链接将其 URL 字符串存入 `pendingSharedText`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:272"
+  },
+  {
+    "fact": "`MainActivity.handleIntent` 对 `ACTION_VIEW` 的非链接文件 URI 存入 `pendingSharedFileUris`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:273"
+  },
+  {
+    "fact": "`MainActivity.handleIntent` 处理 `ACTION_SEND`：单文件 URI 进 `pendingSharedFileUris`，纯文本进 `pendingSharedText`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:277"
+  },
+  {
+    "fact": "`MainActivity.handleIntent` 处理 `ACTION_SEND_MULTIPLE`：多个文件 URI 列表进 `pendingSharedFileUris`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:302"
+  },
+  {
+    "fact": "`MainActivity.prepareStartupChatIfNeeded` 在 `startWithNewChat` 偏好开启时创建新聊天但不设为当前聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:330"
+  },
+  {
+    "fact": "`MainActivity.startPluginLoading` 插件加载超时时间为 30000 毫秒，由 `pluginLoadingState.startTimeoutCheck(30000L, lifecycleScope)` 设定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:387"
+  },
+  {
+    "fact": "`MainActivity.startPluginLoading` 在显示加载界面后 `delay(500)` 让首帧先完成再初始化 MCP 服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:392"
+  },
+  {
+    "fact": "`MainActivity.processPendingSharedFiles` 通过 `SharedFileHandler.setSharedFiles` 把待分享文件桥接到聊天界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:112"
+  },
+  {
+    "fact": "`MainActivity.processPendingSharedText` 消费完 `pendingSharedText` 后将其置 null，避免重复投递",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:136"
+  },
+  {
+    "fact": "`MainActivity.restoreRuntimeTaskViewVisibilityIfNeeded` 在 `AIForegroundService` 未运行时把任务视图的 `setExcludeFromRecents(false)` 恢复可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:146"
+  },
+  {
+    "fact": "`MainActivity.setupBackPressHandler` 双击返回退出：首次弹出 `press_back_again_to_exit` Toast，2000ms 内再次按下才 `finish()`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:441"
+  },
+  {
+    "fact": "`MainActivity.onDestroy` 调用 `VirtualDisplayOverlay.hideAll()` 隐藏所有虚拟显示覆盖层",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:463"
+  },
+  {
+    "fact": "`MainActivity.onDestroy` 调用 `anrMonitor.stop()` 停止 ANR 监控",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:465"
+  },
+  {
+    "fact": "`MainActivity.configureDisplaySettings` 在 API 31+ 上请求 `window.setSustainedPerformanceMode(true)`，失败时捕获异常打日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:561"
+  },
+  {
+    "fact": "`MainActivity.configureDisplaySettings` 在 API 30+ 上按最高刷新率设置 `window.attributes.preferredDisplayModeId`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:575"
+  },
+  {
+    "fact": "`MainActivity.configureDisplaySettings` 在 API 23+ 上设置 `window.attributes.preferredRefreshRate`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:582"
+  },
+  {
+    "fact": "`MainActivity.configureDisplaySettings` 强制设置 `FLAG_HARDWARE_ACCELERATED` 要求窗口硬件加速",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:589"
+  },
+  {
+    "fact": "插件加载界面 `PluginLoadingScreenWithState` 以 `Modifier.zIndex(10f)` 盖在主界面最上层",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:677"
+  },
+  {
+    "fact": "横竖屏切换时 `MainActivity` 弹 `OrientationChangeDialog`，用户确认后才 `recreate()` 重建 Activity",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:683"
+  },
+  {
+    "fact": "`MainActivity.setupUpdateManager` 只在 `UpdateStatus.Available` 与 `UpdateStatus.PatchAvailable` 时弹 Toast 提示更新，不强制跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:776"
+  },
+  {
+    "fact": "`MainActivity.setupUpdateManager` 在界面显示 3 秒后才 `checkForUpdatesSilently(appVersion)` 静默检查更新",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:784"
+  },
+  {
+    "fact": "OperitApp 定义三个 CompositionLocal：`LocalTopBarActions`、`LocalTopBarTitleContent`、`LocalAppNavigationModel`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:66"
+  },
+  {
+    "fact": "`NavigationTransitionSource` 枚举只有 `DEFAULT` 与 `DRAWER` 两种转场来源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:73"
+  },
+  {
+    "fact": "OperitApp 用 `AppRouteCatalog.build(context)` 合并原生路由与 toolpkg 插件路由，`navigationRevision` 变化时重建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:111"
+  },
+  {
+    "fact": "`OperitApp` 过滤 `NavigationSurface.MAIN_SIDEBAR_PLUGINS` 的插件导航项作为侧边栏插件区数据源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:129"
+  },
+  {
+    "fact": "`OperitApp.requestRouteTransition` 用 `isRouteTransitionInProgress` 串行化转场，忙时最多排队一次 `queuedRouteTransition`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:152"
+  },
+  {
+    "fact": "`OperitApp.requestRouteTransition` 在转场前调用 `routeBackGuardRegistry.canLeaveRoute(routeInstanceId)`，被拦截时静默丢弃转场",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:161"
+  },
+  {
+    "fact": "OperitApp 用 `lastHandledShortcutRequestId` 去重快捷方式导航请求，避免重复处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:191"
+  },
+  {
+    "fact": "`OperitApp` 处理小组件路由请求时，未知 routeId 只打 warn 日志并标记已处理，不崩溃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:91"
+  },
+  {
+    "fact": "`OperitApp.navigateTo` 同路由同参数时直接返回不做转场；抽屉来源用 `resetTo`，其余用 `navigate`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:258"
+  },
+  {
+    "fact": "`OperitApp.performGoBack` 栈可弹时 `pop()`，否则 `resetTo` 回到 `Screen.AiChat`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:276"
+  },
+  {
+    "fact": "`OperitApp.navigateToNavigationEntry` 对带 `action` 的插件导航项在 `Dispatchers.IO` 上执行动作并带上事件载荷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:299"
+  },
+  {
+    "fact": "OperitApp 的 `BackHandler` 只在当前屏不是 `Screen.AiChat` 时启用，聊天主页用双击退出逻辑",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:338"
+  },
+  {
+    "fact": "平板布局判定为 `screenWidthDp >= 600`，由 `OperitApp.useTabletLayout` 计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:356"
+  },
+  {
+    "fact": "平板侧边栏默认宽 280dp、收起宽 64dp，由 `tabletSidebarWidth` 与 `collapsedTabletSidebarWidth` 定义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:346"
+  },
+  {
+    "fact": "OperitApp 每 10 秒在 `Dispatchers.IO` 上轮询一次 `NetworkUtils` 网络状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:396"
+  },
+  {
+    "fact": "手机抽屉宽度为屏宽的 75%，由 `drawerWidth = (screenWidthDp * 0.75).dp` 计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:435"
+  },
+  {
+    "fact": "插件运行时变化时 OperitApp 把 `navigationRevision` 加一，触发 `AppRouteCatalog.build` 重建导航模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:441"
+  },
+  {
+    "fact": "`AppRouterGateway.install` 与 `AppRouteDiscoveryGateway.install` 放在 OperitApp 的 `DisposableEffect` 里，离开组合时 `clear()`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:449"
+  },
+  {
+    "fact": "顶栏标题优先级为：自定义聊天标题 > `Screen.getTitle()` > `NavItem.titleResId`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:312"
+  },
+  {
+    "fact": "`RemoteAnnouncementDialog` 在 `remoteAnnouncement != null` 时弹出远程公告",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/OperitApp.kt:581"
+  },
+  {
+    "fact": "`RouteRuntime` 只有 `NATIVE` 与 `TOOLPKG_COMPOSE_DSL` 两种取值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:12"
+  },
+  {
+    "fact": "`NavigationSurface` 有 `MAIN_SIDEBAR_AI`、`MAIN_SIDEBAR_TOOLS`、`MAIN_SIDEBAR_PLUGINS`、`MAIN_SIDEBAR_SYSTEM`、`TOOLBOX` 五种展示面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:17"
+  },
+  {
+    "fact": "`NavigationEntryKind` 区分 `HOST`（原生）与 `PLUGIN`（插件）两种导航项来源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:25"
+  },
+  {
+    "fact": "`RouteEntrySource` 记录路由来源：`DEFAULT`、`DRAWER`、`SCRIPT`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:36"
+  },
+  {
+    "fact": "`RouteSpec.keepAlive` 默认 false，`reuseOnTop` 默认 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:46"
+  },
+  {
+    "fact": "`RouteEntry.instanceId` 默认用 `UUID.randomUUID().toString()` 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:55"
+  },
+  {
+    "fact": "`NavigationEntrySpec.order` 默认 0，`kind` 默认 `HOST`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:68"
+  },
+  {
+    "fact": "`AppRouterState.navigate` 在 `reuseOnTop` 且同 routeId 同 args 时直接返回当前栈顶，不压新实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:102"
+  },
+  {
+    "fact": "`AppRouterState.resetTo` 清空整个栈只保留目标路由",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:119"
+  },
+  {
+    "fact": "`AppRouterState.pop` 在栈只剩一个时返回 null，不弹空栈",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:125"
+  },
+  {
+    "fact": "AppRouterGateway 的 handler 字段用 `@Volatile` 修饰，未安装时 `navigate`/`resetTo` 静默无操作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:157"
+  },
+  {
+    "fact": "`AppRouterGateway.navigate` 的默认 `source` 为 `RouteEntrySource.SCRIPT`，供脚本调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:154"
+  },
+  {
+    "fact": "`AppRouteDiscoveryGateway.listRoutes` 未安装时返回空列表（`orEmpty()`）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppNavigationModels.kt:179"
+  },
+  {
+    "fact": "`AppRouteCatalog.build` 把 toolpkg 路由的 `runtime` 固定为 `RouteRuntime.TOOLPKG_COMPOSE_DSL`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:23"
+  },
+  {
+    "fact": "toolpkg 导航项只收 `TOOLPKG_NAV_SURFACE_TOOLBOX` 与 `TOOLPKG_NAV_SURFACE_MAIN_SIDEBAR_PLUGINS` 两种 surface，其余丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:35"
+  },
+  {
+    "fact": "toolpkg 导航项的 entryId 形如 `toolpkg:<包名>:<entryId>`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:41"
+  },
+  {
+    "fact": "toolpkg 路由图标经 `MaterialIconNameResolver.resolveOrDefault` 解析，失败回退 `Icons.Default.Extension`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:46"
+  },
+  {
+    "fact": "`AppRouteCatalog.build` 最终按 `surface.ordinal`、`order`、`title` 三级排序导航项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:69"
+  },
+  {
+    "fact": "`AppRouteCatalog.resolveScreen` 对 `TOOLPKG_COMPOSE_DSL` 路由构造 `Screen.ToolPkgComposeDsl`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/AppRouteCatalog.kt:80"
+  },
+  {
+    "fact": "`RouteBackGuardRegistry.register` 返回注销 lambda，用 token 配对，`synchronized(lock)` 保证线程安全",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuard.kt:18"
+  },
+  {
+    "fact": "无守卫注册时 `RouteBackGuardRegistry.canLeaveRoute` 直接返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuard.kt:35"
+  },
+  {
+    "fact": "`RegisterRouteBackGuard` 用 `DisposableEffect(registry, routeInstanceId)` 自动注销，并用 `rememberUpdatedState` 保持最新 handler",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuard.kt:50"
+  },
+  {
+    "fact": "`ScreenRouteViewModelStoreOwner` 每个实例持有一个全新的 `ViewModelStore`，约定只在主线程使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwner.kt:18"
+  },
+  {
+    "fact": "`ScreenRouteViewModelStoreOwnerManager` 是 Activity 级 `ViewModel`，跨配置变化保留",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwner.kt:33"
+  },
+  {
+    "fact": "`ScreenRouteViewModelStoreOwnerManager.remove` 会 `viewModelStore.clear()` 触发该路由所有 ViewModel 的 `onCleared`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwner.kt:42"
+  },
+  {
+    "fact": "`ScreenRouteViewModelStoreOwnerManager.retainOnly` 清掉不在存活集合中的路由 ViewModel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwner.kt:50"
+  },
+  {
+    "fact": "`retainedRouteKeysOnContentAttach` 只在 `AppContent` 首次 attach 时调用一次，重建组合时不再重复",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwner.kt:85"
+  },
+  {
+    "fact": "AppContent 用 `screenCache`（`mutableStateMapOf`）缓存访问过的屏幕 composable，用 `rememberSaveableStateHolder` 保留状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:220"
+  },
+  {
+    "fact": "`AppContent` 的页面转场时长为 280ms，禁用导航动画时为 400ms，抽屉接力转场为 320ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:142"
+  },
+  {
+    "fact": "AppContent 转场状态机由 `lastObservedCurrentKey`、`transitionFromKey`、`pendingRemovalKey`、`isTransitioning` 四个状态驱动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:475"
+  },
+  {
+    "fact": "`AppContent` 在 `LaunchedEffect(currentScreenKey)` 里等动画结束后再 `retainOnly(aliveRouteKeys())` 清理出栈路由的 ViewModel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:142"
+  },
+  {
+    "fact": "AppContent 的 `renderKeys` 只渲染 keepAlive 缓存键、过渡上一页键与当前页键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:561"
+  },
+  {
+    "fact": "每屏内容包在 `SaveableStateProvider(screenKey)` 里，并注入 `LocalIsCurrentScreen` 与 `LocalRouteInstanceId`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:706"
+  },
+  {
+    "fact": "`usesRouteViewModelStore` 为 true 的屏幕通过 `LocalViewModelStoreOwner` 拿到该路由专属的 `ViewModelStoreOwner`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:459"
+  },
+  {
+    "fact": "`ImeWakeListeningEffect` 在键盘弹出时挂起 `AIForegroundService` 的语音唤醒，避免误唤醒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:122"
+  },
+  {
+    "fact": "`currentScreenUsesImePadding` 为 true 的屏幕在根布局加 `imePadding()` 避让键盘",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:378"
+  },
+  {
+    "fact": "FPS 计数器 `FpsCounter` 在 `showFpsCounter` 开启时悬浮于界面右上角",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:732"
+  },
+  {
+    "fact": "顶栏返回键逻辑：可返回时显示 `ArrowBack`；平板上切换侧边栏展开/收起；手机上打开抽屉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:338"
+  },
+  {
+    "fact": "顶栏颜色逻辑：`toolbarTransparent` 时透明，自定义色优先，否则用主题 `primary` 色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:361"
+  },
+  {
+    "fact": "AppContent 的软键盘模式取屏幕覆盖值，否则取 manifest，最后回退 `SOFT_INPUT_ADJUST_PAN`，退出屏幕时恢复",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/AppContent.kt:249"
+  },
+  {
+    "fact": "`DrawerContent` 分展开态 `DrawerContent` 与平板收起态 `CollapsedDrawerContent` 两个 composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:274"
+  },
+  {
+    "fact": "侧边栏品牌名按 `softwareIdentity` 显示 Operit 或灵枢",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:146"
+  },
+  {
+    "fact": "`DrawerContent` 底部固定 Settings/Help/About 三个入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:128"
+  },
+  {
+    "fact": "`resolveSidebarPermissionStatus` 按 `AndroidPermissionLevel` 枚举的五档（STANDARD、DEBUGGER、ACCESSIBILITY、ADMIN、ROOT，`core/tools/system/AndroidPermissionLevel.kt:11`）分支解析侧边栏权限徽标文案；`SidebarPermissionStatus` 本身只是携带 `badgeTextResId` 的 data class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:77"
+  },
+  {
+    "fact": "DEBUGGER 档按 Shizuku 安装/服务运行/授权三步检查给出不同徽标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:90"
+  },
+  {
+    "fact": "DrawerContent 用 `produceState` 在 IO 线程查已启用插件包数、工作流数与权限徽标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:167"
+  },
+  {
+    "fact": "Packages/Workflow 快捷卡片带数字徽标显示已启用包数与工作流数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:481"
+  },
+  {
+    "fact": "侧边栏点击导航项先 `drawerState.close()` 关抽屉再执行导航",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:212"
+  },
+  {
+    "fact": "`CollapsedDrawerContent` 用 44dp 圆形图标按钮列展示导航，含网络状态 WiFi 图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/DrawerContent.kt:279"
+  },
+  {
+    "fact": "`NavigationDrawerItemHeader` 用 `titleSmall` 加粗、28/16/8dp 内边距做分组标题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/NavigationComponents.kt:33"
+  },
+  {
+    "fact": "`CompactNavigationDrawerItem` 高 40dp，选中时叠加 0.18f 透明度的选中色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/NavigationComponents.kt:45"
+  },
+  {
+    "fact": "`NavigationDrawerAppearance` 共 10 个外观字段，`rememberNavigationDrawerAppearance` 从主题快照读取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/NavigationDrawerAppearance.kt:33"
+  },
+  {
+    "fact": "水晶玻璃/液态玻璃效果分别由 `isWaterGlassSupported` 与 `isLiquidGlassSupported` 做设备能力门控",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/NavigationDrawerAppearance.kt:44"
+  },
+  {
+    "fact": "自定义抽屉背景色按亮度混合强调色：亮色系 alpha 0.14f、暗色系 0.24f，混合比例 0.28f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/NavigationDrawerAppearance.kt:95"
+  },
+  {
+    "fact": "PhoneLayout 用 `updateTransition(drawerState.targetValue)` 驱动抽屉动画，打开用 `LowBouncy`、关闭用 `NoBouncy` spring",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:95"
+  },
+  {
+    "fact": "`PhoneLayout` spring 刚度为 1000f，抽屉开合跟手且有轻微回弹",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:94"
+  },
+  {
+    "fact": "抽屉打开时内容位移为抽屉宽的 0.82 倍、下沉 12dp、缩放 0.92、Y 轴旋转 -7°、圆角 24dp、阴影 18dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:114"
+  },
+  {
+    "fact": "`PhoneLayout` 遮罩色为 `Color.Transparent`，点击遮罩区关闭抽屉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:61"
+  },
+  {
+    "fact": "PhoneLayout 全局横向 `draggable` 阈值 40px，聊天屏手势被消费时不抢手势",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:151"
+  },
+  {
+    "fact": "`PhoneLayout` 抽屉自身位移为 `-drawerWidth * (1 - progress)`，缩放从 0.92 到 1、透明度从 0.72 到 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/PhoneLayout.kt:61"
+  },
+  {
+    "fact": "`TabletLayout` 侧边栏宽度动画 280ms、内容 Crossfade 160ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/TabletLayout.kt:44"
+  },
+  {
+    "fact": "`TabletLayout` 展开时先变宽 280ms 后再淡入内容，收起时先淡出内容再变窄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/TabletLayout.kt:77"
+  },
+  {
+    "fact": "`TabletLayout` 内容宽度为屏宽减侧栏宽再加 1dp，注释写明用于解决右侧白线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/layout/TabletLayout.kt:44"
+  },
+  {
+    "fact": "原生路由 id 由 `nativeRouteIdForTypeName` 生成：`native.` 前缀加类名的蛇形命名（`camelToSnakeCase`），如 AiChat 对应 native.ai_chat",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:63"
+  },
+  {
+    "fact": "`ScreenRouteRegistry` 反射扫描 `Screen` 的所有嵌套类并按类简单名排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:82"
+  },
+  {
+    "fact": "`hostEntryDefinitions` 集中声明原生路由：`main.*` 9 个、`toolbox.*` 18 个（order 10~180）、`hidden.*` 4 个无展示面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:110"
+  },
+  {
+    "fact": "`ScreenRouteRegistry.toEntry` 把 `Screen` 实例本身塞进 args 的 `__native_screen` 键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:46"
+  },
+  {
+    "fact": "`ScreenRouteRegistry.screenFromEntry` 优先从 args 直接取 `Screen`，取不到才走 `buildScreen` 反射重建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:432"
+  },
+  {
+    "fact": "`ScreenRouteRegistry.buildScreen` 用主构造 `callBy` 重建屏幕，参数转换支持枚举名（忽略大小写）/序号与基础类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:475"
+  },
+  {
+    "fact": "`ScreenRouteRegistry.buildScreen` 反射失败全部 `getOrNull()` 吞掉返回 null，路由静默打不开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:480"
+  },
+  {
+    "fact": "`ScreenRouteRegistry.defaultScreenForNavItem` 找不到对应屏幕时 `requireNotNull` 抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/ScreenRouteRegistry.kt:408"
+  },
+  {
+    "fact": "Screen 基类声明 `navItem`（侧边栏高亮归属）与 `titleRes`（标题资源）两个身份属性",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:104"
+  },
+  {
+    "fact": "Screen 基类有三个行为开关：`participatesInCrossfadeTransition` 默认 true、`keepAlive` 默认 false、`usesRouteViewModelStore` 默认 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:114"
+  },
+  {
+    "fact": "`Screen.screenKey` 对 keepAlive 屏幕用 `stableScreenKey()`，否则用路由实例 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:126"
+  },
+  {
+    "fact": "`Screen.Content` 默认空实现，约 60 个子类各自实现界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:131"
+  },
+  {
+    "fact": "`Screen.AssistantConfig` 的 `participatesInCrossfadeTransition` 为 false，注释说明实时渲染视图转场会留残影",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:714"
+  },
+  {
+    "fact": "`Screen.TokenUsageStatistics` 的 `usesRouteViewModelStore` 为 true，用路由级 ViewModelStore",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:1123"
+  },
+  {
+    "fact": "`Screen.ToolPkgComposeDsl` 与 `Screen.ToolPkgPluginConfig` 的 `stableScreenKey` 为 `toolpkg_keepalive:<包>:<模块>`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:1182"
+  },
+  {
+    "fact": "`Screen.Market` 的 `initialTab` 参数经路由 args 传递，市场首页 Tab 可深链直达",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:223"
+  },
+  {
+    "fact": "`Screen.Packages` 的新建插件回调先 `PendingChatDraftHandler.setPendingDraft` 再跳 AI 聊天页，用对话创建插件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:206"
+  },
+  {
+    "fact": "`GestureStateHolder.isChatScreenGestureConsumed` 是全局手势标志，聊天屏消费手势时阻止抽屉抢滑动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:1559"
+  },
+  {
+    "fact": "`Screen.Toolbox` 的 Content 解析失败时回退 `AppRouterGateway.navigate` 跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:1390"
+  },
+  {
+    "fact": "`NavItem` 共 15 个导航对象，每个含 route 字符串、`titleResId` 与图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/NavItem.kt:24"
+  },
+  {
+    "fact": "`NavItem.AiChat` 的图标是 `Icons.Default.Email`（信封）而非聊天图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/NavItem.kt:24"
+  },
+  {
+    "fact": "`NavItem.Help` 使用 `Icons.AutoMirrored.Filled.Help` 做 RTL 镜像适配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/NavItem.kt:46"
+  },
+  {
+    "fact": "`OperitUtilityTheme` 跟随系统深浅色切换 `darkColorScheme`/`lightColorScheme`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/OperitUtilityTheme.kt:12"
+  },
+  {
+    "fact": "`rememberLocal` 基于 `ui_preferences` DataStore，Boolean/Int/Long/Float/String 走原生键，泛型走 JSON 序列化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/RememberLocal.kt:28"
+  },
+  {
+    "fact": "`rememberLocal` 在 `LaunchedEffect(key)` 里异步读 DataStore 初始值，读取失败回退默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/RememberLocal.kt:37"
+  },
+  {
+    "fact": "`rememberLocal` 的 setter 值不变时不写盘，变化时协程异步写 DataStore",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/RememberLocal.kt:37"
+  },
+  {
+    "fact": "`WaveVisualizer` 活跃态尺寸 200dp、非活跃态 120dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/WaveVisualizer.kt:33"
+  },
+  {
+    "fact": "WaveVisualizer 音量变化经 100ms `tween` 平滑，避免波形跳变",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/WaveVisualizer.kt:62"
+  },
+  {
+    "fact": "WaveVisualizer 用 `rememberInfiniteTransition` 常驻 4 路动画：进度 3000ms、脉冲 1500ms、光晕 2000ms、旋转 2000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/WaveVisualizer.kt:56"
+  },
+  {
+    "fact": "`WaveVisualizer` 非活跃态画径向渐变光晕、扩散波环与线框圆，共 3 圈波环（0.2/0.6/1.0 缩放）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/WaveVisualizer.kt:33"
+  },
+  {
+    "fact": "`WaveVisualizer` 活跃态画两条 120° 圆弧（相隔 180°）随旋转扫动，线宽随音量 2~14dp 变化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/WaveVisualizer.kt:33"
+  },
+  {
+    "fact": "`SimpleAnimatedVisibility` 只做 alpha 淡入淡出，alpha 归零后才移除内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/animations/SimpleAnimation.kt:18"
+  },
+  {
+    "fact": "`BrowserCallbackDialog` 的 WebView 禁多窗口（`setSupportMultipleWindows(false)`）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:51"
+  },
+  {
+    "fact": "`BrowserCallbackDialog` 用 scheme/host/port/path 四元组匹配 OAuth 回调地址",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:51"
+  },
+  {
+    "fact": "BrowserCallbackDialog 在 `shouldOverrideUrlLoading` 里捕获 OAuth 回调 URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:80"
+  },
+  {
+    "fact": "BrowserCallbackDialog 在 `onPageStarted` 里二次捕获回调，命中即 `stopLoading`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:89"
+  },
+  {
+    "fact": "`BrowserCallbackDialog` 超过 `expiresAt` 未回调则 `onFailure(\"Browser callback timed out\")`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:51"
+  },
+  {
+    "fact": "`BrowserCallbackDialog` 禁止点外部关闭（`dismissOnClickOutside = false`），完成中禁用关闭与重载按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:51"
+  },
+  {
+    "fact": "`BrowserCallbackDialog` 销毁时按 stopLoading → about:blank → clearHistory → removeAllViews → destroy 顺序释放 WebView",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:51"
+  },
+  {
+    "fact": "`MaterialIconNameResolver` 用 `ConcurrentHashMap` 缓存解析结果，图标名按非字母数字切分转 PascalCase",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/MaterialIconNameResolver.kt:8"
+  },
+  {
+    "fact": "`MaterialIconNameResolver` 反射 `androidx.compose.material.icons.filled.<Pascal>Kt` 类取图标，失败返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/MaterialIconNameResolver.kt:31"
+  },
+  {
+    "fact": "`MaterialIconNameResolver.resolveOrDefault` 解析失败回退指定默认图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/MaterialIconNameResolver.kt:40"
+  },
+  {
+    "fact": "`ProviderLogoLoader` 从 `assets/model_logos/{ApiProviderType.name}/` 找第一个 .svg 或 .png 做模型商 logo",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/ProviderLogoLoader.kt:38"
+  },
+  {
+    "fact": "`ProviderLogoLoader.load` 要求 `sizePx > 0`，否则 `require` 抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/ProviderLogoLoader.kt:97"
+  },
+  {
+    "fact": "`ProviderLogoLoader` 用 AndroidSVG 把 svg 渲染成 ARGB_8888 Bitmap 并按最大边等比缩放居中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/ProviderLogoLoader.kt:177"
+  },
+  {
+    "fact": "`ProviderLogoLoader` 对位图缩放后 `source.recycle()` 回收原图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/ProviderLogoLoader.kt:177"
+  },
+  {
+    "fact": "`providerLogoColorFilter` 在深色背景（亮度 < 0.5）时给 logo 加 `onSurface` 着色保证可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/ProviderLogoLoader.kt:224"
+  },
+  {
+    "fact": "`RemoteLogoLoader` 只允许 https  scheme，非 https 直接返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/RemoteLogoLoader.kt:35"
+  },
+  {
+    "fact": "`RemoteLogoLoader` 单张 logo 上限 512KB（`MAX_LOGO_BYTES`），内存缓存上限 4MB（`MAX_CACHE_BYTES`）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/RemoteLogoLoader.kt:31"
+  },
+  {
+    "fact": "`RemoteLogoLoader` 的 OkHttp 连接超时 15 秒、读取超时 20 秒，`followSslRedirects(false)` 不跟随跨协议重定向",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/RemoteLogoLoader.kt:35"
+  },
+  {
+    "fact": "RemoteLogoLoader 下载时先查 `contentLength`，流式累计超 512KB 即中断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/icons/RemoteLogoLoader.kt:81"
+  },
+  {
+    "fact": "`ImeBringIntoView.bringIntoViewOnImeFocus()` 在输入框聚焦后等一帧（`withFrameNanos`）再 `bringIntoView` 防键盘遮挡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/input/ImeBringIntoView.kt:25"
+  },
+  {
+    "fact": "`PendingChatDraftHandler` 是 `MutableStateFlow<String?>` 单例，`setPendingDraft`/`clearPendingDraft` 读写待发送草稿",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/PendingChatDraftHandler.kt:9"
+  },
+  {
+    "fact": "`SharedFileHandler` 有三路 StateFlow：`sharedFiles`（文件 URI）、`sharedFileText`（文件附带文本）、`sharedText`（纯分享文本）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/SharedFileHandler.kt:12"
+  },
+  {
+    "fact": "`SharedFileHandler.clearSharedFiles` 同时清空三路状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/SharedFileHandler.kt:34"
+  },
+  {
+    "fact": "`LocalAppBarContentColor` 默认值为 `Color.Unspecified`，各屏可覆盖顶栏内容色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/components/LocalAppBarContentColor.kt:5"
+  },
+  {
+    "fact": "`captureCompletion` 用 `completionHandled` 保证回调只触发一次，超时与成功路径共用该守卫",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/browser/BrowserCallbackDialog.kt:70"
+  }
+]

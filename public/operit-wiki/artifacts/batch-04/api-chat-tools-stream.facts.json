@@ -1,0 +1,570 @@
+[
+  {
+    "fact": "StructuredToolCallBridge 是 internal object 单例：工具调用的结构化协议桥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:14"
+  },
+  {
+    "fact": "包代理工具名常量 PACKAGE_PROXY_TOOL_NAME = \"package_proxy\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:15"
+  },
+  {
+    "fact": "CLI 代理工具名常量 CLI_PROXY_TOOL_NAME = \"proxy\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:16"
+  },
+  {
+    "fact": "代理目标参数名常量 PROXY_TARGET_TOOL_NAME_PARAM = \"tool_name\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:17"
+  },
+  {
+    "fact": "ProviderHistoryBlockType 是私有枚举，三值：ASSISTANT、USER_INPUT、TOOL_RESULT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:19"
+  },
+  {
+    "fact": "ToolResultRecord(name: String?, content: String) 是私有数据类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:25"
+  },
+  {
+    "fact": "OpenToolCall(id, matchingName)：已发给模型、尚无结果回应的工具调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:31"
+  },
+  {
+    "fact": "MatchedToolCall(resultIndex, call)：已匹配调用与其来源结果索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:36"
+  },
+  {
+    "fact": "toolCallName 解包代理信封取可执行工具名：Gemini 传裸 functionCall（args 为对象）、Claude 传 input、OpenAI 系包装 function 并序列化 arguments。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:44"
+  },
+  {
+    "fact": "proxyTargetToolName 按 arguments→args→input 顺序取参并解析 JSON，从中提取 tool_name。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:55"
+  },
+  {
+    "fact": "代理参数不是合法 JSON 时记 warn 日志并返回空串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:72"
+  },
+  {
+    "fact": "consumeMatchingToolCalls 只消费名字精确匹配的 open 调用；结果不保证按调用顺序返回（被拒调用会被顶到结果列表前面），按位置配对会错配 call ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:80"
+  },
+  {
+    "fact": "匹配结果返回带来源结果索引的 MatchedToolCall；未匹配的结果保持未消费。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:82"
+  },
+  {
+    "fact": "unmatchedToolResultContent 为未匹配调用生成协议合法的缺失说明：不声称执行完成，也不声称用户取消。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:105"
+  },
+  {
+    "fact": "空工具名默认标签为\"未知工具\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:106"
+  },
+  {
+    "fact": "缺失原因 tool_result_partial_batch / tool_result_without_structured_match 映射为\"没有匹配到执行结果\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:109"
+  },
+  {
+    "fact": "缺失原因 typed_tool_call_without_payload 映射为\"调用没有可执行参数\"；tool_call_api_disabled 映射为\"工具调用协议已关闭\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:111"
+  },
+  {
+    "fact": "user_boundary、system_boundary、assistant_boundary 等边界原因映射为\"后续对话历史已到达，但未返回执行结果\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:114"
+  },
+  {
+    "fact": "返回文本格式为\"工具结果缺失：$toolLabel $detail。这不是用户取消。\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:120"
+  },
+  {
+    "fact": "buildToolsJson：toolPrompts 为空返回 null，否则组装工具定义 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:123"
+  },
+  {
+    "fact": "buildToolsArray：toolPrompts 为空返回空 JSONArray。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:131"
+  },
+  {
+    "fact": "buildMessagesJson 把对话历史编译成结构化消息 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:138"
+  },
+  {
+    "fact": "buildMnnChatHistory 返回 List<Pair<String, String>>，供 MNN 端侧 provider 使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:145"
+  },
+  {
+    "fact": "纯 role+content 消息（恰好 2 个键、role 非空、content 为字符串或空）取 (role, content)，否则取 (\"json\", 整条 JSON 字符串)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:166"
+  },
+  {
+    "fact": "compileHistoryForProvider 把连续同类 turn 合并成块后再输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:177"
+  },
+  {
+    "fact": "useToolCall=false 时 TOOL_RESULT 块映射为 USER，而非 TOOL_RESULT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:199"
+  },
+  {
+    "fact": "块归属规则：ASSISTANT/TOOL_CALL 归 ASSISTANT 块，TOOL_RESULT 归 TOOL_RESULT 块，USER/SUMMARY 归 USER_INPUT 块，SYSTEM 直接透传并先刷块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:231"
+  },
+  {
+    "fact": "convertToolCallPayloadToXml：空白原样返回；已含工具标签原样返回；否则从文本解析工具调用并转成 XML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:250"
+  },
+  {
+    "fact": "buildStructuredMessages 是历史→结构化消息的核心：先 compileHistoryForProvider(useToolCall=true)，再逐 turn 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:259"
+  },
+  {
+    "fact": "新工具调用分配 id：generatedToolCallId(nextToolCallOrdinal++)，并登记 OpenToolCall(callId, toolCallName(toolCall))。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:286"
+  },
+  {
+    "fact": "攒批的工具调用以 role=assistant 消息发出，content 非空时携带，带 tool_calls 数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:302"
+  },
+  {
+    "fact": "未匹配的 open 调用按工具结果缺失处理：逐条发出 role=tool 消息（带 tool_call_id 与缺失说明），并记 warn 日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:323"
+  },
+  {
+    "fact": "preserveThinkInHistory=false 时，ASSISTANT turn 先经 ChatUtils.removeThinkingContent 去除思考内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:335"
+  },
+  {
+    "fact": "消息内容先经 ChatUtils.stripOpenAiResponsesProtocolMarkup 去除协议标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:340"
+  },
+  {
+    "fact": "SYSTEM turn 以\"system_boundary\"刷掉未匹配调用后，发出 role=system 消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:343"
+  },
+  {
+    "fact": "USER/SUMMARY turn 以\"user_boundary\"刷掉未匹配调用后，发出 role=user 消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:350"
+  },
+  {
+    "fact": "ASSISTANT turn 解析出 XML 工具调用时：先 wrapPackageToolCallsWithProxy，再以\"assistant_tool_call_before_result\"刷掉未匹配调用并入队。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:370"
+  },
+  {
+    "fact": "ASSISTANT turn 无 XML 工具调用时：以\"assistant_boundary\"刷掉未匹配调用，随后发出纯文本 assistant 消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:379"
+  },
+  {
+    "fact": "TOOL_CALL turn 同理，刷块原因分别为\"typed_tool_call_before_result\"与\"typed_tool_call_without_payload\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:396"
+  },
+  {
+    "fact": "TOOL_RESULT turn 先 emitQueuedToolCallsIfNeeded，再解析 XML 结果并按名匹配 open 调用，逐条发出带 tool_call_id 的 role=tool 消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:416"
+  },
+  {
+    "fact": "匹配结果的 name 非空时，role=tool 消息带 name 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:423"
+  },
+  {
+    "fact": "匹配不上的 tool_result 只记 debug 日志\"发现未匹配的tool_result\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:434"
+  },
+  {
+    "fact": "批量结果处理完后，剩余 open 调用以\"tool_result_partial_batch\"刷掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:438"
+  },
+  {
+    "fact": "无结构化匹配时以\"tool_result_without_structured_match\"刷掉未匹配调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:448"
+  },
+  {
+    "fact": "工具结果解析后残留的文本内容以 role=user 消息发出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:444"
+  },
+  {
+    "fact": "历史末尾以\"history_end\"刷掉所有剩余 open 调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:462"
+  },
+  {
+    "fact": "nonEmptyContent：空白内容填\"[Empty]\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:466"
+  },
+  {
+    "fact": "buildToolDefinitions：每个工具生成 {type:\"function\", function:{name, description, parameters}}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:469"
+  },
+  {
+    "fact": "description 规则：details 非空时为 description + \"\\n\" + details，否则只用 description。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:477"
+  },
+  {
+    "fact": "buildSchemaFromStructured 生成 {type:\"object\", properties:{name:{type, description, default?}}, required:[...]}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:491"
+  },
+  {
+    "fact": "required 恒为数组（含空数组），这是 OpenAI 风格 schema 的要求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:514"
+  },
+  {
+    "fact": "convertToolCallsToXml：每条调用取 function.name，空名跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:520"
+  },
+  {
+    "fact": "工具标签名由 ChatMarkupRegex.generateRandomToolTagName() 生成随机名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:536"
+  },
+  {
+    "fact": "参数可解析为 JSON 时逐键生成 <param name=\"key\">转义值</param>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:546"
+  },
+  {
+    "fact": "参数不可解析但非空时用 <param name=\"_raw_arguments\"> 包裹原始字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:555"
+  },
+  {
+    "fact": "parsePossibleToolCallsFromText 的候选：全文、extractJson、extractJsonArray、```json 围栏块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:568"
+  },
+  {
+    "fact": "extractToolCallsFromAny(JSONObject) 识别 tool_calls 数组与 function_call 对象两种形态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:618"
+  },
+  {
+    "fact": "extractToolCallsFromAny(JSONObject) 还识别 type==\"function_call\"（629）与 output 数组（636）两种形态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:632"
+  },
+  {
+    "fact": "JSONArray 根直接走 normalizeToolCalls。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:646"
+  },
+  {
+    "fact": "normalizeSingleToolCall 的 name 取 function.name / 顶层 name / function_call.name，空则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:667"
+  },
+  {
+    "fact": "arguments 取 function.arguments / 顶层 arguments / function_call.arguments。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:678"
+  },
+  {
+    "fact": "arguments 归一化：对象/数组转字符串，空串或 null 用 \"{}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:686"
+  },
+  {
+    "fact": "id 取 raw.id / raw.call_id，缺省为 \"call_${sanitizeToolCallId(name)}_$index\" 再清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:691"
+  },
+  {
+    "fact": "归一化输出 {id, type:\"function\", function:{name, arguments}}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:696"
+  },
+  {
+    "fact": "parseXmlToolCalls 用 ChatMarkupRegex.toolCallPattern 匹配工具调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:705"
+  },
+  {
+    "fact": "参数用 ChatMarkupRegex.toolParamPattern 提取并经 XmlEscaper.unescape。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:720"
+  },
+  {
+    "fact": "XML 工具调用的 callId = sanitize(\"call_${toolNamePart}_${hashPart}_$callIndex\")，hash 取自\"工具名:参数\"的稳定哈希。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:727"
+  },
+  {
+    "fact": "匹配到的 XML 片段从文本中剔除，返回剩余文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:739"
+  },
+  {
+    "fact": "工具名含 \":\" 且不是 package_proxy 自身时，被包一层 package_proxy。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:757"
+  },
+  {
+    "fact": "包后参数为 {tool_name: 原工具名, params: 原参数对象}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:767"
+  },
+  {
+    "fact": "parseXmlToolResults 用 ChatMarkupRegex.toolResultAnyPattern 匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:784"
+  },
+  {
+    "fact": "内容优先取 <content> 子标签否则取全文；name 取自开始标签的 name 属性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:797"
+  },
+  {
+    "fact": "parseXmlToolResults 返回时剔除匹配片段并 trim 剩余文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:803"
+  },
+  {
+    "fact": "XmlEscaper.escape 转义 5 个 XML 实体：&、<、>、双引号、单引号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:812"
+  },
+  {
+    "fact": "XmlEscaper.unescape 反转义 5 个 XML 实体：&、<、>、双引号、单引号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:820"
+  },
+  {
+    "fact": "sanitizeToolCallId：保留字母数字/_/-，其余换下划线，合并连续下划线并去首尾，全空返回\"call\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:831"
+  },
+  {
+    "fact": "generatedToolCallId 生成 9 位定长 id（hash+序号清洗后取尾 9 位，不足补齐）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:847"
+  },
+  {
+    "fact": "stableIdHashPart：hashCode 取绝对值转 36 进制小写字母数字；Int.MIN_VALUE 按 0 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt:854"
+  },
+  {
+    "fact": "ToolPkgJsAiProviderService(config, provider) 实现 AIService：JS 工具包形态的 AI 供应商服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:28"
+  },
+  {
+    "fact": "ProviderHookValue 是密封接口，六态：NullValue、TextValue、BooleanValue、NumberValue、ObjectValue(JSONObject)、ArrayValue(JSONArray)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:32"
+  },
+  {
+    "fact": "输入/缓存输入/输出 token 计数器为 @Volatile Long。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:57"
+  },
+  {
+    "fact": "executionChatId = \"toolpkg-ai-provider:${providerId}:${UUID 去横杠}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:65"
+  },
+  {
+    "fact": "providerRuntimeContextKey = \"toolpkg_provider:${containerPackageName}:${providerId 小写}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:68"
+  },
+  {
+    "fact": "providerModel = \"${displayName}:${modelName}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:80"
+  },
+  {
+    "fact": "resetTokenCounts 清零三个 token 计数器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:83"
+  },
+  {
+    "fact": "cancelStreaming() 经 toolPkgPackageManager().cancelToolPkgExecutionsForChat(executionChatId) 取消包执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:89"
+  },
+  {
+    "fact": "mainHookRunnerOverride 是测试缝：生产为 null，走真实包管理器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:98"
+  },
+  {
+    "fact": "getModelsList 调用 provider.listModelsFunctionName/Source，事件 TOOLPKG_EVENT_AI_PROVIDER_LIST_MODELS，成功校验后解析模型列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:105"
+  },
+  {
+    "fact": "sendMessage 以 util.stream.stream { } 构建 Stream<String>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:125"
+  },
+  {
+    "fact": "sendMessage 的 hook payload 含 chatHistory（序列化 turn）、modelParameters、availableTools、enableThinking、stream、preserveThinkInHistory、enableRetry。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:142"
+  },
+  {
+    "fact": "中间结果回调：先 applyAndForwardUsage（无 attempt 记 hasLegacyUsage），再转发非致命错误，最后逐 chunk 发出并置 hasIntermediateTextChunk=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:155"
+  },
+  {
+    "fact": "设计要求：最终结果的 usage 必须与明确的成功完成信号同属一个 attempt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:164"
+  },
+  {
+    "fact": "最终结果先 applyAndForwardUsage，再 ensureNoFatalError。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:167"
+  },
+  {
+    "fact": "无中间文本块时，才从最终结果提取 message chunks 发出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:172"
+  },
+  {
+    "fact": "onUsageFinalized 的参数：finalUsage?.attempt ?: extractAttemptNumber(decoded)，再无则 hasLegacyUsage 时为 1，否则 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:176"
+  },
+  {
+    "fact": "testConnection 调用 testConnectionFunctionName/Source；CancellationException 直接重抛。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:188"
+  },
+  {
+    "fact": "calculateInputTokens 调用 calculateInputTokensFunctionName/Source；payload 只有 chatHistory 与 availableTools（context 传 null）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:206"
+  },
+  {
+    "fact": "release() 即 cancelStreaming()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:219"
+  },
+  {
+    "fact": "invokeProviderFunction：有 onIntermediateResult 时建无界 Channel（Channel.UNLIMITED）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:232"
+  },
+  {
+    "fact": "Dispatchers.IO 协程消费该 channel，解码后转发给 onIntermediateResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:239"
+  },
+  {
+    "fact": "中间结果 channel 容量为 Channel.UNLIMITED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:234"
+  },
+  {
+    "fact": "测试覆盖时走 mainHookRunnerOverride.run。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:254"
+  },
+  {
+    "fact": "该 run 调用面（252–267 行）无 dispatchIntermediateOnMain 参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:263"
+  },
+  {
+    "fact": "生产路径调 toolPkgPackageManager().runToolPkgMainHook，pluginId=\"${providerId}:$event\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:273"
+  },
+  {
+    "fact": "hook 的 eventPayload 注入 chatId=executionChatId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:281"
+  },
+  {
+    "fact": "executionContextKey=providerRuntimeContextKey，runtimeKind=\"provider\"，生产路径 dispatchIntermediateOnMain=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:286"
+  },
+  {
+    "fact": "hook 结果经 getOrElse 重抛异常后，再 decodeToolPkgHookResult → decodeProviderHookValue。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:296"
+  },
+  {
+    "fact": "finally 关闭中间 channel 并 join 中间任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:299"
+  },
+  {
+    "fact": "buildBasePayload：providerId、providerDisplayName、providerDescription、config=serializeModelConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:304"
+  },
+  {
+    "fact": "serializeModelConfig 含 id、name、apiProviderType/apiProviderTypeId、apiKey、apiEndpoint、modelName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:316"
+  },
+  {
+    "fact": "apiKey 原样塞进发给 JS hook 的 payload。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:319"
+  },
+  {
+    "fact": "locale 取 context 首个 locale 的 toLanguageTag，可空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:332"
+  },
+  {
+    "fact": "serializePromptTurn：kind、content（去协议标记）、toolName、metadata。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:336"
+  },
+  {
+    "fact": "serializeModelParameter：id、name、value=当前值、type=值类型名、category=类别名、enabled、custom。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:349"
+  },
+  {
+    "fact": "serializeToolPrompt：name、description、parameters、parametersStructured。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:360"
+  },
+  {
+    "fact": "parametersStructured 子项含 name/type/description/required/default。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:368"
+  },
+  {
+    "fact": "decodeJsonObjectString：空或 \"{}\" 返回空 JSONObject；解析失败静默返回空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:382"
+  },
+  {
+    "fact": "decodeJsonArrayString：空或 \"[]\" 返回空 JSONArray；解析失败静默返回空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:394"
+  },
+  {
+    "fact": "parseModelOptions：ObjectValue 优先取 \"models\" 字段再解码；数组分支透传。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:406"
+  },
+  {
+    "fact": "数组逐个解析；单个值按单元素处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:414"
+  },
+  {
+    "fact": "parseModelOption：文本值 id=name=文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:423"
+  },
+  {
+    "fact": "对象 id 取 id/name/model，name 取 name/displayName/title/id；id 空返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:431"
+  },
+  {
+    "fact": "parseConnectionMessage：文本值（空则\"Connection successful\"）、布尔值（false 抛错）、对象看 success 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:449"
+  },
+  {
+    "fact": "parseTokenCount：数字/数字文本/对象（tokens/inputTokens/count）三种形态，否则抛 IllegalStateException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:470"
+  },
+  {
+    "fact": "token 计数全程 Long：longValueExact 精确转换，负值钳到 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:480"
+  },
+  {
+    "fact": "optTokenCountLong：负值拒绝为未知（null）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:505"
+  },
+  {
+    "fact": "ensureNoFatalError：对象 success=false 抛 IllegalStateException；非对象直接放行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:528"
+  },
+  {
+    "fact": "extractNonFatalError 取 nonFatalError 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:537"
+  },
+  {
+    "fact": "新 usage 协议：usage 对象或顶层带 attempt/attemptNumber（从 1 开始）；同 attempt 多次上报是流式部分更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:546"
+  },
+  {
+    "fact": "旧 usage 协议：无 attempt 字段 = 整个逻辑请求的累计快照，按 attempt 1 记账，后报覆盖先报，绝不累加。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:551"
+  },
+  {
+    "fact": "账本字段可空：缺省=未知，绝不用全局计数填充；负值拒绝为未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:553"
+  },
+  {
+    "fact": "extractUsage：非对象直接返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:557"
+  },
+  {
+    "fact": "extractAttemptNumber 从 usage 对象或顶层取 attempt/attemptNumber，钳到 ≥1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:564"
+  },
+  {
+    "fact": "extractUsageFromJson：input/cachedInput/output 取值；三者全空返回 null；attempt 缺省为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:578"
+  },
+  {
+    "fact": "applyAndForwardUsage：解析→更新 UI 累计计数→转发规范化 usage→返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:605"
+  },
+  {
+    "fact": "forwardUsage 经 ProviderUsageNormalizer.toolPkg 转发，completeSnapshot = !attemptPresent。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:621"
+  },
+  {
+    "fact": "applyUsage：缺省字段按 0L 计并钳到 ≥0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:631"
+  },
+  {
+    "fact": "extractMessageChunks：NullValue 为空；文本值非空成单 chunk；对象按 chunk、chunks 数组顺序提取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:644"
+  },
+  {
+    "fact": "对象还按 text、content 顺序提取（无则空）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:653"
+  },
+  {
+    "fact": "decodeProviderHookValue：null→NullValue；JSONObject→ObjectValue；JSONArray→ArrayValue；String→TextValue；Boolean→BooleanValue；Number→NumberValue；Map/List 互转；其他 toString 成 TextValue。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:670"
+  },
+  {
+    "fact": "TokenUsage(input?, cachedInput?, output?, attempt=1, attemptPresent=false)：缺省字段=未知。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:687"
+  },
+  {
+    "fact": "ToolPkgMainHookRunner：与 PackageManager.runToolPkgMainHook 同调用面的测试缝接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt:700"
+  }
+]

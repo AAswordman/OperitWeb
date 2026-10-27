@@ -1,0 +1,174 @@
+[
+  {
+    "confidence": "high",
+    "description": "GitHub OAuth 的 access_token 以明文存于普通 DataStore \"github_auth_preferences\"（第 20 行，未加密）。同目录 CodexAuthPreferences.kt:146-153 已使用 EncryptedSharedPreferences + MasterKey(AES256_GCM) 加密存储同类凭证，说明项目内已有成熟加密方案而本文件未采用。root 设备、备份导出或任意能读应用私有目录者可直接拿到 token；scope 含 public_repo（可读写公开仓库）与 notifications，泄露后果严重。",
+    "evidence": "            preferences[ACCESS_TOKEN] = accessToken",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt",
+    "line": 141,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "所谓\"验证哈希\"只是明文拼接，任何用户可直接改写 Downloads/Operit/usage_verification.dat（如写入 \"0|\"）伪造校验内容，防\"清应用数据\"作弊机制形同虚设。配合第 61-76 行的恢复逻辑（取外部文件与 prefs 使用计数最大值），伪造文件反而会被采信为真值。",
+    "evidence": "    private fun generateVerificationHash(totalUsage: Int, nextDate: String): String {\n        return \"$totalUsage|$nextDate\"\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 120,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "migrateLegacyDefaultCharacterThemeIfEligible 无论 ThemeScopeMigrationPolicy 判定是否为 true，完成标记都被置 true。若首次运行时机不满足迁移条件（默认角色卡尚未创建且当前激活卡不是默认卡），旧全局主题键将永久失去被复制的机会；且 readThemePreferenceValues 只读带前缀键，无前缀旧键从此成为孤儿数据，用户旧主题静默丢失。",
+    "evidence": "            preferences[CHARACTER_THEME_DEFAULT_MIGRATION_COMPLETED] = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/UserPreferencesManager.kt",
+    "line": 1172,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "7 个同步 getter 用 runBlocking 等待 DataStore 磁盘 IO；若在主线程调用会阻塞 UI。ToolPkgHookExecutionBudget.create() 等在功能执行路径上同步读取，调用线程上下文未逐一确认，存在 ANR 风险。",
+    "evidence": "    fun isExperimentalVirtualDisplayEnabled(): Boolean {\n        return runBlocking {\n            enableExperimentalVirtualDisplay.first()",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt",
+    "line": 270,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "读取实验性虚拟屏开关抛异常时默认返回 true，即\"读不到配置 → 开启实验功能\"。异常路径放大了功能面而非收敛，虽有错误回调，但默认开启实验性能力的策略值得复核。",
+    "evidence": "        val experimentalEnabled = try {\n            DisplayPreferencesManager.getInstance(context).isExperimentalVirtualDisplayEnabled()\n        } catch (e: Exception) {\n            onExperimentalFlagReadError?.invoke(e)\n            true",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt",
+    "line": 85,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "TTS 服务类型用 valueOf 直接解析存储字符串，未知枚举名抛 IllegalArgumentException；而 STT 侧有 parseSttServiceType 做未知值回退（第 111-116 行）。存储损坏或枚举改名会导致 TTS 配置流崩溃，不对称容错实锤。",
+    "evidence": "    val ttsServiceTypeFlow: Flow<VoiceServiceFactory.VoiceServiceType> = dataStore.data.map { prefs ->\n        VoiceServiceFactory.VoiceServiceType.valueOf(\n            prefs[TTS_SERVICE_TYPE] ?: DEFAULT_TTS_SERVICE_TYPE.name\n        )\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt",
+    "line": 120,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "该 flow 对损坏的 JSON 无 try/catch 保护（decodeFromString 直接抛），而相邻的 ttsHttpConfigFlow（第 132 行）与 sttHttpConfigFlow（第 176 行）都有解析失败回退默认值的保护；损坏的 tts_vits_package_config 会使该 Flow 抛异常并中断订阅者。不对称的容错实锤。",
+    "evidence": "    val ttsVitsPackageConfigFlow: Flow<VitsTtsPackageConfig> = dataStore.data.map { prefs ->\n        val json = prefs[TTS_VITS_PACKAGE_CONFIG]\n        if (json == null) {\n            DEFAULT_VITS_TTS_PACKAGE_CONFIG\n        } else {\n            serializerJson.decodeFromString<VitsTtsPackageConfig>(json)\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt",
+    "line": 139,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "个人唤醒模板为声纹特征向量（生物特征类敏感数据），经 savePersonalWakeTemplates（第 276-281 行）以明文 JSON 存于 personal_wake_templates_json 键，无加密。",
+    "evidence": "    data class PersonalWakeTemplate(\n        val features: List<Float>,\n    )",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/WakeWordPreferences.kt",
+    "line": 41,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "本机对外 HTTP API 的 bearer token 明文存于普通 DataStore \"external_http_api_preferences\"。威胁模型弱于 OAuth token（该 token 只用于本机回环服务鉴权），但 root/备份仍可读取并调用本机 API。",
+    "evidence": "        context.externalHttpApiDataStore.edit { preferences ->\n            preferences[KEY_BEARER_TOKEN] = generated\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt",
+    "line": 63,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "云端 embedding 的 apiKey 以明文存于普通 SharedPreferences。同目录 CodexAuthPreferences.kt:146-153 已使用 EncryptedSharedPreferences + MasterKey(AES256_GCM) 加密存储，说明项目内已有加密方案而本文件未采用；apiKey 泄露意味着第三方 embedding 服务额度被盗用。",
+    "evidence": "            .putString(KEY_CLOUD_API_KEY, normalized.apiKey)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt",
+    "line": 101,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "云端 STT/TTS 的 apiKey 以明文 JSON 存于 DataStore 文件（应用私有目录，root 设备可读；备份/调试导出亦会携带）。未做加密存储（如 EncryptedFile/密钥库封装）；写入点在 saveTtsSettings（SpeechServicesPreferences.kt:196）经 serializerJson.encodeToString 序列化落盘。",
+    "evidence": "val apiKey: String, // Keep apiKey for header-based auth\nhttpConfig?.let { prefs[TTS_HTTP_CONFIG] = serializerJson.encodeToString(it) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServicesPreferences.kt",
+    "line": 38,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "mutateActiveThemeForPrompt 目标非当前 active prompt 时静默丢弃主题变更，无日志、无回调、无返回值，调用方无法感知写入被跳过；并发切换 prompt 时的丢弃难以排查。",
+    "evidence": "            if (getActivePrompt() != target) return@runTransition",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt",
+    "line": 75,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "saveDisplaySettings 中 null 语义是\"不写\"而非\"清空\"，没有把头像 URI / 用户名清空调的通道，只能走 resetDisplaySettings（会连带重置全部显示设置）。",
+    "evidence": "            globalUserAvatarUri?.let { preferences[KEY_GLOBAL_USER_AVATAR_URI] = it }\n            globalUserName?.let { preferences[KEY_GLOBAL_USER_NAME] = it }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/DisplayPreferencesManager.kt",
+    "line": 247,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "必填读取器有 String/Boolean/Float 三种，缺 Int 版本，API 不对称；目前快照派生属性未使用必填 Int 读取故无崩溃风险。",
+    "evidence": "    fun requiredString(name: String): String = requireNotNull(string(name))\n\n    fun requiredBoolean(name: String): Boolean = requireNotNull(boolean(name))\n\n    fun requiredFloat(name: String): Float = requireNotNull(float(name))",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ThemePreferenceSnapshot.kt",
+    "line": 17,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "该 flow 用 first{} 严格匹配，无匹配时抛 NoSuchElementException；同文件另有 currentTtsProfileOrNullFlow 用 find 宽松匹配。正常流程下迁移（第 120 行）与\"禁止删 active\"（第 313 行）保证 id 有效，仅 DataStore 损坏时触发。",
+    "evidence": "    val currentTtsProfileFlow: Flow<TtsProfile> =\n        ttsProfilesFlow.combine(currentTtsProfileIdFlow) { profiles, id ->\n            profiles.first { profile -> profile.id == id }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt",
+    "line": 161,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "画像写入与 legacy 投影回写是两步非原子操作；若进程在两者之间被杀，画像 store 与 legacy 投影不一致（工厂读画像不受影响，但注释称投影需对齐的旧消费者会读到旧配置）。",
+    "evidence": "        dataStore.edit { preferences ->\n            val profiles = decodeTtsProfiles(preferences[TTS_PROFILES]) + profile\n            preferences[TTS_PROFILES] = json.encodeToString(profiles)\n            preferences[CURRENT_TTS_PROFILE_ID] = profile.id\n        }\n        projectTtsProfile(profile)\n        return profile",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt",
+    "line": 209,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "构造器中直接做文件 IO（checkExternalVerification 读写外部文件），主线程实例化时有 ANR 风险。",
+    "evidence": "    init {\n        // 初始化时检查外部验证文件，确保状态一致性\n        checkExternalVerification()\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 31,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "等待期完全依赖设备本地时钟（LocalDate.now()），用户修改系统时间即可绕过退避等待。",
+    "evidence": "    fun canUseFreeTier(): Boolean {\n        val today = LocalDate.now()",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 125,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "按 ordinal 索引枚举持久化 scoreMode，若未来 MemoryScoreMode 枚举增删改序会导致 ArrayIndexOutOfBounds 或错位；建议按 name 持久化。",
+    "evidence": "            scoreMode = MemoryScoreMode.entries[searchPrefs.getInt(KEY_SCORE_MODE, MemoryScoreMode.BALANCED.ordinal)],",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt",
+    "line": 21,
+    "severity": "suggestion"
+  },
+  {
+    "title": "DataStore 被用于多进程场景，官方明确不支持",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt",
+    "line": 17,
+    "severity": "warn",
+    "category": "并发/数据安全",
+    "detail": "initAndroidPermissionPreferences 的文档注释写\"该入口可被多个进程组件重复调用\"，但 DataStore 官方明确不支持多进程访问；各进程各自创建 DataStore 实例读写同一文件，可能写丢失或读到过期数据。跨进程配置应走 ContentProvider/MMkv 等多进程安全机制，或收敛到单进程写。",
+    "evidence": "private val Context.androidPermissionDataStore: DataStore<Preferences> by\n        preferencesDataStore(name = \"android_permission_preferences\")\n\n/** 初始化Android权限偏好管理器。该入口可被多个进程组件重复调用。 */",
+    "confidence": "high"
+  },
+  {
+    "title": "runBlocking 同步读偏好，主线程误调会 ANR",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/AndroidPermissionPreferences.kt",
+    "line": 117,
+    "severity": "suggestion",
+    "category": "线程/性能",
+    "detail": "getPreferredPermissionLevel 等四个同步 getter 用 runBlocking 阻塞等待 Flow.first()；文档虽注明应在非 UI 线程使用，但无编译期约束，调用方散落各处，主线程误调即 ANR。可考虑只暴露 Flow/suspend 接口。",
+    "evidence": "    /**\n     * 获取当前首选的权限级别 这是一个阻塞调用，应在非UI线程使用或谨慎使用\n     * @return 当前配置的首选权限级别，如果未设置则返回null\n     */\n    fun getPreferredPermissionLevel(): AndroidPermissionLevel? {\n        return runBlocking {",
+    "confidence": "medium"
+  }
+]

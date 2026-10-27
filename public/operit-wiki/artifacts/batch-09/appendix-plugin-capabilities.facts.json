@@ -1,0 +1,170 @@
+[
+ {
+  "fact": "Operit 插件分四种形态：JS 沙盒包（31 个随 APK 内置）、ToolPkg/bundle 容器包（市场分发）、MCP 插件（外部服务器）、Skill 包。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1274"
+ },
+ {
+  "fact": "31 个 JS 沙盒包随 APK 内置在 app/src/main/assets/packages/，加载时统一标记 isBuiltIn=true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1274"
+ },
+ {
+  "fact": "enabledByDefault=true 的内置包在启动时自动进入 AI 工具注册表，共 18 个；其余 13 个需用户在包管理手动启用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1792"
+ },
+ {
+  "fact": "ToolPkg/bundle 容器包的数据模型是 ToolPackage，有 bundle id（如 com.operit.QQbot），走市场分发不在 APK 内。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:301"
+ },
+ {
+  "fact": "MCPRepository 管理 MCP 插件的安装卸载与状态跟踪，远程服务器经 Kotlin MCP SDK 直连；启用后工具以 \"$pluginId:$toolName\" 注册进 AI 运行时。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt:50"
+ },
+ {
+  "fact": "SkillPackage 数据类确认 Skill 包存在，含 name/description/directory/skillFile 四个字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillPackage.kt:5"
+ },
+ {
+  "fact": "openai_draw（OpenAI 绘图）：OpenAI 格式图像生成 API（/v1/images/generations）文生图，图片存 /sdcard/Download/Operit/plugins/draw/openai_draw/draws/；需配 OPENAI_API_KEY（必填）、OPENAI_API_BASE_URL、OPENAI_IMAGE_MODEL。",
+  "ref": "app/src/main/assets/packages/openai_draw.js:16"
+ },
+ {
+  "fact": "zhipu_draw（智谱生图）：智谱 AI 图像生成 API 文生图；需配 ZHIPU_API_KEY、ZHIPU_IMAGE_MODEL（如 cogview-3-flash）。",
+  "ref": "app/src/main/assets/packages/zhipu_draw.js:14"
+ },
+ {
+  "fact": "qwen_draw（Qwen 绘图）：阿里云百炼/DashScope 文生图（通义万相，异步任务轮询）；需配 DASHSCOPE_API_KEY、DASHSCOPE_API_BASE_URL、QWEN_IMAGE_MODEL。",
+  "ref": "app/src/main/assets/packages/qwen_draw.js:15"
+ },
+ {
+  "fact": "siliconflow_draw（硅基流动绘图）：图像+视频双能力，图片走 /v1/images/generations，视频走 /v1/video/submit + /v1/video/status；需配 SILICONFLOW_API_KEY、SILICONFLOW_API_BASE_URL、SILICONFLOW_IMAGE_MODEL、SILICONFLOW_VIDEO_MODEL。",
+  "ref": "app/src/main/assets/packages/siliconflow_draw.js:15"
+ },
+ {
+  "fact": "xai_draw（xAI 图片与视频）：xAI 官方接口生图+生视频；需配 XAI_API_KEY、XAI_API_BASE_URL、XAI_IMAGE_MODEL、XAI_VIDEO_MODEL。",
+  "ref": "app/src/main/assets/packages/xai_draw.js:14"
+ },
+ {
+  "fact": "minimax_draw（MiniMax 绘图）：MiniMax 图像生成（/v1/image_generation），文生图+参考图生图；需配 MINIMAX_API_KEY、MINIMAX_API_BASE_URL、MINIMAX_IMAGE_MODEL、BEEIMG_API_KEY。",
+  "ref": "app/src/main/assets/packages/minimax_draw.js:15"
+ },
+ {
+  "fact": "nanobanana_draw（Nanobanana 绘图）：Nano Banana 文生图/图生图，本地图片先上传图床拿公网 URL；需配 NANOBANANA_API_KEY、NANOBANANA_API_BASE_URL、BEEIMG_API_KEY。",
+  "ref": "app/src/main/assets/packages/nanobanana_draw.js:14"
+ },
+ {
+  "fact": "tavily（Tavily 搜索）：高级网络搜索、内容提取、网站爬取、站点地图生成；TAVILY_API_KEY 必填，无 Key 直接抛错。",
+  "ref": "app/src/main/assets/packages/tavily.js:14"
+ },
+ {
+  "fact": "duckduckgo（DuckDuckGo 搜索）：网络搜索+内容抓取；零配置。",
+  "ref": "app/src/main/assets/packages/duckduckgo.js:4"
+ },
+ {
+  "fact": "google_search（Google 搜索）：普通搜索+Google Scholar 学术搜索，可设语言与返回条数；零配置。",
+  "ref": "app/src/main/assets/packages/google_search.js:3"
+ },
+ {
+  "fact": "various_search（多平台搜索）：必应/百度/搜狗/夸克多平台搜索（含图片搜索），默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/various_search.js:11"
+ },
+ {
+  "fact": "zhipu_search（智谱搜索）：智谱独立搜索 API，返回结构化搜索结果；需配 ZHIPU_SEARCH_API_KEY。",
+  "ref": "app/src/main/assets/packages/zhipu_search.js:15"
+ },
+ {
+  "fact": "crossref（Crossref 学术文献查询）：DOI 查询、关键词搜索、作者搜索，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/crossref.js:13"
+ },
+ {
+  "fact": "12306_ticket（12306 拓展）：12306 余票、中转、经停站查询，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/12306.js:10"
+ },
+ {
+  "fact": "daily_life（日常生活工具包）：天气、短信、电话、微信/QQ 单条消息、朋友圈发布、闹钟、截图拍照等 30+ 工具，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/daily_life.js:11"
+ },
+ {
+  "fact": "system_tools（系统工具）：设置管理、应用安装卸载启动、通知获取、位置服务、Intent/广播调用，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/system_tools.js:13"
+ },
+ {
+  "fact": "super_admin（超级管理员）：终端命令与 Shell 高级功能，terminal 跑在 Ubuntu 环境，shell 经 Shizuku/Root 直调 Android 命令，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/super_admin.js:11"
+ },
+ {
+  "fact": "automatic_ui_base（自动化基础工具）：UI 自动化基础操作（点击、滑动、输入），默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/automatic_ui_base.js:11"
+ },
+ {
+  "fact": "automatic_ui_subagent（自动化 AutoGLM 子代理）：主屏运行 UI 子代理，按自然语言意图自动规划执行界面操作；默认关闭。",
+  "ref": "app/src/main/assets/packages/automatic_ui_subagent.js:29"
+ },
+ {
+  "fact": "github（GitHub API）：GitHub REST API 工具集（仓库/Issue/PR/文件提交/分支）+ 本地 apply_file；需配 GITHUB_TOKEN、GITHUB_API_BASE_URL。",
+  "ref": "app/src/main/assets/packages/github.js:13"
+ },
+ {
+  "fact": "code_runner（代码运行器）：JS/Python/Ruby/Go/Rust/C/C++ 多语言代码执行，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/code_runner.js:9"
+ },
+ {
+  "fact": "browser（Browser 自动化操作）：对齐 Playwright MCP 默认 browser 工具面的浏览器自动化，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/browser.js:12"
+ },
+ {
+  "fact": "ffmpeg（FFmpeg 工具集）：多媒体内容处理，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/ffmpeg.js:13"
+ },
+ {
+  "fact": "file_converter（文件转换器）：音视频/图像/文档格式互转，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/file_converter.js:13"
+ },
+ {
+  "fact": "extended_chat（增强对话）：对话增删改查、跨话题读消息、角色卡绑定对话，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/extended_chat.js:13"
+ },
+ {
+  "fact": "extended_file_tools（增强文件工具）：file_exists/move/copy/info、zip/unzip、open/share，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/extended_file_tools.js:14"
+ },
+ {
+  "fact": "extended_http_tools（增强 HTTP 工具）：文件上传、GET/POST 网络直访，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/extended_http_tools.js:13"
+ },
+ {
+  "fact": "extended_memory_tools（增强记忆工具）：记忆增删改查/链接、用户偏好更新，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/extended_memory_tools.js:14"
+ },
+ {
+  "fact": "operit_editor（Operit 平台编辑器）：平台配置直改（MCP/Skill/沙盒包/角色卡/模型参数/TTS/STT），默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/operit_editor.js:13"
+ },
+ {
+  "fact": "time（时间）：时间相关功能，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/time.js:13"
+ },
+ {
+  "fact": "workflow（工作流管理）：工作流列表/创建/触发/管理，默认启用；零配置。",
+  "ref": "app/src/main/assets/packages/workflow.js:14"
+ },
+ {
+  "fact": "生图/生视频是纯插件能力：以 dbf71916 为准，app/src/main/java 全仓 grep images/generations、textToImage 零命中，原生无任何图像生成代码。",
+  "ref": "app/src/main/assets/packages/openai_draw.js:3"
+ },
+ {
+  "fact": "12306 余票查询是纯插件能力：原生 StandardUITools.kt:87 只有\"铁路12306 → com.MobileTicket\"的 App 启动映射，无余票查询接口。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt:87"
+ },
+ {
+  "fact": "AI 可调用的 GitHub 仓库操作是纯插件能力：原生 GitHubApiService.kt:149 虽是完整 REST 客户端，但只被 UpdateManager（应用更新）、MarketInteractionController（插件市场）等内部服务调用，ToolRegistration.kt 中零注册为 AI 工具。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:149"
+ },
+ {
+  "fact": "QQ 接入是纯插件能力：以 dbf71916 为准源码全仓 grep QQbot 零命中；com.operit.QQbot bundle 是唯一来源（社群经验）。",
+  "ref": "社群文档《关于QQbot插件.txt》"
+ },
+ {
+  "fact": "QQbot 工具包（com.operit.QQbot）提供 QQ 官方 Bot 接入：Gateway WebSocket 收消息、群/C2C 发消息、监听开关+自动回复；需去 q.qq.com 申请 AppID/AppSecret，未过审开沙盒；对话里必须关流式输出否则逐字刷屏。",
+  "ref": "社群文档《关于QQbot插件.txt》"
+ }
+]

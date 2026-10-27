@@ -1,0 +1,102 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "validateParameters 对危险命令的拦截是简单的子串匹配：仅当命令包含 \"rm -rf\" 或 \"format\" 时拒绝。绕过方式极多：大小写变体（rm -Rf /）、等价删除（rm -r /、dd if=/dev/zero of=...、mkfs、:(){:|:&};: fork 炸弹）、权限破坏（chmod -R 777 /、chown）、: 等均不在黑名单内。且该工具依赖 Shizuku 以高权限执行 shell，黑名单形同虚设。建议改为白名单或至少做词法级危险模式匹配。",
+    "evidence": "command.contains(\"rm -rf\") || command.contains(\"format\") -> {\n                ToolValidationResult(\n                        valid = false,\n                        errorMessage = \"Potentially dangerous command detected\"\n                )\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardShellToolExecutor.kt",
+    "line": 89,
+    "severity": "high",
+    "title": "shell 危险命令拦截仅为 \"rm -rf\"/\"format\" 子串匹配，极易绕过"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "StandardTerminalCommandExecutor 的全部命令入口（executeCommandInSession、executeHiddenCommand、inputInSession）没有任何危险命令过滤，与 StandardShellToolExecutor 的（虽弱但存在）拦截形成不对称：同一条 rm -rf 命令走 execute_shell 被拦，走终端会话则直接执行。",
+    "evidence": "fun executeCommandInSession(tool: AITool): ToolResult {\n        return runBlocking {\n            try {\n                val command = tool.parameters.find { param -> param.name == \"command\" }?.value ?: \"\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardTerminalCommandExecutor.kt",
+    "line": 88,
+    "severity": "warning",
+    "title": "终端会话命令无任何危险命令过滤，与 shell 工具不对称"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "StandardSendBroadcastToolExecutor 与 StandardIntentToolExecutor 允许发送任意 action 的广播/intent（含系统级 action），仅校验 action/component 非空。恶意或误配的 prompt 可让 AI 发送如 android.intent.action.BOOT_COMPLETED 类欺骗广播、或启动任意显式组件（含 service 类型）。建议对高危 action/包名做拦截清单。",
+    "evidence": "val action = tool.parameters.find { it.name == \"action\" }?.value?.trim().orEmpty()\n        if (action.isBlank()) {\n            return ToolResult(\n                toolName = tool.name,\n                success = false,\n                result = StringResultData(\"\"),\n                error = \"Missing required parameter: action\"\n            )\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSendBroadcastToolExecutor.kt",
+    "line": 42,
+    "severity": "warning",
+    "title": "广播/intent 工具可发送任意 action，无危险 action 过滤"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "StandardFFmpegConvertToolExecutor 用 StringBuilder 直接拼接用户传入的 inputPath/outputPath 到 ffmpeg 命令字符串（形如 -i \"input\" ... \"output\"）。若路径含双引号即可跳出引号注入额外 ffmpeg 参数（如 -y 覆盖、输出到任意路径）。建议对路径做引号转义或改用参数数组执行。",
+    "evidence": "val commandBuilder = StringBuilder(\"-i \\\"$inputPath\\\"\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt",
+    "line": 176,
+    "severity": "warning",
+    "title": "FFmpeg 转码命令直接拼接输入路径，引号可注入额外参数"
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "detail": "getDeviceLocation 的位置请求超时用 kotlinx.coroutines.GlobalScope.launch 实现，与调用方协程无父子关系：调用方取消时超时协程仍存活并尝试 resume continuation（虽有 isCompleted 检查避免崩溃，但属于结构化并发违规，有协程泄漏风险）。应改用 withTimeoutOrNull 包裹 suspendCancellableCoroutine。",
+    "evidence": "// 设置超时\n                                kotlinx.coroutines.GlobalScope.launch {\n                                    delay(timeout * 1000L)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt",
+    "line": 1554,
+    "severity": "warning",
+    "title": "getDeviceLocation 用 GlobalScope.launch 做超时，违反结构化并发"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "continuation.invokeOnCancellation 回调里用 runBlocking(Dispatchers.Main) 等待 removeUpdates。若调用方恰好在主线程取消该协程，runBlocking 会阻塞主线程等待主线程调度器执行任务，造成死锁。建议改用 Handler(Looper.getMainLooper()).post 或保证非主线程取消。",
+    "evidence": "continuation.invokeOnCancellation {\n                                    try {\n                                        // 确保在主线程上移除位置更新\n                                        kotlinx.coroutines.runBlocking(\n                                                kotlinx.coroutines.Dispatchers.Main\n                                        ) { locationManager.removeUpdates(locationListener) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt",
+    "line": 1571,
+    "severity": "warning",
+    "title": "位置取消回调中 runBlocking(Dispatchers.Main) 有主线程死锁风险"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "sendNotification 的通知 id 取 (System.currentTimeMillis() and 0x7FFFFFFF).toInt()：同一毫秒内发两条通知会得到相同 id，后一条覆盖前一条。AI 高频发通知（如批量提醒）时可能丢通知。建议用 AtomicInteger 自增。",
+    "evidence": "val id = (System.currentTimeMillis() and 0x7FFFFFFF).toInt()\n            manager.notify(id, notification)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSystemOperationTools.kt",
+    "line": 195,
+    "severity": "suggestion",
+    "title": "通知 id 用时间戳取低 31 位，同一毫秒内可能碰撞覆盖"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "StandardFFmpegInfoToolExecutor 的 info.appendLine(\"Build configuration: ${FFmpegKitConfig.getBuildDate()}\")：标签写的是构建配置，实际调用的是 getBuildDate()（构建日期），名实不符，给 AI 的信息有误导性。",
+    "evidence": "info.appendLine(\"FFmpeg version: ${FFmpegKitConfig.getVersion()}\")\n            info.appendLine(\"Build configuration: ${FFmpegKitConfig.getBuildDate()}\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFFmpegTool.kt",
+    "line": 103,
+    "severity": "suggestion",
+    "title": "FFmpeg 信息标签写 Build configuration 实际取的是 build date"
+  },
+  {
+    "category": "performance",
+    "confidence": "medium",
+    "detail": "restartMcpWithLogs 用 while(true) + delay(250L) 忙轮询 pluginLoadingState.progress，直到 progress≥0.999 且 message 非空。StateFlow 本就支持 collect 等待，轮询是多余的 CPU/调度开销，且 250ms 粒度让超时判断有抖动。",
+    "evidence": "while (true) {\n            val elapsed = System.currentTimeMillis() - startAt\n            val finished =\n                pluginLoadingState.progress.value >= 0.999f &&\n                    pluginLoadingState.message.value.isNotBlank()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardSoftwareSettingsModifyTools.kt",
+    "line": 1859,
+    "severity": "suggestion",
+    "title": "MCP 重启等待用 delay(250) 忙轮询 StateFlow"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "medium",
+    "detail": "scanAndAddInstalledApps 在 finally 块中无条件置 appsScanned=true：即使 pm.getInstalledApplications 抛异常导致扫描失败，也标记为已扫描，后续永远不再重试，新装应用的映射永久缺失。应只在成功时标记，或失败时允许重试。",
+    "evidence": "} catch (e: Exception) {\n                    AppLogger.e(TAG, \"Failed to scan installed applications\", e)\n                } finally {\n                    appsScanned = true\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardUITools.kt",
+    "line": 259,
+    "severity": "suggestion",
+    "title": "应用包名扫描失败仍标记已扫描，永不重试"
+  }
+]

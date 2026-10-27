@@ -1,0 +1,12 @@
+{
+  "critic": "独立 critic 初验打回后修错，独立复验通过（core-subpack.critic.md）",
+  "id": "core-subpack",
+  "issue": 76,
+  "refs_valid": "107/107 引用行号真实存在，lint 硬失败 0/警告 0（修错后，独立 critic 复验通过）；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "安装包编辑与逆向（APK/EXE）",
+  "approved_by_comment_id": 5926578782,
+  "updated": "2026-10-02"
+}

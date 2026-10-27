@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypeSanitize from 'rehype-sanitize';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import type { SyntaxHighlighterProps } from 'react-syntax-highlighter';
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
@@ -74,9 +75,10 @@ const LazyImage: React.FC<React.ComponentProps<typeof Image> & { eager?: boolean
 interface MarkdownRendererProps {
   file: string;
   language: 'zh' | 'en';
+  sanitizeHtml?: boolean;
 }
 
-const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) => {
+const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language, sanitizeHtml = false }) => {
   const [markdown, setMarkdown] = useState('');
   const [loading, setLoading] = useState(true);
   const [loadedDocumentKey, setLoadedDocumentKey] = useState('');
@@ -547,7 +549,7 @@ const MarkdownRenderer: React.FC<MarkdownRendererProps> = ({ file, language }) =
       <Image.PreviewGroup>
         <ReactMarkdown
           remarkPlugins={[remarkDetails, remarkGfm, remarkImageGallery]}
-          rehypePlugins={[rehypeRaw]}
+          rehypePlugins={sanitizeHtml ? [rehypeRaw, rehypeSanitize] : [rehypeRaw]}
           urlTransform={urlTransform}
           components={{
             code({ inline, className, children, style, ...props }: CodeComponentProps & { inline?: boolean }) {

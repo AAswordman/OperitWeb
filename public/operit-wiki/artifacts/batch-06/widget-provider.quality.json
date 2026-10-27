@@ -1,0 +1,106 @@
+[
+  {
+    "confidence": "high",
+    "description": "WorkspaceDocumentsProvider.getFileForDocId 直接拼接 documentId，无任何路径越界校验，传入 \"/../shared_prefs\" 这类 ID 即可逃出 workspace 根目录读写任意应用私有文件；同仓库的 OperitDataDocumentsProvider 有 ensureInsideDataRoot 做 canonical 校验，这里完全缺失。",
+    "evidence": "val file = if (documentId == \"/\") {\n            workspaceRoot\n        } else {\n            // 移除开头的/，拼接到workspace根目录\n            val relativePath = documentId.trimStart('/')\n            File(workspaceRoot, relativePath)\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt",
+    "line": 266,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "WorkspaceDocumentsProvider.isChildDocument 用 child.canonicalPath.startsWith(parent.canonicalPath) 判断，未加路径分隔符；\"/data/.../workspace_evil\" 会被误判为 \"/data/.../workspace\" 的子文档。",
+    "evidence": "return try {\n            child.canonicalPath.startsWith(parent.canonicalPath)\n        } catch (e: Exception) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt",
+    "line": 192,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "WorkspaceDocumentsProvider.deleteDocument 对目录使用非递归的 file.delete()；删除非空目录时 delete() 返回 false，直接抛 IllegalStateException，无法删除含文件的目录。",
+    "evidence": "if (!file.delete()) {\n            throw IllegalStateException(\"Failed to delete file\")\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt",
+    "line": 172,
+    "severity": "high"
+  },
+  {
+    "confidence": "medium",
+    "description": "WorkspaceDocumentsProvider.renameDocument 用 File(sourceFile.parentFile, displayName) 且不对 displayName 做任何消毒；displayName 含 \"/\" 时会把文件改名到其他目录，含空字符时行为未定义；同仓库 OperitDataDocumentsProvider.resolveChildFile 有三项校验，这里没有。",
+    "evidence": "val sourceFile = getFileForDocId(documentId)\n        val destFile = File(sourceFile.parentFile, displayName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt",
+    "line": 178,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "WorkspaceDocumentsProvider.createDocument 同样不对 displayName 消毒，直接 File(parent, displayName)；displayName 为 \"../x\" 时创建位置逃出父目录。",
+    "evidence": "val file = File(parent, displayName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/WorkspaceDocumentsProvider.kt",
+    "line": 145,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "ToolPkgDesktopWidgetHost.saveSelection 用 commit() 同步落盘 10 个键；该函数在配置页 onSelect 回调（主线程）中调用，磁盘 IO 阻塞主线程。",
+    "evidence": ".putInt(orderPrefKey(appWidgetId), widget.order)\n            .commit()",
+    "file": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt",
+    "line": 79,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "ToolPkgDesktopWidgetHost.refreshAll 内部用 runBlocking 包裹 updateAll；若未来在主线程调用会直接 ANR，公共 API 采用阻塞式实现。",
+    "evidence": "fun refreshAll(context: Context) {\n        runBlocking {\n            ToolPkgDesktopGlanceWidget().updateAll(context)\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetHost.kt",
+    "line": 118,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "MemoryDocumentsProvider.loadAllMemories 每次用 searchMemories(\"*\") 全量加载记忆；queryChildDocuments 每列一次目录就触发一次全表扫描，记忆量大时目录浏览卡顿。",
+    "evidence": "private fun loadAllMemories(repo: MemoryRepository): List<Memory> {\n        return runBlocking {\n            repo.searchMemories(query = \"*\", folderPath = null)\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt",
+    "line": 1060,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "MemoryDocumentsProvider.repositoryCache 按 profileId 缓存 MemoryRepository 且永不清理；记忆空间增删后旧实例常驻内存。",
+    "evidence": "private val repositoryCache: MutableMap<String, MemoryRepository> = mutableMapOf()",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt",
+    "line": 62,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "MemoryDocumentsProvider 写模式的回写在后台线程执行，失败只记日志；用户侧文件关闭已返回成功，写回失败无任何反馈通道。",
+    "evidence": "} catch (e: Exception) {\n                        AppLogger.e(TAG, \"Failed to apply written content for ${ref.uuid}\", e)\n                    } finally {",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt",
+    "line": 385,
+    "severity": "warn"
+  },
+  {
+    "confidence": "low",
+    "description": "MemoryDocumentsProvider.queryRoots 的 AVAILABLE_BYTES 硬编码为 0L，文件 App 显示该根可用空间为 0。",
+    "evidence": "row.add(DocumentsContract.Root.COLUMN_AVAILABLE_BYTES, 0L)",
+    "file": "app/src/main/java/com/ai/assistance/operit/provider/MemoryDocumentsProvider.kt",
+    "line": 236,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "low",
+    "description": "ToolPkgDesktopWidgetDslRenderer 把 linearprogressindicator 降格渲染为百分比文字（如 \"87%\"），小组件上看不到真实进度条。",
+    "evidence": "\"linearprogressindicator\" -> {\n            val progress =\n                (node.props[\"progress\"] as? Number)?.toFloat()?.coerceIn(0f, 1f)\n                    ?: (node.props[\"value\"] as? Number)?.toFloat()?.coerceIn(0f, 1f)\n                    ?: 0f\n            Text(\n                text = \"${(progress * 100).toInt()}%\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt",
+    "line": 224,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "low",
+    "description": "每次小组件刷新都 acquire/release 一次 JS 执行引擎；冷启动渲染要走引擎初始化，频繁刷新时开销大。",
+    "evidence": "    val jsEngine =\n        packageManager.acquireToolPkgExecutionEngine(\n            contextKey = executionContextKey,\n            containerPackageName = renderRoute.containerPackageName\n        )",
+    "file": "app/src/main/java/com/ai/assistance/operit/widget/ToolPkgDesktopWidgetDslRenderer.kt",
+    "line": 83,
+    "severity": "suggestion"
+  }
+]

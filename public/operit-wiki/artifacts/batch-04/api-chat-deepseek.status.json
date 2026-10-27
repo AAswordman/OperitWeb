@@ -1,0 +1,14 @@
+{
+  "critic": "",
+  "id": "api-chat-deepseek",
+  "issue": 30,
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "DeepSeek 供应商",
+  "refs_valid": "78/78 引用行号真实存在（critic 逐条核引用复验通过；2026-10-01 落实 Issue #30 端点反馈新增 5 条，lint 硬失败 0/警告 0）；2026-10-01 误批准回滚（watcher 误将流水线留言判为通过），水位线已前移；2026-10-02 新增 DSML 协议说明（备注）3 facts，内容变更打回待评审",
+  "approved_by_comment_id": 5948287220,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 08:36 UTC",
+  "updated": "2026-10-02"
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "confidence": "high",
+    "description": "Windows 导出换图标时输入与输出是同一文件 mainExe。ExeIconChanger.changeIcon 先执行 outputFile.delete() 再 exeFile.copyTo(outputFile)，源文件已被删除导致复制抛异常（源在 delete 后已不存在），changeIcon 返回 false，process 抛 RuntimeException；该异常被 ExportDialogs 的 try/catch 吞掉并继续流程，最终打出的 ZIP 缺少 assistance_subpack.exe 主程序。",
+    "evidence": "val exeEditor = ExeEditor.fromFile(context, mainExe)\ncontext.contentResolver.openInputStream(iconUri)?.use { input ->\n    exeEditor.changeIcon(input).setOutput(mainExe).process()\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt",
+    "line": 928,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "所谓 EXE 图标更换从未真正修改 PE 资源：simulateResourceReplacement 直接返回 true。changeIcon 因此恒报成功，ExportDialogs 打出“已更换Windows应用图标”日志并继续，用户会误以为图标已换，实际输出的 EXE 与模板字节一致。",
+    "evidence": "/**\n     * 模拟资源替换过程\n     * 注意：这个函数只是模拟，实际上无法在Android上直接修改EXE文件的资源\n     * 在真实环境中，这需要使用Windows API或专用工具实现\n     */\n    private fun simulateResourceReplacement(exeFile: File, iconFile: File): Boolean {\n        AppLogger.d(TAG, \"模拟替换EXE资源: ${exeFile.absolutePath}\")\n        AppLogger.d(TAG, \"图标文件: ${iconFile.absolutePath}\")\n\n        // 这里我们只是模拟成功，实际上我们无法修改EXE文件\n        return true\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt",
+    "line": 122,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "签名密码、别名、密钥密码全部硬编码（android/androidkey/android），且密钥库文件 jks.jks、pkcs12.keystore 直接放在 app/src/main/assets 下随 APK 分发。任何人解包即可提取私钥，用同一身份给任意 APK 签名；所有用户导出的应用共用同一签名身份，该签名不提供来源真实性。",
+    "evidence": ".withSignature(\n                            keyStoreFile,\n                            \"android\", // 密码\n                            \"androidkey\", // 别名\n                            \"android\" // 密钥密码\n                    )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt",
+    "line": 830,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "指定签名别名不存在时，仅打一条 warning 日志就改用密钥库中第一个可用别名签名。调用方无从察觉用了错误的密钥，可能把对外发布的包签成别的身份。",
+    "evidence": "if (!aliasList.contains(keyAlias) && aliasList.isNotEmpty()) {\n                        AppLogger.w(TAG, \"指定的别名'$keyAlias'不存在，将使用可用的别名: ${aliasList[0]}\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt",
+    "line": 629,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "isPEFile 字节序写反：readShort/readInt 是大端读取，\"MZ\" 读出 0x4D5A 而非常量 0x5A4D，\"PE\\0\\0\" 读出 0x50450000 而非常量 0x00004550，合法 PE 文件会被判为 false。该函数当前没有任何调用方，属于带 bug 的死代码。",
+    "evidence": "val dosSignature = raf.readShort().toInt() and 0xFFFF\n                if (dosSignature != DOS_SIGNATURE) { // 将Short转为Int再比较\n                    return false\n                }\n                // 获取PE头偏移量\n                raf.seek(0x3C)\n                val peOffset = raf.readInt()\n                // 检查PE签名\n                raf.seek(peOffset.toLong())\n                if (raf.readInt() != 0x00004550) { // \"PE\\0\\0\"\n                    return false\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt",
+    "line": 140,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "每次获取 PKCS12 实例都移除并重插进程全局的 BC 安全提供者到首位，改变整个应用进程的加密提供者顺序，可能影响 TLS 等其他加密行为；并发调用时存在竞态（一个线程刚 remove，另一个线程的 getInstance 可能拿到不一致的提供者表）。",
+    "evidence": "// 先移除再添加，避免重复添加导致的问题\n                Security.removeProvider(\"BC\")\n\n                // 创建新的BouncyCastle提供者实例\n                val provider = BouncyCastleProvider()\n\n                // 添加到安全提供者列表首位确保优先级\n                val position = Security.insertProviderAt(provider, 1)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt",
+    "line": 28,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "modifyManifestBytes 异常时返回原始 manifest 字节，上层 repackageApkWithWebContent 仍返回 true。用户以为包名、版本、应用名已改，实际清单原样，打包成功是假象。",
+    "evidence": "} catch (e: Exception) {\n            AppLogger.e(TAG, \"修改AndroidManifest字节失败: ${e.message}\", e)\n            return manifestBytes\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt",
+    "line": 499,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "导出引用的模板 subpack/android.apk 与 subpack/windows.zip 在仓库 app/src/main/assets/subpack/ 下均不存在（仅 .keep 占位）。从该源码树构建出的包，导出流程会在 AssetCopyUtils.copyAssetToFile / assets.open 处抛异常，导出功能整体不可用。",
+    "evidence": "val apkEditor = ApkEditor.fromAsset(context, \"subpack/android.apk\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt",
+    "line": 782,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "BitmapFactory.decodeStream 在图片损坏时返回 null，传入非空 Bitmap 参数会触发 Kotlin 空检查抛 NPE。exportAndroidApp 的图标分支没有单独 try/catch，一张坏图会导致整个导出失败，而不是跳过图标继续。",
+    "evidence": "fun changeIcon(iconInputStream: InputStream): ApkEditor {\n        val bitmap = BitmapFactory.decodeStream(iconInputStream)\n        return changeIcon(bitmap)\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt",
+    "line": 137,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "getOrCreateKeystore 名为“获取或创建”，实际不创建任何文件；全部尝试失败时返回一个可能不存在的路径。调用方 signApk 虽有 exists 校验兜底，但函数契约名具有误导性。",
+    "evidence": "// 如果所有尝试都失败，返回默认文件路径\n            return pkcs12KeyStoreFile",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt",
+    "line": 194,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "图标识别依赖与特定模板绑定的混淆文件名集合，更换模板 APK 后即失效。建议改为解析 manifest 中 android:icon 引用的资源名来定位图标条目。",
+    "evidence": "val knownIconNames = setOf(\"yn.png\", \"n3.png\", \"9w.png\", \"fs.png\", \"rj.png\", \"o-.png\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt",
+    "line": 246,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "残留旧流程字符串（apk_editor_extract_first、apk_editor_change_package_failed 等），描述“先调 extract 解包”的工作流已不存在，无代码引用；ApkEditor companion 末尾还有一段无归属的“复制资产文件到缓存目录”文档注释。建议清理，减少误导。",
+    "evidence": "<string name=\"apk_editor_extract_first\">Please call extract method to unpack APK first</string>",
+    "file": "app/src/main/res/values-en/strings.xml",
+    "line": 6201,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "用“大于 1000 字节”判断密钥库有效并复用，属于弱校验；损坏但大于 1000 字节的文件会被直接采用，直到真正 load 时才报错。建议直接尝试 load 校验。",
+    "evidence": "if (keystoreFile.exists() && keystoreFile.length() > 1000) {\n                    return keystoreFile\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt",
+    "line": 118,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "签名最低 SDK 版本写死为 26，与 app/build.gradle.kts 的 minSdk=26 当前一致，但注释已标明需手动同步；minSdk 变更时此处容易遗漏，建议从构建配置读取。",
+    "evidence": ".setMinSdkVersion(26) // 根据项目实际最低SDK版本调整",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt",
+    "line": 702,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "包名替换白名单写死 MainActivity：模板主 Activity 改名即失效；endsWith 匹配还可能误伤其他以同名结尾的组件。建议改为读取 manifest 的 launcher activity 动态确定。",
+    "evidence": "if (strValue == \"$oldPackageName.MainActivity\" ||\n                                    strValue.endsWith(\".$oldPackageName.MainActivity\")\n                    ) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt",
+    "line": 54,
+    "severity": "suggestion"
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "critic": "独立 critic 初验打回后修错，独立复验通过（data-prefs-character.critic.md）",
+  "id": "data-prefs-character",
+  "issue": 66,
+  "refs_valid": "170/170 引用行号真实存在且 ±5 窗口经脚本复验均有支撑原文，lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "角色卡与人格配置",
+  "approved_by_comment_id": 5931037756,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-01 12:07 UTC",
+  "updated": "2026-10-01"
+}

@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 4,
+  "refs_valid": "lint 0 硬失败 0 警告；133 条 facts 引用行号已逐批核实；2026-10-02 v2 死链回炉：正文 [[ ]] wikilink 与裸 slug 全部转为 entry.html 真链接并补细页索引，内容变更打回待评审；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "聊天与消息处理（总览）：MessageProcessingDelegate 每会话导演 + AIMessageManager 无状态信使 + ChatHistoryDelegate 档案馆 + TokenStatisticsDelegate 记账员；主链路 sendUserMessage→组装落库→插件接管/AI流式→修订收集→落库记账；走查 4 条（建议 3/警告 1）",
+  "updated": "2026-10-02",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914916814,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

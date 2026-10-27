@@ -1,0 +1,82 @@
+[
+ {
+  "confidence": "high",
+  "description": "OperitTheme 的背景视频 ExoPlayer 用 remember(5 个键) 创建，但释放用 DisposableEffect(Unit)：当任一 remember 键变化（如切换背景视频）导致 player 重建时，DisposableEffect 因键不变不会重跑，旧 player 永远得不到 stop/clearMediaItems/release，形成 ExoPlayer 实例泄漏；且 onDispose 闭包捕获的只是首次组合时的 player。",
+  "evidence": "    val exoPlayer =\n            remember(\n                    useBackgroundImage,\n                    backgroundImageUri,\n                    backgroundMediaType,\n                    videoBackgroundLoop,\n                    videoBackgroundMuted\n            ) {",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt",
+  "line": 245,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "ThemeColorSchemeResolver.kt 内的 generateResolvedLightColorScheme / generateResolvedDarkColorScheme / getResolvedContrastingTextColor 等私有函数与 Theme.kt 内的 generateLightColorScheme / generateDarkColorScheme / getContrastingTextColor 近乎逐行重复（仅改名前缀 Resolved），两套配色算法各自演进，改一处易漏另一处。",
+  "evidence": "private fun generateResolvedLightColorScheme(\n    primaryColor: Color,\n    secondaryColor: Color,\n    onColorMode: String\n): ColorScheme {\n    val onPrimary =\n        when (onColorMode) {\n            ON_COLOR_MODE_LIGHT -> Color.White\n            ON_COLOR_MODE_DARK -> Color.Black\n            else -> getResolvedContrastingTextColor(primaryColor)",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeColorSchemeResolver.kt",
+  "line": 71,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "AppBackgroundLayer 的背景视频加载异常只打日志（\"Error loading video background\"），不像 OperitTheme 那样调用 disableBackgroundForTarget 关闭 use_background_image；同一个异常在两处背景实现里行为不一致。",
+  "evidence": "                        } catch (e: Exception) {\n                            AppLogger.e(\n                                \"AppBackgroundLayer\",\n                                \"Error loading video background: ${e.message}\",\n                                e\n                            )\n                        }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/theme/AppBackgroundLayer.kt",
+  "line": 91,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "ManagedDragonBonesView 的随机待机动画用 while(true) 无限循环：虽然在 LaunchedEffect 内、随 composition 销毁自动取消，风险低，但每 2–8 秒随机播一次且 loop=1，若组件长期驻留（如 waifu 模式）会持续占用动画线程做无意义播放。",
+  "evidence": "            if (availableAnims.isNotEmpty()) {\n                while (true) {\n                    delay(Random.nextLong(2000, 8000))\n                    val randomAnim = availableAnims.random()\n                    AppLogger.d(TAG, \"Animation effect: Playing random animation '$randomAnim'.\")\n                    controller.fadeInAnimation(\n                        randomAnim,\n                        layer = RANDOM_ANIMATION_LAYER,\n                        loop = 1\n                    )\n                }\n            }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt",
+  "line": 84,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "GlobalDisplaySettingsScreen 直接用硬编码字符串读写 \"floating_chat_prefs\" 这个 SharedPreferences 与 \"status_indicator_style\" 键（注释称与 FloatingChatService 共用），键名散落在 UI 层而非常量，若服务侧改名则此处静默读回默认值 FULLSCREEN_RAINBOW。",
+  "evidence": "    val statusIndicatorPrefs = remember {\n        context.getSharedPreferences(\"floating_chat_prefs\", android.content.Context.MODE_PRIVATE)\n    }\n    var statusIndicatorStyle by remember {\n        mutableStateOf(\n            run {\n                val defaultName = StatusIndicatorStyle.FULLSCREEN_RAINBOW.name\n                val stored = statusIndicatorPrefs.getString(\"status_indicator_style\", defaultName)",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt",
+  "line": 121,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "CustomEmojiManagementScreen 的错误/成功提示直接把 Snackbar 放在内容 Column 末尾，而不是经 Scaffold 的 snackbarHost：没有自动消失、遮挡底部内容区域，且与 Material 规范的悬浮提示行为不一致。",
+  "evidence": "    // 显示错误和成功消息\n    errorMessage?.let {\n        Snackbar(\n            modifier = Modifier.padding(16.dp),\n            action = {\n                TextButton(onClick = { viewModel.clearErrorMessage() }) {\n                    Text(stringResource(R.string.close))\n                }\n            }\n        ) {\n            Text(it)\n        }\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt",
+  "line": 348,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "liquidGlass 与 waterGlass 的降级路径各用一套硬编码 alpha 常数（前者 tint 0.16/0.24、后者 0.14/0.22；高光/边框亦然），同为“系统不支持玻璃特效时的磨砂降级”，视觉基准不统一。",
+  "evidence": "        val fallbackSurfaceTint =\n            if (isLightGlass) {\n                containerColor.copy(alpha = 0.16f)\n            } else {\n                containerColor.copy(alpha = 0.24f)\n            }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt",
+  "line": 56,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "ThemeSettingsInterfaceTab 的 updateDraftThemeColor 先 addRecentColor 再按模式写值，而 ThemeSettingsBasicTab 的同名函数先写值后 addRecentColor：同一份颜色面板逻辑在两个 tab 里顺序相反，虽无功能差异，但后续改动易只改一处。",
+  "evidence": "    val selectedColor =\n        primaryColor ?: secondaryColor ?: statusBarColor ?: appBarColor\n            ?: navigationDrawerBackgroundColor ?: navigationDrawerAccentColor\n            ?: historyIconColor ?: pipIconColor\n    val editorSession = shared.editorSession\n    selectedColor?.let { shared.scope.launch { editorSession.addRecentColor(it) } }\n    when (currentColorPickerMode) {",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsInterfaceTab.kt",
+  "line": 179,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "ThemeSettingsBackgroundSection.kt 拖拽透明度 Slider 时有一段形如 `if (isDragging) { DisposableEffect(Unit) { scrollState.value; onDispose {} } }` 的代码：Effect 内读取 scrollState.value 却不使用、onDispose 为空、无任何副作用，纯粹的 no-op 疑似调试残留；若本意是拖拽时锁定外层滚动，并未实现。",
+  "evidence": "                if (isDragging) {\n                    DisposableEffect(Unit) {\n                        scrollState.value\n                        onDispose {}\n                    }\n                }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt",
+  "line": 435,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "high",
+  "description": "CustomEmojiViewModel.isCustomCategory(_category: String) 无条件返回 true，参数未使用（下划线前缀），全仓库无任何调用方；疑似未实现的残留桩，后续若按\"内置/自定义\"区分逻辑容易被误用为已实现。",
+  "evidence": "    fun isCustomCategory(_category: String): Boolean {\n        return true\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt",
+  "line": 218,
+  "severity": "suggestion"
+ }
+]

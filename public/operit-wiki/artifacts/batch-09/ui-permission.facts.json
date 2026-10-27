@@ -1,0 +1,614 @@
+[
+  {
+    "fact": "PermissionGuideScreen 引导共 6 页：INTRO_PAGES_COUNT=3 页介绍 + 欢迎页 + 基础权限页 + 权限级别页，TOTAL_PAGES_COUNT=INTRO_PAGES_COUNT+3。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:83"
+  },
+  {
+    "fact": "WELCOME_PAGE_INDEX=INTRO_PAGES_COUNT，即欢迎页索引为 3。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:84"
+  },
+  {
+    "fact": "BASIC_PERMISSIONS_PAGE_INDEX=INTRO_PAGES_COUNT+1，即基础权限页索引为 4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:85"
+  },
+  {
+    "fact": "PERMISSION_LEVEL_PAGE_INDEX=INTRO_PAGES_COUNT+2，即权限级别页索引为 5。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:86"
+  },
+  {
+    "fact": "PermissionGuideScreen 是 @OptIn(ExperimentalFoundationApi::class) 的 @Composable 入口，接收 onComplete: () -> Unit 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:91"
+  },
+  {
+    "fact": "PermissionGuideScreen 默认参数 viewModel: PermissionGuideViewModel = viewModel()，未传则用 Compose 注入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:92"
+  },
+  {
+    "fact": "引导页用 rememberPagerState(pageCount = { TOTAL_PAGES_COUNT }) 驱动 HorizontalPager。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:100"
+  },
+  {
+    "fact": "showPermissionWarning 用 remember{mutableStateOf(false)} 控制权限不足警告对话框的显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:103"
+  },
+  {
+    "fact": "PermissionGuideScreen 启动时 LaunchedEffect(Unit){ viewModel.checkPermissions(context) } 初始化四项基础权限状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:106"
+  },
+  {
+    "fact": "存储权限走 rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) 申请。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:109"
+  },
+  {
+    "fact": "存储权限结果回调只在 SDK < Android R 时处理 READ_EXTERNAL_STORAGE 与 WRITE_EXTERNAL_STORAGE 的授予情况。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:116"
+  },
+  {
+    "fact": "位置权限走 rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) 申请。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:126"
+  },
+  {
+    "fact": "位置权限回调中 ACCESS_FINE_LOCATION 或 ACCESS_COARSE_LOCATION 任一授予即调用 viewModel.updateLocationPermission(true)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:133"
+  },
+  {
+    "fact": "页面切换到介绍/欢迎页区间时 LaunchedEffect 调用 viewModel.setCurrentStep(PermissionGuideViewModel.Step.WELCOME)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:141"
+  },
+  {
+    "fact": "切换到基础权限页时 LaunchedEffect 调用 viewModel.setCurrentStep(PermissionGuideViewModel.Step.BASIC_PERMISSIONS)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:143"
+  },
+  {
+    "fact": "切换到权限级别页时 LaunchedEffect 调用 viewModel.setCurrentStep(PermissionGuideViewModel.Step.PERMISSION_LEVEL)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:145"
+  },
+  {
+    "fact": "完成设置后 LaunchedEffect(uiState.isCompleted) 先 delay(500) 展示完成态再调 onComplete()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:152"
+  },
+  {
+    "fact": "isCompleted 为 true 后直接调用 onComplete()，无其他分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:153"
+  },
+  {
+    "fact": "权限警告对话框图标用 Icons.Default.Warning，tint 为 MaterialTheme.colorScheme.error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:163"
+  },
+  {
+    "fact": "权限警告对话框正文取自 R.string.permission_guide_warning_message。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:176"
+  },
+  {
+    "fact": "警告对话框点继续后 scope.launch{ pagerState.animateScrollToPage(PERMISSION_LEVEL_PAGE_INDEX) } 跳到级别页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:185"
+  },
+  {
+    "fact": "引导顶部用 LinearProgressIndicator 显示 (currentPage+1)/pageCount 的进度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:206"
+  },
+  {
+    "fact": "引导的 HorizontalPager 设置 userScrollEnabled=false，禁止手滑翻页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:221"
+  },
+  {
+    "fact": "WELCOME_PAGE_INDEX 分支渲染 WelcomePage() 欢迎页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:245"
+  },
+  {
+    "fact": "BASIC_PERMISSIONS_PAGE_INDEX 分支渲染 BasicPermissionsPage，传入四项权限状态与四个点击回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:247"
+  },
+  {
+    "fact": "Android 11+ 存储权限点击直接打开 Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION 系统设置页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:259"
+  },
+  {
+    "fact": "存储设置 Intent data 为 Uri.parse(\"package:${context.packageName}\")，直达本应用详情。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:264"
+  },
+  {
+    "fact": "打不开精准存储设置页时回退打开 Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION 通用页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:274"
+  },
+  {
+    "fact": "Android 10 及以下存储权限点击走 storagePermissionLauncher.launch(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:291"
+  },
+  {
+    "fact": "悬浮窗权限点击打开 Settings.ACTION_MANAGE_OVERLAY_PERMISSION，data 带包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:304"
+  },
+  {
+    "fact": "电池优化点击走 Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS，直接请求忽略电池优化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:325"
+  },
+  {
+    "fact": "电池优化直接请求失败时回退打开 Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS 设置页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:340"
+  },
+  {
+    "fact": "位置权限点击走 locationPermissionLauncher.launch(ACCESS_FINE_LOCATION, ACCESS_COARSE_LOCATION)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:367"
+  },
+  {
+    "fact": "BasicPermissionsPage 的 onRefresh 回调直接调用 viewModel.checkPermissions(context) 重新检测。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:374"
+  },
+  {
+    "fact": "PERMISSION_LEVEL_PAGE_INDEX 分支渲染 PermissionLevelPage，传入 uiState.selectedPermissionLevel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:377"
+  },
+  {
+    "fact": "上一步按钮 onClick 用 scope.launch{ pagerState.animateScrollToPage(currentPage-1) } 后退。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:399"
+  },
+  {
+    "fact": "上一步按钮 enabled=pagerState.currentPage>0，首屏不可点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:403"
+  },
+  {
+    "fact": "下一步按钮在权限级别页且 selectedPermissionLevel!=null 时调用 viewModel.savePermissionLevel() 完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:447"
+  },
+  {
+    "fact": "在基础权限页但 !allBasicPermissionsGranted 时下一步改为弹 showPermissionWarning 警告对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:453"
+  },
+  {
+    "fact": "介绍/欢迎页下一步调用 pagerState.animateScrollToPage(currentPage+1) 前进。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:457"
+  },
+  {
+    "fact": "权限级别页下一步按钮启用条件为 uiState.selectedPermissionLevel!=null，未选级别不可前进。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:468"
+  },
+  {
+    "fact": "IntroductionPage 是私有的三参 @Composable(title, description, pageIndex)，圆形序号徽标 + 标题 + 描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:504"
+  },
+  {
+    "fact": "WelcomePage 是无参私有 @Composable，渲染欢迎标题、描述与提示文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:550"
+  },
+  {
+    "fact": "BasicPermissionsPage 是私有 @Composable，接收四项权限状态布尔 + 四个 onXxxPermissionClick 回调 + onRefresh。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:593"
+  },
+  {
+    "fact": "PermissionLevelPage 是私有 @Composable，接收 selectedLevel: AndroidPermissionLevel? 与 onLevelSelected/onConfirm。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt:818"
+  },
+  {
+    "fact": "PermissionGuideViewModel 内定义 enum class Step，值为 WELCOME/BASIC_PERMISSIONS/PERMISSION_LEVEL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:32"
+  },
+  {
+    "fact": "PermissionGuideViewModel.checkPermissions(context) 一次性检测存储、悬浮窗、电池优化豁免、位置四项权限。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:44"
+  },
+  {
+    "fact": "Android R+ 存储权限以 Environment.isExternalStorageManager() 判定是否拿到全部文件访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:49"
+  },
+  {
+    "fact": "Android R 以下存储权限检查 Manifest.permission.WRITE_EXTERNAL_STORAGE 是否 GRANTED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:53"
+  },
+  {
+    "fact": "Android M+ 悬浮窗权限以 Settings.canDrawOverlays(context) 判定，低于 M 视为已授予。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:59"
+  },
+  {
+    "fact": "Android M+ 电池优化豁免以 PowerManager.isIgnoringBatteryOptimizations(packageName) 判定，低于 M 视为已授予。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:67"
+  },
+  {
+    "fact": "位置权限判定为 ACCESS_FINE_LOCATION 或 ACCESS_COARSE_LOCATION 任一 GRANTED 即通过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:80"
+  },
+  {
+    "fact": "checkPermissions 用 _uiState.update{copy(...)} 一次写入四项状态，并计算 allBasicPermissionsGranted 为四项的逻辑与。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:89"
+  },
+  {
+    "fact": "checkPermissions 完成后用 AppLogger.d(TAG, \"Permissions checked: ...\") 打印四项结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:96"
+  },
+  {
+    "fact": "PermissionGuideViewModel.setCurrentStep(step) 只更新 UiState.currentStep 并打日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:103"
+  },
+  {
+    "fact": "PermissionGuideViewModel.selectPermissionLevel(level) 更新 UiState.selectedPermissionLevel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:109"
+  },
+  {
+    "fact": "PermissionGuideViewModel.savePermissionLevel() 在 selectedPermissionLevel 为 null 时只打警告日志不保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:115"
+  },
+  {
+    "fact": "savePermissionLevel 在 viewModelScope.launch 里调用 androidPermissionPreferences.savePreferredPermissionLevel(level) 落盘。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:123"
+  },
+  {
+    "fact": "savePermissionLevel 落盘后调用 AndroidShellExecutor.clearPreferredPermissionLevelCache() 清掉权限级别缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:124"
+  },
+  {
+    "fact": "PermissionGuideViewModel.updateLocationPermission(granted) 更新位置状态并重算 allBasicPermissionsGranted。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:141"
+  },
+  {
+    "fact": "PermissionGuideViewModel.UiState 是 data class，含 8 个字段：currentStep、四项权限、allBasicPermissionsGranted、selectedPermissionLevel、isCompleted。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:156"
+  },
+  {
+    "fact": "UiState.currentStep 默认值为 Step.WELCOME。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt:157"
+  },
+  {
+    "fact": "ToolPermissionSettingsScreen(navigateBack) 是设置入口的工具权限总开关界面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:37"
+  },
+  {
+    "fact": "工具列表取自 toolHandler.getAllToolNames()，filterNot 过滤掉三项内部工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:44"
+  },
+  {
+    "fact": "被过滤的三个工具名是 \"package_proxy\"、\"proxy\"、\"search\"，不参与权限配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:45"
+  },
+  {
+    "fact": "全局主开关初始值从 toolPermissionSystem.masterSwitchFlow.collectAsState(initial=PermissionLevel.ASK) 取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:49"
+  },
+  {
+    "fact": "单个工具的当前覆盖值用 toolPermissionSystem.getToolPermissionOverride(toolName) 查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:54"
+  },
+  {
+    "fact": "handlePermissionChange(toolName, newLevel) 是局部函数：重复点同级时移除覆盖回到 ASK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:65"
+  },
+  {
+    "fact": "重复点同一 PermissionLevel 时调用 toolPermissionSystem.clearToolPermission(toolName) 清除覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:71"
+  },
+  {
+    "fact": "切换到新级别时调用 toolPermissionSystem.saveToolPermission(toolName, newLevel) 保存覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:77"
+  },
+  {
+    "fact": "全局开关选择后调用 toolPermissionSystem.saveMasterSwitch(level) 保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:128"
+  },
+  {
+    "fact": "界面只展示 ALLOW 与 FORBID 两个 PermissionGroup，ASK 是默认兜底级别不单独分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:159"
+  },
+  {
+    "fact": "ALLOW 分组列出 toolPermissions.filterValues{it==PermissionLevel.ALLOW}.keys 的工具名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:161"
+  },
+  {
+    "fact": "FORBID 分组列出 toolPermissions.filterValues{it==PermissionLevel.FORBID}.keys 的工具名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:170"
+  },
+  {
+    "fact": "PermissionGroup 是 private @Composable，按 PermissionLevel.ALLOW/FORBID/ASK 配标题、描述与配色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:179"
+  },
+  {
+    "fact": "ToolChip 展示单个工具名，点击 X 按钮移除其权限覆盖（调 onRemove）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:256"
+  },
+  {
+    "fact": "ToolSelectorDialog 是工具选择弹窗，带搜索框与 LazyColumn 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:284"
+  },
+  {
+    "fact": "工具选择弹窗的搜索过滤用 allTools.filter{it.contains(searchQuery, ignoreCase=true)}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:295"
+  },
+  {
+    "fact": "工具选择弹窗每行展示工具名与 toolHandler.getToolDescription(it) 的描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:345"
+  },
+  {
+    "fact": "CompactPermissionLevelSelector 用 FlowRow 展示 PermissionLevel.values() 的全部级别。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:371"
+  },
+  {
+    "fact": "CompactPermissionLevelSelector 中 ALLOW/ASK 分别映射 R.string.permission_level_allow/permission_level_ask，FORBID 映射 R.string.forbid。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:399"
+  },
+  {
+    "fact": "AppPermissionsScreen.kt 定义 data class AppInfo(name, packageName, icon, installTime, isSystemApp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:44"
+  },
+  {
+    "fact": "AppPermissionsScreen.kt 定义 data class PermissionInfo(name, description, granted, dangerous, group, rawName)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:52"
+  },
+  {
+    "fact": "AppPermissionsScreen(navController: NavController) 是工具箱里的第三方应用权限管理界面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:63"
+  },
+  {
+    "fact": "权限按 it.group 用 groupBy 分组展示，remember(selectedAppPermissions) 缓存分组结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:79"
+  },
+  {
+    "fact": "loadAppPermissions(packageName) 是局部函数，协程里调 getAppPermissions 并写 selectedAppPermissions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:144"
+  },
+  {
+    "fact": "togglePermission(permission) 局部函数：已授予则 action=\"revoke\"，未授予则 action=\"grant\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:160"
+  },
+  {
+    "fact": "togglePermission 通过 AndroidShellExecutor.executeShellCommand(\"pm $action $packageName ${permission.rawName}\") 改权限。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:169"
+  },
+  {
+    "fact": "resetAppPermissions() 局部函数：对选中应用执行 pm reset-permissions 重置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:188"
+  },
+  {
+    "fact": "resetAppPermissions 用 AndroidShellExecutor.executeShellCommand(\"pm reset-permissions $packageName\") 执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:196"
+  },
+  {
+    "fact": "PermissionItem 的开关 onToggle 同样用 \"pm $action $packageName ${permission.rawName}\" shell 命令即时切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:729"
+  },
+  {
+    "fact": "PermissionStat(count, label, icon, iconTint) 是权限概览卡里的统计小组件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:819"
+  },
+  {
+    "fact": "AppItem(app, onClick) 渲染应用列表行：图标、应用名、包名、系统应用标记与查看权限按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:853"
+  },
+  {
+    "fact": "PermissionItem(permission, onToggle, groupColor) 渲染单条权限卡：状态图标、名称、描述与 Switch 开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:962"
+  },
+  {
+    "fact": "loadInstalledApps(packageManager) 是 private suspend 函数，在 Dispatchers.IO 上枚举已安装应用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1097"
+  },
+  {
+    "fact": "getAppPermissions(packageName, context) 是 private suspend 函数，经 shell 解析 dumpsys 输出构建权限列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1137"
+  },
+  {
+    "fact": "getAppPermissions 用 AndroidShellExecutor.executeShellCommand(\"dumpsys package $packageName\") 取权限声明。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1144"
+  },
+  {
+    "fact": "getAppPermissions 另起一条 \"dumpsys package $packageName | grep -E \\\"granted=true|:granted=true\\\"\" 取已授予权限。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1149"
+  },
+  {
+    "fact": "extractSectionContent(output, sectionHeader) 是 private 函数，从 dumpsys 输出中截取指定段落。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1472"
+  },
+  {
+    "fact": "extractPermissionsFromSection(section, permissions) 是 private 函数，从段落行中提取权限名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1503"
+  },
+  {
+    "fact": "权限列表最终按 sortedWith 排序：未分组垫底、已授权优先、再按组与名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1461"
+  },
+  {
+    "fact": "TokenConfigWebViewScreen(onNavigateBack) 是 Token/签到类页面的 WebView 承载界面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:62"
+  },
+  {
+    "fact": "界面持有 remember{SnackbarHostState()} 供提示条使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:65"
+  },
+  {
+    "fact": "urlConfigManager=remember{UrlConfigManager(context)} 管理 URL 配置的读写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:66"
+  },
+  {
+    "fact": "urlConfig 取自 urlConfigManager.urlConfigFlow.collectAsState(initial=UrlConfig())，配置变化即重组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:69"
+  },
+  {
+    "fact": "WebView 实例由 WebViewConfig.createWebView(context) 在 remember 里创建并复用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:77"
+  },
+  {
+    "fact": "底部导航只取 urlConfig.tabs.take(4)，最多展示 4 个标签页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:81"
+  },
+  {
+    "fact": "navigateTo(url, index) 局部函数：置 isLoading=true、webView.loadUrl(url)、更新 selectedTabIndex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:91"
+  },
+  {
+    "fact": "webViewClient 用 remember 缓存，是 WebViewClient 匿名子类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:98"
+  },
+  {
+    "fact": "webViewClient 重写 shouldOverrideUrlLoading 拦截外部协议。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:100"
+  },
+  {
+    "fact": "alipays:/alipay:/weixin:/weixins: 协议走 ACTION_VIEW Intent 转外部应用打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:114"
+  },
+  {
+    "fact": "外部 Intent 加 FLAG_ACTIVITY_NEW_TASK 标志启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:115"
+  },
+  {
+    "fact": "webViewClient 重写 onPageFinished，加载结束置 isLoading=false 并按 URL 匹配修正选中标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:136"
+  },
+  {
+    "fact": "DisposableEffect(webView) 负责绑定 webViewClient 与初始加载，onDispose 里 stopLoading+destroy。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:154"
+  },
+  {
+    "fact": "DisposableEffect 中执行 webView.webViewClient=webViewClient 绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:155"
+  },
+  {
+    "fact": "urlConfig.signInUrl 非空时 DisposableEffect 内 webView.loadUrl(signInUrl) 加载登录页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:159"
+  },
+  {
+    "fact": "界面从 LocalTopBarActions.current 取 setTopBarActions，用于注入顶栏按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:169"
+  },
+  {
+    "fact": "界面用 LocalIsCurrentScreen.current 判断是否为当前屏幕，避免顶栏竞争。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:171"
+  },
+  {
+    "fact": "LaunchedEffect(isCurrentScreen, appBarContentColor) 在当前屏时向顶栏注入 Settings 按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:175"
+  },
+  {
+    "fact": "点顶栏设置按钮弹出 UrlConfigDialog(currentConfig=urlConfig)，onSave 调 saveUrlConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:193"
+  },
+  {
+    "fact": "UrlConfigDialog 保存时在 scope.launch 里调 urlConfigManager.saveUrlConfig(newConfig)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt:197"
+  },
+  {
+    "fact": "TokenConfigWebViewScreen 挂在 Screen.TokenConfig 的 Content 里，onNavigateBack=onGoBack。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:778"
+  },
+  {
+    "fact": "ToolPermissionSettingsScreen 挂在 Screen.ToolPermissions 的 Content 里，navigateBack=onGoBack。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/screens/OperitScreens.kt:814"
+  },
+  {
+    "fact": "PermissionGuideScreen 在 MainActivity 的引导流程中展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/main/MainActivity.kt:620"
+  },
+  {
+    "fact": "ToolPermissionCheckResult 是工具执行前权限门禁的结果枚举，4 个取值：GRANTED、DENIED、OVERLAY_PERMISSION_REQUIRED、CONFIRMATION_TIMEOUT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionCheckResult.kt:7"
+  },
+  {
+    "fact": "ToolPermissionCheckResult 用 isGranted 布尔区分放行与否，GRANTED 的 isGranted 为 true，其余三者为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionCheckResult.kt:11"
+  },
+  {
+    "fact": "ToolPermissionCheckResult 的 DENIED 绑定错误文案 R.string.tool_permission_execution_denied",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionCheckResult.kt:14"
+  },
+  {
+    "fact": "ToolPermissionCheckResult 的 OVERLAY_PERMISSION_REQUIRED 绑定 R.string.tool_permission_overlay_required_for_confirmation，CONFIRMATION_TIMEOUT 绑定 R.string.tool_permission_confirmation_timeout",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionCheckResult.kt:18"
+  },
+  {
+    "fact": "ToolPermissionDialog.kt 文件实际只定义 PermissionRequestResult 三值枚举（ALLOW、DENY、ALWAYS_ALLOW），确认对话框 UI 本体在 PermissionRequestOverlay.kt 中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionDialog.kt:6"
+  },
+  {
+    "fact": "PermissionRequestResult.ALWAYS_ALLOW 由 ToolPermissionSystem.handlePermissionResult 转为 GRANTED 并持久化为 ALLOW 级别",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionDialog.kt:7"
+  },
+  {
+    "fact": "ToolPermissionSystem 的权限数据存在 DataStore 文件 tool_permissions 中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:29"
+  },
+  {
+    "fact": "PermissionLevel 共三档：ALLOW（自动放行）、ASK（每次询问）、FORBID（永不放行）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:34"
+  },
+  {
+    "fact": "PermissionLevel.fromString 把历史值 CAUTION 归一为 ASK，未知字符串默认 ASK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:43"
+  },
+  {
+    "fact": "ToolPermissionSystem 是 @Volatile + synchronized 双重检查锁单例，getInstance 传入 applicationContext 防泄漏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:70"
+  },
+  {
+    "fact": "逐工具权限的 DataStore 键名为 tool_permission_<工具名>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:78"
+  },
+  {
+    "fact": "全局主开关的键名为 master_switch，未设置时默认 PermissionLevel.ASK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:62"
+  },
+  {
+    "fact": "ToolPermissionSystem 对外暴露 permissionRequestState（MutableStateFlow<Pair<AITool, String>?>），供 UI 层观察当前确认请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:98"
+  },
+  {
+    "fact": "操作描述注册表 operationDescriptionRegistry 是 ConcurrentHashMap<String, (AITool) -> String>，MCP 启动时可并发注册各工具的描述生成器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:118"
+  },
+  {
+    "fact": "ToolPermissionSystem.getToolPermissionOverride 在未设置逐工具权限时返回 null，用于区分\"未设置\"与\"显式 ASK\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:175"
+  },
+  {
+    "fact": "ToolPermissionSystem.getOperationDescription 找不到注册的描述生成器时回退为 R.string.tool_permission_operation 模板文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:185"
+  },
+  {
+    "fact": "checkToolPermission 先取逐工具覆盖值，无覆盖时回退到全局主开关；ALLOW 直接 GRANTED，ASK 弹悬浮确认，FORBID 直接 DENIED",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:192"
+  },
+  {
+    "fact": "权限确认请求用 withTimeoutOrNull 包 60 秒超时（PERMISSION_REQUEST_TIMEOUT_MS = 60000L），超时返回 CONFIRMATION_TIMEOUT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:59"
+  },
+  {
+    "fact": "requestPermission 把回调注册进 currentPermissionCallback 后 post 到主线程：无悬浮窗权限时先跳系统设置再回 OVERLAY_PERMISSION_REQUIRED，有权限则用 PermissionRequestOverlay.show 弹窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:241"
+  },
+  {
+    "fact": "handlePermissionResult 把 ALWAYS_ALLOW 落盘为 saveToolPermission(tool.name, ALLOW)（后台 IO 协程），即\"总是允许\"会持久生效",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt:268"
+  },
+  {
+    "fact": "PermissionRequestOverlay.hasOverlayPermission 即 Settings.canDrawOverlays(context)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:349"
+  },
+  {
+    "fact": "PermissionRequestOverlay.requestOverlayPermission 不弹系统对话框，直接用 ACTION_MANAGE_OVERLAY_PERMISSION Intent 跳系统设置（加 FLAG_ACTIVITY_NEW_TASK），同时 Toast 提示 overlay_permission_grant_hint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:356"
+  },
+  {
+    "fact": "PermissionRequestOverlay.show() 若已有弹窗（overlayView != null）直接 return；无悬浮窗权限时记错日志并回 DENY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:386"
+  },
+  {
+    "fact": "确认悬浮窗用 TYPE_APPLICATION_OVERLAY（Android O+，低版本 TYPE_PHONE），flags 为 FLAG_NOT_FOCUSABLE | FLAG_LAYOUT_IN_SCREEN | FLAG_LAYOUT_NO_LIMITS，全屏 TRANSLUCENT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:400"
+  },
+  {
+    "fact": "确认弹窗内容是 ComposeView（DisposeOnDetachedFromWindow），用 ServiceLifecycleOwner 依次发送 ON_CREATE/ON_START/ON_RESUME 并挂 setViewTreeLifecycleOwner、setViewTreeViewModelStoreOwner、setViewTreeSavedStateRegistryOwner",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:435"
+  },
+  {
+    "fact": "PermissionRequestOverlay.dismiss() 按 ON_PAUSE→ON_STOP→ON_DESTROY 销毁生命周期后 removeView 并清空引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:457"
+  },
+  {
+    "fact": "确认 UI 延迟 100ms 后以 fadeIn(300)+scaleIn(300, 初始 0.9f) 入场；卡片占屏 85% 宽×65% 高、24dp 圆角、6dp 高度、surfaceContainerHigh 底色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:113"
+  },
+  {
+    "fact": "确认弹窗提供三种操作：拒绝（OutlinedButton）、允许（Button）、\"总是允许\"文字链；底部有 permission_change_reminder 提醒可在设置中更改",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:190"
+  },
+  {
+    "fact": "PermissionDetails 展示请求的操作描述与工具名，并逐条列出工具参数（参数名 + 参数值两行式）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt:247"
+  }
+]

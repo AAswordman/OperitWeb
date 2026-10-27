@@ -1,0 +1,172 @@
+[
+  {
+    "confidence": "high",
+    "detail": "模型配置导出直接 writeText 明文写入 json 文件，无任何加密。ModelConfigExportWarningDialog 明确告知导出内容含 API Key（BackupDialogs.kt:663 起列出 API Key/端点/模型参数/自定义参数），但对话框只有一个知悉按钮，无取消导出、无密码/加密选项。备份文件落盘即明文可读。",
+    "evidence": "                            exportFile.writeText(jsonContent)\n\n                            // 导出成功，显示安全警告对话框\n                            exportedModelConfigPath = exportFile.absolutePath\n                            showModelConfigExportWarning = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "id": "Q01",
+    "line": 657,
+    "severity": "high",
+    "title": "模型配置备份明文导出，含 API Key，仅知悉式警告"
+  },
+  {
+    "confidence": "high",
+    "detail": "RawSnapshotBackupManager.ExportProgress 枚举明确包含 ZIPPING_SHARED_PREFS 与 ZIPPING_DATASTORE 阶段，即 SharedPreferences 与 DataStore 的原始文件被原样打进 zip。恢复时对应 REPLACING_SHARED_PREFS / REPLACING_DATASTORE。应用内 token、偏好等敏感数据随备份明文外发。",
+    "evidence": "        ZIPPING_SHARED_PREFS,\n        ZIPPING_DATASTORE,",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt",
+    "id": "Q02",
+    "line": 74,
+    "severity": "high",
+    "title": "原生快照把 SharedPreferences/DataStore 原文件打进 zip，未脱敏"
+  },
+  {
+    "confidence": "high",
+    "detail": "RoomDB 备份文件合法性仅按文件名前缀+后缀判定，无签名/hash/魔数校验。任意构造同名 zip 都可进入恢复流程，恢复后直接替换数据库并要求重启。",
+    "evidence": "    fun isRoomDatabaseBackupFile(name: String): Boolean {\n        return (name.startsWith(AUTO_BACKUP_FILE_PREFIX) || name.startsWith(MANUAL_BACKUP_FILE_PREFIX)) &&\n            name.endsWith(\".zip\")\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseRestoreManager.kt",
+    "id": "Q03",
+    "line": 63,
+    "severity": "warn",
+    "title": "RoomDB 恢复仅按文件名判定，无内容校验"
+  },
+  {
+    "confidence": "medium",
+    "detail": "importMemoriesFromUri 对导入文件只做 isBlank() 空校验，无 schema/版本校验，格式解析的健壮性完全依赖下游 MemoryRepository。",
+    "evidence": "    if (jsonString.isBlank()) {\n        throw Exception(context.getString(R.string.backup_import_file_empty))\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "id": "Q04",
+    "line": 1643,
+    "severity": "warn",
+    "title": "记忆导入仅做空校验，无格式版本校验"
+  },
+  {
+    "confidence": "high",
+    "detail": "批量删除直接调 deleteChatHistory 逐条删除，删除后仅 Toast 报告数量，无回收站、无撤销入口。虽有确认对话框，但误删不可恢复。",
+    "evidence": "private suspend fun deleteSelectedChatHistories(\n    context: Context,\n    selectedChatIds: List<String>\n): DeleteSelectedChatsResult =\n    withContext(Dispatchers.IO) {\n        val chatHistoryManager = ChatHistoryManager.getInstance(context)\n        var deletedCount = 0\n        var skippedLockedCount = 0",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt",
+    "id": "Q05",
+    "line": 2553,
+    "severity": "warn",
+    "title": "聊天记录删除不可恢复，无回收站"
+  },
+  {
+    "confidence": "high",
+    "detail": "批量删除逐条执行非事务：被锁定的聊天返回 false 即计入 skippedLockedCount 跳过，可能部分成功。UI 会告知跳过数，但用户需二次处理残留。",
+    "evidence": "        selectedChatIds.forEach { chatId ->\n            val deleted = chatHistoryManager.deleteChatHistory(chatId)\n            if (deleted) {\n                deletedCount++\n            } else {\n                skippedLockedCount++\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt",
+    "id": "Q06",
+    "line": 2562,
+    "severity": "warn",
+    "title": "批量删除非原子，锁定会话静默跳过"
+  },
+  {
+    "confidence": "high",
+    "detail": "UnboundWorkspaceCard 的删除直接 deleteRecursively() 删整个工作区目录。虽有确认对话框，但删除不可恢复，且判定仅靠目录名/路径比对。",
+    "evidence": "                                    if (workspaceDir.exists() && workspaceDir.deleteRecursively()) {\n                                        count++\n                                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt",
+    "id": "Q07",
+    "line": 406,
+    "severity": "warn",
+    "title": "无绑定工作区删除是物理删目录"
+  },
+  {
+    "confidence": "high",
+    "detail": "11 个功能类型的模型映射一键清零到默认，不可撤销、无确认对话框。虽可重新选择，但误触成本高。",
+    "evidence": "                            onClick = {\n                                scope.launch {\n                                    functionalConfigManager.resetAllFunctionConfigs()\n                                    // 刷新所有服务实例\n                                    EnhancedAIService.refreshAllServices(context)\n                                    showSaveSuccess = true\n                                }\n                            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt",
+    "id": "Q08",
+    "line": 199,
+    "severity": "warn",
+    "title": "重置全部功能配置无二次确认"
+  },
+  {
+    "confidence": "medium",
+    "detail": "takePersistableUriPermission 失败时空 catch 吞异常，无提示。虽不影响继续恢复，但用户无从得知权限未持久化。",
+    "evidence": "                                        try {\n                                            context.contentResolver.takePersistableUriPermission(\n                                                uri,\n                                                Intent.FLAG_GRANT_READ_URI_PERMISSION\n                                            )\n                                        } catch (_: Exception) {\n                                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "id": "Q09",
+    "line": 1420,
+    "severity": "warn",
+    "title": "恢复流程取 URI 权限失败被静默吞掉"
+  },
+  {
+    "confidence": "medium",
+    "detail": "summaryCustomRules / summarySectionOverrides 以明文 JSON 存于 model_configs DataStore。若用户在自定义规则中粘贴过对话片段，会随模型配置导出或原生快照明文外发。",
+    "evidence": "        ZIPPING_SHARED_PREFS,\n        ZIPPING_DATASTORE,",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/backup/RawSnapshotBackupManager.kt",
+    "id": "Q10",
+    "line": 74,
+    "severity": "warn",
+    "title": "总结规则明文存 DataStore，随配置导出外发"
+  },
+  {
+    "confidence": "high",
+    "detail": "UI 文案写阈值范围 0.1-0.95，代码实际接受 (0,1) 开区间任意值（如 0.05、0.99 也能保存）。",
+    "evidence": "                when {\n                    threshold == null || threshold <= 0f || threshold >= 1f ->\n                        onSummaryErrorChange(errorSummaryThresholdRange)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt",
+    "id": "Q11",
+    "line": 488,
+    "severity": "suggestion",
+    "title": "总结阈值文案与实现不一致"
+  },
+  {
+    "confidence": "high",
+    "detail": "UI 文案写 1-20 条，代码仅校验 >0，无 20 上限。用户可输入超大值。",
+    "evidence": "                    enableSummaryByMessageCount && (messageCount == null || messageCount <= 0) ->",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt",
+    "id": "Q12",
+    "line": 491,
+    "severity": "suggestion",
+    "title": "消息数阈值文案 1-20 条，代码无上限"
+  },
+  {
+    "confidence": "high",
+    "detail": "FullscreenSettingsTextEditor 的 onDismissRequest、确认、返回手势都会调 finishEditing() 写回，无取消路径。误改无法放弃。",
+    "evidence": "private fun FullscreenSettingsTextEditor(",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt",
+    "id": "Q13",
+    "line": 1426,
+    "severity": "suggestion",
+    "title": "全屏文本编辑器没有真正的取消"
+  },
+  {
+    "confidence": "medium",
+    "detail": "初始化 LaunchedEffect（:296）、刷新按钮回调（:473）、调小备份数后（:754）三处几乎相同的目录扫描代码，宜抽取复用。",
+    "evidence": "                fun mergedFiles(newDir: File): List<File> {\n                    val newFiles = newDir.listFiles()?.toList() ?: emptyList()\n                    return (newFiles + legacyFiles)\n                        .filter { it.isFile }\n                        .distinctBy { it.name }\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "id": "Q14",
+    "line": 282,
+    "severity": "suggestion",
+    "title": "备份目录扫描逻辑重复三遍"
+  },
+  {
+    "confidence": "medium",
+    "detail": "input.parse(raw)!! 非空断言。虽外层有 try/catch 兜底显示原串不崩溃，但属弱断言写法。",
+    "evidence": "                    output.format(input.parse(raw)!!)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/RoomDbBackupComponents.kt",
+    "id": "Q15",
+    "line": 48,
+    "severity": "suggestion",
+    "title": "RoomDbBackupComponents 用 !! 弱断言"
+  },
+  {
+    "confidence": "medium",
+    "detail": "导出按钮用 CloudDownload（下载）图标、导入用 CloudUpload（上传），与常规直觉相反，易误解。建议按代码原样向用户说明。",
+    "evidence": "                    text = stringResource(R.string.backup_export),\n                    icon = Icons.Default.CloudDownload,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt",
+    "id": "Q16",
+    "line": 81,
+    "severity": "suggestion",
+    "title": "导出/导入图标语义反直觉"
+  },
+  {
+    "confidence": "low",
+    "detail": "RawSnapshotOperation 用 BACKUP_SUCCESS，而 BackupOperationTypes.kt 的三个枚举用 EXPORTED/IMPORTED，命名不统一。",
+    "evidence": "enum class RawSnapshotOperation {\n    IDLE,\n    BACKING_UP,\n    BACKUP_SUCCESS,\n    RESTORING,\n    FAILED\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt",
+    "id": "Q17",
+    "line": 134,
+    "severity": "suggestion",
+    "title": "备份状态枚举命名不统一"
+  }
+]

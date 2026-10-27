@@ -1,0 +1,12 @@
+[
+  {
+    "severity": "suggestion",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MediaLinkParser.kt",
+    "line": 48,
+    "title": "FILE_LINK_PATTERN_PLAIN / FILE_LINK_PATTERN_ESCAPED 从未被使用",
+    "detail": "两个 file 链接正则只定义未引用；实际文件名提取走 FILE_NAME_ATTRIBUTE_PATTERN（extractFileName）。全仓库无其他引用，是死代码。",
+    "evidence": "    private val FILE_LINK_PATTERN_PLAIN = Regex(\n        \"\"\"<link\\s+type\\s*=\\s*\\\"file\\\"\\s+id\\s*=\\s*\\\"([^\\\"]+)\\\"\\s+filename\\s*=\\s*\\\"([^\\\"]+)\\\"\\s*>.*?</link>\"\"\",\n        RegexOption.DOT_MATCHES_ALL,\n    )",
+    "confidence": "high"
+  }
+]

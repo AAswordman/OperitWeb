@@ -1,0 +1,590 @@
+[
+  {
+    "fact": "JsEngine 把 QuickJS 引擎跑在名为 \"OperitQuickJsEngine\" 的单线程守护线程上，线程引用保存在 quickJsThread 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:70"
+  },
+  {
+    "fact": "quickJsExecutor 是 Executors.newSingleThreadExecutor，quickJsDispatcher 是它的协程调度器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:76"
+  },
+  {
+    "fact": "engineScope = CoroutineScope(SupervisorJob() + quickJsDispatcher)，引擎相关的协程都挂在这个作用域下",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:77"
+  },
+  {
+    "fact": "ensureQuickJs 用 synchronized(quickJsInitLock) 做双重检查：quickJs 为空时才在 QuickJS 线程上创建 OperitQuickJsEngine",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:178"
+  },
+  {
+    "fact": "引擎创建后立即 bindNativeInterface(toolCallInterface)，把 JsToolCallInterface 实例绑定为 JS 全局 NativeInterface",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:190"
+  },
+  {
+    "fact": "BINARY_DATA_THRESHOLD = 32 * 1024：超过 32KB 的二进制工具结果不直接序列化，而是存入注册表返回句柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:53"
+  },
+  {
+    "fact": "BINARY_HANDLE_PREFIX = \"@binary_handle:\"：大二进制结果的句柄前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:54"
+  },
+  {
+    "fact": "DIRECT_SCRIPT_EXECUTION_FUNCTION = \"__operit_run_inline_code__\"：内联脚本执行的 JS 入口函数名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:55"
+  },
+  {
+    "fact": "binaryDataRegistry 是 ConcurrentHashMap<String, ByteArray>，存放大二进制结果供 JS 按句柄取用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:59"
+  },
+  {
+    "fact": "javaObjectRegistry 是 ConcurrentHashMap<String, Any>，存放暴露给 JS 的 Java 对象句柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:60"
+  },
+  {
+    "fact": "activeExecutionSessions 是 ConcurrentHashMap<String, ExecutionSession>，按 callId 跟踪进行中的执行会话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:114"
+  },
+  {
+    "fact": "launchQuickJsFunctionCall(functionName, argsJson, callSite, onError) 是向 QuickJS 线程投递函数调用的统一入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:300"
+  },
+  {
+    "fact": "nextExecutionCallId 生成 \"operit_call_\" + 去横线 UUID 作为每次执行的 callId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:331"
+  },
+  {
+    "fact": "createExecutionSession 构造 ExecutionSession（含 CompletableFuture、监听器、运行时监控句柄）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:334"
+  },
+  {
+    "fact": "initJavaScriptEnvironment 在 quickJsInitLock 内按 jsEnvironmentInitialized 做幂等：只初始化一次",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:759"
+  },
+  {
+    "fact": "initJavaScriptEnvironment 按序执行 runtimeBootstrapModules() 返回的全部 bootstrap 模块，失败则 disposeQuickJsForReinit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:767"
+  },
+  {
+    "fact": "runtimeBootstrapModules() 返回 JsLibraries.buildRuntimeBootstrapModules 拼装的模块列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:550"
+  },
+  {
+    "fact": "evaluateBootstrapModule 用 evaluateQuickJsBlocking<Any?>(module.source, module.fileName) 执行模块源码，空源码跳过，失败抛 IllegalStateException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:558"
+  },
+  {
+    "fact": "exposeBootstrapGlobals 为模块声明的 globals 生成 expose(\"X\", typeof X !== 'undefined' ? X : undefined) 脚本；__operitExpose 不可用时回退直接写 globalThis/window",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:598"
+  },
+  {
+    "fact": "executeScriptFunction(script, functionName, params, ...) 是脚本执行主入口，timeoutSec 默认 JsTimeoutConfig.MAIN_TIMEOUT_SECONDS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:788"
+  },
+  {
+    "fact": "executeScriptFunction 自动向 params 注入 __operit_package_lang（当前语言，取不到则 \"en\"）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:792"
+  },
+  {
+    "fact": "每次执行创建会话并注册进 activeExecutionSessions，再用 ToolPkgRuntimeMonitor.beginCall 开始运行时监控",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:862"
+  },
+  {
+    "fact": "会话注册行 activeExecutionSessions[callId] = session，callId 即本次执行的唯一标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:881"
+  },
+  {
+    "fact": "preTimeoutMs = 超时前 PRE_TIMEOUT_LEAD_SECONDS 的提前量，让 JS 侧先收到超时预警",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:891"
+  },
+  {
+    "fact": "executionArgsJson = [callId, params, script, functionName, safeTimeoutSec, preTimeoutMs, toolPkgApiContextJson]，是传给 JS 入口的实参",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:901"
+  },
+  {
+    "fact": "执行经 launchQuickJsFunctionCall 调 JS 侧 TOOLPKG_EXECUTION_ENTRY_FUNCTION（值为 __operitExecuteScriptFunction）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:920"
+  },
+  {
+    "fact": "调用方在 session.future 上阻塞等待：timeoutMillis 优先（毫秒）、否则 timeoutSec（秒）、都为 null 则无限等待",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:957"
+  },
+  {
+    "fact": "超时或中断时先 interruptQuickJs 中断原生执行（同步死循环下排队的 JS 取消无法生效，所以原生中断必须先行）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:991"
+  },
+  {
+    "fact": "捕获 InterruptedException 时恢复中断标志 Thread.currentThread().interrupt()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:994"
+  },
+  {
+    "fact": "超时后调 cancelExecutionSessionInJs(callId, failureReason) 在 JS 侧取消会话，并通知 executionListener.onFailed",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1018"
+  },
+  {
+    "fact": "cancelExecutionSessionInJs 是 Kotlin 侧取消会话的函数定义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:515"
+  },
+  {
+    "fact": "executeScriptCode(script, ...) 把任意脚本包成 DIRECT_SCRIPT_EXECUTION_FUNCTION（__operit_run_inline_code__）执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1036"
+  },
+  {
+    "fact": "executeScriptCode 向 params 注入 __operit_inline_function_name 与 __operit_inline_function_source(buildDirectScriptExecutionSource(script))",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1046"
+  },
+  {
+    "fact": "executeScriptCode 实际以 functionName = DIRECT_SCRIPT_EXECUTION_FUNCTION 调 executeScriptFunction",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1050"
+  },
+  {
+    "fact": "executeComposeDslScript 先用 buildComposeDslRuntimeWrappedScript(script) 包裹脚本，再以 __operit_render_compose_dsl 执行，timeoutSec = null（无限等）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1132"
+  },
+  {
+    "fact": "executeComposeDslAction(actionId, payload) 以空脚本调 __operit_dispatch_compose_dsl_action，参数注入 __action_id/__action_payload，timeoutSec = null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1146"
+  },
+  {
+    "fact": "rerenderComposeDslTree 以空脚本调 __operit_rerender_compose_dsl 重新渲染，timeoutSec = null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1172"
+  },
+  {
+    "fact": "invokeJavaBridgeJsObjectCallbackSync 在主线程或 QuickJS 线程上调用时直接拒绝（返回 success=false 的 JSON）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:635"
+  },
+  {
+    "fact": "Java 侧同步回调 JS 时用 request.future.get(30, TimeUnit.SECONDS) 等待，最多 30 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:675"
+  },
+  {
+    "fact": "resetState 回收 bitmapRegistry 中全部 Bitmap 并清空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1538"
+  },
+  {
+    "fact": "resetState 清空 javaObjectRegistry，并执行 JS 侧 __operitClearAllTimers 清掉全部定时器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1542"
+  },
+  {
+    "fact": "JsToolCallInterface 是 JsEngine 的内部类，@JavascriptInterface 方法群即 JS 全局 NativeInterface",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1566"
+  },
+  {
+    "fact": "NativeInterface.decompress 转调 JsNativeInterfaceDelegates.decompress",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1599"
+  },
+  {
+    "fact": "NativeInterface.navigateToRoute 经 AppRouterGateway.navigate 跳转，source = RouteEntrySource.SCRIPT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:1790"
+  },
+  {
+    "fact": "NativeInterface.javaClassExists(className) 检查类是否存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2126"
+  },
+  {
+    "fact": "NativeInterface.javaLoadDex(path, optionsJson) 经 JsExternalJavaCodeLoader.loadDex 加载外部 dex",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2134"
+  },
+  {
+    "fact": "NativeInterface.javaLoadJar(path, optionsJson) 经 JsExternalJavaCodeLoader.loadJar 加载外部 jar",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2143"
+  },
+  {
+    "fact": "NativeInterface.javaListLoadedCodePaths 返回外部代码加载器的已加载产物清单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2152"
+  },
+  {
+    "fact": "NativeInterface.javaGetApplicationContext 把 applicationContext 经 exposeJavaObject 注册成句柄返回给 JS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2157"
+  },
+  {
+    "fact": "NativeInterface.javaGetCurrentActivity 取 ActivityLifecycleManager.getCurrentActivity()，为空返回 success=false，取到则注册成句柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2164"
+  },
+  {
+    "fact": "NativeInterface.javaNewInstance(className, argsJson) 经 JsJavaBridgeDelegates.newInstance 反射构造对象",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2178"
+  },
+  {
+    "fact": "NativeInterface.javaCallStatic / javaCallInstance 分别经 JsJavaBridgeDelegates.callStatic / callInstance 做反射调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2189"
+  },
+  {
+    "fact": "NativeInterface.javaCallStaticSuspend / javaCallInstanceSuspend 支持调用 Kotlin 挂起函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2213"
+  },
+  {
+    "fact": "NativeInterface.javaGetStaticField / javaSetStaticField / javaGetInstanceField / javaSetInstanceField / javaHasInstanceMethod 做字段与方法探测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2253"
+  },
+  {
+    "fact": "NativeInterface.javaPollPendingJsCallback / javaResolvePendingJsCallback 是 JS 回调泵的 Kotlin 侧两端",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2305"
+  },
+  {
+    "fact": "NativeInterface.sendCallIntermediateResult(callId, result) 投递中间结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2395"
+  },
+  {
+    "fact": "NativeInterface.callTool(toolType, toolName, paramsJson) 经 JsNativeInterfaceDelegates.callToolSync 同步执行工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2413"
+  },
+  {
+    "fact": "NativeInterface.callToolAsync / callToolAsyncStreaming 分别经 JsNativeInterfaceDelegates.callToolAsync / callToolAsyncStreaming 异步执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2427"
+  },
+  {
+    "fact": "NativeInterface.setCallResult(callId, result) 经 completeCallFuture 完成会话的 CompletableFuture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2524"
+  },
+  {
+    "fact": "NativeInterface.setCallError(callId, error) 完成会话为异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2548"
+  },
+  {
+    "fact": "completeCallFuture 是完成会话 future 的统一函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2586"
+  },
+  {
+    "fact": "NativeInterface.reportErrorForCall 把 JS 侧的详细错误上报回 Kotlin",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2677"
+  },
+  {
+    "fact": "destroy() 先 engine.interrupt() 中断原生执行，再排空关闭引擎",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2719"
+  },
+  {
+    "fact": "destroy() 关闭引擎后关 quickJsDispatcher 并 quickJsExecutor.shutdownNow()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEngine.kt:2753"
+  },
+  {
+    "fact": "JsBootstrapModule(fileName, source, globals) 是 bootstrap 模块的数据结构：文件名、源码、要暴露的全局名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:5"
+  },
+  {
+    "fact": "buildRuntimeBootstrapModules 返回 buildInitRuntimeModules 的 6 个基础模块 + 12 个能力/第三方模块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:11"
+  },
+  {
+    "fact": "compose-dsl-bridge 模块把 buildComposeDslContextBridgeDefinition() 暴露为全局 OperitComposeDslRuntime",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:35"
+  },
+  {
+    "fact": "java-bridge 模块把 buildJavaClassBridgeDefinition() 暴露为全局 Java / Kotlin",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:40"
+  },
+  {
+    "fact": "third-party-libs 模块导出全局 _（lodash）、dataUtils、Icons",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:45"
+  },
+  {
+    "fact": "AndroidUtils.js 模块导出 Android、Intent、PackageManager、ContentProvider、SystemManager、DeviceController 六个全局",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:65"
+  },
+  {
+    "fact": "OkHttp3.js 模块导出 OkHttpClientBuilder、OkHttpClient、RequestBuilder、OkHttp 四个全局",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:80"
+  },
+  {
+    "fact": "getJsThirdPartyLibraries() 拼装第三方库脚本（lodash 等）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsLibraries.kt:106"
+  },
+  {
+    "fact": "loadCryptoJs / loadJimpJs / loadPakoJs 分别加载 assets 内 js/CryptoJS.js、js/Jimp.js、js/pako.js",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEmbeddedLibraryLoader.kt:5"
+  },
+  {
+    "fact": "嵌入式库加载失败时吞掉异常返回空字符串（调用方视为空模块跳过）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsEmbeddedLibraryLoader.kt:12"
+  },
+  {
+    "fact": "loadUINodeJs / loadAndroidUtilsJs / loadOkHttp3Js 分别加载 assets 内 js/UINode.js、js/AndroidUtils.js、js/OkHttp3.js",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsAssetLoader.kt:19"
+  },
+  {
+    "fact": "JS 资产加载失败记日志并返回空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsAssetLoader.kt:15"
+  },
+  {
+    "fact": "buildInitRuntimeModules(operitDownloadDir, operitCleanOnExitDir) 返回 6 个基础运行时模块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:5"
+  },
+  {
+    "fact": "runtime-expose.js 定义 __operitExpose(name, value)，是全部全局导出的统一出口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:41"
+  },
+  {
+    "fact": "runtime-constants.js 暴露 OPERIT_DOWNLOAD_DIR 与 OPERIT_CLEAN_ON_EXIT_DIR 两个目录常量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:68"
+  },
+  {
+    "fact": "runtime-call-registry.js 维护 windowRef.__operitCallRegistry，暴露 __operitRegisterCallSession / __operitCancelCallSession",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:94"
+  },
+  {
+    "fact": "runtime-errors.js 定义 __operitReportDetailedErrorForCall，经 NativeInterface.reportErrorForCall 把错误详情传回 Kotlin",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:298"
+  },
+  {
+    "fact": "runtime-tool-call.js 暴露全局 toolCall：把 JS 调用包成 Promise，经 NativeInterface.callToolAsync/callToolAsyncStreaming 加 window 回调 id 实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsInitRuntimeScriptBuilder.kt:306"
+  },
+  {
+    "fact": "buildToolPkgApiRuntimeScript 暴露 __operitToolPkgApi{currentCallId, currentVersion, namespace, method}，支持按 manifest.api_version 做 semver 版本化 API",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgApiRuntime.kt:3"
+  },
+  {
+    "fact": "ToolPkg API 的 method().since(版本, 实现).build(名字) 按当前版本选实现；版本不满足时抛错说明需要的 API 版本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgApiRuntime.kt:105"
+  },
+  {
+    "fact": "buildJavaClassBridgeDefinition() 生成 JS 侧 Java/Kotlin 桥脚本，是 Java 互操作在 JS 侧的全部定义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:3"
+  },
+  {
+    "fact": "__javaBridgeJsObjectStore 是 JS 侧回调对象注册表（Object.create(null)），供 Java 反向调用 JS 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:50"
+  },
+  {
+    "fact": "桥用 FinalizationRegistry 在实例代理被 GC 时自动释放 Java 侧的句柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:53"
+  },
+  {
+    "fact": "invokeBridge(methodName, args) 经 NativeInterface[methodName] 动态调用原生方法，解析 {success, data/message} 信封，失败抛 Error",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:482"
+  },
+  {
+    "fact": "tryProcessPendingJavaBridgeCallback() 经 javaPollPendingJsCallback / javaResolvePendingJsCallback 泵取待处理的 Java→JS 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:543"
+  },
+  {
+    "fact": "createInstanceProxy(className, handle) 为 Java 实例建 Proxy：call/callSuspend/get/set/toString，属性访问先 javaHasInstanceMethod 探测再读字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:772"
+  },
+  {
+    "fact": "实例代理的方法调用支持 callSuspend 变体，用于 Kotlin 挂起函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:786"
+  },
+  {
+    "fact": "createClassProxy(className) 为类建代理：newInstance/callStatic/getStatic/setStatic，$ 拼嵌套类名做探测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:987"
+  },
+  {
+    "fact": "createPackageProxy(parts) 为包路径建代理，支持按点分路径逐级取类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1109"
+  },
+  {
+    "fact": "JavaApi.type(className) / use(className) / importClass(className) 按名取类并包成代理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1176"
+  },
+  {
+    "fact": "JavaApi.package(packageName) 返回包路径代理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1189"
+  },
+  {
+    "fact": "JavaApi.implement(interfaceNameOrNames, impl) / proxy(...) 用 JS 对象实现 Java 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1196"
+  },
+  {
+    "fact": "JavaApi.classExists / loadDex / loadJar / listLoadedCodePaths 对应类存在检查与外部代码加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1223"
+  },
+  {
+    "fact": "JavaApi.callStatic / callSuspend / newInstance 是类代理的快捷调用入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1239"
+  },
+  {
+    "fact": "JavaApi.getApplicationContext / getContext / getCurrentActivity / getActivity 把 Android 上下文与当前 Activity 暴露给 JS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridge.kt:1273"
+  },
+  {
+    "fact": "JsJavaBridgeDelegates 是 internal object 单例，承载全部 Java 反射桥的 Kotlin 侧实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:29"
+  },
+  {
+    "fact": "桥标记常量：__javaHandle/__javaClass（实例句柄）、__javaJsInterface/__javaJsObjectId/__javaInterfaces（JS 接口绑定）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:31"
+  },
+  {
+    "fact": "newInstance / callStatic / callInstance 分别做反射构造、静态调用、实例调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:239"
+  },
+  {
+    "fact": "callStaticSuspend / callInstanceSuspend 支持调用 Kotlin 挂起函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:339"
+  },
+  {
+    "fact": "callStatic 找不到静态方法时回退到 Companion/INSTANCE 实例上再找（findStaticFallbackInstance）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:294"
+  },
+  {
+    "fact": "findStaticFallbackInstance 按序找 Companion 静态字段/getter，再找 INSTANCE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:2022"
+  },
+  {
+    "fact": "runBridgeCall 把全部桥调用包成 {success:true,data} / {success:false,message} 信封，并拆包 InvocationTargetException 取真实原因",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:720"
+  },
+  {
+    "fact": "callSuspendInternal 找末参为 Continuation 的方法来调用 Kotlin 挂起函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:755"
+  },
+  {
+    "fact": "挂起调用用 AtomicBoolean 防重复恢复，COROUTINE_SUSPENDED 时等待回调而非直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:832"
+  },
+  {
+    "fact": "loadClass 支持基本类型名，优先用 bridgeClassLoader（外部代码类加载器）加载，失败回退 Class.forName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:887"
+  },
+  {
+    "fact": "decodeJsonValue 把带桥标记的 JSON 解析回 Java 实例或 JsInterfaceBinding（句柄过期抛错）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:964"
+  },
+  {
+    "fact": "toJsonCompatibleValue 把非 JSON 类型（任意 Java 对象）自动注册成句柄，返回 {__javaHandle, __javaClass} 标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:1038"
+  },
+  {
+    "fact": "selectConstructor / selectMethod 按参数转换打分选最优重载，支持可变参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:1231"
+  },
+  {
+    "fact": "convertArg 把 JS Map 转成 Java 接口的动态代理（createJsInterfaceProxyFromMap），支持 get/is/set 属性访问器映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:1665"
+  },
+  {
+    "fact": "JS 接口代理用 PhantomReference + ReferenceQueue 跟踪，守护线程 \"OperitJsInterfaceRelease\" 在代理被 GC 后自动释放 JS 侧回调对象（引用计数）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsJavaBridgeDelegates.kt:615"
+  },
+  {
+    "fact": "JsExternalJavaCodeLoader.loadDex / loadJar 用 DexClassLoader 加载外部 dex/jar，jar 必须含 classes.dex（纯 JVM 字节码不支持）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:104"
+  },
+  {
+    "fact": "childFirstPrefixes 非空时用 PrefixIsolatedDexClassLoader，让指定包前缀优先从外部代码加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:171"
+  },
+  {
+    "fact": "外部代码先复制到 codeCache 下 js-external-code-sources，文件名是 \"类型-SHA256(类型|原路径)\"，并 setReadOnly",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:279"
+  },
+  {
+    "fact": "加载后校验产物必须只读，否则抛错拒绝加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:294"
+  },
+  {
+    "fact": "getEffectiveClassLoader 返回最后一个已加载产物的类加载器，无产物时返回 baseClassLoader",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:99"
+  },
+  {
+    "fact": "加载外部代码前设置 JVM 兼容系统属性：os.name=Linux、os.arch、user.home 等",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsExternalJavaCodeLoader.kt:307"
+  },
+  {
+    "fact": "callToolSync 解析工具名与参数后直接调 toolHandler.executeTool 同步执行并序列化结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:674"
+  },
+  {
+    "fact": "callToolAsync 在新线程执行工具，经 sendToolResult 回调返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:707"
+  },
+  {
+    "fact": "callToolAsyncStreaming 用 runBlocking 收集 Flow：中间结果走 sendIntermediateResult，最终结果走 sendToolResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:758"
+  },
+  {
+    "fact": "超 32KB 的二进制结果存入 binaryDataRegistry，返回 \"@binary_handle:\" + UUID 句柄而非内联数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:152"
+  },
+  {
+    "fact": "buildToolResultCallbackScript 生成 window[callbackId](result, isError) 回调脚本：JSON 字面量直接嵌入，否则转义后作字符串嵌入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:832"
+  },
+  {
+    "fact": "buildStringResultCallbackScript 用 JSONObject.quote 做转义生成回调脚本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:863"
+  },
+  {
+    "fact": "decompress 只支持 deflate 算法，输入可以是 binary handle 或 Base64",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:627"
+  },
+  {
+    "fact": "imageProcessing 支持 read/create/crop/composite/getwidth/getheight/getbase64/release，用 bitmapRegistry 按 UUID 管理 Bitmap，在新线程执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:881"
+  },
+  {
+    "fact": "crypto 支持 md5 与 AES/ECB/NoPadding 解密（手动去 PKCS7 填充）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:1043"
+  },
+  {
+    "fact": "AES 解密用 Cipher.getInstance(\"AES/ECB/NoPadding\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:1066"
+  },
+  {
+    "fact": "callToolPkgWasm 解析 i32/i64/f32/f64 参数，经 ToolPkgWasmRuntime.call 调用 WASM 导出函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:510"
+  },
+  {
+    "fact": "measureComposeText 用 StaticLayout 按 maxWidth/maxLines/ellipsis 等参数测量文本宽高",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:564"
+  },
+  {
+    "fact": "setEnv / setEnvs 经 EnvPreferences 持久化写环境变量，空值则删除",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsNativeInterfaceDelegates.kt:227"
+  },
+  {
+    "fact": "buildComposeDslContextBridgeDefinition() 生成 Compose DSL 的 JS 运行时桥，挂为全局 OperitComposeDslRuntime",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:3"
+  },
+  {
+    "fact": "OperitComposeDslRuntime.createContext(runtimeOptions) 创建 DSL 上下文：stateStore/memoStore/actionStore 等运行时状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:186"
+  },
+  {
+    "fact": "DSL 节点是 {__composeNode: true, type, props, children, slots} 的纯数据描述，函数 prop 被 normalize 成 {__actionId}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:304"
+  },
+  {
+    "fact": "DSL 上下文提供 useState/useMutable/useRef/useMemo 四个状态原语，key 必填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:334"
+  },
+  {
+    "fact": "ctx.callTool / ctx.toolCall 转调 toolCall；ctx.navigate 经 NativeInterface.navigateToRoute 跳转路由",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:650"
+  },
+  {
+    "fact": "createWebViewController(key) 创建 WebView 控制器描述符，经 NativeInterface.composeWebViewControllerCommand 下发命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:409"
+  },
+  {
+    "fact": "MaterialTheme.colorScheme 是 Proxy，任意 key 取色都生成 {__colorToken} 令牌",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:624"
+  },
+  {
+    "fact": "UI 是 Proxy：UI.任意名 即该类型节点的工厂函数；Modifier 是链式调用收集 __modifierOps 的 Proxy",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslBridge.kt:635"
+  },
+  {
+    "fact": "buildComposeDslRuntimeWrappedScript(script) 为 DSL 脚本包裹渲染/重渲染/动作分发三个入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:3"
+  },
+  {
+    "fact": "__operit_render_compose_dsl 建上下文、解析入口（module.exports.default/Screen、exports.default/Screen、window.default/Screen），返回 {state, memo, tree}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:72"
+  },
+  {
+    "fact": "__operit_rerender_compose_dsl 复用 globalThis 上的 __operit_compose_bundle/__operit_compose_entry 重新渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:104"
+  },
+  {
+    "fact": "__operit_dispatch_compose_dsl_action 按 __action_id 找 handler 执行，支持 __no_render/__noRender/__local 跳过渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:132"
+  },
+  {
+    "fact": "动作执行期间的状态变更经 sendIntermediateResult 推送中间渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:185"
+  },
+  {
+    "fact": "防抖队列保证一次只跑一个中间渲染（__intermediateRenderInFlight 守卫）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsComposeDslRuntimeScript.kt:230"
+  }
+]

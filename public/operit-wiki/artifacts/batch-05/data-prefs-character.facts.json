@@ -1,0 +1,682 @@
+[
+ {
+  "fact": "CharacterCard 是 Room Entity，表名为 \"character_cards\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:41"
+ },
+ {
+  "fact": "CharacterCard 的主键 id 为 String 类型。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:43"
+ },
+ {
+  "fact": "CharacterCard.name 是角色卡名称字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:45"
+ },
+ {
+  "fact": "CharacterCard.description 默认值为空字符串。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:46"
+ },
+ {
+  "fact": "CharacterCard.characterSetting 是角色设定（引导词），默认空字符串。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:47"
+ },
+ {
+  "fact": "CharacterCard.openingStatement 是开场白字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:48"
+ },
+ {
+  "fact": "CharacterCard.otherContentChat 是聊天场景用的其他内容。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:49"
+ },
+ {
+  "fact": "CharacterCard.otherContentVoice 是语音场景用的其他内容。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:50"
+ },
+ {
+  "fact": "CharacterCard.attachedTagIds 是附着的提示词标签 ID 列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:51"
+ },
+ {
+  "fact": "CharacterCard.advancedCustomPrompt 是高级设置的自定义引导词。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:52"
+ },
+ {
+  "fact": "CharacterCard.marks 是备注信息，注释说明它不会被拼接到提示词中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:53"
+ },
+ {
+  "fact": "CharacterCard.chatModelBindingMode 默认值为 FOLLOW_GLOBAL。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:54"
+ },
+ {
+  "fact": "CharacterCard.chatModelConfigId 是固定绑定时使用的配置 ID，可空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:55"
+ },
+ {
+  "fact": "CharacterCard.chatModelIndex 是固定绑定时使用的模型索引，默认 0。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:56"
+ },
+ {
+  "fact": "CharacterCard.memoryProfileBindingMode 默认值为 FOLLOW_GLOBAL。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:57"
+ },
+ {
+  "fact": "CharacterCard.memoryProfileId 是固定绑定时使用的记忆配置 ID，可空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:58"
+ },
+ {
+  "fact": "CharacterCard.toolAccessConfig 是角色卡自定义工具白名单，默认空配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:59"
+ },
+ {
+  "fact": "CharacterCard.isDefault 默认值为 false。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:60"
+ },
+ {
+  "fact": "CharacterCard.createdAt 默认值为创建时间戳。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:61"
+ },
+ {
+  "fact": "CharacterCard.updatedAt 默认值为创建时间戳。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:62"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.enabled 默认 false，表示未启用自定义白名单。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:9"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.allowedBuiltinTools 是允许的内置工具名列表，默认空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:10"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.allowedPackages 是允许的工具包名列表，默认空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:11"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.allowedSkills 是允许的 Skill 名列表，默认空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:12"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.allowedMcpServers 是允许的 MCP 服务器名列表，默认空。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:13"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.normalized() 对四个名单做去首尾空白、过滤空串、去重。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:15"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.hasExternalSelections() 在任一外部名单非空时返回 true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:24"
+ },
+ {
+  "fact": "CharacterCardChatModelBindingMode 定义 FOLLOW_GLOBAL 与 FIXED_CONFIG 两个常量。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:65"
+ },
+ {
+  "fact": "CharacterCardChatModelBindingMode.normalize() 将非 FIXED_CONFIG 的值回退为 FOLLOW_GLOBAL。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:69"
+ },
+ {
+  "fact": "CharacterCardMemoryProfileBindingMode 定义 FOLLOW_GLOBAL 与 FIXED_PROFILE 两个常量。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:74"
+ },
+ {
+  "fact": "CharacterCardMemoryProfileBindingMode.normalize() 将非 FIXED_PROFILE 的值回退为 FOLLOW_GLOBAL。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:78"
+ },
+ {
+  "fact": "TavernCharacterCard 包含 spec、spec_version、data 三个字段，是酒馆角色卡格式模型。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:86"
+ },
+ {
+  "fact": "TavernCharacterData 包含 name、description、personality、first_mes、avatar、mes_example、scenario、creator_notes、system_prompt、post_history_instructions、alternate_greetings、tags、creator、character_version、extensions、character_book 字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:92"
+ },
+ {
+  "fact": "OperitTavernExtension.schema 默认值为 \"operit_character_card_v1\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:118"
+ },
+ {
+  "fact": "OperitCharacterCardPayload 承载 Operit 角色卡的完整字段载荷，用于酒馆格式的无损往返。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:122"
+ },
+ {
+  "fact": "OperitAttachedTagPayload 包含 id、name、description、promptContent，tagType 默认 \"CUSTOM\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:142"
+ },
+ {
+  "fact": "GroupMemberConfig 包含 characterCardId 与 orderIndex（默认 0）两个字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterGroupCard.kt:6"
+ },
+ {
+  "fact": "CharacterGroupCard 包含 id、name、description、members（List<GroupMemberConfig>）、createdAt、updatedAt 字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterGroupCard.kt:14"
+ },
+ {
+  "fact": "ActivePrompt 是密封接口，只有 CharacterCard(id) 与 CharacterGroup(id) 两个子类型。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ActivePrompt.kt:3"
+ },
+ {
+  "fact": "角色卡 DataStore 名为 \"character_cards\"，schema 版本为 1。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:47"
+ },
+ {
+  "fact": "CharacterCardManager.getInstance 使用双重检查锁实现全局单例。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:106"
+ },
+ {
+  "fact": "角色卡列表存放在 \"character_card_list\" 字符串集合键中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:92"
+ },
+ {
+  "fact": "活跃角色卡 ID 存放在 \"active_character_card_id\" 字符串键中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:93"
+ },
+ {
+  "fact": "默认角色卡 ID 为 \"default_character\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:96"
+ },
+ {
+  "fact": "默认角色卡名称为 \"Operit\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:98"
+ },
+ {
+  "fact": "版本 0 迁移时若角色卡列表为空，会创建默认角色卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:119"
+ },
+ {
+  "fact": "默认角色卡的模型绑定与记忆绑定模式均为 FOLLOW_GLOBAL，配置 ID 键被移除。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:196"
+ },
+ {
+  "fact": "默认角色卡的描述、角色设定、聊天与语音其他内容取自 CharacterCardBilingualData 的双语默认值。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:189"
+ },
+ {
+  "fact": "版本 0 迁移把旧的 other_content 字段合并进 other_content_chat。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:234"
+ },
+ {
+  "fact": "版本 0 迁移只在语音字段从未被写入时才为默认卡播种默认语音提示词，显式清空的空串会被保留。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:239"
+ },
+ {
+  "fact": "版本 0 迁移会删除角色卡上已不存在的标签 ID 引用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:213"
+ },
+ {
+  "fact": "读取角色卡时若名称缺失，回退到 R.string.default_character_card 字符串资源。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:327"
+ },
+ {
+  "fact": "读取角色卡时 isDefault 为 true 的条件是 id 等于默认卡 ID 或 is_default 键为 true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:343"
+ },
+ {
+  "fact": "读取角色卡时 chatModelIndex 取 max(0) 钳制为非负数。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:339"
+ },
+ {
+  "fact": "工具白名单 JSON 解析使用 ignoreUnknownKeys = true 的 kotlinx Json。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:273"
+ },
+ {
+  "fact": "工具白名单 JSON 解析失败时打日志并返回默认空配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:285"
+ },
+ {
+  "fact": "写入工具白名单时，若归一化后等于默认空配置则直接删除该键。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:296"
+ },
+ {
+  "fact": "createCharacterCard 中 isDefault 的卡使用默认卡 ID，否则生成 UUID。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:415"
+ },
+ {
+  "fact": "新建角色卡时若其为默认卡或当前无活跃卡，则将其设为活跃卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:461"
+ },
+ {
+  "fact": "新建非默认角色卡会删除其主题快照、复制当前 Waifu 配置、克隆创建来源的表情集。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:359"
+ },
+ {
+  "fact": "updateCharacterCard 在角色卡改名后调用 ChatHistoryManager.renameCharacterCardInChats 同步聊天记录中的卡名。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:519"
+ },
+ {
+  "fact": "deleteCharacterCard 对默认卡 ID 直接返回，默认卡不可删除。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:523"
+ },
+ {
+  "fact": "删除角色卡会移除其 19 个偏好键并将其从列表中剔除。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:545"
+ },
+ {
+  "fact": "删除活跃角色卡后，活跃 ID 回退为默认卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:577"
+ },
+ {
+  "fact": "删除角色卡会同步删除其主题配置、Waifu 配置与自定义表情。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:583"
+ },
+ {
+  "fact": "删除角色卡后若不存在同名卡，会清除聊天记录中的角色卡绑定。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:588"
+ },
+ {
+  "fact": "setActiveCharacterCard 写入活跃 ID 后切换到该卡的 Waifu 配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:601"
+ },
+ {
+  "fact": "clearActiveCharacterCard 移除活跃卡 ID 键。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:611"
+ },
+ {
+  "fact": "combinePrompts 拼接时先加入角色设定 characterSetting。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:635"
+ },
+ {
+  "fact": "combinePrompts 随后拼接其他内容 otherContent（聊天用 otherContentChat，语音用 otherContentVoice）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:640"
+ },
+ {
+  "fact": "combinePrompts 随后依次拼接各附着标签的 promptContent。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:651"
+ },
+ {
+  "fact": "combinePrompts 最后拼接高级自定义提示词 advancedCustomPrompt。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:656"
+ },
+ {
+  "fact": "combinePrompts 中 PromptFunctionType.VOICE 使用 otherContentVoice，其他类型使用 otherContentChat。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:639"
+ },
+ {
+  "fact": "combinePrompts 读取标签失败时吞掉异常并跳过该标签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:626"
+ },
+ {
+  "fact": "ConversationService 在组装系统提示词时调用 characterCardManager.combinePrompts。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:517"
+ },
+ {
+  "fact": "角色卡备份文件的数据类 schema 为 \"operit_character_cards_backup_v1\"，version 为 1。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:702"
+ },
+ {
+  "fact": "导出角色卡备份到 OperitBackupDirs.characterCardsDir() 目录。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:771"
+ },
+ {
+  "fact": "备份文件名格式为 character_cards_backup_yyyy-MM-dd_HH-mm-ss.json。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:774"
+ },
+ {
+  "fact": "导出备份会附带角色卡引用的提示词标签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:766"
+ },
+ {
+  "fact": "导入备份支持两种格式：含 characterCards 与 promptTags 的对象，或纯角色卡数组。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:795"
+ },
+ {
+  "fact": "导入时 id 或 name 为空的角色卡被计为 skipped。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:836"
+ },
+ {
+  "fact": "导入时 id 已存在计为 updated，不存在计为 new。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:863"
+ },
+ {
+  "fact": "导入时默认卡 ID 强制 isDefault=true，其他卡强制 isDefault=false。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:846"
+ },
+ {
+  "fact": "导入标签时若本地已存在相同内容的标签则复用，否则新建。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1266"
+ },
+ {
+  "fact": "导入标签时名称、描述、提示词三者全空则返回 null 跳过。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1262"
+ },
+ {
+  "fact": "createCharacterCardFromTavernJson 在酒馆卡名称为空时返回失败。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:966"
+ },
+ {
+  "fact": "导入酒馆卡时 character_book 的条目被合并为 \"[条目名]\\n内容\" 文本并创建 FUNCTION 类型世界书标签挂载到卡上。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:986"
+ },
+ {
+  "fact": "导入酒馆卡时只有 extensions.operit.schema 等于 \"operit_character_card_v1\" 才使用 Operit 载荷，否则走通用转换。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:994"
+ },
+ {
+  "fact": "通用转换把酒馆卡的 description、personality、scenario 组合进角色设定。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1280"
+ },
+ {
+  "fact": "通用转换把酒馆卡的 mes_example、system_prompt、post_history_instructions 组合进聊天其他内容 otherContentChat。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1320"
+ },
+ {
+  "fact": "通用转换把酒馆卡的 alternate_greetings（备用问候语）逐条组合进聊天其他内容。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1331"
+ },
+ {
+  "fact": "通用转换把酒馆卡的 depth_prompt 放入高级自定义提示词。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1343"
+ },
+ {
+  "fact": "通用转换把酒馆卡的 first_mes 作为开场白。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1391"
+ },
+ {
+  "fact": "导出酒馆卡使用 spec=\"chara_card_v2\"、spec_version=\"2.0\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1105"
+ },
+ {
+  "fact": "导出酒馆卡时 openingStatement 映射到 first_mes，otherContentChat 映射到 mes_example。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1115"
+ },
+ {
+  "fact": "导出酒馆卡时 characterSetting 映射到 system_prompt，advancedCustomPrompt 映射到 post_history_instructions，marks 映射到 creator_notes。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1115"
+ },
+ {
+  "fact": "createCharacterCardFromTavernPng 先从 PNG 提取 JSON 再走酒馆 JSON 导入流程。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1057"
+ },
+ {
+  "fact": "PNG 角色卡数据存放在 tEXt 块中关键字为 \"chara\" 的条目里，内容为 Base64 编码的 JSON。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1157"
+ },
+ {
+  "fact": "extractJsonFromPng 先校验 8 字节 PNG 文件头签名。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1145"
+ },
+ {
+  "fact": "switchToCharacterCardWaifuSettings 总是调用切换，即使该卡无配置也会清空当前 Waifu 配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardManager.kt:1406"
+ },
+ {
+  "fact": "群组角色卡 DataStore 名为 \"character_groups\"，schema 版本为 1。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:37"
+ },
+ {
+  "fact": "群组列表存放在 \"character_group_list\" 键，活跃群组 ID 存放在 \"active_character_group_id\" 键。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:61"
+ },
+ {
+  "fact": "单个群组卡以 Gson JSON 字符串存放在 \"character_group_${id}_data\" 键中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:308"
+ },
+ {
+  "fact": "normalizeGroup 过滤空成员 ID、按 orderIndex 排序并重新编号 orderIndex。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:289"
+ },
+ {
+  "fact": "创建群组卡时 id 为空则生成 UUID，createdAt 非正则为当前时间。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:119"
+ },
+ {
+  "fact": "创建群组卡时若无活跃群组则将其设为活跃。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:135"
+ },
+ {
+  "fact": "创建群组卡时若将其设为活跃，会切换到该群组的 Waifu 配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:143"
+ },
+ {
+  "fact": "更新群组卡时若成员名单变化且当前头像是托管的默认头像，会重新生成拼图头像。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:163"
+ },
+ {
+  "fact": "删除群组卡会删除其主题、Waifu 配置、自定义表情与聊天绑定。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:196"
+ },
+ {
+  "fact": "删除群组卡时若头像是托管的默认头像，会删除对应的头像文件。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:200"
+ },
+ {
+  "fact": "删除活跃群组卡后切换回角色卡的 Waifu 配置。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:206"
+ },
+ {
+  "fact": "setActiveCharacterGroupCard 传入空值时移除活跃群组 ID。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:214"
+ },
+ {
+  "fact": "duplicateCharacterGroupCard 复制群组并克隆主题、Waifu、表情绑定到新群组。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:261"
+ },
+ {
+  "fact": "群组默认头像取排序后前 9 个成员（take(9)）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:385"
+ },
+ {
+  "fact": "群组默认头像画布尺寸为 512px。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:403"
+ },
+ {
+  "fact": "群组默认头像文件名为 group_avatar_${id}_${时间戳}.png，存放在 filesDir。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:466"
+ },
+ {
+  "fact": "isManagedDefaultGroupAvatar 要求 URI 为 file scheme 且文件名以 \"group_avatar_${id}_\" 开头、以 .png 结尾。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterGroupCardManager.kt:351"
+ },
+ {
+  "fact": "ResolvedCharacterCardToolAccess 包含 customEnabled、有效内置工具可见性、三类外部源白名单、canUsePackageSystem、hasAnyAllowedExternalSource 字段。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:10"
+ },
+ {
+  "fact": "角色卡未启用自定义白名单时，解析结果直接使用全局工具可见性与全部外部源，canUsePackageSystem 为 true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:81"
+ },
+ {
+  "fact": "启用自定义白名单时，内置工具的最终可见性为全局可见性与白名单的交集。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:95"
+ },
+ {
+  "fact": "启用自定义白名单时，只有白名单包含 use_package，工具包、Skill、MCP 三类外部源才可能被允许。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:99"
+ },
+ {
+  "fact": "isBuiltinToolAllowed 对 package_proxy 特殊处理：有任一外部源被允许时才放行。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:23"
+ },
+ {
+  "fact": "isExternalSourceAllowed 在未启用自定义时返回 true，无 package 系统时返回 false，否则检查三类白名单集合。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardToolAccessResolver.kt:29"
+ },
+ {
+  "fact": "ToolRegistration.resolveCurrentRoleCardToolAccess 调用 CharacterCardToolAccessResolver.resolve 解析当前调用角色的工具权限。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:185"
+ },
+ {
+  "fact": "Waifu 配置 DataStore 名为 \"waifu_settings\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:16"
+ },
+ {
+  "fact": "Waifu 模式开关键为 \"enable_waifu_mode\"，默认关闭。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:33"
+ },
+ {
+  "fact": "Waifu 每字符延迟的偏好键为 \"waifu_char_delay\"（WAIFU_CHAR_DELAY）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:34"
+ },
+ {
+  "fact": "Waifu 每字符延迟默认 250 毫秒（DEFAULT_WAIFU_CHAR_DELAY）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:45"
+ },
+ {
+  "fact": "Waifu 移除标点、启用表情包、启用自拍、启用合并发送四个开关默认均为 false。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:46"
+ },
+ {
+  "fact": "Waifu 合并发送等待时间键为 \"waifu_merge_send_delay_ms\"，默认 5000 毫秒。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:50"
+ },
+ {
+  "fact": "Waifu 默认附加提示词要求只允许纯文本对话、禁止动作表情。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:51"
+ },
+ {
+  "fact": "Waifu 默认自拍外貌提示词是一段英文二次元形象描述词。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:52"
+ },
+ {
+  "fact": "角色卡的 Waifu 配置以前缀 \"character_card_waifu_${id}_\" 存放在同一 DataStore 中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:159"
+ },
+ {
+  "fact": "群组卡的 Waifu 配置以前缀 \"character_group_waifu_${id}_\" 存放在同一 DataStore 中。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:162"
+ },
+ {
+  "fact": "切换 Waifu 配置时，有卡专属配置则覆盖全局键，无则删除全局键（清空）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/WaifuPreferences.kt:240"
+ },
+ {
+  "fact": "CharacterCardBilingualData 的默认角色设定中文为“你是Operit，一个全能AI助手，旨在解决用户提出的任何任务。”",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardBilingualData.kt:22"
+ },
+ {
+  "fact": "CharacterCardBilingualData 的默认聊天其他内容中文为“保持有帮助的语气，并清楚地传达限制。”",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardBilingualData.kt:32"
+ },
+ {
+  "fact": "默认语音其他内容是一套“猫娘未来人”人格提示词，含身份锚定、不可覆盖的核心指令、语音专项要求等章节。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardBilingualData.kt:56"
+ },
+ {
+  "fact": "isChineseLocale 以 locale.language 是否为 \"zh\" 或 \"zho\" 判断中文环境。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardBilingualData.kt:318"
+ },
+ {
+  "fact": "酒馆卡导入时世界书标签名模板为 \"世界书: {角色名}\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CharacterCardBilingualData.kt:199"
+ },
+ {
+  "fact": "ActivePromptManager.activePromptFlow 优先取活跃群组 ID，其次活跃角色卡 ID，最后回退默认卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt:19"
+ },
+ {
+  "fact": "ActivePromptManager.setActivePrompt 选群组时清空活跃角色卡，选角色卡时清空活跃群组，两者互斥。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt:51"
+ },
+ {
+  "fact": "ActivePromptManager.activateForChatBinding 按群组 ID、角色卡名、默认卡的顺序解析激活目标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt:131"
+ },
+ {
+  "fact": "ActivePromptManager.resolveActiveCardIdForSend 在活跃目标为群组时返回默认卡 ID。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ActivePromptManager.kt:150"
+ },
+ {
+  "fact": "PersonaCardChatHistoryManager 的 DataStore 名为 \"persona_card_chat_history\"。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt:13"
+ },
+ {
+  "fact": "人设卡聊天历史以 \"chat_history_{角色卡ID}\" 为键、Gson JSON 存取消息列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt:49"
+ },
+ {
+  "fact": "加载人设卡聊天历史时 JSON 解析失败返回空列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt:72"
+ },
+ {
+  "fact": "PersonaCardChatHistoryManager.clearAllChatHistory 清空整个 DataStore 的所有聊天历史。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt:103"
+ },
+ {
+  "fact": "PersonaCardChatHistoryManager 为人设卡生成界面提供每角色卡独立的对话历史槽位。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PersonaCardChatHistoryManager.kt:18"
+ },
+ {
+  "fact": "WaifuMessageProcessor 是 object 单例，类注释明确其职责是把 AI 回复按句号分割并模拟逐句发送。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:22"
+ },
+ {
+  "fact": "streamSegmentsWithTypingQueue 把分句结果送入无界 Channel 队列，按打字机延迟逐句 emit 给上游。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:194"
+ },
+ {
+  "fact": "calculateTypingDelayMs：首句、空内容或延迟≤0 时返回 0，即首句不等待。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:185"
+ },
+ {
+  "fact": "单句打字延迟 = 句长×每字符延迟，并以 MAX_TYPING_DELAY_MS = 3000ms 为上限。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:191"
+ },
+ {
+  "fact": "分句前用 {WAIFUENTITY:n} 占位符保护 Markdown 图片/链接、URL 和邮箱，切完再还原，避免把链接从中间切断。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:27"
+ },
+ {
+  "fact": "代码块、表格、LaTeX 块被标记为受保护（isProtected），整块作为一个 segment 发出、不拆句。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:881"
+ },
+ {
+  "fact": "流式分句快照若短于已发出的句子、或前缀发生变化，直接丢弃本次快照，已发出的句子不回滚。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:75"
+ },
+ {
+  "fact": "separateEmotionAndText 把 <emotion> 标签转成 Markdown 图片 segment（方括号内为情绪名、file:// 表情路径）单独发送。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:950"
+ },
+ {
+  "fact": "表情匹配只查自定义表情；未命中时 getRandomEmojiPath 返回 null 并打 warning 日志，该 <emotion> 标签被直接丢弃。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:1037"
+ },
+ {
+  "fact": "cleanContentForWaifu 剥离 thinking 内容、状态/工具/工具结果/emotion/XML 标签和 Markdown 标记，只留纯文本。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:766"
+ },
+ {
+  "fact": "AIForegroundService 的 AI 回复通知用 cleanContentForWaifu 清洗后显示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:329"
+ },
+ {
+  "fact": "ChatViewModel 的 TTS 朗读在发音前用 cleanContentForWaifu 清洗文本。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:3028"
+ },
+ {
+  "fact": "Waifu 模式开启时，ConversationService 在系统提示词末尾追加 [Extra Rules] 规则块。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:593"
+ },
+ {
+  "fact": "buildWaifuRulesText 按开关组装规则：表情规则（情绪列表动态取自当前卡的表情分组）、自拍规则、自定义提示词。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:974"
+ },
+ {
+  "fact": "waifuEmotionRule 要求模型在每句末用 <emotion> 标签标注情绪，情绪名来自可用分组列表。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:462"
+ },
+ {
+  "fact": "sendMessageToAIStream 里 effectiveWaifuMode = waifuMode == true：只有模型显式传 waifu=true 才走分句+打字机管线。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:2078"
+ },
+ {
+  "fact": "waifu 工具参数非法（非 true/false）时直接返回 Invalid parameter 错误，不进入流式。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:2061"
+ },
+ {
+  "fact": "合并发送开启时，AIChatScreen 把用户每条消息先加入 waifuMergeBuffer 并即时显示为可见消息，等待间隔后合并为一条真正发送。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1849"
+ },
+ {
+  "fact": "合并发送的等待由 LaunchedEffect 实现：delay(waifuMergeSendDelayMs) 且输入空闲后才合并发送；任一开关关闭则清空 buffer。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1663"
+ },
+ {
+  "fact": "WaifuModeSettingsScreen 的 saveSettings 包装器：每次保存后把当前 Waifu 配置同步写回当前卡/群组的专属前缀键。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:76"
+ },
+ {
+  "fact": "合并发送间隔滑块范围 500~10000ms，打字延迟滑块范围 200~1000ms/字符。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:286"
+ }
+]

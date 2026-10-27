@@ -1,0 +1,5344 @@
+{
+  "schemaVersion": 1,
+  "repository": "jasonluoxray/Operit-wiki",
+  "revision": "5e2f848db47d352754ba614c2138fa03b9c5ce93",
+  "upstreamUpdated": "2026-10-06 17:59 UTC",
+  "license": "MIT",
+  "copyright": "Copyright (c) 2026 luojiaping",
+  "sourceLanguage": "zh",
+  "counts": {
+    "entries": 126,
+    "articles": 124,
+    "facts": 14586,
+    "findings": 1033,
+    "links": 187
+  },
+  "chapters": [
+    {
+      "title": "架构总览",
+      "entries": [
+        "batch-02/arch-overview"
+      ]
+    },
+    {
+      "title": "工具系统",
+      "entries": [
+        "batch-02/core-tools",
+        "batch-02/core-tools-registry",
+        "batch-03/core-tools-standard-filesystem",
+        "batch-03/core-tools-standard-webchat",
+        "batch-03/core-tools-standard-system",
+        "batch-03/core-tools-websession-browser",
+        "batch-03/core-tools-websession-userscript",
+        "batch-03/core-tools-execmodes",
+        "batch-03/core-tools-jsengine",
+        "batch-03/core-tools-jstools",
+        "batch-04/core-tools-packtool",
+        "batch-04/core-tools-system",
+        "batch-04/core-tools-misc"
+      ]
+    },
+    {
+      "title": "聊天与消息",
+      "entries": [
+        "batch-02/core-chat",
+        "batch-04/core-chat-runtime"
+      ]
+    },
+    {
+      "title": "云端 Chat API",
+      "entries": [
+        "batch-02/api-chat",
+        "batch-04/api-chat-openai",
+        "batch-04/api-chat-gemini",
+        "batch-04/api-chat-claude",
+        "batch-04/api-chat-deepseek",
+        "batch-04/api-chat-mnn",
+        "batch-04/api-chat-openai-responses",
+        "batch-04/api-chat-kimi",
+        "batch-04/api-chat-opencode",
+        "batch-04/api-chat-llama",
+        "batch-04/api-chat-codex",
+        "batch-04/api-chat-openrouter",
+        "batch-04/api-chat-qwen",
+        "batch-04/api-chat-mistral",
+        "batch-04/api-chat-nvidia",
+        "batch-04/api-chat-xai",
+        "batch-04/api-chat-doubao",
+        "batch-04/api-chat-mimo",
+        "batch-04/api-chat-ollama",
+        "batch-04/api-chat-nousportal",
+        "batch-04/api-chat-fourrouter",
+        "batch-04/api-chat-keypool",
+        "batch-04/api-chat-providers-base",
+        "batch-04/api-chat-thinking",
+        "batch-04/api-chat-params",
+        "batch-04/api-chat-errors",
+        "batch-04/api-chat-tools-stream",
+        "batch-04/api-chat-tokens",
+        "batch-04/api-chat-media",
+        "batch-04/api-chat-runtime",
+        "batch-04/api-chat-enhance",
+        "batch-04/api-chat-memory"
+      ]
+    },
+    {
+      "title": "语音服务",
+      "entries": [
+        "batch-04/api-speech",
+        "batch-04/api-voice"
+      ]
+    },
+    {
+      "title": "数据层",
+      "entries": [
+        "batch-02/data-model",
+        "batch-04/data-room-db",
+        "batch-04/data-models",
+        "batch-05/data-repo-memory",
+        "batch-05/data-repo-chat",
+        "batch-05/data-repo-misc",
+        "batch-05/data-prefs-model",
+        "batch-05/data-prefs-character",
+        "batch-05/data-prefs-app",
+        "batch-05/data-stats-pricing",
+        "batch-05/data-backup-export",
+        "batch-05/data-mcp",
+        "batch-05/data-api-oauth",
+        "batch-05/data-update-announce"
+      ]
+    },
+    {
+      "title": "引擎其他",
+      "entries": [
+        "batch-05/core-avatar",
+        "batch-05/core-config-prompts",
+        "batch-05/core-app-workflow",
+        "batch-05/core-subpack"
+      ]
+    },
+    {
+      "title": "系统服务与集成",
+      "entries": [
+        "batch-05/services-chatservice",
+        "batch-06/services-system",
+        "batch-06/plugins",
+        "batch-06/integrations-webchat",
+        "batch-06/integrations-external",
+        "batch-06/widget-provider"
+      ]
+    },
+    {
+      "title": "工具函数库",
+      "entries": [
+        "batch-06/util-file-media",
+        "batch-06/util-text-chat",
+        "batch-06/util-stream-core",
+        "batch-06/util-stream-parse",
+        "batch-06/util-system",
+        "batch-06/util-search"
+      ]
+    },
+    {
+      "title": "用户界面",
+      "entries": [
+        "batch-06/ui-chat-screen",
+        "batch-06/ui-chat-components",
+        "batch-06/ui-chat-input",
+        "batch-06/ui-chat-styles",
+        "batch-06/ui-chat-parts",
+        "batch-07/ui-chat-lazylist",
+        "batch-07/ui-chat-workspace",
+        "batch-07/ui-chat-editor",
+        "batch-07/ui-settings-model",
+        "batch-07/ui-settings-theme",
+        "batch-07/ui-settings-chat",
+        "batch-07/ui-settings-misc",
+        "batch-08/ui-packages-manager",
+        "batch-08/ui-packages-market",
+        "batch-08/ui-packages-publish",
+        "batch-08/ui-packages-mcp",
+        "batch-08/ui-toolbox-filemanager",
+        "batch-08/ui-toolbox-dev",
+        "batch-08/ui-toolbox-apps",
+        "batch-08/ui-common-dsl",
+        "batch-08/ui-common-markdown",
+        "batch-08/ui-main",
+        "batch-09/ui-floating",
+        "batch-09/ui-memory",
+        "batch-09/ui-tokenstats",
+        "batch-09/ui-workflow",
+        "batch-09/ui-websession",
+        "batch-09/ui-assistant",
+        "batch-09/ui-demo",
+        "batch-09/ui-permission",
+        "batch-09/ui-about",
+        "batch-09/ui-startup"
+      ]
+    },
+    {
+      "title": "附录",
+      "entries": [
+        "batch-09/appendix-tests-unit-api-core",
+        "batch-09/appendix-tests-unit-data",
+        "batch-09/appendix-tests-unit-ui-util",
+        "batch-09/appendix-tests-android",
+        "batch-09/appendix-js-package-dev",
+        "batch-09/appendix-plugin-capabilities",
+        "batch-09/appendix-plugin-contract",
+        "batch-09/appendix-plugin-dev-guide",
+        "batch-09/appendix-plugin-examples",
+        "batch-09/appendix-toolpkg-contract",
+        "batch-10/appendix-room-field-spec",
+        "batch-10/appendix-uncovered-native"
+      ]
+    },
+    {
+      "title": "编写大纲与维护资料",
+      "entries": [
+        "batch-00/outline-v3",
+        "batch-00/outline"
+      ]
+    }
+  ],
+  "pages": [
+    {
+      "id": "batch-00/outline-v3",
+      "title": "Operit-wiki 大纲 v3（草案）",
+      "chapter": "编写大纲与维护资料",
+      "module": "meta",
+      "status": "approved",
+      "updated": "2026-09-30",
+      "summary": "大纲 v3 已批准（2026-09-30 用户确认\"通过\"）：11 章 116 页，覆盖 app 1359/1362 kt；21 供应商独立页 + 7 跨供应商机制页；替代 outline-v2。流水线 Day 1 启动。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 0,
+      "issue": 7,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "outline-v3.status.json",
+          "path": "artifacts/batch-00/outline-v3.status.json"
+        }
+      ],
+      "original": "original/batch-00/outline-v3.md",
+      "originalSha256": "2e777fbd161466fb74caf4ecd71d2204447a3747b29e3a75d5f8882474b34975",
+      "contentSha256": "e29975eddce5ad358f3583543ebab553c3f6ecd910694d6383b058516798c304"
+    },
+    {
+      "id": "batch-00/outline",
+      "title": "Operit-wiki 大纲（定稿）",
+      "chapter": "编写大纲与维护资料",
+      "module": "meta",
+      "status": "approved",
+      "updated": "2026-09-30",
+      "summary": "大纲 v2 定稿：8 章 27 页（llm-local 页删除，mnn/llama/mmd 停止维护不再覆盖），2026-09-30 用户在 Issue #1 确认无问题，git tag outline-v2。",
+      "sourceCommit": "9d210f401858b14d1444477edca3f47610378576",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 0,
+      "issue": 1,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "outline.status.json",
+          "path": "artifacts/batch-00/outline.status.json"
+        }
+      ],
+      "original": "original/batch-00/outline.md",
+      "originalSha256": "ec6273c10adf20a338f74384fcee5d317caa8a7d2613cbac3d7d268e2909c1a6",
+      "contentSha256": "75ae5c8274dcdcea0d01154c016b078ad0c48dc82c1507851965837a24a435ab"
+    },
+    {
+      "id": "batch-02/api-chat",
+      "title": "云端 Chat API 接入（总览）",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "云端 Chat API 接入（总览，v3 回炉重造）：ModelConfigData 配置维度全览、ApiProviderType 39 供应商、FunctionType 11 功能类型、AIServiceFactory 装配调用链、本章 31 个细页地图索引。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 112,
+      "issue": 5,
+      "links": [
+        "batch-02/core-tools-registry",
+        "batch-04/api-chat-claude",
+        "batch-04/api-chat-codex",
+        "batch-04/api-chat-deepseek",
+        "batch-04/api-chat-doubao",
+        "batch-04/api-chat-enhance",
+        "batch-04/api-chat-errors",
+        "batch-04/api-chat-fourrouter",
+        "batch-04/api-chat-gemini",
+        "batch-04/api-chat-keypool",
+        "batch-04/api-chat-kimi",
+        "batch-04/api-chat-llama",
+        "batch-04/api-chat-media",
+        "batch-04/api-chat-memory",
+        "batch-04/api-chat-mimo",
+        "batch-04/api-chat-mistral",
+        "batch-04/api-chat-mnn",
+        "batch-04/api-chat-nousportal",
+        "batch-04/api-chat-nvidia",
+        "batch-04/api-chat-ollama",
+        "batch-04/api-chat-openai",
+        "batch-04/api-chat-openai-responses",
+        "batch-04/api-chat-opencode",
+        "batch-04/api-chat-openrouter",
+        "batch-04/api-chat-params",
+        "batch-04/api-chat-providers-base",
+        "batch-04/api-chat-qwen",
+        "batch-04/api-chat-runtime",
+        "batch-04/api-chat-thinking",
+        "batch-04/api-chat-tokens",
+        "batch-04/api-chat-tools-stream",
+        "batch-04/api-chat-xai"
+      ],
+      "artifacts": [
+        {
+          "name": "api-chat.facts.json",
+          "path": "artifacts/batch-02/api-chat.facts.json"
+        },
+        {
+          "name": "api-chat.lint.md",
+          "path": "artifacts/batch-02/api-chat.lint.md"
+        },
+        {
+          "name": "api-chat.quality.json",
+          "path": "artifacts/batch-02/api-chat.quality.json"
+        },
+        {
+          "name": "api-chat.status.json",
+          "path": "artifacts/batch-02/api-chat.status.json"
+        }
+      ],
+      "original": "original/batch-02/api-chat.md",
+      "originalSha256": "8e58fce9558f8efde03bd89aa68e407b04217dbdbd10db41830a093b2985232b",
+      "contentSha256": "b22fe6b9fd9b72920c588f5bd34886e627c2031b03793f7db0a9715cbc9876ff"
+    },
+    {
+      "id": "batch-02/arch-overview",
+      "title": "整体架构（总览）",
+      "chapter": "架构总览",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "整体架构（总览）：Gradle 9 模块划分与依赖方向、构建变体与签名轮换体系、构建前置资产同步与原生库校验、JniBridge/FbxNative/NativeRipgrep 三种 JNI 桥接、全站 11 章 116 页地图。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 82,
+      "issue": 2,
+      "links": [
+        "batch-02/api-chat",
+        "batch-02/core-chat",
+        "batch-02/core-tools",
+        "batch-02/core-tools-registry",
+        "batch-02/data-model",
+        "batch-03/core-tools-execmodes",
+        "batch-03/core-tools-jsengine",
+        "batch-03/core-tools-jstools",
+        "batch-03/core-tools-standard-filesystem",
+        "batch-03/core-tools-standard-system",
+        "batch-03/core-tools-standard-webchat",
+        "batch-03/core-tools-websession-browser",
+        "batch-03/core-tools-websession-userscript",
+        "batch-04/api-chat-claude",
+        "batch-04/api-chat-codex",
+        "batch-04/api-chat-deepseek",
+        "batch-04/api-chat-doubao",
+        "batch-04/api-chat-enhance",
+        "batch-04/api-chat-errors",
+        "batch-04/api-chat-fourrouter",
+        "batch-04/api-chat-gemini",
+        "batch-04/api-chat-keypool",
+        "batch-04/api-chat-kimi",
+        "batch-04/api-chat-llama",
+        "batch-04/api-chat-media",
+        "batch-04/api-chat-memory",
+        "batch-04/api-chat-mimo",
+        "batch-04/api-chat-mistral",
+        "batch-04/api-chat-mnn",
+        "batch-04/api-chat-nousportal",
+        "batch-04/api-chat-nvidia",
+        "batch-04/api-chat-ollama",
+        "batch-04/api-chat-openai",
+        "batch-04/api-chat-openai-responses",
+        "batch-04/api-chat-opencode",
+        "batch-04/api-chat-openrouter",
+        "batch-04/api-chat-params",
+        "batch-04/api-chat-providers-base",
+        "batch-04/api-chat-qwen",
+        "batch-04/api-chat-runtime",
+        "batch-04/api-chat-thinking",
+        "batch-04/api-chat-tokens",
+        "batch-04/api-chat-tools-stream",
+        "batch-04/api-chat-xai",
+        "batch-04/api-speech",
+        "batch-04/api-voice",
+        "batch-04/core-chat-runtime",
+        "batch-04/core-tools-misc",
+        "batch-04/core-tools-packtool",
+        "batch-04/core-tools-system",
+        "batch-04/data-models",
+        "batch-04/data-room-db",
+        "batch-05/core-app-workflow",
+        "batch-05/core-avatar",
+        "batch-05/core-config-prompts",
+        "batch-05/core-subpack",
+        "batch-05/data-api-oauth",
+        "batch-05/data-backup-export",
+        "batch-05/data-mcp",
+        "batch-05/data-prefs-app",
+        "batch-05/data-prefs-character",
+        "batch-05/data-prefs-model",
+        "batch-05/data-repo-chat",
+        "batch-05/data-repo-memory",
+        "batch-05/data-repo-misc",
+        "batch-05/data-stats-pricing",
+        "batch-05/data-update-announce",
+        "batch-05/services-chatservice",
+        "batch-06/integrations-external",
+        "batch-06/integrations-webchat",
+        "batch-06/plugins",
+        "batch-06/services-system",
+        "batch-06/ui-chat-components",
+        "batch-06/ui-chat-input",
+        "batch-06/ui-chat-parts",
+        "batch-06/ui-chat-screen",
+        "batch-06/ui-chat-styles",
+        "batch-06/util-file-media",
+        "batch-06/util-search",
+        "batch-06/util-stream-core",
+        "batch-06/util-stream-parse",
+        "batch-06/util-system",
+        "batch-06/util-text-chat",
+        "batch-06/widget-provider",
+        "batch-07/ui-chat-editor",
+        "batch-07/ui-chat-lazylist",
+        "batch-07/ui-chat-workspace",
+        "batch-07/ui-settings-chat",
+        "batch-07/ui-settings-misc",
+        "batch-07/ui-settings-model",
+        "batch-07/ui-settings-theme",
+        "batch-08/ui-common-dsl",
+        "batch-08/ui-common-markdown",
+        "batch-08/ui-main",
+        "batch-08/ui-packages-manager",
+        "batch-08/ui-packages-market",
+        "batch-08/ui-packages-mcp",
+        "batch-08/ui-packages-publish",
+        "batch-08/ui-toolbox-apps",
+        "batch-08/ui-toolbox-dev",
+        "batch-08/ui-toolbox-filemanager",
+        "batch-09/appendix-js-package-dev",
+        "batch-09/appendix-plugin-capabilities",
+        "batch-09/appendix-plugin-contract",
+        "batch-09/appendix-plugin-dev-guide",
+        "batch-09/appendix-plugin-examples",
+        "batch-09/appendix-tests-android",
+        "batch-09/appendix-tests-unit-api-core",
+        "batch-09/appendix-tests-unit-data",
+        "batch-09/appendix-tests-unit-ui-util",
+        "batch-09/appendix-toolpkg-contract",
+        "batch-09/ui-about",
+        "batch-09/ui-assistant",
+        "batch-09/ui-demo",
+        "batch-09/ui-floating",
+        "batch-09/ui-memory",
+        "batch-09/ui-permission",
+        "batch-09/ui-startup",
+        "batch-09/ui-tokenstats",
+        "batch-09/ui-websession",
+        "batch-09/ui-workflow",
+        "batch-10/appendix-uncovered-native"
+      ],
+      "artifacts": [
+        {
+          "name": "arch-overview.facts.json",
+          "path": "artifacts/batch-02/arch-overview.facts.json"
+        },
+        {
+          "name": "arch-overview.lint.md",
+          "path": "artifacts/batch-02/arch-overview.lint.md"
+        },
+        {
+          "name": "arch-overview.quality.json",
+          "path": "artifacts/batch-02/arch-overview.quality.json"
+        },
+        {
+          "name": "arch-overview.status.json",
+          "path": "artifacts/batch-02/arch-overview.status.json"
+        }
+      ],
+      "original": "original/batch-02/arch-overview.md",
+      "originalSha256": "3a2121ac56718fa2274ca129c007d8ca7ec0a5d5d2be11d9fb030805bfa69e65",
+      "contentSha256": "5d52897e3fa11285ea840dea6ccf09387cda49a30d4a2e7931d8d68e7a20a8a3"
+    },
+    {
+      "id": "batch-02/core-chat",
+      "title": "聊天与消息处理（总览）",
+      "chapter": "聊天与消息",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "聊天与消息处理（总览）：MessageProcessingDelegate 每会话导演 + AIMessageManager 无状态信使 + ChatHistoryDelegate 档案馆 + TokenStatisticsDelegate 记账员；主链路 sendUserMessage→组装落库→插件接管/AI流式→修订收集→落库记账；走查 4 条（建议 3/警告 1）",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 134,
+      "issue": 4,
+      "links": [
+        "batch-04/api-chat-memory",
+        "batch-04/api-chat-runtime",
+        "batch-04/api-chat-tokens",
+        "batch-04/core-chat-runtime",
+        "batch-05/data-repo-chat"
+      ],
+      "artifacts": [
+        {
+          "name": "core-chat.facts.json",
+          "path": "artifacts/batch-02/core-chat.facts.json"
+        },
+        {
+          "name": "core-chat.lint.md",
+          "path": "artifacts/batch-02/core-chat.lint.md"
+        },
+        {
+          "name": "core-chat.quality.json",
+          "path": "artifacts/batch-02/core-chat.quality.json"
+        },
+        {
+          "name": "core-chat.status.json",
+          "path": "artifacts/batch-02/core-chat.status.json"
+        }
+      ],
+      "original": "original/batch-02/core-chat.md",
+      "originalSha256": "746fcb6ae27e047a18bbb2a65f67b9158d88069e7837db6be16aafa2c9404b89",
+      "contentSha256": "668d6278f53676b94afaf10f96b9e43f9c1f5e8fd55742fcf4d8fb0d422be230"
+    },
+    {
+      "id": "batch-02/core-tools-registry",
+      "title": "工具注册与执行框架",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-09-30",
+      "summary": "工具注册与执行框架：AIToolHandler 注册表与执行调用链、Hook 机制、执行限额、进度总线、ToolPackage 数据模型、ToolResultData 结果类型体系、代理调用。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 79,
+      "issue": 9,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-registry.facts.json",
+          "path": "artifacts/batch-02/core-tools-registry.facts.json"
+        },
+        {
+          "name": "core-tools-registry.lint.md",
+          "path": "artifacts/batch-02/core-tools-registry.lint.md"
+        },
+        {
+          "name": "core-tools-registry.quality.json",
+          "path": "artifacts/batch-02/core-tools-registry.quality.json"
+        },
+        {
+          "name": "core-tools-registry.status.json",
+          "path": "artifacts/batch-02/core-tools-registry.status.json"
+        }
+      ],
+      "original": "original/batch-02/core-tools-registry.md",
+      "originalSha256": "d5fb88684ba44510f98be2f5359678001abbabf4363e1961e371339b8e581044",
+      "contentSha256": "a91ff811d0655c0dbf07d7504e804df86f99507bf2290c0e4f833237f44ca548"
+    },
+    {
+      "id": "batch-02/core-tools",
+      "title": "工具系统（总览）",
+      "chapter": "工具系统",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "工具系统（总览）：AITool/ToolParameter/ToolInvocation/ToolResult 数据模型与 ToolExecutionManager 执行编排（解析→三关拦截→并行/串行执行→有序聚合）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 118,
+      "issue": 3,
+      "links": [
+        "batch-02/api-chat",
+        "batch-02/core-tools-registry",
+        "batch-02/data-model",
+        "batch-03/core-tools-execmodes",
+        "batch-03/core-tools-jsengine",
+        "batch-03/core-tools-jstools",
+        "batch-03/core-tools-standard-filesystem",
+        "batch-03/core-tools-standard-system",
+        "batch-03/core-tools-standard-webchat",
+        "batch-03/core-tools-websession-browser",
+        "batch-03/core-tools-websession-userscript",
+        "batch-04/core-tools-misc",
+        "batch-04/core-tools-packtool",
+        "batch-04/core-tools-system"
+      ],
+      "artifacts": [
+        {
+          "name": "core-tools.facts.json",
+          "path": "artifacts/batch-02/core-tools.facts.json"
+        },
+        {
+          "name": "core-tools.lint.md",
+          "path": "artifacts/batch-02/core-tools.lint.md"
+        },
+        {
+          "name": "core-tools.quality.json",
+          "path": "artifacts/batch-02/core-tools.quality.json"
+        },
+        {
+          "name": "core-tools.status.json",
+          "path": "artifacts/batch-02/core-tools.status.json"
+        }
+      ],
+      "original": "original/batch-02/core-tools.md",
+      "originalSha256": "85d9be817b2fb87298eac67d4071b6af511799faa18b817c92477e6d3507e4ec",
+      "contentSha256": "539c0e6059fa343e6283cfe8eadbc77f86111d21b98bbc12394f567dab13ed5f"
+    },
+    {
+      "id": "batch-02/data-model",
+      "title": "数据模型（总览）",
+      "chapter": "数据层",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "数据模型（总览）：Room AppDatabase（版本 21、5 实体、5 DAO、20 级迁移链、token 用量账本）与 ObjectBox ObjectBoxManager（按 profile 分库）的分工；数据六类（聊天/记忆/配置/统计/实体/备份）的存储地图与读写入口；输入→处理→输出三条调用链；13 个数据章细页索引。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 64,
+      "issue": 6,
+      "links": [
+        "batch-02/core-tools-registry",
+        "batch-04/data-models",
+        "batch-04/data-room-db",
+        "batch-05/data-api-oauth",
+        "batch-05/data-backup-export",
+        "batch-05/data-mcp",
+        "batch-05/data-prefs-app",
+        "batch-05/data-prefs-character",
+        "batch-05/data-prefs-model",
+        "batch-05/data-repo-chat",
+        "batch-05/data-repo-memory",
+        "batch-05/data-repo-misc",
+        "batch-05/data-stats-pricing",
+        "batch-05/data-update-announce"
+      ],
+      "artifacts": [
+        {
+          "name": "data-model.facts.json",
+          "path": "artifacts/batch-02/data-model.facts.json"
+        },
+        {
+          "name": "data-model.lint.md",
+          "path": "artifacts/batch-02/data-model.lint.md"
+        },
+        {
+          "name": "data-model.quality.json",
+          "path": "artifacts/batch-02/data-model.quality.json"
+        },
+        {
+          "name": "data-model.status.json",
+          "path": "artifacts/batch-02/data-model.status.json"
+        }
+      ],
+      "original": "original/batch-02/data-model.md",
+      "originalSha256": "308fd44e4665fb0385e025f1efe3ae656b5a36830638504008b86f94e6516b2c",
+      "contentSha256": "833530784a4085fdb0bc16c518007f371aff9d0296b851b44b88eca985157da7"
+    },
+    {
+      "id": "batch-03/core-tools-execmodes",
+      "title": "工具执行模式（Debugger/Root/无障碍/Admin）",
+      "chapter": "工具系统",
+      "module": "工具系统",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "工具执行模式：ToolGetter 按 ROOT/ADMIN/DEBUGGER/ACCESSIBILITY/STANDARD 五级分发，Standard→Accessibility→Debugger→Admin→Root 继承链的行为差异与三级降级策略（linux/SAF/内部路径回退 super），PathValidator 路径校验规则（Android 要求 / 开头，Linux 允许 / 或 ~）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 81,
+      "issue": 16,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-execmodes.critic.md",
+          "path": "artifacts/batch-03/core-tools-execmodes.critic.md"
+        },
+        {
+          "name": "core-tools-execmodes.facts.json",
+          "path": "artifacts/batch-03/core-tools-execmodes.facts.json"
+        },
+        {
+          "name": "core-tools-execmodes.lint.md",
+          "path": "artifacts/batch-03/core-tools-execmodes.lint.md"
+        },
+        {
+          "name": "core-tools-execmodes.quality.json",
+          "path": "artifacts/batch-03/core-tools-execmodes.quality.json"
+        },
+        {
+          "name": "core-tools-execmodes.status.json",
+          "path": "artifacts/batch-03/core-tools-execmodes.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-execmodes.md",
+      "originalSha256": "719b7434dda4afd7b48f180aa64e490a7b9092e6b45517b15905c316c17e3b2f",
+      "contentSha256": "cf82d57dd97bbf4895f1951a5fdb95cc97183c8d97bf4b8bca3735945aec4d0a"
+    },
+    {
+      "id": "batch-03/core-tools-jsengine",
+      "title": "JS 引擎与 Java 互操作桥",
+      "chapter": "工具系统",
+      "module": "工具系统",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "JS 引擎与 Java 互操作桥：QuickJS 引擎生命周期、JS 执行会话与超时取消、NativeInterface 方法门、JS↔Java 对象桥（代理+句柄+JSON 信封）、18 个 bootstrap 模块、Compose DSL 运行时、外部 dex/jar 隔离加载。146 条 facts，走查 10 条（高危 1/警告 4/建议 5）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 147,
+      "issue": 21,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-jsengine.critic.md",
+          "path": "artifacts/batch-03/core-tools-jsengine.critic.md"
+        },
+        {
+          "name": "core-tools-jsengine.facts.json",
+          "path": "artifacts/batch-03/core-tools-jsengine.facts.json"
+        },
+        {
+          "name": "core-tools-jsengine.lint.md",
+          "path": "artifacts/batch-03/core-tools-jsengine.lint.md"
+        },
+        {
+          "name": "core-tools-jsengine.quality.json",
+          "path": "artifacts/batch-03/core-tools-jsengine.quality.json"
+        },
+        {
+          "name": "core-tools-jsengine.status.json",
+          "path": "artifacts/batch-03/core-tools-jsengine.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-jsengine.md",
+      "originalSha256": "e76ed1de6b5ec885ecf8f8b4db3b52a85bd9052fa466996b1615f5fcc4680f45",
+      "contentSha256": "056bb577e6367da2b89fcc8b5e61532e3d2be5e2a6bf32c6b1df5bac4ddaaa2b"
+    },
+    {
+      "id": "batch-03/core-tools-jstools",
+      "title": "JS 工具脚本执行与注册",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "JS 工具脚本执行与注册：JsToolManager 调度与引擎池、执行脚本组装与 __operitExecuteScriptFunction 入口、ToolPkg 注册桥接与 23 个注册桶、结果判定协议、双层超时、执行追踪、广播触发执行、JS 侧 Tools 门面。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 110,
+      "issue": 20,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-jstools.critic.md",
+          "path": "artifacts/batch-03/core-tools-jstools.critic.md"
+        },
+        {
+          "name": "core-tools-jstools.facts.json",
+          "path": "artifacts/batch-03/core-tools-jstools.facts.json"
+        },
+        {
+          "name": "core-tools-jstools.lint.md",
+          "path": "artifacts/batch-03/core-tools-jstools.lint.md"
+        },
+        {
+          "name": "core-tools-jstools.quality.json",
+          "path": "artifacts/batch-03/core-tools-jstools.quality.json"
+        },
+        {
+          "name": "core-tools-jstools.status.json",
+          "path": "artifacts/batch-03/core-tools-jstools.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-jstools.md",
+      "originalSha256": "38c8dda3b29551330c4a60c162d4abea0649cccc18db7215b8689354aa218ff6",
+      "contentSha256": "ea038eaaeee3c4dfd1ca54ccb21ccdcb5d4be14ef2b352fe0f5957bcf34edf08"
+    },
+    {
+      "id": "batch-03/core-tools-standard-filesystem",
+      "title": "标准工具·文件系统",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "标准工具·文件系统：24 个文件工具经 StandardFileSystemTools 统一入口、三套环境路由（android/linux/repo:SAF）、读侧截断与特殊文件处理、写侧默认覆写、ZipSlip 防护、SAF/Linux 限制；走查 8 条（高危 3/警告 4/建议 1）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 45,
+      "issue": 17,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-standard-filesystem.critic.md",
+          "path": "artifacts/batch-03/core-tools-standard-filesystem.critic.md"
+        },
+        {
+          "name": "core-tools-standard-filesystem.facts.json",
+          "path": "artifacts/batch-03/core-tools-standard-filesystem.facts.json"
+        },
+        {
+          "name": "core-tools-standard-filesystem.lint.md",
+          "path": "artifacts/batch-03/core-tools-standard-filesystem.lint.md"
+        },
+        {
+          "name": "core-tools-standard-filesystem.quality.json",
+          "path": "artifacts/batch-03/core-tools-standard-filesystem.quality.json"
+        },
+        {
+          "name": "core-tools-standard-filesystem.status.json",
+          "path": "artifacts/batch-03/core-tools-standard-filesystem.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-standard-filesystem.md",
+      "originalSha256": "a84e6df29a7cddef10054256859a749c321d4a9ddea50869564abe0c8e9f666d",
+      "contentSha256": "9f02373120d3b803fb24ecc91ffb517c53b86568d0cfe65672a6af9c8a076183"
+    },
+    {
+      "id": "batch-03/core-tools-standard-system",
+      "title": "标准工具·系统操作/多媒体/UI",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "标准工具·系统操作/多媒体/UI：系统设置与应用管理、设备信息、Intent/广播、Shell/终端（会话复用/超时中断）、蓝牙/BLE（会话单例）、音乐播放（ExoPlayer）、FFmpeg、计算器、软件设置（模型配置/角色卡/沙盒包/语音服务/MCP 重启）、UI 自动化（标准版直接操作不可用，子 agent 循环与截图可用）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 134,
+      "issue": 19,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-standard-system.critic.md",
+          "path": "artifacts/batch-03/core-tools-standard-system.critic.md"
+        },
+        {
+          "name": "core-tools-standard-system.facts.json",
+          "path": "artifacts/batch-03/core-tools-standard-system.facts.json"
+        },
+        {
+          "name": "core-tools-standard-system.lint.md",
+          "path": "artifacts/batch-03/core-tools-standard-system.lint.md"
+        },
+        {
+          "name": "core-tools-standard-system.quality.json",
+          "path": "artifacts/batch-03/core-tools-standard-system.quality.json"
+        },
+        {
+          "name": "core-tools-standard-system.status.json",
+          "path": "artifacts/batch-03/core-tools-standard-system.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-standard-system.md",
+      "originalSha256": "a95fb4624996f0c1bd16f82bbed41b1b586ec99f83f78f1972fa1b7c3e452800",
+      "contentSha256": "543edb5d2803d4ce9457bbd8b8fdc36a5c0a5917e271a29a9fb0884821aa963a"
+    },
+    {
+      "id": "batch-03/core-tools-standard-webchat",
+      "title": "标准工具·浏览器/网络/聊天/工作流",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "标准工具·浏览器/网络/聊天/工作流：22 个 browser_* 会话操控、visit_web 一次性抓取、http_request/multipart_request/manage_cookies、15 个聊天管理工具、工作流 CRUD/patch/触发、12 个记忆查询与管理工具。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 83,
+      "issue": 22,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-standard-webchat.critic.md",
+          "path": "artifacts/batch-03/core-tools-standard-webchat.critic.md"
+        },
+        {
+          "name": "core-tools-standard-webchat.facts.json",
+          "path": "artifacts/batch-03/core-tools-standard-webchat.facts.json"
+        },
+        {
+          "name": "core-tools-standard-webchat.lint.md",
+          "path": "artifacts/batch-03/core-tools-standard-webchat.lint.md"
+        },
+        {
+          "name": "core-tools-standard-webchat.quality.json",
+          "path": "artifacts/batch-03/core-tools-standard-webchat.quality.json"
+        },
+        {
+          "name": "core-tools-standard-webchat.status.json",
+          "path": "artifacts/batch-03/core-tools-standard-webchat.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-standard-webchat.md",
+      "originalSha256": "f8b74e1a62570eac1d46a07c84db9b767921f586a8df4f490917142af98c4bcb",
+      "contentSha256": "f05a7389def4e00866207b675798c7bb4ec613469d3b6cbf1dc2da33a92fba78"
+    },
+    {
+      "id": "batch-03/core-tools-websession-browser",
+      "title": "网页会话·浏览器宿主",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "WebView 浏览器宿主：悬浮窗窗口形态（展开/收起小球/障眼布局）、视口挂载与缩放、WebView 配置与会话管理、页面执行（可访问性快照/动作结算/截图/表单输入）、下载管理（内联+多线程断点续传）、历史书签与权限桥。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 60,
+      "issue": 15,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-websession-browser.critic.md",
+          "path": "artifacts/batch-03/core-tools-websession-browser.critic.md"
+        },
+        {
+          "name": "core-tools-websession-browser.facts.json",
+          "path": "artifacts/batch-03/core-tools-websession-browser.facts.json"
+        },
+        {
+          "name": "core-tools-websession-browser.lint.md",
+          "path": "artifacts/batch-03/core-tools-websession-browser.lint.md"
+        },
+        {
+          "name": "core-tools-websession-browser.quality.json",
+          "path": "artifacts/batch-03/core-tools-websession-browser.quality.json"
+        },
+        {
+          "name": "core-tools-websession-browser.status.json",
+          "path": "artifacts/batch-03/core-tools-websession-browser.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-websession-browser.md",
+      "originalSha256": "186b25b8bd16de7b828f013888a0910022bc5c26b6bf75c370f7b98bb0a60d93",
+      "contentSha256": "a542fa95b62f61859994572c85ca550e4625eb393f94dca680f384dc710f51d3"
+    },
+    {
+      "id": "batch-03/core-tools-websession-userscript",
+      "title": "网页会话·用户脚本引擎",
+      "chapter": "工具系统",
+      "module": "core",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "Tampermonkey 式用户脚本引擎：元数据解析、URL 匹配（@match/@include/@exclude/@connect）、33 个 grant 能力注册表、JSON 文件存储（scripts/cache/state）、安装三入口、document-start 注入 + OperitUserscriptBridge RPC、GM.* 特权 API（cookie/XHR/通知/下载/标签页/webRequest 拦截改写）。走查 4 条：高危 1（桥接消息无来源与授权校验）、中 1（安装失败无回滚）、低 2。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 81,
+      "issue": 18,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-websession-userscript.critic.md",
+          "path": "artifacts/batch-03/core-tools-websession-userscript.critic.md"
+        },
+        {
+          "name": "core-tools-websession-userscript.facts.json",
+          "path": "artifacts/batch-03/core-tools-websession-userscript.facts.json"
+        },
+        {
+          "name": "core-tools-websession-userscript.lint.md",
+          "path": "artifacts/batch-03/core-tools-websession-userscript.lint.md"
+        },
+        {
+          "name": "core-tools-websession-userscript.quality.json",
+          "path": "artifacts/batch-03/core-tools-websession-userscript.quality.json"
+        },
+        {
+          "name": "core-tools-websession-userscript.status.json",
+          "path": "artifacts/batch-03/core-tools-websession-userscript.status.json"
+        }
+      ],
+      "original": "original/batch-03/core-tools-websession-userscript.md",
+      "originalSha256": "0f7862a0fd8a524149e4c3c847dd27e2bb3913164030ab70ef13ed10aa20c7ca",
+      "contentSha256": "6dd9f0006c9a89567cc9de55cb9cb0bcd5a5d5dc2d976699ccd9478930a13f08"
+    },
+    {
+      "id": "batch-04/api-chat-claude",
+      "title": "Claude 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "Claude 供应商：ClaudeProvider 历史序列化与 system 参数、XML tool call 桥接、prompt cache 断点、token 用量解析、thinking、OpenAI 兼容回退、重试/取消。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 126,
+      "issue": 29,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-claude.critic.md",
+          "path": "artifacts/batch-04/api-chat-claude.critic.md"
+        },
+        {
+          "name": "api-chat-claude.facts.json",
+          "path": "artifacts/batch-04/api-chat-claude.facts.json"
+        },
+        {
+          "name": "api-chat-claude.lint.md",
+          "path": "artifacts/batch-04/api-chat-claude.lint.md"
+        },
+        {
+          "name": "api-chat-claude.quality.json",
+          "path": "artifacts/batch-04/api-chat-claude.quality.json"
+        },
+        {
+          "name": "api-chat-claude.status.json",
+          "path": "artifacts/batch-04/api-chat-claude.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-claude.md",
+      "originalSha256": "3c51945c337834e5ebadecd91780bc0c92b986968642940cbdb3720e0c021a98",
+      "contentSha256": "dcd54c95b209b1bdadfe96f0e8a7d00e4e22f8f23b1a2b7db61d7b07c962b218"
+    },
+    {
+      "id": "batch-04/api-chat-codex",
+      "title": "Codex 供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 34,
+      "issue": 36,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-codex.critic.md",
+          "path": "artifacts/batch-04/api-chat-codex.critic.md"
+        },
+        {
+          "name": "api-chat-codex.facts.json",
+          "path": "artifacts/batch-04/api-chat-codex.facts.json"
+        },
+        {
+          "name": "api-chat-codex.lint.md",
+          "path": "artifacts/batch-04/api-chat-codex.lint.md"
+        },
+        {
+          "name": "api-chat-codex.quality.json",
+          "path": "artifacts/batch-04/api-chat-codex.quality.json"
+        },
+        {
+          "name": "api-chat-codex.status.json",
+          "path": "artifacts/batch-04/api-chat-codex.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-codex.md",
+      "originalSha256": "31f93fb3bcc9f5357e0556e8490c4d450e2d2336eccebb916b58d59fcd42ab55",
+      "contentSha256": "05ab1be3859c75889c7b5c236dae8c118e3f7b7c2d4ef06ac00cb8aeb692115e"
+    },
+    {
+      "id": "batch-04/api-chat-deepseek",
+      "title": "DeepSeek 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 81,
+      "issue": 30,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-deepseek.critic.md",
+          "path": "artifacts/batch-04/api-chat-deepseek.critic.md"
+        },
+        {
+          "name": "api-chat-deepseek.facts.json",
+          "path": "artifacts/batch-04/api-chat-deepseek.facts.json"
+        },
+        {
+          "name": "api-chat-deepseek.lint.md",
+          "path": "artifacts/batch-04/api-chat-deepseek.lint.md"
+        },
+        {
+          "name": "api-chat-deepseek.quality.json",
+          "path": "artifacts/batch-04/api-chat-deepseek.quality.json"
+        },
+        {
+          "name": "api-chat-deepseek.status.json",
+          "path": "artifacts/batch-04/api-chat-deepseek.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-deepseek.md",
+      "originalSha256": "59bb163e4e87124ad3b6d9e85694818a7ca821d6053649f1313651210bff13b8",
+      "contentSha256": "3eb7f5801b9274d624131402bdbd5aa4fdc96a1dcbed29a4932a8028d7777e10"
+    },
+    {
+      "id": "batch-04/api-chat-doubao",
+      "title": "豆包供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 11,
+      "issue": 42,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-doubao.critic.md",
+          "path": "artifacts/batch-04/api-chat-doubao.critic.md"
+        },
+        {
+          "name": "api-chat-doubao.facts.json",
+          "path": "artifacts/batch-04/api-chat-doubao.facts.json"
+        },
+        {
+          "name": "api-chat-doubao.lint.md",
+          "path": "artifacts/batch-04/api-chat-doubao.lint.md"
+        },
+        {
+          "name": "api-chat-doubao.quality.json",
+          "path": "artifacts/batch-04/api-chat-doubao.quality.json"
+        },
+        {
+          "name": "api-chat-doubao.status.json",
+          "path": "artifacts/batch-04/api-chat-doubao.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-doubao.md",
+      "originalSha256": "7d98ef2cda369795c000054da2a2a009e2b14ddce520e9cc792a1c59eaa52654",
+      "contentSha256": "caf595ac3292eb09c53c757fdf68e810b60cc62a316e934d763d5d492215152b"
+    },
+    {
+      "id": "batch-04/api-chat-enhance",
+      "title": "对话增强管线",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 171,
+      "issue": 56,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-enhance.critic.md",
+          "path": "artifacts/batch-04/api-chat-enhance.critic.md"
+        },
+        {
+          "name": "api-chat-enhance.facts.json",
+          "path": "artifacts/batch-04/api-chat-enhance.facts.json"
+        },
+        {
+          "name": "api-chat-enhance.lint.md",
+          "path": "artifacts/batch-04/api-chat-enhance.lint.md"
+        },
+        {
+          "name": "api-chat-enhance.quality.json",
+          "path": "artifacts/batch-04/api-chat-enhance.quality.json"
+        },
+        {
+          "name": "api-chat-enhance.status.json",
+          "path": "artifacts/batch-04/api-chat-enhance.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-enhance.md",
+      "originalSha256": "2dd410085cbef51582d0e8e0635d04346653071d7061135cf9eef528b8290996",
+      "contentSha256": "f2c1cae3791c9fc2320648727b90ff0c300e32068cbf7f623c1c33d83c75940a"
+    },
+    {
+      "id": "batch-04/api-chat-errors",
+      "title": "错误/限流/重试",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 32,
+      "issue": 51,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-errors.critic.md",
+          "path": "artifacts/batch-04/api-chat-errors.critic.md"
+        },
+        {
+          "name": "api-chat-errors.facts.json",
+          "path": "artifacts/batch-04/api-chat-errors.facts.json"
+        },
+        {
+          "name": "api-chat-errors.lint.md",
+          "path": "artifacts/batch-04/api-chat-errors.lint.md"
+        },
+        {
+          "name": "api-chat-errors.quality.json",
+          "path": "artifacts/batch-04/api-chat-errors.quality.json"
+        },
+        {
+          "name": "api-chat-errors.status.json",
+          "path": "artifacts/batch-04/api-chat-errors.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-errors.md",
+      "originalSha256": "c576938dfbfe66fd8342f4091f7dfd9d161085da4221c415ffcc6973dc8dd1ff",
+      "contentSha256": "79b26a8472ab6844353207ff6c8e598a9853d1fbb39ae75836958f3a55150164"
+    },
+    {
+      "id": "batch-04/api-chat-fourrouter",
+      "title": "FourRouter 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "FourRouter 供应商：11 条 facts，走查 1 条，lint 硬失败 0/警告 0。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 11,
+      "issue": 46,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-fourrouter.critic.md",
+          "path": "artifacts/batch-04/api-chat-fourrouter.critic.md"
+        },
+        {
+          "name": "api-chat-fourrouter.facts.json",
+          "path": "artifacts/batch-04/api-chat-fourrouter.facts.json"
+        },
+        {
+          "name": "api-chat-fourrouter.lint.md",
+          "path": "artifacts/batch-04/api-chat-fourrouter.lint.md"
+        },
+        {
+          "name": "api-chat-fourrouter.quality.json",
+          "path": "artifacts/batch-04/api-chat-fourrouter.quality.json"
+        },
+        {
+          "name": "api-chat-fourrouter.status.json",
+          "path": "artifacts/batch-04/api-chat-fourrouter.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-fourrouter.md",
+      "originalSha256": "642bf9656c3515d83b8acf6f09b2a9b2dd531591e2e6305159689d38f110975f",
+      "contentSha256": "6dd5f89afdfe1c5fa9faaa7bb4044eb02535951663079c4127bf3aa529353c38"
+    },
+    {
+      "id": "batch-04/api-chat-gemini",
+      "title": "Gemini 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 100,
+      "issue": 28,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-gemini.critic.md",
+          "path": "artifacts/batch-04/api-chat-gemini.critic.md"
+        },
+        {
+          "name": "api-chat-gemini.facts.json",
+          "path": "artifacts/batch-04/api-chat-gemini.facts.json"
+        },
+        {
+          "name": "api-chat-gemini.lint.md",
+          "path": "artifacts/batch-04/api-chat-gemini.lint.md"
+        },
+        {
+          "name": "api-chat-gemini.quality.json",
+          "path": "artifacts/batch-04/api-chat-gemini.quality.json"
+        },
+        {
+          "name": "api-chat-gemini.status.json",
+          "path": "artifacts/batch-04/api-chat-gemini.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-gemini.md",
+      "originalSha256": "85336c5b52b83143b4e5275d8ecad582d1a4683d404aaf6c50877bf6782e94f1",
+      "contentSha256": "469af586f65186b77931be3d4ed7a1d595b5874d7e95ae66d315cb6793948bfb"
+    },
+    {
+      "id": "batch-04/api-chat-keypool",
+      "title": "Key 池轮询（ApiKeyProvider）",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 42,
+      "issue": 47,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-keypool.critic.md",
+          "path": "artifacts/batch-04/api-chat-keypool.critic.md"
+        },
+        {
+          "name": "api-chat-keypool.facts.json",
+          "path": "artifacts/batch-04/api-chat-keypool.facts.json"
+        },
+        {
+          "name": "api-chat-keypool.lint.md",
+          "path": "artifacts/batch-04/api-chat-keypool.lint.md"
+        },
+        {
+          "name": "api-chat-keypool.quality.json",
+          "path": "artifacts/batch-04/api-chat-keypool.quality.json"
+        },
+        {
+          "name": "api-chat-keypool.status.json",
+          "path": "artifacts/batch-04/api-chat-keypool.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-keypool.md",
+      "originalSha256": "b826eaa4f2cfda66a9b6bb542dcb3b69de5557e625f42ebe49128fbf3c91c4aa",
+      "contentSha256": "e999c722dd5d74639dd299d5defff6f4cc43edb9478e0e2adc0bee49f156d920"
+    },
+    {
+      "id": "batch-04/api-chat-kimi",
+      "title": "Kimi 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 84,
+      "issue": 33,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-kimi.critic.md",
+          "path": "artifacts/batch-04/api-chat-kimi.critic.md"
+        },
+        {
+          "name": "api-chat-kimi.facts.json",
+          "path": "artifacts/batch-04/api-chat-kimi.facts.json"
+        },
+        {
+          "name": "api-chat-kimi.lint.md",
+          "path": "artifacts/batch-04/api-chat-kimi.lint.md"
+        },
+        {
+          "name": "api-chat-kimi.quality.json",
+          "path": "artifacts/batch-04/api-chat-kimi.quality.json"
+        },
+        {
+          "name": "api-chat-kimi.status.json",
+          "path": "artifacts/batch-04/api-chat-kimi.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-kimi.md",
+      "originalSha256": "43489d01a671fb64aeaf7cd6e46c853694ff4e09480d2533359378a9c6410be9",
+      "contentSha256": "64691e688185c061663c9ec6a35bcd418163f1345af3fbc50c21fe2237e64207"
+    },
+    {
+      "id": "batch-04/api-chat-llama",
+      "title": "Llama 端侧供应商（已停止维护）",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 46,
+      "issue": 35,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-llama.critic.md",
+          "path": "artifacts/batch-04/api-chat-llama.critic.md"
+        },
+        {
+          "name": "api-chat-llama.facts.json",
+          "path": "artifacts/batch-04/api-chat-llama.facts.json"
+        },
+        {
+          "name": "api-chat-llama.lint.md",
+          "path": "artifacts/batch-04/api-chat-llama.lint.md"
+        },
+        {
+          "name": "api-chat-llama.quality.json",
+          "path": "artifacts/batch-04/api-chat-llama.quality.json"
+        },
+        {
+          "name": "api-chat-llama.status.json",
+          "path": "artifacts/batch-04/api-chat-llama.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-llama.md",
+      "originalSha256": "5769a8cabf261022862fe41d9653090cba9c7578bc82d233b13f5893f003e181",
+      "contentSha256": "de5dac6e3a946c5fe228c019e43e98d87cde0c70dd6a969b1e76bc58e5490a54"
+    },
+    {
+      "id": "batch-04/api-chat-media",
+      "title": "多模态媒体链接与能力探测",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 26,
+      "issue": 54,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-media.critic.md",
+          "path": "artifacts/batch-04/api-chat-media.critic.md"
+        },
+        {
+          "name": "api-chat-media.facts.json",
+          "path": "artifacts/batch-04/api-chat-media.facts.json"
+        },
+        {
+          "name": "api-chat-media.lint.md",
+          "path": "artifacts/batch-04/api-chat-media.lint.md"
+        },
+        {
+          "name": "api-chat-media.quality.json",
+          "path": "artifacts/batch-04/api-chat-media.quality.json"
+        },
+        {
+          "name": "api-chat-media.status.json",
+          "path": "artifacts/batch-04/api-chat-media.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-media.md",
+      "originalSha256": "93cc3d9306855fc54d730191973d60f370a073c98fae16a16f2a7c0766bd214d",
+      "contentSha256": "4588a984af244287c370847fc2c0b48ed82bbb62f8bc75981122d9fbfb7807b3"
+    },
+    {
+      "id": "batch-04/api-chat-memory",
+      "title": "会话记忆与上下文总结",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 123,
+      "issue": 57,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-memory.critic.md",
+          "path": "artifacts/batch-04/api-chat-memory.critic.md"
+        },
+        {
+          "name": "api-chat-memory.facts.json",
+          "path": "artifacts/batch-04/api-chat-memory.facts.json"
+        },
+        {
+          "name": "api-chat-memory.lint.md",
+          "path": "artifacts/batch-04/api-chat-memory.lint.md"
+        },
+        {
+          "name": "api-chat-memory.quality.json",
+          "path": "artifacts/batch-04/api-chat-memory.quality.json"
+        },
+        {
+          "name": "api-chat-memory.status.json",
+          "path": "artifacts/batch-04/api-chat-memory.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-memory.md",
+      "originalSha256": "15204ec63b204367fa2e06800650dfc4c4bcc6d0fbc7b9475575fb3d0c578532",
+      "contentSha256": "cb02e0930ba654bcaab5cea83da9cf1f6fe0c1ce2526912d257d14b91048bae3"
+    },
+    {
+      "id": "batch-04/api-chat-mimo",
+      "title": "小米 Mimo 供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 7,
+      "issue": 43,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-mimo.critic.md",
+          "path": "artifacts/batch-04/api-chat-mimo.critic.md"
+        },
+        {
+          "name": "api-chat-mimo.facts.json",
+          "path": "artifacts/batch-04/api-chat-mimo.facts.json"
+        },
+        {
+          "name": "api-chat-mimo.lint.md",
+          "path": "artifacts/batch-04/api-chat-mimo.lint.md"
+        },
+        {
+          "name": "api-chat-mimo.quality.json",
+          "path": "artifacts/batch-04/api-chat-mimo.quality.json"
+        },
+        {
+          "name": "api-chat-mimo.status.json",
+          "path": "artifacts/batch-04/api-chat-mimo.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-mimo.md",
+      "originalSha256": "b5f5f97692beddb4917b4dbd039649a600559dadd7bfaea28366a098ad15edff",
+      "contentSha256": "ff3176436fc96e7c92be9b41cc2590e822fe50c6c9fb1a996451ab6d0ef8a265"
+    },
+    {
+      "id": "batch-04/api-chat-mistral",
+      "title": "Mistral 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 20,
+      "issue": 39,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-mistral.critic.md",
+          "path": "artifacts/batch-04/api-chat-mistral.critic.md"
+        },
+        {
+          "name": "api-chat-mistral.facts.json",
+          "path": "artifacts/batch-04/api-chat-mistral.facts.json"
+        },
+        {
+          "name": "api-chat-mistral.lint.md",
+          "path": "artifacts/batch-04/api-chat-mistral.lint.md"
+        },
+        {
+          "name": "api-chat-mistral.quality.json",
+          "path": "artifacts/batch-04/api-chat-mistral.quality.json"
+        },
+        {
+          "name": "api-chat-mistral.status.json",
+          "path": "artifacts/batch-04/api-chat-mistral.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-mistral.md",
+      "originalSha256": "51c4f45ac63e3ebfd75c4c1fad794e58a6e19b718e06b922b3ee87e5ccb1ae8b",
+      "contentSha256": "5af851d794695df4c7e26cb7c373b17bff746dac51c3807cdcad4331d91becaf"
+    },
+    {
+      "id": "batch-04/api-chat-mnn",
+      "title": "MNN 端侧供应商（已停止维护）",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 80,
+      "issue": 31,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-mnn.critic.md",
+          "path": "artifacts/batch-04/api-chat-mnn.critic.md"
+        },
+        {
+          "name": "api-chat-mnn.facts.json",
+          "path": "artifacts/batch-04/api-chat-mnn.facts.json"
+        },
+        {
+          "name": "api-chat-mnn.lint.md",
+          "path": "artifacts/batch-04/api-chat-mnn.lint.md"
+        },
+        {
+          "name": "api-chat-mnn.quality.json",
+          "path": "artifacts/batch-04/api-chat-mnn.quality.json"
+        },
+        {
+          "name": "api-chat-mnn.status.json",
+          "path": "artifacts/batch-04/api-chat-mnn.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-mnn.md",
+      "originalSha256": "3abe664bc3e37012b9f2c320216037de45aa324149c4a191ad4ab3d15cdbd9ac",
+      "contentSha256": "ef01af72f6c235fa758172d10b4a7b597358e3297216a097399e3dd72223759f"
+    },
+    {
+      "id": "batch-04/api-chat-nousportal",
+      "title": "NousPortal 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "NousPortal 供应商：12 条 facts，走查 2 条，lint 硬失败 0/警告 0。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 13,
+      "issue": 45,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-nousportal.critic.md",
+          "path": "artifacts/batch-04/api-chat-nousportal.critic.md"
+        },
+        {
+          "name": "api-chat-nousportal.facts.json",
+          "path": "artifacts/batch-04/api-chat-nousportal.facts.json"
+        },
+        {
+          "name": "api-chat-nousportal.lint.md",
+          "path": "artifacts/batch-04/api-chat-nousportal.lint.md"
+        },
+        {
+          "name": "api-chat-nousportal.quality.json",
+          "path": "artifacts/batch-04/api-chat-nousportal.quality.json"
+        },
+        {
+          "name": "api-chat-nousportal.status.json",
+          "path": "artifacts/batch-04/api-chat-nousportal.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-nousportal.md",
+      "originalSha256": "4c3cf7263052c0178ad12f42b8d01cc6af71bbd90ef208274a46361bfd298bf9",
+      "contentSha256": "68ba2b3558ee98b964df131519782767081a6d7f5f0c3ef99902bf9fcb72b7f1"
+    },
+    {
+      "id": "batch-04/api-chat-nvidia",
+      "title": "NVIDIA AI 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 16,
+      "issue": 40,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-nvidia.critic.md",
+          "path": "artifacts/batch-04/api-chat-nvidia.critic.md"
+        },
+        {
+          "name": "api-chat-nvidia.facts.json",
+          "path": "artifacts/batch-04/api-chat-nvidia.facts.json"
+        },
+        {
+          "name": "api-chat-nvidia.lint.md",
+          "path": "artifacts/batch-04/api-chat-nvidia.lint.md"
+        },
+        {
+          "name": "api-chat-nvidia.quality.json",
+          "path": "artifacts/batch-04/api-chat-nvidia.quality.json"
+        },
+        {
+          "name": "api-chat-nvidia.status.json",
+          "path": "artifacts/batch-04/api-chat-nvidia.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-nvidia.md",
+      "originalSha256": "6ac40c650826a684e499f8d79b515b755a8ef181140d9fba06f9176cab061d69",
+      "contentSha256": "e1a98eadcd7b50ac8c7b5885d9ae69a0d8ab77b8ae7eea9f8256885f320bad44"
+    },
+    {
+      "id": "batch-04/api-chat-ollama",
+      "title": "Ollama 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "Ollama 供应商：12 条 facts，走查 1 条，lint 硬失败 0/警告 0。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 12,
+      "issue": 44,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-ollama.critic.md",
+          "path": "artifacts/batch-04/api-chat-ollama.critic.md"
+        },
+        {
+          "name": "api-chat-ollama.facts.json",
+          "path": "artifacts/batch-04/api-chat-ollama.facts.json"
+        },
+        {
+          "name": "api-chat-ollama.lint.md",
+          "path": "artifacts/batch-04/api-chat-ollama.lint.md"
+        },
+        {
+          "name": "api-chat-ollama.quality.json",
+          "path": "artifacts/batch-04/api-chat-ollama.quality.json"
+        },
+        {
+          "name": "api-chat-ollama.status.json",
+          "path": "artifacts/batch-04/api-chat-ollama.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-ollama.md",
+      "originalSha256": "2a628867226a38fa15c0b565285c3f1e76a940f41db0df728296da4dab0536e0",
+      "contentSha256": "72f7f61a86aabbab6c814046ace6a3c298912c70746a70c466179e075b28b281"
+    },
+    {
+      "id": "batch-04/api-chat-openai-responses",
+      "title": "OpenAI Responses 供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 77,
+      "issue": 32,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-openai-responses.critic.md",
+          "path": "artifacts/batch-04/api-chat-openai-responses.critic.md"
+        },
+        {
+          "name": "api-chat-openai-responses.facts.json",
+          "path": "artifacts/batch-04/api-chat-openai-responses.facts.json"
+        },
+        {
+          "name": "api-chat-openai-responses.lint.md",
+          "path": "artifacts/batch-04/api-chat-openai-responses.lint.md"
+        },
+        {
+          "name": "api-chat-openai-responses.quality.json",
+          "path": "artifacts/batch-04/api-chat-openai-responses.quality.json"
+        },
+        {
+          "name": "api-chat-openai-responses.status.json",
+          "path": "artifacts/batch-04/api-chat-openai-responses.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-openai-responses.md",
+      "originalSha256": "f5c87f210998df6b990ed3cc125ae3528bfa4bc9cd6722e3a924fe0b04dcf155",
+      "contentSha256": "b0d1aa1982da19af33f5d90fad53133c31297c9860288d333cf397973db60c6d"
+    },
+    {
+      "id": "batch-04/api-chat-openai",
+      "title": "OpenAI 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 120,
+      "issue": 27,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-openai.critic.md",
+          "path": "artifacts/batch-04/api-chat-openai.critic.md"
+        },
+        {
+          "name": "api-chat-openai.facts.json",
+          "path": "artifacts/batch-04/api-chat-openai.facts.json"
+        },
+        {
+          "name": "api-chat-openai.lint.md",
+          "path": "artifacts/batch-04/api-chat-openai.lint.md"
+        },
+        {
+          "name": "api-chat-openai.quality.json",
+          "path": "artifacts/batch-04/api-chat-openai.quality.json"
+        },
+        {
+          "name": "api-chat-openai.status.json",
+          "path": "artifacts/batch-04/api-chat-openai.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-openai.md",
+      "originalSha256": "500af2d38d0e14381579415dad64d046fd514b6b99aa5d0ac8600f275266d947",
+      "contentSha256": "8f2c40a4287087c18806716749e00c428249337baebd68294ac81a2a9ff3d9a5"
+    },
+    {
+      "id": "batch-04/api-chat-opencode",
+      "title": "OpenCode 供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 65,
+      "issue": 34,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-opencode.critic.md",
+          "path": "artifacts/batch-04/api-chat-opencode.critic.md"
+        },
+        {
+          "name": "api-chat-opencode.facts.json",
+          "path": "artifacts/batch-04/api-chat-opencode.facts.json"
+        },
+        {
+          "name": "api-chat-opencode.lint.md",
+          "path": "artifacts/batch-04/api-chat-opencode.lint.md"
+        },
+        {
+          "name": "api-chat-opencode.quality.json",
+          "path": "artifacts/batch-04/api-chat-opencode.quality.json"
+        },
+        {
+          "name": "api-chat-opencode.status.json",
+          "path": "artifacts/batch-04/api-chat-opencode.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-opencode.md",
+      "originalSha256": "7fae705bccd7b8c3ccc59ec8e37a06ac90dbf43f24f8ab97637a911e5d14d7aa",
+      "contentSha256": "1830c4f5e657d91ba027c11400fc249ab7711277feb740ff841f0f3b02aa9e97"
+    },
+    {
+      "id": "batch-04/api-chat-openrouter",
+      "title": "OpenRouter 供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 18,
+      "issue": 37,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-openrouter.critic.md",
+          "path": "artifacts/batch-04/api-chat-openrouter.critic.md"
+        },
+        {
+          "name": "api-chat-openrouter.facts.json",
+          "path": "artifacts/batch-04/api-chat-openrouter.facts.json"
+        },
+        {
+          "name": "api-chat-openrouter.lint.md",
+          "path": "artifacts/batch-04/api-chat-openrouter.lint.md"
+        },
+        {
+          "name": "api-chat-openrouter.quality.json",
+          "path": "artifacts/batch-04/api-chat-openrouter.quality.json"
+        },
+        {
+          "name": "api-chat-openrouter.status.json",
+          "path": "artifacts/batch-04/api-chat-openrouter.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-openrouter.md",
+      "originalSha256": "61adaf5d84d784ce5c15d34105c5eb9dea91562d31e912a32e4da0062fb4820e",
+      "contentSha256": "5c1f3cda4d74710bccddbfe5c91af34a00047ccce76d77316570e70f6cd8a1ad"
+    },
+    {
+      "id": "batch-04/api-chat-params",
+      "title": "统一参数模型与自定义参数",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 44,
+      "issue": 50,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-params.critic.md",
+          "path": "artifacts/batch-04/api-chat-params.critic.md"
+        },
+        {
+          "name": "api-chat-params.facts.json",
+          "path": "artifacts/batch-04/api-chat-params.facts.json"
+        },
+        {
+          "name": "api-chat-params.lint.md",
+          "path": "artifacts/batch-04/api-chat-params.lint.md"
+        },
+        {
+          "name": "api-chat-params.quality.json",
+          "path": "artifacts/batch-04/api-chat-params.quality.json"
+        },
+        {
+          "name": "api-chat-params.status.json",
+          "path": "artifacts/batch-04/api-chat-params.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-params.md",
+      "originalSha256": "b316e784bbb19a3410870fb9e7e35a76277c3a47f5f487e5765e22aa94fc587f",
+      "contentSha256": "9a7b0b6ec62f2430cff3152255b8482e5610075650d0a85f2495c9088dc9da1b"
+    },
+    {
+      "id": "batch-04/api-chat-providers-base",
+      "title": "供应商接入基础设施",
+      "chapter": "云端 Chat API",
+      "module": "云端 Chat API",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 159,
+      "issue": 48,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-providers-base.critic.md",
+          "path": "artifacts/batch-04/api-chat-providers-base.critic.md"
+        },
+        {
+          "name": "api-chat-providers-base.facts.json",
+          "path": "artifacts/batch-04/api-chat-providers-base.facts.json"
+        },
+        {
+          "name": "api-chat-providers-base.lint.md",
+          "path": "artifacts/batch-04/api-chat-providers-base.lint.md"
+        },
+        {
+          "name": "api-chat-providers-base.quality.json",
+          "path": "artifacts/batch-04/api-chat-providers-base.quality.json"
+        },
+        {
+          "name": "api-chat-providers-base.status.json",
+          "path": "artifacts/batch-04/api-chat-providers-base.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-providers-base.md",
+      "originalSha256": "93c389e783bdcd2b30ebdea742ff3aca396cb647b3bcfc1cd3811ddb6a526f5f",
+      "contentSha256": "6860fc8c0d40b9c7eca0333df7f274e9abacafd3d7b3fa108b8e01d27fbfbe96"
+    },
+    {
+      "id": "batch-04/api-chat-qwen",
+      "title": "通义千问供应商",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 19,
+      "issue": 38,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-qwen.critic.md",
+          "path": "artifacts/batch-04/api-chat-qwen.critic.md"
+        },
+        {
+          "name": "api-chat-qwen.facts.json",
+          "path": "artifacts/batch-04/api-chat-qwen.facts.json"
+        },
+        {
+          "name": "api-chat-qwen.lint.md",
+          "path": "artifacts/batch-04/api-chat-qwen.lint.md"
+        },
+        {
+          "name": "api-chat-qwen.quality.json",
+          "path": "artifacts/batch-04/api-chat-qwen.quality.json"
+        },
+        {
+          "name": "api-chat-qwen.status.json",
+          "path": "artifacts/batch-04/api-chat-qwen.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-qwen.md",
+      "originalSha256": "16d0337da51de8eac0dc0d5e21293f3228081ff4e0fef4a82a2338f2439f69e2",
+      "contentSha256": "6650e6aa51a33e7a415a5958e94572485fecbb4012a75a5b5237e3ed6c381ddd"
+    },
+    {
+      "id": "batch-04/api-chat-runtime",
+      "title": "对话编排运行时",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 107,
+      "issue": 55,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-runtime.critic.md",
+          "path": "artifacts/batch-04/api-chat-runtime.critic.md"
+        },
+        {
+          "name": "api-chat-runtime.facts.json",
+          "path": "artifacts/batch-04/api-chat-runtime.facts.json"
+        },
+        {
+          "name": "api-chat-runtime.lint.md",
+          "path": "artifacts/batch-04/api-chat-runtime.lint.md"
+        },
+        {
+          "name": "api-chat-runtime.quality.json",
+          "path": "artifacts/batch-04/api-chat-runtime.quality.json"
+        },
+        {
+          "name": "api-chat-runtime.status.json",
+          "path": "artifacts/batch-04/api-chat-runtime.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-runtime.md",
+      "originalSha256": "79c245f36d77fda668f660b0fb76169c2c52267bffc15402fd811f37ec300d98",
+      "contentSha256": "723025d222cec9477294f9b7d39c36b8448ce58be68189cc160a85f577c2f479"
+    },
+    {
+      "id": "batch-04/api-chat-thinking",
+      "title": "thinking 配置机制（ThinkingQualityMapping）",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 64,
+      "issue": 49,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-thinking.critic.md",
+          "path": "artifacts/batch-04/api-chat-thinking.critic.md"
+        },
+        {
+          "name": "api-chat-thinking.facts.json",
+          "path": "artifacts/batch-04/api-chat-thinking.facts.json"
+        },
+        {
+          "name": "api-chat-thinking.lint.md",
+          "path": "artifacts/batch-04/api-chat-thinking.lint.md"
+        },
+        {
+          "name": "api-chat-thinking.quality.json",
+          "path": "artifacts/batch-04/api-chat-thinking.quality.json"
+        },
+        {
+          "name": "api-chat-thinking.status.json",
+          "path": "artifacts/batch-04/api-chat-thinking.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-thinking.md",
+      "originalSha256": "83aa626ffbdf4675bd2d20a342365835eb9f4d6a2941d709b5b349786c50e153",
+      "contentSha256": "8a4cec3a32112ba46dc9fdbeef8a9884bd6ac8392eb82fdcb824c3f942074bee"
+    },
+    {
+      "id": "batch-04/api-chat-tokens",
+      "title": "Token 统计与 usage 上报",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 29,
+      "issue": 53,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-tokens.critic.md",
+          "path": "artifacts/batch-04/api-chat-tokens.critic.md"
+        },
+        {
+          "name": "api-chat-tokens.facts.json",
+          "path": "artifacts/batch-04/api-chat-tokens.facts.json"
+        },
+        {
+          "name": "api-chat-tokens.lint.md",
+          "path": "artifacts/batch-04/api-chat-tokens.lint.md"
+        },
+        {
+          "name": "api-chat-tokens.quality.json",
+          "path": "artifacts/batch-04/api-chat-tokens.quality.json"
+        },
+        {
+          "name": "api-chat-tokens.status.json",
+          "path": "artifacts/batch-04/api-chat-tokens.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-tokens.md",
+      "originalSha256": "1f6478dbbc04721188776f324e55ee017acc9e861e6a7931c6a3ba364f8fdd72",
+      "contentSha256": "ba16016fefe072aa52ee4e327d8d09f51d46f87088f38c6c8963222e234bb606"
+    },
+    {
+      "id": "batch-04/api-chat-tools-stream",
+      "title": "工具调用与流式协议",
+      "chapter": "云端 Chat API",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 142,
+      "issue": 52,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-tools-stream.critic.md",
+          "path": "artifacts/batch-04/api-chat-tools-stream.critic.md"
+        },
+        {
+          "name": "api-chat-tools-stream.facts.json",
+          "path": "artifacts/batch-04/api-chat-tools-stream.facts.json"
+        },
+        {
+          "name": "api-chat-tools-stream.lint.md",
+          "path": "artifacts/batch-04/api-chat-tools-stream.lint.md"
+        },
+        {
+          "name": "api-chat-tools-stream.quality.json",
+          "path": "artifacts/batch-04/api-chat-tools-stream.quality.json"
+        },
+        {
+          "name": "api-chat-tools-stream.status.json",
+          "path": "artifacts/batch-04/api-chat-tools-stream.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-tools-stream.md",
+      "originalSha256": "e9bcad4faef38caad9acb863da1f6f60b624a2bb3109f6f078ae23338fc98d2d",
+      "contentSha256": "a24da971f6a8a55b3f96191c15dae981cb3b512516bc94eb156025e8bfe7df92"
+    },
+    {
+      "id": "batch-04/api-chat-xai",
+      "title": "xAI 供应商",
+      "chapter": "云端 Chat API",
+      "module": "api",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 12,
+      "issue": 41,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-chat-xai.critic.md",
+          "path": "artifacts/batch-04/api-chat-xai.critic.md"
+        },
+        {
+          "name": "api-chat-xai.facts.json",
+          "path": "artifacts/batch-04/api-chat-xai.facts.json"
+        },
+        {
+          "name": "api-chat-xai.lint.md",
+          "path": "artifacts/batch-04/api-chat-xai.lint.md"
+        },
+        {
+          "name": "api-chat-xai.quality.json",
+          "path": "artifacts/batch-04/api-chat-xai.quality.json"
+        },
+        {
+          "name": "api-chat-xai.status.json",
+          "path": "artifacts/batch-04/api-chat-xai.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-chat-xai.md",
+      "originalSha256": "c200dd7b2b186de7c38e67eb32e054a93313ff7ce55bcae09ee2c9b7dfdc53aa",
+      "contentSha256": "b340028aef41719bd93c087d7c661e4da461492cc9ce3db48cadb17e57e0a719"
+    },
+    {
+      "id": "batch-04/api-speech",
+      "title": "语音识别流水线",
+      "chapter": "语音服务",
+      "module": "语音",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 112,
+      "issue": 58,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-speech.critic.md",
+          "path": "artifacts/batch-04/api-speech.critic.md"
+        },
+        {
+          "name": "api-speech.facts.json",
+          "path": "artifacts/batch-04/api-speech.facts.json"
+        },
+        {
+          "name": "api-speech.lint.md",
+          "path": "artifacts/batch-04/api-speech.lint.md"
+        },
+        {
+          "name": "api-speech.quality.json",
+          "path": "artifacts/batch-04/api-speech.quality.json"
+        },
+        {
+          "name": "api-speech.status.json",
+          "path": "artifacts/batch-04/api-speech.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-speech.md",
+      "originalSha256": "85237b39b23e075af4a6e14be17212fa47d382ae3c7f7b2c190157df3b8c05cb",
+      "contentSha256": "57fb84e85c93e3728abb6e50f77aaeb5f1cc99933ac5c576abe93c429c724225"
+    },
+    {
+      "id": "batch-04/api-voice",
+      "title": "语音合成（TTS）服务",
+      "chapter": "语音服务",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 222,
+      "issue": 59,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "api-voice.critic.md",
+          "path": "artifacts/batch-04/api-voice.critic.md"
+        },
+        {
+          "name": "api-voice.facts.json",
+          "path": "artifacts/batch-04/api-voice.facts.json"
+        },
+        {
+          "name": "api-voice.lint.md",
+          "path": "artifacts/batch-04/api-voice.lint.md"
+        },
+        {
+          "name": "api-voice.quality.json",
+          "path": "artifacts/batch-04/api-voice.quality.json"
+        },
+        {
+          "name": "api-voice.status.json",
+          "path": "artifacts/batch-04/api-voice.status.json"
+        }
+      ],
+      "original": "original/batch-04/api-voice.md",
+      "originalSha256": "ff514725f34dc7d430152f2747453c3797becaeb7b4d260226f4a633ec7155ad",
+      "contentSha256": "11b4f7d0087a1f4df4e5f125be7fd6cc9807df18c4625e6aaf15f47351379892"
+    },
+    {
+      "id": "batch-04/core-chat-runtime",
+      "title": "聊天运行时（消息管理/Hook/插件）",
+      "chapter": "聊天与消息",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 109,
+      "issue": 26,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-chat-runtime.critic.md",
+          "path": "artifacts/batch-04/core-chat-runtime.critic.md"
+        },
+        {
+          "name": "core-chat-runtime.facts.json",
+          "path": "artifacts/batch-04/core-chat-runtime.facts.json"
+        },
+        {
+          "name": "core-chat-runtime.lint.md",
+          "path": "artifacts/batch-04/core-chat-runtime.lint.md"
+        },
+        {
+          "name": "core-chat-runtime.quality.json",
+          "path": "artifacts/batch-04/core-chat-runtime.quality.json"
+        },
+        {
+          "name": "core-chat-runtime.status.json",
+          "path": "artifacts/batch-04/core-chat-runtime.status.json"
+        }
+      ],
+      "original": "original/batch-04/core-chat-runtime.md",
+      "originalSha256": "00a69f2b7564ed72268e5917e0ae3395e3dfffa99e0e12ab927dd31881b3e030",
+      "contentSha256": "46bf715f95a83cdf1bf26b95917d891230a6c0884ffee0ccfecaa1bf0be2436b"
+    },
+    {
+      "id": "batch-04/core-tools-misc",
+      "title": "专项工具（PhoneAgent/计算器/MCP/Skill/CLI 模式/条件）",
+      "chapter": "工具系统",
+      "module": "工具系统",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "专项工具：PhoneAgent 自动操控循环与 8 种动作、Shower 屏幕操控链（服务端 jar/广播 binder/虚拟屏/H.264 渲染）、自研表达式计算器（解析器/函数库/单位换算）、MCP 外部工具桥（server:tool 调用/结果截断存文件/U+FFFD 拦截）、Skill 技能包（扫描/zip 导入/ZipSlip 防护）、CLI 工具模式（search+proxy 双工具）、条件表达式求值器。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 156,
+      "issue": 25,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-misc.critic.md",
+          "path": "artifacts/batch-04/core-tools-misc.critic.md"
+        },
+        {
+          "name": "core-tools-misc.facts.json",
+          "path": "artifacts/batch-04/core-tools-misc.facts.json"
+        },
+        {
+          "name": "core-tools-misc.lint.md",
+          "path": "artifacts/batch-04/core-tools-misc.lint.md"
+        },
+        {
+          "name": "core-tools-misc.quality.json",
+          "path": "artifacts/batch-04/core-tools-misc.quality.json"
+        },
+        {
+          "name": "core-tools-misc.status.json",
+          "path": "artifacts/batch-04/core-tools-misc.status.json"
+        }
+      ],
+      "original": "original/batch-04/core-tools-misc.md",
+      "originalSha256": "0904a8aec1ebb49b0ef219c00eaaf2a0991863364f6f9381024f3ba5611ca94d",
+      "contentSha256": "cea511e9c84d71272d7c1aad3e1a90ca224763f667bbfe76ec8f1b2261c24451"
+    },
+    {
+      "id": "batch-04/core-tools-packtool",
+      "title": "插件包（ToolPkg）管理与解析",
+      "chapter": "工具系统",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 196,
+      "issue": 23,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-packtool.critic.md",
+          "path": "artifacts/batch-04/core-tools-packtool.critic.md"
+        },
+        {
+          "name": "core-tools-packtool.facts.json",
+          "path": "artifacts/batch-04/core-tools-packtool.facts.json"
+        },
+        {
+          "name": "core-tools-packtool.lint.md",
+          "path": "artifacts/batch-04/core-tools-packtool.lint.md"
+        },
+        {
+          "name": "core-tools-packtool.quality.json",
+          "path": "artifacts/batch-04/core-tools-packtool.quality.json"
+        },
+        {
+          "name": "core-tools-packtool.status.json",
+          "path": "artifacts/batch-04/core-tools-packtool.status.json"
+        }
+      ],
+      "original": "original/batch-04/core-tools-packtool.md",
+      "originalSha256": "2c8230a7d738a82027c5ce317d40a4609fcb9cbf854bd499087c5cf212563579",
+      "contentSha256": "462fdfcb6df321189779e7631bb1de57be8e32e64b1b22a47a16cc1c469d0374"
+    },
+    {
+      "id": "batch-04/core-tools-system",
+      "title": "系统底层能力（Shell 执行器 / Action 监听器 / 终端 / 截屏投屏）",
+      "chapter": "工具系统",
+      "module": "工具系统",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 136,
+      "issue": 24,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-tools-system.critic.md",
+          "path": "artifacts/batch-04/core-tools-system.critic.md"
+        },
+        {
+          "name": "core-tools-system.facts.json",
+          "path": "artifacts/batch-04/core-tools-system.facts.json"
+        },
+        {
+          "name": "core-tools-system.lint.md",
+          "path": "artifacts/batch-04/core-tools-system.lint.md"
+        },
+        {
+          "name": "core-tools-system.quality.json",
+          "path": "artifacts/batch-04/core-tools-system.quality.json"
+        },
+        {
+          "name": "core-tools-system.status.json",
+          "path": "artifacts/batch-04/core-tools-system.status.json"
+        }
+      ],
+      "original": "original/batch-04/core-tools-system.md",
+      "originalSha256": "90e8da0ec816f9f62e406d8f698721cf754bda8e4721d045c064b70866989701",
+      "contentSha256": "1eca88a4fcfe70b86dad4b6b51aad33ba0416730ec77c3c58d44c05f2c949fa1"
+    },
+    {
+      "id": "batch-04/data-models",
+      "title": "数据模型与实体类",
+      "chapter": "数据层",
+      "module": "数据层 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "数据模型与实体类：data/model 53 个文件 + data/mnn 1 个文件。聊天线（ChatMessage/UI 类与 ChatEntity/MessageEntity/MessageVariantEntity Room 实体分离、时间戳分配器）、记忆线（Memory ObjectBox 图谱、Embedding/EmbeddingConverter 向量字节存取）、配置线（ModelConfigData 38 供应商、StandardModelParameters 7 标准参数）、工作流 sealed 节点树、角色卡酒馆格式兼容、MnnModelDownloadManager 下载状态机与断点续传、归档导出。走查 5 条（警告 3/建议 2）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 212,
+      "issue": 61,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-models.critic.md",
+          "path": "artifacts/batch-04/data-models.critic.md"
+        },
+        {
+          "name": "data-models.facts.json",
+          "path": "artifacts/batch-04/data-models.facts.json"
+        },
+        {
+          "name": "data-models.lint.md",
+          "path": "artifacts/batch-04/data-models.lint.md"
+        },
+        {
+          "name": "data-models.quality.json",
+          "path": "artifacts/batch-04/data-models.quality.json"
+        },
+        {
+          "name": "data-models.status.json",
+          "path": "artifacts/batch-04/data-models.status.json"
+        }
+      ],
+      "original": "original/batch-04/data-models.md",
+      "originalSha256": "fd994d4f56113d690d2f341e49ad51cbe4913d16bc742c6c5d57fd03e218c96d",
+      "contentSha256": "d3ba056c437d82bb0d91f1af192004e110c37302fb490658cb1add4077a58fae"
+    },
+    {
+      "id": "batch-04/data-room-db",
+      "title": "Room 数据库与 DAO",
+      "chapter": "数据层",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 103,
+      "issue": 60,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-room-db.critic.md",
+          "path": "artifacts/batch-04/data-room-db.critic.md"
+        },
+        {
+          "name": "data-room-db.facts.json",
+          "path": "artifacts/batch-04/data-room-db.facts.json"
+        },
+        {
+          "name": "data-room-db.lint.md",
+          "path": "artifacts/batch-04/data-room-db.lint.md"
+        },
+        {
+          "name": "data-room-db.quality.json",
+          "path": "artifacts/batch-04/data-room-db.quality.json"
+        },
+        {
+          "name": "data-room-db.status.json",
+          "path": "artifacts/batch-04/data-room-db.status.json"
+        }
+      ],
+      "original": "original/batch-04/data-room-db.md",
+      "originalSha256": "abc4599d97774055c5a112d62a83ce9785ff286d55e145fa6efdc992b56d53a2",
+      "contentSha256": "fa283333ab2597932c58929d593e1d2ab3b3ef0cfdc199aaca2a3b45ec9969e4"
+    },
+    {
+      "id": "batch-05/core-app-workflow",
+      "title": "应用生命周期、性能监控与工作流调度",
+      "chapter": "引擎其他",
+      "module": "引擎其他",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 119,
+      "issue": 136,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-app-workflow.critic.md",
+          "path": "artifacts/batch-05/core-app-workflow.critic.md"
+        },
+        {
+          "name": "core-app-workflow.facts.json",
+          "path": "artifacts/batch-05/core-app-workflow.facts.json"
+        },
+        {
+          "name": "core-app-workflow.lint.md",
+          "path": "artifacts/batch-05/core-app-workflow.lint.md"
+        },
+        {
+          "name": "core-app-workflow.quality.json",
+          "path": "artifacts/batch-05/core-app-workflow.quality.json"
+        },
+        {
+          "name": "core-app-workflow.status.json",
+          "path": "artifacts/batch-05/core-app-workflow.status.json"
+        }
+      ],
+      "original": "original/batch-05/core-app-workflow.md",
+      "originalSha256": "e531ad2f30a84301ff2aa84d798125ae1bc90e8ebbaa5ef89547df9484bfffdf",
+      "contentSha256": "886394196a90a72f9fc83ef029fca488e0b96fe503c868bd3597186748b3203d"
+    },
+    {
+      "id": "batch-05/core-avatar",
+      "title": "虚拟形象引擎",
+      "chapter": "引擎其他",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "虚拟形象引擎：6 种形象路线（DragonBones/WebP/MP4/glTF/FBX/MMD）统一为模型-控制器-渲染器三层；AvatarController 以 StateFlow 发布情绪/动画/循环/nonce 状态；AvatarMoodTypes 内置 5 mood 并解析模型返回的 <mood> 标签；三工厂负责模型/控制器/渲染器构造；各路线原生渲染（JNI/ImageDecoder/ExoPlayer/Filament/MMD native）；走查 7 条（警告 3：渲染错误被吞、angry 别名误映射 SAD、MMD 双发射中间态）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 113,
+      "issue": 73,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-avatar.critic.md",
+          "path": "artifacts/batch-05/core-avatar.critic.md"
+        },
+        {
+          "name": "core-avatar.facts.json",
+          "path": "artifacts/batch-05/core-avatar.facts.json"
+        },
+        {
+          "name": "core-avatar.lint.md",
+          "path": "artifacts/batch-05/core-avatar.lint.md"
+        },
+        {
+          "name": "core-avatar.quality.json",
+          "path": "artifacts/batch-05/core-avatar.quality.json"
+        },
+        {
+          "name": "core-avatar.status.json",
+          "path": "artifacts/batch-05/core-avatar.status.json"
+        }
+      ],
+      "original": "original/batch-05/core-avatar.md",
+      "originalSha256": "a5dabae3f1a882d3bf8f6782e2887a94b10c20e0714574a021c7a5cc2ea029e2",
+      "contentSha256": "732192ff94ca6ca81b07b811f0b8ac138f3305de834a64bc696cc50285faaf8b"
+    },
+    {
+      "id": "batch-05/core-config-prompts",
+      "title": "系统提示词与功能提示配置",
+      "chapter": "引擎其他",
+      "module": "引擎核心",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 84,
+      "issue": 74,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-config-prompts.critic.md",
+          "path": "artifacts/batch-05/core-config-prompts.critic.md"
+        },
+        {
+          "name": "core-config-prompts.facts.json",
+          "path": "artifacts/batch-05/core-config-prompts.facts.json"
+        },
+        {
+          "name": "core-config-prompts.lint.md",
+          "path": "artifacts/batch-05/core-config-prompts.lint.md"
+        },
+        {
+          "name": "core-config-prompts.quality.json",
+          "path": "artifacts/batch-05/core-config-prompts.quality.json"
+        },
+        {
+          "name": "core-config-prompts.status.json",
+          "path": "artifacts/batch-05/core-config-prompts.status.json"
+        }
+      ],
+      "original": "original/batch-05/core-config-prompts.md",
+      "originalSha256": "e506a5c249d800706d75aa266892ddbf5d669b9819f7696f01c31b02e8f83c16",
+      "contentSha256": "2896da501341bc68c540978537d4fd54945130fee2caf69d4906fc459d995f5b"
+    },
+    {
+      "id": "batch-05/core-subpack",
+      "title": "安装包编辑与逆向（APK/EXE）",
+      "chapter": "引擎其他",
+      "module": "引擎其他",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 107,
+      "issue": 76,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "core-subpack.critic.md",
+          "path": "artifacts/batch-05/core-subpack.critic.md"
+        },
+        {
+          "name": "core-subpack.facts.json",
+          "path": "artifacts/batch-05/core-subpack.facts.json"
+        },
+        {
+          "name": "core-subpack.lint.md",
+          "path": "artifacts/batch-05/core-subpack.lint.md"
+        },
+        {
+          "name": "core-subpack.quality.json",
+          "path": "artifacts/batch-05/core-subpack.quality.json"
+        },
+        {
+          "name": "core-subpack.status.json",
+          "path": "artifacts/batch-05/core-subpack.status.json"
+        }
+      ],
+      "original": "original/batch-05/core-subpack.md",
+      "originalSha256": "9c9e478f341022a6924b3e33df6ee4fc2019849f796c3e5cb8e9985588f226f5",
+      "contentSha256": "ec8e4d95a1e22eefba86d0903b28a5e19d01ff89fc2c0441dd5c36fe4cbd5379"
+    },
+    {
+      "id": "batch-05/data-api-oauth",
+      "title": "OAuth 与外部 API 客户端",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 198,
+      "issue": 71,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-api-oauth.critic.md",
+          "path": "artifacts/batch-05/data-api-oauth.critic.md"
+        },
+        {
+          "name": "data-api-oauth.facts.json",
+          "path": "artifacts/batch-05/data-api-oauth.facts.json"
+        },
+        {
+          "name": "data-api-oauth.lint.md",
+          "path": "artifacts/batch-05/data-api-oauth.lint.md"
+        },
+        {
+          "name": "data-api-oauth.quality.json",
+          "path": "artifacts/batch-05/data-api-oauth.quality.json"
+        },
+        {
+          "name": "data-api-oauth.status.json",
+          "path": "artifacts/batch-05/data-api-oauth.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-api-oauth.md",
+      "originalSha256": "ca0192e0c582f39e19b39b05b187c8fd5240740df9aba553978fa41d66fb9644",
+      "contentSha256": "cc3b79e2cb589233a751bb709744cc4e713db015356dfd72408185756016be7d"
+    },
+    {
+      "id": "batch-05/data-backup-export",
+      "title": "数据备份、恢复与导入导出",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 193,
+      "issue": 69,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-backup-export.critic.md",
+          "path": "artifacts/batch-05/data-backup-export.critic.md"
+        },
+        {
+          "name": "data-backup-export.facts.json",
+          "path": "artifacts/batch-05/data-backup-export.facts.json"
+        },
+        {
+          "name": "data-backup-export.lint.md",
+          "path": "artifacts/batch-05/data-backup-export.lint.md"
+        },
+        {
+          "name": "data-backup-export.quality.json",
+          "path": "artifacts/batch-05/data-backup-export.quality.json"
+        },
+        {
+          "name": "data-backup-export.status.json",
+          "path": "artifacts/batch-05/data-backup-export.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-backup-export.md",
+      "originalSha256": "1b3af99fdd5897b024614d9ae1ffa1d434b920eeebba8319f4ed60470d991148",
+      "contentSha256": "793bdc0c10b3b6204af75ba00592751b5d1268d153b38ba5cafde1bb0490b9a6"
+    },
+    {
+      "id": "batch-05/data-mcp",
+      "title": "MCP 服务与插件桥接",
+      "chapter": "数据层",
+      "module": "数据层 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 324,
+      "issue": 70,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-mcp.critic.md",
+          "path": "artifacts/batch-05/data-mcp.critic.md"
+        },
+        {
+          "name": "data-mcp.facts.json",
+          "path": "artifacts/batch-05/data-mcp.facts.json"
+        },
+        {
+          "name": "data-mcp.lint.md",
+          "path": "artifacts/batch-05/data-mcp.lint.md"
+        },
+        {
+          "name": "data-mcp.quality.json",
+          "path": "artifacts/batch-05/data-mcp.quality.json"
+        },
+        {
+          "name": "data-mcp.status.json",
+          "path": "artifacts/batch-05/data-mcp.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-mcp.md",
+      "originalSha256": "0c54e52d14f5ee1ccc3e0cea57f2ed4f96c7eadf41465c3e8b3ce25e65d0a192",
+      "contentSha256": "2b69c65a29ac6c8734c461db96db3c0237449cea0e02356f6ca29be7b4d84a95"
+    },
+    {
+      "id": "batch-05/data-prefs-app",
+      "title": "应用基础/主题/语音/记忆搜索配置",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 245,
+      "issue": 67,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-prefs-app.critic.md",
+          "path": "artifacts/batch-05/data-prefs-app.critic.md"
+        },
+        {
+          "name": "data-prefs-app.facts.json",
+          "path": "artifacts/batch-05/data-prefs-app.facts.json"
+        },
+        {
+          "name": "data-prefs-app.lint.md",
+          "path": "artifacts/batch-05/data-prefs-app.lint.md"
+        },
+        {
+          "name": "data-prefs-app.quality.json",
+          "path": "artifacts/batch-05/data-prefs-app.quality.json"
+        },
+        {
+          "name": "data-prefs-app.status.json",
+          "path": "artifacts/batch-05/data-prefs-app.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-prefs-app.md",
+      "originalSha256": "d5e4a6445fecde9770813a7196f41a587ef5f19e45e6fa0f60ccf795efecbffc",
+      "contentSha256": "9b29b1e5a944a6981f5ff65ec864777b460c03948abd3612e51dc191ed07b0ec"
+    },
+    {
+      "id": "batch-05/data-prefs-character",
+      "title": "角色卡与人格配置",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-01",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 170,
+      "issue": 66,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-prefs-character.critic.md",
+          "path": "artifacts/batch-05/data-prefs-character.critic.md"
+        },
+        {
+          "name": "data-prefs-character.facts.json",
+          "path": "artifacts/batch-05/data-prefs-character.facts.json"
+        },
+        {
+          "name": "data-prefs-character.lint.md",
+          "path": "artifacts/batch-05/data-prefs-character.lint.md"
+        },
+        {
+          "name": "data-prefs-character.quality.json",
+          "path": "artifacts/batch-05/data-prefs-character.quality.json"
+        },
+        {
+          "name": "data-prefs-character.status.json",
+          "path": "artifacts/batch-05/data-prefs-character.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-prefs-character.md",
+      "originalSha256": "94192369e50ae387431c169ae39e9f6d8086a2c5fa5c225345fa45cf9d6b17c8",
+      "contentSha256": "77eec20db4fd879daddf1235e228666bc3a34e42a30ad764a92eeb871cd36172"
+    },
+    {
+      "id": "batch-05/data-prefs-model",
+      "title": "模型与 API 配置（偏好设置）",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 181,
+      "issue": 65,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-prefs-model.critic.md",
+          "path": "artifacts/batch-05/data-prefs-model.critic.md"
+        },
+        {
+          "name": "data-prefs-model.facts.json",
+          "path": "artifacts/batch-05/data-prefs-model.facts.json"
+        },
+        {
+          "name": "data-prefs-model.lint.md",
+          "path": "artifacts/batch-05/data-prefs-model.lint.md"
+        },
+        {
+          "name": "data-prefs-model.quality.json",
+          "path": "artifacts/batch-05/data-prefs-model.quality.json"
+        },
+        {
+          "name": "data-prefs-model.status.json",
+          "path": "artifacts/batch-05/data-prefs-model.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-prefs-model.md",
+      "originalSha256": "cfbe3fa1c6f1532c7062eac82c10a4c83938d7bc513ed293796f112faa850fb6",
+      "contentSha256": "c487c199b7b7a5a7ae56022a4e6457bfb2bc08c24f8cc2968b74598048e7eafc"
+    },
+    {
+      "id": "batch-05/data-repo-chat",
+      "title": "聊天历史仓库",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 146,
+      "issue": 63,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-repo-chat.critic.md",
+          "path": "artifacts/batch-05/data-repo-chat.critic.md"
+        },
+        {
+          "name": "data-repo-chat.facts.json",
+          "path": "artifacts/batch-05/data-repo-chat.facts.json"
+        },
+        {
+          "name": "data-repo-chat.lint.md",
+          "path": "artifacts/batch-05/data-repo-chat.lint.md"
+        },
+        {
+          "name": "data-repo-chat.quality.json",
+          "path": "artifacts/batch-05/data-repo-chat.quality.json"
+        },
+        {
+          "name": "data-repo-chat.status.json",
+          "path": "artifacts/batch-05/data-repo-chat.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-repo-chat.md",
+      "originalSha256": "ac921cc5a1146f35abd4e67e6d55281e90cd42125d6a604eb3e2d5a3e775423f",
+      "contentSha256": "4ea8161aa17cc819ac6def0262623e8a65b25d0f3d32ec9ac2eb1dc37d11abcd"
+    },
+    {
+      "id": "batch-05/data-repo-memory",
+      "title": "记忆仓库",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 173,
+      "issue": 62,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-repo-memory.critic.md",
+          "path": "artifacts/batch-05/data-repo-memory.critic.md"
+        },
+        {
+          "name": "data-repo-memory.facts.json",
+          "path": "artifacts/batch-05/data-repo-memory.facts.json"
+        },
+        {
+          "name": "data-repo-memory.lint.md",
+          "path": "artifacts/batch-05/data-repo-memory.lint.md"
+        },
+        {
+          "name": "data-repo-memory.quality.json",
+          "path": "artifacts/batch-05/data-repo-memory.quality.json"
+        },
+        {
+          "name": "data-repo-memory.status.json",
+          "path": "artifacts/batch-05/data-repo-memory.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-repo-memory.md",
+      "originalSha256": "4102fc71442edfac33287f23accb511fc304367336c1914e75cd8e20235f6395",
+      "contentSha256": "d4f002f2b60c3b20f3fd63fb682e181de6a7ab49ae7e24b27aa4e0ee85d25e5c"
+    },
+    {
+      "id": "batch-05/data-repo-misc",
+      "title": "扩展仓库（Avatar/表情/工作流/Skill/插件黑名单/UI 层级）",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 168,
+      "issue": 64,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-repo-misc.critic.md",
+          "path": "artifacts/batch-05/data-repo-misc.critic.md"
+        },
+        {
+          "name": "data-repo-misc.facts.json",
+          "path": "artifacts/batch-05/data-repo-misc.facts.json"
+        },
+        {
+          "name": "data-repo-misc.lint.md",
+          "path": "artifacts/batch-05/data-repo-misc.lint.md"
+        },
+        {
+          "name": "data-repo-misc.quality.json",
+          "path": "artifacts/batch-05/data-repo-misc.quality.json"
+        },
+        {
+          "name": "data-repo-misc.status.json",
+          "path": "artifacts/batch-05/data-repo-misc.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-repo-misc.md",
+      "originalSha256": "ff764355f235fc2ea4e62035626bcdcd0a162ecf2783449e58ac3077412b4b68",
+      "contentSha256": "89d98a061466fa7ccc9462da83a57eca34f662da7dbcd681c51cc38112b49a78"
+    },
+    {
+      "id": "batch-05/data-stats-pricing",
+      "title": "Token 用量统计与模型定价数据",
+      "chapter": "数据层",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 215,
+      "issue": 68,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-stats-pricing.critic.md",
+          "path": "artifacts/batch-05/data-stats-pricing.critic.md"
+        },
+        {
+          "name": "data-stats-pricing.facts.json",
+          "path": "artifacts/batch-05/data-stats-pricing.facts.json"
+        },
+        {
+          "name": "data-stats-pricing.lint.md",
+          "path": "artifacts/batch-05/data-stats-pricing.lint.md"
+        },
+        {
+          "name": "data-stats-pricing.quality.json",
+          "path": "artifacts/batch-05/data-stats-pricing.quality.json"
+        },
+        {
+          "name": "data-stats-pricing.status.json",
+          "path": "artifacts/batch-05/data-stats-pricing.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-stats-pricing.md",
+      "originalSha256": "e94407a23852844ec20efa11717ac5c560f518df073b9ea73654cfcdcbdf6ab7",
+      "contentSha256": "afd51beee38032ab3447b7d4b7ca3131d161c5aa1da6b64f4712d6541c7c7f05"
+    },
+    {
+      "id": "batch-05/data-update-announce",
+      "title": "应用更新与公告",
+      "chapter": "数据层",
+      "module": "数据层",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 130,
+      "issue": 72,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "data-update-announce.critic.md",
+          "path": "artifacts/batch-05/data-update-announce.critic.md"
+        },
+        {
+          "name": "data-update-announce.facts.json",
+          "path": "artifacts/batch-05/data-update-announce.facts.json"
+        },
+        {
+          "name": "data-update-announce.lint.md",
+          "path": "artifacts/batch-05/data-update-announce.lint.md"
+        },
+        {
+          "name": "data-update-announce.quality.json",
+          "path": "artifacts/batch-05/data-update-announce.quality.json"
+        },
+        {
+          "name": "data-update-announce.status.json",
+          "path": "artifacts/batch-05/data-update-announce.status.json"
+        }
+      ],
+      "original": "original/batch-05/data-update-announce.md",
+      "originalSha256": "9ac64c4a0a17ac8ba31e7e6f9c276ba1c352858b1a974a4f1a24b2af9646c57b",
+      "contentSha256": "6901adbb97b995333dda000a9e8f95cf295dae036f57b38d1b71274b1406fdc8"
+    },
+    {
+      "id": "batch-05/services-chatservice",
+      "title": "聊天服务核心 Delegate 群",
+      "chapter": "系统服务与集成",
+      "module": "系统服务与集成",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 181,
+      "issue": 77,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "services-chatservice.critic.md",
+          "path": "artifacts/batch-05/services-chatservice.critic.md"
+        },
+        {
+          "name": "services-chatservice.facts.json",
+          "path": "artifacts/batch-05/services-chatservice.facts.json"
+        },
+        {
+          "name": "services-chatservice.lint.md",
+          "path": "artifacts/batch-05/services-chatservice.lint.md"
+        },
+        {
+          "name": "services-chatservice.quality.json",
+          "path": "artifacts/batch-05/services-chatservice.quality.json"
+        },
+        {
+          "name": "services-chatservice.status.json",
+          "path": "artifacts/batch-05/services-chatservice.status.json"
+        }
+      ],
+      "original": "original/batch-05/services-chatservice.md",
+      "originalSha256": "075a55a47ff56b903ee789f708d3e33a0d3ffdcd4444678fe2b6b90f6af62560",
+      "contentSha256": "214383cec17bbfdc7b050ac9c477cef5d265187d137b7460358dac4250692923"
+    },
+    {
+      "id": "batch-06/integrations-external",
+      "title": "外部聊天入口与自动化集成",
+      "chapter": "系统服务与集成",
+      "module": "外部集成 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 161,
+      "issue": 81,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "integrations-external.critic.md",
+          "path": "artifacts/batch-06/integrations-external.critic.md"
+        },
+        {
+          "name": "integrations-external.critic2.md",
+          "path": "artifacts/batch-06/integrations-external.critic2.md"
+        },
+        {
+          "name": "integrations-external.facts.json",
+          "path": "artifacts/batch-06/integrations-external.facts.json"
+        },
+        {
+          "name": "integrations-external.lint.md",
+          "path": "artifacts/batch-06/integrations-external.lint.md"
+        },
+        {
+          "name": "integrations-external.quality.json",
+          "path": "artifacts/batch-06/integrations-external.quality.json"
+        },
+        {
+          "name": "integrations-external.status.json",
+          "path": "artifacts/batch-06/integrations-external.status.json"
+        }
+      ],
+      "original": "original/batch-06/integrations-external.md",
+      "originalSha256": "11acea064a24be963fbc0b0fc1b7b5a67e55e7146783e7fa988dd9188eca6ff9",
+      "contentSha256": "ed926ba8bd09afc6cdca93883e82f38b0bd467c90307a7bff65eb0fc9a2058a2"
+    },
+    {
+      "id": "batch-06/integrations-webchat",
+      "title": "WebChat 本地 HTTP 服务",
+      "chapter": "系统服务与集成",
+      "module": "integrations-webchat",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 153,
+      "issue": 80,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "integrations-webchat.critic.md",
+          "path": "artifacts/batch-06/integrations-webchat.critic.md"
+        },
+        {
+          "name": "integrations-webchat.critic2.md",
+          "path": "artifacts/batch-06/integrations-webchat.critic2.md"
+        },
+        {
+          "name": "integrations-webchat.critic3.md",
+          "path": "artifacts/batch-06/integrations-webchat.critic3.md"
+        },
+        {
+          "name": "integrations-webchat.facts.json",
+          "path": "artifacts/batch-06/integrations-webchat.facts.json"
+        },
+        {
+          "name": "integrations-webchat.lint.md",
+          "path": "artifacts/batch-06/integrations-webchat.lint.md"
+        },
+        {
+          "name": "integrations-webchat.quality.json",
+          "path": "artifacts/batch-06/integrations-webchat.quality.json"
+        },
+        {
+          "name": "integrations-webchat.status.json",
+          "path": "artifacts/batch-06/integrations-webchat.status.json"
+        }
+      ],
+      "original": "original/batch-06/integrations-webchat.md",
+      "originalSha256": "8a138d92eb30f1576b708ced5a762de92e19768a694b15d2511937bcba1c8c1f",
+      "contentSha256": "abacc7f1ac4abc7ce9e07841841fffbc2615da6d95e0369e655c554c3ca1617c"
+    },
+    {
+      "id": "batch-06/plugins",
+      "title": "插件机制与工具包桥接",
+      "chapter": "系统服务与集成",
+      "module": "插件体系",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 181,
+      "issue": 79,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "plugins.critic.md",
+          "path": "artifacts/batch-06/plugins.critic.md"
+        },
+        {
+          "name": "plugins.critic2.md",
+          "path": "artifacts/batch-06/plugins.critic2.md"
+        },
+        {
+          "name": "plugins.facts.json",
+          "path": "artifacts/batch-06/plugins.facts.json"
+        },
+        {
+          "name": "plugins.lint.md",
+          "path": "artifacts/batch-06/plugins.lint.md"
+        },
+        {
+          "name": "plugins.quality.json",
+          "path": "artifacts/batch-06/plugins.quality.json"
+        },
+        {
+          "name": "plugins.status.json",
+          "path": "artifacts/batch-06/plugins.status.json"
+        }
+      ],
+      "original": "original/batch-06/plugins.md",
+      "originalSha256": "fd3a6390ead528ae4709b0803665dc778c1713c0992b348371fd346e72b80674",
+      "contentSha256": "39a5503f5c48f9495c68afba6881467b185143550c9275f7eeaaeea624971ad4"
+    },
+    {
+      "id": "batch-06/services-system",
+      "title": "系统服务与悬浮窗",
+      "chapter": "系统服务与集成",
+      "module": "系统层 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 131,
+      "issue": 78,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "services-system.critic.md",
+          "path": "artifacts/batch-06/services-system.critic.md"
+        },
+        {
+          "name": "services-system.critic2.md",
+          "path": "artifacts/batch-06/services-system.critic2.md"
+        },
+        {
+          "name": "services-system.facts.json",
+          "path": "artifacts/batch-06/services-system.facts.json"
+        },
+        {
+          "name": "services-system.lint.md",
+          "path": "artifacts/batch-06/services-system.lint.md"
+        },
+        {
+          "name": "services-system.quality.json",
+          "path": "artifacts/batch-06/services-system.quality.json"
+        },
+        {
+          "name": "services-system.status.json",
+          "path": "artifacts/batch-06/services-system.status.json"
+        }
+      ],
+      "original": "original/batch-06/services-system.md",
+      "originalSha256": "c6453983be90c9a9e736f575a2ceef5ece37d4dd1a328eb45d91a30a60115c77",
+      "contentSha256": "abad3eaf971e24c0dc920865a6b44d0deec6e28c3449b466c0e595e94d407945"
+    },
+    {
+      "id": "batch-06/ui-chat-components",
+      "title": "UI 聊天内容组件",
+      "chapter": "用户界面",
+      "module": "UI 聊天",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 117,
+      "issue": 90,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-components.critic.md",
+          "path": "artifacts/batch-06/ui-chat-components.critic.md"
+        },
+        {
+          "name": "ui-chat-components.critic2.md",
+          "path": "artifacts/batch-06/ui-chat-components.critic2.md"
+        },
+        {
+          "name": "ui-chat-components.facts.json",
+          "path": "artifacts/batch-06/ui-chat-components.facts.json"
+        },
+        {
+          "name": "ui-chat-components.lint.md",
+          "path": "artifacts/batch-06/ui-chat-components.lint.md"
+        },
+        {
+          "name": "ui-chat-components.quality.json",
+          "path": "artifacts/batch-06/ui-chat-components.quality.json"
+        },
+        {
+          "name": "ui-chat-components.status.json",
+          "path": "artifacts/batch-06/ui-chat-components.status.json"
+        }
+      ],
+      "original": "original/batch-06/ui-chat-components.md",
+      "originalSha256": "701ccdfa3ef2e2d31a8bea10f29e2b3c6f57dff507c747854b9b290c3d08d72b",
+      "contentSha256": "ae2d5650ece9aa91875987da449d59681e3d4e0b3535863514d9303894a2baf6"
+    },
+    {
+      "id": "batch-06/ui-chat-input",
+      "title": "聊天输入区",
+      "chapter": "用户界面",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "聊天输入区：agent（OutlinedTextField+模型胶囊+双弹窗）与 classic（BasicTextField+右下角齿轮 280dp 设置菜单）两种样式由 inputStyle 切换；common 共享 ChatInputHookRegistry（三事件+ALLOW/BLOCK/REPLACE/CONSUME 裁决，AIChatScreen 接线执行）、InputMenuTogglePluginRegistry（6 槽位开关插件）、MentionVisualTransformation、PendingMessageQueuePanel、ThinkingQualitySlider、ToolPromptManagerDialog；输入增强：空输入 Mic 走全屏语音、附件面板（classic 内嵌/agent 弹窗）、工具权限三段开关与工具提示词管理；走查 11 条（警告 7：sendButtonEnabled 恒 true 死逻辑、透明双分支布局重复等）。",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 79,
+      "issue": 91,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-input.critic.md",
+          "path": "artifacts/batch-06/ui-chat-input.critic.md"
+        },
+        {
+          "name": "ui-chat-input.critic2.md",
+          "path": "artifacts/batch-06/ui-chat-input.critic2.md"
+        },
+        {
+          "name": "ui-chat-input.facts.json",
+          "path": "artifacts/batch-06/ui-chat-input.facts.json"
+        },
+        {
+          "name": "ui-chat-input.lint.md",
+          "path": "artifacts/batch-06/ui-chat-input.lint.md"
+        },
+        {
+          "name": "ui-chat-input.quality.json",
+          "path": "artifacts/batch-06/ui-chat-input.quality.json"
+        },
+        {
+          "name": "ui-chat-input.status.json",
+          "path": "artifacts/batch-06/ui-chat-input.status.json"
+        }
+      ],
+      "original": "original/batch-06/ui-chat-input.md",
+      "originalSha256": "1070ab1d2beeb7c50b11136c5057aa843043b8239f7c71a3df16373be25db115",
+      "contentSha256": "243348c0e1ccf5240a29ef1b578f42bca6c2c51a54cabfa2260d4bdae3e06803"
+    },
+    {
+      "id": "batch-06/ui-chat-parts",
+      "title": "UI 聊天消息部件",
+      "chapter": "用户界面",
+      "module": "UI 聊天",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 151,
+      "issue": 93,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-parts.critic.md",
+          "path": "artifacts/batch-06/ui-chat-parts.critic.md"
+        },
+        {
+          "name": "ui-chat-parts.critic2.md",
+          "path": "artifacts/batch-06/ui-chat-parts.critic2.md"
+        },
+        {
+          "name": "ui-chat-parts.critic3.md",
+          "path": "artifacts/batch-06/ui-chat-parts.critic3.md"
+        },
+        {
+          "name": "ui-chat-parts.facts.json",
+          "path": "artifacts/batch-06/ui-chat-parts.facts.json"
+        },
+        {
+          "name": "ui-chat-parts.lint.md",
+          "path": "artifacts/batch-06/ui-chat-parts.lint.md"
+        },
+        {
+          "name": "ui-chat-parts.quality.json",
+          "path": "artifacts/batch-06/ui-chat-parts.quality.json"
+        },
+        {
+          "name": "ui-chat-parts.status.json",
+          "path": "artifacts/batch-06/ui-chat-parts.status.json"
+        }
+      ],
+      "original": "original/batch-06/ui-chat-parts.md",
+      "originalSha256": "67c03bd9c9a3590860f2275b2c654748d1102170dd321eccbec3a8440ce68990",
+      "contentSha256": "1c65e820ecfe57e9090b2c3209faa459e67dc0705cb6e39748aed95f5782ad81"
+    },
+    {
+      "id": "batch-06/ui-chat-screen",
+      "title": "聊天主界面与状态管理",
+      "chapter": "用户界面",
+      "module": "ui/chat-screen",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 82,
+      "issue": 89,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-screen.critic.md",
+          "path": "artifacts/batch-06/ui-chat-screen.critic.md"
+        },
+        {
+          "name": "ui-chat-screen.critic2.md",
+          "path": "artifacts/batch-06/ui-chat-screen.critic2.md"
+        },
+        {
+          "name": "ui-chat-screen.facts.json",
+          "path": "artifacts/batch-06/ui-chat-screen.facts.json"
+        },
+        {
+          "name": "ui-chat-screen.lint.md",
+          "path": "artifacts/batch-06/ui-chat-screen.lint.md"
+        },
+        {
+          "name": "ui-chat-screen.quality.json",
+          "path": "artifacts/batch-06/ui-chat-screen.quality.json"
+        },
+        {
+          "name": "ui-chat-screen.status.json",
+          "path": "artifacts/batch-06/ui-chat-screen.status.json"
+        }
+      ],
+      "original": "original/batch-06/ui-chat-screen.md",
+      "originalSha256": "ded513916e73b510068f03e483e660a7ca93cb7f790e934ad7ea2918c1154642",
+      "contentSha256": "6f966e7c5ee3c721cab283a0f7f6aef0a40dcaed16ae16290ca772f43cbf51d2"
+    },
+    {
+      "id": "batch-06/ui-chat-styles",
+      "title": "聊天消息样式：气泡风格与 Cursor 风格",
+      "chapter": "用户界面",
+      "module": "UI 聊天 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 113,
+      "issue": 92,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-styles.critic.md",
+          "path": "artifacts/batch-06/ui-chat-styles.critic.md"
+        },
+        {
+          "name": "ui-chat-styles.critic2.md",
+          "path": "artifacts/batch-06/ui-chat-styles.critic2.md"
+        },
+        {
+          "name": "ui-chat-styles.facts.json",
+          "path": "artifacts/batch-06/ui-chat-styles.facts.json"
+        },
+        {
+          "name": "ui-chat-styles.lint.md",
+          "path": "artifacts/batch-06/ui-chat-styles.lint.md"
+        },
+        {
+          "name": "ui-chat-styles.quality.json",
+          "path": "artifacts/batch-06/ui-chat-styles.quality.json"
+        },
+        {
+          "name": "ui-chat-styles.status.json",
+          "path": "artifacts/batch-06/ui-chat-styles.status.json"
+        }
+      ],
+      "original": "original/batch-06/ui-chat-styles.md",
+      "originalSha256": "b03d5dfc9b42b1cfda4793e7469922428d321e7c1ee036d824a9a09808cf8c01",
+      "contentSha256": "fec46f0460ef1bf3a7f4e83c09e0b07a4030425fa3afed7bbefeffde1fee0660"
+    },
+    {
+      "id": "batch-06/util-file-media",
+      "title": "文件、媒体与格式转换工具",
+      "chapter": "工具函数库",
+      "module": "util",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 156,
+      "issue": 83,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-file-media.critic.md",
+          "path": "artifacts/batch-06/util-file-media.critic.md"
+        },
+        {
+          "name": "util-file-media.critic2.md",
+          "path": "artifacts/batch-06/util-file-media.critic2.md"
+        },
+        {
+          "name": "util-file-media.facts.json",
+          "path": "artifacts/batch-06/util-file-media.facts.json"
+        },
+        {
+          "name": "util-file-media.lint.md",
+          "path": "artifacts/batch-06/util-file-media.lint.md"
+        },
+        {
+          "name": "util-file-media.quality.json",
+          "path": "artifacts/batch-06/util-file-media.quality.json"
+        },
+        {
+          "name": "util-file-media.status.json",
+          "path": "artifacts/batch-06/util-file-media.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-file-media.md",
+      "originalSha256": "f4c785b13a49d899447c8c308fad99e01fedecc4e87e8481f8ebde8d8d37fef6",
+      "contentSha256": "6277abe260e865edaf36e69fd0563d14dae101d5c212c676ec5ae3855badba1f"
+    },
+    {
+      "id": "batch-06/util-search",
+      "title": "向量索引与本地检索",
+      "chapter": "工具函数库",
+      "module": "工具函数库 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 82,
+      "issue": 88,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-search.critic.md",
+          "path": "artifacts/batch-06/util-search.critic.md"
+        },
+        {
+          "name": "util-search.critic2.md",
+          "path": "artifacts/batch-06/util-search.critic2.md"
+        },
+        {
+          "name": "util-search.facts.json",
+          "path": "artifacts/batch-06/util-search.facts.json"
+        },
+        {
+          "name": "util-search.lint.md",
+          "path": "artifacts/batch-06/util-search.lint.md"
+        },
+        {
+          "name": "util-search.quality.json",
+          "path": "artifacts/batch-06/util-search.quality.json"
+        },
+        {
+          "name": "util-search.status.json",
+          "path": "artifacts/batch-06/util-search.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-search.md",
+      "originalSha256": "30126c3dc7ad436e1780a9c17d7de16f384411574c34fc5db8c5e41c8927746f",
+      "contentSha256": "c4ec41a999cd4ed72a3d1ec63556eb63d6defcecc6a4f730e57b3f72b95260e6"
+    },
+    {
+      "id": "batch-06/util-stream-core",
+      "title": "响应式流框架",
+      "chapter": "工具函数库",
+      "module": "工具函数库 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 166,
+      "issue": 85,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-stream-core.critic.md",
+          "path": "artifacts/batch-06/util-stream-core.critic.md"
+        },
+        {
+          "name": "util-stream-core.critic2.md",
+          "path": "artifacts/batch-06/util-stream-core.critic2.md"
+        },
+        {
+          "name": "util-stream-core.facts.json",
+          "path": "artifacts/batch-06/util-stream-core.facts.json"
+        },
+        {
+          "name": "util-stream-core.lint.md",
+          "path": "artifacts/batch-06/util-stream-core.lint.md"
+        },
+        {
+          "name": "util-stream-core.quality.json",
+          "path": "artifacts/batch-06/util-stream-core.quality.json"
+        },
+        {
+          "name": "util-stream-core.status.json",
+          "path": "artifacts/batch-06/util-stream-core.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-stream-core.md",
+      "originalSha256": "ac8119b608f3eac2b6cafd590fdf7b54d369001d290a860781b21e5b65fba608",
+      "contentSha256": "fdd007df16ba9f2d9153edf0f7186517bebd8eb6ca7bea68a428a4909a1b1559"
+    },
+    {
+      "id": "batch-06/util-stream-parse",
+      "title": "流式内容解析插件与原生实现",
+      "chapter": "工具函数库",
+      "module": "util",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 86,
+      "issue": 86,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-stream-parse.critic.md",
+          "path": "artifacts/batch-06/util-stream-parse.critic.md"
+        },
+        {
+          "name": "util-stream-parse.critic2.md",
+          "path": "artifacts/batch-06/util-stream-parse.critic2.md"
+        },
+        {
+          "name": "util-stream-parse.facts.json",
+          "path": "artifacts/batch-06/util-stream-parse.facts.json"
+        },
+        {
+          "name": "util-stream-parse.lint.md",
+          "path": "artifacts/batch-06/util-stream-parse.lint.md"
+        },
+        {
+          "name": "util-stream-parse.quality.json",
+          "path": "artifacts/batch-06/util-stream-parse.quality.json"
+        },
+        {
+          "name": "util-stream-parse.status.json",
+          "path": "artifacts/batch-06/util-stream-parse.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-stream-parse.md",
+      "originalSha256": "ab443d3bb314c6d7c76fb6052c0e9d89e20209fb641a5af120cfb77493759bae",
+      "contentSha256": "519b78d1e2c15f89679ffcc3bbf0b085776afe1f45183bcdc65ee39d424b8278"
+    },
+    {
+      "id": "batch-06/util-system",
+      "title": "系统诊断、日志与平台服务",
+      "chapter": "工具函数库",
+      "module": "工具层 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 71,
+      "issue": 87,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-system.critic.md",
+          "path": "artifacts/batch-06/util-system.critic.md"
+        },
+        {
+          "name": "util-system.critic2.md",
+          "path": "artifacts/batch-06/util-system.critic2.md"
+        },
+        {
+          "name": "util-system.facts.json",
+          "path": "artifacts/batch-06/util-system.facts.json"
+        },
+        {
+          "name": "util-system.lint.md",
+          "path": "artifacts/batch-06/util-system.lint.md"
+        },
+        {
+          "name": "util-system.quality.json",
+          "path": "artifacts/batch-06/util-system.quality.json"
+        },
+        {
+          "name": "util-system.status.json",
+          "path": "artifacts/batch-06/util-system.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-system.md",
+      "originalSha256": "1231f51c6f4502fc70a13db9c15e4d8e31d9ba433f49636e8f0c810e3af57d11",
+      "contentSha256": "452f8148aa9b8ede7bd7e7fa0f218c32869cefda99e012cc2db5a37b6c8525da"
+    },
+    {
+      "id": "batch-06/util-text-chat",
+      "title": "消息渲染与文本处理",
+      "chapter": "工具函数库",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 196,
+      "issue": 135,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "util-text-chat.critic.md",
+          "path": "artifacts/batch-06/util-text-chat.critic.md"
+        },
+        {
+          "name": "util-text-chat.critic2.md",
+          "path": "artifacts/batch-06/util-text-chat.critic2.md"
+        },
+        {
+          "name": "util-text-chat.facts.json",
+          "path": "artifacts/batch-06/util-text-chat.facts.json"
+        },
+        {
+          "name": "util-text-chat.lint.md",
+          "path": "artifacts/batch-06/util-text-chat.lint.md"
+        },
+        {
+          "name": "util-text-chat.quality.json",
+          "path": "artifacts/batch-06/util-text-chat.quality.json"
+        },
+        {
+          "name": "util-text-chat.status.json",
+          "path": "artifacts/batch-06/util-text-chat.status.json"
+        }
+      ],
+      "original": "original/batch-06/util-text-chat.md",
+      "originalSha256": "1ed40442f9108a02df724516438295a976cca609587a968e1653135f8809f71a",
+      "contentSha256": "6cd8a61d1ccc106e6ed7dd06e78ad87f1c2b9c77da36c5cfa5af9117859b888a"
+    },
+    {
+      "id": "batch-06/widget-provider",
+      "title": "桌面小组件与文档提供器",
+      "chapter": "系统服务与集成",
+      "module": "系统服务 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 146,
+      "issue": 82,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "widget-provider.critic.md",
+          "path": "artifacts/batch-06/widget-provider.critic.md"
+        },
+        {
+          "name": "widget-provider.critic2.md",
+          "path": "artifacts/batch-06/widget-provider.critic2.md"
+        },
+        {
+          "name": "widget-provider.facts.json",
+          "path": "artifacts/batch-06/widget-provider.facts.json"
+        },
+        {
+          "name": "widget-provider.lint.md",
+          "path": "artifacts/batch-06/widget-provider.lint.md"
+        },
+        {
+          "name": "widget-provider.quality.json",
+          "path": "artifacts/batch-06/widget-provider.quality.json"
+        },
+        {
+          "name": "widget-provider.status.json",
+          "path": "artifacts/batch-06/widget-provider.status.json"
+        }
+      ],
+      "original": "original/batch-06/widget-provider.md",
+      "originalSha256": "f31d53d559c6236f09ed0cfd939f4bf6fbdd37da356d1576d1ecf07a25625804",
+      "contentSha256": "e62648b1179d5922134852a102d9d44828b08121263a28d7edf590c0004be216"
+    },
+    {
+      "id": "batch-07/ui-chat-editor",
+      "title": "内置代码编辑器",
+      "chapter": "用户界面",
+      "module": "聊天 / webview 工作区",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 105,
+      "issue": 96,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-editor.critic.md",
+          "path": "artifacts/batch-07/ui-chat-editor.critic.md"
+        },
+        {
+          "name": "ui-chat-editor.critic2.md",
+          "path": "artifacts/batch-07/ui-chat-editor.critic2.md"
+        },
+        {
+          "name": "ui-chat-editor.facts.json",
+          "path": "artifacts/batch-07/ui-chat-editor.facts.json"
+        },
+        {
+          "name": "ui-chat-editor.lint.md",
+          "path": "artifacts/batch-07/ui-chat-editor.lint.md"
+        },
+        {
+          "name": "ui-chat-editor.quality.json",
+          "path": "artifacts/batch-07/ui-chat-editor.quality.json"
+        },
+        {
+          "name": "ui-chat-editor.status.json",
+          "path": "artifacts/batch-07/ui-chat-editor.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-chat-editor.md",
+      "originalSha256": "0e7bbcde0c20044eeb4c32c14b407d33857f6b4eca8d9cad3022b2b7d6993125",
+      "contentSha256": "a4f6e3fe94f4e61650f05471f04d8013e436cf89542a0f192235089734e240ea"
+    },
+    {
+      "id": "batch-07/ui-chat-lazylist",
+      "title": "聊天列表懒加载布局",
+      "chapter": "用户界面",
+      "module": "ui-features-chat / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 131,
+      "issue": 94,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-lazylist.critic.md",
+          "path": "artifacts/batch-07/ui-chat-lazylist.critic.md"
+        },
+        {
+          "name": "ui-chat-lazylist.critic2.md",
+          "path": "artifacts/batch-07/ui-chat-lazylist.critic2.md"
+        },
+        {
+          "name": "ui-chat-lazylist.facts.json",
+          "path": "artifacts/batch-07/ui-chat-lazylist.facts.json"
+        },
+        {
+          "name": "ui-chat-lazylist.lint.md",
+          "path": "artifacts/batch-07/ui-chat-lazylist.lint.md"
+        },
+        {
+          "name": "ui-chat-lazylist.quality.json",
+          "path": "artifacts/batch-07/ui-chat-lazylist.quality.json"
+        },
+        {
+          "name": "ui-chat-lazylist.status.json",
+          "path": "artifacts/batch-07/ui-chat-lazylist.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-chat-lazylist.md",
+      "originalSha256": "7c44fe87ded4908e937bcac5630e8e3b9d3fd43f30536d05dc8775098c56eb5a",
+      "contentSha256": "b23af1cae080733467ae8c917bd9d5e5062f20a5af0638beb22a4276162eb10f"
+    },
+    {
+      "id": "batch-07/ui-chat-workspace",
+      "title": "工作区与 WebView 基础设施",
+      "chapter": "用户界面",
+      "module": "UI 聊天",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 211,
+      "issue": 95,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-chat-workspace.critic.md",
+          "path": "artifacts/batch-07/ui-chat-workspace.critic.md"
+        },
+        {
+          "name": "ui-chat-workspace.critic2.md",
+          "path": "artifacts/batch-07/ui-chat-workspace.critic2.md"
+        },
+        {
+          "name": "ui-chat-workspace.facts.json",
+          "path": "artifacts/batch-07/ui-chat-workspace.facts.json"
+        },
+        {
+          "name": "ui-chat-workspace.lint.md",
+          "path": "artifacts/batch-07/ui-chat-workspace.lint.md"
+        },
+        {
+          "name": "ui-chat-workspace.quality.json",
+          "path": "artifacts/batch-07/ui-chat-workspace.quality.json"
+        },
+        {
+          "name": "ui-chat-workspace.status.json",
+          "path": "artifacts/batch-07/ui-chat-workspace.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-chat-workspace.md",
+      "originalSha256": "ba4185bca511e4d4adf66ee71e0565016c05b9047deb9bd592a2376581f9bd63",
+      "contentSha256": "c173458b680269fb2fad2327fbe44778343cfac05d6f6a02a5dd324455b79e3a"
+    },
+    {
+      "id": "batch-07/ui-settings-chat",
+      "title": "聊天/备份/历史设置界面",
+      "chapter": "用户界面",
+      "module": "用户界面 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 115,
+      "issue": 99,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-settings-chat.critic2.md",
+          "path": "artifacts/batch-07/ui-settings-chat.critic2.md"
+        },
+        {
+          "name": "ui-settings-chat.facts.json",
+          "path": "artifacts/batch-07/ui-settings-chat.facts.json"
+        },
+        {
+          "name": "ui-settings-chat.lint.md",
+          "path": "artifacts/batch-07/ui-settings-chat.lint.md"
+        },
+        {
+          "name": "ui-settings-chat.quality.json",
+          "path": "artifacts/batch-07/ui-settings-chat.quality.json"
+        },
+        {
+          "name": "ui-settings-chat.status.json",
+          "path": "artifacts/batch-07/ui-settings-chat.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-settings-chat.md",
+      "originalSha256": "0cbc575f70209c7ea9ee6aff1c05908185531dff1c28dacc2e210fa6704bc5e0",
+      "contentSha256": "2b3f6d104a627de86daaab7ecf8e83a6b3c0bb4179537987893f84ea162c3ce1"
+    },
+    {
+      "id": "batch-07/ui-settings-misc",
+      "title": "偏好与其他设置界面",
+      "chapter": "用户界面",
+      "module": "设置 / 杂项",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 212,
+      "issue": 100,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-settings-misc.critic.md",
+          "path": "artifacts/batch-07/ui-settings-misc.critic.md"
+        },
+        {
+          "name": "ui-settings-misc.critic2.md",
+          "path": "artifacts/batch-07/ui-settings-misc.critic2.md"
+        },
+        {
+          "name": "ui-settings-misc.facts.json",
+          "path": "artifacts/batch-07/ui-settings-misc.facts.json"
+        },
+        {
+          "name": "ui-settings-misc.lint.md",
+          "path": "artifacts/batch-07/ui-settings-misc.lint.md"
+        },
+        {
+          "name": "ui-settings-misc.quality.json",
+          "path": "artifacts/batch-07/ui-settings-misc.quality.json"
+        },
+        {
+          "name": "ui-settings-misc.status.json",
+          "path": "artifacts/batch-07/ui-settings-misc.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-settings-misc.md",
+      "originalSha256": "55d51ad0b7b6abcd1ef79fd86b1920a4fb2772acd47cf447d569c93681c4cc5c",
+      "contentSha256": "c605a44abcef7cc089bea71db3cb51c01deb52fcecc1feb91f7328b80be084a5"
+    },
+    {
+      "id": "batch-07/ui-settings-model",
+      "title": "模型配置与提示词设置",
+      "chapter": "用户界面",
+      "module": "设置 / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 126,
+      "issue": 97,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-settings-model.critic.md",
+          "path": "artifacts/batch-07/ui-settings-model.critic.md"
+        },
+        {
+          "name": "ui-settings-model.critic2.md",
+          "path": "artifacts/batch-07/ui-settings-model.critic2.md"
+        },
+        {
+          "name": "ui-settings-model.facts.json",
+          "path": "artifacts/batch-07/ui-settings-model.facts.json"
+        },
+        {
+          "name": "ui-settings-model.lint.md",
+          "path": "artifacts/batch-07/ui-settings-model.lint.md"
+        },
+        {
+          "name": "ui-settings-model.quality.json",
+          "path": "artifacts/batch-07/ui-settings-model.quality.json"
+        },
+        {
+          "name": "ui-settings-model.status.json",
+          "path": "artifacts/batch-07/ui-settings-model.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-settings-model.md",
+      "originalSha256": "0983a6a291dc60d5dbda1844c14c053942221258f075d07575b00ad33f9ca160",
+      "contentSha256": "d1b812c3af1f0d23a461b94b2ae78805038d88dacdce41af81f6c75d744bf839"
+    },
+    {
+      "id": "batch-07/ui-settings-theme",
+      "title": "主题与显示设置",
+      "chapter": "用户界面",
+      "module": "UI 设置",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 234,
+      "issue": 98,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-settings-theme.critic.md",
+          "path": "artifacts/batch-07/ui-settings-theme.critic.md"
+        },
+        {
+          "name": "ui-settings-theme.critic2.md",
+          "path": "artifacts/batch-07/ui-settings-theme.critic2.md"
+        },
+        {
+          "name": "ui-settings-theme.facts.json",
+          "path": "artifacts/batch-07/ui-settings-theme.facts.json"
+        },
+        {
+          "name": "ui-settings-theme.lint.md",
+          "path": "artifacts/batch-07/ui-settings-theme.lint.md"
+        },
+        {
+          "name": "ui-settings-theme.quality.json",
+          "path": "artifacts/batch-07/ui-settings-theme.quality.json"
+        },
+        {
+          "name": "ui-settings-theme.status.json",
+          "path": "artifacts/batch-07/ui-settings-theme.status.json"
+        }
+      ],
+      "original": "original/batch-07/ui-settings-theme.md",
+      "originalSha256": "9d5900e580393638c59040072a453b46a61fc2bdd8bf39f4fe0ae1cd3c8daa61",
+      "contentSha256": "02a999083b46e06ca1c55ddac56af4e200480419f4ea8236dd913f9dd55d6119"
+    },
+    {
+      "id": "batch-08/ui-common-dsl",
+      "title": "工具包 Compose DSL 渲染",
+      "chapter": "用户界面",
+      "module": "ui-common / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 172,
+      "issue": 108,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-common-dsl.critic.md",
+          "path": "artifacts/batch-08/ui-common-dsl.critic.md"
+        },
+        {
+          "name": "ui-common-dsl.critic2.md",
+          "path": "artifacts/batch-08/ui-common-dsl.critic2.md"
+        },
+        {
+          "name": "ui-common-dsl.facts.json",
+          "path": "artifacts/batch-08/ui-common-dsl.facts.json"
+        },
+        {
+          "name": "ui-common-dsl.lint.md",
+          "path": "artifacts/batch-08/ui-common-dsl.lint.md"
+        },
+        {
+          "name": "ui-common-dsl.quality.json",
+          "path": "artifacts/batch-08/ui-common-dsl.quality.json"
+        },
+        {
+          "name": "ui-common-dsl.status.json",
+          "path": "artifacts/batch-08/ui-common-dsl.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-common-dsl.md",
+      "originalSha256": "084b97e13c7c31be8b37967d47a033d82eab5a81c3a328c7644ab40961622366",
+      "contentSha256": "3860b93fe797c3e83e81f24511b602508eea58b26ad631803bcf9019a35756e4"
+    },
+    {
+      "id": "batch-08/ui-common-markdown",
+      "title": "Markdown 与富文本渲染",
+      "chapter": "用户界面",
+      "module": "UI 通用组件",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 209,
+      "issue": 109,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-common-markdown.critic.md",
+          "path": "artifacts/batch-08/ui-common-markdown.critic.md"
+        },
+        {
+          "name": "ui-common-markdown.critic2.md",
+          "path": "artifacts/batch-08/ui-common-markdown.critic2.md"
+        },
+        {
+          "name": "ui-common-markdown.critic3.md",
+          "path": "artifacts/batch-08/ui-common-markdown.critic3.md"
+        },
+        {
+          "name": "ui-common-markdown.facts.json",
+          "path": "artifacts/batch-08/ui-common-markdown.facts.json"
+        },
+        {
+          "name": "ui-common-markdown.lint.md",
+          "path": "artifacts/batch-08/ui-common-markdown.lint.md"
+        },
+        {
+          "name": "ui-common-markdown.quality.json",
+          "path": "artifacts/batch-08/ui-common-markdown.quality.json"
+        },
+        {
+          "name": "ui-common-markdown.status.json",
+          "path": "artifacts/batch-08/ui-common-markdown.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-common-markdown.md",
+      "originalSha256": "bca0d14a5102cb9a68161fe3bb47be3d873dc4c765920994b1edc2ebdb26e6c9",
+      "contentSha256": "c523aa29fc1dc2b3b24bad9b5b8f4321d0b12392469849114f3805ba1cf34d9c"
+    },
+    {
+      "id": "batch-08/ui-main",
+      "title": "主界面与导航骨架",
+      "chapter": "用户界面",
+      "module": "UI / 主界面",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 173,
+      "issue": 110,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-main.critic.md",
+          "path": "artifacts/batch-08/ui-main.critic.md"
+        },
+        {
+          "name": "ui-main.critic2.md",
+          "path": "artifacts/batch-08/ui-main.critic2.md"
+        },
+        {
+          "name": "ui-main.facts.json",
+          "path": "artifacts/batch-08/ui-main.facts.json"
+        },
+        {
+          "name": "ui-main.lint.md",
+          "path": "artifacts/batch-08/ui-main.lint.md"
+        },
+        {
+          "name": "ui-main.quality.json",
+          "path": "artifacts/batch-08/ui-main.quality.json"
+        },
+        {
+          "name": "ui-main.status.json",
+          "path": "artifacts/batch-08/ui-main.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-main.md",
+      "originalSha256": "f9ff7f998874432fb6c351b9bf8597387b1bb70351324ee7f2771523590e5cbb",
+      "contentSha256": "02fa258872cf0175ecc9fa1a62db443cab83f88f1c10ad0d30c8a024c86c9636"
+    },
+    {
+      "id": "batch-08/ui-packages-manager",
+      "title": "扩展包管理界面",
+      "chapter": "用户界面",
+      "module": "扩展包 / 管理界面",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 130,
+      "issue": 101,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-packages-manager.critic.md",
+          "path": "artifacts/batch-08/ui-packages-manager.critic.md"
+        },
+        {
+          "name": "ui-packages-manager.critic2.md",
+          "path": "artifacts/batch-08/ui-packages-manager.critic2.md"
+        },
+        {
+          "name": "ui-packages-manager.facts.json",
+          "path": "artifacts/batch-08/ui-packages-manager.facts.json"
+        },
+        {
+          "name": "ui-packages-manager.lint.md",
+          "path": "artifacts/batch-08/ui-packages-manager.lint.md"
+        },
+        {
+          "name": "ui-packages-manager.quality.json",
+          "path": "artifacts/batch-08/ui-packages-manager.quality.json"
+        },
+        {
+          "name": "ui-packages-manager.status.json",
+          "path": "artifacts/batch-08/ui-packages-manager.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-packages-manager.md",
+      "originalSha256": "1aed2f9d5ef2d139e854750216617da4ad193122acb85c06669ae31ad24a8a75",
+      "contentSha256": "96d2b141d42c444f9141af8e7fc4d6eae289cbb15886fa6453c1440fbb69e22b"
+    },
+    {
+      "id": "batch-08/ui-packages-market",
+      "title": "扩展市场浏览界面",
+      "chapter": "用户界面",
+      "module": "ui-features-packages / app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 118,
+      "issue": 102,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-packages-market.critic.md",
+          "path": "artifacts/batch-08/ui-packages-market.critic.md"
+        },
+        {
+          "name": "ui-packages-market.critic2.md",
+          "path": "artifacts/batch-08/ui-packages-market.critic2.md"
+        },
+        {
+          "name": "ui-packages-market.facts.json",
+          "path": "artifacts/batch-08/ui-packages-market.facts.json"
+        },
+        {
+          "name": "ui-packages-market.lint.md",
+          "path": "artifacts/batch-08/ui-packages-market.lint.md"
+        },
+        {
+          "name": "ui-packages-market.quality.json",
+          "path": "artifacts/batch-08/ui-packages-market.quality.json"
+        },
+        {
+          "name": "ui-packages-market.status.json",
+          "path": "artifacts/batch-08/ui-packages-market.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-packages-market.md",
+      "originalSha256": "5d2d69e8ba7c81e51f4db1d1302a555f3b3ca72545a76cebf8424374a743dbcc",
+      "contentSha256": "73781080ceb1314cdde6e6b3e7fd22c3edd8450c3a5dc84a7af9296b05081ad5"
+    },
+    {
+      "id": "batch-08/ui-packages-mcp",
+      "title": "MCP 配置与部署界面",
+      "chapter": "用户界面",
+      "module": "设置 / 扩展包（packages）",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 138,
+      "issue": 104,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-packages-mcp.critic2.md",
+          "path": "artifacts/batch-08/ui-packages-mcp.critic2.md"
+        },
+        {
+          "name": "ui-packages-mcp.facts.json",
+          "path": "artifacts/batch-08/ui-packages-mcp.facts.json"
+        },
+        {
+          "name": "ui-packages-mcp.lint.md",
+          "path": "artifacts/batch-08/ui-packages-mcp.lint.md"
+        },
+        {
+          "name": "ui-packages-mcp.quality.json",
+          "path": "artifacts/batch-08/ui-packages-mcp.quality.json"
+        },
+        {
+          "name": "ui-packages-mcp.status.json",
+          "path": "artifacts/batch-08/ui-packages-mcp.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-packages-mcp.md",
+      "originalSha256": "72c452cba4d6538c3828289d4961c946c63096b537fd460d7367acc37066bc30",
+      "contentSha256": "1bc1aedc3696b9e042e384313db02dab0ad371de6aca30b6c2dad471fd7a41bd"
+    },
+    {
+      "id": "batch-08/ui-packages-publish",
+      "title": "扩展发布界面（Artifact / Market 发布）",
+      "chapter": "用户界面",
+      "module": "插件 / 市场发布",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 221,
+      "issue": 103,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-packages-publish.critic.md",
+          "path": "artifacts/batch-08/ui-packages-publish.critic.md"
+        },
+        {
+          "name": "ui-packages-publish.critic2.md",
+          "path": "artifacts/batch-08/ui-packages-publish.critic2.md"
+        },
+        {
+          "name": "ui-packages-publish.facts.json",
+          "path": "artifacts/batch-08/ui-packages-publish.facts.json"
+        },
+        {
+          "name": "ui-packages-publish.lint.md",
+          "path": "artifacts/batch-08/ui-packages-publish.lint.md"
+        },
+        {
+          "name": "ui-packages-publish.quality.json",
+          "path": "artifacts/batch-08/ui-packages-publish.quality.json"
+        },
+        {
+          "name": "ui-packages-publish.status.json",
+          "path": "artifacts/batch-08/ui-packages-publish.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-packages-publish.md",
+      "originalSha256": "70c05a55084135a459144ac8d11ec2c9a562afd4e2b3a6cb30f63398de4ba0d3",
+      "contentSha256": "fa7aaf41c916a469792d1ac7e188bb47914fb45b193153e045856027598965c7"
+    },
+    {
+      "id": "batch-08/ui-toolbox-apps",
+      "title": "系统与媒体工具界面",
+      "chapter": "用户界面",
+      "module": "工具箱",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 160,
+      "issue": 107,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-toolbox-apps.critic.md",
+          "path": "artifacts/batch-08/ui-toolbox-apps.critic.md"
+        },
+        {
+          "name": "ui-toolbox-apps.critic2.md",
+          "path": "artifacts/batch-08/ui-toolbox-apps.critic2.md"
+        },
+        {
+          "name": "ui-toolbox-apps.facts.json",
+          "path": "artifacts/batch-08/ui-toolbox-apps.facts.json"
+        },
+        {
+          "name": "ui-toolbox-apps.lint.md",
+          "path": "artifacts/batch-08/ui-toolbox-apps.lint.md"
+        },
+        {
+          "name": "ui-toolbox-apps.quality.json",
+          "path": "artifacts/batch-08/ui-toolbox-apps.quality.json"
+        },
+        {
+          "name": "ui-toolbox-apps.status.json",
+          "path": "artifacts/batch-08/ui-toolbox-apps.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-toolbox-apps.md",
+      "originalSha256": "5d0b81ef1dd80f626ab7166b7a59ebbccd87f3580d4b3ee5fcc109e1d3b7b096",
+      "contentSha256": "740dfdf427b9a1423c81f7b80d414aae95ad9109c1b74c5c8c81c62fe3a95a99"
+    },
+    {
+      "id": "batch-08/ui-toolbox-dev",
+      "title": "开发调试工具界面（ui-toolbox-dev）",
+      "chapter": "用户界面",
+      "module": "工具箱（toolbox）",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 137,
+      "issue": 106,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-toolbox-dev.critic.md",
+          "path": "artifacts/batch-08/ui-toolbox-dev.critic.md"
+        },
+        {
+          "name": "ui-toolbox-dev.critic2.md",
+          "path": "artifacts/batch-08/ui-toolbox-dev.critic2.md"
+        },
+        {
+          "name": "ui-toolbox-dev.facts.json",
+          "path": "artifacts/batch-08/ui-toolbox-dev.facts.json"
+        },
+        {
+          "name": "ui-toolbox-dev.lint.md",
+          "path": "artifacts/batch-08/ui-toolbox-dev.lint.md"
+        },
+        {
+          "name": "ui-toolbox-dev.quality.json",
+          "path": "artifacts/batch-08/ui-toolbox-dev.quality.json"
+        },
+        {
+          "name": "ui-toolbox-dev.status.json",
+          "path": "artifacts/batch-08/ui-toolbox-dev.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-toolbox-dev.md",
+      "originalSha256": "d6277f016135ce151981f1a3f1701411267898d2b1d7ec2982926e4cacb7c8fe",
+      "contentSha256": "9c36b428dcd9b4e3ba82cc3edcaeb7a18242931286adbc9824bb3fdd2375a492"
+    },
+    {
+      "id": "batch-08/ui-toolbox-filemanager",
+      "title": "文件管理器界面",
+      "chapter": "用户界面",
+      "module": "工具箱 / 文件管理器",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 144,
+      "issue": 105,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-toolbox-filemanager.critic.md",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.critic.md"
+        },
+        {
+          "name": "ui-toolbox-filemanager.critic2.md",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.critic2.md"
+        },
+        {
+          "name": "ui-toolbox-filemanager.facts.json",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.facts.json"
+        },
+        {
+          "name": "ui-toolbox-filemanager.lint.md",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.lint.md"
+        },
+        {
+          "name": "ui-toolbox-filemanager.quality.json",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.quality.json"
+        },
+        {
+          "name": "ui-toolbox-filemanager.status.json",
+          "path": "artifacts/batch-08/ui-toolbox-filemanager.status.json"
+        }
+      ],
+      "original": "original/batch-08/ui-toolbox-filemanager.md",
+      "originalSha256": "62af6a98569382391b6486b0f53001cbba19d9417b5bcabb77a1af9eba48ba78",
+      "contentSha256": "0be59310aa52701b011d21a627ade1bcd0a632c317cdfcf5c629fb963750eaf6"
+    },
+    {
+      "id": "batch-09/appendix-js-package-dev",
+      "title": "JS 沙盒包开发接口",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 31,
+      "issue": 139,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-js-package-dev.facts.json",
+          "path": "artifacts/batch-09/appendix-js-package-dev.facts.json"
+        },
+        {
+          "name": "appendix-js-package-dev.status.json",
+          "path": "artifacts/batch-09/appendix-js-package-dev.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-js-package-dev.md",
+      "originalSha256": "75a91147a2395162f9ac64db9928efd6ac2b10a6c66eb0659980096b2df65d96",
+      "contentSha256": "6935ba9bcc4b8ab19fc146dd710a749e9ec4ceb6ba48f7e95db387b1ae04a41c"
+    },
+    {
+      "id": "batch-09/appendix-plugin-capabilities",
+      "title": "插件能力目录",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 42,
+      "issue": 138,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-plugin-capabilities.facts.json",
+          "path": "artifacts/batch-09/appendix-plugin-capabilities.facts.json"
+        },
+        {
+          "name": "appendix-plugin-capabilities.status.json",
+          "path": "artifacts/batch-09/appendix-plugin-capabilities.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-plugin-capabilities.md",
+      "originalSha256": "c2b712476798f54d349474209b6ab060e449af3c22fe585b2d7744f1137ca14c",
+      "contentSha256": "f8cc709b3ebc3c98a8bd8a83fe173977137b4031a076ae7028a3bb196b48393d"
+    },
+    {
+      "id": "batch-09/appendix-plugin-contract",
+      "title": "插件开发契约手册",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 22,
+      "issue": 153,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-plugin-contract.facts.json",
+          "path": "artifacts/batch-09/appendix-plugin-contract.facts.json"
+        },
+        {
+          "name": "appendix-plugin-contract.status.json",
+          "path": "artifacts/batch-09/appendix-plugin-contract.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-plugin-contract.md",
+      "originalSha256": "58eb3d6d3223868433daab5e1b9a0dd551a3dc93ee93dfba82262b11cd3c20e7",
+      "contentSha256": "0abe98503b916ff444447a64c91277ba7b458d387126231dc8c361e53f31def3"
+    },
+    {
+      "id": "batch-09/appendix-plugin-dev-guide",
+      "title": "插件开发指南（Top50 实证）",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 36,
+      "issue": 140,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-plugin-dev-guide.facts.json",
+          "path": "artifacts/batch-09/appendix-plugin-dev-guide.facts.json"
+        },
+        {
+          "name": "appendix-plugin-dev-guide.status.json",
+          "path": "artifacts/batch-09/appendix-plugin-dev-guide.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-plugin-dev-guide.md",
+      "originalSha256": "5f511c7e1d050b87f4e288af5357c096ffe087cfaf3a5eed776ca64801426559",
+      "contentSha256": "b04d1c914be83038060864615867eae43166fed603d351d943f88145dd3dc3b3"
+    },
+    {
+      "id": "batch-09/appendix-plugin-examples",
+      "title": "插件最小实例集",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 11,
+      "issue": 154,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-plugin-examples.facts.json",
+          "path": "artifacts/batch-09/appendix-plugin-examples.facts.json"
+        },
+        {
+          "name": "appendix-plugin-examples.status.json",
+          "path": "artifacts/batch-09/appendix-plugin-examples.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-plugin-examples.md",
+      "originalSha256": "8476fc6262730343e4a81629b83cac804d32fdaa0fa742141d4bc533dff0721b",
+      "contentSha256": "b2f8dcb5b97820a9549ff668144b744b68ec2ffb995ecbb552df0aa93315de4c"
+    },
+    {
+      "id": "batch-09/appendix-tests-android",
+      "title": "插桩测试、模板与本地化",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 176,
+      "issue": 137,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-tests-android.critic.md",
+          "path": "artifacts/batch-09/appendix-tests-android.critic.md"
+        },
+        {
+          "name": "appendix-tests-android.critic2.md",
+          "path": "artifacts/batch-09/appendix-tests-android.critic2.md"
+        },
+        {
+          "name": "appendix-tests-android.facts.json",
+          "path": "artifacts/batch-09/appendix-tests-android.facts.json"
+        },
+        {
+          "name": "appendix-tests-android.lint.md",
+          "path": "artifacts/batch-09/appendix-tests-android.lint.md"
+        },
+        {
+          "name": "appendix-tests-android.quality.json",
+          "path": "artifacts/batch-09/appendix-tests-android.quality.json"
+        },
+        {
+          "name": "appendix-tests-android.status.json",
+          "path": "artifacts/batch-09/appendix-tests-android.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-tests-android.md",
+      "originalSha256": "27cfdbcb89c9bf5c035500f81aea40c30587ff7b35b2fc09e57fdd99a7db02a0",
+      "contentSha256": "ad9f12c1d3d24785657e75be465ff311cecdd52bb074dd94a38872b6e0894dc9"
+    },
+    {
+      "id": "batch-09/appendix-tests-unit-api-core",
+      "title": "单元测试·api/core",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 151,
+      "issue": 121,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-tests-unit-api-core.critic.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-api-core.critic.md"
+        },
+        {
+          "name": "appendix-tests-unit-api-core.facts.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-api-core.facts.json"
+        },
+        {
+          "name": "appendix-tests-unit-api-core.lint.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-api-core.lint.md"
+        },
+        {
+          "name": "appendix-tests-unit-api-core.quality.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-api-core.quality.json"
+        },
+        {
+          "name": "appendix-tests-unit-api-core.status.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-api-core.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-tests-unit-api-core.md",
+      "originalSha256": "e0292f8c447b2d1b365617f6237e3d803979b73cf93fdff943f6fb94a78b3ddd",
+      "contentSha256": "5b0c3fd3662bc73bc03bfcc2ed67e3e1ecf0385cf956ec8bc3d778332496ee31"
+    },
+    {
+      "id": "batch-09/appendix-tests-unit-data",
+      "title": "单元测试·data（测试覆盖附录）",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 144,
+      "issue": 122,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-tests-unit-data.critic.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.critic.md"
+        },
+        {
+          "name": "appendix-tests-unit-data.critic2.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.critic2.md"
+        },
+        {
+          "name": "appendix-tests-unit-data.facts.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.facts.json"
+        },
+        {
+          "name": "appendix-tests-unit-data.lint.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.lint.md"
+        },
+        {
+          "name": "appendix-tests-unit-data.quality.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.quality.json"
+        },
+        {
+          "name": "appendix-tests-unit-data.status.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-data.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-tests-unit-data.md",
+      "originalSha256": "7f7129f03137c94e00a7fdc3b3b6918aa841b427a55a112e7e93f7ed6e1b1d52",
+      "contentSha256": "add8b02d949d9d40f48079d56d4eba7ea2fe281d489bb540e2edbcd577d7b308"
+    },
+    {
+      "id": "batch-09/appendix-tests-unit-ui-util",
+      "title": "单元测试·ui/util",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 149,
+      "issue": 123,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-tests-unit-ui-util.critic.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.critic.md"
+        },
+        {
+          "name": "appendix-tests-unit-ui-util.critic2.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.critic2.md"
+        },
+        {
+          "name": "appendix-tests-unit-ui-util.facts.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.facts.json"
+        },
+        {
+          "name": "appendix-tests-unit-ui-util.lint.md",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.lint.md"
+        },
+        {
+          "name": "appendix-tests-unit-ui-util.quality.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.quality.json"
+        },
+        {
+          "name": "appendix-tests-unit-ui-util.status.json",
+          "path": "artifacts/batch-09/appendix-tests-unit-ui-util.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-tests-unit-ui-util.md",
+      "originalSha256": "190d7891b8c4924a301a687fe2537c55ec7d7ec32b04a02c26238ff1c3eed4ac",
+      "contentSha256": "7e0be500e4735d6d3cadb40d10da688c470ca168cbc4d8776225731bb4a7b09c"
+    },
+    {
+      "id": "batch-09/appendix-toolpkg-contract",
+      "title": "ToolPkg 容器契约",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-03",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 13,
+      "issue": 155,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-toolpkg-contract.facts.json",
+          "path": "artifacts/batch-09/appendix-toolpkg-contract.facts.json"
+        },
+        {
+          "name": "appendix-toolpkg-contract.status.json",
+          "path": "artifacts/batch-09/appendix-toolpkg-contract.status.json"
+        }
+      ],
+      "original": "original/batch-09/appendix-toolpkg-contract.md",
+      "originalSha256": "406012741b2de5b317b16b9d8865a58c91f66d97e862278f9f7cb3d687c53304",
+      "contentSha256": "7a1706108f5f1fa6c8607359f6754fe28fd4d3668e487b058f6615842545cae9"
+    },
+    {
+      "id": "batch-09/ui-about",
+      "title": "关于/更新/帮助界面",
+      "chapter": "用户界面",
+      "module": "UI / 关于与更新",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 126,
+      "issue": 119,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-about.critic.md",
+          "path": "artifacts/batch-09/ui-about.critic.md"
+        },
+        {
+          "name": "ui-about.critic2.md",
+          "path": "artifacts/batch-09/ui-about.critic2.md"
+        },
+        {
+          "name": "ui-about.facts.json",
+          "path": "artifacts/batch-09/ui-about.facts.json"
+        },
+        {
+          "name": "ui-about.lint.md",
+          "path": "artifacts/batch-09/ui-about.lint.md"
+        },
+        {
+          "name": "ui-about.quality.json",
+          "path": "artifacts/batch-09/ui-about.quality.json"
+        },
+        {
+          "name": "ui-about.status.json",
+          "path": "artifacts/batch-09/ui-about.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-about.md",
+      "originalSha256": "ce4f58c2773b3fc0e0b1ce81b9f624336d9513f5dc2d5e152088a3efc4b3276f",
+      "contentSha256": "168c081a6f410947004c0a805c8fef60cc20a30493ee17f2299c11dead9d94a1"
+    },
+    {
+      "id": "batch-09/ui-assistant",
+      "title": "助手配置界面",
+      "chapter": "用户界面",
+      "module": "UI / 助手配置",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 143,
+      "issue": 116,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-assistant.critic.md",
+          "path": "artifacts/batch-09/ui-assistant.critic.md"
+        },
+        {
+          "name": "ui-assistant.facts.json",
+          "path": "artifacts/batch-09/ui-assistant.facts.json"
+        },
+        {
+          "name": "ui-assistant.lint.md",
+          "path": "artifacts/batch-09/ui-assistant.lint.md"
+        },
+        {
+          "name": "ui-assistant.quality.json",
+          "path": "artifacts/batch-09/ui-assistant.quality.json"
+        },
+        {
+          "name": "ui-assistant.status.json",
+          "path": "artifacts/batch-09/ui-assistant.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-assistant.md",
+      "originalSha256": "2a5fba4957ed67cc8ffee047dfb405bc3c00604e7d1fa7c694931d83fc384caf",
+      "contentSha256": "bbc0fbae951f237510721320fcf390d6166636cf3fda5350013fa38238ca5390"
+    },
+    {
+      "id": "batch-09/ui-demo",
+      "title": "权限引导与演示界面",
+      "chapter": "用户界面",
+      "module": "UI / 权限与演示",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 160,
+      "issue": 117,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-demo.critic.md",
+          "path": "artifacts/batch-09/ui-demo.critic.md"
+        },
+        {
+          "name": "ui-demo.critic2.md",
+          "path": "artifacts/batch-09/ui-demo.critic2.md"
+        },
+        {
+          "name": "ui-demo.facts.json",
+          "path": "artifacts/batch-09/ui-demo.facts.json"
+        },
+        {
+          "name": "ui-demo.lint.md",
+          "path": "artifacts/batch-09/ui-demo.lint.md"
+        },
+        {
+          "name": "ui-demo.quality.json",
+          "path": "artifacts/batch-09/ui-demo.quality.json"
+        },
+        {
+          "name": "ui-demo.status.json",
+          "path": "artifacts/batch-09/ui-demo.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-demo.md",
+      "originalSha256": "15bc12f67de77c5ff83215160cd6c2a8619e0c9a5cd5c74b8105be95e8e295e3",
+      "contentSha256": "eace4ccb071f9a8c3ba632305ea51da2594304f4b0f1ec2f5b2f5671a1aae88c"
+    },
+    {
+      "id": "batch-09/ui-floating",
+      "title": "悬浮窗界面",
+      "chapter": "用户界面",
+      "module": "UI / 悬浮窗",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 148,
+      "issue": 111,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-floating.critic.md",
+          "path": "artifacts/batch-09/ui-floating.critic.md"
+        },
+        {
+          "name": "ui-floating.critic2.md",
+          "path": "artifacts/batch-09/ui-floating.critic2.md"
+        },
+        {
+          "name": "ui-floating.facts.json",
+          "path": "artifacts/batch-09/ui-floating.facts.json"
+        },
+        {
+          "name": "ui-floating.lint.md",
+          "path": "artifacts/batch-09/ui-floating.lint.md"
+        },
+        {
+          "name": "ui-floating.quality.json",
+          "path": "artifacts/batch-09/ui-floating.quality.json"
+        },
+        {
+          "name": "ui-floating.status.json",
+          "path": "artifacts/batch-09/ui-floating.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-floating.md",
+      "originalSha256": "0b99c6cbc3b6118869032eb7f44814e1762bf8b754e2ae7bde8b9cbff8d514c0",
+      "contentSha256": "5d45a513f26ed396f502d41120a0cebae1c48942311a23f9d89359467f4bab7b"
+    },
+    {
+      "id": "batch-09/ui-memory",
+      "title": "记忆与知识库界面",
+      "chapter": "用户界面",
+      "module": "UI / 记忆",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 210,
+      "issue": 112,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-memory.critic.md",
+          "path": "artifacts/batch-09/ui-memory.critic.md"
+        },
+        {
+          "name": "ui-memory.critic2.md",
+          "path": "artifacts/batch-09/ui-memory.critic2.md"
+        },
+        {
+          "name": "ui-memory.facts.json",
+          "path": "artifacts/batch-09/ui-memory.facts.json"
+        },
+        {
+          "name": "ui-memory.lint.md",
+          "path": "artifacts/batch-09/ui-memory.lint.md"
+        },
+        {
+          "name": "ui-memory.quality.json",
+          "path": "artifacts/batch-09/ui-memory.quality.json"
+        },
+        {
+          "name": "ui-memory.status.json",
+          "path": "artifacts/batch-09/ui-memory.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-memory.md",
+      "originalSha256": "734ea64a1c8a0b6471d7657d7c1431f49e02faa26eaed700d4e21b70d072f80b",
+      "contentSha256": "913d6a0b3bc671c57f28d6751e91b878e906fd6a76de62407d782dcb4c51858f"
+    },
+    {
+      "id": "batch-09/ui-permission",
+      "title": "权限与 Token 配置界面",
+      "chapter": "用户界面",
+      "module": "UI / 权限与 Token",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 153,
+      "issue": 118,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-permission.critic.md",
+          "path": "artifacts/batch-09/ui-permission.critic.md"
+        },
+        {
+          "name": "ui-permission.critic2.md",
+          "path": "artifacts/batch-09/ui-permission.critic2.md"
+        },
+        {
+          "name": "ui-permission.facts.json",
+          "path": "artifacts/batch-09/ui-permission.facts.json"
+        },
+        {
+          "name": "ui-permission.lint.md",
+          "path": "artifacts/batch-09/ui-permission.lint.md"
+        },
+        {
+          "name": "ui-permission.quality.json",
+          "path": "artifacts/batch-09/ui-permission.quality.json"
+        },
+        {
+          "name": "ui-permission.status.json",
+          "path": "artifacts/batch-09/ui-permission.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-permission.md",
+      "originalSha256": "834ee35d76f5c33e46ac9644f47f98286128e7299875a7be075277502c560cd8",
+      "contentSha256": "40433a8affde219c9ca4bb9db2bf75e8db9a991e70bdb3e26b9c89491275b39b"
+    },
+    {
+      "id": "batch-09/ui-startup",
+      "title": "启动/恢复/性能界面",
+      "chapter": "用户界面",
+      "module": "UI / 启动与恢复",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 174,
+      "issue": 120,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-startup.critic.md",
+          "path": "artifacts/batch-09/ui-startup.critic.md"
+        },
+        {
+          "name": "ui-startup.critic2.md",
+          "path": "artifacts/batch-09/ui-startup.critic2.md"
+        },
+        {
+          "name": "ui-startup.facts.json",
+          "path": "artifacts/batch-09/ui-startup.facts.json"
+        },
+        {
+          "name": "ui-startup.lint.md",
+          "path": "artifacts/batch-09/ui-startup.lint.md"
+        },
+        {
+          "name": "ui-startup.quality.json",
+          "path": "artifacts/batch-09/ui-startup.quality.json"
+        },
+        {
+          "name": "ui-startup.status.json",
+          "path": "artifacts/batch-09/ui-startup.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-startup.md",
+      "originalSha256": "f1ffc4b022c879ddaeab7a28e8081b17afb7351567fba00851ee5d6cde098214",
+      "contentSha256": "effd83914b2394c4a35473b8278c07d58f9f5a651bd9976c07c43885e21aacb5"
+    },
+    {
+      "id": "batch-09/ui-tokenstats",
+      "title": "Token 用量统计界面",
+      "chapter": "用户界面",
+      "module": "UI / 统计",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 228,
+      "issue": 113,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-tokenstats.critic.md",
+          "path": "artifacts/batch-09/ui-tokenstats.critic.md"
+        },
+        {
+          "name": "ui-tokenstats.facts.json",
+          "path": "artifacts/batch-09/ui-tokenstats.facts.json"
+        },
+        {
+          "name": "ui-tokenstats.lint.md",
+          "path": "artifacts/batch-09/ui-tokenstats.lint.md"
+        },
+        {
+          "name": "ui-tokenstats.quality.json",
+          "path": "artifacts/batch-09/ui-tokenstats.quality.json"
+        },
+        {
+          "name": "ui-tokenstats.status.json",
+          "path": "artifacts/batch-09/ui-tokenstats.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-tokenstats.md",
+      "originalSha256": "6df8ca3fa290da0e922ed5c93f1c5f03d2e75a9bec2d04e8bdf2dff191f75446",
+      "contentSha256": "12b1bcadcfeffd799882aebede37a85c39e6f8be90afbb97291e7bea1778b26e"
+    },
+    {
+      "id": "batch-09/ui-websession",
+      "title": "内置浏览器界面",
+      "chapter": "用户界面",
+      "module": "app",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 111,
+      "issue": 115,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-websession.critic.md",
+          "path": "artifacts/batch-09/ui-websession.critic.md"
+        },
+        {
+          "name": "ui-websession.critic2.md",
+          "path": "artifacts/batch-09/ui-websession.critic2.md"
+        },
+        {
+          "name": "ui-websession.facts.json",
+          "path": "artifacts/batch-09/ui-websession.facts.json"
+        },
+        {
+          "name": "ui-websession.lint.md",
+          "path": "artifacts/batch-09/ui-websession.lint.md"
+        },
+        {
+          "name": "ui-websession.quality.json",
+          "path": "artifacts/batch-09/ui-websession.quality.json"
+        },
+        {
+          "name": "ui-websession.status.json",
+          "path": "artifacts/batch-09/ui-websession.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-websession.md",
+      "originalSha256": "295d763a56cd0e3b1a9da2ac1bd69cefe43399c24dc83b7cf77728d6a4f7bc02",
+      "contentSha256": "b9c584b2d2c0008d8c7665aee693ab4878d422f011d71e8f452c354e5cefc7e5"
+    },
+    {
+      "id": "batch-09/ui-workflow",
+      "title": "工作流界面",
+      "chapter": "用户界面",
+      "module": "UI / 工作流",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 169,
+      "issue": 114,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "ui-workflow.critic.md",
+          "path": "artifacts/batch-09/ui-workflow.critic.md"
+        },
+        {
+          "name": "ui-workflow.critic2.md",
+          "path": "artifacts/batch-09/ui-workflow.critic2.md"
+        },
+        {
+          "name": "ui-workflow.facts.json",
+          "path": "artifacts/batch-09/ui-workflow.facts.json"
+        },
+        {
+          "name": "ui-workflow.lint.md",
+          "path": "artifacts/batch-09/ui-workflow.lint.md"
+        },
+        {
+          "name": "ui-workflow.quality.json",
+          "path": "artifacts/batch-09/ui-workflow.quality.json"
+        },
+        {
+          "name": "ui-workflow.status.json",
+          "path": "artifacts/batch-09/ui-workflow.status.json"
+        }
+      ],
+      "original": "original/batch-09/ui-workflow.md",
+      "originalSha256": "fd2008e07570c5d562fec839b5ace4cdc182b342add8679c6748ecf83ac1fe58",
+      "contentSha256": "fd2da8619b513bbce92711f81d3ec78aa145ba40d5fcc750c0de011444281dfd"
+    },
+    {
+      "id": "batch-10/appendix-room-field-spec",
+      "title": "Room 表字段规范与数据救援",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-07",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 30,
+      "issue": null,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-room-field-spec.facts.json",
+          "path": "artifacts/batch-10/appendix-room-field-spec.facts.json"
+        },
+        {
+          "name": "appendix-room-field-spec.status.json",
+          "path": "artifacts/batch-10/appendix-room-field-spec.status.json"
+        }
+      ],
+      "original": "original/batch-10/appendix-room-field-spec.md",
+      "originalSha256": "57baa7b3fd3e3d0a1a5b2aead93d53fec4dfa44b9904ad073881c1dc0cb10d24",
+      "contentSha256": "742a15a0581a51fd42a89af7df1b97351f1391da808dcca0fc20d00dc487ecd7"
+    },
+    {
+      "id": "batch-10/appendix-uncovered-native",
+      "title": "未覆盖 kt 扫尾·原生绑定/模板/示例",
+      "chapter": "附录",
+      "module": "附录",
+      "status": "approved",
+      "updated": "2026-10-02",
+      "summary": "",
+      "sourceCommit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+      "sourceRepository": "AAswordman/Operit",
+      "facts": 138,
+      "issue": 125,
+      "links": [],
+      "artifacts": [
+        {
+          "name": "appendix-uncovered-native.facts.json",
+          "path": "artifacts/batch-10/appendix-uncovered-native.facts.json"
+        },
+        {
+          "name": "appendix-uncovered-native.quality.json",
+          "path": "artifacts/batch-10/appendix-uncovered-native.quality.json"
+        },
+        {
+          "name": "appendix-uncovered-native.status.json",
+          "path": "artifacts/batch-10/appendix-uncovered-native.status.json"
+        }
+      ],
+      "original": "original/batch-10/appendix-uncovered-native.md",
+      "originalSha256": "20d03d17eb5b6bdb5b0eb164d69d848e968db318372316d8f9511d0edcfc8d9e",
+      "contentSha256": "a766e1e79a3b1470b3fa6df8446280661029ae7e26ec6f2a8701e130bf4c7d0b"
+    }
+  ]
+}

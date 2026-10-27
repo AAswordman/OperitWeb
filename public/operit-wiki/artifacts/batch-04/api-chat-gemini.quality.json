@@ -1,0 +1,58 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 148,
+    "evidence": "        private const val DEBUG = true // 开启调试日志",
+    "severity": "建议",
+    "confidence": "高",
+    "description": "DEBUG 硬编码为 true，logDebug 恒开启；createRequestBody 会把完整请求体（含用户消息）分块打到 logcat，release 包同样输出。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1503,
+    "evidence": "                \"$requestUrl?key=$currentApiKey\"",
+    "severity": "警告",
+    "confidence": "高",
+    "description": "API Key 拼在 URL 查询参数 ?key= 中；查询参数易落入代理/服务端访问日志，HttpLogSanitizer 仅脱敏请求头，保不住 URL。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1176,
+    "evidence": "              recordTokenUsage: Boolean,",
+    "severity": "建议",
+    "confidence": "高",
+    "description": "sendMessage 声明了 recordTokenUsage 参数，但函数体内从未引用；调用方传 false（如 testConnection）实际无任何效果，属死参数。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1612,
+    "evidence": "                        } catch (e: Exception) {\n                            logError(\"解析SSE响应数据失败: ${e.message}\", e)\n                        }",
+    "severity": "建议",
+    "confidence": "中",
+    "description": "SSE 单行 JSON 解析失败只记日志就继续，损坏的行会被静默丢弃，用户看到的内容可能缺一块而无任何提示。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1824,
+    "evidence": "                streamCollector.emit(\" \")",
+    "severity": "建议",
+    "confidence": "中",
+    "description": "流式全程无内容时发送一个空格占位（非流式 1883 行同样）；下游若把非空字符串当有效回复，会存下一条只有空格的助手消息。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1521,
+    "evidence": "        } catch (e: Exception) {\n            logError(\"解析API端点失败\", e)\n            \"https://generativelanguage.googleapis.com\"\n        }",
+    "severity": "建议",
+    "confidence": "中",
+    "description": "determineBaseUrl 解析端点失败时静默回退到官方地址；用户配错自建代理地址时请求会被发往非预期的谷歌官方服务端，且只有一条 error 日志。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/GeminiProvider.kt",
+    "line": 1309,
+    "evidence": "                // 清理活跃引用\n                activeCall = null\n                activeResponse = null",
+    "severity": "建议",
+    "confidence": "中",
+    "description": "activeCall/activeResponse 的清理写在 withContext 之后；响应处理抛异常时会跳过这两行进入外层 catch，activeResponse 残留引用直到下次请求覆盖，cancelStreaming 可能误关旧连接。"
+  }
+]

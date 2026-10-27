@@ -1,0 +1,8 @@
+Operit-wiki snapshot
+Copyright (c) 2026 luojiaping
+License: MIT (see LICENSE.txt)
+Repository: https://github.com/jasonluoxray/Operit-wiki
+Snapshot commit: 5e2f848db47d352754ba614c2138fa03b9c5ce93
+Original issue repository: luojiaping/Operit-wiki (not migrated; issue numbers must not be reused in the backup repository).
+Adaptations: website routes, pinned source links, frontmatter removal, chapter/search/quality indexes.
+Original complete repository and original article text are retained alongside the adapted content.

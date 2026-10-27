@@ -1,0 +1,90 @@
+[
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt",
+    "line": 22,
+    "description": "callbackMap 注册后只在收到 Termux 回包时移除。若 Termux 进程被杀或永不回包，回调（含闭包引用的上下文）永久驻留内存且无超时清理，长期累积可致内存泄漏。",
+    "evidence": "private val callbackMap = mutableMapOf<Int, ((CommandResult) -> Unit)>()"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt",
+    "line": 556,
+    "description": "onTaskRemoved 无条件 startService 自重启。在最近任务划掉应用会触发服务复活；彻底停止需经窗口内关闭按钮走 onClose→stopSelf()（:716），划掉任务无法彻底关闭悬浮窗服务。",
+    "evidence": "override fun onTaskRemoved(rootIntent: Intent) {"
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt",
+    "line": 327,
+    "description": "申请 10 分钟 PARTIAL_WAKE_LOCK 保活。每次启动服务都持锁 10 分钟，频繁唤醒场景下会显著增加待机耗电；且超时靠 WakeLock 自释放，无主动 release 路径可审计。",
+    "evidence": "wakeLock?.acquire(10 * 60 * 1000L)"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt",
+    "line": 179,
+    "description": "completeEmbeddingsEndpoint 对用户配置的 endpoint 只做 trim 与路径拼接，直接 URL(trimmed) 发请求。无域名白名单/协议校验（http 明文亦可），API Key 会以 Bearer 头发往任意用户填写的地址，配错或被篡改即泄露密钥。",
+    "evidence": "val path = URL(trimmed).path.removeSuffix(\"/\")"
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/UIDebuggerService.kt",
+    "line": 77,
+    "description": "UIDebuggerService 以 BIND_AUTO_CREATE 单向绑定 FloatingChatService（后者未反向绑定），UIDebuggerService 存活期间系统保活被绑服务；服务停用/卸载路径不干净。",
+    "evidence": "bindService(intent, connection, Context.BIND_AUTO_CREATE)"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/notification/OperitNotificationListenerService.kt",
+    "line": 14,
+    "description": "OperitNotificationStore 在内存 LinkedHashMap 里明文缓存最多 200 条通知全文（含短信验证码、银行提醒等敏感内容）。虽不出进程，但内存转储/调试即可读取；建议落盘加密或缩短留存。",
+    "evidence": "private val entries = LinkedHashMap<String, Entry>()"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/TermuxCommandResultService.kt",
+    "line": 16,
+    "description": "继承 Android 已废弃的 IntentService（API 30 废弃）。Google 建议迁移到 WorkManager 或 Service + 协程；继续使用在新版本可能行为变更。",
+    "evidence": "class TermuxCommandResultService : IntentService(\"TermuxCommandResultService\")"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/CloudEmbeddingService.kt",
+    "line": 45,
+    "description": "generateEmbedding 用 try/catch(Exception) 包住全部网络逻辑，失败一律记日志后返回 null。调用方无法区分“配置错误/网络超时/服务端 4xx/5xx”，排障只能翻日志。",
+    "evidence": "} catch (e: Exception) {"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/floating/FloatingWindowState.kt",
+    "line": 98,
+    "description": "restoreState 读到 NaN 直接 require 抛 IllegalArgumentException，调用链回到 FloatingChatService.onCreate 的 catch 分支会 stopSelf——一次脏数据就导致悬浮窗服务彻底起不来，直到用户清数据。建议脏值回退默认值而非抛异常。",
+    "evidence": "require(storedWidth.isFinite()) { \"Non-finite stored window_width: $storedWidth\" }"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/FloatingChatService.kt",
+    "line": 215,
+    "description": "(application as OperitApplication) 强转。若进程 Application 被替换（测试/多进程场景），此处 ClassCastException 直接崩溃 onCreate；建议用 as? 安全转换。",
+    "evidence": "(application as OperitApplication).initializeMainApplication()"
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/services/assistant/OperitVoiceInteractionService.kt",
+    "line": 40,
+    "description": "onGetSupportedVoiceActions 仅打日志后 return super，无任何实质定制。若无需声明支持的语音动作，可删掉该覆写减少噪音。",
+    "evidence": "return super.onGetSupportedVoiceActions(voiceActions)"
+  }
+]

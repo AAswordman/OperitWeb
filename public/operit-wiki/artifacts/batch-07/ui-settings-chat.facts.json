@@ -1,0 +1,462 @@
+[
+  {
+    "fact": "ChatBackupSettingsScreen() 是备份设置页主入口（:144），用 LazyColumn 拼装数据总览、备份统计、聊天/角色卡/记忆/模型配置管理、FAQ、Room 数据库备份、原生快照共 9 个区块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:144"
+  },
+  {
+    "fact": "RoomDatabaseBackupOperation 枚举（:120）定义 RoomDB 备份四态：IDLE / BACKING_UP / SUCCESS / FAILED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:120"
+  },
+  {
+    "fact": "RoomDatabaseRestoreOperation 枚举（:127）定义 RoomDB 恢复四态：IDLE / RESTORING / SUCCESS / FAILED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:127"
+  },
+  {
+    "fact": "RawSnapshotOperation 枚举（:134）定义原生快照五态：IDLE / BACKING_UP / BACKUP_SUCCESS / RESTORING / FAILED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:134"
+  },
+  {
+    "fact": "聊天记录导出默认格式为 JSON（:221，selectedExportFormat 初始值 ExportFormat.JSON）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:221"
+  },
+  {
+    "fact": "聊天记录导入默认格式为 OPERIT（:225，selectedImportFormat 初始值 ChatFormat.OPERIT）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:225"
+  },
+  {
+    "fact": "聊天记录导出支持 5 种格式：JSON / MARKDOWN / HTML / TXT / CSV（ExportFormatDialog，:385）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:410"
+  },
+  {
+    "fact": "聊天记录导入支持 5 种格式：OPERIT / CHATGPT / CHATBOX / MARKDOWN / GENERIC_JSON（ImportFormatDialog，:500）；CLAUDE 暂无独立解析，走通用 JSON 回退（ChatHistoryManager.kt:2305）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:500"
+  },
+  {
+    "fact": "聊天导出经 ChatHistoryManager.exportChatHistoriesToDownloads(selectedChatIds, format, onProgress) 执行，带长文本逐字符进度回调（:1271）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1271"
+  },
+  {
+    "fact": "聊天导入经 chatHistoryManager.importChatHistoriesFromUri(uri, format) 执行（:1328）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1328"
+  },
+  {
+    "fact": "deleteAllChatHistories（:1586）在 Dispatchers.IO 逐条删除全部聊天记录，被锁定的返回 false 计入 skippedLockedCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1586"
+  },
+  {
+    "fact": "角色卡导出调用 CharacterCardManager.exportAllCharacterCardsToBackupFile()，成功消息含备份文件路径（:595）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:595"
+  },
+  {
+    "fact": "角色卡导入读取整文件文本后调 importAllCharacterCardsFromBackupContent(jsonContent)，返回 CharacterCardImportResult：new/updated/skipped 三字段，total 为派生属性（get() = new + updated，CharacterCardManager.kt:756）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:339"
+  },
+  {
+    "fact": "记忆导出 exportMemories（:1613）先选记忆空间（默认当前活动空间），经 memoryRepository.exportMemoriesToJson() 生成 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1613"
+  },
+  {
+    "fact": "记忆备份文件名格式为 memory_backup_yyyy-MM-dd_HH-mm-ss.json（:1613 起 exportMemories 内构造）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1613"
+  },
+  {
+    "fact": "记忆导出时用 memoryBox.query(Memory_.isDocumentNode.equal(false)) 过滤掉文档节点（:2591）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2591"
+  },
+  {
+    "fact": "importMemoriesFromUri（:1633）先做 jsonString.isBlank() 空校验，再调 memoryRepository.importMemoriesFromJson(jsonString, strategy)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1633"
+  },
+  {
+    "fact": "模型配置导出写入 OperitBackupDirs.modelConfigDir()，文件名 model_config_backup_yyyy-MM-dd_HH-mm-ss.json（:656）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:656"
+  },
+  {
+    "fact": "模型配置导出用 exportFile.writeText(jsonContent) 明文写入，无加密（:657）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:657"
+  },
+  {
+    "fact": "模型配置导出成功后弹出 ModelConfigExportWarningDialog 安全警告（:661，:1376），告知含 API Key 明文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:661"
+  },
+  {
+    "fact": "模型配置导入经 modelConfigManager.importConfigs(jsonContent)，返回 new/updated/skipped 三元组（:442）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:442"
+  },
+  {
+    "fact": "RoomDB 每日自动备份开关默认开启（enableDailyBackupFlow collectAsState initial=true，:203）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:203"
+  },
+  {
+    "fact": "RoomDB 备份份数下限为 1：减少按钮用 (roomDbMaxBackupCount - 1).coerceAtLeast(1)（:761）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:761"
+  },
+  {
+    "fact": "RoomDB 备份份数上限为 100：增加按钮用 (roomDbMaxBackupCount + 1).coerceAtMost(100)（:789）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:789"
+  },
+  {
+    "fact": "调小备份份数后立即 pruneExcessBackups(context) 清理多余备份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:764"
+  },
+  {
+    "fact": "立即备份调 RoomDatabaseBackupManager.backupIfNeeded(context, force=true)，在 Dispatchers.IO 执行（:812）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:812"
+  },
+  {
+    "fact": "RoomDB 备份列表只展示最近 3 份（listRecentBackups(context, limit=3)，:318）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:318"
+  },
+  {
+    "fact": "RoomDB 恢复经二次确认 AlertDialog 后调 RoomDatabaseRestoreManager.restoreFromBackupFile/restoreFromBackupUri（:1393）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1393"
+  },
+  {
+    "fact": "RoomDB 恢复成功后弹出重启确认对话框（恢复数据库必须重启 App，:1547）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1552"
+  },
+  {
+    "fact": "原生快照备份经 RawSnapshotBackupManager.exportToBackupDir(context, onProgress)，进度分 8 个阶段（:988）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:988"
+  },
+  {
+    "fact": "原生快照 8 个备份阶段含 ZIPPING_SHARED_PREFS 与 ZIPPING_DATASTORE（:1011、:1014），即 SharedPreferences/DataStore 原文件打进 zip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1011"
+  },
+  {
+    "fact": "原生快照恢复完成后直接 exitProcess(0) 杀进程重启（:1527），因 DataStore 可能残留旧状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1527"
+  },
+  {
+    "fact": "备份文件统计扫描兼容新旧目录：新目录 + 旧 operitRootDir() 合并，按文件名去重（distinctBy name，:304）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:282"
+  },
+  {
+    "fact": "聊天备份统计文件名规则：chat_backup_*.{json,zip,html,txt,csv} 或 chat_export_*.{json,md,html,txt,csv,zip}（:295）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:295"
+  },
+  {
+    "fact": "恢复流程取持久 URI 权限失败时 catch (_: Exception) {} 空处理（:1420），不影响继续恢复也无提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatBackupSettingsScreen.kt:1420"
+  },
+  {
+    "fact": "ChatHistorySettingsScreen()（:88）是聊天记录管理屏，无自动清理/保留天数/上限条数类设置项，不写任何持久化键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:88"
+  },
+  {
+    "fact": "ChatManagementOverviewCard（:743）展示聊天记录总数 + 当前记忆空间名称。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:743"
+  },
+  {
+    "fact": "CharacterCardStatsCard（:811）按角色卡名聚合聊天数/消息数，未绑定或丢失的角色卡条目标红可点击处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:811"
+  },
+  {
+    "fact": "CharacterGroupStatsCard（:884）按角色群组聚合统计，丢失的群组排最前并标红。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:884"
+  },
+  {
+    "fact": "ChatHistoryBatchSelectorCard（:1194）是批量操作卡：搜索过滤、多选列表、批量绑定角色卡/群组/分组、批量删除、聊天记忆重建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:1194"
+  },
+  {
+    "fact": "批量删除经 showDeleteConfirmDialog 的 AlertDialog 确认，文案带选中数量（:1844）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:1844"
+  },
+  {
+    "fact": "删除进行中（deleteInProgress）时 onDismissRequest 禁止关闭确认对话框（:1835）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:1835"
+  },
+  {
+    "fact": "deleteSelectedChatHistories（:2553）在 IO 线程逐个调 deleteChatHistory，返回 false 计为锁定跳过，无回收站/撤销。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:2562"
+  },
+  {
+    "fact": "无绑定工作区删除是 workspaceDir.deleteRecursively() 物理删目录（:406），有确认对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:406"
+  },
+  {
+    "fact": "无绑定工作区检测范围：内部 filesDir/workspace（:155）+ 外部 Downloads/Operit/workspace（:215）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:155"
+  },
+  {
+    "fact": "记忆重建窗口大小可选 16/24/32/48 条消息（memoryWindowMessageCounts，:2106）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:2106"
+  },
+  {
+    "fact": "记忆重建时间范围模式：ENTIRE（全部）/ RANGE（自定义日期范围）（:2101）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:2101"
+  },
+  {
+    "fact": "记忆重建进度状态：PREPARING / RUNNING / COMPLETED / CANCELLED / FAILED（ChatMemoryRebuildManager.Status，:61），运行时可调 memoryRebuildManager.cancel() 取消。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/ChatMemoryRebuildManager.kt:61"
+  },
+  {
+    "fact": "记忆重建运行时批量操作锁定：canSubmit 要求 !isMemoryRebuildRunning（:1301）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:1301"
+  },
+  {
+    "fact": "角色卡与群组批量绑定互斥：指定群组目标时角色卡绑定不被同时改动（:334）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:334"
+  },
+  {
+    "fact": "批量操作成功后自动清空选中并重置目标选择（:1717）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ChatHistorySettingsScreen.kt:1717"
+  },
+  {
+    "fact": "ContextSummarySettingsScreen()（:102）是上下文与总结设置页，所有设置项自动保存，无显式保存按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:102"
+  },
+  {
+    "fact": "自动保存经 snapshotFlow{}.drop(1).debounce(700).distinctUntilChanged().collectLatest{}，输入变化 700ms 防抖后写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:402"
+  },
+  {
+    "fact": "总结触发条件一：上下文使用比例超阈值（settings_summary_threshold），阈值校验实际为 (0,1) 开区间（:488）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:488"
+  },
+  {
+    "fact": "UI 文案写阈值范围 0.1-0.95，但代码接受 (0,1) 开区间任意值，文案与实现不一致（:488）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:488"
+  },
+  {
+    "fact": "总结触发条件二：新消息数达阈值（enableSummaryByMessageCount 开关 + settings_summary_message_count_threshold）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:491"
+  },
+  {
+    "fact": "消息数阈值校验仅要求 >0，无上限（:491），与 UI 文案 1-20 条不一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:491"
+  },
+  {
+    "fact": "本页无独立摘要模型选择器，总结绑定当前 CHAT 功能的模型配置（functionMappings[FunctionType.CHAT]，:154）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:136"
+  },
+  {
+    "fact": "总结提示词三层可配：全局自定义规则 summaryCustomRules、四节标题/指令覆盖 overrides、对话回顾开关+标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:168"
+  },
+  {
+    "fact": "总结默认四节 id：core_task / interaction / progress / key_info（FunctionalPrompts 私有 summarySectionIds，:118）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:118"
+  },
+  {
+    "fact": "分节覆盖只保存与默认值的差异字段（buildSummarySectionOverrides 取 takeIf != default，全无差异则不存）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:183"
+  },
+  {
+    "fact": "enableSummary 默认 true（ModelConfigDefaults.DEFAULT_ENABLE_SUMMARY，:66）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:66"
+  },
+  {
+    "fact": "summaryTokenThreshold 默认 0.70f（DEFAULT_SUMMARY_TOKEN_THRESHOLD，:65）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:65"
+  },
+  {
+    "fact": "enableSummaryByMessageCount 默认 true（:67）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:67"
+  },
+  {
+    "fact": "summaryMessageCountThreshold 默认 16（:68）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:68"
+  },
+  {
+    "fact": "图片历史保留回合默认 2（DEFAULT_MAX_IMAGE_HISTORY_USER_TURNS，ApiPreferences :171），键 max_image_history_user_turns。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:171"
+  },
+  {
+    "fact": "音视频历史保留回合默认 1（DEFAULT_MAX_MEDIA_HISTORY_USER_TURNS，:172），键 max_media_history_user_turns。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:172"
+  },
+  {
+    "fact": "历史保留回合数校验仅 toIntOrNull 且 >=0 才保存，0 可保存（语义上等于不保留）（:545）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:545"
+  },
+  {
+    "fact": "关闭 enableSummary 总开关时不清空阈值等字段（原样保留），重开即恢复（:470）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:470"
+  },
+  {
+    "fact": "FullscreenSettingsTextEditor（:1426）关闭/确认/返回手势都调 finishEditing() 写回，无真正取消。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ContextSummarySettingsScreen.kt:1426"
+  },
+  {
+    "fact": "FunctionalConfigScreen()（:53）是功能→模型配置映射页，本屏无开关式配置项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:53"
+  },
+  {
+    "fact": "11 个 FunctionType：CHAT / SUMMARY / TITLE_GENERATION / MEMORY / UI_CONTROLLER / TRANSLATION / GREP / ROLE_RESPONSE_PLANNER / IMAGE_RECOGNITION / AUDIO_RECOGNITION / VIDEO_RECOGNITION（:4）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/FunctionType.kt:4"
+  },
+  {
+    "fact": "映射持久化键 function_config_mapping（DataStore），默认全部 FunctionType → FunctionConfigMapping(\"default\", 0)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:71"
+  },
+  {
+    "fact": "重置全部按钮点击后直接 resetAllFunctionConfigs() + refreshAllServices，无确认对话框（:199）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:199"
+  },
+  {
+    "fact": "CHAT 功能选中含 autoglm 的模型时弹 Toast 警告并阻止选择（:818、:912），其他功能类型允许。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:818"
+  },
+  {
+    "fact": "图像/音频/视频识别三类若配置未启用直接媒体处理，显示红色能力不足警告（:283）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:283"
+  },
+  {
+    "fact": "连接测试用 stream=false、enableRetry=false 的真实小样本调用，非 ping（:550）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:550"
+  },
+  {
+    "fact": "媒体测试临时文件在 finally 中 runCatching 清理（:749）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:749"
+  },
+  {
+    "fact": "连接测试结果 5 秒后自动清空（delay(5000)，:328）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/FunctionalConfigScreen.kt:328"
+  },
+  {
+    "fact": "OverviewCard（:45）展示当前记忆空间名 + 聊天数/角色卡数/记忆数/记忆链接数四个 StatChip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupCards.kt:45"
+  },
+  {
+    "fact": "BackupFilesStatisticsCard（:100）统计 5 类备份文件数量：聊天/角色卡/记忆/模型配置/RoomDB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupCards.kt:100"
+  },
+  {
+    "fact": "统计卡扫描中（isScanning）显示 24dp 圆形进度条，否则显示刷新按钮（:128）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupCards.kt:128"
+  },
+  {
+    "fact": "DataManagementCard（:134）含导出/导入/删除全部三个按钮，删除按钮为红色 isDestructive 样式独占一行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:134"
+  },
+  {
+    "fact": "导出按钮用 CloudDownload 图标（:81），与常规直觉相反。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:81"
+  },
+  {
+    "fact": "导入按钮用 CloudUpload 图标（:87）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:87"
+  },
+  {
+    "fact": "MemoryManagementCard（:248）展示记忆数与关联数 + 导出/导入按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:248"
+  },
+  {
+    "fact": "ModelConfigManagementCard（:332）展示模型配置总数 + 导出/导入按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:332"
+  },
+  {
+    "fact": "FaqCard（:543）含三问：为什么备份 / 备份存哪 / 重复导入怎么办。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:543"
+  },
+  {
+    "fact": "BackupManagementCards 内四张管理卡均为纯 UI 回调（onExport/onImport/onDelete），无备份文件列表、无恢复对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupManagementCards.kt:52"
+  },
+  {
+    "fact": "DeleteConfirmationDialog（:62）确认键为红色 error 配色，点击即执行删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:62"
+  },
+  {
+    "fact": "MemoryImportStrategyDialog 默认选中 SKIP（:77）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:77"
+  },
+  {
+    "fact": "记忆导入遇 UUID 重复且策略为 SKIP 时保留现有记忆、跳过导入（:2684）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2684"
+  },
+  {
+    "fact": "ChatHistoryExportSelectionDialog（:249）未选任何会话时确认键禁用（enabled=selectedChatIds.isNotEmpty()，:320）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:320"
+  },
+  {
+    "fact": "ModelConfigExportWarningDialog（:754）只有单个知悉按钮（无取消导出选项），点了即关闭由调用方继续流程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:754"
+  },
+  {
+    "fact": "BackupDialogs 全文件无密码输入框、无加密选项、无进度对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupDialogs.kt:52"
+  },
+  {
+    "fact": "RoomDbBackupListItem（:28）解析文件名展示备份类型与时间，右端恢复按钮透出 onRestoreClick 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/RoomDbBackupComponents.kt:28"
+  },
+  {
+    "fact": "自动备份文件名 room_db_backup_<yyyy-MM-dd>.zip，按天命名（:84）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:84"
+  },
+  {
+    "fact": "手动备份文件名 room_db_manual_backup_<yyyy-MM-dd_HH-mm-ss>.zip（:127）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/backup/RoomDatabaseBackupManager.kt:127"
+  },
+  {
+    "fact": "手动备份时间解析失败（catch）则显示原串，不崩溃（:46）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/RoomDbBackupComponents.kt:46"
+  },
+  {
+    "fact": "RoomDbBackupComponents 只渲染列表项，恢复确认对话框与恢复执行逻辑不在此文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/RoomDbBackupComponents.kt:94"
+  },
+  {
+    "fact": "ChatHistoryOperation 枚举（:3）8 态：IDLE/EXPORTING/EXPORTED/IMPORTING/IMPORTED/DELETING/DELETED/FAILED，是唯一带删除态的。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupOperationTypes.kt:3"
+  },
+  {
+    "fact": "MemoryOperation / CharacterCardOperation / ModelConfigOperation 均为 6 态（无 DELETING/DELETED）（:14）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupOperationTypes.kt:14"
+  },
+  {
+    "fact": "记忆导入策略三选项：SKIP 跳过（推荐）/ UPDATE 更新 / CREATE_NEW 创建新记录（可能导致重复），判定依据为 UUID 是否重复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/BackupMemoryImportStrategyStrings.kt:18"
+  },
+  {
+    "fact": "ChatStyleOption（:18）是通用样式选项卡片（title+selected+onClick），不定义具体样式枚举，样式列表由调用方传入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ChatStyleOption.kt:18"
+  },
+  {
+    "fact": "MAX_INLINE_TOKEN_LENGTH=512（:12）限制行内 token 向后搜索长度，防畸形分隔符触发全行重复搜索。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:12"
+  },
+  {
+    "fact": "MarkdownSyntaxKind 枚举 8 种 token：HEADING/EMPHASIS/CODE/LINK/QUOTE/MARKER/COMMENT/HTML（:14）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:14"
+  },
+  {
+    "fact": "Markdown 高亮是纯手写字符扫描器（scanMarkdownSyntax/scanInlineSyntax），无正则（:81）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:81"
+  },
+  {
+    "fact": "rememberMarkdownSyntaxOutputTransformation（:48）返回 Compose OutputTransformation，对输入框源文本做原位样式变换，非渲染器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:48"
+  },
+  {
+    "fact": "颜色映射：HEADING/EMPHASIS→tertiary，CODE/LINK→primary，QUOTE/MARKER/HTML→secondary，COMMENT→onSurfaceVariant（:60）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:60"
+  },
+  {
+    "fact": "围栏代码块开栏要求 ``` / ~~~ 长度≥3，闭栏同标记且长度≥开栏、其后仅空白（isClosingFence，:309）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:309"
+  },
+  {
+    "fact": "标题需 1-6 个 # 后紧跟空白或行尾，# 本体标 MARKER、标题文本标 HEADING（:326）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlighting.kt:326"
+  },
+  {
+    "fact": "ExpandableStatusText（:26）默认收起 1 行（collapsedMaxLines=1）+ 省略号截断，展开时 maxLines=Int.MAX_VALUE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ExpandableStatusText.kt:26"
+  },
+  {
+    "fact": "展开按钮（···）只在 hasOverflow||expanded 时渲染，短文本不溢出则无按钮（:54）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ExpandableStatusText.kt:54"
+  },
+  {
+    "fact": "文本变化时 expanded/hasOverflow 经 remember(text) 自动复位为收起（:33）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ExpandableStatusText.kt:33"
+  },
+  {
+    "fact": "溢出判断用 onTextLayout 实测 hasVisualOverflow（仅收起态读取），非字符数估算（:48）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ExpandableStatusText.kt:48"
+  }
+]

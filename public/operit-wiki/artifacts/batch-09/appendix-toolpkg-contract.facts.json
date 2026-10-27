@@ -1,0 +1,54 @@
+[
+ {
+  "fact": "ToolPkg 解析器在 ZIP 里找 manifest.hjson 或 manifest.json（大小写不敏感），找不到则整个包拒收。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:413"
+ },
+ {
+  "fact": "ToolPkgManifest 字段用 snake_case：toolpkg_id、api_version、enabled_by_default、subpackages、resources、wasm_modules 等。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:202"
+ },
+ {
+  "fact": "toolpkg_id 去空白后不得为空，否则抛错；它是容器包的稳定身份。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:422"
+ },
+ {
+  "fact": "main 不得为空且指向的条目必须在 ZIP 里存在，否则抛错；主入口脚本必须导出 registerToolPkg()。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:424"
+ },
+ {
+  "fact": "api_version 缺省为 LEGACY_API_VERSION；schema_version 缺省为 1，仅是 manifest 数据格式标识。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:205"
+ },
+ {
+  "fact": "ToolPkg 的 enabled_by_default 缺省为 true，与老式 JS 包的 enabledByDefault 缺省 false 相反。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:213"
+ },
+ {
+  "fact": "api_version 必须是严格 major.minor.patch 格式，格式不对解析时抛错。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:1"
+ },
+ {
+  "fact": "requireSupported 在加载时校验 api_version 准入，宿主不支持的版本直接拒收。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:418"
+ },
+ {
+  "fact": "subpackages 每项 {id, entry}，entry 指向的子包脚本必须能解析为普通 JS 工具包。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:221"
+ },
+ {
+  "fact": "单个子包无效只记录错误并跳过；但声明了子包却一个都没加载成功则容器解析失败。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:432"
+ },
+ {
+  "fact": "主入口 registerToolPkg() 只收集注册声明，不要在里面启动常驻逻辑。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgRegistration.kt:1"
+ },
+ {
+  "fact": "JsToolPkgApiRuntime 把 API 包装为 method().since().build() 版本化方法，调用时按 manifest.api_version 选最新满足 since 的实现。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgApiRuntime.kt:1"
+ },
+ {
+  "fact": "当前版本低于方法引入版本则抛错提示 requires ToolPkg API x.y.z；想用新 API 先抬 manifest 的 api_version。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/javascript/JsToolPkgApiRuntime.kt:1"
+ }
+]

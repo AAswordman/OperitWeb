@@ -1,0 +1,938 @@
+[
+  {
+    "fact": "OperitTheme 是应用的根主题 composable，入口签名为 OperitTheme(content)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:94"
+  },
+  {
+    "fact": "OperitTheme 收集的 activePrompt 初始值为 ActivePrompt.CharacterCard(DEFAULT_CHARACTER_CARD_ID)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:99"
+  },
+  {
+    "fact": "disableBackgroundForTarget 在协程中调用 mutateActiveThemeForPrompt，把目标的 use_background_image 置 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:103"
+  },
+  {
+    "fact": "createCustomTypography 用 remember 缓存，键为 useCustomFont、fontType、systemFontName、customFontPath、fontScale 五个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:137"
+  },
+  {
+    "fact": "useSystemTheme 为真时暗色判定走 isSystemInDarkTheme()，否则走 themeMode == THEME_MODE_DARK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:148"
+  },
+  {
+    "fact": "动态取色仅在 Build.VERSION.SDK_INT >= Build.VERSION_CODES.S 时启用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:157"
+  },
+  {
+    "fact": "useCustomColors 且 customPrimaryColor 非空时，才生成自定义配色方案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:172"
+  },
+  {
+    "fact": "自定义 secondary 为空时沿用 colorScheme.secondary。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:174"
+  },
+  {
+    "fact": "SideEffect 内恒执行 WindowCompat.setDecorFitsSystemWindows(window, false)，状态栏背景由 Compose 自己处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:193"
+  },
+  {
+    "fact": "statusBarHidden 时隐藏状态栏并设 BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:197"
+  },
+  {
+    "fact": "状态栏颜色优先级为：statusBarTransparent → 有背景图 → useCustomStatusBarColor → colorScheme.primary。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:207"
+  },
+  {
+    "fact": "状态栏图标深浅为 isAppearanceLightStatusBars = !isColorLight(Color(statusBarColor))。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:217"
+  },
+  {
+    "fact": "有背景图时导航栏透明，且 Android Q+ 关闭 isNavigationBarContrastEnforced。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:222"
+  },
+  {
+    "fact": "有背景图时导航栏图标深浅为 isAppearanceLightNavigationBars = !darkTheme。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:230"
+  },
+  {
+    "fact": "无背景图时导航栏用 colorScheme.background，且 Android Q+ 开启对比度强制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:232"
+  },
+  {
+    "fact": "背景视频 ExoPlayer 的 remember 键为 useBackgroundImage、backgroundImageUri、backgroundMediaType、videoBackgroundLoop、videoBackgroundMuted。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:248"
+  },
+  {
+    "fact": "只有 backgroundMediaType == MEDIA_TYPE_VIDEO 时才创建背景视频播放器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:253"
+  },
+  {
+    "fact": "背景视频缓冲配置为 5000/10000/500/1000 ms，目标缓冲字节 5MB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:263"
+  },
+  {
+    "fact": "背景视频 repeatMode 按 videoBackgroundLoop 取 REPEAT_MODE_ALL 或 REPEAT_MODE_OFF。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:272"
+  },
+  {
+    "fact": "背景视频音量按 videoBackgroundMuted 取 0f 或 1f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:279"
+  },
+  {
+    "fact": "背景视频 playWhenReady = true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:280"
+  },
+  {
+    "fact": "背景视频加载异常时打日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:290"
+  },
+  {
+    "fact": "背景视频加载异常时调用 disableBackgroundForTarget(activePrompt)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:295"
+  },
+  {
+    "fact": "DisposableEffect(Unit) 在 dispose 时执行 exoPlayer 的 stop/clearMediaItems/release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:305"
+  },
+  {
+    "fact": "生命周期 ON_PAUSE 时暂停背景视频，ON_RESUME 时继续播放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:320"
+  },
+  {
+    "fact": "OperitTheme 下发三个 CompositionLocal：LocalThemePreferenceSnapshot、LocalLiquidGlassBackdrop、LocalWaterGlassState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:341"
+  },
+  {
+    "fact": "waterGlassState 仅在 isWaterGlassSupported() 为真时 rememberLiquidState()，否则为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:340"
+  },
+  {
+    "fact": "主题底层为按暗/亮取黑/白的 Box。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:353"
+  },
+  {
+    "fact": "主题底层挂载 liquefiable(waterGlassState)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:355"
+  },
+  {
+    "fact": "背景图片 painter 的 error 参数为纯色 fallback painter。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:376"
+  },
+  {
+    "fact": "LaunchedEffect(painter) 检测图片加载出错（AsyncImagePainter.State.Error）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:377"
+  },
+  {
+    "fact": "图片加载出错时打日志记录背景图片 URI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:379"
+  },
+  {
+    "fact": "file scheme 的背景图会检查文件存在性，不存在或读不出时各打一条日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:384"
+  },
+  {
+    "fact": "背景图片加载失败最终调用 disableBackgroundForTarget(activePrompt)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:399"
+  },
+  {
+    "fact": "背景图片 modifier 为 alpha(backgroundImageOpacity)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:408"
+  },
+  {
+    "fact": "可选再叠加 blur(backgroundBlurRadius.dp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:410"
+  },
+  {
+    "fact": "背景视频用 argb((1 - backgroundImageOpacity) * 255) 的 ColorDrawable 前景模拟不透明度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:448"
+  },
+  {
+    "fact": "有背景图时 surface、surfaceVariant、background 及全部 surfaceContainer* 共 8 个颜色都被 copy(alpha = 1f)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:490"
+  },
+  {
+    "fact": "generateLightColorScheme 中 primaryContainer = lightenColor(primary, 0.7f)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:538"
+  },
+  {
+    "fact": "浅色方案 onSurface = Color.Black。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:554"
+  },
+  {
+    "fact": "generateDarkColorScheme 中主色 lighten 0.2f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:566"
+  },
+  {
+    "fact": "深色方案 container 用 darken 0.3f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:580"
+  },
+  {
+    "fact": "深色方案 onSurface = Color.White。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:596"
+  },
+  {
+    "fact": "getContrastingTextColor 用 WCAG 亮度公式 0.299/0.587/0.114，阈值 0.5 决定黑白文字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:615"
+  },
+  {
+    "fact": "isColorLight 的判定条件为 luminance > 0.5。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Theme.kt:649"
+  },
+  {
+    "fact": "Color.kt 定义浅色三色：Purple80=0xFFD0BCFF、PurpleGrey80=0xFFCCC2DC、Pink80=0xFFEFB8C8。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Color.kt:5"
+  },
+  {
+    "fact": "Color.kt 定义深色三色：Purple40=0xFF6650a4、PurpleGrey40=0xFF625b71、Pink40=0xFF7D5260。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Color.kt:9"
+  },
+  {
+    "fact": "默认 Typography 的 bodyLarge 为 16sp 字号、24sp 行高、0.5sp 字间距。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:18"
+  },
+  {
+    "fact": "getSystemFontFamily 把 SYSTEM_FONT_SERIF/SANS_SERIF/MONOSPACE/CURSIVE 映射为 FontFamily.Serif/SansSerif/Monospace/Cursive。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:44"
+  },
+  {
+    "fact": "loadCustomFontFamily 对 file:// 前缀路径用 Uri.parse(fontPath).toFile() 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:57"
+  },
+  {
+    "fact": "resolveConfiguredFontFamily 在 !useCustomFont 时直接返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:83"
+  },
+  {
+    "fact": "FONT_TYPE_SYSTEM 走系统字体名，FONT_TYPE_FILE 走非空路径加载文件字体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:95"
+  },
+  {
+    "fact": "createCustomTypography 在 !useCustomFont 且 fontScale == 1.0f 时直接返回默认 Typography。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:146"
+  },
+  {
+    "fact": "withScale 把每个 TextStyle 的 fontSize 和 lineHeight 都乘以 fontScale。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/Type.kt:161"
+  },
+  {
+    "fact": "getTextColorForBackground 在亮度 > 0.5 时返回黑色，否则返回白色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeUtils.kt:8"
+  },
+  {
+    "fact": "isHighContrast 在亮度 < 0.3 或 > 0.7 时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeUtils.kt:21"
+  },
+  {
+    "fact": "LocalThemePreferenceSnapshot 未提供时抛出 error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemePreferenceLocals.kt:14"
+  },
+  {
+    "fact": "rememberActiveThemePreferenceSnapshot 的初始快照为 source=\"character_card\"、sourceId=DEFAULT_CHARACTER_CARD_ID、values=defaultVisual()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemePreferenceLocals.kt:26"
+  },
+  {
+    "fact": "AiMarkdownTextLayoutSettings 默认值：lineHeightMultiplier=1f、letterSpacingSp=0f、paragraphSpacingDp=12f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/TextLayoutSettings.kt:18"
+  },
+  {
+    "fact": "ProvideAiMarkdownTextLayoutSettings 从 UserPreferencesManager 读取行高/字间距/段间距三个 flow 下发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/TextLayoutSettings.kt:30"
+  },
+  {
+    "fact": "resolveThemeColorScheme 用 context.resources.configuration.uiMode 判断暗色，而非 isSystemInDarkTheme()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeColorSchemeResolver.kt:28"
+  },
+  {
+    "fact": "ThemeColorSchemeResolver 内含 generateResolvedLightColorScheme 私有实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeColorSchemeResolver.kt:71"
+  },
+  {
+    "fact": "ThemeColorSchemeResolver 内含 generateResolvedDarkColorScheme 私有实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/ThemeColorSchemeResolver.kt:109"
+  },
+  {
+    "fact": "LiquidGlassMinApi = Build.VERSION_CODES.TIRAMISU。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:27"
+  },
+  {
+    "fact": "isLiquidGlassSupported() 为 Build.VERSION.SDK_INT >= TIRAMISU。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:29"
+  },
+  {
+    "fact": "liquidGlass 在 enabled 为 false 时直接返回 this，不做任何修饰。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:43"
+  },
+  {
+    "fact": "liquidGlass 降级路径的阴影 elevation 至少 10.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:55"
+  },
+  {
+    "fact": "liquidGlass 降级路径边框宽度至少 0.6.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:77"
+  },
+  {
+    "fact": "liquidGlass 降级路径的表面 tint 在亮色为 0.16、暗色为 0.24。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:56"
+  },
+  {
+    "fact": "liquidGlass 主路径的 drawBackdrop effects 为 vibrancy() + blur(blurRadius) + lens(折射高 12.dp、折射量 18.dp、色差开启)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:97"
+  },
+  {
+    "fact": "liquidGlass 高光 Highlight 的 width=edgeWidth、blurRadius=edgeWidth*2.4f、alpha 在亮色 0.62、暗色 0.50。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:110"
+  },
+  {
+    "fact": "liquidGlass 表面 tint 的 alpha 为 (0.16/0.23 + overlayAlphaBoost)，上限钳制在 0.48。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/LiquidGlass.kt:84"
+  },
+  {
+    "fact": "WaterGlassMinApi = Build.VERSION_CODES.TIRAMISU。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/WaterGlass.kt:22"
+  },
+  {
+    "fact": "waterGlass 在 enabled 为 false 时直接返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/WaterGlass.kt:35"
+  },
+  {
+    "fact": "waterGlass 的 liquid 参数亮/暗两套：frost 6.dp/8.dp、curve 0.40/0.30、refraction 0.12/0.09、dispersion 0.18/0.13、saturation 0.40/0.32、contrast 1.22/1.40。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/WaterGlass.kt:97"
+  },
+  {
+    "fact": "waterGlass 表面 tint 的 alpha 上限钳制在 0.56。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/WaterGlass.kt:71"
+  },
+  {
+    "fact": "AppBackgroundLayer 是独立可复用的背景层 composable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/AppBackgroundLayer.kt:36"
+  },
+  {
+    "fact": "AppBackgroundLayer 的背景视频加载异常只打日志，不调用 disableBackgroundForTarget。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/AppBackgroundLayer.kt:91"
+  },
+  {
+    "fact": "AppBackgroundLayer 用 DisposableEffect(exoPlayer) 释放播放器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/AppBackgroundLayer.kt:103"
+  },
+  {
+    "fact": "AppBackgroundLayer 的视频不透明度叠加层 alpha 经 coerceIn(0, 255) 钳制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/theme/AppBackgroundLayer.kt:148"
+  },
+  {
+    "fact": "CustomScaffold 把 contentWindowInsets 设为 WindowInsets(0, 0, 0, 0)，避免系统栏重复边距。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/CustomScaffold.kt:35"
+  },
+  {
+    "fact": "CustomScaffold 的 containerColor 默认为 MaterialTheme.colorScheme.background。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/CustomScaffold.kt:22"
+  },
+  {
+    "fact": "ErrorDialog 错误正文用 SelectionContainer + 等宽字体 + 垂直滚动，最大高度 350.dp，完整展示原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ErrorDialog.kt:53"
+  },
+  {
+    "fact": "ErrorDialog 的复制按钮把 displayMessage 写入剪贴板。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ErrorDialog.kt:70"
+  },
+  {
+    "fact": "ErrorDialog 空错误消息显示 R.string.unknown_error，标题为 R.string.request_failed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ErrorDialog.kt:44"
+  },
+  {
+    "fact": "ErrorDialog 的 dismissOnBackPress 与 dismissOnClickOutside 均为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ErrorDialog.kt:37"
+  },
+  {
+    "fact": "ManagedDragonBonesView 的待机动画名为 \"idle\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:22"
+  },
+  {
+    "fact": "ManagedDragonBonesView 的随机动画候选为 blink、shake_head、wag_tail。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:25"
+  },
+  {
+    "fact": "ManagedDragonBonesView 每 2000–8000ms 在图层 10 播放一次随机动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:85"
+  },
+  {
+    "fact": "待机动画在图层 0 以 loop=0 播放。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:73"
+  },
+  {
+    "fact": "拖拽手势调用 overrideBonePosition 覆盖 ik_target 骨骼位置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:103"
+  },
+  {
+    "fact": "拖拽结束或取消时 resetBone 复位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/components/ManagedDragonBonesView.kt:113"
+  },
+  {
+    "fact": "ThemeSettingsScreen 直接转发 ThemeSettingsContent()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ThemeSettingsScreen.kt:7"
+  },
+  {
+    "fact": "语言列表来自 LocaleUtils.getSupportedLanguages()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LanguageSettingsScreen.kt:64"
+  },
+  {
+    "fact": "语言切换调用 setAppLanguage 后延迟 600ms，再带 FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK 重启 MainActivity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LanguageSettingsScreen.kt:123"
+  },
+  {
+    "fact": "布局微调屏 5 个浮点设置项的默认值：按钮边距 2f、聊天区边距 16f、行高倍数 1f、字间距 0f、段间距 12f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:70"
+  },
+  {
+    "fact": "AI 行高倍数输入范围为 0.8f..2.0f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:141"
+  },
+  {
+    "fact": "AI 字间距输入范围为 -1f..8f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:156"
+  },
+  {
+    "fact": "AI 段间距输入范围为 0f..48f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:171"
+  },
+  {
+    "fact": "非法数值输入显示 R.string.invalid_value_range 红字提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:384"
+  },
+  {
+    "fact": "非法数值输入时输入框背景切 errorContainer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:347"
+  },
+  {
+    "fact": "布局微调屏输入框用 DecimalFormat(\"0.##\") 格式化数字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:279"
+  },
+  {
+    "fact": "布局微调屏的预览卡片用 ProvideAiMarkdownTextLayoutSettings 包裹 MarkdownTextComposable 实时渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/LayoutAdjustmentSettingsScreen.kt:256"
+  },
+  {
+    "fact": "ThemeEditorSession 是主题编辑器的草稿会话，为 internal 类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:12"
+  },
+  {
+    "fact": "setBoolean 开启 chat_input_liquid_glass 时关闭 chat_input_water_glass，反之亦然。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:55"
+  },
+  {
+    "fact": "setBoolean 对 cursor 用户气泡的液态/水玻璃开关做同样的互斥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:66"
+  },
+  {
+    "fact": "用户/AI 气泡开启液态或水玻璃时，同时关闭另一种并把 bubble_*_use_image 置 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:72"
+  },
+  {
+    "fact": "reset() 回到 defaultVisual()，但保留 custom_ai_avatar_uri 与 custom_chat_title。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:107"
+  },
+  {
+    "fact": "discard() 删除暂存资源并把值恢复到基线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:118"
+  },
+  {
+    "fact": "beginSave/markSaved/cancelSave 管理 in-flight 保存状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:125"
+  },
+  {
+    "fact": "registerStagedAsset 登记暂存资源 URI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:158"
+  },
+  {
+    "fact": "deleteStagedAssets 只删除 scheme 为 file 的 URI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:178"
+  },
+  {
+    "fact": "addRecentColor 记录最近使用的颜色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeEditorSession.kt:166"
+  },
+  {
+    "fact": "ThemeSettingsTab 枚举有 BASIC、BACKGROUND、CHAT、INPUT、INTERFACE 五个 tab。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsTabs.kt:31"
+  },
+  {
+    "fact": "切换 tab 时先显示 LinearProgressIndicator，再 yield()、scrollState.scrollTo(0)，然后渲染新 tab。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsTabs.kt:55"
+  },
+  {
+    "fact": "ThemeSettingsFooter 保存按钮的 enabled 由 saveEnabled 控制，保存中显示转圈圈。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsTabs.kt:123"
+  },
+  {
+    "fact": "ThemeSettingsFooter 的重置按钮为 OutlinedButton。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsTabs.kt:134"
+  },
+  {
+    "fact": "保存成功提示在 2000ms 后自动消失。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsTabs.kt:142"
+  },
+  {
+    "fact": "字体选择器用 ActivityResultContracts.GetContent()，只接受 ttf/otf/ttc 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBasicTab.kt:76"
+  },
+  {
+    "fact": "字体文件拷贝到内部存储 \"custom_font\" 目录，登记暂存资源，并写 custom_font_path 与 font_type=FONT_TYPE_FILE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBasicTab.kt:88"
+  },
+  {
+    "fact": "颜色面板默认值：primary=Magenta、secondary=Blue、header 图标=Gray。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBasicTab.kt:128"
+  },
+  {
+    "fact": "updateDraftThemeColor 按 8 种 picker 模式（primary/secondary/statusBar/appBar/navigationDrawerBackground/navigationDrawerAccent/historyIcon/pipIcon）写对应 setInt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBasicTab.kt:271"
+  },
+  {
+    "fact": "BasicTab 的 updateDraftThemeColor 先按模式写值，再 addRecentColor。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBasicTab.kt:289"
+  },
+  {
+    "fact": "背景 tab 读取 use_background_image 等 8 个背景偏好项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:40"
+  },
+  {
+    "fact": "背景 tab 的预览 ExoPlayer 同样使用 5000/10000/500/1000 ms 缓冲与 5MB 目标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:118"
+  },
+  {
+    "fact": "背景图片裁剪输出为 JPEG、质量 90。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:290"
+  },
+  {
+    "fact": "背景媒体选择用 ActivityResultContracts.OpenDocument()，视频经 checkVideoSize(30) 检查 30MB 上限。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:314"
+  },
+  {
+    "fact": "视频背景拷贝到内部 \"background_video\" 并置 background_media_type=MEDIA_TYPE_VIDEO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:334"
+  },
+  {
+    "fact": "背景 tab 用 DisposableEffect(Unit) 释放预览用的 ExoPlayer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsBackgroundTab.kt:164"
+  },
+  {
+    "fact": "气泡图片选择器的 MIME 类型为 image/*。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:441"
+  },
+  {
+    "fact": "非 .9.png 图片走裁剪流程，.9.png 走九宫格参数解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:259"
+  },
+  {
+    "fact": "isNinePatchMarker 要求像素 alpha >= 0x80 且红绿蓝三通道均 < 32。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:87"
+  },
+  {
+    "fact": "九宫格标记缺失时拉伸区默认取 0.35f..0.65f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:134"
+  },
+  {
+    "fact": "九宫格气泡的 bubble_image_render_mode 写为 BUBBLE_IMAGE_RENDER_MODE_NINE_PATCH。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:296"
+  },
+  {
+    "fact": "头像裁剪固定 1:1 纵横比。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:419"
+  },
+  {
+    "fact": "头像选择器有 user/ai/global_user 三种模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:57"
+  },
+  {
+    "fact": "全局用户头像不进主题草稿，直接写 displayPreferencesManager.saveDisplaySettings。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:383"
+  },
+  {
+    "fact": "setSelectedChatColor 处理 cursorUserBubble/bubbleUserBubble/bubbleAiBubble/bubbleUserText/bubbleAiText 五种气泡颜色模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsChatTab.kt:775"
+  },
+  {
+    "fact": "input_style 经 ChatStyleOption 在 classic/agent 间二选一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsInputTab.kt:56"
+  },
+  {
+    "fact": "chat_input_transparent 与 chat_input_floating 为两个独立开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsInputTab.kt:92"
+  },
+  {
+    "fact": "InterfaceTab 的 updateDraftThemeColor 先 addRecentColor 再按模式映射写值，顺序与 BasicTab 相反。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsInterfaceTab.kt:179"
+  },
+  {
+    "fact": "RegisterRouteBackGuard 用 suspendCancellableCoroutine 挂起返回导航，等待未保存对话框的决定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsContentEditor.kt:313"
+  },
+  {
+    "fact": "saveCurrentDraft 先检查 isSaving，再 beginSave，按 resetRequested 走 resetThemeDraft 或 commitThemeDraft，最后 markSaved。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsContentEditor.kt:280"
+  },
+  {
+    "fact": "activateTarget 用 targetSwitchesInFlight 计数器防止并发切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsContentEditor.kt:219"
+  },
+  {
+    "fact": "tab 内容用 key(draft) 包裹，使外部 picker 回调绑定到创建时的草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsContentEditor.kt:377"
+  },
+  {
+    "fact": "未保存更改对话框提供保存并继续、放弃并继续、取消三组按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/theme/ThemeSettingsContentEditor.kt:430"
+  },
+  {
+    "fact": "滑杆值变更经 300ms 防抖后保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:169"
+  },
+  {
+    "fact": "滑杆范围为访问等待 0-10、hook 超时 1-60、质量与缩放 50-100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:155"
+  },
+  {
+    "fact": "组件背景色：有背景图时用 surface 纯色，否则用 50% 透明的 surface。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:180"
+  },
+  {
+    "fact": "工具折叠模式用三档滑杆在 READ_ONLY/ALL/FULL 之间选择。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:95"
+  },
+  {
+    "fact": "自动化状态指示样式读写 floating_chat_prefs 这个 SharedPreferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:122"
+  },
+  {
+    "fact": "截图格式在 PNG 与 JPG 之间用 FilterChip 选择。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:752"
+  },
+  {
+    "fact": "Root 执行模式区只在 preferredPermissionLevel == AndroidPermissionLevel.ROOT 时显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:823"
+  },
+  {
+    "fact": "重置按钮同时调用 resetDisplaySettings() 与 resetRootExecutionSettings()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:915"
+  },
+  {
+    "fact": "开启后台保活后联动调用 AIForegroundService.refreshBackgroundKeepAlive(context)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:578"
+  },
+  {
+    "fact": "虚拟屏码率提供 1500/3000/5000/10000/20000 五档 FilterChip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:631"
+  },
+  {
+    "fact": "软件身份在 SOFTWARE_IDENTITY_OPERIT 与 SOFTWARE_IDENTITY_LINGSHU 之间用 FilterChip 切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:525"
+  },
+  {
+    "fact": "屏幕常亮开关 keepScreenOn 来自 ApiPreferences 的 keepScreenOnFlow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GlobalDisplaySettingsScreen.kt:77"
+  },
+  {
+    "fact": "自定义表情添加用 ActivityResultContracts.OpenMultipleDocuments() 支持多选图片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:64"
+  },
+  {
+    "fact": "表情网格为 GridCells.Fixed(3) 的三列布局。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:448"
+  },
+  {
+    "fact": "点击表情打开图片预览，长按表情弹出删除确认对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:220"
+  },
+  {
+    "fact": "非 CustomEmojiPreferences.BUILTIN_EMOTIONS 的分组在下拉菜单中标 Star 星形图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:413"
+  },
+  {
+    "fact": "新建分组名强制转小写，且必须匹配正则 ^[a-z0-9_]*$。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:530"
+  },
+  {
+    "fact": "自定义表情页顶部卡片显示当前绑定的目标名称 activeTargetName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/CustomEmojiManagementScreen.kt:118"
+  },
+  {
+    "fact": "materialColors 是取色器内置的 14 色 Material Design 推荐色列表（紫/青/蓝/红/绿/深橙/棕/蓝灰系 700 色阶为主）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:34"
+  },
+  {
+    "fact": "取色器的 HsvColorPicker、BrightnessSlider、AlphaSlider、AlphaTile、PresetColorItem 均来自 skydoves 的 colorpicker-compose 库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:27"
+  },
+  {
+    "fact": "Color.toHsv() 用 android.graphics.Color.colorToHSV 把 Compose Color 转成 HSV 三值 FloatArray；hsvToColor(h,s,v) 反向构造 Color。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:57"
+  },
+  {
+    "fact": "parseHexColor 支持 6 位/8 位 hex 与 3 位简写（#F00 展开为 #FF0000），非法输入抛异常后捕获返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:74"
+  },
+  {
+    "fact": "ColorPickerDialog 的 ColorPickerController 用 remember(currentColor) 创建并以 selectByColor(currentColor, fromUser=false) 初始化，换取色项时重建控制器以修复初始颜色错误（注释称之为 definitive fix for the initial color bug）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:158"
+  },
+  {
+    "fact": "LaunchedEffect(pickedColor) 把当前选中色同步回 HEX/RGB/HSV 三组手动输入框（HEX 用 #%06X 格式化，丢弃 alpha）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:181"
+  },
+  {
+    "fact": "手动输入默认 HEX 模式，可通过三个 FilterChip 切换到 RGB/HSV 模式（inputMode 初始值 \"HEX\"）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:169"
+  },
+  {
+    "fact": "HEX 输入框的粘贴按钮用 LocalClipboardManager.getText 读取剪贴板文本并立即 applyManualColor() 应用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:376"
+  },
+  {
+    "fact": "最近使用的颜色分两行各展示最多 7 个（take(7)/drop(7).take(7)），点击色点直接 pickerController.selectByColor(it, fromUser=true) 选中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:543"
+  },
+  {
+    "fact": "点确定时按 currentColorPickerMode 字符串（primary/secondary/statusBar/appBar/navigationDrawerBackground/navigationDrawerAccent/historyIcon/pipIcon/cursorUserBubble/bubbleUserBubble/bubbleAiBubble/bubbleUserText/bubbleAiText）把拾取色 ARGB 填入 onColorSelected 对应位置参数，其余 12 个位置传 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ColorPickerDialog.kt:605"
+  },
+  {
+    "fact": "ThemeModeOption 是可点击卡片：选中时底色为 primary.copy(alpha=0.2f) 并加 2.dp primary 描边，文字加粗且变 primary 色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ThemeSettingsComponents.kt:32"
+  },
+  {
+    "fact": "MediaTypeOption 与 ThemeModeOption 同款选中样式（半透明 primary 底色+2.dp 描边），额外在标题上方放一个 24.dp 图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ThemeSettingsComponents.kt:66"
+  },
+  {
+    "fact": "ColorSelectionItem 是带标题的 48.dp 圆形色板，disabled 时整项透明度降为 0.38f 且色板 alpha 减半。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ThemeSettingsComponents.kt:109"
+  },
+  {
+    "fact": "ColorSelectionItem 禁用态透明度常量为 0.38f（val alpha = if (enabled) 1f else 0.38f）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ThemeSettingsComponents.kt:116"
+  },
+  {
+    "fact": "PresetColorItem 是 32.dp 圆形预设色点，带 1.dp 白色描边，点击触发 onSelect 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/ThemeSettingsComponents.kt:145"
+  },
+  {
+    "fact": "calculateLuminance 是背景 section 的私有亮度函数，用 0.299/0.587/0.114 加权公式判定视频预览遮罩用白色还是黑色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:65"
+  },
+  {
+    "fact": "背景媒体类型用两个 MediaTypeOption 在图片/视频间切换，对应 UserPreferencesManager.MEDIA_TYPE_IMAGE/MEDIA_TYPE_VIDEO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:150"
+  },
+  {
+    "fact": "切换图片/视频类型时，只有已选背景媒体 URI 非空才把 background_media_type 写进编辑草稿，避免覆盖空值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:158"
+  },
+  {
+    "fact": "图片背景预览用 rememberAsyncImagePainter(Uri.parse(backgroundImageUriInput)) 加载，右上角 Crop 按钮调 launchImageCrop 重新裁剪。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:202"
+  },
+  {
+    "fact": "视频背景预览用 AndroidView 嵌入 StyledPlayerView，useController=false，resizeMode=AspectRatioFrameLayout.RESIZE_MODE_ZOOM。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:244"
+  },
+  {
+    "fact": "视频预览前景叠一层 ColorDrawable，用 (1f-backgroundImageOpacityInput)*255 算 alpha，浅色主题罩白、深色主题罩黑，以模拟透明度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:249"
+  },
+  {
+    "fact": "视频预览右上角静音按钮切换后把新值写 video_background_muted 草稿；循环按钮切换后写 video_background_loop 并弹 Toast 提示已启用/已禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:283"
+  },
+  {
+    "fact": "选择按钮按当前媒体类型调用 mediaPickerLauncher.launch(arrayOf(\"video/*\") 或 arrayOf(\"image/*\"))。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:393"
+  },
+  {
+    "fact": "背景透明度 Slider 范围 0.1f..1f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:468"
+  },
+  {
+    "fact": "背景透明度采用 pendingOpacity 模式：onValueChange 只缓存 pending 值并通知上游，onValueChangeFinished 时才把 pending 值写 background_image_opacity 草稿，避免点按时同帧重组未生效导致持久化旧值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:457"
+  },
+  {
+    "fact": "背景模糊开关写 use_background_blur 草稿，打开后出现半径 Slider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:504"
+  },
+  {
+    "fact": "背景模糊半径 Slider 范围 1f..30f，抬手后写 background_blur_radius 草稿（同样用 pending 缓存模式）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsBackgroundSection.kt:533"
+  },
+  {
+    "fact": "ThemeSettingsColorContentMode 枚举只有 PALETTE（配色）与 INTERFACE（界面）两个值，决定同一 composable 渲染哪些卡片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:27"
+  },
+  {
+    "fact": "状态栏自定义色开关仅在 !statusBarTransparentInput && !statusBarHiddenInput 时可用（enabled 参数），文字同时置灰 0.38f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:168"
+  },
+  {
+    "fact": "导航抽屉提供水玻璃开关（写 navigation_drawer_water_glass）与按钮液态玻璃开关（写 navigation_drawer_button_liquid_glass）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:293"
+  },
+  {
+    "fact": "聊天头透明开关（chat_header_transparent）打开后才展示覆盖模式（chat_header_overlay_mode）子开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:471"
+  },
+  {
+    "fact": "顶栏内容色强制开关（force_app_bar_content_color_enabled）打开后出现浅/暗两档 ThemeModeOption，写 app_bar_content_color_mode（APP_BAR_CONTENT_COLOR_MODE_LIGHT/DARK）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:528"
+  },
+  {
+    "fact": "开启自定义配色（use_custom_colors）时用 editorSession.update 一次性把主色/次色写入 custom_primary_color/custom_secondary_color。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:613"
+  },
+  {
+    "fact": "on_color_mode 提供自动/浅/暗三档（ON_COLOR_MODE_AUTO/LIGHT/DARK），用三个 ThemeModeOption 排布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:665"
+  },
+  {
+    "fact": "配色预览用两个 Surface 分别渲染主色/次色按钮，文字色由 getTextColorForBackground 保证对比度，另有一行对比度提示文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsColorSection.kt:707"
+  },
+  {
+    "fact": "ThemeSettingsThemeModeSection 用 use_system_theme 开关控制跟随系统，关闭后才显示浅/暗两个 ThemeModeOption（写 theme_mode）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:107"
+  },
+  {
+    "fact": "聊天风格在 CHAT_STYLE_CURSOR 与 CHAT_STYLE_BUBBLE 间切换（写 chat_style），用 ChatStyleOption 选项卡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:154"
+  },
+  {
+    "fact": "输入框风格独立在 INPUT_STYLE_CLASSIC（经典）与 INPUT_STYLE_AGENT（Agent）间切换，可被调用方用 showInputStyleControls=false 隐藏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:294"
+  },
+  {
+    "fact": "cursor 风格下有\"用户气泡跟随主题\"开关（写 cursor_user_bubble_follow_theme），关闭跟随后才显示自定义颜色选择器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:328"
+  },
+  {
+    "fact": "cursor 风格预览时若开启跟随主题，用户色取 colorScheme.primaryContainer，否则取自定义色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1121"
+  },
+  {
+    "fact": "气泡模式的用户/AI 各自有独立的液态玻璃与水玻璃开关（bubble_user_bubble_liquid_glass 等），开玻璃后图片背景选项被禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:606"
+  },
+  {
+    "fact": "气泡图片渲染模式二选一：BUBBLE_IMAGE_RENDER_MODE_NINE_PATCH（九宫格）或 BUBBLE_IMAGE_RENDER_MODE_TILED_NINE_SLICE（平铺九宫格），写 bubble_image_render_mode。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:731"
+  },
+  {
+    "fact": "BubbleFontStyleEditor 的字体类型分 FONT_TYPE_SYSTEM 与 FONT_TYPE_FILE 两档 FilterChip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1210"
+  },
+  {
+    "fact": "系统字体提供默认/衬线/无衬线/等宽/手写体 5 个 RadioButton 选项（SYSTEM_FONT_CURSIVE 等）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1233"
+  },
+  {
+    "fact": "文件字体模式下当前字体路径只显示文件名（substringAfterLast(\"/\")），并提供选文件/清除两个按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1274"
+  },
+  {
+    "fact": "BubbleImageStyleEditor 的裁剪四边滑杆范围均为 0..0.45，写入时 coerceIn(0f, 0.45f) 钳制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:921"
+  },
+  {
+    "fact": "气泡图片缩放滑杆范围 0.2..3，内容左右内边距滑杆范围 0..32dp（BubbleStyleDpSliderRow 以 dp 显示）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:981"
+  },
+  {
+    "fact": "NineSliceSourcePreviewCard 用 Canvas 绘制源图缩略图，并叠加红色裁剪框（alpha 0.4）与九宫格重复区线（alpha 0.9）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1556"
+  },
+  {
+    "fact": "rememberSourcePreviewBitmap 在 Dispatchers.IO 上用 BitmapFactory.decodeStream 解码 URI，runCatching 失败返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1723"
+  },
+  {
+    "fact": "ChatStylePreviewCard 宽布局下气泡最大宽度 280.dp，普通布局 240.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1806"
+  },
+  {
+    "fact": "圆角开启时用户气泡用 RoundedCornerShape(20.dp,4.dp,20.dp,20.dp)（右上尖角）、AI 气泡用 RoundedCornerShape(4.dp,20.dp,20.dp,20.dp)（左上尖角）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:1809"
+  },
+  {
+    "fact": "ThemeSettingsDisplayOptionsSection 含 12 个显示开关：思考过程/模型供应商/模型名/角色名/用户名/token 统计/速度/耗时/时间戳/状态标签/输入处理状态/悬浮圆点动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:2118"
+  },
+  {
+    "fact": "ThemeSettingsSectionTitle 是各 section 通用标题行：primary 色图标 + 加粗 primary 色标题 + 下方分隔线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsCoreSections.kt:2444"
+  },
+  {
+    "fact": "字号缩放 Slider 范围 0.8f..1.5f、steps=6，标签显示一位小数，拖动直接写 font_scale 草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:249"
+  },
+  {
+    "fact": "本角色用户头像重置把 custom_user_avatar_uri 写 null（走主题草稿）；全局用户头像重置则把 DisplayPreferencesManager 的 saveDisplaySettings(globalUserAvatarUri=\"\") 写空（走全局设置，不走草稿）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:292"
+  },
+  {
+    "fact": "全局用户头像重置同样走 displayPreferencesManager.saveDisplaySettings(globalUserAvatarUri=\"\") 持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:306"
+  },
+  {
+    "fact": "全局用户名输入框为空时尾部图标是清空（写空字符串并持久化），非空时是保存（持久化当前输入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:341"
+  },
+  {
+    "fact": "头像形状在 AVATAR_SHAPE_CIRCLE/AVATAR_SHAPE_SQUARE 间二选一（写 avatar_shape）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:389"
+  },
+  {
+    "fact": "选方形头像时 AnimatedVisibility 展开圆角步进器：±1 步进、范围 0..16f，写 avatar_corner_radius。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ThemeSettingsFontAvatarSections.kt:452"
+  },
+  {
+    "fact": "CustomEmojiViewModel 继承 ViewModel 但构造函数直接拿 Context（内部只存 applicationContext），不是 AndroidViewModel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:34"
+  },
+  {
+    "fact": "activePrompt 用 SharingStarted.WhileSubscribed(5000) 在 viewModelScope 内共享，初始值为默认角色卡 ActivePrompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:46"
+  },
+  {
+    "fact": "activeTargetName 按 CharacterCard/CharacterGroup 分支分别订阅角色卡或群组卡的名称 flow（map { it?.name.orEmpty() }）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:54"
+  },
+  {
+    "fact": "categories 每次 activePrompt 变化先调用 repository.initializeBuiltinEmojis(prompt) 初始化内置表情，再 emitAll(repository.getAllCategories(prompt))。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:73"
+  },
+  {
+    "fact": "emojisInCategory 用 combine(activePrompt, _selectedCategory) 再 flatMapLatest 订阅当前分类的表情列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:84"
+  },
+  {
+    "fact": "init 里收集 categories：当前选中分类不在列表中时自动回退到首个分类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:108"
+  },
+  {
+    "fact": "addEmojis 逐个调用 repository.addCustomEmoji 并统计成功/失败数，部分成功时提示 emoji_added_partial（带两数），全部失败时提示 emoji_add_failed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:144"
+  },
+  {
+    "fact": "createCategory 先做 isValidCategoryName 校验，非法名提示 invalid_category_name。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:198"
+  },
+  {
+    "fact": "createCategory 发现分类已存在（categoryExists）时提示 category_already_exists 并返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:203"
+  },
+  {
+    "fact": "isCustomCategory 无条件返回 true 且参数未使用（_category）、全仓库无调用方，是未实现的残留桩。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:218"
+  },
+  {
+    "fact": "resetToDefault 在协程中调用 repository.resetToDefault，try/catch 包裹，成功提示 emoji_reset_success，失败提示 emoji_reset_failed 并带异常信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/viewmodels/CustomEmojiViewModel.kt:237"
+  }
+]
