@@ -1,0 +1,546 @@
+[
+  {
+    "fact": "ShellExecutor 是 Shell 执行器的统一接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:7"
+  },
+  {
+    "fact": "工具权限分 5 个层级：STANDARD/ACCESSIBILITY/ROOT/ADMIN/DEBUGGER",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidPermissionLevel.kt:10"
+  },
+  {
+    "fact": "ShellExecutor.executeCommand(command, identity=ShellIdentity.DEFAULT) 是挂起函数，返回 CommandResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:13"
+  },
+  {
+    "fact": "ShellExecutor.getPermissionLevel 返回执行器所属的 AndroidPermissionLevel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:19"
+  },
+  {
+    "fact": "ShellExecutor.isAvailable 检查执行器在当前设备是否可用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:25"
+  },
+  {
+    "fact": "ShellExecutor.requestPermission(onResult) 请求执行器所需的权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:31"
+  },
+  {
+    "fact": "ShellExecutor.hasPermission 返回 PermissionStatus（含是否有权限及失败原因）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:37"
+  },
+  {
+    "fact": "ShellExecutor.initialize 初始化执行器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:40"
+  },
+  {
+    "fact": "ShellExecutor.startProcess 启动长期运行的交互式进程，返回 ShellProcess",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:50"
+  },
+  {
+    "fact": "ShellExecutor.CommandResult 包含 success/stdout/stderr/exitCode 四个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:53"
+  },
+  {
+    "fact": "ShellExecutor.PermissionStatus.granted()/denied(reason) 是两个工厂方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:67"
+  },
+  {
+    "fact": "ShellProcess.stdout/stderr 是按行发射文本的 Flow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:77"
+  },
+  {
+    "fact": "ShellProcess.destroy 强行终止进程，waitFor 挂起等待退出码，isAlive 检查是否运行中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutor.kt:85"
+  },
+  {
+    "fact": "ShellExecutorFactory 用 executors 缓存已创建的执行器实例（按权限级别）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:14"
+  },
+  {
+    "fact": "ShellExecutorFactory.getExecutor 按权限级别创建对应执行器：ROOT→RootShellExecutor、ADMIN→AdminShellExecutor、DEBUGGER→DebuggerShellExecutor、ACCESSIBILITY→AccessibilityShellExecutor、STANDARD→StandardShellExecutor",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:34"
+  },
+  {
+    "fact": "ShellExecutorFactory.getExecutor 创建后先调 executor.initialize() 再缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:44"
+  },
+  {
+    "fact": "ShellExecutorFactory.getHighestAvailableExecutor 按 ROOT→ADMIN→DEBUGGER→ACCESSIBILITY→STANDARD 顺序返回首个可用且有权限的执行器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:61"
+  },
+  {
+    "fact": "ShellExecutorFactory.getHighestAvailableExecutor 找不到可用执行器时回退 STANDARD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:78"
+  },
+  {
+    "fact": "ShellExecutorFactory.getUserPreferredExecutor 读用户偏好权限级别，异常时回退 STANDARD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:96"
+  },
+  {
+    "fact": "ShellExecutorFactory.clearCache(null) 清空全部执行器缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:116"
+  },
+  {
+    "fact": "ShellExecutorFactory.getAvailableExecutors 返回全部 5 个级别的执行器及其权限状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt:139"
+  },
+  {
+    "fact": "AndroidPermissionLevel 有 STANDARD/ACCESSIBILITY/DEBUGGER/ADMIN/ROOT 五个枚举值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidPermissionLevel.kt:12"
+  },
+  {
+    "fact": "AndroidPermissionLevel.fromString 无法识别的字符串默认返回 STANDARD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidPermissionLevel.kt:24"
+  },
+  {
+    "fact": "ShellIdentity 有 DEFAULT/APP/ROOT/SHELL 四个枚举值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidShellExecutor.kt:139"
+  },
+  {
+    "fact": "AndroidShellExecutor.executeShellCommand 优先用用户偏好的权限级别执行器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidShellExecutor.kt:96"
+  },
+  {
+    "fact": "AndroidShellExecutor.executeShellCommand 在严格模式下：首选执行器不可用或无权限时直接返回失败，不降级到更低级别",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidShellExecutor.kt:107"
+  },
+  {
+    "fact": "AndroidShellExecutor.startShellProcess 在严格模式下失败时抛 SecurityException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AndroidShellExecutor.kt:122"
+  },
+  {
+    "fact": "StandardShellExecutor 的命令超时为 COMMAND_TIMEOUT=30 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:21"
+  },
+  {
+    "fact": "StandardShellExecutor.isAvailable 恒为 true，hasPermission 恒为 granted",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:26"
+  },
+  {
+    "fact": "StandardShellExecutor 含 shell 特殊字符的命令走 executeWithShell（sh -c），否则 Runtime.exec 直接执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:49"
+  },
+  {
+    "fact": "StandardShellExecutor 的 grep 命令退出码为 1（无匹配）也视为成功",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:139"
+  },
+  {
+    "fact": "StandardShellExecutor.containsShellOperators 识别引号与转义，只在引号外检测操作符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:166"
+  },
+  {
+    "fact": "containsShellOperators 检测管道 | 与 & 操作符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:193"
+  },
+  {
+    "fact": "containsShellOperators 检测重定向 > < 与分号 ;",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:204"
+  },
+  {
+    "fact": "StandardShellExecutor.startProcess 返回 StandardShellProcess",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:99"
+  },
+  {
+    "fact": "StandardShellProcess 基于 Runtime.exec 实现（无特殊操作符时直接 exec，有则经 sh -c）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt:223"
+  },
+  {
+    "fact": "RootShellExecutor 静态初始化 libsu：enableVerboseLogging=true、FLAG_MOUNT_MASTER、超时 10 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:44"
+  },
+  {
+    "fact": "RootShellExecutor 有 libsu 与 exec 两种执行模式，由 useExecMode 开关控制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:113"
+  },
+  {
+    "fact": "RootShellExecutor.extractActualCommand 用正则提取 run-as 包装内的真实命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:244"
+  },
+  {
+    "fact": "RootShellExecutor.ensureShellLauncherInstalled 把 assets 里的 operit_shell_exec 复制到应用私有 bin 目录并加可执行权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:287"
+  },
+  {
+    "fact": "RootShellExecutor 以 ShellIdentity.SHELL 执行时经 operit_shell_exec launcher 降权执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:376"
+  },
+  {
+    "fact": "RootShellExecutor.checkExecSuAvailable 通过 `buildSuExecCommand(\"id\")` 构造 su 执行命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:166"
+  },
+  {
+    "fact": "su 执行成功（退出码 0）且输出含 uid=0 时判定 su 可用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:178"
+  },
+  {
+    "fact": "RootShellExecutor.startProcess 无 Root 权限时抛 SecurityException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:481"
+  },
+  {
+    "fact": "RootShellExecutor 的 LibSuShellProcess 用 CallbackList 把输出送入 256 容量的 Channel（DROP_OLDEST）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt:495"
+  },
+  {
+    "fact": "DebuggerShellExecutor 基于 Shizuku 实现 DEBUGGER 级别命令执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:28"
+  },
+  {
+    "fact": "DebuggerShellExecutor 用 ConcurrentHashMap 按 uid 缓存 IShizukuService，死亡时 pingBinder 检测并移除",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:32"
+  },
+  {
+    "fact": "DebuggerShellExecutor.executeCommandDirect 经 IShizukuService.newProcess 创建进程",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:230"
+  },
+  {
+    "fact": "DebuggerShellExecutor.retryOperation 最多重试 3 次、间隔 500ms，只重试 read interrupted 的 InterruptedIOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:187"
+  },
+  {
+    "fact": "DebuggerShellExecutor 含管道的 grep 命令会被替换为 /system/bin/grep 绝对路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:336"
+  },
+  {
+    "fact": "DebuggerShellExecutor 以单个 & 结尾的后台命令只负责启动、不等待，创建成功即返回成功",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:374"
+  },
+  {
+    "fact": "DebuggerShellExecutor 的 shell 模式用 sh -e -c 执行增强命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:356"
+  },
+  {
+    "fact": "DebuggerShellExecutor.parseCommand 是处理引号的智能命令行分词器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt:500"
+  },
+  {
+    "fact": "AdminShellExecutor.executeCommand 只支持 lockscreen（调 lockNow 锁屏）与 wipe（调 wipeData(0) 清除数据）两种命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AdminShellExecutor.kt:118"
+  },
+  {
+    "fact": "AdminShellExecutor 对其他命令返回 Unsupported command for device admin",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AdminShellExecutor.kt:137"
+  },
+  {
+    "fact": "AdminShellExecutor.requestPermission 引导用户到系统设备管理员激活页",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AdminShellExecutor.kt:73"
+  },
+  {
+    "fact": "AccessibilityShellExecutor.executeCommand 恒返回失败：无障碍服务不能直接执行 shell 命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AccessibilityShellExecutor.kt:117"
+  },
+  {
+    "fact": "AccessibilityShellExecutor.isAvailable 要求无障碍服务已启用且服务引用已设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AccessibilityShellExecutor.kt:39"
+  },
+  {
+    "fact": "RootAuthorizer 是 object 单例，对外暴露 isRooted/hasRootAccess 两个 StateFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:31"
+  },
+  {
+    "fact": "RootAuthorizer.isDeviceRooted 用 libsu 的 isAppGrantedRoot（方法1）与 KernelSU 的 checkKernelSu（方法2）检测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:208"
+  },
+  {
+    "fact": "RootAuthorizer.isDeviceRooted 还检查常见 su 路径（方法3）与 which su（方法4）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:232"
+  },
+  {
+    "fact": "RootAuthorizer 检测的 su 路径包括 /system/bin/su、/system/xbin/su、/sbin/su",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:224"
+  },
+  {
+    "fact": "RootAuthorizer.checkKernelSu 执行 su --version，输出含 KernelSU（忽略大小写）即判定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:269"
+  },
+  {
+    "fact": "RootAuthorizer.requestRootPermission 会触发 Magisk/SuperSU 等的授权弹窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:330"
+  },
+  {
+    "fact": "RootAuthorizer.executeRootCommand 以 ShellIdentity.ROOT 身份执行，返回 Pair(success, 输出)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt:395"
+  },
+  {
+    "fact": "ShizukuAuthorizer 认定的 Shizuku 包名是 moe.shizuku.privileged.api",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:18"
+  },
+  {
+    "fact": "ShizukuAuthorizer 只接受 uid 为 0 或 2000 的 Shizuku 连接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:154"
+  },
+  {
+    "fact": "ShizukuAuthorizer.isShizukuServiceRunning 等价于能解析出有效 Shizuku 连接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:224"
+  },
+  {
+    "fact": "ShizukuAuthorizer.hasShizukuPermission 用 Shizuku.checkSelfPermission 检查授权",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:240"
+  },
+  {
+    "fact": "ShizukuAuthorizer.requestShizukuPermission 用 requestCode=100 请求授权",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:289"
+  },
+  {
+    "fact": "ShizukuAuthorizer.getShizukuStartupInstructions 给出 adb 启动脚本路径 /sdcard/Android/data/moe.shizuku.privileged.api/start.sh",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt:414"
+  },
+  {
+    "fact": "ShizukuInstaller 内置 APK 文件名是 shizuku.apk，从 assets 提取到 cacheDir",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuInstaller.kt:38"
+  },
+  {
+    "fact": "ShizukuInstaller 的版本缓存有效期为 60 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuInstaller.kt:30"
+  },
+  {
+    "fact": "ShizukuInstaller.installBundledShizuku 用 ACTION_VIEW 唤起系统安装界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuInstaller.kt:104"
+  },
+  {
+    "fact": "ShizukuInstaller.getBundledShizukuVersion 从 assets 的 shizuku_version.txt 读版本号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuInstaller.kt:141"
+  },
+  {
+    "fact": "ShizukuInstaller.isShizukuUpdateNeeded 逐段比较主版本号，内置更大才提示更新",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuInstaller.kt:231"
+  },
+  {
+    "fact": "MediaProjectionCaptureManager.setupDisplay 创建名为 OperitScreenCapture 的 VirtualDisplay",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:59"
+  },
+  {
+    "fact": "MediaProjectionCaptureManager 用 ImageReader(RGBA_8888, maxImages=2) 承接投屏帧",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:54"
+  },
+  {
+    "fact": "MediaProjectionCaptureManager 使用 VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR 标志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:57"
+  },
+  {
+    "fact": "MediaProjectionCaptureManager.captureToBitmap 取 acquireLatestImage 的最新帧并按 rowStride 裁掉行填充",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:112"
+  },
+  {
+    "fact": "MediaProjectionCaptureManager.captureToFile 以 PNG 质量 100 落盘",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:152"
+  },
+  {
+    "fact": "MediaProjection 停止时回调 MediaProjectionHolder.clear 并释放资源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionCaptureManager.kt:85"
+  },
+  {
+    "fact": "MediaProjectionHolder 是全局单例，持有 mediaProjection/permissionResultData/permissionResultCode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionHolder.kt:11"
+  },
+  {
+    "fact": "MediaProjectionHolder.clear 会停止 ScreenCaptureService",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/MediaProjectionHolder.kt:25"
+  },
+  {
+    "fact": "ScreenCaptureActivity 是透明 Activity（Theme.Translucent.NoTitleBar）",
+    "ref": "app/src/main/AndroidManifest.xml:309"
+  },
+  {
+    "fact": "ScreenCaptureActivity 用 REQUEST_CODE_CAPTURE=1001 发起截屏授权",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureActivity.kt:20"
+  },
+  {
+    "fact": "ScreenCaptureActivity 在 Android 14 上先启动前台服务再调 getMediaProjection（按代码注释；代码中无版本门检查）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureActivity.kt:47"
+  },
+  {
+    "fact": "ScreenCaptureActivity 以 30ms 间隔轮询前台服务就绪，最长等 1500ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureActivity.kt:55"
+  },
+  {
+    "fact": "ScreenCaptureService 是前台服务，通知 ID 为 2001",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureService.kt:25"
+  },
+  {
+    "fact": "ScreenCaptureService 用 FOREGROUND_SERVICE_TYPE_MEDIA_PROJECTION 类型保活投屏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureService.kt:86"
+  },
+  {
+    "fact": "ScreenCaptureService.isMediaProjectionForegroundReady 标记前台服务是否就绪",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ScreenCaptureService.kt:29"
+  },
+  {
+    "fact": "Terminal 是应用级终端门面，单例 getInstance，要求 API 26+",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:37"
+  },
+  {
+    "fact": "Terminal 对外暴露 commandEvents/directoryEvents/terminalState 三个事件流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:50"
+  },
+  {
+    "fact": "Terminal.createSession 返回新会话 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:77"
+  },
+  {
+    "fact": "Terminal.executeCommand 先订阅 commandEvents（按 sessionId+commandId 过滤）再发命令，避免快命令输出丢失",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:112"
+  },
+  {
+    "fact": "Terminal.executeHiddenCommand 默认超时 120000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:141"
+  },
+  {
+    "fact": "Terminal.executeCommandFlow 返回命令执行全过程事件的 Flow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:157"
+  },
+  {
+    "fact": "Terminal.sendInterruptSignal 发送 Ctrl+C 中断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:193"
+  },
+  {
+    "fact": "Terminal.isConnected 恒返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt:201"
+  },
+  {
+    "fact": "OperitTerminalManager.PACKAGE_NAME 是 com.ai.assistance.operit.terminal",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/OperitTerminalManager.kt:15"
+  },
+  {
+    "fact": "OperitTerminalManager 从 GitHub 仓库 AAswordman/OperitTerminal 查最新 Release",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/OperitTerminalManager.kt:44"
+  },
+  {
+    "fact": "OperitTerminalManager.isInstalled 检查终端应用是否已安装",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/OperitTerminalManager.kt:26"
+  },
+  {
+    "fact": "OperitTerminalManager.getInstalledVersion 获取已安装终端的版本号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/OperitTerminalManager.kt:35"
+  },
+  {
+    "fact": "AccessibilityProviderInstaller 管理的无障碍提供者包名是 com.ai.assistance.operit.provider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AccessibilityProviderInstaller.kt:18"
+  },
+  {
+    "fact": "AccessibilityProviderInstaller 版本缓存有效期 60 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AccessibilityProviderInstaller.kt:25"
+  },
+  {
+    "fact": "AccessibilityProviderInstaller.getBundledVersion 从 assets 的 accessibility_version.txt 读版本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AccessibilityProviderInstaller.kt:36"
+  },
+  {
+    "fact": "AccessibilityProviderInstaller.launchInstall 经 UIHierarchyManager.launchProviderInstall 触发安装",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/AccessibilityProviderInstaller.kt:139"
+  },
+  {
+    "fact": "OperitShowerShellRunner 把 showerclient 的 ShellIdentity(DEFAULT/SHELL/ROOT) 映射到应用的 ShellIdentity 再调 AndroidShellExecutor.executeShellCommand",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shower/OperitShowerShellRunner.kt:17"
+  },
+  {
+    "fact": "ActionListener.startListening 接收 ActionEvent 回调，返回 ListeningResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListener.kt:12"
+  },
+  {
+    "fact": "ActionListener.ActionEvent 含 timestamp/actionType/coordinates/elementInfo/inputText/additionalData",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListener.kt:54"
+  },
+  {
+    "fact": "ActionListener.ActionType 有 CLICK/LONG_CLICK/SWIPE/TEXT_INPUT/KEY_PRESS/SCROLL/GESTURE/APP_SWITCH/SCREEN_CHANGE/SYSTEM_EVENT 十种",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListener.kt:64"
+  },
+  {
+    "fact": "ActionListener.ElementInfo 含 resourceId/className/text/contentDescription/bounds/packageName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListener.kt:78"
+  },
+  {
+    "fact": "ActionListenerFactory 用 listeners 缓存各权限级别的监听器实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListenerFactory.kt:14"
+  },
+  {
+    "fact": "ActionListenerFactory.getListener 按级别创建 Root/Admin/Debugger/Accessibility/Standard 五种监听器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListenerFactory.kt:30"
+  },
+  {
+    "fact": "ActionListenerFactory.getHighestAvailableListener 按权限从高到低返回首个可用监听器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListenerFactory.kt:52"
+  },
+  {
+    "fact": "ActionListenerFactory.stopAllListeners 停止所有正在监听的监听器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionListenerFactory.kt:146"
+  },
+  {
+    "fact": "ActionManager 是单例 getInstance，统一管理 UI 操作监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:30"
+  },
+  {
+    "fact": "ActionManager 对外暴露 isListening/currentPermissionLevel 两个 StateFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:45"
+  },
+  {
+    "fact": "ActionManager.startListeningWithHighestPermission 用最高可用权限启动监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:62"
+  },
+  {
+    "fact": "ActionManager.startListeningWithPermissionLevel 用指定权限级别启动监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:88"
+  },
+  {
+    "fact": "ActionManager 把监听器事件广播给 eventCallbacks 里所有回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:123"
+  },
+  {
+    "fact": "ActionManager.registerEventCallback/registerStateChangeCallback 注册事件与状态回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/ActionManager.kt:201"
+  },
+  {
+    "fact": "RootActionListener 用 Root 权限启动 `getevent -l` 持续进程监听内核输入事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/RootActionListener.kt:150"
+  },
+  {
+    "fact": "RootActionListener 的 getevent 进程退出后若仍在监听会自动重启",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/RootActionListener.kt:166"
+  },
+  {
+    "fact": "RootActionListener 把 BTN_TOUCH UP 解析为 CLICK 事件（来源 getevent）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/RootActionListener.kt:194"
+  },
+  {
+    "fact": "DebuggerActionListener 每秒轮询 dumpsys window 监控窗口焦点变化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/DebuggerActionListener.kt:183"
+  },
+  {
+    "fact": "DebuggerActionListener 每秒轮询 dumpsys activity 监控 Activity 栈变化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/DebuggerActionListener.kt:206"
+  },
+  {
+    "fact": "DebuggerActionListener 把窗口焦点变化转为 SCREEN_CHANGE 事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/DebuggerActionListener.kt:235"
+  },
+  {
+    "fact": "DebuggerActionListener.handleDetectedTouchEvent 把 DOWN/UP 映射为 CLICK、MOVE 映射为 SWIPE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/DebuggerActionListener.kt:283"
+  },
+  {
+    "fact": "AccessibilityActionListener 过滤掉 eventType=2048（TYPE_TOUCH_INTERACTION_START）的高频噪音事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AccessibilityActionListener.kt:123"
+  },
+  {
+    "fact": "AccessibilityActionListener 把 TYPE_VIEW_CLICKED/TYPE_VIEW_LONG_CLICKED/TYPE_VIEW_TEXT_CHANGED/TYPE_VIEW_SCROLLED/TYPE_WINDOW_STATE_CHANGED 分别映射为 CLICK/LONG_CLICK/TEXT_INPUT/SCROLL/SCREEN_CHANGE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AccessibilityActionListener.kt:129"
+  },
+  {
+    "fact": "AccessibilityActionListener.handleAccessibilityEvent 是 private 且无任何调用者（死代码）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AccessibilityActionListener.kt:117"
+  },
+  {
+    "fact": "AdminActionListener.startAdminEventMonitoring 只是打日志的空实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AdminActionListener.kt:143"
+  },
+  {
+    "fact": "AdminActionListener.handleScreenLockEvent 产生 SYSTEM_EVENT 类型的锁屏事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AdminActionListener.kt:166"
+  },
+  {
+    "fact": "StandardActionListener.isAvailable 恒返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/StandardActionListener.kt:23"
+  },
+  {
+    "fact": "标准权限下只能监听应用内的基本触摸和按键事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/StandardActionListener.kt:88"
+  }
+]

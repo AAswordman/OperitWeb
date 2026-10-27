@@ -1,0 +1,22 @@
+[
+  {
+    "category": "privacy",
+    "confidence": "medium",
+    "detail": "createRequestBody 在发送前把完整请求体（含 tools 工具定义与模型参数）用 logLargeString 写入日志。虽然图片 base64 经过 sanitizeImageDataForLogging 脱敏，但用户提示词原文、工具定义等仍会原文落盘 logcat，任何能读日志的应用都可获取。建议仅在 debug 构建中输出完整请求体，或对 tools/消息内容做同样的省略处理。",
+    "evidence": "        val sanitizedLogJson = sanitizeImageDataForLogging(logJson)\n        logLargeString(\n            \"QwenAIProvider\",\n            sanitizedLogJson.toString(4),\n            \"Final Qwen-compatible request body: \"\n        )",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt",
+    "line": 81,
+    "severity": "warning",
+    "title": "完整请求体（含工具定义）原文写入 logcat"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "sendMessage 的重写只是把全部 13 个参数原样透传给 super.sendMessage，没有增改任何行为。这个空壳重写增加了维护面（父类签名变更时这里也要同步），且注释声称的“续写逻辑和 stream 参数处理”本就属于父类。建议直接删除该重写。",
+    "evidence": "    ): Stream<String> {\n        // 直接调用父类的sendMessage实现，它已经包含了续写逻辑和stream参数处理\n        return super.sendMessage(context, chatHistory, modelParameters, enableThinking, stream, availableTools, preserveThinkInHistory, onTokensUpdated, onUsageReported, onNonFatalError, enableRetry, recordTokenUsage, onUsageFinalized)\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt",
+    "line": 121,
+    "severity": "suggestion",
+    "title": "sendMessage 重写为空壳透传，可删除"
+  }
+]

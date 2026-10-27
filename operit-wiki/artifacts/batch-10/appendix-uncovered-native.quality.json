@@ -1,0 +1,215 @@
+[
+ {
+  "category": "线程/生命周期",
+  "confidence": "high",
+  "detail": "generateStream() 在 synchronized(lock) 内只把 sessionPtr 拷出锁（85-95 行），真正的 nativeGenerateStream 在锁外执行，可能耗时很长；release() 在锁内把 sessionPtr 置 0 后直接调 nativeReleaseSession（178-190 行），不等待在途调用。同模块的 MNNLlmSession.release() 用 activeCalls 计数 + wait/notifyAll 做了在途调用栅栏（MNNLlmSession.kt:390-406），LlamaSession 缺少同等保护，native 侧若在回调/生成期间释放会话即构成 use-after-free。",
+  "evidence": [
+   "    fun generateStream(prompt: String, maxTokens: Int, onToken: (String) -> Boolean): Boolean {",
+   "        val ptr: Long",
+   "        synchronized(lock) {",
+   "            checkValid()",
+   "            ptr = sessionPtr",
+   "        }",
+   "",
+   "        return LlamaNative.nativeGenerateStream("
+  ],
+  "file": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaSession.kt",
+  "line": 178,
+  "severity": "high",
+  "title": "LlamaSession.release() 不等待在途的 nativeGenerateStream，释放与推理并发存在 use-after-free 风险"
+ },
+ {
+  "category": "线程/生命周期",
+  "confidence": "medium",
+  "detail": "cancel() 在 synchronized(lock) 内取出 llmPtr 后立即离开锁、锁外调用 nativeCancel(ptr)；若此时另一线程的 release() 把 llmPtr 置 0 并 nativeReleaseLlm，cancel 的 ptr 即为已释放指针，native 侧可能访问已释放对象。release() 本身对在途调用有 activeCalls 栅栏，但 cancel 绕过了它。",
+  "evidence": [
+   "    fun cancel() {",
+   "        val ptr = synchronized(lock) {",
+   "            if (released || llmPtr == 0L) {",
+   "                return",
+   "            }",
+   "            llmPtr",
+   "        }",
+   "        MNNLlmNative.nativeCancel(ptr)"
+  ],
+  "file": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt",
+  "line": 302,
+  "severity": "warn",
+  "title": "MNNLlmSession.cancel() 锁外调用 nativeCancel，释放与取消并发时指针可能已失效"
+ },
+ {
+  "category": "异常处理",
+  "confidence": "high",
+  "detail": "System.loadLibrary(\"LlamaWrapper\") 没有 try/catch，UnsatisfiedLinkError 直接抛到调用方；且它在 LlamaNative 的 init 块里被触发（LlamaNative.kt:5），首次触碰该 object 即崩溃且无任何日志。同模块的 MNNLibraryLoader 捕获后打日志再 rethrow（MNNLibraryLoader.kt:41）。建议补日志或把失败信息纳入 nativeGetUnavailableReason 路径。",
+  "evidence": [
+   "    fun loadLibraries() {",
+   "        if (loaded) return",
+   "        synchronized(lock) {",
+   "            if (loaded) return",
+   "            System.loadLibrary(\"LlamaWrapper\")",
+   "            loaded = true",
+   "        }",
+   "    }"
+  ],
+  "file": "llm/llama/src/main/java/com/ai/assistance/llama/LlamaLibraryLoader.kt",
+  "line": 13,
+  "severity": "warn",
+  "title": "LlamaLibraryLoader 加载失败无日志直接上抛，缺 so 时诊断困难"
+ },
+ {
+  "category": "异常处理",
+  "confidence": "high",
+  "detail": "System.loadLibrary(\"dragonbones_native\") 放在 object 的 init 块里，无 try/catch、无日志；DragonBonesView 构造时调 JniBridge.init()（DragonBonesView.kt:56），缺 so 时以 UnsatisfiedLinkError 硬崩，无任何诊断信息。FBX/MMD 的 Loader 虽也有同样问题但至少在具名函数内，这里直接在 init 块。",
+  "evidence": [
+   "object JniBridge {",
+   "    init {",
+   "        System.loadLibrary(\"dragonbones_native\")",
+   "    }",
+   "",
+   "    @JvmStatic external fun init()"
+  ],
+  "file": "avator/dragonbones/src/main/java/com/dragonbones/JniBridge.kt",
+  "line": 5,
+  "severity": "warn",
+  "title": "DragonBones JniBridge.init 直接 loadLibrary 无异常处理，缺库即硬崩"
+ },
+ {
+  "category": "异常处理",
+  "confidence": "high",
+  "detail": "System.loadLibrary(\"FbxWrapper\") 无 try/catch，失败直接抛 UnsatisfiedLinkError 且无日志；MmdLibraryLoader.kt:13 对 \"MmdWrapper\" 是完全相同的写法。两者模块都有 nativeIsAvailable 探活设计（FbxInspector/MmdInspector），但 so 缺失时探活代码根本跑不到——崩溃发生在类初始化阶段。建议至少打日志，或把加载失败转为 isAvailable=false。",
+  "evidence": [
+   "    fun loadLibraries() {",
+   "        if (loaded) return",
+   "        synchronized(lock) {",
+   "            if (loaded) return",
+   "            System.loadLibrary(\"FbxWrapper\")",
+   "            loaded = true",
+   "        }",
+   "    }"
+  ],
+  "file": "avator/fbx/src/main/java/com/ai/assistance/fbx/FbxLibraryLoader.kt",
+  "line": 13,
+  "severity": "warn",
+  "title": "FbxLibraryLoader/MmdLibraryLoader 加载失败无日志直接上抛"
+ },
+ {
+  "category": "线程/生命周期",
+  "confidence": "medium",
+  "detail": "rendererHandle 作为 NativeMmdRenderer 的属性初始化器（= MmdNative.nativeCreateRenderer()），而 NativeMmdRenderer 实例是 MmdGlSurfaceView 的字段——构造发生在 UI 线程。native 渲染器若持有 GL 状态/需要在 GL 上下文内创建资源，在 UI 线程创建即属错线程；且后续 onSurfaceCreated 才有 GL 上下文可用（242 行）。对比 FbxGlSurfaceView 把 native 会话创建放在 onSurfaceCreated 之后的 loadPreviewAssets 里（432 行）。",
+  "evidence": [
+   "    private var rendererHandle: Long = MmdNative.nativeCreateRenderer()",
+   "    private var requestedModelPath: String? = null"
+  ],
+  "file": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt",
+  "line": 140,
+  "severity": "warn",
+  "title": "NativeMmdRenderer 的 nativeCreateRenderer 在构造线程（UI 线程）执行，不在 GL 线程"
+ },
+ {
+  "category": "API 设计",
+  "confidence": "medium",
+  "detail": "本仓库定义 FORWARD_OPENCL=3、FORWARD_OPENGL=6，而上游 MNN 官方 Java 绑定常用的取值是 OPENCL=2、OPENGL=3（AUTO=4、VULKAN=7 相同）。若有人照官方文档传 2/3 进来，会静默映射到错误的后端。建议在注释里注明与上游的差异，或在 nativeSetConfig 相关路径做取值校验。",
+  "evidence": [
+   "    FORWARD_CPU(0),",
+   "    FORWARD_OPENCL(3),",
+   "    FORWARD_AUTO(4),",
+   "    FORWARD_OPENGL(6),",
+   "    FORWARD_VULKAN(7)"
+  ],
+  "file": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNForwardType.kt",
+  "line": 16,
+  "severity": "warn",
+  "title": "MNNForwardType 取值与上游 MNN 官方 Java 绑定不一致，跨文档/跨平台对接易踩坑"
+ },
+ {
+  "category": "安全",
+  "confidence": "high",
+  "detail": "normalizeTimerCallback 里字符串回调被包成 function() { return eval(callback); }。这是为了兼容浏览器 setTimeout(\"code\") 语义，但 eval 让任意字符串获得完整脚本执行能力；若脚本来源不可信（宿主把用户输入拼进定时器字符串），即构成代码注入。当前调用方均为内部脚本，风险可控，建议在文档注明仅接受内部受信字符串。",
+  "evidence": [
+   "            function normalizeTimerCallback(callback) {",
+   "                if (typeof callback === 'function') return callback;",
+   "                if (typeof callback === 'string') {",
+   "                    return function() { return eval(callback); };",
+   "                }"
+  ],
+  "file": "quickjs/src/main/java/com/ai/assistance/operit/core/tools/javascript/QuickJsNativeCompatScriptBuilder.kt",
+  "line": 88,
+  "severity": "suggestion",
+  "title": "QuickJS 兼容层对字符串定时器回调走 eval() 执行"
+ },
+ {
+  "category": "异常处理",
+  "confidence": "high",
+  "detail": "try/catch(_: Throwable) 空 catch，Surface.setFrameRate 反射失败（方法不存在、参数不匹配、权限问题）时无任何日志，高刷请求静默失效，排查时难以定位是设备不支持还是代码问题。建议至少打一行 debug 日志。",
+  "evidence": [
+   "        try {",
+   "            val setFrameRateMethod =",
+   "                surface.javaClass.getMethod(",
+   "                    \"setFrameRate\",",
+   "                    Float::class.javaPrimitiveType!!,",
+   "                    Int::class.javaPrimitiveType!!",
+   "                )",
+   "            setFrameRateMethod.invoke(surface, 120f, 0)",
+   "        } catch (_: Throwable) {",
+   "        }"
+  ],
+  "file": "avator/mmd/src/main/java/com/ai/assistance/mmd/MmdGlSurfaceView.kt",
+  "line": 121,
+  "severity": "suggestion",
+  "title": "requestHighRefreshRateIfSupported 静默吞掉所有反射异常"
+ },
+ {
+  "category": "生命周期",
+  "confidence": "medium",
+  "detail": "protected fun finalize() { release() } 在 GC 终结器线程执行 nativeCancel + 等待在途调用 + nativeReleaseLlm。finalize 执行时机不可预测（deprecated API），且 release 里的 wait 可能阻塞终结器线程；正常路径已有显式 release()，finalize 兜底反而可能引入终结器线程阻塞。建议改用 Cleaner 或明确要求调用方显式 release。",
+  "evidence": [
+   "    protected fun finalize() {",
+   "        release()",
+   "    }"
+  ],
+  "file": "llm/mnn/src/main/java/com/ai/assistance/mnn/MNNLlmSession.kt",
+  "line": 428,
+  "severity": "suggestion",
+  "title": "MNNLlmSession.finalize() 在终结器线程做 JNI 释放"
+ },
+ {
+  "category": "security",
+  "confidence": "high",
+  "detail": "ensureServerStarted 把 shower-server.jar 拷到 /data/local/tmp/shower-server.jar（该目录全局可写），然后用 SHELL 身份执行 CLASSPATH=<jar> app_process / com.ai.assistance.shower.Main。拷入前没有任何签名/哈希校验，且 jar 先经全局可读写的 /sdcard/Download/Operit 中转（copyJarToExternalDir）。本机其他应用可在窗口期内替换 jar，使其以 shell 身份进程的代码执行权限运行，构成潜在的本地提权向量。",
+  "evidence": "// 4) Start app_process with CLASSPATH pointing to /data/local/tmp/shower-server.jar, in background.\nval targetPackagesArg = appContext.packageName\nval startCmd = \"CLASSPATH=$remoteJarPath app_process / com.ai.assistance.shower.Main $targetPackagesArg &\"\nShowerLog.d(TAG, \"Starting Shower server with command: $startCmd\")",
+  "file": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerServerManager.kt",
+  "line": 86,
+  "severity": "high",
+  "title": "投屏服务端 jar 从全局可写的 /data/local/tmp 经 app_process 执行，无完整性校验"
+ },
+ {
+  "category": "security",
+  "confidence": "medium",
+  "detail": "setService 对传入的 IShowerService 不做任何来源校验（注释写明由宿主广播接收器转发服务端发布的 Binder）。若宿主的广播接收器未做权限保护，恶意应用可伪造广播注入自己的 Binder；之后 ShowerController 会把 tap/key/screenshot 等输入注入命令发给它，并在 ensureDisplay 时把客户端的 IShowerVideoSink 交给它（ShowerController.kt:291），伪造服务端可借此干扰投屏会话或实施拒绝服务。",
+  "evidence": "fun setService(newService: IShowerService?) {\n    service = newService\n    val alive = newService?.asBinder()?.isBinderAlive == true\n    ShowerLog.d(TAG, \"setService: service=$newService alive=$alive\")\n}",
+  "file": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerBinderRegistry.kt",
+  "line": 19,
+  "severity": "warn",
+  "title": "IShowerService Binder 被无条件信任，伪造广播可注入恶意服务端"
+ },
+ {
+  "category": "robustness",
+  "confidence": "high",
+  "detail": "onFrame 在解码器未初始化且收到的不是 SPS/PPS 时把每个包追加进 pendingFrames；该列表只在解码器初始化成功或解码出错时清空。若服务端只发视频帧却始终不发 SPS/PPS（或发了损坏的），pendingFrames 会随视频流无限增长造成内存膨胀。建议加帧数或字节数上限。",
+  "evidence": "if (nalType == 7) { // SPS\n    if (csd0 == null) {\n        csd0 = packet\n    }\n} else if (nalType == 8) { // PPS\n    if (csd1 == null) {\n        csd1 = packet\n    }\n} else {\n    pendingFrames.add(packet)\n}",
+  "file": "showerclient/src/main/java/com/ai/assistance/showerclient/ShowerVideoRenderer.kt",
+  "line": 113,
+  "severity": "suggestion",
+  "title": "SPS/PPS 始终不到达时 pendingFrames 无限增长"
+ },
+ {
+  "category": "robustness",
+  "confidence": "medium",
+  "detail": "OnlineStream、Vad、OnlineRecognizer 都用 protected fun finalize() 释放 native 指针（release() 直接调 finalize()）。finalizer 在新版 JVM/Android 上已废弃：回收时机不确定、可能延迟 native 内存释放，且存在 finalizer 攻击面。建议只保留显式的 release()/use {}（OnlineStream 已有 use），去掉对 finalize 的依赖。该代码为 sherpa-onnx 上游移植，保持与上游一致亦可接受。",
+  "evidence": "protected fun finalize() {\n    if (ptr != 0L) {\n        delete(ptr)\n        ptr = 0\n    }\n}\n\nfun release() = finalize()",
+  "file": "app/src/main/java/com/k2fsa/sherpa/mnn/OnlineStream.kt",
+  "line": 9,
+  "severity": "suggestion",
+  "title": "sherpa mnn 封装用已废弃的 finalizer 做 JNI 资源回收"
+ }
+]

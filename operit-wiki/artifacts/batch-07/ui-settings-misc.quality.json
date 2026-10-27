@@ -1,0 +1,389 @@
+[
+  {
+    "severity": "high",
+    "title": "外部聊天广播接收器无权限导出且设置页公开教授调用方法",
+    "description": "ExternalChatReceiver 在 manifest 中 android:exported=\"true\" 且未声明 android:permission，任意应用可发送 com.ai.assistance.operit.EXTERNAL_CHAT 广播触发聊天；设置页内置 adb 调用示例（含 request_id/message/initial_mode 等参数），降低了利用门槛。",
+    "evidence": "<receiver\n            android:name=\".integrations.intent.ExternalChatReceiver\"\n            android:exported=\"true\">\n            <intent-filter>\n                <action android:name=\"com.ai.assistance.operit.EXTERNAL_CHAT\" />\n            </intent-filter>\n        </receiver>",
+    "file": "app/src/main/AndroidManifest.xml",
+    "line": 384,
+    "confidence": "high"
+  },
+  {
+    "severity": "high",
+    "title": "外部 HTTP 聊天全程明文 HTTP，Bearer Token 局域网裸奔",
+    "description": "访问 URL 由本机 LAN IPv4 拼接 http://$ip:$savedPort 生成，无 TLS；同步调用示例要求在 Authorization: Bearer 头中携带 token，同一局域网内可被嗅探。",
+    "evidence": "val accessUrls = remember(savedPort) {\n        ExternalChatHttpNetworkInfo.getLocalIpv4Addresses().map { ip ->\n            \"http://$ip:$savedPort\"\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt",
+    "line": 86,
+    "confidence": "high"
+  },
+  {
+    "severity": "high",
+    "title": "语音服务 API Key 明文存入未加密的 Preferences DataStore",
+    "description": "语音服务档案（含各引擎 API Key / Token）经 versionedPreferencesDataStore 存入普通 Preferences DataStore，未采用 EncryptedSharedPreferences 等加密存储；密钥以明文落盘。",
+    "evidence": "private val Context.speechServiceProfilesDataStore: DataStore<Preferences> by\n    versionedPreferencesDataStore(",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt",
+    "line": 23,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "Bearer Token 明文输入框无掩码",
+    "description": "Token 输入框为普通 OutlinedTextField，未设置 visualTransformation，完整 token 以明文显示。",
+    "evidence": "OutlinedTextField(\n                    value = bearerTokenText,\n                    onValueChange = { bearerTokenText = it },\n                    modifier = Modifier.fillMaxWidth(),\n                    label = { Text(stringResource(R.string.external_http_chat_token)) }\n                )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt",
+    "line": 270,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "复制/重置 token 把完整密钥写入系统剪贴板",
+    "description": "复制按钮把完整 bearerToken 以纯文本写入剪贴板（label \"external-http-bearer-token\"），重置后新 token 也自动复制到剪贴板，密钥进入剪贴板历史。",
+    "evidence": "                    TextButton(\n                        onClick = {\n                            if (bearerToken.isBlank()) {\n                                showToast(context.getString(R.string.external_http_chat_token_not_generated))\n                            } else {\n                                copyText(\n                                    text = bearerToken,\n                                    label = \"external-http-bearer-token\",\n                                    successMessage = context.getString(R.string.external_http_chat_token_copied)\n                                )\n                            }\n                        }\n                    ) {\n                        Icon(Icons.Default.ContentCopy, contentDescription = null)\n                        Text(stringResource(R.string.external_http_chat_copy_token))\n                    }\n                    TextButton(\n                        onClick = {\n                            scope.launch {\n                                val newToken = preferences.resetBearerToken()\n                                copyText(\n                                    text = newToken,\n                                    label = \"external-http-bearer-token\",\n                                    successMessage = context.getString(R.string.external_http_chat_token_reset)\n                                )\n                            }\n                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt",
+    "line": 286,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "Bearer Token 最低长度仅 6 字符",
+    "description": "saveToken 仅校验 bearerTokenText.length < 6，弱 token（如 123456）可被接受并用于鉴权。",
+    "evidence": "fun saveToken() {\n        scope.launch {\n            if (bearerTokenText.length < 6) {\n                showToast(context.getString(R.string.external_http_chat_token_length_error))\n                return@launch\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt",
+    "line": 166,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "设置主页退出 GitHub 未清 OAuth 会话，两条退出路径不一致",
+    "description": "设置主页的退出项直接调用 githubAuth.logout()；GitHubAccountScreen 的退出则先调 clearGitHubOAuthBrowserSession() 再 logout，两条路径行为不一致。",
+    "evidence": "onClick = {\n                                                scope.launch { githubAuth.logout() }\n                                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt",
+    "line": 113,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "LLM 输出直接驱动角色卡持久化写库，无用户确认",
+    "description": "流结束后对 LLM 原始输出调用 processToolInvocations，正则提取 <tool> 调用后直接执行 save_character_info 并 updateCharacterCard 写库，全程无用户确认环节。",
+    "evidence": "// 解析并执行工具调用\n    suspend fun processToolInvocations(rawContent: String, assistantIndex: Int) {\n        try {\n            val invList = LocalCharacterToolExecutor.extractInvocations(rawContent)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 381,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "预设硬编码 pollinations.ai 图片 URL，路径由 LLM 拼接",
+    "description": "剧情故事创作预设指示 LLM 按 ![image](https://image.pollinations.ai/prompt/{description}) 输出插图，{description} 由 LLM 自由拼接后发往第三方图床。",
+    "evidence": "- **插图提示**: 格式为 `![image](https://image.pollinations.ai/prompt/{description})`，其中 `{description}` 是详细的英文画面描述。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt",
+    "line": 363,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "用正则解析 XML 风格的工具调用",
+    "description": "extractInvocations 用 ChatMarkupRegex.toolCallPattern 正则从 LLM 原始输出提取 <tool> 调用，正则解析结构化标记在嵌套/转义场景下易误判。",
+    "evidence": "    fun extractInvocations(raw: String): List<Pair<String, Map<String, String>>> {\n        val list = mutableListOf<Pair<String, Map<String, String>>>()\n        // 简单 XML 提取：<tool name=\"...\"> <param name=\"field\">..</param><param name=\"content\">..</param></tool>\n        ChatMarkupRegex.toolCallPattern.findAll(raw).forEach { m ->",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 51,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "package_proxy/proxy/search 三个工具被硬编码排除在权限管理页外",
+    "description": "权限页以硬编码集合排除 package_proxy、proxy、search 三个工具，用户无法在界面上查看或修改它们的权限，形成权限盲区。",
+    "evidence": "        toolHandler.getAllToolNames().filterNot {\n            it == \"package_proxy\" || it == \"proxy\" || it == \"search\"\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt",
+    "line": 44,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "全局 ALLOW 一键放行且异步持久化无失败反馈",
+    "description": "全局开关修改后在 scope.launch 中调用 toolPermissionSystem.saveMasterSwitch(level)，无 try/catch、无失败提示；一键 ALLOW 即放行全部工具。",
+    "evidence": "onLevelSelected = { level ->\n                            masterSwitchInput = level\n                            scope.launch {\n                                toolPermissionSystem.saveMasterSwitch(level)\n                            }\n                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt",
+    "line": 125,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "删除记忆档案仅一次确认，无撤销",
+    "description": "删除档案经确认对话框后直接调用 preferencesManager.deleteMemorySpace(profileId)，无软删除、无撤销入口。",
+    "evidence": "scope.launch {\n                                try {\n                                    preferencesManager.deleteMemorySpace(profileId)\n                                    showDeleteDialog = false",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt",
+    "line": 755,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "9 处密钥输入框明文无遮罩",
+    "description": "语音服务各引擎的 API Key / Token 输入框为普通 OutlinedTextField，未设 visualTransformation，密钥明文显示。",
+    "evidence": "OutlinedTextField(\n                                    value = ttsApiKeyInput,\n                                    onValueChange = { ttsApiKeyInput = it },\n                                    label = { Text(stringResource(R.string.speech_services_http_api_key)) },",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 842,
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "title": "URL 模板无 scheme 校验，可配置 http 明文地址",
+    "description": "通用 HTTP TTS 的 URL 模板输入框未校验 scheme，用户可填入 http:// 明文地址，密钥随请求明文传输。",
+    "evidence": "OutlinedTextField(\n                                    value = ttsUrlTemplateInput,\n                                    onValueChange = { ttsUrlTemplateInput = it },\n                                    label = { Text(stringResource(R.string.speech_services_http_url_template)) },",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 831,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "档案下拉菜单用 profiles.first，数据不一致时崩溃",
+    "description": "ProfileDropdownMenu 直接调用 profiles.first { it.id == activeProfileId }，若活动档案 id 在列表中不存在则抛 NoSuchElementException。",
+    "evidence": "val activeProfileName = profiles.first { it.id == activeProfileId }.name",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 2580,
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "title": "头像 URI 未校验 scheme 即交 coil 加载",
+    "description": "AvatarPicker 对 avatarUri 仅判空，不校验 scheme 即 Uri.parse 后交 coil 加载；角色卡/角色组头像同样直接传入。",
+    "evidence": "if (avatarUri != null) {\n                Image(\n                    painter = rememberAsyncImagePainter(model = Uri.parse(avatarUri)),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt",
+    "line": 51,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "ExternalHttpChatSettingsScreen 的 onBackPressed 参数未使用",
+    "description": "页面声明了 onBackPressed: () -> Unit 参数但函数体内从未引用。",
+    "evidence": "fun ExternalHttpChatSettingsScreen(onBackPressed: () -> Unit) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt",
+    "line": 63,
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "title": "滚动位置保存在文件级全局可变状态",
+    "description": "SettingsScreenScrollPosition 为文件级 mutableStateOf，所有实例共享同一滚动位置。",
+    "evidence": "private val SettingsScreenScrollPosition = mutableStateOf(0)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt",
+    "line": 35,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "GitHub 头像 URL 未做域名校验即加载",
+    "description": "头像直接用 userInfo.avatarUrl 交 coil 加载，未校验域名。",
+    "evidence": "painter = rememberAsyncImagePainter(userInfo!!.avatarUrl),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt",
+    "line": 80,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "GitHubAccountScreen 密集使用 !!",
+    "description": "userInfo!!.avatarUrl 等多处 !! 解包，若上游 flow 发出 null 会崩溃。",
+    "evidence": "painter = rememberAsyncImagePainter(userInfo!!.avatarUrl),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt",
+    "line": 81,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "otherContent 别名静默写入 otherContentChat",
+    "description": "字段名 \"otherContent\" 被静默映射写入 otherContentChat，无提示、无文档说明该别名。",
+    "evidence": "\"otherContent\" -> currentCard.copy(otherContentChat = content)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 96,
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "title": "抽屉编辑器每次按键即写库，无防抖",
+    "description": "角色名字段 onValueChange 每次按键都启动协程在 IO 线程写库，无防抖节流。",
+    "evidence": "onValueChange = { newValue ->\n                            editName = newValue\n                            scope.launch {\n                                activeCard?.let { card ->\n                                    withContext(Dispatchers.IO) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 694,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "死代码：双语引导文案 characterAssistantIntro 从未使用",
+    "description": "定义的双语引导文案 characterAssistantIntro 在界面中无任何引用。",
+    "evidence": "val characterAssistantIntro = remember {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 150,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "死参数：三个导航回调在函数体内未使用",
+    "description": "onNavigateToSettings / onNavigateToModelConfig / onNavigateToModelPrompts 三个回调参数声明后未被引用。",
+    "evidence": "fun PersonaCardGenerationScreen(\n    onNavigateToSettings: () -> Unit = {},\n    onNavigateToModelConfig: () -> Unit = {},\n    onNavigateToModelPrompts: () -> Unit = {}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 140,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "未使用的 import：ApiPreferences 与 org.json.JSONObject",
+    "description": "文件 import 了 ApiPreferences 和 org.json.JSONObject 但全文件无引用。",
+    "evidence": "import org.json.JSONObject",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 43,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "聊天历史全量发送给 LLM，无截断",
+    "description": "sendMessage 中 historySnapshot = chatMessages.toList() 全量转 historyPairs 发送，仅受 40 条 MESSAGE_LIMIT 限制。",
+    "evidence": "val historySnapshot = chatMessages.toList()\n            val historyPairs = withContext(Dispatchers.Default) {\n                historySnapshot.map { it.role to it.content }\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt",
+    "line": 466,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "预设描述文本固定高度 40.dp 且无截断处理",
+    "description": "PresetTagCard 描述文本固定高度 40.dp，未设 maxLines/overflow，长文本溢出。",
+    "evidence": "Text(\n                text = preset.getLocalizedDescription(context),\n                style = MaterialTheme.typography.bodyMedium,\n                color = MaterialTheme.colorScheme.onSurfaceVariant,\n                modifier = Modifier.height(40.dp) // 保证差不多两行的高度 (Ensure about two lines height)\n            )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt",
+    "line": 196,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "标签类型徽章 AssistChip 点击为空实现",
+    "description": "预设卡片上的 AssistChip onClick = { } 空实现，点击无反馈。",
+    "evidence": "                AssistChip(\n                    onClick = { },",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt",
+    "line": 182,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "乐观 UI 与异步持久化可能发散",
+    "description": "单工具权限切换先改本地 toolPermissions 再 scope.launch 持久化，失败无回滚，UI 与实际权限可能不一致。",
+    "evidence": "toolPermissions[toolName] = newLevel\n            scope.launch {\n                toolPermissionSystem.saveToolPermission(toolName, newLevel)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt",
+    "line": 75,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "工具权限页 navigateBack 参数未使用，页面无返回按钮",
+    "description": "navigateBack 回调参数声明后未被引用，页面无返回按钮。",
+    "evidence": "fun ToolPermissionSettingsScreen(navigateBack: () -> Unit) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt",
+    "line": 37,
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "title": "FORBID 文案键在选择器与分组标题间不一致",
+    "description": "选择器用 R.string.forbid，分组标题用 R.string.permission_level_forbid，同一档位两套文案键。",
+    "evidence": "PermissionLevel.FORBID -> stringResource(R.string.forbid)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt",
+    "line": 399,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "新建档案后自动设为活跃档案",
+    "description": "新建记忆档案后直接将其设为活跃，用户无选择余地。",
+    "evidence": "val profileId = preferencesManager.createMemorySpace(name)\n                                    preferencesManager.setActiveMemorySpace(profileId)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt",
+    "line": 695,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "默认档案 id \"default\" 硬编码",
+    "description": "\"default\" 以字符串字面量硬编码出现在删除保护与初始化逻辑中。",
+    "evidence": "if (selectedProfileId != \"default\") {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt",
+    "line": 418,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "未保存改动检测为全文本字符串比对",
+    "description": "草稿与已保存文本逐字比对，文档很长时每次按键触发全量比对。",
+    "evidence": "val hasUnsavedChanges = draftMarkdown != savedMarkdown",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt",
+    "line": 124,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "SpeechServicesSettingsScreen 的 onBackPressed 参数未使用",
+    "description": "主界面声明了 onBackPressed 参数但函数体内从未引用。",
+    "evidence": "fun SpeechServicesSettingsScreen(\n    onBackPressed: () -> Unit,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 98,
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "title": "500ms 防抖后重写整个档案 JSON（含密钥明文）",
+    "description": "任何输入变化经 delay(500) 后触发全量保存，密钥以明文反复写入 DataStore。",
+    "evidence": "kotlinx.coroutines.delay(500)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 249,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "请求头 JSON 在高级选项中明文回显",
+    "description": "HTTP 头 JSON（含可能携带的 Authorization）在 OutlinedTextField 中明文回显。",
+    "evidence": "                                        OutlinedTextField(\n                                            value = ttsHeadersInput,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt",
+    "line": 880,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "角色卡名称可保存为空字符串",
+    "description": "保存时 name = name 直接拷贝，未做 isBlank 校验，空名称角色卡可落盘。",
+    "evidence": "onSave(\n                                characterCard.copy(\n                                    name = name,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt",
+    "line": 938,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "开场白翻译异常被静默吞掉",
+    "description": "翻译 catch 块为空实现，仅留注释\"翻译失败，可以显示错误提示\"，用户无感知。",
+    "evidence": "} catch (e: Exception) {\n                                            // 翻译失败，可以显示错误提示\n                                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt",
+    "line": 358,
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "title": "Waifu 提示词每次按键触发保存",
+    "description": "自定义提示词输入框 onValueChange 每次按键调用 saveSettings 写偏好，无防抖。",
+    "evidence": "onValueChange = { newText ->\n                                customPromptText = newText\n                                saveSettings {\n                                    waifuPreferences.saveWaifuCustomPrompt(newText)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt",
+    "line": 431,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "FIXED_CONFIG 绑定下空配置的回退不一致",
+    "description": "固定模型配置为空时自动回填首个可用配置，而保存时空配置走 null 分支，两处空值语义不一致。",
+    "evidence": "chatModelConfigId = if (\n                                        chatModelBindingMode == CharacterCardChatModelBindingMode.FIXED_CONFIG &&\n                                        !fixedChatModelConfigId.isBlank()\n                                    ) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt",
+    "line": 950,
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "title": "空字符串头像 URI 也会进入 coil 加载",
+    "description": "仅判 null 未判 blank，空字符串 URI 经 Uri.parse 后交 coil，可能触发无意义请求。",
+    "evidence": "if (avatarUri != null) {\n                Image(\n                    painter = rememberAsyncImagePainter(model = Uri.parse(avatarUri)),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt",
+    "line": 51,
+    "confidence": "medium"
+  }
+]

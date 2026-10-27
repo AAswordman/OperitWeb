@@ -1,0 +1,850 @@
+[
+ {
+  "fact": "ActivePrompt 是 sealed interface，两个子类各携带一个 id: String",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ActivePrompt.kt:3"
+ },
+ {
+  "fact": "ActivePrompt 的子类为 CharacterCard(val id: String) 与 CharacterGroup(val id: String)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ActivePrompt.kt:4"
+ },
+ {
+  "fact": "WorkspaceRenameResult 记录工作区重命名的三元组：workspacePath、workspaceEnv（可空）、workspaceName",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/WorkspaceRenameResult.kt:3"
+ },
+ {
+  "fact": "ChatTurnOptions 控制单轮对话行为：persistTurn 默认 true、notifyReply 默认 null、hideUserMessage 默认 false、disableWarning 默认 false",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatTurnOptions.kt:3"
+ },
+ {
+  "fact": "ChatMessageDisplayMode 是 @Serializable 枚举，仅 NORMAL 与 HIDDEN_PLACEHOLDER 两个值",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageDisplayMode.kt:6"
+ },
+ {
+  "fact": "PromptFunctionType 区分消息上下文用途：CHAT 或 VOICE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/PromptFunctionType.kt:6"
+ },
+ {
+  "fact": "CharacterGroupChatStats 记录群组聊天统计：characterGroupId（可空）、chatCount、messageCount",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterGroupChatStats.kt:6"
+ },
+ {
+  "fact": "CharacterCardChatStats 记录角色卡聊天统计：characterCardName（可空）、chatCount、messageCount",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCardChatStats.kt:6"
+ },
+ {
+  "fact": "AiReference 是 AI 回复中的引用：text 文本与 url 链接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AiReference.kt:10"
+ },
+ {
+  "fact": "ModelOption 是 @Serializable 的模型选项：id 与 name，供 UI 列表显示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OpenAIModels.kt:9"
+ },
+ {
+  "fact": "AttachmentInfo 描述聊天消息附件：filePath、fileName、mimeType、fileSize，content 默认为空字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AttachmentInfo.kt:7"
+ },
+ {
+  "fact": "ChatMessageLocatorPreview 是消息定位预览：messageIndex（可空）、timestamp、sender、previewContent、contentLength、displayMode、isFavorite",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageLocatorPreview.kt:3"
+ },
+ {
+  "fact": "ChatMessageLocatorPreview.resolvedDisplayMode 把 displayMode 字符串解析为 ChatMessageDisplayMode，解析失败回落 NORMAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageLocatorPreview.kt:11"
+ },
+ {
+  "fact": "FunctionType 枚举 11 种功能类型：CHAT、SUMMARY、TITLE_GENERATION、MEMORY、UI_CONTROLLER、TRANSLATION、GREP、ROLE_RESPONSE_PLANNER、IMAGE_RECOGNITION、AUDIO_RECOGNITION、VIDEO_RECOGNITION",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/FunctionType.kt:10"
+ },
+ {
+  "fact": "LegacyUserProfile 是已发布的结构化用户画像载荷，仅为后续迁移保留数据；字段含 id、name、birthDate、gender、personality、identity、occupation、aiStyle、isInitialized",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/LegacyUserProfile.kt:7"
+ },
+ {
+  "fact": "MemorySpace 是 @Serializable 的长期记忆库元数据：id、name、profileAutoUpdateEnabled（默认 true）、profileAutoUpdateLocked（默认 false）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySpace.kt:12"
+ },
+ {
+  "fact": "MemorySpace.id 在用户画像迁移中保持稳定，因为它同时是 ObjectBox 数据库名并可被角色卡引用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySpace.kt:8"
+ },
+ {
+  "fact": "Embedding 是 FloatArray 的包装类，供 ObjectBox 存向量嵌入，避免直接处理原始数组",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Embedding.kt:9"
+ },
+ {
+  "fact": "Embedding 用 contentEquals/contentHashCode 重写 equals/hashCode，正确比较浮点数组内容",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Embedding.kt:14"
+ },
+ {
+  "fact": "GroupMemberConfig 是群组角色卡成员配置：characterCardId 与 orderIndex（默认 0）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterGroupCard.kt:6"
+ },
+ {
+  "fact": "CharacterGroupCard 是群组角色卡：id、name、description（默认空）、members 成员列表、createdAt/updatedAt（默认当前时间）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterGroupCard.kt:14"
+ },
+ {
+  "fact": "TokenStatsModelEntity 是 Room 实体，表名 token_stats_models，联合主键为 configId、provider、model",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenStatsModelEntity.kt:5"
+ },
+ {
+  "fact": "TokenStatsModelEntity 记录百万 token 定价：inputPricePerMillion、cachedInputPricePerMillion、cacheWritePricePerMillion、outputPricePerMillion、pricePerRequest",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenStatsModelEntity.kt:15"
+ },
+ {
+  "fact": "CloudEmbeddingConfig 是云端向量配置：enabled（默认 false）、endpoint、apiKey、model",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CloudEmbeddingConfig.kt:3"
+ },
+ {
+  "fact": "CloudEmbeddingConfig.normalized() 对 endpoint、apiKey、model 做 trim",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CloudEmbeddingConfig.kt:9"
+ },
+ {
+  "fact": "CloudEmbeddingConfig.isReady() 要求启用且 endpoint、apiKey、model 均非空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CloudEmbeddingConfig.kt:15"
+ },
+ {
+  "fact": "MemoryScoreMode 有 BALANCED、KEYWORD_FIRST、SEMANTIC_FIRST 三种打分模式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySearchConfig.kt:3"
+ },
+ {
+  "fact": "MemorySearchConfig 默认权重：keywordWeight=10.0f、tagWeight=0.0f、vectorWeight=0.0f、edgeWeight=0.4f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySearchConfig.kt:9"
+ },
+ {
+  "fact": "MemorySearchConfig.normalized() 把四项权重钳制为不小于 0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySearchConfig.kt:17"
+ },
+ {
+  "fact": "CustomEmoji 是 @Serializable 自定义表情：id 默认随机 UUID，emotionCategory、fileName、isBuiltInCategory、createdAt；只存 fileName 不存路径",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CustomEmoji.kt:18"
+ },
+ {
+  "fact": "DocumentChunk 是 @Entity 的外部文档内容区块：id、content、chunkIndex，以及可空的 embedding",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DocumentChunk.kt:14"
+ },
+ {
+  "fact": "DocumentChunk.embedding 经 EmbeddingConverter 转为 ByteArray 存库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DocumentChunk.kt:20"
+ },
+ {
+  "fact": "DocumentChunk 通过 ToOne<Memory> 的 memory 字段归属某个记忆",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DocumentChunk.kt:24"
+ },
+ {
+  "fact": "DimensionCount 记录向量维度与出现次数：dimension、count",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingDimensionUsage.kt:3"
+ },
+ {
+  "fact": "EmbeddingDimensionUsage 统计记忆与区块的向量维度分布：memoryTotal、memoryMissing、memoryDimensions、chunkTotal、chunkMissing、chunkDimensions",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingDimensionUsage.kt:8"
+ },
+ {
+  "fact": "EmbeddingRebuildProgress.fraction 为 processed/total，total<=0 时为 0；isFinished 要求 total>0 且 processed>=total",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingDimensionUsage.kt:24"
+ },
+ {
+  "fact": "ChatHistory 是 @Serializable 的聊天会话：id 默认随机 UUID，title、messages，createdAt/updatedAt 用 LocalDateTimeSerializer",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatHistory.kt:9"
+ },
+ {
+  "fact": "ChatHistory 携带统计与归属字段：inputTokens、outputTokens、currentWindowSize、group、displayOrder、workspace、workspaceEnv、parentChatId、characterCardName、characterGroupId、locked、pinned",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatHistory.kt:16"
+ },
+ {
+  "fact": "PromptTag 是 Room 实体，表名 prompt_tags，id 为主键；含 name、description、promptContent、tagType（默认 CUSTOM）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/PromptTag.kt:10"
+ },
+ {
+  "fact": "TagType 有 TONE、CHARACTER、FUNCTION、CUSTOM 四种标签类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/PromptTag.kt:24"
+ },
+ {
+  "fact": "EmbeddingConverter 是 ObjectBox 的 PropertyConverter，实现 Embedding 与 ByteArray 互转",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingConverter.kt:9"
+ },
+ {
+  "fact": "EmbeddingConverter.convertToEntityProperty 用 ByteBuffer.asFloatBuffer 把字节数组还原为 FloatArray",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingConverter.kt:10"
+ },
+ {
+  "fact": "EmbeddingConverter.convertToDatabaseValue 按每个 float 4 字节把向量写入 ByteArray",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingConverter.kt:19"
+ },
+ {
+  "fact": "normalizeProviderTypeId 取 providerTypeId 中 '/' 之前的供应商前缀，经 ApiProviderType.fromProviderTypeId 还原为枚举名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ProviderIdentityUtils.kt:4"
+ },
+ {
+  "fact": "normalizeProviderModel 只规范化 provider:model 身份中的 provider 部分，保留冒号后的模型名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ProviderIdentityUtils.kt:15"
+ },
+ {
+  "fact": "hasIndependentCacheWriteBilling 对 ANTHROPIC、ANTHROPIC_GENERIC、OTHER 及未知供应商返回 true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ProviderIdentityUtils.kt:23"
+ },
+ {
+  "fact": "MemoryAutoSaveCandidate 是 @Entity 的记忆自动保存候选：chatId 建索引，triggerMessageTimestamp、status、attemptCount、lastError、sourceType",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:9"
+ },
+ {
+  "fact": "MemoryAutoSaveCandidate 状态常量：pending、processing、failed；来源常量：reply_finalized_auto、selected_user_message",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:21"
+ },
+ {
+  "fact": "MemoryAutoSaveCandidate.isSelectedUserMessageSource 判断来源是否为选中的用户消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:28"
+ },
+ {
+  "fact": "TokenUsageRecordEntity 是 Room 实体，表名 token_usage_records；索引含 occurredAtMs、(provider, model, configId, occurredAtMs) 与唯一 importKey",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenUsageRecordEntity.kt:6"
+ },
+ {
+  "fact": "TokenUsageRecordEntity.providerModel 派生为 provider 与 model 以冒号拼接的格式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/TokenUsageRecordEntity.kt:30"
+ },
+ {
+  "fact": "ApiKeyFormatValidator.normalize 对 key 做 trim",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:4"
+ },
+ {
+  "fact": "ApiKeyFormatValidator.isValid 要求 key 非空且每个字符码在 0x21..0x7E（可打印 ASCII）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:6"
+ },
+ {
+  "fact": "ApiKeyFormatValidator.hasUsableKey 在多 key 模式下优先选用 availabilityStatus 为 AVAILABLE 的已启用 key",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:20"
+ },
+ {
+  "fact": "BillingMode 有 TOKEN（按 token 计费）与 COUNT（按次计费）两种计费方式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/BillingMode.kt:7"
+ },
+ {
+  "fact": "BillingMode.fromString 解析失败时默认返回 TOKEN",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/BillingMode.kt:27"
+ },
+ {
+  "fact": "ChatMessageTimestampAllocator 用 AtomicLong 为聊天消息分配进程内单调递增时间戳，避免重复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocator.kt:11"
+ },
+ {
+  "fact": "ChatMessageTimestampAllocator.next 用 CAS 循环保证候选值大于上次签发值",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocator.kt:13"
+ },
+ {
+  "fact": "ChatMessageTimestampAllocator.observe 把外部传入的时间戳合并进水位线",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocator.kt:22"
+ },
+ {
+  "fact": "ToolParameter 是 @Serializable 的工具参数：name 与 value",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AITool.kt:8"
+ },
+ {
+  "fact": "AITool 是 @Serializable 的 AI 可用工具：name、parameters（默认空）、description（默认空）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AITool.kt:12"
+ },
+ {
+  "fact": "ToolInvocation 记录 AI 回复中的工具调用：tool、rawText，responseLocation 为 @Contextual 的 IntRange",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AITool.kt:20"
+ },
+ {
+  "fact": "ToolResult 记录工具执行结果：toolName、success、result（ToolResultData）、error（可空）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AITool.kt:29"
+ },
+ {
+  "fact": "ToolValidationResult 记录工具参数校验结果：valid 与 errorMessage",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/AITool.kt:37"
+ },
+ {
+  "fact": "MemorySearchDebugInfo 记录记忆搜索调试全量信息：query、关键词、各类权重、命中计数与候选列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySearchDebugInfo.kt:3"
+ },
+ {
+  "fact": "MemorySearchDebugCandidate 记录单个候选的打分明细：memoryId、title、keywordScore、tagScore、semanticScore、edgeScore、totalScore、passedThreshold",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemorySearchDebugInfo.kt:26"
+ },
+ {
+  "fact": "InputProcessingState 是 UI 状态 sealed 类，含 Idle、Processing、Connecting 等基础状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/InputProcessingState.kt:9"
+ },
+ {
+  "fact": "InputProcessingState.ExecutingTool 与 ToolProgress（toolName、progress、message）表示工具执行中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/InputProcessingState.kt:20"
+ },
+ {
+  "fact": "InputProcessingState.ProcessingToolResult、Summarizing 表示处理工具结果与总结记忆中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/InputProcessingState.kt:27"
+ },
+ {
+  "fact": "InputProcessingState.ExecutingPlan、Completed、Error 表示执行计划中、完成与错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/InputProcessingState.kt:36"
+ },
+ {
+  "fact": "ApiKeyAvailabilityStatus 有 UNTESTED、AVAILABLE、UNAVAILABLE 三种 key 可用状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyInfo.kt:16"
+ },
+ {
+  "fact": "ApiKeyInfo 是 @Serializable 的 API Key 详情：id、key、name、isEnabled（默认 true）、availabilityStatus、usageCount、lastUsed、errorCount",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyInfo.kt:33"
+ },
+ {
+  "fact": "WorkflowLogLevel 有 DEBUG、WARN、ERROR 三级",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/WorkflowExecutionLog.kt:7"
+ },
+ {
+  "fact": "WorkflowExecutionFailureStage 有 WORKFLOW_STARTUP、RUNTIME_INITIALIZATION、WORKFLOW_EXECUTION、CANCELLATION 四个失败阶段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/WorkflowExecutionLog.kt:14"
+ },
+ {
+  "fact": "WorkflowExecutionLogEntry 记录单条工作流日志：timestamp、level、message、nodeId（可空）、nodeName（可空）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/WorkflowExecutionLog.kt:22"
+ },
+ {
+  "fact": "WorkflowExecutionRecord 记录一次工作流执行：runId 默认随机 UUID，含 workflowId、起止时间、success、logs、failureStage（可空）、failureReason（可空）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/WorkflowExecutionLog.kt:31"
+ },
+ {
+  "fact": "ModelType 目前仅 STANDARD 一种动画逻辑",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DragonBones.kt:8"
+ },
+ {
+  "fact": "DragonBonesModel 是骨骼动画模型元数据：id、name、folderPath、skeletonFile、textureJsonFile、textureImageFile、isBuiltIn（默认 false）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DragonBones.kt:24"
+ },
+ {
+  "fact": "DragonBonesConfig 是视图配置：modelId、scale（默认 1.0f）、translateX/translateY（默认 0）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DragonBones.kt:42"
+ },
+ {
+  "fact": "ModelParameter 是泛型模型参数：id、name、apiName、description、defaultValue、currentValue、isEnabled、valueType、minValue/maxValue（可空）、category、isCustom",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelParameter.kt:6"
+ },
+ {
+  "fact": "ParameterValueType 有 INT、FLOAT、STRING、BOOLEAN、OBJECT 五种参数值类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelParameter.kt:22"
+ },
+ {
+  "fact": "ParameterCategory 有 GENERATION、CREATIVITY、REPETITION、OTHER 四种参数分类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelParameter.kt:31"
+ },
+ {
+  "fact": "CustomParameterData 是 @Serializable 的自定义参数 JSON 载体：defaultValue/currentValue 为字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelParameter.kt:40"
+ },
+ {
+  "fact": "OperitNodeInfo 是可序列化的无障碍节点替代类，用于进程间传递；含 children、className、packageName、text、contentDescription、viewIdResourceName、boundsInScreen 及 clickable/visible/focused/checked 四个布尔",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitNodeInfo.kt:10"
+ },
+ {
+  "fact": "OperitNodeInfo.getBounds 把方括号坐标格式的 boundsInScreen 解析为 android.graphics.Rect，解析失败返回 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitNodeInfo.kt:47"
+ },
+ {
+  "fact": "MessageVariantEntity 是 Room 实体，表名 message_variants；外键指向 ChatEntity(id)，onDelete=CASCADE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:8"
+ },
+ {
+  "fact": "MessageVariantEntity 索引：(chatId, messageTimestamp) 与唯一 (chatId, messageTimestamp, variantIndex)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:18"
+ },
+ {
+  "fact": "MessageVariantEntity.applyTo(baseMessage, variantCount) 把变体内容回填为 ChatMessage",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:38"
+ },
+ {
+  "fact": "MessageVariantEntity.fromChatMessage 从 ChatMessage 构造变体实体",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:59"
+ },
+ {
+  "fact": "ChatEntity 是 Room 实体，表名 chats；id 为主键，默认随机 UUID",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:10"
+ },
+ {
+  "fact": "ChatEntity.displayOrder 默认取 -createdAt，用于倒序排列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:19"
+ },
+ {
+  "fact": "ChatEntity.toChatHistory 把毫秒时间戳转为系统时区的 LocalDateTime 并生成 ChatHistory",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:24"
+ },
+ {
+  "fact": "ChatEntity.fromChatHistory 从 ChatHistory 构造 ChatEntity 实体",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:62"
+ },
+ {
+  "fact": "displayOrder 非零时保留原值，否则取负的当前时间 -now",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:83"
+ },
+ {
+  "fact": "MessageEntity 是 Room 实体，表名 messages；外键指向 ChatEntity(id)，onDelete=CASCADE；索引 chatId 与 (chatId, timestamp)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:9"
+ },
+ {
+  "fact": "MessageEntity.messageId 为自增主键；timestamp 默认当前时间；orderIndex 保持消息顺序",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:21"
+ },
+ {
+  "fact": "MessageEntity.toChatMessage 解析 displayMode 字符串，失败回落 ChatMessageDisplayMode.NORMAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:38"
+ },
+ {
+  "fact": "MessageEntity.fromChatMessage(chatId, message, orderIndex) 从 ChatMessage 构造实体",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:68"
+ },
+ {
+  "fact": "ChatMessage 同时是 @Serializable 与 Parcelable 的聊天消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:9"
+ },
+ {
+  "fact": "ChatMessage.timestamp 默认取 ChatMessageTimestampAllocator.next()",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:13"
+ },
+ {
+  "fact": "ChatMessage.isVariantPreview 与 contentStream 标 @Transient，不参与序列化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:21"
+ },
+ {
+  "fact": "ChatMessage 初始化块调用 ChatMessageTimestampAllocator.observe(timestamp) 更新水位线",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:27"
+ },
+ {
+  "fact": "ChatMessage.writeToParcel 按固定顺序写 17 个字段，contentStream 不写入",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:62"
+ },
+ {
+  "fact": "Memory 是 @Entity 的核心记忆单元：id、uuid（默认随机），title、content、contentType（默认 text/plain）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:18"
+ },
+ {
+  "fact": "Memory 有 source、credibility（默认 0.5f）、importance（默认 0.5f) 三个元数据字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:27"
+ },
+ {
+  "fact": "Memory.folderPath 建索引、可空，null 视为未分类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:40"
+ },
+ {
+  "fact": "Memory.embedding 经 EmbeddingConverter 转为 ByteArray 存库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:44"
+ },
+ {
+  "fact": "Memory 通过 ToMany 关联 tags、properties、links，并用 @Backlink 反向关联 backlinks 与 documentChunks",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:54"
+ },
+ {
+  "fact": "MemoryTag 是 @Entity 的记忆标签：id、name，parent 自引用父标签，memories 反向关联记忆",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:76"
+ },
+ {
+  "fact": "MemoryLink 是 @Entity 的记忆关联：type（默认 related）、weight（默认 1.0f）、description，source/target 指向两端记忆",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:93"
+ },
+ {
+  "fact": "MemoryProperty 是 @Entity 的记忆键值属性：id、key、value",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:103"
+ },
+ {
+  "fact": "DateSerializer 把 Date 序列化为 Long 时间戳",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:16"
+ },
+ {
+  "fact": "SerializableMemory 是可序列化的记忆导出体，createdAt/updatedAt 用 DateSerializer，tagNames 存标签名列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:34"
+ },
+ {
+  "fact": "SerializableLink 用 sourceUuid/targetUuid 引用记忆两端",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:55"
+ },
+ {
+  "fact": "MemoryExportData 是导出容器：memories、links、exportDate，version 默认为 1.0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:68"
+ },
+ {
+  "fact": "ImportStrategy 有 SKIP、UPDATE、CREATE_NEW 三种导入策略",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:80"
+ },
+ {
+  "fact": "MemoryImportResult 记录导入统计：newMemories、updatedMemories、skippedMemories、newLinks",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:101"
+ },
+ {
+  "fact": "SerializableColorScheme 是 @Parcelize 的配色方案，29 个 Long 型颜色字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableColorScheme.kt:9"
+ },
+ {
+  "fact": "ColorScheme.toSerializable() 把 Compose 颜色值转为 Long 存入 SerializableColorScheme",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableColorScheme.kt:41"
+ },
+ {
+  "fact": "SerializableColorScheme.toComposeColorScheme() 把 Long 转回 ULong 还原 Compose ColorScheme",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableColorScheme.kt:75"
+ },
+ {
+  "fact": "SerializableTypography 是 @Parcelize 的排版方案，含 display/headline/title/body/label 各三档共 15 个 SerializableTextStyle",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableTypography.kt:12"
+ },
+ {
+  "fact": "SerializableTextStyle 记录 fontSize、lineHeight、letterSpacing、fontWeight 四个浮点/整型值",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableTypography.kt:31"
+ },
+ {
+  "fact": "Typography.toSerializable() 与 TextStyle.toSerializable() 把 Compose 排版转为可序列化形式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableTypography.kt:38"
+ },
+ {
+  "fact": "SerializableTypography.toComposeTypography() 还原 Compose Typography",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableTypography.kt:67"
+ },
+ {
+  "fact": "SerializableTextStyle.toComposeTextStyle() 还原时 fontFamily 固定为 FontFamily.Default",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/SerializableTypography.kt:87"
+ },
+ {
+  "fact": "ToolParameterSchema 定义工具参数模式：name、type（默认 string）、description、required（默认 true）、default（可空）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ToolPrompt.kt:6"
+ },
+ {
+  "fact": "ToolPrompt.toString 优先用 parametersStructured 生成参数描述，缺失时回落 parameters 字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ToolPrompt.kt:26"
+ },
+ {
+  "fact": "SystemToolPromptCategory 把一组相关工具拼成系统提示词：categoryName、categoryHeader、tools、categoryFooter",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ToolPrompt.kt:74"
+ },
+ {
+  "fact": "PackageToolPromptCategory 生成包工具提示词：packageName、packageDescription、tools",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ToolPrompt.kt:119"
+ },
+ {
+  "fact": "OperitChatArchive 归档类型为 operit_chat_archive，当前格式版本 CURRENT_FORMAT_VERSION=2",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:14"
+ },
+ {
+  "fact": "OperitArchivedChat.toChatHistory 把归档聊天还原为 ChatHistory",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:41"
+ },
+ {
+  "fact": "OperitArchivedChat.fromChatHistory(history, messages) 从 ChatHistory 构造归档聊天",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:64"
+ },
+ {
+  "fact": "OperitArchivedMessage 含 baseMessage 与 variants 变体列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:93"
+ },
+ {
+  "fact": "OperitArchivedMessageVariant.toEntity(chatId, messageTimestamp) 转为 MessageVariantEntity",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:112"
+ },
+ {
+  "fact": "OperitArchivedMessageVariant.fromEntity(entity) 从 MessageVariantEntity 还原",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:132"
+ },
+ {
+  "fact": "Workflow 是 @Serializable 的自动化工作流：id、name、description、nodes、connections，enabled 默认 true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:11"
+ },
+ {
+  "fact": "Workflow 记录执行统计：lastExecutionTime、lastExecutionStatus、totalExecutions、successfulExecutions、failedExecutions",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:16"
+ },
+ {
+  "fact": "ExecutionStatus 有 SUCCESS、FAILED、RUNNING 三种执行状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:32"
+ },
+ {
+  "fact": "WorkflowNode 是 @Serializable sealed 基类，抽象属性 id、type、name、description、position",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:42"
+ },
+ {
+  "fact": "TriggerNode.triggerType 默认 manual，可选 schedule、tasker、intent、speech、app_open",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:55"
+ },
+ {
+  "fact": "ExecuteNode.actionType 为工具名，actionConfig 支持静态值或节点引用，jsCode 可选执行 JS",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:70"
+ },
+ {
+  "fact": "ConditionOperator 有 EQ、NE、GT、GTE、LT、LTE、CONTAINS、NOT_CONTAINS、IN、NOT_IN 十种条件运算符",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:82"
+ },
+ {
+  "fact": "ConditionNode 比较左右两个 ParameterValue，默认运算符 EQ",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:96"
+ },
+ {
+  "fact": "LogicOperator 有 AND、OR 两种逻辑运算符",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:108"
+ },
+ {
+  "fact": "LogicNode 按 LogicOperator（默认 AND）组合条件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:114"
+ },
+ {
+  "fact": "ExtractMode 有 REGEX、JSON、SUB、CONCAT、RANDOM_INT、RANDOM_STRING 六种抽取模式",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:124"
+ },
+ {
+  "fact": "ExtractNode 默认抽取模式为 REGEX，randomMax 默认 100，randomStringLength 默认 8",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:134"
+ },
+ {
+  "fact": "ParameterValue 是 @Serializable sealed 类：StaticValue 静态值或 NodeReference 引用其他节点输出",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:161"
+ },
+ {
+  "fact": "NodePosition 记录节点画布坐标 x、y",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:173"
+ },
+ {
+  "fact": "WorkflowNodeConnection 定义节点连线：sourceNodeId、targetNodeId，condition 可选",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Workflow.kt:183"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig 是角色卡工具白名单：allowedBuiltinTools、allowedPackages、allowedSkills、allowedMcpServers，默认全空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:8"
+ },
+ {
+  "fact": "CharacterCardToolAccessConfig.normalized() 对白名单条目做 trim、去空、去重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:14"
+ },
+ {
+  "fact": "CharacterCard 是 Room 实体，表名 character_cards，id 为主键",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:42"
+ },
+ {
+  "fact": "CharacterCard.chatModelBindingMode 默认 FOLLOW_GLOBAL，memoryProfileBindingMode 默认 FOLLOW_GLOBAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:52"
+ },
+ {
+  "fact": "CharacterCardChatModelBindingMode.normalize 非 FIXED_CONFIG 一律回落 FOLLOW_GLOBAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:65"
+ },
+ {
+  "fact": "CharacterCardMemoryProfileBindingMode.normalize 非 FIXED_PROFILE 一律回落 FOLLOW_GLOBAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:74"
+ },
+ {
+  "fact": "TavernCharacterCard 是酒馆角色卡格式：spec、spec_version、data",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:86"
+ },
+ {
+  "fact": "TavernCharacterData 含 name、description、personality、first_mes、mes_example、scenario 等酒馆字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:92"
+ },
+ {
+  "fact": "TavernExtensions 含 chub、depth_prompt 与 operit 三个扩展槽",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:111"
+ },
+ {
+  "fact": "OperitTavernExtension.schema 固定为 operit_character_card_v1，承载 Operit 自有载荷",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:117"
+ },
+ {
+  "fact": "OperitCharacterCardPayload 镜像 CharacterCard 主体字段并允许 toolAccessConfig 为空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CharacterCard.kt:122"
+ },
+ {
+  "fact": "ApiProviderType 枚举 38 种 API 供应商：OPENAI、XAI、ANTHROPIC、GOOGLE、国产厂商、本地引擎及 OTHER 等",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:7"
+ },
+ {
+  "fact": "ApiProviderType.fromProviderTypeId 大小写不敏感匹配枚举名，空字符串返回 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:47"
+ },
+ {
+  "fact": "ModelConfigDefaults 定义默认上下文与总结阈值：DEFAULT_CONTEXT_LENGTH=64.0f、DEFAULT_SUMMARY_TOKEN_THRESHOLD=0.70f、DEFAULT_SUMMARY_MESSAGE_COUNT_THRESHOLD=16",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:60"
+ },
+ {
+  "fact": "SummarySectionConfig 与 SummarySectionOverride 分别承载总结分节配置与可空覆盖",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:71"
+ },
+ {
+  "fact": "ConversationSummaryConfig 含 globalRules、sectionOverrides 与对话复核开关",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:86"
+ },
+ {
+  "fact": "ModelConfigData.apiProviderType 默认 DEEPSEEK，apiProviderTypeId 默认取枚举名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:95"
+ },
+ {
+  "fact": "ModelConfigData 多 key 模式：useMultipleApiKeys、apiKeyPool、currentKeyIndex、keyRotationMode（ROUND_ROBIN/RANDOM）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:105"
+ },
+ {
+  "fact": "ModelConfigData 默认 maxTokens=4096、temperature=1.0f、topP=1.0f、topK=0、repetitionPenalty=1.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:118"
+ },
+ {
+  "fact": "ModelConfigData.llama 相关默认：llamaThreadCount=4、llamaContextSize=2048、llamaBatchSize=512、llamaGpuLayers=0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:167"
+ },
+ {
+  "fact": "getModelByIndex 从逗号分隔的模型名字符串按索引取值，越界回落第一个",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:217"
+ },
+ {
+  "fact": "getModelList 把逗号分隔的模型名字符串拆为列表并去空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:222"
+ },
+ {
+  "fact": "getValidModelIndex 越界时返回 0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:238"
+ },
+ {
+  "fact": "ModelConfigSummary 是列表展示用的简化配置：id、name、modelName、apiEndpoint、apiProviderType、thinkingOptionId、modelIndex",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:206"
+ },
+ {
+  "fact": "ParameterDefinition 是标准模型参数的静态定义：id、name、apiName、description、defaultValue、valueType、category、minValue/maxValue",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:23"
+ },
+ {
+  "fact": "StandardModelParameters.DEFINITIONS 含 7 个标准参数定义：max_tokens、temperature、top_p、top_k、presence_penalty、frequency_penalty、repetition_penalty",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:50"
+ },
+ {
+  "fact": "StandardModelParameters 默认值：DEFAULT_MAX_TOKENS=4096、DEFAULT_TEMPERATURE=1.0f、DEFAULT_TOP_P=1.0f、DEFAULT_TOP_K=0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:42"
+ },
+ {
+  "fact": "MnnModel 是 @Serializable 的模型条目：modelName、size_gb、tags、sources、description",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:29"
+ },
+ {
+  "fact": "ModelMarketData 是模型市场数据容器：models 列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:38"
+ },
+ {
+  "fact": "MsRepoInfo、MsResponseData、MsFileInfo 是 ModelScope 仓库 API 的响应结构",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:44"
+ },
+ {
+  "fact": "PersistentDownloadState 持久化下载状态：modelName、url、modelFolderName、totalBytes、fileTasks",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:65"
+ },
+ {
+  "fact": "PersistentFileTask 记录多文件下载的子任务：path、size",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:74"
+ },
+ {
+  "fact": "DownloadState 有 Idle、Connecting、Downloading、Paused、Completed、Failed 六种状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:79"
+ },
+ {
+  "fact": "MnnModelDownloadManager.getInstance 用双重检查单例，保存 applicationContext",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:101"
+ },
+ {
+  "fact": "MODEL_MARKET_URL 指向 meta.alicdn.com 的 model_market.json",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:108"
+ },
+ {
+  "fact": "MODEL_DIR 为 Download/Operit/models/mnn 公共目录",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:113"
+ },
+ {
+  "fact": "OkHttpClient 连接超时 30 秒、读取超时 60 秒",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:120"
+ },
+ {
+  "fact": "Json 解析器配置 ignoreUnknownKeys 与 isLenient",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:124"
+ },
+ {
+  "fact": "MnnModelDownloadManager 初始化时建目录并加载持久化下载状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:137"
+ },
+ {
+  "fact": "loadPersistentStates 按 .tmp 临时文件与已完成文件重算已下载字节",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:166"
+ },
+ {
+  "fact": "未完成下载恢复为 Paused 状态；已完成但未清理的做清理",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:186"
+ },
+ {
+  "fact": "savePersistentStates 在无状态时删除状态文件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:203"
+ },
+ {
+  "fact": "getDownloadState 已下载模型初态为 Completed，否则 Idle",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:236"
+ },
+ {
+  "fact": "fetchModelList 请求失败或异常时回落本地缓存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:246"
+ },
+ {
+  "fact": "fetchRepoFiles 调 modelscope.cn 的 repo/files 接口（Recursive=1）取仓库文件列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:294"
+ },
+ {
+  "fact": "downloadModel 入口若已在下载或连接中则忽略重复调用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:345"
+ },
+ {
+  "fact": "ModelScope 仓库地址走多文件下载分支：先持久化子任务再 downloadAllFiles",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:394"
+ },
+ {
+  "fact": "单文件下载先发 HEAD 请求取 Content-Length",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:414"
+ },
+ {
+  "fact": "单文件下载时已存在文件且大小匹配则跳过下载",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:432"
+ },
+ {
+  "fact": "单文件下载用 Range 请求头实现断点续传",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:463"
+ },
+ {
+  "fact": "下载进度每 500ms 更新一次 StateFlow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:517"
+ },
+ {
+  "fact": "单文件下载完成经 renameTo 生效并清理持久化状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:541"
+ },
+ {
+  "fact": "pauseDownload 置暂停标志；cancelDownload 取消任务并回 Idle",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:565"
+ },
+ {
+  "fact": "deleteModel 递归删除模型文件夹并清理持久化状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:584"
+ },
+ {
+  "fact": "getDownloadedModels 返回 MODEL_DIR 下按修改时间倒序的模型文件夹",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:598"
+ },
+ {
+  "fact": "isModelDownloaded 检查模型文件夹是否存在",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:605"
+ },
+ {
+  "fact": "getFileName 对不以 .mnn 结尾的模型名补后缀",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:617"
+ },
+ {
+  "fact": "formatSpeed 按 B/s、KB/s、MB/s 分档格式化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:621"
+ },
+ {
+  "fact": "formatFileSize 按 B、KB、MB、GB 分档格式化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:629"
+ },
+ {
+  "fact": "getLastFileName 取路径最后一段作模型文件夹名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:638"
+ },
+ {
+  "fact": "downloadAllFiles 跳过已存在且大小匹配的文件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:682"
+ },
+ {
+  "fact": "downloadAllFiles 全部完成置 Completed 并清理持久化状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt:794"
+ }
+]

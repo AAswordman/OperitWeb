@@ -1,0 +1,12 @@
+[
+  {
+    "severity": "suggestion",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt",
+    "line": 16,
+    "title": "providerType 默认值 OLLAMA 永不生效",
+    "detail": "OllamaProvider 构造参数 providerType 默认为 ApiProviderType.OLLAMA，但唯一构造点 AIServiceFactory 在 OLLAMA 分支总是显式传入 providerType（AIServiceFactory.kt:459），默认值写了也用不上，属于冗余参数。",
+    "evidence": "    providerType: ApiProviderType = ApiProviderType.OLLAMA,",
+    "confidence": "medium"
+  }
+]

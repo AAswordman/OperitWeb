@@ -1,0 +1,13 @@
+{
+  "critic": "独立复核通过（110 条，1 处内容错误+16 处引用修正后复检通过）",
+  "issue": 20,
+  "refs_valid": "101/101 引用行号真实存在，symbol 在 ±5 行内全命中（自查修复 1 条越界）；lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "JS 工具脚本执行与注册：JsToolManager 调度与引擎池、执行脚本组装与 __operitExecuteScriptFunction 入口、ToolPkg 注册桥接与 23 个注册桶、结果判定协议、双层超时、执行追踪、广播触发执行、JS 侧 Tools 门面。",
+  "updated": "2026-10-02",
+  "approved_by_comment_id": 5945899812,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 05:07 UTC"
+}

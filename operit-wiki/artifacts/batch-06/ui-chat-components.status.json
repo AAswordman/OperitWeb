@@ -1,0 +1,11 @@
+{
+  "critic": "critic2-verified-5-items-fixed-by-parent",
+  "id": "ui-chat-components",
+  "issue": 90,
+  "refs_valid": "117；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "approved_by_comment_id": 5927195245,
+  "updated": "2026-10-02"
+}

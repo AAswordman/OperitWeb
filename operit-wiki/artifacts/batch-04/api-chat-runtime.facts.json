@@ -1,0 +1,430 @@
+[
+  {
+    "fact": "`ChatRuntimeSlot` 是枚举，仅有两个值 `MAIN` 与 `FLOATING`，分别对应主会话与悬浮窗会话的运行时槽位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeSlot.kt:3"
+  },
+  {
+    "fact": "`ChatRuntimeHolder` 构造器私有；`getInstance` 用 `@Volatile` 实例加双重检查锁实现进程级单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:258"
+  },
+  {
+    "fact": "`cores` 是 `ConcurrentHashMap<ChatRuntimeSlot, ChatServiceCore>`，按槽位缓存两个会话核心",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:25"
+  },
+  {
+    "fact": "`getCore(slot)` 用 `getOrPut` 懒创建核心；`MAIN` 槽的选择模式为 `ChatSelectionMode.FOLLOW_GLOBAL`，`FLOATING` 槽为 `LOCAL_ONLY`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:44"
+  },
+  {
+    "fact": "`init` 块预创建全部槽位核心，并依次注册跨会话同步、统计观察与钩子观察",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:32"
+  },
+  {
+    "fact": "`activeConversationCount` 是 `StateFlow<Int>`，由两核心的 `activeStreamingChatIds` 合并去重计数得到",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:60"
+  },
+  {
+    "fact": "`currentSessionToolCount` 是 `StateFlow<Int>`，统计双核心所有活跃聊天的当轮工具调用总数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:72"
+  },
+  {
+    "fact": "`observeRuntimeHooks` 对每个槽合并 `inputProcessingStateByChatId`、`activeStreamingChatIds`、`currentTurnToolInvocationCountByChatId` 三个流观察状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:94"
+  },
+  {
+    "fact": "输入处理状态变化时经 `ChatRuntimeHookRegistry.dispatchAsync` 派发 `ChatRuntimeHookEvent.STATE_CHANGED`，上下文携带槽位、状态与活跃统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:113"
+  },
+  {
+    "fact": "钩子观察跳过 `__DEFAULT_CHAT__` 默认聊天键，且同一状态不重复派发",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:106"
+  },
+  {
+    "fact": "`registerChatSelectionSync` 监听源槽 `currentChatId`，目标槽用 `switchChatLocal` 跟随切换当前聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:213"
+  },
+  {
+    "fact": "`registerTurnSync` 用 `setAdditionalOnTurnComplete` 挂接回合同步回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:172"
+  },
+  {
+    "fact": "回合同步回调中若目标核心当前聊天不是同一 `chatId` 直接返回，否则 `reloadChatMessagesSmart` 并同步 token 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:177"
+  },
+  {
+    "fact": "`syncMainChatSelectionToFloating(chatId)` 是公开的聊天选择同步入口，空串直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/ChatRuntimeHolder.kt:200"
+  },
+  {
+    "fact": "`EnhancedAIService` 构造器私有；`getInstance` 用双重检查锁实现全局单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:118"
+  },
+  {
+    "fact": "`getChatInstance(context, chatId)` 按 `chatId` 在 `CHAT_INSTANCES` 中维护一会话一实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:128"
+  },
+  {
+    "fact": "`releaseChatInstance(chatId)` 从 `CHAT_INSTANCES` 移除实例并调用 `cancelConversation` 释放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:137"
+  },
+  {
+    "fact": "`FOREGROUND_REF_COUNT` 是 `AtomicInteger`，用作前台服务的引用计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:111"
+  },
+  {
+    "fact": "`SendMessageOptions` 包含 `message`、`chatId`、`chatHistory`、`workspacePath` 等请求字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:326"
+  },
+  {
+    "fact": "`SendMessageOptions.functionType` 默认值为 `FunctionType.CHAT`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:333"
+  },
+  {
+    "fact": "`SendMessageOptions.enableMemoryAutoUpdate` 默认值为 `true`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:339"
+  },
+  {
+    "fact": "`SendMessageOptions.stream` 默认值为 `true`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:353"
+  },
+  {
+    "fact": "`sendMessage(options)` 返回 `Stream<String>`，以流式方式输出 AI 回复",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:903"
+  },
+  {
+    "fact": "每次 `sendMessage` 创建一个 `MessageExecutionContext`，`executionId` 自增分配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:967"
+  },
+  {
+    "fact": "非子任务请求先调用 `startAiService` 启动前台服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:979"
+  },
+  {
+    "fact": "非子任务请求把 `inputProcessingState` 置为 `InputProcessingState.Processing`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:985"
+  },
+  {
+    "fact": "`estimatePreparedRequestWindow` 计算请求窗口的 token 数，可发布到 `requestWindowEstimateFlow`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:712"
+  },
+  {
+    "fact": "`ensureInitialized` 用双重检查在 IO 线程初始化 `multiServiceManager`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:373"
+  },
+  {
+    "fact": "`init` 块初始化 `MemoryLibrary`，并异步执行 `ensureInitialized` 与 `registerDefaultTools`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:521"
+  },
+  {
+    "fact": "`getModelExecutionSnapshot`：`CHAT` 功能且有 `configId` 覆盖时按配置取服务，否则按功能取；以 `ServiceLease` 租约持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:474"
+  },
+  {
+    "fact": "`enhanceToolDetection` 用 `StreamXmlPlugin` 对回复做流式 XML 解析，规范化工具标签格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1346"
+  },
+  {
+    "fact": "`detectAndRepairTruncatedToolRound` 检测未闭合的 tool 标签，生成追加的修复后缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1443"
+  },
+  {
+    "fact": "纯思考输出（去除 thinking 内容后正文为空）时注入警告状态回传给 AI 继续生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1805"
+  },
+  {
+    "fact": "`disableWarning=true` 时纯思考输出直接结束本轮，不注入警告",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1773"
+  },
+  {
+    "fact": "`processStreamCompletion`：空内容仍走 `finalizeAssistantResponse` 收尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1752"
+  },
+  {
+    "fact": "`processStreamCompletion`：检测到工具调用走 `handleToolInvocation`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1953"
+  },
+  {
+    "fact": "`processStreamCompletion`：无工具调用时直接 `finalizeAssistantResponse` 收尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1984"
+  },
+  {
+    "fact": "`finalizeAssistantResponse` 把 `isConversationActive` 置 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2024"
+  },
+  {
+    "fact": "`finalizeAssistantResponse`：记忆自动保存经 `MemoryAutoSaveCandidateRepository.enqueue` 入队",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2044"
+  },
+  {
+    "fact": "`finalizeAssistantResponse` 随后经 `notifyReplyCompleted` 通知并 `stopAiService`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2063"
+  },
+  {
+    "fact": "`handleToolInvocation` 逐个触发 `onToolInvocation` 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2102"
+  },
+  {
+    "fact": "`handleToolInvocation`：UI 状态置为 `ExecutingTool`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2107"
+  },
+  {
+    "fact": "`handleToolInvocation` 经 `ToolExecutionManager.executeInvocations` 执行工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2116"
+  },
+  {
+    "fact": "`processToolResults` 把工具结果经 `ConversationMarkupManager.buildToolResultMessage` 转为 `TOOL_RESULT` 回合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2222"
+  },
+  {
+    "fact": "`processToolResults`：token 用量超过阈值时触发 `onTokenLimitExceeded` 并结束对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2316"
+  },
+  {
+    "fact": "`toolExecutionJobs` 用 `ConcurrentHashMap<String, Job>` 跟踪工具执行任务，`join` 后移除",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2181"
+  },
+  {
+    "fact": "`cancelAllToolExecutions` 取消 `toolProcessingScope` 的全部子协程",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2874"
+  },
+  {
+    "fact": "`cancelConversation` 失效全部执行上下文、取消流与工具执行、token 计数清零、调用 `stopAiService`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2829"
+  },
+  {
+    "fact": "`startAiService` 对 `FOREGROUND_REF_COUNT` 做递增；应用不在前台且无常驻后台职责时跳过启动前台服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3026"
+  },
+  {
+    "fact": "`stopAiService` 仅在引用计数归零时发送 `STATE_IDLE` 更新，不真正停止前台服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3080"
+  },
+  {
+    "fact": "`notifyReplyCompleted` 委托给 `AIForegroundService.notifyReplyCompleted` 发送回复完成通知",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3063"
+  },
+  {
+    "fact": "`getAvailableToolsForFunction`：全局工具开关关闭时返回 `null`，不提供任何 Tool Call 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2905"
+  },
+  {
+    "fact": "`getAvailableToolsForFunction`：模型配置未启用 Tool Call 时返回 `null`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2914"
+  },
+  {
+    "fact": "`getAvailableToolsForFunction`：CLI 暴露模式下用 `CliToolModeSupport.buildCliPublicToolPrompts` 构建工具列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2940"
+  },
+  {
+    "fact": "`getAvailableToolsForFunction`：非 CLI 模式追加 `package_proxy` 代理工具，用于转发已激活工具包的工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2978"
+  },
+  {
+    "fact": "`callFunctionModel` 以非流式方式调用指定功能类型的模型，把输出收集为纯文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:667"
+  },
+  {
+    "fact": "`estimateRequestWindowFromMemory` 只做请求窗口的 token 估算，不实际发送请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:769"
+  },
+  {
+    "fact": "`generateSummary` 系列方法委托给 `conversationService` 生成对话总结",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2571"
+  },
+  {
+    "fact": "`saveConversationToMemoryAsync` 用 `MEMORY` 功能类型的模型在 `toolProcessingScope` 中异步保存记忆",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3168"
+  },
+  {
+    "fact": "`translateText` 委托给 `conversationService.translateText` 做文本翻译",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3145"
+  },
+  {
+    "fact": "`analyzeImageWithIntent` 委托给 `conversationService` 做带用户意图的图片分析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3210"
+  },
+  {
+    "fact": "实例方法 `applyFileBinding` 委托给 `fileBindingService.processFileBinding` 做文件绑定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:3130"
+  },
+  {
+    "fact": "companion 的 `getAIServiceForFunction` 经 `multiServiceManager` 按功能类型取 `AIService`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:152"
+  },
+  {
+    "fact": "`getProviderAndModelForFunction` 把 `providerModel` 按第一个冒号拆成 provider 与 modelName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:595"
+  },
+  {
+    "fact": "`resetTokenCountersForFunction(functionType=null)` 重置指定功能类型或全部功能类型的 token 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2562"
+  },
+  {
+    "fact": "`_inputProcessingState` 是 `MutableStateFlow<InputProcessingState>`，对外暴露为只读 `StateFlow`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:385"
+  },
+  {
+    "fact": "`captureCurrentTurnTokenSnapshot` 返回当轮输入、输出、缓存 token 的快照",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2525"
+  },
+  {
+    "fact": "类注释：前台服务用于 AI 长时间处理时保活应用，不执行实际工作，仅靠持久通知提升进程优先级",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:102"
+  },
+  {
+    "fact": "主通知 ID 为 1，回复通知 ID 为 2001，主通知渠道 ID 为 `AI_SERVICE_CHANNEL`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:105"
+  },
+  {
+    "fact": "`isRunning` 是静态 `AtomicBoolean` 标志，供外部检查服务是否正在运行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:143"
+  },
+  {
+    "fact": "`externalHttpStateFlow` 是 `MutableStateFlow<ExternalChatHttpState>`，对外暴露为只读 `externalHttpState`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:145"
+  },
+  {
+    "fact": "`EXTRA_STATE` 配合 `STATE_RUNNING`（running）/`STATE_IDLE`（idle）做前台服务状态切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:151"
+  },
+  {
+    "fact": "`notifyReplyCompleted`：应用在前台时跳过发送回复通知",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:292"
+  },
+  {
+    "fact": "回复通知内容取清理后文本的前 100 字，支持 `BigTextStyle` 展开全文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:346"
+  },
+  {
+    "fact": "回复通知可设置头像大图标（`setLargeIcon`）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:371"
+  },
+  {
+    "fact": "回复通知 tag 前缀常量 `REPLY_NOTIFICATION_TAG_PREFIX` 为 `\"ai_reply:\"`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:119"
+  },
+  {
+    "fact": "回复通知 tag 格式为 `ai_reply:` 加 `chatId`（空则用 default）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:155"
+  },
+  {
+    "fact": "回复通知发送后其 tag 记入 `activeReplyNotificationTags` 集合，用于退出时批量取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:379"
+  },
+  {
+    "fact": "`onCreate` 把 `isRunning` 置 true，创建通知渠道并以前台服务方式启动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:924"
+  },
+  {
+    "fact": "`ChatRuntimeHolder` 以 `by lazy` 持有为进程单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:722"
+  },
+  {
+    "fact": "`onCreate` 中引用 `chatRuntimeHolder` 触发其初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:930"
+  },
+  {
+    "fact": "`onCreate` 启动任务视图偏好、保活偏好、聊天统计、唤醒监听、外部 HTTP 五组观察",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:944"
+  },
+  {
+    "fact": "`onStartCommand` 处理 `ACTION_EXIT_APP`：取消当前 AI 任务、停止悬浮窗与调试服务、清除全部通知、杀进程退出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1083"
+  },
+  {
+    "fact": "`ACTION_CANCEL_CURRENT_OPERATION` 调用 `AIMessageManager.cancelCurrentOperation` 并刷新通知",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1232"
+  },
+  {
+    "fact": "`ACTION_START_OR_REFRESH_EXTERNAL_HTTP`（或 intent 为空）启动外部 HTTP 服务；服务运行时返回 `START_STICKY`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1158"
+  },
+  {
+    "fact": "`startOrRefreshExternalHttpServer`：配置禁用或端口非法则停止服务；同端口已运行则直接复用并更新状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:807"
+  },
+  {
+    "fact": "`stopExternalHttpServer` 停止外部 HTTP 服务，并把状态更新为 `isRunning=false`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:858"
+  },
+  {
+    "fact": "`stopSelfIfIdle`：AI 忙、唤醒监听、后台保活、外部 HTTP 任一有职责时不停止服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:903"
+  },
+  {
+    "fact": "`onDestroy` 停止外部 HTTP 服务，把 `isRunning` 置 false 并取消唤醒监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1276"
+  },
+  {
+    "fact": "`onBind` 返回 `null`，该服务是启动服务不支持绑定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1301"
+  },
+  {
+    "fact": "`startExternalHttpMonitoring` 监听外部 HTTP 的启用与端口配置流，配置变更时启停服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1323"
+  },
+  {
+    "fact": "`observeChatRuntimeStats` 监听双槽活跃会话数与当轮工具数变化，刷新前台通知",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1019"
+  },
+  {
+    "fact": "前台通知标题：AI 忙时显示角色名，否则按唤醒监听状态显示运行中或暂停",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1860"
+  },
+  {
+    "fact": "AI 忙且有活跃会话时，通知内容显示活跃会话数与当轮工具数统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1880"
+  },
+  {
+    "fact": "前台通知带操作按钮：语音悬浮窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1947"
+  },
+  {
+    "fact": "前台通知带操作按钮：唤醒监听开关",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1966"
+  },
+  {
+    "fact": "前台通知带操作按钮：退出应用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1990"
+  },
+  {
+    "fact": "AI 忙时通知额外增加一个停止当前任务的操作按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:2011"
+  },
+  {
+    "fact": "`applyWakeListeningStateLocked`：唤醒监听生效条件是已启用且未被 IME、外部录音、悬浮全屏三者任一挂起",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:552"
+  },
+  {
+    "fact": "检测到外部应用正在录音时挂起唤醒监听（`updateWakeListeningSuspendedForExternalRecording`）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:636"
+  },
+  {
+    "fact": "唤醒词命中后 3 秒内去重，不重复触发",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1674"
+  },
+  {
+    "fact": "`triggerWakeLaunch` 打开全屏悬浮窗并自动进入语音聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1810"
+  },
+  {
+    "fact": "`matchWakePhrase`：正则模式用 `Regex.containsMatchIn` 匹配；普通模式做小写去标点后的包含匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1829"
+  },
+  {
+    "fact": "`ensureMicrophoneForeground`：服务未运行且无常驻前台职责配置时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:418"
+  },
+  {
+    "fact": "`refreshBackgroundKeepAlive`：保活开关关闭且服务未运行时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:455"
+  },
+  {
+    "fact": "`ACTION_PREPARE_WAKE_HANDOFF` 用 `SpeechPrerollStore.capturePending` 捕获唤醒前的音频窗口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1210"
+  },
+  {
+    "fact": "`ACTION_PREPARE_WAKE_HANDOFF` 交接时经 `stopWakeListening(releaseProvider = true)` 停止唤醒监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:1217"
+  }
+]

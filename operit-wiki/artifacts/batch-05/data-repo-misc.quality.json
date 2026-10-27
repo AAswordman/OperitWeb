@@ -1,0 +1,162 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 164,
+    "evidence": "    private fun getWorkflowFile(workflowId: String): File {\n        return File(getWorkflowDirectory(), \"$workflowId.json\")\n    }",
+    "severity": "warn",
+    "confidence": 0.8,
+    "description": "getWorkflowFile 用 File(dir, \"$workflowId.json\") 拼接路径且未做任何消毒。id 来源不可控：StandardWorkflowTools.kt:884 的 triggerWorkflow 工具把 AI 参数 workflow_id 原样传入，经 WorkflowRepository.triggerWorkflow(:552)→triggerWorkflowInternal(:603)→getWorkflowById(:316) 直达 getWorkflowFile(:164)，AI 可传入 ../../ 形 id 读取/覆写存储目录内任意 .json 文件；创建路径固定 UUID 掩盖了该缺口。分级 warn（读侧限于 .json 后缀，利用需先经提示注入操纵模型工具参数）。"
+  },
+  {
+    "confidence": 0.75,
+    "description": "getExternalStoragePublicDirectory 在 API 29 起已废弃；Android 10+ 分区存储下无 MANAGE_EXTERNAL_STORAGE 权限时写入公共 Downloads 目录可能失败，导致全部工作流读写抛 WorkflowStorageException，工作流功能整体不可用。",
+    "evidence": "        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)\n        val workflowDir = File(downloadDir, WORKFLOW_DIR)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 138,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.7,
+    "description": "公开的非 suspend 函数 scheduleWorkflow 内部用 runBlocking 做磁盘 IO；若在主线程调用（如 UI 直接调用）会阻塞 UI 线程。调用方 WorkflowViewModel.kt:1585 与 WorkflowTaskerReceiver.kt:90 需自行保证不在主线程调用，契约脆弱。",
+    "evidence": "    fun scheduleWorkflow(id: String): Boolean {\n        return try {\n            val workflowResult = kotlinx.coroutines.runBlocking { getWorkflowById(id) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 761,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.9,
+    "description": "黑名单载荷只做 schema/版本一致性校验，没有签名校验，安全完全依赖 TLS。若更新服务器被入侵或设备信任了恶意 CA，攻击者可下发任意黑名单阻止合法插件安装（对插件安装能力的 DoS）。建议对 payload 做离线签名验证。",
+    "evidence": "    suspend fun refreshFromRemote(): Boolean {\n        return withContext(Dispatchers.IO) {\n            runCatching {\n                val pointer = json.decodeFromString<PluginDenylistPointer>(fetchText(addCacheBust(pointerUrl)))\n                validatePointer(pointer)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/security/PluginDenylistRepository.kt",
+    "line": 59,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.85,
+    "description": "findDeniedImport 在无本地缓存时返回 null 即放行。首次启动尚未 refreshFromRemote 成功、或缓存被清除时，黑名单拦截完全不生效， fail-open 语义与“安全黑名单”预期相反。",
+    "evidence": "    fun findDeniedImport(file: File): PluginDenylistEntry? {\n        if (!file.isFile || !file.canRead()) return null\n\n        return runCatching {\n            val payload = readCachedPayload() ?: return@runCatching null",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/security/PluginDenylistRepository.kt",
+    "line": 76,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.5,
+    "description": "用户 Avatar id 取路径 32 位 hashCode 的 16 进制，碰撞后两个不同目录映射到同一 id；switchAvatar/deleteAvatar 按 id 操作会产生歧义（删错/切错形象）。路径数量不大时概率低，但属于可避免的标识设计缺陷。",
+    "evidence": "private fun buildAvatarConfigId(type: AvatarType, directory: File, isBuiltIn: Boolean): String {\n    if (isBuiltIn) {\n        return \"built_in_${type.name.lowercase()}_${directory.name.lowercase()}\"\n    }\n\n    val normalizedPath = normalizeAvatarPath(directory.absolutePath)\n    val pathHash = normalizedPath.hashCode().toUInt().toString(16)\n    return \"user_${type.name.lowercase()}_$pathHash\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/AvatarRepository.kt",
+    "line": 161,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.6,
+    "description": "AvatarRepository init 块在构造线程同步做磁盘 IO（建目录、assets 列表与拷贝、prefs 读取、全目录扫描）。getInstance 若在主线程首次调用，会阻塞 UI；assets 拷贝在形象多时更明显。建议 init 只做轻量初始化，IO 延迟到后台。",
+    "evidence": "    init {\n        userAvatarDir.mkdirs()\n        synchronizeAssets()\n        loadAvatars()\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/AvatarRepository.kt",
+    "line": 552,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.6,
+    "description": "downloadFromUrl 对下载的 zip 没有大小上限，超大仓库 zip 会写满 cacheDir 导致磁盘耗尽。GitHub 仓库体积用户不可控，建议加 Content-Length/累计字节上限并超限中止。",
+    "evidence": "    private fun downloadFromUrl(zipUrl: String, outFile: File): Boolean {\n        val url = URL(zipUrl)\n        val connection = (url.openConnection() as HttpURLConnection).apply {\n            connectTimeout = CONNECT_TIMEOUT\n            readTimeout = READ_TIMEOUT",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/skill/SkillRepository.kt",
+    "line": 381,
+    "severity": "warn"
+  },
+  {
+    "confidence": 0.7,
+    "description": "getUIHierarchy 在“未绑定”与“远端异常”两种情况下都返回空字符串，调用方无法区分是无障碍服务没装、绑定失败还是单纯无 UI。AccessibilityUITools 会把空串当作无层级处理，可能掩盖真实故障，建议用 Result 或哨兵值区分。",
+    "evidence": "    suspend fun getUIHierarchy(context: Context): String {\n        if (!ensureBound(context)) {\n            AppLogger.e(TAG, \"绑定失败，无法获取UI层次结构\")\n            return \"\"\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/UIHierarchyManager.kt",
+    "line": 308,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "launchProviderInstall 使用 GlobalScope.launch 做安装流程，属于非结构化并发；进程在安装中途被杀会留下 cacheDir 里的半成品 APK。影响小，但建议改用与调用方生命周期绑定的 scope。",
+    "evidence": "    fun launchProviderInstall(context: Context) {\n        GlobalScope.launch(Dispatchers.IO) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/UIHierarchyManager.kt",
+    "line": 107,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.8,
+    "description": "saveExecutionRecord、updateExecutionStatus、updateExecutionStatistics 吞掉所有异常只记日志。虽是刻意不让统计失败影响工作流本身，但执行记录静默丢失会让事后排查缺证据，建议至少计数上报失败次数。",
+    "evidence": "    private fun saveExecutionRecord(record: WorkflowExecutionRecord) {\n        try {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 250,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.5,
+    "description": "语音触发的 pattern 是用户工作流配置里的正则，直接 Regex() 编译并匹配；恶意或写坏的正则可造成灾难性回溯，长时间占用 Dispatchers.IO 线程（try/catch 拦不住 ReDoS 的耗时）。建议对匹配加超时或限制 pattern 长度。",
+    "evidence": "                    val matches = try {\n                        val options = if (ignoreCase) setOf(RegexOption.IGNORE_CASE) else emptySet()\n                        Regex(pattern, options).containsMatchIn(trimmed)\n                    } catch (_: Exception) {\n                        false\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 979,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": 0.7,
+    "description": "addCustomEmoji 只按 MIME/文件名校验扩展名白名单，不校验文件魔数；非图片内容可被存为表情，渲染时才暴露为坏图。影响限于单个表情显示，建议写入前做一次图片头校验。",
+    "evidence": "    suspend fun addCustomEmoji(\n        target: ActivePrompt,\n        category: String,\n        sourceUri: Uri\n    ): Result<CustomEmoji> = withContext(Dispatchers.IO) {\n        try {\n            initializeBuiltinEmojis(target)\n\n            val extension = getFileExtension(sourceUri) ?: return@withContext Result.failure(",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/CustomEmojiRepository.kt",
+    "line": 96,
+    "severity": "suggestion"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/AvatarRepository.kt",
+    "line": 642,
+    "evidence": "    private fun isPathFromAssets(path: String): Boolean {\n        // A simple heuristic to determine if a model was copied from assets.\n        // This could be improved by storing metadata.\n        return _configs.value.any { it.isBuiltIn && it.getBasePath() == path }\n    }",
+    "severity": "warn",
+    "confidence": 0.85,
+    "description": "isBuiltIn 判定是死逻辑：isPathFromAssets 读 _configs.value，但 loadAvatars 先扫描后赋值，首次启动 _configs 为空导致全部 isBuiltIn=false 并持久化；之后每次扫描读到的都是上一轮全 false 的旧值，启发式条件 it.isBuiltIn 永远不成立。后果：deleteAvatar 的内置保护分支实际不可达，built_in_ 开头的 id 方案从未被使用。好在 synchronizeAssets 下次启动会重拷被删的内置模型，影响限于可恢复。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 140,
+    "evidence": "        val downloadDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS)\n        val workflowDir = File(downloadDir, WORKFLOW_DIR)",
+    "severity": "warn",
+    "confidence": 0.85,
+    "description": "工作流 JSON（含节点配置、可能内嵌的密钥/Token/脚本）存放在公共 Download 目录 Operit/workflow，任何持有存储权限的应用均可读取；外部可直接增删改文件，getAllWorkflows 仅对解析失败做警告跳过，无完整性校验。另该 API 已被 Android 标记废弃，未来系统版本可能失效。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 625,
+    "evidence": "        if (getRunningWorkflowJobs(id).isNotEmpty()) {\n            return@withContext Result.failure(Exception(context.getString(R.string.workflow_already_running, workflow.name)))\n        }",
+    "severity": "warn",
+    "confidence": 0.6,
+    "description": "check-then-act 竞态：“是否在运行”检查（625 行）与登记运行（registerRunningWorkflow）非原子；Tasker/Intent/语音等触发可并发到达，两个 triggerWorkflow 可能同时绕过检查导致同一工作流重复执行。registerRunningWorkflow 内部的 synchronized 只保护了登记本身。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/UIHierarchyManager.kt",
+    "line": 207,
+    "evidence": "            val implicitIntent = Intent(PROVIDER_ACTION).setPackage(PROVIDER_PACKAGE_NAME)\n            val resolveInfo: ResolveInfo? = context.packageManager.resolveService(implicitIntent, PackageManager.MATCH_ALL)",
+    "severity": "warn",
+    "confidence": 0.7,
+    "description": "按包名（com.ai.assistance.operit.provider）信任并绑定外部 App 做 AIDL 通信，未校验提供者签名；若恶意应用先于官方 provider 安装同包名，可截获全部无障碍数据（UI 层级 XML 含屏幕文本）并冒充执行点击/输入。安装冲突机制降低了可行性，但无纵深校验。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/CustomEmojiRepository.kt",
+    "line": 233,
+    "evidence": "    suspend fun cloneEmojiSet(source: ActivePrompt, target: ActivePrompt) = withContext(Dispatchers.IO) {\n        if (source == target) {\n            initializeBuiltinEmojis(target)\n            return@withContext\n        }",
+    "severity": "warn",
+    "confidence": 0.6,
+    "description": "克隆表情集非事务性：先 deleteTarget 删光目标，再逐文件复制；中途 I/O 失败则目标表情集残缺且无法回滚。应改为先拷临时目录再原子替换，或复制完成前不删目标。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/CustomEmojiRepository.kt",
+    "line": 223,
+    "evidence": "    suspend fun addCategory(target: ActivePrompt, categoryName: String) {\n        initializeBuiltinEmojis(target)\n        preferences.addCategory(target, categoryName)\n    }",
+    "severity": "suggestion",
+    "confidence": 0.6,
+    "description": "纵深防御建议：分类名直接用作目录名（getCategoryDir 用 File(getTargetBaseDir(target), category)），但 isValidCategoryName 校验只存在于 UI 层 CustomEmojiViewModel.createCategory，repository 写入路径从未调用。当前唯一调用方已校验，故降为建议而非缺陷。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/security/PluginDenylistRepository.kt",
+    "line": 59,
+    "evidence": "    suspend fun refreshFromRemote(): Boolean {",
+    "severity": "suggestion",
+    "confidence": 0.8,
+    "description": "黑名单只在 OperitApp 启动时刷新一次（OperitApp.kt:404），失败无重试、无 TTL、无后台定时刷新；若启动时网络异常，全程使用陈旧或缺失的本地缓存，恶意插件可在此窗口完成导入（与 findDeniedImport 无缓存即放行的 fail-open 叠加）。"
+  }
+]

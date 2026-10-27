@@ -1,0 +1,138 @@
+[
+  {
+    "fact": "CodexAccessTokenProvider 实现 ApiKeyProvider，getApiKey 委托 authManager.getValidAccessToken()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:17"
+  },
+  {
+    "fact": "CodexAccessTokenProvider.getCandidateKeyCount 在 authState 为 null 时返回 0，否则返回 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:22"
+  },
+  {
+    "fact": "CodexProvider 继承 OpenAIResponsesProvider，走 CodexOAuthProtocol.CODEX_RESPONSES_ENDPOINT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:39"
+  },
+  {
+    "fact": "CodexProvider 的 responsesProviderType 为 ApiProviderType.OPENAI_CODEX",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:45"
+  },
+  {
+    "fact": "applyAuthenticationHeaders 先调 super，再取 authManager.currentAccountId() 写入 ChatGPT-Account-ID 头，取不到抛 IllegalStateException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:54"
+  },
+  {
+    "fact": "Codex 请求头固定带 originator=operit、User-Agent=Operit/<VERSION_NAME>、随机 session-id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:59"
+  },
+  {
+    "fact": "有 residency 时追加 x-openai-internal-codex-residency 头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:62"
+  },
+  {
+    "fact": "customizeFinalRequestObject 先调 super，再按 enableWebSearch 决定是否追加 web_search 工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:67"
+  },
+  {
+    "fact": "Codex 请求体经 CodexModelVariant.applyRequestParameters 做模型名映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:76"
+  },
+  {
+    "fact": "Codex 请求体固定 store=false、parallel_tool_calls=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:77"
+  },
+  {
+    "fact": "Codex 请求的 include 数组恒含 reasoning.encrypted_content",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:82"
+  },
+  {
+    "fact": "开 web_search 时 include 数组追加 web_search_call.action.sources",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:85"
+  },
+  {
+    "fact": "formatResponsesWebSearchDisplayXml 只处理 type=web_search_call 的条目，其他返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:90"
+  },
+  {
+    "fact": "Codex 搜索展示 XML 根为 <search provider=\"codex\">，内含 action、status 属性与 query/source 子节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:159"
+  },
+  {
+    "fact": "query 与 sources 都为空时搜索展示返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:113"
+  },
+  {
+    "fact": "CodexProvider.getModelsList 委托 CodexModelListFetcher.getModelsList(httpClient)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:120"
+  },
+  {
+    "fact": "appendWebSearchTool 在 tools 数组追加 {\"type\":\"web_search\"} 并置 tool_choice=auto",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:124"
+  },
+  {
+    "fact": "tools 里已有 web_search 时 appendWebSearchTool 只置 tool_choice=auto 不重复追加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:128"
+  },
+  {
+    "fact": "escapeXmlAttribute 按 & < > \" ' 顺序转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:186"
+  },
+  {
+    "fact": "escapeXmlText 转义 & < >",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:194"
+  },
+  {
+    "fact": "CodexModelPolicy.explicitlyAllowed 含 gpt-5.5、gpt-5.3-codex-spark、gpt-5.4、gpt-5.4-mini",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:202"
+  },
+  {
+    "fact": "CodexModelPolicy.explicitlyDisallowed 含 gpt-5.5-pro",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:208"
+  },
+  {
+    "fact": "CodexModelPolicy.allows：reasoningMode 为 pro 直接拒绝",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:213"
+  },
+  {
+    "fact": "CodexModelPolicy.allows：gpt-5.6 硬编码拒绝",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:216"
+  },
+  {
+    "fact": "CodexModelPolicy.allows：其余 gpt-x.y 按版本号 gate，只放行 > 5.4 的",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:217"
+  },
+  {
+    "fact": "CodexModelVariant.FAST_SUFFIX 为 \"-fast\"，apiModelId 去掉该后缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:224"
+  },
+  {
+    "fact": "模型名带 -fast 后缀时请求改写 model 为去后缀 id 并加 service_tier=priority",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:227"
+  },
+  {
+    "fact": "CodexModelListFetcher.getModelsList 用 GET 请求 CodexOAuthProtocol.MODEL_CATALOG_ENDPOINT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:243"
+  },
+  {
+    "fact": "模型目录请求只带 User-Agent 与 Accept 头，不带鉴权头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:244"
+  },
+  {
+    "fact": "模型目录请求非 2xx 抛 IllegalStateException(\"OpenCode model catalog request failed with HTTP ...\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:251"
+  },
+  {
+    "fact": "parseModels 要求根 JSON 有 openai 对象，否则抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:266"
+  },
+  {
+    "fact": "parseModels 要求 openai 下有 models 对象，否则抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:268"
+  },
+  {
+    "fact": "parseModels 跳过 id/name 为空或 CodexModelPolicy.allows 不通过的模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:272"
+  },
+  {
+    "fact": "有 experimental.modes 的模型会为每个 mode 生成 \"$id-$mode\" 的变体 ModelOption，展示名首字母大写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:294"
+  }
+]

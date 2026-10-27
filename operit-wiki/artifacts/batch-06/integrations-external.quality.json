@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "description": "ExternalChatReceiver 以 exported=true 注册且未声明任何权限，任意第三方应用都可发送 com.ai.assistance.operit.EXTERNAL_CHAT 广播，借 Operit 身份执行任意聊天请求并取回 AI 回复。",
+    "evidence": "<receiver\n            android:name=\".integrations.intent.ExternalChatReceiver\"\n            android:exported=\"true\">",
+    "file": "app/src/main/AndroidManifest.xml",
+    "line": 385,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "WorkflowTaskerReceiver 以 exported=true 注册且无权限保护，任意应用可发送 TRIGGER_WORKFLOW 或 Tasker 的 FIRE_SETTING 广播，直接触发用户工作流执行。",
+    "evidence": "<receiver\n            android:name=\".integrations.tasker.WorkflowTaskerReceiver\"\n            android:exported=\"true\"\n            android:enabled=\"true\">",
+    "file": "app/src/main/AndroidManifest.xml",
+    "line": 461,
+    "severity": "high"
+  },
+  {
+    "confidence": "warn",
+    "description": "ExternalChatHttpServer 监听 0.0.0.0（全网卡），且 CORS 允许任意来源，局域网内任何设备/页面都可直连聊天与 A2A 接口，鉴权只依赖 Bearer token 一道防线。",
+    "evidence": "private const val LISTEN_HOST = \"0.0.0.0\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "line": 548,
+    "severity": "warn"
+  },
+  {
+    "confidence": "warn",
+    "description": "A2A SendMessage 在 returnImmediately=false 时用 runBlocking 在 NanoHTTPD 处理线程上死等任务终态，慢任务会长期占用服务线程，并发稍高即耗尽线程池。",
+    "evidence": "runBlocking { taskManager.awaitTerminalTask(submittedTask.id) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt",
+    "line": 139,
+    "severity": "warn"
+  },
+  {
+    "confidence": "warn",
+    "description": "A2aTaskManager.tasks 是无界 ConcurrentHashMap，对提交的任务数没有任何上限，外部可无限制创建任务堆积内存。",
+    "evidence": "private val tasks = ConcurrentHashMap<String, TaskRecord>()",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt",
+    "line": 67,
+    "severity": "warn"
+  },
+  {
+    "confidence": "warn",
+    "description": "sendResultBroadcast 在调用方未提供 reply_package 时发出隐式广播，任意应用注册对应 action 即可截获他人的 AI 回复内容。",
+    "evidence": "if (!packageName.isNullOrBlank()) {\n            out.`package` = packageName\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt",
+    "line": 105,
+    "severity": "warn"
+  },
+  {
+    "confidence": "warn",
+    "description": "triggerWorkflowsByIntentEvent 把广播 extras 全部转字符串注入为工作流触发参数，外部广播可向工作流执行上下文注入任意键值。",
+    "evidence": "bundle.keySet().associateWith { key ->\n                    bundle.get(key)?.toString() ?: \"\"\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt",
+    "line": 883,
+    "severity": "warn"
+  },
+  {
+    "confidence": "suggestion",
+    "description": "Agent Card 接口（/.well-known/agent-card.json）不做鉴权，任何人可拉取服务能力描述；JSON-RPC 接口有 Bearer 保护，信息泄露面限于能力声明本身。",
+    "evidence": "session.uri == A2aHttpHandler.AGENT_CARD_PATH -> a2aHandler.handleAgentCard(session).withCors()",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt",
+    "line": 78,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "suggestion",
+    "description": "Agent Card 的 JSON-RPC 端点 URL 直接信任 Host 请求头拼接，Host 头注入会污染卡片中的端点地址。 緩解：buildJsonRpcEndpoint 已校验 Host 不含 `/`、`?`、`#`（A2aHttpHandler.kt:488-489），注入面有限，故维持 suggestion。",
+    "evidence": "return \"http://$host$A2A_PATH\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt",
+    "line": 491,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "suggestion",
+    "description": "A2A 流式事件通道使用无界 Channel，慢消费客户端会导致服务端事件无限堆积。",
+    "evidence": "val eventChannel = Channel<A2aTaskEvent>(Channel.UNLIMITED)",
+    "file": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt",
+    "line": 209,
+    "severity": "suggestion"
+  }
+]

@@ -1,0 +1,12 @@
+[
+  {
+    "category": "maintainability",
+    "confidence": "medium",
+    "detail": "思考配置映射用的 providerTypeId 硬编码为 ApiProviderType.NVIDIA.name，而构造函数仍接受 providerType 参数并转发给父类。若将来有人用非 NVIDIA 的 providerType 构造此类（如工厂分支配错），思考配置映射走 NVIDIA、管线其余部分走另一个类型标识，两处口径不一致且难以排查。建议 providerTypeId 取自构造参数 providerType.name，与 Qwen 的 qwenProviderType.name 做法保持一致。",
+    "evidence": "            providerTypeId = ApiProviderType.NVIDIA.name,",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt",
+    "line": 71,
+    "severity": "suggestion",
+    "title": "providerTypeId 硬编码 NVIDIA，与构造参数 providerType 口径可能不一致"
+  }
+]

@@ -1,0 +1,614 @@
+[
+  {
+    "fact": "ExternalChatHttpServer 继承 NanoHTTPD，构造时把监听地址 LISTEN_HOST 与 preferences.getPort() 配置端口传给父类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:45"
+  },
+  {
+    "fact": "LISTEN_HOST 常量固定为 \"0.0.0.0\"，HTTP 服务监听全部网络接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:548"
+  },
+  {
+    "fact": "startServer 用 AtomicBoolean running 做防重入，调用 NanoHTTPD 的 start(SOCKET_READ_TIMEOUT, false)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:56"
+  },
+  {
+    "fact": "stopServer 先调用 a2aHandler.close()，再调用 stop()，最后把 running 置为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:68"
+  },
+  {
+    "fact": "serve() 优先处理 OPTIONS 预检请求，交给 handleOptions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:76"
+  },
+  {
+    "fact": "serve() 把 A2aHttpHandler.AGENT_CARD_PATH 交给 a2aHandler.handleAgentCard 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:78"
+  },
+  {
+    "fact": "serve() 把 A2aHttpHandler.A2A_PATH 交给 a2aHandler.handleJsonRpc 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:79"
+  },
+  {
+    "fact": "serve() 把 GET /api/health 路由到 handleHealth。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:80"
+  },
+  {
+    "fact": "serve() 把 POST /api/external-chat 路由到 handleChat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:81"
+  },
+  {
+    "fact": "serve() 把所有 /api/web/ 前缀请求交给 WebChatHttpBridge.handleApi。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:82"
+  },
+  {
+    "fact": "serve() 把不以 /api 开头的请求交给 WebChatHttpBridge.serveStatic，用于下发网页端静态资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:83"
+  },
+  {
+    "fact": "serve() 对其余 /api/* 未知端点返回 404 与 \"API endpoint not found\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:84"
+  },
+  {
+    "fact": "useGzipWhenAccepted 对 text/event-stream 响应返回 false，禁用 SSE 流的 gzip 压缩。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:93"
+  },
+  {
+    "fact": "handleOptions 返回 200 空文本响应并附加 CORS 头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:102"
+  },
+  {
+    "fact": "handleHealth 先做 Bearer token 校验，再返回 enabled、serviceRunning、port、versionName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:106"
+  },
+  {
+    "fact": "handleChat 先做 Bearer token 校验，未授权直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:124"
+  },
+  {
+    "fact": "handleChat 请求体读取失败时返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:136"
+  },
+  {
+    "fact": "handleChat 请求体为空白时返回 400 \"Request body is empty\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:143"
+  },
+  {
+    "fact": "handleChat JSON 解析失败时返回 400 \"Invalid JSON: ...\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:152"
+  },
+  {
+    "fact": "handleChat 的 response_mode 非法时返回 400，要求 sync/async_callback。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:165"
+  },
+  {
+    "fact": "handleChat 的 message 为空时返回 400 \"Missing extra: message\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:177"
+  },
+  {
+    "fact": "handleChat 拒绝 stream=true 与 async_callback 组合，返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:186"
+  },
+  {
+    "fact": "handleChat 在 stream=true 时走 sseResponse 建立 SSE 流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:196"
+  },
+  {
+    "fact": "handleChat 的 async_callback 模式要求 callback_url 非空且 scheme 为 http/https。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:202"
+  },
+  {
+    "fact": "handleChat 的 async_callback 模式用 serviceScope.launch 异步执行并 postCallback，立即返回 202 与 ExternalChatAcceptedResponse。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:222"
+  },
+  {
+    "fact": "handleChat 的同步模式用 runBlocking 执行 executor.execute 并返回 200。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:236"
+  },
+  {
+    "fact": "sseResponse 用 64KB 的 PipedInputStream/PipedOutputStream 桥接协程写入与 HTTP 分块响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:243"
+  },
+  {
+    "fact": "SSE 事件名常量为 start、delta、done、error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:556"
+  },
+  {
+    "fact": "writeSseEvent 按 \"event: <名>\" 加多行 \"data: <json>\" 再空行的 SSE 格式写事件并 flush。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:510"
+  },
+  {
+    "fact": "sseResponse 捕获到 IOException（客户端断开）时取消 responseStreamSession。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:355"
+  },
+  {
+    "fact": "sseResponse 的响应流关闭时取消 streamJob 并清理流式会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:368"
+  },
+  {
+    "fact": "requireBearerToken 在配置的 token 为空时直接返回 401 \"Bearer token not configured\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:379"
+  },
+  {
+    "fact": "requireBearerToken 从 Authorization 头解析 Bearer token 并与配置值做明文相等比较。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:390"
+  },
+  {
+    "fact": "requireBearerToken 在 token 不一致时返回 401 \"Unauthorized\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:403"
+  },
+  {
+    "fact": "postCallback 用 OkHttp 把执行结果 POST 到 callbackUrl，失败只记日志不重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:414"
+  },
+  {
+    "fact": "readRequestBody 要求请求携带合法 Content-Length 头，缺失则报错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:435"
+  },
+  {
+    "fact": "readRequestBody 拒绝超过 Int.MAX_VALUE 的 Content-Length。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:441"
+  },
+  {
+    "fact": "resolveRequestCharset 从 content-type 头解析 charset 参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:2815"
+  },
+  {
+    "fact": "charset 缺失或不支持时请求体按 UTF-8 回退解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:2822"
+  },
+  {
+    "fact": "withCors 给响应添加 Access-Control-Allow-Origin: * 等 CORS 头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:538"
+  },
+  {
+    "fact": "A2aHttpHandler 构造时传入 ::requireBearerToken 作为鉴权回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:49"
+  },
+  {
+    "fact": "ExternalChatHttpAutoStarter.ensureRunningIfEnabled 用 AtomicBoolean ensureInProgress 防止并发重复检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:20"
+  },
+  {
+    "fact": "自启检查在外部 HTTP 聊天配置 disabled 时直接跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:34"
+  },
+  {
+    "fact": "自启检查在配置端口非法（isValidPort 校验失败）时跳过并记警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:38"
+  },
+  {
+    "fact": "自启检查在服务已在同一端口运行时跳过，避免重复启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:43"
+  },
+  {
+    "fact": "自启最终调用 AIForegroundService.ensureRunningForExternalHttp(appContext) 拉起前台服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:49"
+  },
+  {
+    "fact": "ExternalChatHttpNetworkInfo.getLocalIpv4Addresses 枚举处于 up 状态、非回环、非虚拟网卡的 IPv4 地址并排序去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpNetworkInfo.kt:9"
+  },
+  {
+    "fact": "ExternalChatHttpState 是数据类，字段为 isRunning（默认 false）、port（默认 null）、lastError（默认 null）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpState.kt:3"
+  },
+  {
+    "fact": "WebChatHttpBridge.handleApi 入口先调用 cleanupExpiredEntries() 清理过期附件与上传。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:109"
+  },
+  {
+    "fact": "handleApi 对 /api/web/assets 前缀请求先走 handleRegisteredAsset，该分支在 Bearer 校验之前。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:111"
+  },
+  {
+    "fact": "handleApi 除 assets 路由外的所有分支都先经过 requireBearerToken 校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:114"
+  },
+  {
+    "fact": "GET /api/web/bootstrap 路由到 handleBootstrap。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:121"
+  },
+  {
+    "fact": "GET /api/web/character-selector 路由到 handleCharacterSelector。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:124"
+  },
+  {
+    "fact": "POST /api/web/active-prompt 路由到 handleSetActivePrompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:127"
+  },
+  {
+    "fact": "GET/POST /api/web/model-selector 分别路由到 handleModelSelector/handleSelectModel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:130"
+  },
+  {
+    "fact": "GET/POST /api/web/memory-selector 分别路由到 handleMemorySelector/handleSelectMemoryProfile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:136"
+  },
+  {
+    "fact": "GET/PATCH /api/web/input-settings 分别路由到 handleInputSettings/handleUpdateInputSettings。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:142"
+  },
+  {
+    "fact": "POST /api/web/actions/manual-memory-update 与 /api/web/actions/manual-conversation-summary 分别触发手动记忆更新与手动会话总结。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:148"
+  },
+  {
+    "fact": "GET/POST /api/web/chats 分别路由到 handleListChats/handleCreateChat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:154"
+  },
+  {
+    "fact": "POST /api/web/chats/reorder 路由到 handleReorderChats。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:160"
+  },
+  {
+    "fact": "POST /api/web/chat-groups/rename 与 /api/web/chat-groups/delete 分别路由到 handleRenameGroup/handleDeleteGroup。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:163"
+  },
+  {
+    "fact": "PATCH/DELETE /api/web/chats/{id} 分别路由到 handleUpdateChat/handleDeleteChat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:169"
+  },
+  {
+    "fact": "POST /api/web/chats/{id}/select 路由到 handleSelectChat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:179"
+  },
+  {
+    "fact": "GET /api/web/chats/{id}/messages 路由到 handleMessages。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:185"
+  },
+  {
+    "fact": "GET /api/web/chats/{id}/message-locator 路由到 handleMessageLocator。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:192"
+  },
+  {
+    "fact": "POST /api/web/chats/{id}/messages/reveal 路由到 handleRevealMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:199"
+  },
+  {
+    "fact": "PATCH /api/web/chats/{id}/messages/favorite 路由到 handleToggleMessageFavorite。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:206"
+  },
+  {
+    "fact": "GET /api/web/chats/{id}/theme 路由到 handleTheme。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:213"
+  },
+  {
+    "fact": "POST /api/web/chats/{id}/messages/stream 路由到 handleStream（SSE 流式发送）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:219"
+  },
+  {
+    "fact": "POST /api/web/uploads 路由到 handleUpload。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:226"
+  },
+  {
+    "fact": "handleApi 未知端点返回 404 \"API endpoint not found\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:229"
+  },
+  {
+    "fact": "serveStatic 只允许 GET/HEAD，其他方法返回 405。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:241"
+  },
+  {
+    "fact": "normalizeStaticPath 拒绝包含反斜杠或 \"..\" 路径段的请求，返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2660"
+  },
+  {
+    "fact": "serveStatic 在 normalizeStaticPath 返回 null 时返回 403。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:250"
+  },
+  {
+    "fact": "静态资源从 app assets 的 web-chat/ 目录读取，缺省页面为 web-chat/index.html。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2900"
+  },
+  {
+    "fact": "无扩展名的静态路径回退到 web-chat/index.html（单页应用路由）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2669"
+  },
+  {
+    "fact": "handleBootstrap 返回 versionName、currentChatId、默认主题样式与 capabilities。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:269"
+  },
+  {
+    "fact": "WebCapabilities 六项能力（attachments、perChatTheme、structuredRender、streaming、renameChat、deleteChat）全部为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:287"
+  },
+  {
+    "fact": "handleSetActivePrompt 只接受 character_card 与 character_group 两种 type。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:320"
+  },
+  {
+    "fact": "ACTIVE_PROMPT_TYPE_CHARACTER_CARD 与 ACTIVE_PROMPT_TYPE_CHARACTER_GROUP 常量分别为 \"character_card\" 与 \"character_group\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2915"
+  },
+  {
+    "fact": "handleCreateChat 用 chatHistoryManager.createNewChat 建会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:471"
+  },
+  {
+    "fact": "setCurrent 为 true 时 handleCreateChat 调用 switchAppChatContext 切换应用聊天上下文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:480"
+  },
+  {
+    "fact": "handleUpdateChat 先校验 chatExists，不存在返回 404 \"Chat not found\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:548"
+  },
+  {
+    "fact": "handleUpdateChat 要求至少提供一个更新字段，否则返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:568"
+  },
+  {
+    "fact": "handleUpdateChat 拒绝同时绑定角色卡与角色组，返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:585"
+  },
+  {
+    "fact": "handleDeleteChat 对不存在的会话返回 404，对锁定的会话返回 409。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:704"
+  },
+  {
+    "fact": "handleDeleteChat 在删除前若该会话正在流式输出，先取消其消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:716"
+  },
+  {
+    "fact": "handleMessages 的 limit 参数限制在 1 到 MAX_MESSAGES_PAGE_SIZE（120）之间，缺省 24。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:751"
+  },
+  {
+    "fact": "handleMessages 拒绝同时提供 before_timestamp 与 after_timestamp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:758"
+  },
+  {
+    "fact": "handleMessages 用 limit+1 多取一条来判断 hasMoreBefore/hasMoreAfter。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:768"
+  },
+  {
+    "fact": "handleUpload 要求 Content-Type 为 multipart/form-data，否则返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:983"
+  },
+  {
+    "fact": "handleUpload 单文件上限为 MAX_UPLOAD_BYTES，即 25MB。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2907"
+  },
+  {
+    "fact": "handleUpload 用 sanitizeFilename 把文件名中的非法字符替换为下划线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1021"
+  },
+  {
+    "fact": "handleUpload 把文件存到 cacheDir/external_http_uploads，文件名为 \"<uuid>_<安全文件名>\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1028"
+  },
+  {
+    "fact": "handleUpload 成功返回 attachment_id、file_name、mime_type、file_size。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1046"
+  },
+  {
+    "fact": "handleStream 要求 message 或 attachment_ids 二者至少其一，否则返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1076"
+  },
+  {
+    "fact": "handleStream 校验 attachment_ids 全部有效，无效或过期返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1086"
+  },
+  {
+    "fact": "handleStream 先切换应用聊天上下文，失败则写 SSE error 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1100"
+  },
+  {
+    "fact": "handleStream 发送消息前先 core.clearAttachments() 再添加本次附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1119"
+  },
+  {
+    "fact": "handleStream 先写 start 与 user_message 两个 SSE 事件（含乐观用户消息）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1147"
+  },
+  {
+    "fact": "handleStream 等待响应流最多 STREAM_READY_TIMEOUT_MS（10 秒），超时写 error 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1160"
+  },
+  {
+    "fact": "handleStream 把每个非空 chunk 写成 assistant_delta 事件并累积全文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1197"
+  },
+  {
+    "fact": "handleStream 结束时按最终状态写 assistant_done 或 error 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1227"
+  },
+  {
+    "fact": "handleStream 捕获 CancellationException/IOException 时取消对应会话的消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1236"
+  },
+  {
+    "fact": "handleStream 的响应流关闭时取消 streamJob 并取消消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1262"
+  },
+  {
+    "fact": "SSE 事件名常量为 start、user_message、assistant_delta、assistant_done、error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2910"
+  },
+  {
+    "fact": "handleRegisteredAsset 只允许 GET/HEAD，其他方法返回 405。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1279"
+  },
+  {
+    "fact": "handleRegisteredAsset 按 assetId 查 assetsById，不存在返回 404。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1294"
+  },
+  {
+    "fact": "handleRegisteredAsset 成功时附加 Cache-Control: no-store 头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:1311"
+  },
+  {
+    "fact": "switchAppChatContext 在 3 秒（CHAT_SWITCH_TIMEOUT_MS）内等待 currentChatId 生效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2475"
+  },
+  {
+    "fact": "switchAppChatContext 切换后按会话绑定同步 active prompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2495"
+  },
+  {
+    "fact": "awaitFinalState 最多等待 10 秒（STREAM_FINAL_STATE_TIMEOUT_MS）等输入处理进入终态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2506"
+  },
+  {
+    "fact": "normalizeSender 把 ai/assistant 归一为 assistant，summary/system 保留，其余归为 user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2529"
+  },
+  {
+    "fact": "registerAsset 用 UUID 生成 assetId 并登记到 assetsById，返回 \"/api/web/assets/<id>\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2538"
+  },
+  {
+    "fact": "registerAsset 对同一 source+mime 组合做去重并刷新 createdAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2543"
+  },
+  {
+    "fact": "readRegisteredAsset 支持 file:///android_asset/、content://、file:// 与普通文件路径四种来源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2557"
+  },
+  {
+    "fact": "cleanupExpiredEntries 按 ASSET_TTL_MS（6 小时）清理附件，按 UPLOAD_TTL_MS（2 小时）清理上传并删除文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2611"
+  },
+  {
+    "fact": "WebChatHttpBridge 的 requireBearerToken 与 ExternalChatHttpServer 的同名函数逻辑一致：空配置 401，头解析后明文比较。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2623"
+  },
+  {
+    "fact": "parseJsonRequest 要求请求体非空且 JSON 可解析，否则返回 null 由调用方转 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2762"
+  },
+  {
+    "fact": "guessMimeType 优先用内置的 Web 扩展名映射（js/css/json/wasm/svg/html 等）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2842"
+  },
+  {
+    "fact": "mimeTypeForWebExtension 把 js/mjs/cjs 映射为 text/javascript，wasm 映射为 application/wasm。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatHttpBridge.kt:2860"
+  },
+  {
+    "fact": "WebChatModels.kt 全部用 kotlinx.serialization 的 @Serializable/@SerialName 定义 snake_case 的 JSON 协议。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:1"
+  },
+  {
+    "fact": "WebBootstrapResponse 包含 version_name、current_chat_id、默认主题样式与 capabilities。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:7"
+  },
+  {
+    "fact": "WebChatSummary 包含 id、title、updated_at、group 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:46"
+  },
+  {
+    "fact": "WebChatSummary 包含 character_card_name、character_group_id、character_group_name 角色卡绑定字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:52"
+  },
+  {
+    "fact": "WebChatSummary 包含 active_streaming、locked、pinned 状态字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:64"
+  },
+  {
+    "fact": "WebChatMessage 包含 id、sender、content_raw、timestamp 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:87"
+  },
+  {
+    "fact": "WebChatMessage 包含 role_name、provider、model_name 可选字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:95"
+  },
+  {
+    "fact": "WebChatMessagesPage 携带 messages 列表与 has_more_before/has_more_after。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:163"
+  },
+  {
+    "fact": "WebChatMessagesPage 携带 next_before_timestamp/next_after_timestamp 前后游标时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:170"
+  },
+  {
+    "fact": "WebChatStreamEvent 包含 event、chat_id、message 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:547"
+  },
+  {
+    "fact": "WebChatStreamEvent 的 delta、error 字段缺省为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:554"
+  },
+  {
+    "fact": "WebSendMessageRequest 的 attachment_ids 缺省为空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:711"
+  },
+  {
+    "fact": "WebSendMessageRequest 的 return_tool_status 缺省为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:713"
+  },
+  {
+    "fact": "WebThemeSnapshot 包含 source、theme_mode、use_system_theme 主题来源字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:200"
+  },
+  {
+    "fact": "WebThemeSnapshot 覆盖 primary_color/secondary_color 等调色板与背景字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:206"
+  },
+  {
+    "fact": "WebModelSelectorState 携带 current_config_id、current_model_index、current_model_name 等当前配置字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:496"
+  },
+  {
+    "fact": "WebModelSelectorState 携带 locked_by_character_card 角色卡锁定状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:501"
+  },
+  {
+    "fact": "WebModelSelectorState 携带 thinking_quality_mapping 思考质量映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:508"
+  },
+  {
+    "fact": "WebInputSettingsState 覆盖 enable_thinking_mode、enable_memory_auto_update 思考与记忆开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:649"
+  },
+  {
+    "fact": "WebInputSettingsState 覆盖 enable_tools、permission_level 工具与权限等级。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:661"
+  },
+  {
+    "fact": "WebInputSettingsState 覆盖 current_window_tokens、max_context_length_k 等上下文窗口字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/WebChatModels.kt:667"
+  },
+  {
+    "fact": "WebChatActionBridge.manuallyUpdateMemory 委托 core 的消息协调代理手动更新记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatActionBridge.kt:8"
+  },
+  {
+    "fact": "WebChatActionBridge.manuallySummarizeConversation 委托 core 的消息协调代理手动总结会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatActionBridge.kt:12"
+  },
+  {
+    "fact": "WebChatInputSettingsBridge.resolveState 聚合思考模式、上下文长度、权限等级等 14 项输入设置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatInputSettingsBridge.kt:17"
+  },
+  {
+    "fact": "WebChatInputSettingsBridge.update 只对与当前值不同的字段调用对应 toggle/update。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatInputSettingsBridge.kt:42"
+  },
+  {
+    "fact": "WebChatInputSettingsBridge.update 支持修改 permissionLevel，经 ToolPermissionSystem 保存主开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatInputSettingsBridge.kt:82"
+  },
+  {
+    "fact": "WebChatInputSettingsBridge.waitForUpdate 最多轮询 12 次（每次 30ms）等待设置生效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatInputSettingsBridge.kt:98"
+  },
+  {
+    "fact": "WebChatManagementBridge.updateChat 支持改标题、分组、锁定、置顶与角色卡绑定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatManagementBridge.kt:19"
+  },
+  {
+    "fact": "WebChatManagementBridge.updateChat 在更新当前会话的角色绑定后同步激活对应 prompt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatManagementBridge.kt:49"
+  },
+  {
+    "fact": "WebChatManagementBridge.reorderChats 在条目数对不上时返回 false，调用方转 404。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatManagementBridge.kt:61"
+  },
+  {
+    "fact": "WebChatMemorySelectorBridge.selectProfile 校验 profileId 非空且存在于记忆空间列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatMemorySelectorBridge.kt:33"
+  },
+  {
+    "fact": "WebChatMemorySelectorBridge.waitForSelection 最多轮询 12 次（每次 30ms）等待记忆空间切换生效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/bridge/WebChatMemorySelectorBridge.kt:48"
+  }
+]

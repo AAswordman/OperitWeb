@@ -1,0 +1,258 @@
+[
+  {
+    "fact": "`ThinkingQualityControl` 枚举三种控件类型：LEVELS（多档）、TOGGLE_ONLY（仅开关）、UNSUPPORTED（不支持）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:12"
+  },
+  {
+    "fact": "`ThinkingQualityWireValue` 密封接口描述选项在线上的取值形态：Text 文本、Number 数字、Omitted 不发送",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:14"
+  },
+  {
+    "fact": "`ThinkingQualityOption` 含 id、displayLabel、wireValue，actions 默认为空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:20"
+  },
+  {
+    "fact": "`ThinkingQualityJsonAction` 含 path、value，overwrite 默认为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:27"
+  },
+  {
+    "fact": "`ThinkingQualityMapping` 含 control、parameterLabel、options，reasoningRequired 默认为 false，disabledValue 默认为 null，另带 enabledActions/disabledActions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:33"
+  },
+  {
+    "fact": "`toggleOnly` 构造只有开关的映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:43"
+  },
+  {
+    "fact": "`unsupported()` 构造 control 为 UNSUPPORTED 的空映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:46"
+  },
+  {
+    "fact": "`optionFor(id)` 按 id 查找选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:49"
+  },
+  {
+    "fact": "`textValueFor`/`numberValueFor` 取选项 wireValue 的文本/数字",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:50"
+  },
+  {
+    "fact": "`ThinkingQualityMappingRegistry.resolve` 有 2/3/4 参数三个重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:60"
+  },
+  {
+    "fact": "四参 `resolve` 解析规则后取首个启用的全命中规则转映射，无命中返回 unsupported",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:65"
+  },
+  {
+    "fact": "规则优先级：JSON 数组顺序即用户可见优先级，首个 provider+model+endpoint 全命中的启用规则胜出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:72"
+  },
+  {
+    "fact": "`resolveForModel` 是 suspend 版 resolve",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:79"
+  },
+  {
+    "fact": "`validateConfigurations` 解析一次配置，用于校验写法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:88"
+  },
+  {
+    "fact": "`formatConfigurations` 把配置按 2 缩进美化输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:92"
+  },
+  {
+    "fact": "`parseRules` 只保留 enabled 为 true 的规则",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:101"
+  },
+  {
+    "fact": "`rulesArray` 兼容数组、含 rules 数组的对象、其他三种形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:112"
+  },
+  {
+    "fact": "空配置经 `normalizedJsonText` 视作 \"[]\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:124"
+  },
+  {
+    "fact": "`ThinkingConfigurationRule` 含 id、enabled、providerIds、matcher、control、parameterLabel、reasoningRequired、endpointSuffixes、disabledValue、enabled/disabledActions、options",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:128"
+  },
+  {
+    "fact": "`matches`：provider 去空白转大写后比对；providerIds 为空或忽略大小写命中其一即过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:142"
+  },
+  {
+    "fact": "`endpointMatches`：无后缀约束直接 true；endpoint 为空返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:149"
+  },
+  {
+    "fact": "endpoint 归一化：去空白、去 ? 查询串、去 # 片段、去尾斜杠、转小写；任一后缀 endsWith 命中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:161"
+  },
+  {
+    "fact": "`toMapping()` 把规则转为 ThinkingQualityMapping",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:168"
+  },
+  {
+    "fact": "`fromJson` 的 parameterLabel 取 \"parameterLabel\" 或 \"label\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:181"
+  },
+  {
+    "fact": "enabledActions 取 \"enable\"/\"enabledActions\"/\"on\" 三个键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:182"
+  },
+  {
+    "fact": "disabledActions 取 \"disable\"/\"disabledActions\"/\"off\" 三个键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:183"
+  },
+  {
+    "fact": "disabledValue 缺省时从 disabledActions 里 path 等于 parameterLabel 的首个 String 值回退",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:185"
+  },
+  {
+    "fact": "规则 id 默认为空串，enabled 默认为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:189"
+  },
+  {
+    "fact": "providerIds 合并 \"providers\" 与 \"providerTypeIds\" 两处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:191"
+  },
+  {
+    "fact": "matcher 优先从 \"match\" 对象解析，缺省用根对象",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:192"
+  },
+  {
+    "fact": "control 解析：\"levels\"→LEVELS，\"toggle_only\"/\"toggle\"→TOGGLE_ONLY，其他→UNSUPPORTED，缺省 \"unsupported\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:194"
+  },
+  {
+    "fact": "reasoningRequired 取 \"required\" 或 \"reasoningRequired\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:198"
+  },
+  {
+    "fact": "endpointSuffixes 聚合 match.endpointSuffix 与顶层 endpointSuffix",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:199"
+  },
+  {
+    "fact": "`ThinkingModelMatcher` 有 8 种模型匹配条件：整模型 prefix/contains/suffix/regex，首段相等，尾段 prefix/contains/regex",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:216"
+  },
+  {
+    "fact": "`matches(modelName)` 无任何条件直接 true；模型转小写后按 '/' 切段取首尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:222"
+  },
+  {
+    "fact": "整模型匹配：prefix/contains/suffix 比小写后；regex 忽略大小写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:230"
+  },
+  {
+    "fact": "首段精确相等；尾段 prefix/contains/regex",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:234"
+  },
+  {
+    "fact": "`ThinkingModelMatcher.fromJson` 每种条件合并 match 对象与根对象两处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:251"
+  },
+  {
+    "fact": "`ThinkingConfigurationApplier.apply` 的 Context 重载直接转调无 Context 重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:279"
+  },
+  {
+    "fact": "`apply(requestJson, ...)` 返回解析出的 ThinkingQualityMapping",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:312"
+  },
+  {
+    "fact": "control 为 UNSUPPORTED 时直接返回，不写任何参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:303"
+  },
+  {
+    "fact": "thinkingEnabled = enableThinking || reasoningRequired",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:305"
+  },
+  {
+    "fact": "按开关状态二选一执行 enabledActions 或 disabledActions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:306"
+  },
+  {
+    "fact": "LEVELS 且开启时 optionFor(optionId) 找不到抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:309"
+  },
+  {
+    "fact": "选中档位的 actions 逐个写入请求 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:311"
+  },
+  {
+    "fact": "`modelParameters` 先 apply 再把请求 JSON 转为 ModelParameter 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:328"
+  },
+  {
+    "fact": "`applyAction`：path 为空跳过；不覆盖且路径已存在跳过；否则 putJsonPath",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:339"
+  },
+  {
+    "fact": "`optionList`：id 缺省取 value 的字符串；id 为空跳过该选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:347"
+  },
+  {
+    "fact": "选项 label 缺省用 id；path 缺省用 parameterLabel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:355"
+  },
+  {
+    "fact": "wireValue：Number 转 toInt，String 包 Text，其他为 Omitted",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:358"
+  },
+  {
+    "fact": "path 非空且 value 非空时生成直接写入动作，overwrite 取选项的 \"overwrite\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:365"
+  },
+  {
+    "fact": "选项动作为直接动作拼接 \"actions\" 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:375"
+  },
+  {
+    "fact": "`actionList(vararg keys)` 聚合多个键的动作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:386"
+  },
+  {
+    "fact": "`actionsFromValue`：数组逐个转动作、对象转单个、其他为空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:394"
+  },
+  {
+    "fact": "`toAction`：path 为空返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:402"
+  },
+  {
+    "fact": "`stringList`：数组逐项 trim+小写去空；字符串包单个；其他为空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:417"
+  },
+  {
+    "fact": "`jsonValue`：缺键或显式 null 返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:425"
+  },
+  {
+    "fact": "`hasJsonPath` 按 '.' 逐段下钻判断存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:430"
+  },
+  {
+    "fact": "`putJsonPath` 中间段按需建 JSONObject；叶子值经 cloneJsonValue 写入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:450"
+  },
+  {
+    "fact": "`cloneJsonValue` 深拷贝 JSONObject/JSONArray；null 写 JSONObject.NULL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:458"
+  },
+  {
+    "fact": "`toModelParameters`：Gemini 协议（GOOGLE/GEMINI_GENERIC）的 thinkingConfig 归 GENERATION 类，其余归 OTHER",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:473"
+  },
+  {
+    "fact": "值类型映射：对象→OBJECT、布尔→BOOLEAN、整数→INT、小数→FLOAT、字符串→STRING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:481"
+  },
+  {
+    "fact": "`isGeminiProtocol`：GOOGLE 或 GEMINI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:495"
+  },
+  {
+    "fact": "五种 thinking*Parameter 构造器 id 均为 \"thinking-$apiName\"，isEnabled=true、isCustom=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:505"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "DebuggerFileSystemTools 大量 shell 拼接只用单引号包裹路径、未做单引号转义：`ls -la '$normalizedPath'`（listFiles）、`cat '$path'`（readFileFull）、`echo '$contentBase64' | base64 -d > '$path'`（writeFile）、`am start -d 'file://$path'`（openFile）等。路径来自 AITool 参数（LLM 可控），路径中若含单引号（如 /sdcard/a'b）即可逃逸引号注入任意 shell 命令。shQuote  helper 存在（第 71 行）但只在 deleteFile/zipFiles 等少数地方使用，转义策略全类不一致。",
+    "evidence": "val listResult = AndroidShellExecutor.executeShellCommand(\"ls -la '$normalizedPath'\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt",
+    "line": 121,
+    "severity": "high",
+    "title": "文件系统 shell 拼接未转义单引号，路径参数可注入命令"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "DebuggerSystemOperationTools 的 shell 拼接连单引号包裹都没有，参数直接嵌入命令：`pm install -r $apkPath`（installApp）、`pm uninstall [-k] $packageName`（uninstallApp）、`cmd package resolve-activity --brief $packageName` / `am start -n $packageName/$activity`（startApp）、`settings put $namespace $setting $value`（modifySystemSetting）。包名/路径/setting 值均来自 AITool 参数，含空格或 `;` 即可截断命令执行任意 shell。",
+    "evidence": "val command = \"pm install -r $apkPath\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt",
+    "line": 171,
+    "severity": "high",
+    "title": "系统操作 shell 命令参数未加引号直接拼接"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "RootUITools.clickElementWithUiautomator 用正则 `<node[^>]*?属性[^>]*?>` 在 dump XML 文本上做匹配（第 587 行）。XML 属性值含转义 `&gt;`、属性跨行、或节点嵌套时，正则可能误匹配/漏匹配；Debugger 版 clickElementWithUiautomator 已改用 XmlPullParser 逐节点解析（第 1142 行起），Root 版仍停留在正则方案，两层行为不一致。",
+    "evidence": "val nodeRegex = \"<node[^>]*?$attributes[^>]*?>\".toRegex()",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt",
+    "line": 587,
+    "severity": "medium",
+    "title": "Root 版元素定位仍用正则匹配 XML，Debugger 版已改用解析器"
+  },
+  {
+    "category": "design",
+    "confidence": "high",
+    "detail": "RootUITools 类文档声明 “operates without accessibility fallbacks”（第 25 行），tap/longPress/swipe/clickElement/setInputText/pressKey/getPageInfo 确实都直走 shell；但 captureScreenshotToFile/captureScreenshot/captureScreenshotBitmap 未被重写，仍继承 DebuggerUITools 实现——shell `screencap -p` 失败时会回退到无障碍截图（第 521 行），与类文档声明矛盾。",
+    "evidence": "AppLogger.w(TAG, \"captureScreenshotToFile: Shell screencap failed, falling back to accessibility\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt",
+    "line": 521,
+    "severity": "medium",
+    "title": "RootUITools 截图仍回退无障碍，与“无回退”声明不一致"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "moveFile 内对 destPath 做了两次相同的 validateAndroidPath 校验（第 1315 行 paramName 默认为 \"path\"，第 1321 行 paramName=\"destination\"），第二次纯属重复；错误信息也因此可能以 \"destination\" 而非 \"path\" 呈现，前后不一致。",
+    "evidence": "PathValidator.validateAndroidPath(destPath, tool.name)?.let { return it }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt",
+    "line": 1315,
+    "severity": "low",
+    "title": "moveFile 对目标路径重复校验两次"
+  },
+  {
+    "category": "robustness",
+    "confidence": "high",
+    "detail": "shareFile 把源文件经 shell cat 暂存到 getExternalFilesDir 下 share_tmp/<时间戳>_<原名>（第 2755-2761 行），分享完成后从未删除该暂存文件；每次分享都新增一个副本，长期累积占用外部存储。",
+    "evidence": "val stagedFile = File(stagingDir, \"${System.currentTimeMillis()}_$sourceName\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt",
+    "line": 2761,
+    "severity": "low",
+    "title": "shareFile 暂存文件从不清理，长期累积占空间"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "AccessibilityUITools.clickElement 用 `actualId.endsWith(resourceId)` 做后缀匹配（第 268 行）：resourceId=\"search\" 会同时命中 \".../search\" 与 \".../research\"，index 语义也因此不稳定，可能点错元素。Debugger/Root 版用 `==` 或 `:id/` 后缀精确匹配，更可靠。",
+    "evidence": "if(resourceId != null && (actualId == null || !actualId.endsWith(resourceId))){",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt",
+    "line": 268,
+    "severity": "low",
+    "title": "无障碍点击用宽松 endsWith 匹配 resourceId，易误命中"
+  },
+  {
+    "category": "robustness",
+    "confidence": "medium",
+    "detail": "PathValidator 只检查空白与前缀（Android 要求 / 开头，Linux 允许 / 或 ~），不做路径规范化：`/sdcard/../data`、`//data//data` 这类含 `..` 的路径可穿过校验。在 shell 拼接注入（见高危项）存在的前提下，缺少规范化会放大路径穿越的影响面。",
+    "evidence": "if (!path.startsWith(\"/\")) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt",
+    "line": 17,
+    "severity": "suggestion",
+    "title": "PathValidator 不做规范化，.. 可穿过校验"
+  }
+]

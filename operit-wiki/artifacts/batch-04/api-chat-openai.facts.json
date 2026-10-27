@@ -1,0 +1,482 @@
+[
+  {
+    "fact": "OpenAIProvider 是 open class，实现 AIService 接口，承载标准 OpenAI 接口及兼容该格式的其他供应商的聊天实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:103"
+  },
+  {
+    "fact": "构造函数参数 apiEndpoint: String 指定 API 端点地址",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:89"
+  },
+  {
+    "fact": "构造函数参数 apiKeyProvider: ApiKeyProvider 提供请求用的 API 密钥",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:90"
+  },
+  {
+    "fact": "构造函数参数 modelName: String 为公开 val，指定要调用的模型名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:91"
+  },
+  {
+    "fact": "构造函数参数 client: OkHttpClient 为底层 HTTP 客户端",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:92"
+  },
+  {
+    "fact": "构造函数参数 customHeaders: Map<String, String> 默认为空 map，用于附加自定义请求头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:93"
+  },
+  {
+    "fact": "构造函数参数 providerType: ApiProviderType 默认为 ApiProviderType.OPENAI",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:94"
+  },
+  {
+    "fact": "supportsVision/supportsAudio/supportsVideo/supportsFiles 四个 protected 布尔开关默认均为 false，分别控制图片/音频/视频/文件多模态输入能力",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:95"
+  },
+  {
+    "fact": "enableToolCall: Boolean 为公开 val，默认为 false，控制是否启用 OpenAI Tool Call 原生格式双向转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:99"
+  },
+  {
+    "fact": "includeUsageInStream: Boolean 默认为 false，控制流式请求是否要求服务端返回 usage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:100"
+  },
+  {
+    "fact": "thinkingConfigurations/thinkingOptionId 为 protected 空字符串，承载思考配置选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:101"
+  },
+  {
+    "fact": "JSON 为 application/json 的 MediaType 常量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:104"
+  },
+  {
+    "fact": "activeCall/activeResponse 保存当前活跃的 OkHttp Call 与 Response，供取消流式传输使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:108"
+  },
+  {
+    "fact": "isManuallyCancelled 为 @Volatile 布尔标志，标记用户是否手动取消",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:114"
+  },
+  {
+    "fact": "HttpStatusException 继承 IOException 并实现 HttpStatusCodeException，携带 HTTP 状态码",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:120"
+  },
+  {
+    "fact": "tokenCacheManager 为公开的 TokenCacheManager 实例，统一管理 token 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:127"
+  },
+  {
+    "fact": "inputTokenCount/outputTokenCount/cachedInputTokenCount 三个 override 属性直接取自 tokenCacheManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:132"
+  },
+  {
+    "fact": "providerModel 返回 providerType.name 与 modelName 拼接的 供应商:模型 标识符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:140"
+  },
+  {
+    "fact": "useResponsesApi 为 protected open val，默认为 false，子类可覆盖以切换到 Responses API",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:129"
+  },
+  {
+    "fact": "resetTokenCounts() 委托 tokenCacheManager.resetTokenCounts() 清零计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:205"
+  },
+  {
+    "fact": "applyUsageToCounters 经 OpenAIResponsesPayloadAdapter.parseUsageCounts 解析 usage 后更新 tokenCacheManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:147"
+  },
+  {
+    "fact": "buildOpenAiErrorDetail 把 error 对象的 message 与 type/code 拼成 message [type=.., code=..] 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:176"
+  },
+  {
+    "fact": "throwIfOpenAiErrorPayload 在响应 JSON 含 error 对象时抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:192"
+  },
+  {
+    "fact": "customizeFinalRequestObject 默认空实现，供子类在请求体定稿前做定制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:216"
+  },
+  {
+    "fact": "convertChatRequestToResponsesRequest 默认委托 OpenAIResponsesPayloadAdapter.toResponsesRequest 做 Chat→Responses 转换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:221"
+  },
+  {
+    "fact": "createResponsesReasoningMetadataTag 默认委托 OpenAIResponsesPayloadAdapter.createReasoningMetadataTag",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:226"
+  },
+  {
+    "fact": "createResponsesMessageMetadataTag 默认返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:229"
+  },
+  {
+    "fact": "parseResponsesNonStreamingResponse 默认委托 OpenAIResponsesPayloadAdapter.parseNonStreamingResponse",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:234"
+  },
+  {
+    "fact": "applyAuthenticationHeaders 在 apiKey 非空时添加 Authorization: Bearer <key> 请求头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:235"
+  },
+  {
+    "fact": "cancelStreaming 置 isManuallyCancelled=true，关闭 activeResponse，对未取消的 activeCall 调用 cancel()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:244"
+  },
+  {
+    "fact": "getModelsList 委托 ModelListFetcher.getModelsList，传入 apiKey、apiEndpoint 与 providerType",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:256"
+  },
+  {
+    "fact": "testConnection 用 SYSTEM 提示词 You are a helpful assistant. 与 USER 消息 Hi 发起一次不重试的流式请求做连通性探测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:281"
+  },
+  {
+    "fact": "testConnection 中 CancellationException 原样传播，不包装成 Result.failure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:288"
+  },
+  {
+    "fact": "logLargeString 按 3000 字符分块打印长日志（Android 单条日志上限约 4000 字符）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:301"
+  },
+  {
+    "fact": "sanitizeImageDataForLogging 把 data:xxx;base64, 长字符串替换为占位符，避免图片 base64 进入日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:330"
+  },
+  {
+    "fact": "getOutputImagesDir 指向外部存储 Downloads 目录下的 Operit/output images 子目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:372"
+  },
+  {
+    "fact": "fileExtensionForImageMime 把 image/png/jpeg/webp/gif 映射为 png/jpg/webp/gif 扩展名，未知类型默认 png",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:378"
+  },
+  {
+    "fact": "writeOutputImage 以 <prefix>_<currentTimeMillis>.<ext> 为文件名落盘，失败返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:405"
+  },
+  {
+    "fact": "downloadBytes 用 GET 下载字节数组，非成功响应或异常时返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:415"
+  },
+  {
+    "fact": "emitImageMarkdown 以 ![alt](uri) 的 markdown 形式向流中 emit 图片，空 alt 默认为 image",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:428"
+  },
+  {
+    "fact": "tryHandleOpenAiImageResponse 处理 data 数组的 b64_json/url",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:459"
+  },
+  {
+    "fact": "tryHandleOpenAiImageResponse 处理 image_generation. 开头事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:492"
+  },
+  {
+    "fact": "parseResponse 直接返回原文，不再处理 <think> 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:573"
+  },
+  {
+    "fact": "createRequestBody 先经 createRequestBodyInternal 拼 JSON，再经 ThinkingConfigurationApplier.apply 应用思考配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:587"
+  },
+  {
+    "fact": "createRequestBodyInternal 在请求体中写入 model 与 stream 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:609"
+  },
+  {
+    "fact": "stream 且 includeUsageInStream 为 true 时，请求体添加 stream_options.include_usage=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:621"
+  },
+  {
+    "fact": "启用的 ModelParameter 按 INT/FLOAT/STRING/BOOLEAN/OBJECT 类型写入请求体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:625"
+  },
+  {
+    "fact": "useResponsesApi 模式下参数名经 OpenAIResponsesPayloadAdapter.mapParameterNameForResponses 映射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:628"
+  },
+  {
+    "fact": "OBJECT 类型参数解析失败时记警告日志并按原始字符串传递，避免崩溃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:648"
+  },
+  {
+    "fact": "effectiveEnableToolCall 要求 enableToolCall 为 true 且 availableTools 非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:671"
+  },
+  {
+    "fact": "启用 Tool Call 时请求体添加 tools 数组与 tool_choice: auto",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:678"
+  },
+  {
+    "fact": "打日志前 tools 字段被替换为 [N tools omitted for brevity] 占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:704"
+  },
+  {
+    "fact": "prepareHistoryForProvider 经 StructuredToolCallBridge.compileHistoryForProvider 把内部历史编译为供应商格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:765"
+  },
+  {
+    "fact": "calculateAndStoreInputTokens 经 tokenCacheManager.calculateInputTokens 计算输入 token（含工具定义）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:783"
+  },
+  {
+    "fact": "buildContentField 对 user/summary 角色允许注入多媒体内容，返回纯文本或 content 数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:893"
+  },
+  {
+    "fact": "不支持的多模态链接会被移除并记警告日志；全部移除后按类型返回省略提示或 [Empty]",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:940"
+  },
+  {
+    "fact": "音频链接映射为 input_audio 类型，视频映射为 video_url，文件映射为 input_file（含 filename 与 file_data）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:958"
+  },
+  {
+    "fact": "图片链接映射为 image_url，url 为 data:<mime>;base64,<data> 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:985"
+  },
+  {
+    "fact": "buildMessagesAndCountTokens 返回 Pair(消息 JSONArray, 输入 token 计数)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1017"
+  },
+  {
+    "fact": "useToolCall 启用时，SYSTEM/USER/SUMMARY 边界会先把未匹配的 tool_calls 按 unmatched 处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1119"
+  },
+  {
+    "fact": "ASSISTANT 历史中的 XML 工具调用经 parseXmlToolCalls 解析并包装后排队，合并为一条带 tool_calls 的 assistant 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1140"
+  },
+  {
+    "fact": "TOOL_RESULT 历史按名称与未完成的 tool_call 配对，生成 role=tool 且带 tool_call_id 的消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1221"
+  },
+  {
+    "fact": "未匹配完的 tool_call 在历史末尾统一按 unmatchedToolResultContent 生成 tool 结果占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1295"
+  },
+  {
+    "fact": "不启用 Tool Call 时历史按 providerRoleForTurn 映射角色后原样发送，空 assistant 消息填充为 [Empty]",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1268"
+  },
+  {
+    "fact": "calculateInputTokens 用 TokenCacheManager 计算输入 token，updateState=false 不污染状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1300"
+  },
+  {
+    "fact": "buildToolDefinitions 把 ToolPrompt 转为 {type:function, function:{name, description, parameters}} 数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1325"
+  },
+  {
+    "fact": "参数 schema 为 {type:object, properties:{...}, required:[...]}；required 为空时仍保持数组类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1341"
+  },
+  {
+    "fact": "convertToolCallsToXml 把 tool_calls 转回 XML，参数值做 XML 转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1428"
+  },
+  {
+    "fact": "convertToolCallsToXml 流式增量中无 name 的 delta 被跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1397"
+  },
+  {
+    "fact": "XmlEscaper 对 & < > \" ' 五个字符做转义与反转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1442"
+  },
+  {
+    "fact": "sanitizeToolCallId 只保留字母数字并把长度归一到 9 个字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1459"
+  },
+  {
+    "fact": "stableIdHashPart 用 hashCode 的 36 进制表示生成确定性 id 片段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1479"
+  },
+  {
+    "fact": "ToolCallState 为每个 tool index 维护累积器、解析器、标签名与 fedLength 游标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1498"
+  },
+  {
+    "fact": "StreamEmitter.emitContent 只在内容非空且非 null 字符串时 emit，并累加输出 token 估计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1532"
+  },
+  {
+    "fact": "StreamEmitter 支持 savepoint：记录已接收内容长度，供重试回滚定位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1574"
+  },
+  {
+    "fact": "StreamEmitter 支持 rollback：重试时把已接收内容原子回滚到请求起点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1581"
+  },
+  {
+    "fact": "createRequest 经 EndpointCompleter.completeEndpoint(apiEndpoint, providerType) 补全端点 URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1823"
+  },
+  {
+    "fact": "请求打上 LlmRequestTraceContext tag，携带 requestId/provider/model/stream/attempt",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1824"
+  },
+  {
+    "fact": "customHeaders 逐个 addHeader 加入请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1843"
+  },
+  {
+    "fact": "请求头日志经 HttpLogSanitizer.headersForLog 脱敏后打印",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1851"
+  },
+  {
+    "fact": "processToolCallChunk 按 index 累积 tool_calls 增量，name 先到则 emit XML 起始标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1922"
+  },
+  {
+    "fact": "mergeCanonicalArgs 默认把 incoming 增量追加；若 incoming 是 existing 的前缀扩展快照则直接替换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1967"
+  },
+  {
+    "fact": "feedParserFromCanonical 按 fedLength 游标只把新增参数片段喂给 StreamingJsonXmlConverter",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1982"
+  },
+  {
+    "fact": "processToolCallsDelta 跳过 index<0 的 delta；检测到工具切换时先关闭前一个工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2023"
+  },
+  {
+    "fact": "closeToolCallIfOpen 在 flush 解析器后 emit 闭合标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2050"
+  },
+  {
+    "fact": "解析器未闭合但累计 arguments 是合法 JSON 时，强制补 </param> 与闭合标签收尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2060"
+  },
+  {
+    "fact": "wrapPackageToolCallsWithProxy 把工具名含冒号的调用包装为 package_proxy（tool_name+params）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1682"
+  },
+  {
+    "fact": "parseXmlToolCalls 用 ChatMarkupRegex.toolCallPattern 解析 XML，参数值做 XML 反转义，生成确定性 call id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1729"
+  },
+  {
+    "fact": "parseXmlToolResults 解析 <tool_result> 并保留 name 属性，用于把结果配回同名 tool_call",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1780"
+  },
+  {
+    "fact": "processResponsesStreamingEvent 处理 Responses 协议的 output_text/reasoning/function_call_arguments 等事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2602"
+  },
+  {
+    "fact": "response.output_text.delta 即正文通道，按事件到达顺序直接输出不等待 item 结束",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2602"
+  },
+  {
+    "fact": "response.function_call_arguments.delta 累积参数；output_item 阶段只更新 name/id，避免快照与增量混拼",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2763"
+  },
+  {
+    "fact": "response.completed/response.incomplete 时关闭全部工具调用并应用 usage 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2801"
+  },
+  {
+    "fact": "response.failed/response.error 抛 IOException 并携带服务端错误信息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2822"
+  },
+  {
+    "fact": "processContentDelta 把思考内容包在 <think> 标签内输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2893"
+  },
+  {
+    "fact": "正文一旦开始输出，后续到达的推理内容全部忽略（硬切策略）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2908"
+  },
+  {
+    "fact": "handleFinishReason 对空/null/none 的 finish_reason 直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:2852"
+  },
+  {
+    "fact": "processResponseChunk 无 choices 时只应用 usage 计数；有 choices 时分 delta（流式）与 message（非流式）两分支处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3043"
+  },
+  {
+    "fact": "delta/message 中的 reasoning_content 兼容 reasoning 字段名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3074"
+  },
+  {
+    "fact": "processStreamingResponse 逐行读取，只处理 data: 开头行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3121"
+  },
+  {
+    "fact": "收到 [DONE] 时 flush 图片缓冲、关闭全部工具调用、关闭思考标签并标记流完成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3127"
+  },
+  {
+    "fact": "流结束时未确认完成则抛网络中断 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3173"
+  },
+  {
+    "fact": "sendMessage 开始时先重置输出 token 计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3227"
+  },
+  {
+    "fact": "重试上限取 LlmRetryPolicy.MAX_RETRY_ATTEMPTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3238"
+  },
+  {
+    "fact": "HTTP 4xx 抛保留状态码的 HttpStatusException，其余失败抛普通 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3319"
+  },
+  {
+    "fact": "网络请求与响应读取在 Dispatchers.IO 上执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3300"
+  },
+  {
+    "fact": "非流式响应取 choices[0].message；tool_calls 需 enableToolCall 才转 XML",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3407"
+  },
+  {
+    "fact": "非流式 Responses 响应经 parseResponsesNonStreamingResponse 解析后分块 emit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3355"
+  },
+  {
+    "fact": "成功后调用 onUsageFinalized(attemptNumber) 做用量收尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3464"
+  },
+  {
+    "fact": "重试前通过 emitter.emitRollback(requestSavepointId) 回滚本轮已接收内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3479"
+  },
+  {
+    "fact": "sendMessage 返回 responseStream.withEventChannel(eventChannel)，附带文本流事件通道",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:3507"
+  },
+  {
+    "fact": "handleRetryableError 中 UserCancellationException 与 CancellationException 直接抛出不重试",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1650"
+  },
+  {
+    "fact": "enableRetry=false 时可重试错误直接抛 IOException，不进入重试循环",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1657"
+  },
+  {
+    "fact": "重试间隔取 LlmRetryPolicy.nextDelayMs(newRetryCount) 的退避延迟",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1672"
+  },
+  {
+    "fact": "重试前检查 isManuallyCancelled，用户取消则抛 UserCancellationException 停止重试",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:1621"
+  },
+  {
+    "fact": "appendReadableImageMessageIfNeeded 把历史中的图片链接补成可读的 user 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:829"
+  },
+  {
+    "fact": "appendReadableImageMessageIfNeeded 在 supportsVision 为 false 时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:834"
+  },
+  {
+    "fact": "canCarryUserRichContent 仅 user 与 summary 角色可携带多媒体内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:812"
+  },
+  {
+    "fact": "Responses 模式下 role=tool 的消息可携带结构化图片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:817"
+  },
+  {
+    "fact": "generatedToolCallId 按 tool_call:<ordinal> 生成短 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:771"
+  }
+]

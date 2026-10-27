@@ -1,0 +1,164 @@
+[
+  {
+    "confidence": "high",
+    "description": "WebView 的 onPermissionRequest 对页面请求的全部权限直接 grant(request.resources)，包括摄像头、麦克风等敏感权限，没有任何用户确认环节。工具包页面里的任意网页一句 request.getUserMedia 就能拿到音视频权限。",
+    "evidence": "                    override fun onPermissionRequest(request: PermissionRequest?) {\n                        request?.grant(request.resources)\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2104,
+    "severity": "high",
+    "title": "WebView 自动授予页面请求的全部权限（含摄像头/麦克风），无用户确认"
+  },
+  {
+    "confidence": "high",
+    "description": "allowFileAccessFromFileURLs 与 allowUniversalAccessFromFileURLs 默认都是 true。file:// 页面里的 JS 可以用 XHR/fetch 读取任意本地文件并发往任意源，是经典的 WebView 文件域攻击面。",
+    "evidence": "            allowFileAccessFromFileURLs = props.bool(\"allowFileAccessFromFileURLs\", true)\n            allowUniversalAccessFromFileURLs =\n                props.bool(\"allowUniversalAccessFromFileURLs\", true)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2261,
+    "severity": "high",
+    "title": "file:// 页面默认允许跨域读本地文件（allowUniversalAccessFromFileURLs=true）"
+  },
+  {
+    "confidence": "high",
+    "description": "onGeolocationPermissionsShowPrompt 直接 callback.invoke(origin, true, false)：自动授予定位权限且不记住选择。页面 JS 拿地理位置不需要用户点任何确认。",
+    "evidence": "                    override fun onGeolocationPermissionsShowPrompt(\n                        origin: String?,\n                        callback: GeolocationPermissions.Callback?\n                    ) {\n                        callback?.invoke(origin.orEmpty(), true, false)\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2108,
+    "severity": "high",
+    "title": "定位权限被静默自动授予（且不记住选择）"
+  },
+  {
+    "confidence": "high",
+    "description": "mixedContentMode 默认分支返回 MIXED_CONTENT_ALWAYS_ALLOW：HTTPS 页面里的 HTTP 子资源默认被允许加载，存在中间人篡改子资源的风险。",
+    "evidence": "    return when (normalizeToken(string(key))) {\n        \"neverallow\" -> WebSettings.MIXED_CONTENT_NEVER_ALLOW\n        \"compatibilitymode\" -> WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE\n        else -> WebSettings.MIXED_CONTENT_ALWAYS_ALLOW\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt",
+    "line": 4539,
+    "severity": "warn",
+    "title": "WebView 混合内容默认 ALWAYS_ALLOW"
+  },
+  {
+    "confidence": "high",
+    "description": "onJsAlert/onJsConfirm 直接 result?.confirm()，onJsPrompt 用 confirm(defaultValue)：页面弹出的 alert/confirm/prompt 全部被静默确认，用户永远看不到。依赖用户点“取消”的页面逻辑会走错分支。",
+    "evidence": "                    override fun onJsAlert(\n                        view: WebView?,\n                        url: String?,\n                        message: String?,\n                        result: android.webkit.JsResult?\n                    ): Boolean {\n                        result?.confirm()\n                        return true\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2115,
+    "severity": "warn",
+    "title": "页面 JS 弹窗（alert/confirm/prompt）全部被静默自动确认"
+  },
+  {
+    "confidence": "high",
+    "description": "shouldInterceptRequest 在 WebView 的资源线程里用 actionLane.runBlocking(WEBVIEW_RESOURCE_TIMEOUT_MS) 阻塞调用 JS 动作，最长卡 3 秒；期间该线程所有资源加载都被堵住。且 executeActionBlocking 直接在 lane 线程调 jsEngine.executeComposeDslAction，隐含了 JsEngine 线程安全的假设。",
+    "evidence": "                                actionLane.runBlocking(WEBVIEW_RESOURCE_TIMEOUT_MS) {\n                                    currentHostContext.executeActionBlocking(\n                                        actionId = actionId,\n                                        payload = buildComposeDslWebViewRequestPayload(actualRequest)\n                                    )\n                                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 1764,
+    "severity": "warn",
+    "title": "资源拦截在 WebView 资源线程上阻塞调 JS（3s），并假设 JsEngine 线程安全"
+  },
+  {
+    "confidence": "high",
+    "description": "renderSnackbarHostNode 的实现只是一个 Spacer 占位，SnackbarHost 节点不会显示任何悬浮提示。DSL 作者按 Material3 语义写 SnackbarHost 会得到一块空白，行为与预期严重不符。",
+    "evidence": "internal fun renderSnackbarHostNode(\n    node: ToolPkgComposeDslNode,\n    onAction: (String, Any?) -> Unit,\n    nodePath: String,\n    modifierResolver: ComposeDslModifierResolver\n) {\n    Spacer(modifier = applyScopedCommonModifier(Modifier, node.props, modifierResolver))\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt",
+    "line": 983,
+    "severity": "warn",
+    "title": "SnackbarHost 渲染为空 Spacer 占位，能力缺失"
+  },
+  {
+    "confidence": "high",
+    "description": "applyProxyModifierOps 对无法识别的 modifier op 走 else -> modifier 静默丢弃。DSL 里把 token 写错（如大小写/拼写）时没有任何报错或日志，调试困难。",
+    "evidence": "                    dispatchComposeDslModifierAction(\n                        actionId = actionId,\n                        payload = payload,\n                        onAction = onAction\n                    )\n                    modifier\n                }\n                else -> modifier",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt",
+    "line": 3597,
+    "severity": "warn",
+    "title": "未知的 modifier op 被静默忽略，写错 token 无反馈"
+  },
+  {
+    "confidence": "high",
+    "description": "fetchComposeDslRewrittenResource 把改写后的响应体一次性读进内存（InputStream.readBytes）。若 JS 动作把大文件（如视频）rewrite 到 WebView，会直接 OOM。",
+    "evidence": "ToolPkgComposeDslWebView.kt:1244-1253:\n        val bodyBytes =\n            (\n                try {\n                    connection.inputStream\n                } catch (_: Throwable) {\n                    connection.errorStream\n                ...\n            )\n                .use(InputStream::readBytes)\n响应体被一次性读入内存，大文件有 OOM 风险。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 1244,
+    "severity": "warn",
+    "title": "改写资源响应体一次性读入内存，大文件有 OOM 风险"
+  },
+  {
+    "confidence": "medium",
+    "description": "聚焦且有未回显击键时，若 JS 推送了与 lastSyncedText 不同的外部文本，reconcile 会清空回声队列并返回 EXTERNAL_CHANGE，输入框文本被外部状态覆盖，用户正在输入的内容会被顶掉、光标跳动。",
+    "evidence": "        pendingEchoTexts.clear()\n        lastSyncedText = externalText\n        return ExternalUpdate.EXTERNAL_CHANGE",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputSync.kt",
+    "line": 58,
+    "severity": "suggestion",
+    "title": "外部状态推送清空回声队列，覆盖用户正在输入的文本"
+  },
+  {
+    "confidence": "medium",
+    "description": "autoScrollToEnd 开启时 LaunchedEffect 的 key 包含内容签名，内容每次变化都会重新执行 scrollToItem。聊天场景合适，但这意味着开启后用户无法手动停留在历史位置看旧消息，一有新内容就被拽到底。",
+    "evidence": "    LaunchedEffect(nodePath, autoScrollToEnd, reverseLayout, autoScrollSignature) {\n        if (autoScrollToEnd && contentNodes.isNotEmpty()) {\n            listState.scrollToItem(if (reverseLayout) 0 else contentNodes.lastIndex)\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslGeneratedRenderers.kt",
+    "line": 383,
+    "severity": "suggestion",
+    "title": "autoScrollToEnd 开启后任何内容变化都会强制滚到底，无法停看历史"
+  },
+  {
+    "confidence": "medium",
+    "description": "onCreateWindow 把新窗口的 transport.webView 直接设为当前 WebView 再 sendToTarget，window.open 的弹窗会导航当前页面，没有真正的新窗口/标签概念。",
+    "evidence": "ToolPkgComposeDslWebView.kt:2019-2029:\n                    override fun onCreateWindow(\n                        view: WebView?,\n                        ...\n                    ): Boolean {\n                        val message = resultMsg ?: return false\n                        val transport = message.obj as? WebView.WebViewTransport ?: return false\n                        transport.webView = view\n                        message.sendToTarget()\n                        return true\nwindow.open 的新窗口被复用为当前 WebView，无独立窗口概念。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2019,
+    "severity": "suggestion",
+    "title": "window.open 的新窗口被复用为当前 WebView，无独立窗口概念"
+  },
+  {
+    "confidence": "medium",
+    "description": "javaScriptEnabled 与 acceptThirdPartyCookies 默认 true。工具包页面默认处于“JS 全开+第三方 Cookie 全开”状态，跟踪面较大；好在工具作者可经 props 逐项关闭。",
+    "evidence": "            javaScriptEnabled = props.bool(\"javaScriptEnabled\", true)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2253,
+    "severity": "suggestion",
+    "title": "JS 与第三方 Cookie 默认全开，工具页跟踪面较大"
+  },
+  {
+    "confidence": "medium",
+    "description": "mediaPlaybackRequiresUserGesture 默认 false，页面可以自动播放带声音的媒体。工具包内嵌页场景下存在意外外放风险。",
+    "evidence": "            mediaPlaybackRequiresUserGesture =\n                props.bool(\"mediaPlaybackRequiresUserGesture\", false)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 2265,
+    "severity": "suggestion",
+    "title": "媒体默认允许自动播放（无需用户手势）"
+  },
+  {
+    "confidence": "medium",
+    "description": "consumePendingRewrite 用 trim 后的 URL 字符串精确相等判断。WebView 会对 URL 做规范化（如补尾部斜杠），导致消费失败、重写后的导航被拦截器二次处理，JS 动作被重复调用。",
+    "evidence": "ToolPkgComposeDslWebView.kt:302-313:\n    fun consumePendingRewrite(\n        executionContextKey: String,\n        controllerKey: String,\n        url: String\n    ): Boolean {\n        val binding = bindings[executionContextKey]?.get(controllerKey) ?: return false\n        val pendingUrl = binding.pendingRewriteUrl?.trim().orEmpty()\n        if (pendingUrl.isBlank() || pendingUrl != url.trim()) {\n            return false\n        }\n        binding.pendingRewriteUrl = null\n        return true\n重写 URL 用字符串精确匹配消费，规范化差异存在重复拦截风险。",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 308,
+    "severity": "suggestion",
+    "title": "重写 URL 用字符串精确匹配消费，规范化差异存在重复拦截风险"
+  },
+  {
+    "confidence": "medium",
+    "description": "respond 决策支持 filePath 指定任意本地文件作为响应体。页面（工具作者 JS）可借此把应用私有文件内容注入页面上下文，工具包不可信时存在文件读取面。",
+    "evidence": "            spec.filePath != null -> {\n                val file = File(spec.filePath)\n                if (!file.exists() || !file.isFile) {\n                    return null\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslWebView.kt",
+    "line": 1183,
+    "severity": "suggestion",
+    "title": "respond 决策可用 filePath 读取任意本地文件注入页面"
+  },
+  {
+    "confidence": "medium",
+    "description": "canvas 画刷只支持 verticalgradient，横向/径向渐变需求无法表达；且画刷类型缺失时直接抛 IllegalArgumentException 中断整棵树渲染。",
+    "evidence": "            ?: throw IllegalArgumentException(\"canvas brush type is required\")\n        require(type == \"verticalgradient\") { \"unsupported canvas brush type: $type\" }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslScreen.kt",
+    "line": 2688,
+    "severity": "suggestion",
+    "title": "canvas 画刷仅支持 verticalgradient，不支持的类型直接抛错"
+  },
+  {
+    "confidence": "medium",
+    "description": "dumpCurrentSnapshot 每次转储都 deleteRecursively 清空目录；若外部存储不可用则 requireNotNull 直接抛错。并发/重复转储时存在竞态。",
+    "evidence": "        val outputDir =\n            File(externalFilesDir, DEBUG_DIR).apply {\n                deleteRecursively()\n                mkdirs()\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/composedsl/ToolPkgComposeDslDebugSnapshotStore.kt",
+    "line": 97,
+    "severity": "suggestion",
+    "title": "调试转储每次清空目录，外部存储不可用时直接抛错"
+  }
+]

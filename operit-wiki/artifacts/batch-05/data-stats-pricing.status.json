@@ -1,0 +1,12 @@
+{
+  "id": "data-stats-pricing",
+  "title": "Token 用量统计与模型定价数据",
+  "issue": 68,
+  "status": "approved",
+  "source_repo": "operit",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "critic": "独立 critic 初验打回后修错，独立复验通过（data-stats-pricing.critic.md）",
+  "refs_valid": "215/215 引用行号真实存在（2026-10-01 partial 扫尾增补，lint 硬失败 0/警告 0）；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "approved_by_comment_id": 5926576151,
+  "updated": "2026-10-02"
+}

@@ -1,0 +1,50 @@
+[
+  {
+    "fact": "OllamaProvider 是为 Ollama 设计的 LLM 供应商类，类注释说明它使用 Ollama 暴露的 OpenAI 兼容接口（例如 /v1/chat/completions）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt:8"
+  },
+  {
+    "fact": "OllamaProvider 直接继承 OpenAIProvider，12 个构造参数逐一透传给父类，类体无新增成员",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt:23"
+  },
+  {
+    "fact": "providerType 构造参数的默认值为 ApiProviderType.OLLAMA",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt:16"
+  },
+  {
+    "fact": "前 6 个构造参数为 apiEndpoint、apiKeyProvider、modelName、client、customHeaders（默认空 Map）、providerType",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt:13"
+  },
+  {
+    "fact": "后 6 个构造参数为 supportsVision、supportsAudio、supportsVideo、enableToolCall、thinkingConfigurations、thinkingOptionId，默认值均为 false 或空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OllamaProvider.kt:19"
+  },
+  {
+    "fact": "AIServiceFactory 在 ApiProviderType.OLLAMA 分支构造 OllamaProvider，注释写明“ Ollama使用OpenAI兼容格式”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:450"
+  },
+  {
+    "fact": "工厂调用时显式传入 providerType、apiEndpoint、apiKeyProvider、modelName、httpClient 等参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:454"
+  },
+  {
+    "fact": "Ollama 的默认模型名为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:237"
+  },
+  {
+    "fact": "Ollama 的默认 endpoint 为 http://localhost:11434/v1/chat/completions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:238"
+  },
+  {
+    "fact": "Ollama 默认不需要 API Key（requiresApiKey = false）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:239"
+  },
+  {
+    "fact": "ApiProviderType.OLLAMA 的枚举注释为“ Ollama 本地/私有部署服务（OpenAI兼容）”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:38"
+  },
+  {
+    "fact": "继承自 OpenAIProvider 的 providerModel 属性返回“供应商名:模型名”格式的供应商标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:141"
+  }
+]

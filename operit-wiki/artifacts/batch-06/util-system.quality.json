@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "medium",
+    "description": "GlobalExceptionHandler 在 startActivity 拉起 CrashReportActivity 后紧接着 exitProcess(1)。startActivity 只是把 intent 入队给 AMS，进程随即被杀，上报页可能来不及创建；且未链式调用系统默认 handler，系统崩溃弹窗与 Play 崩溃上报都不会触发。",
+    "evidence": "        val intent =\n                Intent(context, CrashReportActivity::class.java).apply {\n                    putExtra(CrashReportActivity.EXTRA_STACK_TRACE, stackTrace)\n                    addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)\n                }\n        context.startActivity(intent)\n\n        // 终止当前进程\n        exitProcess(1)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/GlobalExceptionHandler.kt",
+    "line": 15,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "PortProcessKiller.killListeners 对占用端口的任意 PID 直接 kill -9。若端口被非本应用进程占用（如用户自己的服务），会被误杀；且 kill 失败被 `|| true` 吞掉，调用方无从得知。",
+    "evidence": "                kill -9 \"${'$'}pid\" 2>/dev/null || true",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/PortProcessKiller.kt",
+    "line": 24,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "LocaleUtils.setAppLanguage 用 runBlocking(Dispatchers.IO) 在调用线程同步等待语言偏好落盘。若调用方在主线程调用，会阻塞 UI；应改为 suspend 或回调。",
+    "evidence": "            runBlocking(Dispatchers.IO) {\n                manager.saveAppLanguage(languageCode)\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/LocaleUtils.kt",
+    "line": 174,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "AppLogger 文件写入抛 IOException 时被静默吞掉。磁盘满或权限问题导致日志丢失时，外界完全无从察觉，故障排查会缺关键日志。",
+    "evidence": "        } catch (e: IOException) {\n            // Avoid recursive logging here; swallow to prevent crashes\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt",
+    "line": 335,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "GithubReleaseUtil 内置 34 个第三方镜像站用于下载 APK，本文件内无任何签名/哈希校验逻辑。若某个镜像被投毒，用户会安装到被篡改的包；建议下载后校验签名或哈希（若校验在别处实现，应在此处注释说明）。",
+    "evidence": "            \"Ghfast\" to \"https://ghfast.top/\",",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/GithubReleaseUtil.kt",
+    "line": 40,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "AnrMonitor 存在 4 个未使用的 import（android.os.Debug:4、androidx.lifecycle.Lifecycle:9、androidx.lifecycle.LifecycleOwner:10、java.lang.reflect.Field:21），增加编译警告噪音，应清理。",
+    "evidence": "import androidx.lifecycle.Lifecycle\nimport androidx.lifecycle.LifecycleOwner",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt",
+    "line": 9,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "AppLogger 类 KDoc 写着 API 模仿 [com.ai.assistance.operit.util.AppLogger]，即链接指向自己，是复制粘贴残留，应为 android.util.Log。",
+    "evidence": " * App-wide logger with an API closely mirroring [com.ai.assistance.operit.util.AppLogger].",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/AppLogger.kt",
+    "line": 16,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "low",
+    "description": "AnrMonitor 更新 maxBlockDuration 用的是 check-then-set（先 get 比较再 set），非原子操作。当前调用路径是单线程监控循环，实际风险低；若将来改为多线程采样会丢数据，建议用 updateAndGet。",
+    "evidence": "                if (timeSinceLastResponse > maxBlockDuration.get()) {\n                    maxBlockDuration.set(timeSinceLastResponse)\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/AnrMonitor.kt",
+    "line": 214,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "CrashRecoveryState 用同步 commit() 写 SharedPreferences。在崩溃处理路径调用可接受，但 consumePendingCrashReportLaunch 若在主线程调用会阻塞等待磁盘 IO；可考虑 apply（崩溃路径除外）。",
+    "evidence": "            .putBoolean(KEY_PRESERVE_LOGS_FOR_CRASH_REPORT, true)\n            .commit()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/CrashRecoveryState.kt",
+    "line": 13,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "LocationUtils.isDeviceInMainlandChina 为判断地区请求 ACCESS_FINE_LOCATION/ACCESS_COARSE_LOCATION 权限。定位是隐私敏感权限，调用方需确保已向用户明示该用途，避免权限申请与功能不匹配被应用市场驳回。",
+    "evidence": "    @RequiresPermission(anyOf = [Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION])\n    suspend fun isDeviceInMainlandChina(context: Context): Boolean {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/LocationUtils.kt",
+    "line": 34,
+    "severity": "suggestion"
+  }
+]

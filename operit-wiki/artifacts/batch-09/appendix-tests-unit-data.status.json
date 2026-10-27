@@ -1,0 +1,13 @@
+{
+  "critic": "",
+  "id": "appendix-tests-unit-data",
+  "issue": 122,
+  "refs_valid": "144；2026-10-01 误批准回滚（watcher 误将流水线留言判为通过），水位线已前移；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "approved_by_comment_id": 5930086760,
+  "approved_by": null,
+  "approved_at": null,
+  "updated": "2026-10-02"
+}

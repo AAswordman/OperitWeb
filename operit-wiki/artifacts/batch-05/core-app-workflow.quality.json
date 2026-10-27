@@ -1,0 +1,58 @@
+[
+ {
+  "confidence": "high",
+  "description": "startGlobalAIForegroundServiceIfNeeded 在函数体内用 runBlocking 读取两个 DataStore Flow（alwaysListeningEnabledFlow / enabledFlow）。调用链 MainActivity.onCreate（主线程）→ initializeMainApplication → 该函数，DataStore 读取一旦卡住会直接阻塞主线程造成 ANR。",
+  "evidence": "            val alwaysListeningEnabled = runBlocking {\n                WakeWordPreferences(applicationContext).alwaysListeningEnabledFlow.first()\n            }\n            val externalHttpEnabled = runBlocking {\n                ExternalHttpApiPreferences.getInstance(applicationContext).enabledFlow.first()\n            }",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt",
+  "line": 499,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "initializeAppLanguage 用 runBlocking 同步读取 preferencesManager.appLanguage，同样跑在 MainActivity.onCreate 主线程调用的初始化链上，主线程被 DataStore 读取阻塞。",
+  "evidence": "            val languageCode = runBlocking {\n                try {\n                    // 使用更安全的方式检查preferencesManager\n                    val manager = runCatching { preferencesManager }.getOrNull()",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt",
+  "line": 525,
+  "severity": "warn"
+ },
+ {
+  "confidence": "medium",
+  "description": "initializeMainApplication 的全部 16 步初始化（插件注册、AIMessageManager、语言、图片池等）都在调用线程同步执行；MainActivity.onCreate 直接调用，意味着整条重初始化链跑在主线程上，低端机冷启动 ANR 风险较高。",
+  "evidence": "    fun initializeMainApplication() {\n        synchronized(mainInitializationLock) {\n            if (mainApplicationInitialized) {\n                return\n            }\n            initializeMainApplicationLocked()\n            mainApplicationInitialized = true\n        }\n    }",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/application/OperitApplication.kt",
+  "line": 142,
+  "severity": "warn"
+ },
+ {
+  "confidence": "high",
+  "description": "cron 说明注释写 “0 2 * * * (every 2 hours)” 是错的：标准 cron 里 0 2 * * * 表示每天 02:00 执行一次；实际代码支持每日定时（分 时 * * *）、每 N 小时（0 */N * * *）、每 N 分钟（*/N * * * *）三种模式。注释会误导配置者。",
+  "evidence": "     * Simplified cron parser supporting basic patterns:\n     * - 0 0 * * * (daily at midnight)\n     * - 0 2 * * * (every 2 hours)\n     * - 15 * * * * (every 15 minutes)",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowScheduler.kt",
+  "line": 346,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "medium",
+  "description": "WorkflowSchedulerInitializer.initialize 用裸 CoroutineScope(Dispatchers.IO).launch 启动协程，未挂到任何生命周期或 Supervisor 作用域；进程存活期问题不大，但不符合结构化并发，异常路径难追踪。",
+  "evidence": "        CoroutineScope(Dispatchers.IO).launch {\n            try {\n                val repository = WorkflowRepository(context.applicationContext)",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowSchedulerInitializer.kt",
+  "line": 28,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "medium",
+  "description": "detectCycle 的 dfs 是递归实现，节点数极多的工作流图可能栈溢出；常规工作流图规模小，实际风险低，可考虑改迭代。",
+  "evidence": "        fun dfs(nodeId: String): Boolean {\n            visitState[nodeId] = 1 // 标记为访问中\n            \n            // 访问所有后继节点\n            for (nextNodeId in adjacencyList[nodeId] ?: emptyList()) {",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/workflow/WorkflowExecutor.kt",
+  "line": 768,
+  "severity": "suggestion"
+ },
+ {
+  "confidence": "medium",
+  "description": "readAccessibleProcessTree 每秒枚举并读取全部数字 /proc/<pid>/stat，即使终端会话为空以外的每次采样都全量扫描；高频全量扫描增加 CPU 与电量开销，可考虑缓存 pid 列表。",
+  "evidence": "    private fun readAccessibleProcessTree(): Map<Int, ProcStat> {\n        val result = HashMap<Int, ProcStat>()\n        val dirs =\n            File(\"/proc\").listFiles { file -> file.name.all { it in '0'..'9' } } ?: return result",
+  "file": "app/src/main/java/com/ai/assistance/operit/core/performance/PerformanceMonitorManager.kt",
+  "line": 420,
+  "severity": "suggestion"
+ }
+]

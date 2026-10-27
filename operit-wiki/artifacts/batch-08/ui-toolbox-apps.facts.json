@@ -1,0 +1,642 @@
+[
+  {
+    "fact": "Tool 是工具箱卡片的数据模型，字段为 id、name、icon、可空的 description、onClick 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:44"
+  },
+  {
+    "fact": "ToolboxScreen 接收 navController 与 onNavigationEntrySelected 两个参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:56"
+  },
+  {
+    "fact": "工具箱的工具列表不是写死的，而是从 LocalAppNavigationModel.current 的 navigationEntries 里取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:60"
+  },
+  {
+    "fact": "只有 surface == NavigationSurface.TOOLBOX 的导航条目才会被收进工具箱",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:67"
+  },
+  {
+    "fact": "TOOLBOX 条目的过滤结果用 remember(navigationModel) 缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:62"
+  },
+  {
+    "fact": "导航条目映射为 Tool 时：id 取 entryId、name 取 title、icon 取 icon、description 取 description",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:72"
+  },
+  {
+    "fact": "点击工具卡片会调用 onNavigationEntrySelected(entry) 跳转到对应导航条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:78"
+  },
+  {
+    "fact": "工具箱主页用 LazyVerticalGrid 自适应网格展示工具卡片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:86"
+  },
+  {
+    "fact": "网格列宽为 GridCells.Adaptive(minSize = 156.dp)，随屏幕宽度自动换列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:87"
+  },
+  {
+    "fact": "网格横纵间距均为 8.dp，内容内边距 12.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:89"
+  },
+  {
+    "fact": "网格 items 以 tool.id 作为 key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:94"
+  },
+  {
+    "fact": "ToolCard 按下时卡片缩放到 0.95f，松开回 1f，用 animateFloatAsState 实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:114"
+  },
+  {
+    "fact": "缩放动画按下用 100ms、松开用 200ms 的 tween",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:116"
+  },
+  {
+    "fact": "点击卡片后先 delay(100) 再执行 tool.onClick()，随后恢复缩放状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:125"
+  },
+  {
+    "fact": "工具卡片尺寸为 fillMaxWidth、固定高度 156.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:130"
+  },
+  {
+    "fact": "卡片圆角 12.dp，默认阴影 2.dp、按下时 8.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:136"
+  },
+  {
+    "fact": "卡片图标放在 48.dp 圆形 primaryContainer 背景上，图标本身 24.dp、tint 为 primary",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:148"
+  },
+  {
+    "fact": "卡片标题用 bodyMedium 加粗居中，最少 1 行、最多 2 行，超出省略",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:157"
+  },
+  {
+    "fact": "卡片描述用 bodySmall、onSurfaceVariant 颜色，最多 2 行省略，空描述不显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:165"
+  },
+  {
+    "fact": "FileManagerToolScreen 用 CustomScaffold 包裹 FileManagerScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:195"
+  },
+  {
+    "fact": "TerminalToolScreen 用 TerminalManager.getInstance(context) 拿单例，再经 rememberTerminalEnv 构造终端环境",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:208"
+  },
+  {
+    "fact": "TerminalToolScreen 支持 forceShowSetup 参数强制显示终端初始化界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:206"
+  },
+  {
+    "fact": "TerminalAutoConfigToolScreen 目前只显示“建设中”文本，注释写明 TODO 待重构以适配新终端架构",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:221"
+  },
+  {
+    "fact": "AppPermissionsToolScreen 用 CustomScaffold 包裹 AppPermissionsScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:234"
+  },
+  {
+    "fact": "UIDebuggerToolScreen 用 CustomScaffold 包裹 UIDebuggerScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:245"
+  },
+  {
+    "fact": "FFmpegToolboxToolScreen 用 CustomScaffold 包裹 FFmpegToolboxScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:256"
+  },
+  {
+    "fact": "ShellExecutorToolScreen 用 CustomScaffold 包裹 ShellExecutorScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:267"
+  },
+  {
+    "fact": "LogcatToolScreen 用 CustomScaffold 包裹 LogcatScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:278"
+  },
+  {
+    "fact": "ToolTesterToolScreen 用 CustomScaffold 包裹 tooltester 包下的 ToolTesterScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:289"
+  },
+  {
+    "fact": "DefaultAssistantGuideToolScreen 直接调用 DefaultAssistantGuideScreen，不套 CustomScaffold",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:301"
+  },
+  {
+    "fact": "ToolboxScreen 的 navController 参数实际未使用，被 @Suppress(\"UNUSED_PARAMETER\") 压住警告",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ToolboxScreen.kt:54"
+  },
+  {
+    "fact": "AppInfo 记录应用的名称、包名、图标、安装时间与是否为系统应用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:44"
+  },
+  {
+    "fact": "PermissionInfo 记录权限的显示名、描述、是否已授予、是否危险、分组与原始权限名字符串 rawName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:52"
+  },
+  {
+    "fact": "AppPermissionsScreen 的顶层状态包括搜索词、加载中、已装应用列表、当前选中应用、选中应用的权限列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:68"
+  },
+  {
+    "fact": "权限列表按 group 字段分组后分节展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:77"
+  },
+  {
+    "fact": "权限组颜色表共 14 项，其中 OTHER_GRANTED、OTHER_DENIED、undefined 为三个兜底组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:85"
+  },
+  {
+    "fact": "应用列表在 LaunchedEffect(Unit) 里起协程调用 loadInstalledApps 加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:117"
+  },
+  {
+    "fact": "应用过滤按名称或包名包含搜索词（忽略大小写），默认隐藏系统应用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:131"
+  },
+  {
+    "fact": "过滤后的应用按名称排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:140"
+  },
+  {
+    "fact": "loadAppPermissions 在协程里调用 getAppPermissions，失败时弹错误对话框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:144"
+  },
+  {
+    "fact": "togglePermission 根据当前授予状态决定执行 pm grant 还是 pm revoke",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:160"
+  },
+  {
+    "fact": "权限改动走 AndroidShellExecutor.executeShellCommand 在 IO 线程执行 pm 命令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:169"
+  },
+  {
+    "fact": "pm 命令执行成功后会刷新该应用的权限列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:174"
+  },
+  {
+    "fact": "resetAppPermissions 执行 pm reset-permissions <包名> 重置该应用全部权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:196"
+  },
+  {
+    "fact": "应用列表与权限详情两个视图用 AnimatedContent 按 selectedApp 是否为空做滑动+淡入淡出切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:217"
+  },
+  {
+    "fact": "点击应用条目会设置 selectedApp 并触发该应用的权限加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:399"
+  },
+  {
+    "fact": "权限详情顶部有返回按钮、应用图标、名称包名，以及重置权限按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:425"
+  },
+  {
+    "fact": "权限概览卡片展示总权限数、已授予数、危险权限数三个统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:530"
+  },
+  {
+    "fact": "权限组标题行显示组名与该组权限数量，图标与颜色取自组映射表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:650"
+  },
+  {
+    "fact": "权限条目的 Switch 开关直接触发 onToggle 改权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1075"
+  },
+  {
+    "fact": "loadInstalledApps 用 GET_META_DATA | GET_SHARED_LIBRARY_FILES 拉取已装应用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1102"
+  },
+  {
+    "fact": "系统应用按 ApplicationInfo.FLAG_SYSTEM 位判定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1110"
+  },
+  {
+    "fact": "单个应用加载异常会被吞掉跳过，不中断整个列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1118"
+  },
+  {
+    "fact": "getAppPermissions 用 dumpsys package <包名> 拿完整包信息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1144"
+  },
+  {
+    "fact": "已授予权限用 dumpsys package <包名> | grep -E \"granted=true|:granted=true\" 单独提取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1149"
+  },
+  {
+    "fact": "解析顺序：先 requested permissions 段，再 install permissions 段，再 runtime permissions 段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1158"
+  },
+  {
+    "fact": "三段都找不到时用正则 (android\\.permission\\.[\\w\\.]+|permission\\.[\\w\\.]+) 全文兜底匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1185"
+  },
+  {
+    "fact": "grantedPermissions: 段是已授予权限的另一可靠来源，会逐行解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1215"
+  },
+  {
+    "fact": "请求权限为空但授予权限非空时，把授予权限并入请求集合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1229"
+  },
+  {
+    "fact": "importantPermGroups 把 37 个关键权限映射到 CAMERA/CONTACTS/LOCATION 等 12 个分组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1235"
+  },
+  {
+    "fact": "关键权限在界面上标记为 dangerous=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1354"
+  },
+  {
+    "fact": "非关键的已授予权限归入 OTHER_GRANTED 组，显示名取权限后缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1345"
+  },
+  {
+    "fact": "非关键的未授予权限归入 OTHER_DENIED 组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1375"
+  },
+  {
+    "fact": "一个权限都没解析出来时插入一条 debug.info 占位权限展示原始计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1398"
+  },
+  {
+    "fact": "权限排序：undefined 组垫底，其次已授予优先，再按组名与权限名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1445"
+  },
+  {
+    "fact": "extractSectionContent 按段头截取 dumpsys 输出，遇到下一个已知段头即截止",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1472"
+  },
+  {
+    "fact": "extractPermissionsFromSection 只收 android.permission./permission. 开头的行，并去掉冒号后的 granted=true 等后缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt:1503"
+  },
+  {
+    "fact": "AutoGlmViewModel 持有 Application 级 Context 构造，sessionAgentId 取 UUID 前 8 位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:40"
+  },
+  {
+    "fact": "AutoGlmViewModel 用 MutableStateFlow 持有 AutoGlmUiState，对外暴露只读 StateFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:42"
+  },
+  {
+    "fact": "executeTask 空任务直接返回；先取消上一次的 executionJob 再开新协程",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:45"
+  },
+  {
+    "fact": "开启虚拟屏时 agentId 用 sessionAgentId，否则用 \"default\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:56"
+  },
+  {
+    "fact": "虚拟屏模式先调 ShowerServerManager.ensureServerStarted 起 Shower 服务，失败就写日志并结束",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:62"
+  },
+  {
+    "fact": "虚拟显示用当前屏幕的宽、高、dpi 经 ShowerController.ensureDisplay 创建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:82"
+  },
+  {
+    "fact": "拿不到 displayId 时记日志并结束任务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:94"
+  },
+  {
+    "fact": "UI 自动化走 FunctionType.UI_CONTROLLER 对应的 AI 服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:106"
+  },
+  {
+    "fact": "PhoneAgent 每轮任务最多 25 步（AgentConfig(maxSteps = 25)）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:109"
+  },
+  {
+    "fact": "UI 操作工具实现取自 ToolGetter.getUITools(context)，按用户偏好的权限级别",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:111"
+  },
+  {
+    "fact": "ActionHandler 用当前屏幕宽高构造，负责执行 Tap/Swipe/PressKey/Screenshot",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:113"
+  },
+  {
+    "fact": "PhoneAgent 构造时 cleanupOnFinish = false，跑完不清理会话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:126"
+  },
+  {
+    "fact": "每步回调 appendStepLog 记录思考过程、执行动作 JSON 与附加消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:137"
+  },
+  {
+    "fact": "任务主体在 Dispatchers.IO 上跑 agent.run，onStep 里把日志推回 uiState",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:143"
+  },
+  {
+    "fact": "任务结束追加 🎉/✅ 风格的最终结果行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:162"
+  },
+  {
+    "fact": "cancelTask 取消 executionJob 并在日志尾追加 [Execution Cancelled by User]",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:193"
+  },
+  {
+    "fact": "系统提示词按系统语言决定中英文，中文日期格式为“yyyy年MM月dd日 星期X”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:200"
+  },
+  {
+    "fact": "AutoGlmUiState 只有 isLoading 与 log 两个字段，初始 log 为 \"Ready to execute task.\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:296"
+  },
+  {
+    "fact": "extractTagContent 用正则从 <tag></tag> 提取内容，当前文件内没有调用处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModel.kt:214"
+  },
+  {
+    "fact": "AutoGlmToolScreen 用 AutoGlmViewModelFactory 创建 ViewModel，维护 task 文本与 useVirtualScreen 开关",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmToolScreen.kt:18"
+  },
+  {
+    "fact": "虚拟屏 Switch 在任务执行中被禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmToolScreen.kt:75"
+  },
+  {
+    "fact": "执行按钮在 isLoading 时变红并显示 Cancel，点击即取消任务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmToolScreen.kt:84"
+  },
+  {
+    "fact": "日志区用 LaunchedEffect(uiState.log) 自动滚动到底部",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmToolScreen.kt:108"
+  },
+  {
+    "fact": "AutoGlmOneClickToolScreen 是四步卡片式向导：去模型配置、开 API Key 中心、填 Key 一键配置、恢复原自动化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:263"
+  },
+  {
+    "fact": "一键配置默认端点为 https://open.bigmodel.cn/api/paas/v4/chat/completions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:96"
+  },
+  {
+    "fact": "一键配置默认模型名为 autoglm-phone",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:102"
+  },
+  {
+    "fact": "默认用 ApiProviderType.ZHIPU，高级自定义才用 OPENAI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:108"
+  },
+  {
+    "fact": "同名配置已存在则更新，不存在则新建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:113"
+  },
+  {
+    "fact": "配置写完后打开直接图片处理开关 updateDirectImageProcessing(configId, true)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:128"
+  },
+  {
+    "fact": "新配置被绑定到 UI_CONTROLLER 功能并刷新该功能的 AI 服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:134"
+  },
+  {
+    "fact": "一键配置自动把 temperature 设 0.0、top_p 设 0.85、frequency_penalty 设 0.2 并启用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:147"
+  },
+  {
+    "fact": "配置时禁用 Automatic_ui_base 工具包、启用 Automatic_ui_subagent 工具包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:184"
+  },
+  {
+    "fact": "恢复按钮做反向操作：启用 base、禁用 subagent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:213"
+  },
+  {
+    "fact": "API Key 输入框为单行 OutlinedTextField，未做掩码处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:326"
+  },
+  {
+    "fact": "API Key 中心按钮用 ACTION_VIEW 打开 https://open.bigmodel.cn/usercenter/apikeys",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmOneClickToolScreen.kt:299"
+  },
+  {
+    "fact": "DefaultAssistantGuideScreen 是三步折叠卡片向导：设为默认助手、配置启动手势、测试助手功能",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:90"
+  },
+  {
+    "fact": "步骤 1 的按钮打开 Settings.ACTION_VOICE_INPUT_SETTINGS，失败则退回 ACTION_SETTINGS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:97"
+  },
+  {
+    "fact": "Android 12+ 时步骤 1 额外显示一条系统版本相关的说明",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:130"
+  },
+  {
+    "fact": "步骤 2 在 Android 10+ 尝试打开手势导航设置，失败则打开常规设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:156"
+  },
+  {
+    "fact": "向导默认展开第 1 步，点击卡片可切换展开/收起",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:63"
+  },
+  {
+    "fact": "向导底部有 TroubleshootingCard 答疑卡片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/defaultassistant/DefaultAssistantGuideScreen.kt:228"
+  },
+  {
+    "fact": "FFmpegToolboxScreen 顶部是命令输入区，提供 5 个命令模板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:44"
+  },
+  {
+    "fact": "5 个模板：视频转码、视频压缩、视频裁剪、提取音频、生成 GIF",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:48"
+  },
+  {
+    "fact": "执行时构造 AITool(name=\"ffmpeg_execute\", 参数 command) 交给 AIToolHandler",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:131"
+  },
+  {
+    "fact": "命令为空点执行会弹 Toast 提示，先 return 不执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:116"
+  },
+  {
+    "fact": "执行中按钮禁用并显示处理中状态，isProcessing 控制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:145"
+  },
+  {
+    "fact": "异常时构造失败的 ToolResult，错误信息带 \"FFmpeg execution failed:\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:142"
+  },
+  {
+    "fact": "帮助区可点按钮执行 AITool(name=\"ffmpeg_info\") 查看 FFmpeg 版本信息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:246"
+  },
+  {
+    "fact": "结果卡片按 success 显示绿/红底，FFmpegResultData 展示命令、返回码、耗时与输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ffmpegtoolbox/FFmpegToolboxScreen.kt:282"
+  },
+  {
+    "fact": "HtmlPackagerScreen 分三步：选文件夹、选主 HTML、打包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:70"
+  },
+  {
+    "fact": "文件夹选择用 ActivityResultContracts.OpenDocumentTree()（SAF）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:64"
+  },
+  {
+    "fact": "选定文件夹后只列出 .html 文件，默认选中 index.html",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:70"
+  },
+  {
+    "fact": "打包按钮在未选主 HTML 文件时禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:137"
+  },
+  {
+    "fact": "平台选择对话框分 Android 与 Windows 两个导出通道",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:146"
+  },
+  {
+    "fact": "导出前把 SAF 目录树完整复制到外部文件目录下的临时文件夹",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:193"
+  },
+  {
+    "fact": "选定的主 HTML 文件会被重命名为 index.html",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:199"
+  },
+  {
+    "fact": "Android 导出调用 exportAndroidApp，Windows 导出调用 exportWindowsApp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:207"
+  },
+  {
+    "fact": "无论成功失败，finally 里都在 IO 线程删除临时文件夹",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:231"
+  },
+  {
+    "fact": "导出完成对话框的“打开文件”用 open_file 工具打开产物路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:318"
+  },
+  {
+    "fact": "copyDocumentTreeTo 递归复制 SAF 目录树，单个文件失败只记日志不中断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:332"
+  },
+  {
+    "fact": "ProcessLimitRecord 记录操作类型、命令结果与时间戳",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:41"
+  },
+  {
+    "fact": "ProcessLimitAction 只有 REMOVE 与 RESTORE 两种",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:50"
+  },
+  {
+    "fact": "进屏时 LaunchedEffect 执行 device_config get activity_manager max_phantom_processes 查当前状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:84"
+  },
+  {
+    "fact": "值为 2147483647 或大于 100 的整数都判定为“已解除限制”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:89"
+  },
+  {
+    "fact": "解除限制执行两条命令：max_phantom_processes 置 2147483647，外加 set_sync_disabled_for_tests persistent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:112"
+  },
+  {
+    "fact": "恢复限制执行 device_config delete max_phantom_processes 与 set_sync_disabled_for_tests none",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:116"
+  },
+  {
+    "fact": "两条命令结果合并为一条 CommandResult，任一失败即整体失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:123"
+  },
+  {
+    "fact": "每次操作记录插到历史列表头部并弹窗显示结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:133"
+  },
+  {
+    "fact": "历史记录可一键清空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:445"
+  },
+  {
+    "fact": "OperationRecordCard 按操作类型显示开锁/上锁图标与成功失败圆点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/processlimit/ProcessLimitRemoverScreen.kt:604"
+  },
+  {
+    "fact": "ProcessLimitRemoverToolScreen 只是 ProcessLimitRemoverScreen 的透传包装器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/ProcessLimitRemoverToolScreen.kt:10"
+  },
+  {
+    "fact": "SpeechToTextScreen 默认识别引擎为 SHERPA_NCNN（端侧）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:124"
+  },
+  {
+    "fact": "无麦克风权限时整屏显示权限申请界面并直接 return，不渲染主界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:65"
+  },
+  {
+    "fact": "权限申请用 ActivityResultContracts.RequestPermission() 启动器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:56"
+  },
+  {
+    "fact": "recognitionMode 变化时先 shutdown 旧服务实例再创建新实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:130"
+  },
+  {
+    "fact": "DisposableEffect(Unit) 在离屏时 shutdown 当前语音服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:138"
+  },
+  {
+    "fact": "服务实例变化会触发 initialize，成功后拉取支持语言列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:152"
+  },
+  {
+    "fact": "识别结果流与错误流各起一个协程收集",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:163"
+  },
+  {
+    "fact": "Sherpa 引擎启用连续模式与部分结果，其他引擎不启用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:186"
+  },
+  {
+    "fact": "引擎切换顺序：SHERPA_NCNN → OPENAI_STT → DEEPGRAM_STT → 回到 SHERPA_NCNN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:207"
+  },
+  {
+    "fact": "切换引擎按钮在识别中或未初始化时禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:350"
+  },
+  {
+    "fact": "识别结果可一键复制到剪贴板，空文本点复制会弹 Toast",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextScreen.kt:228"
+  },
+  {
+    "fact": "SpeechToTextToolScreen 用 CustomScaffold 包裹 SpeechToTextScreen 供路由使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/speechtotext/SpeechToTextToolScreen.kt:12"
+  },
+  {
+    "fact": "TextToSpeechScreen 先从 SpeechServiceProfilesPreferences 取当前 TTS 档案，取不到就只显示加载圈",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:48"
+  },
+  {
+    "fact": "语速与音调滑杆范围均为 0.5f..2.0f，步进 5 档",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:283"
+  },
+  {
+    "fact": "speakText 空文本直接报错返回，不调用服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:160"
+  },
+  {
+    "fact": "播放前用 refreshVoiceService() 拿最新的 VoiceService 单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:172"
+  },
+  {
+    "fact": "saveSimpleTtsSelection 保存语音选择后重置 VoiceServiceFactory 单例并 bump 版本号重建服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:141"
+  },
+  {
+    "fact": "SIMPLE_TTS 类型会用 SimpleVoiceProvider 拉取可用语音列表，用完即 shutdown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:126"
+  },
+  {
+    "fact": "handleTtsError 把 TtsException 的 HTTP 状态码与响应体拼成可读错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:741"
+  },
+  {
+    "fact": "未知异常的错误详情会带上异常类名与前 300 字符堆栈",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechScreen.kt:762"
+  },
+  {
+    "fact": "TextToSpeechToolScreen 用 CustomScaffold 包裹 TextToSpeechScreen 供路由使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/texttospeech/TextToSpeechToolScreen.kt:13"
+  },
+  {
+    "fact": "AutoGlmViewModelFactory 只认 AutoGlmViewModel，其他类型抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/autoglm/AutoGlmViewModelFactory.kt:8"
+  }
+]

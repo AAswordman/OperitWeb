@@ -1,0 +1,850 @@
+[
+  {
+    "fact": "设置主页 SettingsScreen 共接收 19 个 () -> Unit 导航回调参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:40"
+  },
+  {
+    "fact": "滚动位置保存在文件级 SettingsScreenScrollPosition（mutableStateOf(0)），跨重组保留",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:35"
+  },
+  {
+    "fact": "滚动变化时经 LaunchedEffect + snapshotFlow 把位置写回 SettingsScreenScrollPosition",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:73"
+  },
+  {
+    "fact": "设置主页监听 GitHubAuthPreferences.isLoggedInFlow 显示登录态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:66"
+  },
+  {
+    "fact": "GitHub 已登录时账号行副标题显示 @login",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:99"
+  },
+  {
+    "fact": "已登录时账号分组显示\"退出\"项，点击执行 githubAuth.logout()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:114"
+  },
+  {
+    "fact": "未登录时账号分组显示\"登录 GitHub\"项，点击弹出 GitHubLoginDialog",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:128"
+  },
+  {
+    "fact": "账号分组中 GitHub 账号行点击跳转 navigateToGitHubAccount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:105"
+  },
+  {
+    "fact": "清除 Cookies 确认后调用 CookiePrivacyManager.clearAllCookies()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:333"
+  },
+  {
+    "fact": "清除 Cookies 确认弹窗的取消按钮使用系统 android.R.string.cancel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:355"
+  },
+  {
+    "fact": "有背景图时设置卡片容器色为 surface，否则为 30% 透明的 surfaceVariant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:83"
+  },
+  {
+    "fact": "外部调用分组的\"外部 HTTP 聊天\"入口跳转 navigateToExternalHttpChatSettings",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:314"
+  },
+  {
+    "fact": "CompactSettingsItem 标题与副标题均为单行省略（maxLines=1）加右箭头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:405"
+  },
+  {
+    "fact": "个性化分组第 1 项为用户偏好",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:140"
+  },
+  {
+    "fact": "个性化分组第 2 项为语言设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:147"
+  },
+  {
+    "fact": "个性化分组第 3 项为主题外观",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:154"
+  },
+  {
+    "fact": "个性化分组第 4 项为全局显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:161"
+  },
+  {
+    "fact": "个性化分组第 5 项为布局调整",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:168"
+  },
+  {
+    "fact": "AI 模型配置分组第 1 项为模型参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:182"
+  },
+  {
+    "fact": "AI 模型配置分组第 2 项为功能模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:189"
+  },
+  {
+    "fact": "AI 模型配置分组第 3 项为语音服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:196"
+  },
+  {
+    "fact": "提示词分组第 1 项为系统提示词",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:211"
+  },
+  {
+    "fact": "提示词分组第 2 项为人设卡生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:219"
+  },
+  {
+    "fact": "提示词分组第 3 项为 Waifu 模式设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:227"
+  },
+  {
+    "fact": "数据和权限分组第 1 项为工具权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:255"
+  },
+  {
+    "fact": "数据和权限分组第 2 项为数据备份",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:262"
+  },
+  {
+    "fact": "数据和权限分组第 3 项为聊天记录管理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:269"
+  },
+  {
+    "fact": "数据和权限分组第 4 项为 Token 用量统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:276"
+  },
+  {
+    "fact": "数据和权限分组第 5 项为性能监控",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:283"
+  },
+  {
+    "fact": "隐私数据清理是独立的设置分组（与数据和权限平级）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:292"
+  },
+  {
+    "fact": "清除 Cookies 是\"隐私与数据清理\"分组的条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SettingsScreen.kt:297"
+  },
+  {
+    "fact": "外部 HTTP 聊天页状态来自 ExternalHttpApiPreferences 单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:67"
+  },
+  {
+    "fact": "服务开关打开时先 ensureBearerToken() 自动生成 token 再启动服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:213"
+  },
+  {
+    "fact": "服务开关关闭时调用 AIForegroundService.stopExternalHttp(context)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:219"
+  },
+  {
+    "fact": "端口输入框仅接受数字且最多 5 位（filter { it.isDigit() }.take(5)）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:240"
+  },
+  {
+    "fact": "端口保存时校验 isValidPort（1..65535），非法则 Toast 提示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:154"
+  },
+  {
+    "fact": "端口默认 8094（ExternalHttpApiPreferences.DEFAULT_PORT）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:70"
+  },
+  {
+    "fact": "Bearer Token 最短长度要求为 6 字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:168"
+  },
+  {
+    "fact": "复制 token 按钮把完整 bearer token 以纯文本写入系统剪贴板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:282"
+  },
+  {
+    "fact": "重置 token 后新 token 会被自动复制到剪贴板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:300"
+  },
+  {
+    "fact": "访问 URL 由本机 LAN IPv4 地址拼接 http://$ip:$savedPort 生成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:88"
+  },
+  {
+    "fact": "A2A 接口地址为 $baseUrl/.well-known/agent-card.json 与 $baseUrl/a2a",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:97"
+  },
+  {
+    "fact": "同步调用示例为 POST /api/external-chat，携带 Authorization: Bearer 头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:104"
+  },
+  {
+    "fact": "异步调用示例使用 response_mode: async_callback 加 callback_url",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:115"
+  },
+  {
+    "fact": "健康检查示例为 GET /api/health",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:120"
+  },
+  {
+    "fact": "Intent 广播 action 常量为 com.ai.assistance.operit.EXTERNAL_CHAT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:540"
+  },
+  {
+    "fact": "Intent 结果广播 action 常量为 com.ai.assistance.operit.EXTERNAL_CHAT_RESULT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:541"
+  },
+  {
+    "fact": "页面提供 adb 广播调用示例，含 request_id/message/show_floating/initial_mode/reply_package 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:126"
+  },
+  {
+    "fact": "服务状态区显示运行中端口 / lastError 错误信息 / 已停止三种状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:326"
+  },
+  {
+    "fact": "onBackPressed 回调参数在页面内未被使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ExternalHttpChatSettingsScreen.kt:63"
+  },
+  {
+    "fact": "Token 生成算法为 UUID.randomUUID().toString().replace(\"-\",\"\")（32 位 hex）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:131"
+  },
+  {
+    "fact": "GitHub 账号页无参数，登录态来自 GitHubAuthPreferences.isLoggedInFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:57"
+  },
+  {
+    "fact": "用户信息来自 GitHubAuthPreferences.userInfoFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:58"
+  },
+  {
+    "fact": "头像用 coil rememberAsyncImagePainter(userInfo.avatarUrl) 加载，72dp 圆形裁剪",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:81"
+  },
+  {
+    "fact": "退出登录时先调 clearGitHubOAuthBrowserSession() 再调 githubAuth.logout()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:122"
+  },
+  {
+    "fact": "账号信息卡展示 id / publicRepos / followers / following 四项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:178"
+  },
+  {
+    "fact": "用户 email 与 bio 仅在非空时显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:101"
+  },
+  {
+    "fact": "登录经 GitHubLoginDialog 弹窗完成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/GitHubAccountScreen.kt:205"
+  },
+  {
+    "fact": "人设卡生成屏的顶层 Composable 是 PersonaCardGenerationScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:139"
+  },
+  {
+    "fact": "屏内定义私有对象 LocalCharacterToolExecutor，注释称本地最小工具执行器，仅处理 save_character_info",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:48"
+  },
+  {
+    "fact": "工具名常量为 TOOL_NAME = \"save_character_info\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:49"
+  },
+  {
+    "fact": "extractInvocations 用 ChatMarkupRegex.toolCallPattern 正则从 LLM 原始输出提取 <tool> 调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:51"
+  },
+  {
+    "fact": "executeSaveCharacterInfo 在 Dispatchers.IO 上调用 manager.updateCharacterCard 持久化角色卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:110"
+  },
+  {
+    "fact": "save_character_info 的字段白名单含 name/description/characterSetting/openingStatement/otherContentChat/otherContentVoice/advancedCustomPrompt/marks",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:94"
+  },
+  {
+    "fact": "不在白名单的字段返回 error_unsupported_field",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:104"
+  },
+  {
+    "fact": "字段名 \"otherContent\" 实际写入的是 otherContentChat 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:96"
+  },
+  {
+    "fact": "对话上限 MESSAGE_LIMIT = 40，按消息条数计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:201"
+  },
+  {
+    "fact": "系统提示词来自 FunctionalPrompts.personaCardGenerationSystemPrompt(useEnglish)，按系统语言是否中文切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:338"
+  },
+  {
+    "fact": "LLM 请求经 EnhancedAIService.getInstance(context).getAIServiceForFunction(FunctionType.CHAT) 获取服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:366"
+  },
+  {
+    "fact": "聊天历史经 toPromptTurns() 转换为 PromptTurns 后发送给 AIService",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:376"
+  },
+  {
+    "fact": "流式显示前用正则剥离 tool 标记、toolResult 标记与 <status>...</status> 块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:479"
+  },
+  {
+    "fact": "流结束后对原始缓冲调用 processToolInvocations 解析并执行工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:382"
+  },
+  {
+    "fact": "未知工具名只打日志 Skipping unknown tool 并跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:392"
+  },
+  {
+    "fact": "工具调用执行后在主线程调用 refreshData() 刷新界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:413"
+  },
+  {
+    "fact": "进入人设卡生成屏时按角色卡 id 经 chatHistoryManager.loadChatHistory(activeCardId) 加载聊天历史",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:256"
+  },
+  {
+    "fact": "卡片 7 个字段全非空时 isCharacterCardComplete() 返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:344"
+  },
+  {
+    "fact": "角色卡 7 字段齐全时发送消息直接回\"🎉 角色卡生成完成！所有信息都已保存。\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:455"
+  },
+  {
+    "fact": "抽屉用 ModalNavigationDrawer 加 ModalDrawerSheet 承载角色卡配置编辑器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:534"
+  },
+  {
+    "fact": "仅非默认卡（isDefault == false）显示删除按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:603"
+  },
+  {
+    "fact": "新建角色卡用 CharacterCardBilingualData.getDefaultCharacterSetting/getDefaultOtherContentChat 作字段默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:641"
+  },
+  {
+    "fact": "双语引导文案 characterAssistantIntro 定义后从未被界面使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:150"
+  },
+  {
+    "fact": "三个导航回调参数 onNavigateToSettings/onNavigateToModelConfig/onNavigateToModelPrompts 在函数体内未被使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:140"
+  },
+  {
+    "fact": "文件 import 了 ApiPreferences 和 org.json.JSONObject 但从未使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/PersonaCardGenerationScreen.kt:43"
+  },
+  {
+    "fact": "标签市场顶层 Composable 是 TagMarketScreen(onBackPressed: () -> Unit)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:42"
+  },
+  {
+    "fact": "TagMarketScreen 的 onBackPressed 参数在函数体内未被使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:42"
+  },
+  {
+    "fact": "预设标签按 getLocalizedCategory(context) 分组后用 LazyColumn 展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:60"
+  },
+  {
+    "fact": "点击\"添加\"后调用 promptTagManager.createPromptTag(name, description, promptContent, tagType) 存入本地标签库",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:108"
+  },
+  {
+    "fact": "保存成功后底部提示条经 delay(1500) 自动消失",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:131"
+  },
+  {
+    "fact": "预设卡片由私有 Composable PresetTagCard 渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:159"
+  },
+  {
+    "fact": "卡片上的 AssistChip 标签类型徽章 onClick = { } 为空实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:182"
+  },
+  {
+    "fact": "预设描述文本固定高度 40.dp 且未设 maxLines/overflow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketScreen.kt:196"
+  },
+  {
+    "fact": "双语预设标签数据类为 PresetTagBilingual，含中英两套 name/description/promptContent/category 共 10 个字符串字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:20"
+  },
+  {
+    "fact": "本地化判断 isChineseLocale 为 language == \"zh\" 或 language == \"zho\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:60"
+  },
+  {
+    "fact": "预设列表 bilingualPresetTags 共 13 个条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:68"
+  },
+  {
+    "fact": "语气风格分类（TagType.TONE）有 3 条：温柔语气/阳光开朗/自然对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:78"
+  },
+  {
+    "fact": "角色设定分类（TagType.CHARACTER）有 3 条：女性化/守护者/知心姐姐",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:116"
+  },
+  {
+    "fact": "特殊功能分类（TagType.FUNCTION）有 7 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:154"
+  },
+  {
+    "fact": "剧情故事创作条目归属创意写作分类（Creative writing 注释）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:351"
+  },
+  {
+    "fact": "剧情故事创作条目的 tagType 为 FUNCTION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:418"
+  },
+  {
+    "fact": "剧情故事创作预设指示 LLM 按 ![image](https://image.pollinations.ai/prompt/{description}) 格式输出插图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:363"
+  },
+  {
+    "fact": "该 pollinations.ai 图片 URL 在文件中硬编码出现 6 处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/TagMarketBilingualData.kt:374"
+  },
+  {
+    "fact": "CompactPermissionLevelSelector 是公开可复用的三档权限选择器组件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:371"
+  },
+  {
+    "fact": "全局权限开关默认值为 ASK（每次使用前询问）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:49"
+  },
+  {
+    "fact": "全局开关修改后经 saveMasterSwitch 异步持久化到 ToolPermissionSystem",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:128"
+  },
+  {
+    "fact": "package_proxy、proxy、search 三个工具被硬编码排除在权限管理页之外",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:44"
+  },
+  {
+    "fact": "单工具权限以覆盖方式差量存储，只有偏离默认的工具才有条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:53"
+  },
+  {
+    "fact": "未设置覆盖的工具在页面上不显示，归入 ASK 默认行为",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:159"
+  },
+  {
+    "fact": "点击已处于目标档位的工具会清除其覆盖并回退到 ASK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:65"
+  },
+  {
+    "fact": "单工具权限覆盖经 saveToolPermission 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:77"
+  },
+  {
+    "fact": "清除单工具权限覆盖经 clearToolPermission",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:71"
+  },
+  {
+    "fact": "工具选择对话框支持忽略大小写的模糊搜索过滤工具名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:293"
+  },
+  {
+    "fact": "选择器对话框中每行展示工具名与其 AIToolHandler 提供的描述",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:293"
+  },
+  {
+    "fact": "FORBID 档在选择器中使用的文案键是 R.string.forbid",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:399"
+  },
+  {
+    "fact": "权限分组标题使用的 FORBID 文案键是 permission_level_forbid",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:195"
+  },
+  {
+    "fact": "工具权限页的 navigateBack 回调参数在文件内未被使用，页面无返回按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ToolPermissionSettingsScreen.kt:37"
+  },
+  {
+    "fact": "用户偏好设置屏实际是用户配置/记忆空间档案管理器，非通用偏好页",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:87"
+  },
+  {
+    "fact": "活跃档案 id 经 activeMemorySpaceIdFlow 订阅，初始值为 \"default\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:97"
+  },
+  {
+    "fact": "档案 id 与记忆空间 id 保持一致以兼容既有 ObjectBox 数据库与角色卡绑定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:82"
+  },
+  {
+    "fact": "首次进入时初始化仓库并确保默认档案存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:134"
+  },
+  {
+    "fact": "人设文档用 BasicTextField 编辑，等宽字体并带 Markdown 语法高亮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:508"
+  },
+  {
+    "fact": "文档长度上限由 MemorySpaceProfileDocumentRepository.MAX_CONTENT_CHARS 定义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:125"
+  },
+  {
+    "fact": "超限时字数统计变红",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:566"
+  },
+  {
+    "fact": "超限时保存按钮被禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:472"
+  },
+  {
+    "fact": "未保存改动检测为草稿文本与已保存文本的字符串比对",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:124"
+  },
+  {
+    "fact": "预览 Tab 用 MarkdownTextComposable 渲染草稿",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:551"
+  },
+  {
+    "fact": "自动更新策略开关绑定 MemorySpace.profileAutoUpdateEnabled",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:624"
+  },
+  {
+    "fact": "锁定策略开关绑定 MemorySpace.profileAutoUpdateLocked",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:644"
+  },
+  {
+    "fact": "策略开关改动经 updateMemorySpace 持久化，失败时回滚本地状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:213"
+  },
+  {
+    "fact": "新建档案后自动将其设为活跃档案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:695"
+  },
+  {
+    "fact": "id 为 \"default\" 的档案不提供删除菜单项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:418"
+  },
+  {
+    "fact": "删除档案经确认对话框后调用 deleteMemorySpace",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:757"
+  },
+  {
+    "fact": "系统返回键被 BackHandler 拦截，有未保存改动时弹丢弃确认",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:242"
+  },
+  {
+    "fact": "有未保存改动时禁止新建档案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:326"
+  },
+  {
+    "fact": "打开记忆前会把所选档案设为活跃再跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/UserPreferencesSettingsScreen.kt:230"
+  },
+  {
+    "fact": "SpeechServicesSettingsScreen 是语音服务设置主界面，参数为 onBackPressed 与 onNavigateToTextToSpeech",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:98"
+  },
+  {
+    "fact": "界面顶部用 SpeechServicesModeTabs 的 TabRow 在 TTS 与 STT 两个页签间切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2500"
+  },
+  {
+    "fact": "TTS/STT 配置以独立档案管理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2524"
+  },
+  {
+    "fact": "TTS/STT 语音档案支持新建、重命名、切换、删除",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2524"
+  },
+  {
+    "fact": "档案数据经由 SpeechServiceProfilesPreferences 的 ttsProfilesFlow / sttProfilesFlow 收集",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:104"
+  },
+  {
+    "fact": "新建 TTS 档案时以当前活动档案为模板复制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2375"
+  },
+  {
+    "fact": "删除档案仅允许删除非当前档案，下拉菜单中当前档案行不显示删除按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2609"
+  },
+  {
+    "fact": "TTS 引擎类型共 9 种：SIMPLE_TTS/HTTP_TTS/OPENAI_WS_TTS/SILICONFLOW_TTS/MINIMAX_TTS/MIMO_TTS/DOUBAO_TTS/OPENAI_TTS/VITS_TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:516"
+  },
+  {
+    "fact": "STT 引擎类型共 3 种：SHERPA_NCNN/OPENAI_STT/DEEPGRAM_STT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2129"
+  },
+  {
+    "fact": "所有设置输入经 500ms 防抖后自动保存，无显式保存按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:245"
+  },
+  {
+    "fact": "语音服务档案经 DataStore Preferences 存储（speechServiceProfilesDataStore）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/SpeechServiceProfilesPreferences.kt:23"
+  },
+  {
+    "fact": "保存成功后调用 VoiceServiceFactory.resetInstance() 与 SpeechServiceFactory.resetInstance() 使配置即时生效",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:336"
+  },
+  {
+    "fact": "HTTP 头 / 响应流水线 / VITS options 的 JSON 非法时会阻止自动保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:246"
+  },
+  {
+    "fact": "语速与音调均为 Slider，取值范围 0.5f..2.0f、steps = 5",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:555"
+  },
+  {
+    "fact": "系统 TTS 的语言标签为空字符串时表示跟随系统",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:620"
+  },
+  {
+    "fact": "系统 TTS 音色经弹窗列表选择",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:631"
+  },
+  {
+    "fact": "通用 HTTP TTS 的请求方法仅支持 GET / POST 二选一",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:925"
+  },
+  {
+    "fact": "通用 HTTP TTS 的请求体输入框仅在方法为 POST 时显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:955"
+  },
+  {
+    "fact": "通用 HTTP TTS 的响应处理流水线使用 HttpTtsResponsePipelineStep 的 DSL 文本解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:272"
+  },
+  {
+    "fact": "选中豆包 TTS 引擎时自动填入默认接入点、默认音色并将 Content-Type 置为 application/json",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:531"
+  },
+  {
+    "fact": "VITS 为离线 TTS 引擎，配置项为模型包路径、说话人 ID 与 options JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1008"
+  },
+  {
+    "fact": "SHERPA_NCNN 为离线 STT 引擎，在界面上无任何配置项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2129"
+  },
+  {
+    "fact": "TTS 文本清洗支持自定义正则列表，内置 5 种模板：单星号、双星号、英文括号、中文括号、XML 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:748"
+  },
+  {
+    "fact": "OpenAI 兼容 TTS 可用当前 URL 与 API Key 刷新并搜索选择模型列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1747"
+  },
+  {
+    "fact": "OpenAI 兼容 TTS 可用当前 URL 与 API Key 刷新并搜索选择音色列表，拉取失败时回退内置音色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1921"
+  },
+  {
+    "fact": "OpenAI WS TTS 的实时音色从 OpenAIRealtimeVoiceProvider.AVAILABLE_VOICES 内置列表中搜索选择",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1574"
+  },
+  {
+    "fact": "硅基流动音色提供预设下拉（SiliconFlowVoiceProvider.getAvailableVoices）与自定义音色 ID 输入两种方式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1147"
+  },
+  {
+    "fact": "硅基流动的自定义音色 ID 输入框绑定 ttsVoiceIdInput",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1195"
+  },
+  {
+    "fact": "Mimo 音色提供预设下拉（MimoVoiceProvider.AVAILABLE_VOICES）与自定义音色 ID 输入两种方式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1345"
+  },
+  {
+    "fact": "豆包音色提供预设下拉（DoubaoVoiceProvider.AVAILABLE_VOICES）与自定义音色输入两种方式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1453"
+  },
+  {
+    "fact": "豆包配置区的 AppID 输入框绑定 ttsModelNameInput",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1433"
+  },
+  {
+    "fact": "豆包配置区的 Token 输入框绑定 ttsApiKeyInput",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:1444"
+  },
+  {
+    "fact": "ttsModelNameInput 初始化自 httpConfig.modelName，ttsApiKeyInput 初始化自 httpConfig.apiKey",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:158"
+  },
+  {
+    "fact": "TTS 页签底部测试 TTS 按钮跳转到外部试听页，本界面无内置试听播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:2286"
+  },
+  {
+    "fact": "档案操作失败时错误信息经 SnackbarHostState 以 Snackbar 展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:137"
+  },
+  {
+    "fact": "档案切换失败会记录 AppLogger.e(\"SpeechServicesSettings\", \"Failed to select TTS profile\", …) 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/SpeechServicesSettingsScreen.kt:436"
+  },
+  {
+    "fact": "二次元模式总开关状态来自 enableWaifuModeFlow，默认关闭",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:62"
+  },
+  {
+    "fact": "每次设置修改都会经 saveSettings 同时写全局偏好并同步到当前激活角色卡/角色组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:76"
+  },
+  {
+    "fact": "保存后会调用 saveCurrentWaifuSettingsToCharacterCard 把当前 waifu 设置写入角色卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:84"
+  },
+  {
+    "fact": "打字机每字延迟默认 250ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:63"
+  },
+  {
+    "fact": "打字延迟滑块范围 200ms–1000ms、39 步（20ms 步长）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:341"
+  },
+  {
+    "fact": "当前打字速度按 1000/charDelay 换算为字/秒显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:314"
+  },
+  {
+    "fact": "合并发送延迟滑块范围 500ms–10000ms、94 步",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:286"
+  },
+  {
+    "fact": "合并发送延迟默认值取自 WaifuPreferences.DEFAULT_WAIFU_MERGE_SEND_DELAY_MS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:70"
+  },
+  {
+    "fact": "自拍功能开启后才会显示外貌提示词输入框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:578"
+  },
+  {
+    "fact": "自定义提示词输入框每次按键都会触发保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:434"
+  },
+  {
+    "fact": "外貌提示词输入框每次按键都会触发保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:603"
+  },
+  {
+    "fact": "保存成功提示卡 2 秒后自动消失",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:94"
+  },
+  {
+    "fact": "管理自定义表情入口经回调 onNavigateToCustomEmoji 跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:505"
+  },
+  {
+    "fact": "当前激活 prompt 为角色组时 waifu 设置绑定到角色组而非角色卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/WaifuModeSettingsScreen.kt:81"
+  },
+  {
+    "fact": "角色卡编辑对话框接收 7 个参数：角色卡、标签列表、偏好管理器、关闭/保存/换头像/重置头像回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:60"
+  },
+  {
+    "fact": "角色卡字段包含名称、简介、角色设定、开场白、聊天附加内容、语音附加内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:71"
+  },
+  {
+    "fact": "角色卡可绑定多个标签（attachedTagIds）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:75"
+  },
+  {
+    "fact": "角色卡标签选择用 FilterChip 多选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:456"
+  },
+  {
+    "fact": "开场白旁有一键翻译按钮，调用 EnhancedAIService.translateText",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:356"
+  },
+  {
+    "fact": "翻译进行中按钮禁用并显示转圈",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:366"
+  },
+  {
+    "fact": "聊天模型绑定支持跟随全局或固定模型配置两档",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:71"
+  },
+  {
+    "fact": "记忆空间绑定支持跟随全局或固定记忆空间两档",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:75"
+  },
+  {
+    "fact": "固定模型配置为空或失效时自动回填首个可用配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:150"
+  },
+  {
+    "fact": "工具权限配置分四个页签：内置工具、工具包、skill、MCP",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:1085"
+  },
+  {
+    "fact": "工具权限选项支持按 key/标题/副标题关键字搜索过滤",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:1114"
+  },
+  {
+    "fact": "保存时若勾选外部工具但未勾选内置 use_package，弹 Toast 并中止保存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:928"
+  },
+  {
+    "fact": "非固定模型模式保存时 chatModelConfigId 置 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:950"
+  },
+  {
+    "fact": "非固定模型模式保存时 chatModelIndex 置 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:963"
+  },
+  {
+    "fact": "每个文本字段都可经全屏编辑对话框编辑，字段名经 fullScreenEditField 路由",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:1006"
+  },
+  {
+    "fact": "角色卡头像从 getAiAvatarForCharacterCardFlow(card.id) 读取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:134"
+  },
+  {
+    "fact": "工具包权限选项自动过滤掉工具包容器包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardDialog.kt:1046"
+  },
+  {
+    "fact": "角色卡分配对话框显示未绑定聊天数量 missingChatCount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardAssignDialog.kt:49"
+  },
+  {
+    "fact": "无角色卡时提示先创建角色卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardAssignDialog.kt:68"
+  },
+  {
+    "fact": "确认按钮仅在未进行中、已选中卡片、列表非空时可用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardAssignDialog.kt:93"
+  },
+  {
+    "fact": "分配进行中确认与取消按钮均禁用并显示转圈",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardAssignDialog.kt:106"
+  },
+  {
+    "fact": "选项卡无头像时用角色卡名称首字占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterCardAssignDialog.kt:173"
+  },
+  {
+    "fact": "角色组分配对话框结构与角色卡分配对话框完全同构",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterGroupAssignDialog.kt:47"
+  },
+  {
+    "fact": "角色组头像从 getAiAvatarForCharacterGroupFlow(group.id) 读取",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/CharacterGroupAssignDialog.kt:122"
+  },
+  {
+    "fact": "头像选择器点击圆形头像触发 onAvatarChange 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt:47"
+  },
+  {
+    "fact": "重置头像按钮仅在已有头像时可用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt:70"
+  },
+  {
+    "fact": "头像图片经 Uri.parse(avatarUri) 交由 coil 加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt:53"
+  },
+  {
+    "fact": "头像选择器不实现相册/拍照/预设选择、裁剪与权限申请，仅回调委托",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/components/AvatarPicker.kt:26"
+  }
+]

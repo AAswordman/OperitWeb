@@ -1,0 +1,488 @@
+[
+  {
+    "fact": "ToolGetter 是 object 单例，负责按当前权限级别装配工具实例；其中文件系统/UI/系统操作/设备信息四个家族有 5 级实现可切换。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:13",
+    "symbol": "ToolGetter"
+  },
+  {
+    "fact": "权限级别取自 androidPermissionPreferences.getPreferredPermissionLevel()，返回可空的 AndroidPermissionLevel。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:21",
+    "symbol": "getFileSystemTools"
+  },
+  {
+    "fact": "getFileSystemTools 按 ROOT/ADMIN/DEBUGGER/ACCESSIBILITY/STANDARD 分别返回 Root/Admin/Debugger/Accessibility/StandardFileSystemTools。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:22",
+    "symbol": "getFileSystemTools"
+  },
+  {
+    "fact": "权限级别为 null（未设置）时，getFileSystemTools 默认回退到 StandardFileSystemTools。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:27",
+    "symbol": "getFileSystemTools"
+  },
+  {
+    "fact": "getUITools 按同样 5 级分发，ROOT 对应 RootUITools，null 默认 StandardUITools。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:47",
+    "symbol": "getUITools"
+  },
+  {
+    "fact": "getSystemOperationTools 按 5 级分发，ROOT 对应 RootSystemOperationTools，null 默认标准实现。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:63",
+    "symbol": "getSystemOperationTools"
+  },
+  {
+    "fact": "getDeviceInfoToolExecutor 按 5 级分发，ROOT 对应 RootDeviceInfoToolExecutor，null 默认标准实现。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:79",
+    "symbol": "getDeviceInfoToolExecutor"
+  },
+  {
+    "fact": "四个分发方法的返回类型声明为 Standard* 基类（多态），调用方只依赖基类接口。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:20",
+    "symbol": "getFileSystemTools"
+  },
+  {
+    "fact": "Shell 工具（getShellToolExecutor）只有标准实现 StandardShellToolExecutor，不随权限级别切换。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:36",
+    "symbol": "getShellToolExecutor"
+  },
+  {
+    "fact": "HTTP/WebVisit/浏览器会话/Intent/广播/终端/音乐/记忆查询/FFmpeg/计算器/工作流/聊天管理/软件设置等十余个 getter 全部只返回标准实现，不参与权限分级。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/ToolGetter.kt:93",
+    "symbol": "getHttpTools"
+  },
+  {
+    "fact": "继承链为 Standard → Accessibility → Debugger → Admin → Root，每层 open class 继承上一层同类工具。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:52",
+    "symbol": "DebuggerFileSystemTools"
+  },
+  {
+    "fact": "AccessibilityFileSystemTools 继承 StandardFileSystemTools，当前阶段零新增、纯继承。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityFileSystemTools.kt:7",
+    "symbol": "AccessibilityFileSystemTools"
+  },
+  {
+    "fact": "AccessibilityDeviceInfoToolExecutor 继承 StandardDeviceInfoToolExecutor，零新增。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityDeviceInfoToolExecutor.kt:7",
+    "symbol": "AccessibilityDeviceInfoToolExecutor"
+  },
+  {
+    "fact": "AccessibilitySystemOperationTools 继承 StandardSystemOperationTools，零新增。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilitySystemOperationTools.kt:7",
+    "symbol": "AccessibilitySystemOperationTools"
+  },
+  {
+    "fact": "AccessibilityUITools 是无障碍层唯一有真实实现的类，继承 StandardUITools，用无障碍服务 API 实现 UI 操作。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:27",
+    "symbol": "AccessibilityUITools"
+  },
+  {
+    "fact": "DebuggerUITools 继承 AccessibilityUITools，在 shell 能力上叠加无障碍实现。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:31",
+    "symbol": "DebuggerUITools"
+  },
+  {
+    "fact": "DebuggerSystemOperationTools 继承 AccessibilitySystemOperationTools（第 15-16 行跨行声明）。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:15",
+    "symbol": "DebuggerSystemOperationTools"
+  },
+  {
+    "fact": "DebuggerDeviceInfoToolExecutor 继承 AccessibilityDeviceInfoToolExecutor，当前零新增。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerDeviceInfoToolExecutor.kt:7",
+    "symbol": "DebuggerDeviceInfoToolExecutor"
+  },
+  {
+    "fact": "Admin 四件套（FileSystem/DeviceInfo/SystemOperation/UI）全部继承 Debugger 同类，当前阶段零新增。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/admin/AdminFileSystemTools.kt:7",
+    "symbol": "AdminFileSystemTools"
+  },
+  {
+    "fact": "RootFileSystemTools / RootDeviceInfoToolExecutor / RootSystemOperationTools 继承 Admin 同类，当前零新增、行为与 Debugger 层一致。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootFileSystemTools.kt:7",
+    "symbol": "RootFileSystemTools"
+  },
+  {
+    "fact": "RootUITools 是 Root 层唯一重写行为的类，继承 AdminUITools（即 DebuggerUITools 行为基线）。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:27",
+    "symbol": "RootUITools"
+  },
+  {
+    "fact": "Debugger 文件系统工具的三级降级策略：environment=linux → 调 super；SAF 环境 → 调 super；Operit 内部路径 → 调 super；其余走 shell 命令实现。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:91",
+    "symbol": "listFiles"
+  },
+  {
+    "fact": "SAF 环境同样回退到 super 的高权限实现（listFiles 第 94-95 行）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:94",
+    "symbol": "listFiles"
+  },
+  {
+    "fact": "Operit 内部路径走 super 的注释写明意图：内部存储用“高权限方法”，外部路径才用 shell。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:102",
+    "symbol": "listFiles"
+  },
+  {
+    "fact": "isOperitInternalPath 判定：规范化后以 /data/data/$appPackage 开头，或 AndroidUserPathUtils.isCurrentUserPackageDataPath 判定为当前用户包数据路径。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:55",
+    "symbol": "isOperitInternalPath"
+  },
+  {
+    "fact": "非内部路径的 listFiles 用 `ls -la '$normalizedPath'` shell 命令，再做三级解析（Android 详细格式/通用格式/fallback）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:121",
+    "symbol": "listFiles"
+  },
+  {
+    "fact": "parseDetailedDirectoryListing 把权限位以 'd' 或 'c' 开头的条目都视为目录（'c' 为字符设备）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:199",
+    "symbol": "parseDetailedDirectoryListing"
+  },
+  {
+    "fact": "readFile/readFileFull/readFilePart 同样先做 linux/SAF/内部路径三级回退，之后用 cat/head 等 shell 命令读取。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:403",
+    "symbol": "readFileFull"
+  },
+  {
+    "fact": "二进制/特殊文件读取先调 super.handleSpecialFileRead 尝试，失败再走 shell 中转。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:446",
+    "symbol": "readFileFull"
+  },
+  {
+    "fact": "handleSpecialFileRead 对不可直接读的文件：shell `cat` 拷贝到 cacheDir 的 shell_copy_<时间戳>.<扩展名> 临时文件，再调 super 解析，最后把返回路径改回原路径。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:799",
+    "symbol": "handleSpecialFileRead"
+  },
+  {
+    "fact": "handleSpecialFileRead 的临时中转文件在 finally 中删除，不留残留。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:840",
+    "symbol": "handleSpecialFileRead"
+  },
+  {
+    "fact": "writeFile 非内部路径时用 base64 写入：内容 base64 后，长度 ≤32768 直接 `echo | base64 -d` 单行写入，超长则按 16384 字符分块追加。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:903",
+    "symbol": "writeFile"
+  },
+  {
+    "fact": "base64 分块大小取 16384（4 的倍数），保证 base64 解码边界正确；首块用 > 或 >>（append 时），后续块一律 >>。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:904",
+    "symbol": "writeFile"
+  },
+  {
+    "fact": "base64 方式失败且内容较小时，回退用 `printf '%s'` 直接写入。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:955",
+    "symbol": "writeFile"
+  },
+  {
+    "fact": "deleteFile 对路径使用 shQuote 做单引号转义后执行 rm，删后校验路径已不存在。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:1110",
+    "symbol": "deleteFile"
+  },
+  {
+    "fact": "shQuote 用单引号包裹并把内部单引号转义为 '\\''，是文件系统工具统一的 shell 转义手段。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:71",
+    "symbol": "shQuote"
+  },
+  {
+    "fact": "moveFile 对目标路径做了两次 validateAndroidPath 校验（第 1315 行与 1321 行重复）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:1315",
+    "symbol": "moveFile"
+  },
+  {
+    "fact": "findFiles 用 AndroidShellExecutor.startShellProcess 以流式进程执行 find，并通过进度总线实时上报。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:1772",
+    "symbol": "findFiles"
+  },
+  {
+    "fact": "unzipFiles 优先尝试设备端解压：依次试 `unzip`、`toybox unzip`、`busybox unzip`（-o 覆盖）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:2331",
+    "symbol": "unzipFiles"
+  },
+  {
+    "fact": "设备端解压全部失败时，回退到 Java ZipInputStream 逐条解压（先把 zip 经 shell cat 拉到本地临时文件）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:2485",
+    "symbol": "unzipFiles"
+  },
+  {
+    "fact": "ZipInputStream 回退路径有 zip-slip 防护：拒绝以 / 开头、含 .. 或 \\ 的 entry，并校验解压后 canonicalPath 仍在目标目录内。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:2499",
+    "symbol": "unzipFiles"
+  },
+  {
+    "fact": "openFile 用 `am start -a android.intent.action.VIEW -d 'file://$path' -t '$mimeType'` 调起系统查看器。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:2658",
+    "symbol": "openFile"
+  },
+  {
+    "fact": "shareFile 先经 shell `cat` 把文件暂存到外部文件目录下 share_tmp/<时间戳>_<原名>，再经 FileProvider 生成 content URI 发 ACTION_SEND 分享。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerFileSystemTools.kt:2761",
+    "symbol": "shareFile"
+  },
+  {
+    "fact": "modifySystemSetting 只允许 system/secure/global 三个 namespace，其余直接报错拒绝。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:34",
+    "symbol": "modifySystemSetting"
+  },
+  {
+    "fact": "modifySystemSetting 实际执行 `settings put $namespace $setting $value` shell 命令。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:45",
+    "symbol": "modifySystemSetting"
+  },
+  {
+    "fact": "getSystemSetting 同样限定三个 namespace，执行 `settings get $namespace $setting`。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:101",
+    "symbol": "getSystemSetting"
+  },
+  {
+    "fact": "installApp 若 apk 在 Operit 内部路径则委托 super.installApp（走标准安装流程），否则用 `pm install -r $apkPath`。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:149",
+    "symbol": "installApp"
+  },
+  {
+    "fact": "installApp 执行 `pm install -r $apkPath`，以输出含 'Success' 判定安装成功。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:171",
+    "symbol": "installApp"
+  },
+  {
+    "fact": "uninstallApp 按 keepData 参数执行 `pm uninstall -k $packageName` 或 `pm uninstall $packageName`。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:235",
+    "symbol": "uninstallApp"
+  },
+  {
+    "fact": "startApp 注释写明用 `am start` 而不用 monkey，避免修改屏幕旋转等系统设置。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:293",
+    "symbol": "startApp"
+  },
+  {
+    "fact": "startApp 无 activity 参数时，先用 `cmd package resolve-activity --brief` 解析主 Activity 再 `am start -n` 启动。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:295",
+    "symbol": "startApp"
+  },
+  {
+    "fact": "stopApp 执行 `am force-stop $packageName`。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:376",
+    "symbol": "stopApp"
+  },
+  {
+    "fact": "getNotifications 用 `dumpsys notification --noredact` 抓通知原文，再 grep pkg=/text= 提取。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerSystemOperationTools.kt:420",
+    "symbol": "getNotifications"
+  },
+  {
+    "fact": "DebuggerUITools 的 uiShellIdentity 默认为 null（默认 shell 身份），经 executeUiShellCommand 透传给 AndroidShellExecutor。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:37",
+    "symbol": "uiShellIdentity"
+  },
+  {
+    "fact": "getDisplayArg 在有 display 参数时返回 `-d <id> ` 前缀，拼在 input 系列 shell 命令之后，用于多屏/副屏场景。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:50",
+    "symbol": "getDisplayArg"
+  },
+  {
+    "fact": "tap/longPress/swipe/clickElement/setInputText/getPageInfo 统一策略：无 display 参数且无障碍服务启用时走 super（无障碍），否则走 shell。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:57",
+    "symbol": "tap"
+  },
+  {
+    "fact": "shell 点击为 `input tap x y`；长按用 `input swipe x y x y 800`（800ms 滑动模拟）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:149",
+    "symbol": "longPress"
+  },
+  {
+    "fact": "shell 滑动为 `input swipe startX startY endX endY duration`，duration 默认 300ms。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:219",
+    "symbol": "swipe"
+  },
+  {
+    "fact": "shell 输入文本流程：先 `input keyevent KEYCODE_CLEAR` 清空，再写剪贴板后 `input keyevent KEYCODE_PASTE` 粘贴。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:368",
+    "symbol": "setInputText"
+  },
+  {
+    "fact": "pressKey 在 Debugger 层直接走 shell `input keyevent $keyCode`，支持任意键码（与无障碍层仅支持 6 个系统全局手势不同）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:460",
+    "symbol": "pressKey"
+  },
+  {
+    "fact": "截图优先 shell `screencap -p <路径>`，失败才回退到 super（无障碍截图）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:505",
+    "symbol": "captureScreenshotToFile"
+  },
+  {
+    "fact": "getPageInfo 的 format 参数只接受 xml/json，其他值直接报错。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:555",
+    "symbol": "getPageInfo"
+  },
+  {
+    "fact": "getPageInfo 用 `uiautomator dump`（可带 --display-id）导出布局到 /sdcard/window_dump.xml，再 cat 回读解析。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:619",
+    "symbol": "getPageInfo"
+  },
+  {
+    "fact": "Debugger 的 clickElementWithUiautomator 用 XmlPullParser 逐节点匹配 resourceId/class/contentDesc",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:1142",
+    "symbol": "clickElementWithUiautomator"
+  },
+  {
+    "fact": "clickElementWithUiautomator 支持短 id（:id/ 后缀）与 partialMatch 模糊匹配",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:1162",
+    "symbol": "clickElementWithUiautomator"
+  },
+  {
+    "fact": "RootUITools 类注释声明其“无无障碍回退”（operates without accessibility fallbacks），与 Debugger 的“优先无障碍”策略相反。",
+    "kind": "architecture",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:25",
+    "symbol": "RootUITools"
+  },
+  {
+    "fact": "RootUITools 以 SHELL 身份执行 UI 命令（uiShellIdentity = ShellIdentity.SHELL），而 Debugger 层为 null 默认身份。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:33",
+    "symbol": "uiShellIdentity"
+  },
+  {
+    "fact": "RootUITools 重写了 tap/longPress/swipe/clickElement/setInputText/pressKey/getPageInfo，全部直走 shell，不再检查无障碍服务。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:41",
+    "symbol": "tap"
+  },
+  {
+    "fact": "Root 的 clickElementWithUiautomator 用正则 `<node[^>]*?属性[^>]*?>` 在 XML 文本上匹配节点，而非 XmlPullParser。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:587",
+    "symbol": "clickElementWithUiautomator"
+  },
+  {
+    "fact": "Root 的 uiautomator dump 文件在 finally 中 `rm /sdcard/window_dump.xml` 清理。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/root/RootUITools.kt:611",
+    "symbol": "clickElementWithUiautomator"
+  },
+  {
+    "fact": "RootUITools 未重写 captureScreenshot*，截图仍继承 Debugger 实现（shell 失败会回退无障碍），与其“无回退”声明不一致。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/debugger/DebuggerUITools.kt:521",
+    "symbol": "captureScreenshotToFile"
+  },
+  {
+    "fact": "无障碍层所有 UI 操作经 withAccessibilityCheck 前置检查：服务未启用则抛 IllegalStateException 提示去系统设置开启。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:45",
+    "symbol": "withAccessibilityCheck"
+  },
+  {
+    "fact": "无障碍获取 UI 层次结构带重试：最多 3 次、间隔 300ms（MAX_RETRY_COUNT=3，RETRY_DELAY_MS=300L）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:31",
+    "symbol": "getUIHierarchyWithRetry"
+  },
+  {
+    "fact": "simplifyLayout 用 XmlPullParser 把无障碍 XML 解析为 SimplifiedUINode 树（取 class/text/content-desc/resource-id/bounds/clickable）。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:166",
+    "symbol": "simplifyLayout"
+  },
+  {
+    "fact": "无障碍 clickElement 用 actualId.endsWith(resourceId) 做后缀匹配（较宽松），与 Debugger/Root 的精确或 :id/ 后缀匹配不同。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:268",
+    "symbol": "clickElement"
+  },
+  {
+    "fact": "无障碍 pressKey 只支持 6 个系统键（BACK/HOME/RECENTS/NOTIFICATIONS/QUICK_SETTINGS/POWER_DIALOG），映射为 AccessibilityService.GLOBAL_ACTION_*，其他键直接报错。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:675",
+    "symbol": "pressKey"
+  },
+  {
+    "fact": "无障碍截图经 UIHierarchyManager.takeScreenshot 走 AIDL 远程服务，存 OperitPaths.cleanOnExitDir() 下 <时间戳后4位>.png。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/accessbility/AccessibilityUITools.kt:736",
+    "symbol": "captureScreenshotToFile"
+  },
+  {
+    "fact": "PathValidator.validateAndroidPath：空白路径直接失败；不以 / 开头返回含 FileOperationData 的失败 ToolResult；返回 null 表示校验通过。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:8",
+    "symbol": "validateAndroidPath"
+  },
+  {
+    "fact": "Android 路径必须以 / 开头（第 17 行检查），相对路径一律拒绝。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:17",
+    "symbol": "validateAndroidPath"
+  },
+  {
+    "fact": "PathValidator.validateLinuxPath 允许 / 或 ~ 开头（env=linux），空白同样失败。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:42",
+    "symbol": "validateLinuxPath"
+  },
+  {
+    "fact": "校验函数返回 ToolResult?：null=通过，非 null=失败结果，调用方用 `?.let { return it }` 短路。",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:30",
+    "symbol": "validateAndroidPath"
+  }
+]

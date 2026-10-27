@@ -1,0 +1,58 @@
+[
+  {
+    "confidence": "high",
+    "description": "渲染器工厂把 6 种渲染器的 onError 回调全部设为空 lambda，渲染层报错被静默吞掉，调用方（如 AvatarView 的 onError）收不到任何错误，排障只能靠日志。",
+    "evidence": "                            onError = { }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarRendererFactoryImpl.kt",
+    "line": 35,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "WebP/MP4 文件名别名推断把含 angry/mad 的文件名映射到 SAD 情绪：一个叫 angry.webp 的资源会播出难过动画，语义错误。",
+    "evidence": "            AvatarEmotion.SAD to listOf(\"sad\", \"cry\", \"crying\", \"angry\", \"mad\"),",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/factory/AvatarModelFactoryImpl.kt",
+    "line": 360,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "playAnimation 对 _state 连续做两次 copy 发射：先清成 (null, 不循环) 再设新动画，订阅者会看到一个中间态；应合并为一次 copy。",
+    "evidence": "        _state.value = _state.value.copy(\n            currentAnimation = null,\n            isLooping = false\n        )\n        _state.value = _state.value.copy(\n            currentAnimation = animationName,\n            isLooping = loop == 0\n        )",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mmd/control/MmdAvatarController.kt",
+    "line": 106,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "WebPAvatarModel 把 shouldLoop 硬编码为 true、repeatCount 硬编码为 0，接口的可配置语义被实现类架空，调用方无法经模型关闭循环。",
+    "evidence": "    override val shouldLoop: Boolean\n        get() = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/webp/model/WebPAvatarModel.kt",
+    "line": 57,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "相机轨道用反射向 ModelViewer 私有字段注入自建 Manipulator，Filament 升级改字段名即失效；好在失败被 runCatching 接住并回退到模型空间绕转。",
+    "evidence": "            manipulator.jumpToBookmark(manipulator.homeBookmark)\n            field.set(modelViewer, manipulator)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt",
+    "line": 1344,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "data-URI 预处理把资源复制到 context.cacheDir/gltf_prepared/<hash> 工作区，文件内未见清理逻辑，源增多会长期占用缓存空间。",
+    "evidence": "        val workspaceDir = File(context.cacheDir, \"gltf_prepared/$sourceHash\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/gltf/view/GltfSurfaceView.kt",
+    "line": 624,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "ExoPlayer 释放时的异常被空 catch 吞掉，release 失败无日志、无回调。",
+    "evidence": "            } catch (_: Exception) {\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/avatar/impl/mp4/view/Mp4Renderer.kt",
+    "line": 67,
+    "severity": "suggestion"
+  }
+]

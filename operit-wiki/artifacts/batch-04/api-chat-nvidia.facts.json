@@ -1,0 +1,66 @@
+[
+  {
+    "fact": "NvidiaAIProvider 是 NVIDIA API Catalog / NIM 的专用供应商实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:14"
+  },
+  {
+    "fact": "类注释说明官方文档为 GPT-OSS 暴露了 model-specific 的 reasoning_effort 取值，为 Nemotron 3 Super/Ultra 端点暴露了当前取值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:13"
+  },
+  {
+    "fact": "请求映射器只写所选模型已发布的控制参数（The request mapper writes only the control published for the selected model）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:17"
+  },
+  {
+    "fact": "NvidiaAIProvider 继承自 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:33"
+  },
+  {
+    "fact": "构造函数参数 providerType 默认值为 ApiProviderType.NVIDIA",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:26"
+  },
+  {
+    "fact": "ApiProviderType.NVIDIA 的注释为“NVIDIA API Catalog / NIM”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:36"
+  },
+  {
+    "fact": "private val configuredApiEndpoint = apiEndpoint 保存构造时传入的端点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:47"
+  },
+  {
+    "fact": "类中重写了 `createRequestBody`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:49"
+  },
+  {
+    "fact": "createRequestBody 先调用 super.createRequestBodyInternal 生成标准 OpenAI 格式请求体的 JSON 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:58"
+  },
+  {
+    "fact": "随后调用 ThinkingConfigurationApplier.apply 的 context 重载，把 NVIDIA 的推理配置应用到请求 JSON 上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:68"
+  },
+  {
+    "fact": "ThinkingConfigurationApplier.apply 存在带 context 参数的重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:266"
+  },
+  {
+    "fact": "该重载内部直接委托给无 context 的重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ThinkingQualityMapping.kt:280"
+  },
+  {
+    "fact": "传入的 providerTypeId 硬编码为 ApiProviderType.NVIDIA.name，而非构造参数 providerType",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:71"
+  },
+  {
+    "fact": "同时传入 modelName、configuredApiEndpoint、thinkingConfigurations、enableThinking 与 thinkingOptionId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:73"
+  },
+  {
+    "fact": "最终用 `createJsonRequestBody(jsonObject.toString())` 构造成 RequestBody 返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NvidiaAIProvider.kt:79"
+  },
+  {
+    "fact": "AIServiceFactory 中 ApiProviderType.NVIDIA 分支构造 NvidiaAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:680"
+  }
+]

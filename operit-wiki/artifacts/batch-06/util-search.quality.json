@@ -1,0 +1,103 @@
+[
+  {
+    "confidence": "high",
+    "description": "索引文件加载失败时直接删除整个索引文件（indexFile.delete()），全部向量丢失，只能靠全量重建恢复，期间语义检索无数据可用。",
+    "evidence": "                indexFile.delete()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt",
+    "line": 33,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "整个 HNSW 索引用 Java 原生序列化（ObjectInputStream.readObject / ObjectOutputStream.writeObject）持久化，反序列化不受信字节流存在代码执行风险；目前文件位于应用私有目录，风险可控但格式与 hnswlib 版本强绑定。",
+    "evidence": "                ObjectInputStream(indexFile.inputStream()).use { it.readObject() as HnswIndex<Id, FloatArray, T, Float> }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt",
+    "line": 29,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "JNI 的 literal 参数在 Rust 侧被命名为 _literal 并完全忽略，Kotlin 侧固定传 false；调用方以为的\"字面量搜索\"实际按正则表达式执行，含正则元字符的 pattern 会被误解析。",
+    "evidence": "    _literal: jboolean,",
+    "file": "tools/native_ripgrep/src/lib.rs",
+    "line": 56,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "System.loadLibrary(\"operit_ripgrep\") 在 NativeRipgrep 首次被使用时触发，若设备 ABI 缺少对应 .so 则抛 UnsatisfiedLinkError，搜索链路无纯 Kotlin 降级方案。",
+    "evidence": "        System.loadLibrary(\"operit_ripgrep\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ripgrep/NativeRipgrep.kt",
+    "line": 5,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "JNI 返回字符串构造失败时返回空指针（null jstring），Kotlin 侧声明返回非空 String，会触发 NullPointerException。",
+    "evidence": "        .unwrap_or(std::ptr::null_mut())",
+    "file": "tools/native_ripgrep/src/lib.rs",
+    "line": 89,
+    "severity": "warn",
+    "file_line": null
+  },
+  {
+    "confidence": "high",
+    "description": "JSON 序列化失败时的手工兜底只转义反斜杠和双引号，错误信息中的换行符或控制字符会直接破坏返回的 JSON 结构。",
+    "evidence": "    text.replace('\\\\', \"\\\\\\\\\").replace('\"', \"\\\\\\\"\")",
+    "file": "tools/native_ripgrep/src/lib.rs",
+    "line": 349,
+    "severity": "warn",
+    "file_line": null
+  },
+  {
+    "confidence": "high",
+    "description": "单行正则匹配出错时用 unwrap_or(false) 按\"不匹配\"处理，静默丢弃该行的命中，无任何日志。",
+    "evidence": "            .any(|matcher| matcher.is_match(text.as_bytes()).unwrap_or(false));",
+    "file": "tools/native_ripgrep/src/lib.rs",
+    "line": 287,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "save() 捕获 IOException 后只记日志不抛异常，调用方（如重建索引流程）无法感知持久化失败，会以为索引已落盘。",
+    "evidence": "            } catch (e: IOException) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt",
+    "line": 81,
+    "severity": "warn",
+    "file_line": null
+  },
+  {
+    "confidence": "medium",
+    "description": "findNearest 只返回条目列表、丢弃 HNSW 算出的距离，MemoryRepository 检索后被迫对全部候选重算 cosineSimilarity，多做一次全量向量计算。",
+    "evidence": "        return index?.findNearest(query, k)?.map { it.item() } ?: emptyList()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt",
+    "line": 60,
+    "severity": "suggestion",
+    "file_line": null
+  },
+  {
+    "confidence": "medium",
+    "description": "IndexItem.equals 只比较 id，同 id 但向量/版本不同的两个条目被视为相等，调用方可借此实现\"同 id 覆盖\"语义，但也会掩盖向量未更新的问题。",
+    "evidence": "        if (id != other.id) return false",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/IndexItem.kt",
+    "line": 27,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "close() 只把 index 置 null 而不持久化，忘记先调 save() 会丢数据；现有调用方（MemoryRepository 重建流程）都遵守了 save-then-close 顺序。",
+    "evidence": "    fun close() {\n        index = null\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt",
+    "line": 88,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "is_probably_binary 只检查文件前 8192 字节是否含 NUL，头部无 NUL 的二进制大文件会被当成文本逐行读入内存。",
+    "evidence": "    let mut buffer = [0u8; 8192];",
+    "file": "tools/native_ripgrep/src/lib.rs",
+    "line": 262,
+    "severity": "suggestion",
+    "file_line": null
+  }
+]

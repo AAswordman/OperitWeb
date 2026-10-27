@@ -1,0 +1,126 @@
+[
+  {
+    "confidence": "high",
+    "description": "saveMemory 无条件用 generateEmbedding 的返回值覆盖旧 embedding；当云 embedding 未配置（CloudEmbeddingConfig 默认 enabled=false，generateEmbedding 在 !isReady() 时返回 null），保存记忆会静默抹掉已有的向量，导致该记忆永久失去语义检索能力，只能靠全量重建恢复。",
+    "evidence": "            memory.embedding = generateEmbedding(textForEmbedding, cloudConfig)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 843,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "updateChunk 无条件覆盖 chunk.embedding；embedding 服务未就绪时更新区块会静默丢弃该区块原有向量（与 Q0 的 saveMemory 同类：静默丢向量、数据丢失类），且 updateChunk 不返回值，调用方无法察觉。",
+    "evidence": "        chunk.embedding = generateEmbedding(newContent, cloudConfig)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 1802,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "deleteFolder 只用精确相等匹配文件夹，子文件夹（如 a/b）的记忆不会被移入未分类；但 getMemoriesByFolderPath 用前缀匹配包含子文件夹。删除文件夹 a 后 a/b 的记忆成为“已删文件夹下的孤儿”，语义不一致。",
+    "evidence": "                memoryBox.all.filter { normalizeFolderPath(it.folderPath) == normalizedTarget }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 2575,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "linkMemories 在做“链接已存在”去重检查前没有调用 source.links.reset()；若调用方传入的 source 是缓存的旧实体，去重检查基于过期 ToMany 快照，可能创建重复链接（getOutgoingLinks 等其它路径都会先 reset）。",
+    "evidence": "        val existingLink = source.links.find { link ->",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 1046,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "saveMemory 每次保存、updateMemory 在重生成向量时，都会经 addMemoryToIndexInternal 触发整维度索引重建（全量读 memoryBox.all 再逐条 addItem）；记忆量大时单次保存的写入放大明显。代码注释说明这是为规避 HNSW tombstone 增量删除的容量异常，属于已知权衡，但仍建议评估增量更新或后台批量重建。",
+    "evidence": "        val items = memoryBox.all",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 361,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "语义检索以 k=索引全部条目数 调用 findNearest，把全库向量都取回再在内存里按余弦相似度排序；每个关键词一次全量扫描，记忆量大时搜索延迟随库规模线性增长。",
+    "evidence": "        val nearest = manager.findNearest(",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 590,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "queryTitleCandidatesByFragments 对每个词条分片执行一次无 limit 的 ObjectBox contains 查询并全量 find()；查询词多、标题命中多时内存占用随分片数线性增长，建议加 limit 或合并查询。",
+    "evidence": "                memoryBox.query()",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 704,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "exportMemoriesToJson 只导出非文档节点；用户视角的“导出全部记忆”会静默丢掉所有文档节点及其区块，导入方也无法恢复，建议导出时明确提示或提供包含文档的选项。",
+    "evidence": "        val memories = memoryBox.query(Memory_.isDocumentNode.equal(false)).build().find()",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 2592,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "悬空链接清理用 @Volatile 时间戳做 check-then-act 节流但未同步；多个线程同时满足节流条件会并发执行全表扫描清理，结果幂等无害但浪费 IO，建议加锁或原子 CAS。",
+    "evidence": "    private fun cleanupDanglingLinksIfNeeded(force: Boolean = false) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 948,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "createMemoryFromDocument 对每个文档区块串行调用一次云端 embedding 接口；大文档导入时网络往返次数等于区块数，建议并发/批量生成并加进度回调。",
+    "evidence": "            val embeddings = chunks.map { generateEmbedding(it.content, cloudConfig) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 801,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "markFailed 把错误信息截断为 500 字符；自动保存失败的根因堆栈/长报文会被截掉，不利于事后排查，建议完整存入或同时记日志。",
+    "evidence": "        val normalizedError = errorMessage.take(500)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt",
+    "line": 115,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "isSearchableLexicalBody 丢弃长度为 1 的词条；单字中文查询（如“猫”）走不到关键词分支，只能靠反向包含或语义检索命中，关键词召回有缺口。",
+    "evidence": "        if (text.length !in 2..24) return false",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt",
+    "line": 660,
+    "severity": "suggestion"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySearchSettingsPreferences.kt",
+    "line": 101,
+    "evidence": ".putString(KEY_CLOUD_API_KEY, normalized.apiKey)",
+    "severity": "suggestion",
+    "confidence": 0.8,
+    "description": "云向量服务的 apiKey 经 MemorySearchSettingsPreferences 明文写入普通 SharedPreferences（\"cloud_embedding_settings_<profileId>\"，MODE_PRIVATE）。app 私有目录、非 world-readable，属常规做法；但敏感密钥未用加密存储，同一仓库内 Codex 凭证已用 EncryptedSharedPreferences，可考虑对齐。"
+  },
+  {
+    "title": "归档切分用 `## ` 正则，用户正文含同形标题会被误切",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt",
+    "line": 238,
+    "severity": "suggestion",
+    "category": "解析鲁棒性",
+    "detail": "parsePublishedArchive 用 `(?m)^## ([^\\r\\n]+)\\r?$` 把归档按二级标题切成多个画像；若某画像正文本身写了 `## ` 开头的行，会被误判为新画像的边界导致切错。只有 Basic information / Personality / Preferred assistant style 三个固定节名被排除。",
+    "evidence": "    private fun parsePublishedArchive(archiveContent: String): List<ArchivedProfileDocument> {\n        val sectionNames =\n            setOf(\"Basic information\", \"Personality\", \"Preferred assistant style\")\n        val headers =\n            Regex(\"(?m)^## ([^\\\\r\\\\n]+)\\\\r?$\")\n                .findAll(archiveContent)\n                .filter { it.groupValues[1] !in sectionNames }\n                .toList()",
+    "confidence": "medium"
+  },
+  {
+    "title": "delete() 删非空目录静默失败",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt",
+    "line": 106,
+    "severity": "suggestion",
+    "category": "错误处理",
+    "detail": "delete() 先删 user.md 再删整个空间目录；java.io.File.delete() 对非空目录返回 false 且不抛错——若目录里残留其他文件，删除会静默失败，调用方无从得知。",
+    "evidence": "    suspend fun delete(memorySpaceId: String) {\n        initialize()\n        writeMutex.withLock {\n            documentFile(memorySpaceId).delete()\n            profileDirectory(memorySpaceId).delete()\n        }\n    }",
+    "confidence": "high"
+  }
+]

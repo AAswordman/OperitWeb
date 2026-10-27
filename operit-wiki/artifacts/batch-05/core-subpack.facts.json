@@ -1,0 +1,430 @@
+[
+  {
+    "fact": "ApkEditor 是 APK 编辑器，提供链式调用 API，支持修改包名、应用名、图标和重新签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:12"
+  },
+  {
+    "fact": "ApkEditor 的构造函数是私有的，只能经由 companion object 的 fromAsset、fromFile、fromPath 三个工厂方法创建实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:13"
+  },
+  {
+    "fact": "ApkEditor.fromAsset 把 assets 中的 APK 复制到 cacheDir（文件名为 apk_editor_ 加原文件名，覆盖写）后再创建编辑器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:29"
+  },
+  {
+    "fact": "ApkEditor.fromFile 直接基于已有的 APK 文件创建编辑器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:44"
+  },
+  {
+    "fact": "ApkEditor.fromPath 按文件路径创建编辑器，内部转调 fromFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:56"
+  },
+  {
+    "fact": "ApkEditor.changePackageName 只把新包名存入成员变量并返回 this，支持链式调用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:87"
+  },
+  {
+    "fact": "ApkEditor.changeAppName 只把新应用名存入成员变量并返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:97"
+  },
+  {
+    "fact": "ApkEditor.changeVersionName 只把新版本名存入成员变量并返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:107"
+  },
+  {
+    "fact": "ApkEditor.changeVersionCode 只把新版本号存入成员变量并返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:117"
+  },
+  {
+    "fact": "ApkEditor.changeIcon(Bitmap) 直接保存图标位图并返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:127"
+  },
+  {
+    "fact": "ApkEditor.changeIcon(InputStream) 用 BitmapFactory.decodeStream 把流解码成位图后转调 Bitmap 重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:137"
+  },
+  {
+    "fact": "ApkEditor.changeIconFromAsset 从 assets 打开图标文件流后转调 InputStream 重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:147"
+  },
+  {
+    "fact": "ApkEditor.withSignature 接收密钥库文件、库密码、别名、密钥密码四项签名信息并保存，返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:161"
+  },
+  {
+    "fact": "ApkEditor.setOutput 接受 File 类型的输出文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:179"
+  },
+  {
+    "fact": "ApkEditor.setOutput 接受路径字符串作为输出文件路径（内部转成 File）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:189"
+  },
+  {
+    "fact": "ApkEditor.repackWithWebContent 只替换 Web 内容并更新清单信息，采用流式重写 zip，不落地解压。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:198"
+  },
+  {
+    "fact": "ApkEditor.repackWithWebContent 要求 webContentDir 存在且为目录，否则抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:200"
+  },
+  {
+    "fact": "ApkEditor.repackWithWebContent 未指定输出文件时，默认输出到 cacheDir 下 unsigned_ 加原 APK 文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:207"
+  },
+  {
+    "fact": "ApkEditor.repackWithWebContent 打包失败时抛 RuntimeException（文案取自 R.string.apk_editor_repack_failed）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:221"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 先调用 repackWithWebContent 生成未签名包，再对它签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:232"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 发现未签名包不存在或为空时抛 RuntimeException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:237"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 在四项签名信息不全时抛 IllegalStateException（文案取自 R.string.apk_editor_signature_incomplete）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:246"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 指定了输出文件时，签名中间文件名为 to_sign_ 加时间戳加未签名包名；否则输出到 cacheDir 下 signed_ 加原 APK 文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:250"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 在 signApk 返回失败时抛 RuntimeException，错误信息取自返回 Pair 的 second。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:266"
+  },
+  {
+    "fact": "ApkEditor.repackAndSignWithWebContent 签名成功且指定了输出文件时，把签名包复制到输出位置并删除临时签名文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:272"
+  },
+  {
+    "fact": "ApkEditor.cleanup 回收 newIconBitmap 并置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkEditor.kt:296"
+  },
+  {
+    "fact": "ApkReverseEngineer 是 APK 逆向工程工具类，负责 APK 的修改和重新打包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:22"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 逐条目流式复制原 APK，跳过 META-INF/ 条目以丢弃旧签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:118"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 跳过 assets/flutter_assets/assets/web_content/ 下的旧 Web 内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:123"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 在提供了新图标时，对命中 shouldReplaceIconEntry 的条目用 buildIconBytes 生成的字节重写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:127"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 对 AndroidManifest.xml 条目调用 modifyManifestBytes 修改后写回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:133"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 对其余条目调用 copyZipEntry 原样复制，保留原压缩方式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:145"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 在打包末尾调用 addWebContentToZip，把 webContentDir 下所有文件写入 assets/flutter_assets/assets/web_content/ 前缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:151"
+  },
+  {
+    "fact": "ApkReverseEngineer.repackageApkWithWebContent 先写出 _unaligned.apk 临时文件，再经 zipalign 输出最终文件并删除临时文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:156"
+  },
+  {
+    "fact": "APK 打包流程调用 zipalign(tempUnalignedApk, outputApk, 4) 做 4 字节对齐。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:156"
+  },
+  {
+    "fact": "ApkReverseEngineer.zipalign 使用 zipalign-java 库，调用 ZipAlign.alignZip(rafIn, fos, alignment, 4 * 1024)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:193"
+  },
+  {
+    "fact": "zipalign 对齐时 .so 文件按 16KB（4*1024）边界对齐，其余文件按传入的 alignment 参数对齐。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:190"
+  },
+  {
+    "fact": "shouldStoreWithoutCompression 规定 AndroidManifest.xml、resources.arsc、.dex 以及 META-INF 下的签名文件用 STORED 方式不压缩存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:211"
+  },
+  {
+    "fact": "shouldReplaceIconEntry 只处理 res/ 目录下的条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:237"
+  },
+  {
+    "fact": "shouldReplaceIconEntry 命中硬编码图标名集合（yn.png、n3.png、9w.png、fs.png、rj.png、o-.png）即判定为待替换图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:246"
+  },
+  {
+    "fact": "shouldReplaceIconEntry 对文件名以 ic_launcher、ic_launcher_round、ic_launcher_foreground、ic_launcher_background 开头且位于 mipmap 或 drawable 目录的条目判定为待替换图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:252"
+  },
+  {
+    "fact": "determineIconSizeFromPath 按密度目录决定图标尺寸：xxxhdpi 192、xxhdpi 144、xhdpi 96、hdpi 72、mdpi 48，默认 96。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:277"
+  },
+  {
+    "fact": "buildIconBytes 按目标条目扩展名选择压缩格式：webp 用 WEBP，jpg/jpeg 用 JPEG，其余用 PNG，压缩质量 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:262"
+  },
+  {
+    "fact": "replacePackageReferences 递归遍历 AXML 所有节点的属性，把含旧包名的字符串值替换为新包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:63"
+  },
+  {
+    "fact": "替换包名引用时，值为 $oldPackageName.MainActivity 或以 .$oldPackageName.MainActivity 结尾的属性会被保留不变。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:54"
+  },
+  {
+    "fact": "modifyManifestBytes 用 AxmlReader 解析二进制 AndroidManifest，修改后经 AxmlWriter 写回字节数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:392"
+  },
+  {
+    "fact": "改包名时若 manifest 缺少 package 属性，modifyManifestBytes 会新建一个 package 属性再赋值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:401"
+  },
+  {
+    "fact": "modifyManifestBytes 写入 versionCode 时用 newVersionCode.toIntOrNull()，解析失败填 1，属性类型标记为 TYPE_INT_HEX。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:451"
+  },
+  {
+    "fact": "versionName 与 versionCode 查找不到时会被新建；android 命名空间缺省为 http://schemas.android.com/apk/res/android。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:427"
+  },
+  {
+    "fact": "改应用名时 modifyManifestBytes 只修改 manifest 下 application 节点的 label 属性，找不到则新建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:467"
+  },
+  {
+    "fact": "modifyManifestBytes 发生异常时记日志并返回原始 manifest 字节，清单修改被跳过但打包流程继续。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:499"
+  },
+  {
+    "fact": "ApkReverseEngineer.signApk 先校验未签名 APK 文件与密钥库文件存在，不存在即返回失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:514"
+  },
+  {
+    "fact": "ApkReverseEngineer.signApk 先尝试以 PKCS12 格式加载密钥库签名，失败再试 JKS；两种都失败则返回合并后的错误信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:537"
+  },
+  {
+    "fact": "trySignWithKeyStoreType 经 KeyStoreHelper.getKeyStoreInstance 获取指定类型的密钥库实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:593"
+  },
+  {
+    "fact": "密钥库中没有任何别名时签名返回失败；指定别名不存在但有其他别名时，用第一个可用别名签名并打警告日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:629"
+  },
+  {
+    "fact": "signWithKeyStore 要求别名对应私钥、证书链非空且链上证书全部为 X509Certificate，否则返回失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:660"
+  },
+  {
+    "fact": "APK 签名使用 com.android.apksig 的 ApkSigner，setMinSdkVersion(26)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:702"
+  },
+  {
+    "fact": "ApkReverseEngineer.signApk 返回 Pair<Boolean, String?>，成功时第二个值为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ApkReverseEngineer.kt:514"
+  },
+  {
+    "fact": "KeyStoreHelper 是密钥库辅助类，统一处理密钥库加载、验证和 Provider 管理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:12"
+  },
+  {
+    "fact": "KeyStoreHelper.registerBouncyCastleProvider 先移除名为 BC 的安全提供者，再把新的 BouncyCastleProvider 插入到第 1 位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:28"
+  },
+  {
+    "fact": "KeyStoreHelper.getKeyStoreInstance 对 PKCS12 类型先注册 BouncyCastle 提供者再获取实例，其他类型直接获取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:52"
+  },
+  {
+    "fact": "KeyStoreHelper.validateKeystore 加载密钥库并要求其中至少包含一个别名才算有效。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:78"
+  },
+  {
+    "fact": "KeyStoreHelper.loadKeystoreFromAsset 从 assets 复制密钥库到 filesDir；目标已存在且大于 1000 字节则直接复用，复制后仍要求大于 1000 字节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:118"
+  },
+  {
+    "fact": "KeyStoreHelper.getOrCreateKeystore 按 filesDir 下 pkcs12.keystore、jks.jks，再到 assets 内置两份的顺序尝试，密码均为 android，校验有效才返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:165"
+  },
+  {
+    "fact": "KeyStoreHelper.getOrCreateKeystore 所有尝试都失败时，返回 filesDir 下 pkcs12.keystore 的默认路径（不保证该文件存在）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/KeyStoreHelper.kt:194"
+  },
+  {
+    "fact": "ExeEditor 是 EXE 编辑器，提供链式调用 API，目前只支持更换图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:11"
+  },
+  {
+    "fact": "ExeEditor.fromAsset 把 assets 中的 EXE 复制到 cacheDir（文件名为 exe_editor_ 加原文件名，覆盖写）后再创建编辑器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:28"
+  },
+  {
+    "fact": "ExeEditor.fromFile 直接基于已有的 EXE 文件创建编辑器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:43"
+  },
+  {
+    "fact": "ExeEditor.fromPath 按文件路径创建编辑器，内部转调 fromFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:55"
+  },
+  {
+    "fact": "ExeEditor.changeIcon(Bitmap) 保存图标位图并返回 this。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:76"
+  },
+  {
+    "fact": "ExeEditor.changeIcon(InputStream) 用 BitmapFactory.decodeStream 解码后转调 Bitmap 重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:86"
+  },
+  {
+    "fact": "ExeEditor.changeIconFromAsset 从 assets 打开图标文件流后转调 InputStream 重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:96"
+  },
+  {
+    "fact": "ExeEditor.setOutput 接受 File 类型的输出文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:107"
+  },
+  {
+    "fact": "ExeEditor.setOutput 接受路径字符串作为输出文件路径（内部转成 File）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:117"
+  },
+  {
+    "fact": "ExeEditor.process 要求先调用 changeIcon 设置图标，否则抛 IllegalStateException（文案取自 R.string.exe_editor_change_icon_first）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:127"
+  },
+  {
+    "fact": "ExeEditor.process 未指定输出文件时，默认输出到 cacheDir 下 modified_ 加原 EXE 文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:135"
+  },
+  {
+    "fact": "ExeEditor.process 调用 exeIconChanger.changeIcon 执行图标更换，失败时抛 RuntimeException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:141"
+  },
+  {
+    "fact": "ExeEditor.cleanup 调用 exeIconChanger.cleanup() 并回收图标位图。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeEditor.kt:147"
+  },
+  {
+    "fact": "ExeIconChanger 是 Windows 可执行文件图标更换工具，包含 PE 文件格式解析与图标资源替换逻辑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:13"
+  },
+  {
+    "fact": "ExeIconChanger.changeIcon 先把输入 EXE 复制到输出位置，再生成临时 ICO 文件，最后调用 simulateResourceReplacement。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:39"
+  },
+  {
+    "fact": "ExeIconChanger.changeIcon 复制前若输出文件已存在会先删除，并自动创建父目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:45"
+  },
+  {
+    "fact": "createIcoFile 手写 ICO 文件：6 字节文件头加 16 字节目录项加 PNG 图像数据，宽高上限 256（256 记为 0）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:75"
+  },
+  {
+    "fact": "createIcoFile 写入的图像数据偏移量为 22（即 6 字节头加 16 字节目录项）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:100"
+  },
+  {
+    "fact": "simulateResourceReplacement 只是模拟实现，其注释明确说明在 Android 上无法实际修改 EXE 文件资源，函数直接返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:119"
+  },
+  {
+    "fact": "ExeIconChanger.isPEFile 校验 DOS 头 MZ、0x3C 处的 PE 头偏移与 PE 签名；当前没有其他代码调用它。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:140"
+  },
+  {
+    "fact": "ExeIconChanger.cleanup 删除 cacheDir 下的 exe_icon_temp 临时目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/subpack/ExeIconChanger.kt:164"
+  },
+  {
+    "fact": "exportAndroidApp 是 Android 应用导出的 suspend 入口函数，在 Dispatchers.IO 上执行，经 onProgress 与 onComplete 回调进度和结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:766"
+  },
+  {
+    "fact": "Android 导出以 assets 中的 subpack/android.apk 为模板，经 ApkEditor.fromAsset 初始化编辑器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:782"
+  },
+  {
+    "fact": "Android 导出依次设置包名、应用名、版本名、版本号；提供了图标 URI 则用 ContentResolver 打开流并调用 changeIcon。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:788"
+  },
+  {
+    "fact": "Android 导出用的签名密钥库来自 KeyStoreHelper.getOrCreateKeystore(context)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:802"
+  },
+  {
+    "fact": "Android 导出写死的签名参数为：库密码 android、别名 androidkey、密钥密码 android。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:830"
+  },
+  {
+    "fact": "Android 导出产物文件名为 WebApp_ 加时间戳 .apk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:822"
+  },
+  {
+    "fact": "Android 导出产物输出到 Download/Operit/exports 目录（Environment.DIRECTORY_DOWNLOADS 下的 Operit/exports 子目录）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:815"
+  },
+  {
+    "fact": "exportWindowsApp 是 Windows 应用导出的 suspend 入口函数，同样在 Dispatchers.IO 上执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:866"
+  },
+  {
+    "fact": "Windows 导出以 assets 中的 subpack/windows.zip 为模板，复制到 cacheDir/windows_export_temp 后解压。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:893"
+  },
+  {
+    "fact": "Windows 导出有图标时，对解压出的 assistance_subpack.exe 执行 ExeEditor.fromFile(...).changeIcon(input).setOutput(mainExe).process()，输入与输出为同一文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:926"
+  },
+  {
+    "fact": "Windows 导出把网页内容目录复制到解压目录下的 data/flutter_assets/assets/web_content。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:942"
+  },
+  {
+    "fact": "Windows 导出最终把解压目录重新打包为 ZIP，文件名为应用名（非字母数字下划线连字符替换为下划线）加时间戳，输出到 Download/Operit/exports。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:957"
+  },
+  {
+    "fact": "Windows 导出在 finally 中删除 cacheDir/windows_export_temp 临时工作目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:982"
+  },
+  {
+    "fact": "Android 导出对话框的默认值：包名 com.example.webproject、应用名 Web Project、版本名 1.0.0、版本号 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt:171"
+  },
+  {
+    "fact": "APK 打包链的 Gradle 依赖为：apksig 8.1.0、Sable axml 2.0.0、zipalign-java 1.2.1、commons-compress 1.25.0、commons-io 2.13.0。",
+    "ref": "gradle/libs.versions.toml:21"
+  },
+  {
+    "fact": "签名用的 BouncyCastle 为 bcprov-jdk18on 1.78。",
+    "ref": "app/build.gradle.kts:830"
+  },
+  {
+    "fact": "构建配置排除了 bcprov-jdk15to18 以防类重复。",
+    "ref": "app/build.gradle.kts:821"
+  },
+  {
+    "fact": "聊天页经导出平台选择对话框调起 exportAndroidApp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1007"
+  },
+  {
+    "fact": "聊天页经导出平台选择对话框调起 exportWindowsApp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScreenContent.kt:1045"
+  },
+  {
+    "fact": "HTML 打包器页面（HtmlPackagerScreen）也复用 exportAndroidApp 导出函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:207"
+  },
+  {
+    "fact": "HTML 打包器页面（HtmlPackagerScreen）也复用 exportWindowsApp 导出函数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/htmlpackager/HtmlPackagerScreen.kt:272"
+  }
+]

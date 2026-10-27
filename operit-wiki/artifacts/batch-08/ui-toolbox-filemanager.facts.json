@@ -1,0 +1,578 @@
+[
+  {
+    "fact": "文件管理器 UI 全部代码位于 ui/features/toolbox/screens/filemanager/ 包下，共 13 个 kt 文件约 3494 行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:1"
+  },
+  {
+    "fact": "models/FileModels.kt 定义 TabItem 数据类，字段为 path、title、environment（environment 默认为 null）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/models/FileModels.kt:4"
+  },
+  {
+    "fact": "models/FileModels.kt 定义 FileItem 数据类，字段为 name、isDirectory、size（默认 0）、lastModified（默认 0）、fullPath（默认 null）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/models/FileModels.kt:11"
+  },
+  {
+    "fact": "FileManagerViewModel 继承 ViewModel，构造参数为 Context，默认起始路径为 /sdcard",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:28"
+  },
+  {
+    "fact": "FileManagerViewModel.currentPath 用 mutableStateOf 持有，private set，对外只读",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:30"
+  },
+  {
+    "fact": "FileManagerViewModel.currentEnvironment 为可空 String，用于区分 linux / repo:xxx 等文件系统环境",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:31"
+  },
+  {
+    "fact": "文件列表 files 用 mutableStateListOf<FileItem> 持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:33"
+  },
+  {
+    "fact": "加载与错误状态分别由 isLoading、error 两个 mutableStateOf 持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:34"
+  },
+  {
+    "fact": "单选选中文件 selectedFile、多选集合 selectedFiles、多选开关 isMultiSelectMode 三者独立持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:38"
+  },
+  {
+    "fact": "剪贴板状态由 clipboardFiles、isCutOperation、clipboardSourcePath 三个状态持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:43"
+  },
+  {
+    "fact": "图标缩放 itemSize 默认 1f，下限 0.5f、上限 1.3f、步进 0.1f，均为 val 常量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:48"
+  },
+  {
+    "fact": "显示模式 displayMode 默认 DisplayMode.SINGLE_COLUMN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:52"
+  },
+  {
+    "fact": "滚动位置记忆用 scrollPositions（mutableStateMapOf 路径->首可见索引）与 pendingScrollPosition（待恢复）持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:55"
+  },
+  {
+    "fact": "标签页 tabs 初始只有一个 TabItem(\"/sdcard\", file_manager_home, null)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:59"
+  },
+  {
+    "fact": "底部动作菜单与上下文菜单文件分别由 showBottomActionMenu、contextMenuFile 持有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:64"
+  },
+  {
+    "fact": "ViewModel 声明了 showCompressDialog、compressFileName 两个状态，但在 ViewModel 内从未被读写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:68"
+  },
+  {
+    "fact": "搜索状态包含 searchQuery、isSearching、searchResults、showSearchDialog、searchDialogQuery、showSearchResultsDialog",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:72"
+  },
+  {
+    "fact": "搜索默认区分大小写关闭（isCaseSensitive=false）、通配符开启（useWildcard=true）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:76"
+  },
+  {
+    "fact": "toolHandler 用 by lazy 延迟获取 AIToolHandler.getInstance(context)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:81"
+  },
+  {
+    "fact": "withEnvParams 在 environment 非空时给工具参数追加 ToolParameter(\"environment\", environment)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:83"
+  },
+  {
+    "fact": "isSafEnv 判断 environment 是否以 repo: 开头（忽略大小写），但在 ViewModel 内没有任何调用处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:88"
+  },
+  {
+    "fact": "loadCurrentDirectory 在 viewModelScope.launch 中执行，先把 isLoading 置 true、error 置 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:93"
+  },
+  {
+    "fact": "loadCurrentDirectory 把工具执行切到 Dispatchers.IO，构造 AITool(name=\"list_files\") 传入 path 与环境参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:98"
+  },
+  {
+    "fact": "list_files 成功后把 result.result 强转为 DirectoryListingData，再逐条映射为 FileItem",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:105"
+  },
+  {
+    "fact": "lastModified 字符串转 Long 失败时兜底为 0（toLongOrNull() ?: 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:114"
+  },
+  {
+    "fact": "每次加载成功后列表先清空，再在首位插入 FileItem(\"..\", true, 0, 0) 作为返回上级入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:121"
+  },
+  {
+    "fact": "UI 状态更新（files/error/isLoading）都切回 Dispatchers.Main 执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:118"
+  },
+  {
+    "fact": "loadCurrentDirectory 的 finally 块在主线程把 isLoading 置 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:131"
+  },
+  {
+    "fact": "navigateToDirectory 仅在 dir.isDirectory 为 true 时执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:138"
+  },
+  {
+    "fact": "点击名为 \"..\" 的目录项会走 navigateUp() 并直接返回，不拼接路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:143"
+  },
+  {
+    "fact": "进入子目录用 buildPath(currentPath, dir.name) 拼接新路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:148"
+  },
+  {
+    "fact": "导航前把目标路径的已记忆滚动位置写入 pendingScrollPosition（无记忆则为 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:150"
+  },
+  {
+    "fact": "导航后同步更新当前活动标签页的 path",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:153"
+  },
+  {
+    "fact": "navigateUp 在 currentPath 为 \"/\" 时直接返回 false，不做任何事",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:165"
+  },
+  {
+    "fact": "navigateUp 计算父路径：斜杠数 <=1 则为 \"/\"，否则取最后一个斜杠之前的子串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:168"
+  },
+  {
+    "fact": "navigateToPath 会去掉路径末尾多余的斜杠（\"/\" 本身除外）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:195"
+  },
+  {
+    "fact": "navigateToPath 会同时切换 currentEnvironment 并写回标签页的 environment",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:204"
+  },
+  {
+    "fact": "addTab 默认在 /sdcard 新建标签并切为活动标签，同时重置 currentEnvironment 为 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:219"
+  },
+  {
+    "fact": "closeTab 仅在标签数大于 1 时允许关闭，关闭后修正 activeTabIndex 不越界",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:228"
+  },
+  {
+    "fact": "switchTab 按索引切换标签并同步 currentPath 与 currentEnvironment",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:241"
+  },
+  {
+    "fact": "createNewFolder 用 buildPath 拼接完整路径后调用 AITool(name=\"make_directory\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:251"
+  },
+  {
+    "fact": "新建文件夹成功后调用 loadCurrentDirectory() 刷新列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:265"
+  },
+  {
+    "fact": "searchFiles 查询为空时直接清空搜索结果并退出搜索态，不调工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:281"
+  },
+  {
+    "fact": "开启通配符时搜索模式为 \"*$query*\"，关闭时直接使用原查询串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:294"
+  },
+  {
+    "fact": "搜索调用 AITool(name=\"find_files\")，参数为 path、pattern、case_sensitive（布尔转字符串）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:296"
+  },
+  {
+    "fact": "搜索结果 result.result 强转为 FindFilesResultData，取其 files 路径列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:313"
+  },
+  {
+    "fact": "搜索结果的文件名取自完整路径最后一个斜杠之后的子串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:315"
+  },
+  {
+    "fact": "搜索对每个结果路径逐个调用 AITool(name=\"file_info\")，以 fileType==\"directory\" 判断是否为目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:318"
+  },
+  {
+    "fact": "file_info 调用失败或异常时该结果按非目录处理（isDir=false）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:338"
+  },
+  {
+    "fact": "搜索结果 FileItem 的 size 与 lastModified 固定填 0，fullPath 保存完整路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:351"
+  },
+  {
+    "fact": "搜索成功后在主线程刷新 searchResults 并弹出 showSearchResultsDialog",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:366"
+  },
+  {
+    "fact": "navigateToFileDirectory 取文件路径最后一个斜杠之前的目录并导航过去",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:382"
+  },
+  {
+    "fact": "从搜索结果跳转目录时会关闭搜索结果对话框并退出搜索态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:392"
+  },
+  {
+    "fact": "setClipboard 记录剪贴板文件、是否剪切、来源路径三要素",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:405"
+  },
+  {
+    "fact": "pasteFiles 在剪贴板为空或来源路径为 null 时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:413"
+  },
+  {
+    "fact": "粘贴对剪贴板每个文件调用 AITool(name=\"copy_file\")，源与目标都用 buildPath 拼接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:425"
+  },
+  {
+    "fact": "剪切粘贴成功后会对源路径再调用 AITool(name=\"delete_file\")（先复制后删除）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:441"
+  },
+  {
+    "fact": "粘贴中某个文件失败时把 error 写到主线程并继续处理下一个文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:457"
+  },
+  {
+    "fact": "ViewModel 的 init 块直接调用 loadCurrentDirectory() 加载初始目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:479"
+  },
+  {
+    "fact": "buildPath 对父路径为 \"/\" 的情况特殊处理为 \"/$childName\"，避免出现双斜杠",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:484"
+  },
+  {
+    "fact": "FileManagerScreen 是 @Composable 入口，接收 NavController 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:45"
+  },
+  {
+    "fact": "FileManagerScreen 用 remember 创建 FileManagerViewModel 实例，用 AIToolHandler.getInstance(context) 拿工具执行器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:51"
+  },
+  {
+    "fact": "querySafBookmarkDisplayName 用 DocumentsContract 查询目录显示名，但整个文件内没有任何调用处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:64"
+  },
+  {
+    "fact": "queryRepoBookmarkName 取内容提供者的应用标签做书签名，规范化为小写、下划线连接，空白则为 \"repo\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:87"
+  },
+  {
+    "fact": "添加仓库书签用 ActivityResultContracts.OpenDocumentTree() 唤起系统目录选择器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:107"
+  },
+  {
+    "fact": "选中目录后调用 takePersistableUriPermission 获取读写持久化 URI 权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:111"
+  },
+  {
+    "fact": "书签命名对话框校验：空名报错、与其他书签重名（忽略大小写、排除自身 URI）报错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:158"
+  },
+  {
+    "fact": "书签确认后调用 apiPreferences.addSafBookmark(uri.toString(), name) 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:167"
+  },
+  {
+    "fact": "列表用 rememberLazyListState 创建 listState，并用 derivedStateOf 观察 firstVisibleItemIndex",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:184"
+  },
+  {
+    "fact": "单击文件：多选模式下切换选中态；目录则导航，非目录则设为 selectedFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:195"
+  },
+  {
+    "fact": "长按文件：多选模式下已选中则弹底部菜单，未选中则加入选中；单选模式下设 contextMenuFile 并弹菜单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:213"
+  },
+  {
+    "fact": "滚动位置仅在 pendingScrollPosition 为 null 且列表非空时才写入 scrollPositions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:227"
+  },
+  {
+    "fact": "currentPath 变化时 LaunchedEffect 触发 viewModel.loadCurrentDirectory(currentPath) 重新加载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:234"
+  },
+  {
+    "fact": "工具栏放大按钮在 itemSize 达到 maxItemSize 时不再生效，缩小同理受 minItemSize 限制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:248"
+  },
+  {
+    "fact": "多选模式切换按钮会清空 selectedFiles 再翻转 isMultiSelectMode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:260"
+  },
+  {
+    "fact": "快速访问栏 Linux 芯片点击后 navigateToPath(\"/\", \"linux\") 进入 Linux 环境根目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:324"
+  },
+  {
+    "fact": "SDCard 芯片仅在外部存储目录存在时才 navigateToPath(sdcardPath, null)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:336"
+  },
+  {
+    "fact": "Workspace 芯片仅在应用 filesDir 下 workspace 目录存在时才跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:349"
+  },
+  {
+    "fact": "每个 SAF 书签对应环境名为 \"repo:${bookmark.name}\"，用 remember(bookmark.name) 缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:357"
+  },
+  {
+    "fact": "点击书签芯片跳转到该仓库环境根目录 navigateToPath(\"/\", repoEnv)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:365"
+  },
+  {
+    "fact": "书签长按弹出 DropdownMenu，提供删除书签选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:367"
+  },
+  {
+    "fact": "删除书签时先 releasePersistableUriPermission 释放持久化 URI 权限，再 removeSafBookmark",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:380"
+  },
+  {
+    "fact": "删除当前正在浏览的书签时，会回退到 workspace 目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:385"
+  },
+  {
+    "fact": "\"+\" 芯片点击调用 addSafLauncher.launch(null) 重新唤起目录选择器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:400"
+  },
+  {
+    "fact": "搜索对话框确认后把 searchDialogQuery 写入 searchQuery 并调用 searchFiles",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:447"
+  },
+  {
+    "fact": "搜索结果对话框点击条目调用 navigateToFileDirectory(path) 跳到文件所在目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:466"
+  },
+  {
+    "fact": "新建文件夹对话框确认后调用 viewModel.createNewFolder(viewModel.newFolderName)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:474"
+  },
+  {
+    "fact": "底部菜单的 onOpen 用 AITool(name=\"open_file\") 并按当前环境附加 environment 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:505"
+  },
+  {
+    "fact": "底部菜单的 onShare 用 AITool(name=\"share_file\") 并按当前环境附加 environment 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:516"
+  },
+  {
+    "fact": "QuickAccessChipWithLongPress 用 awaitEachGesture + withTimeoutOrNull(longPressTimeoutMillis) 自实现长按检测",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:527"
+  },
+  {
+    "fact": "长按触发后用 suppressClickOnce 吞掉随后的一次点击，避免误触 onClick",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:542"
+  },
+  {
+    "fact": "FileContextMenu 是 ModalBottomSheet 形式的底部动作菜单，showMenu 且（contextMenuFile 非空或多选模式）时显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:377"
+  },
+  {
+    "fact": "底部菜单单选模式显示打开、分享、重命名按钮，多选模式显示批量重命名、压缩按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:438"
+  },
+  {
+    "fact": "仅非目录且以 .zip 结尾（忽略大小写）的文件显示解压按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:487"
+  },
+  {
+    "fact": "deleteFile 调用 AITool(name=\"delete_file\")，recursive 参数取 file.isDirectory 的字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:162"
+  },
+  {
+    "fact": "删除确认对话框：多选模式逐个调用 deleteFile，单选模式删除 contextMenuFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:705"
+  },
+  {
+    "fact": "renameFile 用 AITool(name=\"move_file\") 实现重命名，源与目标为同目录下新旧名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:202"
+  },
+  {
+    "fact": "重命名对话框仅在新名非空且与原名不同时才执行 renameFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:540"
+  },
+  {
+    "fact": "compressFiles 用 AITool(name=\"zip_files\")，source 为逗号拼接的多路径，destination 为目标 zip",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:240"
+  },
+  {
+    "fact": "压缩默认文件名是 \"archive_${System.currentTimeMillis() / 1000}.zip\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:550"
+  },
+  {
+    "fact": "压缩对话框确认时若文件名不以 .zip 结尾会自动补上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:676"
+  },
+  {
+    "fact": "unzipFile 用 AITool(name=\"unzip_files\")，解压目标为当前目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:282"
+  },
+  {
+    "fact": "batchRenameFiles 新名格式为 前缀+中段+后缀+扩展名，中段按 keepOriginal 取原名去扩展或起始序号+索引",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:320"
+  },
+  {
+    "fact": "批量重命名逐个调用 move_file，单次失败不中断整体，结果也不回写错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:351"
+  },
+  {
+    "fact": "FileContextMenu 内的 createNewFolder 函数体为空，实际不执行任何操作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:373"
+  },
+  {
+    "fact": "FileContextMenu 声明了 clipboardFiles、isCutOperation、clipboardSourcePath 三个本地状态但从未被读写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:69"
+  },
+  {
+    "fact": "FileContextMenu 的新建文件夹对话框 showNewFolderDialog 在组件内没有任何置 true 的地方",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileContextMenu.kt:56"
+  },
+  {
+    "fact": "FileListContent 在 error 非空时显示错误卡片，否则渲染 LazyColumn 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListContent.kt:44"
+  },
+  {
+    "fact": "搜索态下列表展示 searchResults，否则展示 files",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListContent.kt:95"
+  },
+  {
+    "fact": "双列/三列模式用 chunked(2)/chunked(3) 把文件分行，每行内 Row 均分宽度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListContent.kt:101"
+  },
+  {
+    "fact": "空白区域长按仅在多选且有选中文件时弹出底部菜单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListContent.kt:69"
+  },
+  {
+    "fact": "DisplayMode 枚举定义在 FileListItem.kt，含 SINGLE_COLUMN、TWO_COLUMNS、THREE_COLUMNS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt:27"
+  },
+  {
+    "fact": "FileListItem 行高固定 72.dp 再乘以 itemSize 缩放系数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt:44"
+  },
+  {
+    "fact": "单列/双列/三列模式的图标尺寸分别为 40.dp、36.dp、32.dp，字号分别为 16.sp、14.sp、12.sp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt:46"
+  },
+  {
+    "fact": "目录行显示 file_list_folder 文案，文件行显示格式化后的大小",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt:126"
+  },
+  {
+    "fact": "FileListItem.kt 底部定义了私有的 formatFileSize(size: Long) 与 formatDate(timestamp: Long)，遮蔽了顶部同名 import",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListItem.kt:243"
+  },
+  {
+    "fact": "FileListPane 是独立的双窗格遗留组件，整个 app/src 内没有任何调用处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListPane.kt:27"
+  },
+  {
+    "fact": "FileListPane 用 LaunchedEffect(path) 触发加载，调用 list_files 时不传 environment 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListPane.kt:43"
+  },
+  {
+    "fact": "FileListPane 同样在列表首位插入 FileItem(\"..\", true, 0, 0)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListPane.kt:62"
+  },
+  {
+    "fact": "FileListPane 的返回按钮在 path 为 \"/sdcard\" 时隐藏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileListPane.kt:104"
+  },
+  {
+    "fact": "FileManagerToolbar 包含返回、前进、向上、刷新、缩放、多选、粘贴、显示模式、搜索、新建文件夹共 11 组按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:29"
+  },
+  {
+    "fact": "工具栏的前进按钮 onClick 为空实现（注释写\"前进功能\"）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:82"
+  },
+  {
+    "fact": "工具栏返回按钮与向上按钮都绑定同一个 onNavigateUp 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:71"
+  },
+  {
+    "fact": "粘贴按钮在 clipboardEmpty 为 true 时禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:176"
+  },
+  {
+    "fact": "显示模式按钮按 单列->双列->三列->单列 循环切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/FileManagerScreen.kt:277"
+  },
+  {
+    "fact": "PathNavigationBar 点击路径文本进入编辑模式，可手输路径跳转",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:283"
+  },
+  {
+    "fact": "路径编辑确认（Done 或对勾）后调用 onNavigateToPath(editablePath)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:337"
+  },
+  {
+    "fact": "FileManagerTabRow 用 ScrollableTabRow 渲染标签，超一个标签时每个标签显示关闭按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:362"
+  },
+  {
+    "fact": "StatusBar 多选模式显示已选数量与退出按钮，单选模式显示文件总数与当前选中文件名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/ToolbarComponents.kt:438"
+  },
+  {
+    "fact": "LoadingOverlay 在 isLoading 为 true 时全屏半透明遮罩显示 loading_files 文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/LoadingOverlay.kt:38"
+  },
+  {
+    "fact": "NewFolderDialog 的创建按钮在 folderName.isNotBlank() 时才可用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/NewFolderDialog.kt:42"
+  },
+  {
+    "fact": "SearchDialog 提供查询输入、区分大小写、通配符三个选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/SearchDialogs.kt:26"
+  },
+  {
+    "fact": "SearchResultsDialog 空结果时显示 no_packages_available 文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/SearchDialogs.kt:126"
+  },
+  {
+    "fact": "搜索结果条目点击后用 fullPath 跳转到文件所在目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/SearchDialogs.kt:112"
+  },
+  {
+    "fact": "getFileIcon 按扩展名返回图标：pdf/ppt 用 PictureAsPdf，图片/音频/视频/压缩包/文本/文档/表格各有对应",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:14"
+  },
+  {
+    "fact": "getFileIcon 对目录直接返回 Icons.Default.Folder",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:16"
+  },
+  {
+    "fact": "getFileType 按扩展名返回 R.string.file_type_* 本地化类型描述，未知类型返回 file_type_unknown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:53"
+  },
+  {
+    "fact": "formatFileSize 小于等于 0 返回 \"0 B\"，否则按 1024 进制保留一位小数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:87"
+  },
+  {
+    "fact": "formatFileSize 的单位数组只有 B/KB/MB/GB/TB 五档，超大文件会导致数组越界",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:89"
+  },
+  {
+    "fact": "formatDate 解析 \"MMM dd HH:mm\" 英文格式，失败时原样返回输入字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:98"
+  },
+  {
+    "fact": "parseFileList 用 kotlinx.serialization 把 JSON 反序列化为 DirectoryListingData 再映射为 FileItem",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:110"
+  },
+  {
+    "fact": "parseFileList 在 app/src 内没有任何调用处",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/utils/FileUtils.kt:110"
+  },
+  {
+    "fact": "FileActionButton 是底部菜单的行按钮组件：图标+文本，整行可点击",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/components/FileActionButton.kt:22"
+  },
+  {
+    "fact": "pendingScrollPosition 在 ViewModel 内四处被赋值，但没有任何读取或消费它的代码",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/filemanager/viewmodel/FileManagerViewModel.kt:150"
+  }
+]

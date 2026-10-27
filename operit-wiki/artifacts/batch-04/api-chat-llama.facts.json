@@ -1,0 +1,186 @@
+[
+  {
+    "fact": "LlamaProvider 实现 AIService 接口，构造参数为 context、modelName、sessionConfig，providerType 默认 ApiProviderType.LLAMA_CPP，enableToolCall 默认 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:23"
+  },
+  {
+    "fact": "模型文件固定放在公共 Downloads 目录下的 Operit/models/llama，getModelFile 直接拼接目录与 modelName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:37"
+  },
+  {
+    "fact": "维护 _inputTokenCount、_outputTokenCount、_cachedInputTokenCount 三个 Long 型 token 计数器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:46"
+  },
+  {
+    "fact": "providerModel 返回 \"${providerType.name}:$modelName\" 形如 LLAMA_CPP:xxx 的标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:65"
+  },
+  {
+    "fact": "cancelStreaming 先置 isCancelled=true，再在 sessionLock 内调 session?.cancel()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:99"
+  },
+  {
+    "fact": "release 在 sessionLock 内调 session?.release() 并把 session 置空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:106"
+  },
+  {
+    "fact": "getModelsList 直接委托 ModelListFetcher.getLlamaLocalModels(context) 扫描本地模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:113"
+  },
+  {
+    "fact": "testConnection 在 Dispatchers.IO 上依次检查 LlamaSession.isAvailable() 与模型文件是否存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:117"
+  },
+  {
+    "fact": "testConnection 校验通过后会真实创建一个 LlamaSession 测试会话并立即 release",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:128"
+  },
+  {
+    "fact": "calculateInputTokens 在 Dispatchers.IO 上经 ensureSessionLocked 复用推理会话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:140"
+  },
+  {
+    "fact": "calculateInputTokens 任何异常都吞掉返回 0L",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:161"
+  },
+  {
+    "fact": "calculateInputTokens 的 tool-call 路径用 StructuredToolCallBridge.buildMessagesJson/buildToolsJson 再调 s.applyStructuredChatTemplate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:148"
+  },
+  {
+    "fact": "calculateInputTokens 的普通路径用 buildPlainPromptMessages 拆出 roles/contents 再调 s.applyChatTemplate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:155"
+  },
+  {
+    "fact": "sendMessage 入口先把 isCancelled 置 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:180"
+  },
+  {
+    "fact": "sendMessage 先检查 LlamaSession.isAvailable()，不可用抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:182"
+  },
+  {
+    "fact": "sendMessage 检查模型文件不存在抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:186"
+  },
+  {
+    "fact": "sendMessage 在 Dispatchers.IO 经 ensureSessionLocked 取会话，取不到抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:193"
+  },
+  {
+    "fact": "是否启用 tool-call 由 shouldUseToolCall 决定：enableToolCall && availableTools 非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:358"
+  },
+  {
+    "fact": "sendMessage 的 tool-call 路径把历史与工具转 JSON 后调 applyStructuredChatTemplate(messagesJson, toolsJson, enableThinking, true)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:208"
+  },
+  {
+    "fact": "sendMessage 的普通路径用 buildPlainPromptMessages 再调 applyChatTemplate(roles, contents, enableThinking, true)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:215"
+  },
+  {
+    "fact": "聊天模板返回空抛 IOException(llama_error_chat_template_failed)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:219"
+  },
+  {
+    "fact": "组装完成后用 logLargeString 把完整 prompt 打到 debug 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:224"
+  },
+  {
+    "fact": "temperature 从 modelParameters 按 id 匹配且 isEnabled，默认 1.0f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:227"
+  },
+  {
+    "fact": "top_p 默认 1.0f、top_k 默认 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:234"
+  },
+  {
+    "fact": "repetition_penalty 默认 1.0f、frequency_penalty 默认 0.0f、presence_penalty 默认 0.0f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:242"
+  },
+  {
+    "fact": "采样参数经 s.setSamplingParams 下发，penaltyLastN 硬编码为 64",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:256"
+  },
+  {
+    "fact": "非 tool-call 路径会调 s.clearToolCallGrammar() 清理原生 tool-call 语法状态，失败只打 warning 日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:265"
+  },
+  {
+    "fact": "推理前用 s.countTokens(prompt) 统计输入 token 并回调 onTokensUpdated",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:274"
+  },
+  {
+    "fact": "requestedMaxNewTokens 从 modelParameters 中找 name == \"max_tokens\" 的项，缺省 -1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:279"
+  },
+  {
+    "fact": "推理经 s.generateStream(prompt, requestedMaxNewTokens) 逐 token 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:297"
+  },
+  {
+    "fact": "token 回调里 isCancelled 为 true 即返回 false 中断生成；否则输出计数 +1 并同步 _outputTokenCount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:298"
+  },
+  {
+    "fact": "普通路径的 token 先攒进 finalOutputBuffer，再用 runBlocking { emit(token) } 同步发射到 Stream",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:307"
+  },
+  {
+    "fact": "tool-call 路径的 token 先攒进 toolCallOutputBuffer，不直接发射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:304"
+  },
+  {
+    "fact": "每个 token 都在 runBlocking 里回调 onTokensUpdated 上报最新输入/输出计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:311"
+  },
+  {
+    "fact": "用量上报器为 LocalUsageReporter(SOURCE_LLAMA, onUsageReported)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:292"
+  },
+  {
+    "fact": "收尾走 LocalGenerationEnd.end，传入 cancelled、success 与输入/输出 token 数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:322"
+  },
+  {
+    "fact": "tool-call 收尾时用 s.parseToolCallResponse 解析缓冲区里的 tool-call 输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:333"
+  },
+  {
+    "fact": "解析结果经 StructuredToolCallBridge.convertToolCallPayloadToXml 转成 XML 后 emit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:336"
+  },
+  {
+    "fact": "推理失败走 failWith：先调 onNonFatalError 再抛 IOException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:347"
+  },
+  {
+    "fact": "成功结束时调 onUsageFinalized?.invoke(1)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:352"
+  },
+  {
+    "fact": "buildPlainPromptMessages 把 SYSTEM 映射为 system，USER/SUMMARY/TOOL_RESULT 映射为 user，ASSISTANT/TOOL_CALL 映射为 assistant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:372"
+  },
+  {
+    "fact": "buildPlainPromptMessages 在不保留思考过程时用 ChatUtils.removeThinkingContent 剥离 ASSISTANT 轮的思考内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:373"
+  },
+  {
+    "fact": "buildPlainPromptMessages 用 ChatUtils.stripOpenAiResponsesProtocolMarkup 清理 OpenAI Responses 协议标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:379"
+  },
+  {
+    "fact": "ensureSessionLocked 在 sessionLock 内懒创建 LlamaSession，模型路径来自 getModelFile",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:397"
+  },
+  {
+    "fact": "logLargeString 按 3000 字符把长日志分片输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/LlamaProvider.kt:75"
+  },
+  {
+    "fact": "AIServiceFactory 仍为 ApiProviderType.LLAMA_CPP 接线 LlamaProvider，实现代码保留在仓内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:482"
+  }
+]

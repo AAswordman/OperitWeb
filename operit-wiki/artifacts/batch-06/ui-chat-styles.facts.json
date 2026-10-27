@@ -1,0 +1,454 @@
+[
+  {
+    "fact": "BubbleStyleChatMessage 是 @Composable 分发函数，按 message.sender 把消息路由到三种样式实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:16"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 中 sender 为 \"user\" 时委托 BubbleUserMessageComposable 渲染用户气泡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:49"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 中 sender 为 \"ai\" 时委托 BubbleAiMessageComposable 渲染 AI 气泡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:63"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 中 sender 为 \"summary\" 时委托 SummaryMessageComposable 渲染记忆总结分隔条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:84"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 的 enableDialogs 参数默认 true，控制是否启用各类弹窗功能。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:44"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 的 bubbleUserRoundedCornersEnabled 默认 true，控制用户气泡是否使用圆角。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:30"
+  },
+  {
+    "fact": "BubbleStyleChatMessage 的用户/AI 气泡内容左右内边距默认均为 12f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleStyleChatMessage.kt:33"
+  },
+  {
+    "fact": "ExpandedBubbleLayoutNodeTypes 包含 CODE_BLOCK、TABLE、XML_BLOCK、IMAGE、BLOCK_LATEX 五种节点类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:69"
+  },
+  {
+    "fact": "BubbleAiMessageComposable 的 AI 头像 URI 经 CharacterCardManager.findCharacterCardByName 按 roleName 查找角色卡后解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:124"
+  },
+  {
+    "fact": "气泡头像形状：方形偏好用 RoundedCornerShape(avatarCornerRadius.dp)，否则用 CircleShape。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:140"
+  },
+  {
+    "fact": "BubbleAiMessageComposable 的工具折叠模式默认取 ToolCollapseMode.ALL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:118"
+  },
+  {
+    "fact": "StreamMarkdownRendererState 用 remember(message.timestamp) 缓存，保证同一条消息重组时不重建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:168"
+  },
+  {
+    "fact": "CustomXmlRenderer 接收 effectiveShowThinkingProcess、showStatusTags、initialThinkingExpanded、allowExpandedThinkingFullHeight、enableDialogs 五个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:170"
+  },
+  {
+    "fact": "ThinkToolsXmlNodeGrouper 接收 showThinkingProcess、forceExpandGroups=expandThinkToolsGroups、toolCollapseMode 三个参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:186"
+  },
+  {
+    "fact": "isHidden=true 时透明度目标 0、Y 偏移目标 100f，均用 tween(300ms) 做动画过渡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:209"
+  },
+  {
+    "fact": "仅当 contentStream 为 null 且整条内容恰为单个 markdown 图片时，BubbleAiMessageComposable 才提取 imageUrl。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:216"
+  },
+  {
+    "fact": "renderNodes 中出现 ExpandedBubbleLayoutNodeTypes 任一类型时，AI 气泡内容全宽渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:225"
+  },
+  {
+    "fact": "非隐藏状态下，BubbleAiMessageComposable 在 onSizeChanged 中把测量高度写入 heightMemory.updateMeasured。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:226"
+  },
+  {
+    "fact": "AI 气泡字体经 applyFontFamilyToTypography + resolveConfiguredFontFamily 按 bubbleAiUseCustomFont 等偏好解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:242"
+  },
+  {
+    "fact": "waterGlassEnabled = enableWaterGlass && isWaterGlassSupported()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:256"
+  },
+  {
+    "fact": "liquidGlassEnabled 要求水玻璃未启用，且 enableLiquidGlass && isLiquidGlassSupported() 同时成立。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:257"
+  },
+  {
+    "fact": "任一玻璃效果启用时 effectiveBubbleImageStyle 置 null，图片背景与玻璃效果互斥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:259"
+  },
+  {
+    "fact": "bubbleWideLayoutEnabled=true 时 AI 消息用全宽 Column 布局，并显示头像/角色名/模型信息头部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:280"
+  },
+  {
+    "fact": "窄布局下 AI 气泡最大宽度为 maxWidth 的 85%。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:553"
+  },
+  {
+    "fact": "圆角启用时 AI 气泡形状为 RoundedCornerShape(4.dp, 20.dp, 20.dp, 20.dp)，禁用时为 0.dp 直角。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:568"
+  },
+  {
+    "fact": "气泡水玻璃参数为阴影 10.dp、边框 0.7.dp、叠加透明度提升 0.08f；液态玻璃为边框 0.28.dp、模糊 28.dp、叠加 0.10f、镜头关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:649"
+  },
+  {
+    "fact": "流式消息用 StreamMarkdownRenderer(markdownStream=toCharStream()) 渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:583"
+  },
+  {
+    "fact": "静态消息用 StreamMarkdownRenderer(content=message.content) 渲染，与流式分支共享同一 rendererState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:604"
+  },
+  {
+    "fact": "AI 气泡内容区内边距为左右取 bubbleContentPaddingLeft/Right.dp、上下各 12.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:593"
+  },
+  {
+    "fact": "AI 头像长按经由 combinedClickable 触发 onAvatarLongPressMention，传入 trim 后的 roleName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:278"
+  },
+  {
+    "fact": "metadataText 按偏好拼接：modelName 与 provider 之间用 \" by \" 连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:152"
+  },
+  {
+    "fact": "气泡风格下弹窗关闭时链接点击回调为空实现（点击无反应），否则默认弹出链接预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:193"
+  },
+  {
+    "fact": "LinkPreviewDialog 仅在 showLinkDialog && linkToPreview 非空 && enableDialogs 时显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleAiMessageComposable.kt:684"
+  },
+  {
+    "fact": "BubbleImageStyleConfig 包含 imageUri、裁剪比例、重复起止比例、缩放与渲染模式等配置项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:37"
+  },
+  {
+    "fact": "BubbleImageStyleConfig 的重复区默认 0.35–0.65，imageScale 默认 1f，renderMode 默认 TILED_NINE_SLICE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:44"
+  },
+  {
+    "fact": "BubbleImageRenderMode 定义 TILED_NINE_SLICE=\"tiled_nine_slice\" 与 NINE_PATCH=\"nine_patch\" 两种渲染模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:51"
+  },
+  {
+    "fact": "renderMode 为 NINE_PATCH 时走拉伸绘制，否则走平铺中心绘制，绘制背景后再 drawWithContent 画内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:75"
+  },
+  {
+    "fact": "rememberBubbleImageBitmap 在 LaunchedEffect 中切 Dispatchers.IO 解码图片，失败返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:99"
+  },
+  {
+    "fact": "buildSliceLayout 把裁剪比例钳制在 0–0.45 区间内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:139"
+  },
+  {
+    "fact": "computeDstSliceLayout 把 imageScale 统一钳制在 0.2–3 区间内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:203"
+  },
+  {
+    "fact": "drawRepeatedCenterBubble 中四角直接绘制、上下边横向平铺、左右边纵向平铺、中心双向平铺。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:257"
+  },
+  {
+    "fact": "drawStretchedNinePatchBubble 把九宫格九个区域全部拉伸绘制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:420"
+  },
+  {
+    "fact": "drawNinePatchSliceGuides 绘制 4 条九宫格切片参考线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:575"
+  },
+  {
+    "fact": "drawSlice 对越界的源矩形做钳制，并按源/目标比例收缩目标尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:627"
+  },
+  {
+    "fact": "drawTiledHorizontally 横向循环平铺，末块按剩余宽度裁剪源图。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:672"
+  },
+  {
+    "fact": "drawTiledVertically 纵向循环平铺，末块按剩余高度裁剪源图。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:716"
+  },
+  {
+    "fact": "drawTiled2D 用双层循环双向平铺填充中心区域。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleImageBackgroundSurface.kt:760"
+  },
+  {
+    "fact": "BubbleUserMessageComposable 用 isHiddenPlaceholder 判定隐藏占位：sender==\"user\" 且 displayMode==HIDDEN_PLACEHOLDER。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:91"
+  },
+  {
+    "fact": "隐藏占位状态下用户气泡背景色取透明。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:94"
+  },
+  {
+    "fact": "parseResult 用 remember(message.content, isHiddenPlaceholder) 缓存消息解析结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:122"
+  },
+  {
+    "fact": "parseMessageContent 用 ChatMarkupRegex.proxySenderTag 从消息内容中提取 proxySenderName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:783"
+  },
+  {
+    "fact": "用户消息头像优先级为代发人头像、自定义用户头像、全局用户头像，代发人无头像时头像为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:159"
+  },
+  {
+    "fact": "用户气泡头像形状逻辑与 AI 侧一致：方形圆角或圆形。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:165"
+  },
+  {
+    "fact": "回复引用行使用 surfaceVariant 底色，形状为 RoundedCornerShape(8.dp, 8.dp, 2.dp, 8.dp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:232"
+  },
+  {
+    "fact": "图片链接以 120.dp 卡片展示，点击后打开图片预览对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:277"
+  },
+  {
+    "fact": "图片已过期时降级显示为附件标签，文件名为 R.string.image_expired。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:300"
+  },
+  {
+    "fact": "尾部附件行用 Arrangement.End 右对齐排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:321"
+  },
+  {
+    "fact": "点击尾部附件标签置 showContentPreview 为 true，打开 AttachmentViewerDialog 内容预览对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:681"
+  },
+  {
+    "fact": "宽布局用户气泡圆角为 RoundedCornerShape(20.dp, 4.dp, 20.dp, 20.dp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:402"
+  },
+  {
+    "fact": "隐藏占位气泡最大宽度限制为 minOf(maxBubbleWidth, 320.dp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:408"
+  },
+  {
+    "fact": "隐藏占位渲染 HiddenUserMessagePlaceholderContent，副标题色取文本色 72% 透明度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:429"
+  },
+  {
+    "fact": "窄布局用户气泡最大宽度为 maxWidth 的 85%。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:544"
+  },
+  {
+    "fact": "内容预览对话框 AttachmentViewerDialog 受 enableDialogs 门控。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:681"
+  },
+  {
+    "fact": "图片预览对话框的图片显示区域最大高度为 500.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:737"
+  },
+  {
+    "fact": "parseMessageContent 首先剥离内容中的 memoryTag 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:781"
+  },
+  {
+    "fact": "proxySenderTag 用于提取代发人名，并将其从正文内容中移除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:783"
+  },
+  {
+    "fact": "图片链接经 ImagePoolManager 按 id 取图，Base64 解码后用 ImageBitmapLimiter 降采样。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:795"
+  },
+  {
+    "fact": "媒体链接转为 AttachmentData，其 id 前缀为 \"media_pool:\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:819"
+  },
+  {
+    "fact": "replyToTag 解析为 ReplyInfo，内容去掉 chat_reply_instruction 指示语与首尾引号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:833"
+  },
+  {
+    "fact": "工作区上下文被转为 id=\"workspace_context\" 的特殊附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:862"
+  },
+  {
+    "fact": "附件解析同时支持配对标签与自闭合标签两种格式，重叠时优先配对格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:892"
+  },
+  {
+    "fact": "尾部附件判定为消息末尾由空白分隔的连续附件块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:928"
+  },
+  {
+    "fact": "screen_content.json（text/json 类型）恒被视为尾部附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:968"
+  },
+  {
+    "fact": "行内附件在正文中保留为 @filename 形式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:986"
+  },
+  {
+    "fact": "AttachmentData 包含 id、filename、type、size（默认 0L）、content（默认空）五个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:1022"
+  },
+  {
+    "fact": "AttachmentTag 按附件类型选择图标：图片、音频、视频、截屏、工作区、默认文档各不同。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:1032"
+  },
+  {
+    "fact": "screen_content 显示 R.string.screen_content 文案，工作区附件显示 R.string.workspace 文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:1055"
+  },
+  {
+    "fact": "AttachmentTag 仅当附件有内容、或 id 具特定前缀、或为图片类型时才可点击。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/bubble/BubbleUserMessageComposable.kt:1068"
+  },
+  {
+    "fact": "HiddenUserMessagePlaceholderContent 的占位行最大宽度 220.dp，内容垂直居中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/common/HiddenUserMessagePlaceholderContent.kt:28"
+  },
+  {
+    "fact": "占位行两侧分隔线使用主题色 28% 透明度、1.dp 粗细。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/common/HiddenUserMessagePlaceholderContent.kt:33"
+  },
+  {
+    "fact": "占位行中央文案取 R.string.chat_hidden_user_message_badge，样式为 labelSmall + Medium 字重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/common/HiddenUserMessagePlaceholderContent.kt:38"
+  },
+  {
+    "fact": "CursorStyleChatMessage 是 Cursor IDE 风格的 @Composable 消息分发器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:14"
+  },
+  {
+    "fact": "CursorStyleChatMessage 中 sender 为 \"user\" 时委托 UserMessageComposable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:39"
+  },
+  {
+    "fact": "CursorStyleChatMessage 中 sender 为 \"ai\" 时委托 AiMessageComposable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:49"
+  },
+  {
+    "fact": "CursorStyleChatMessage 中 sender 为 \"summary\" 时委托 SummaryMessageComposable，与气泡风格共用同一实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:63"
+  },
+  {
+    "fact": "CursorStyleChatMessage 的 supportToolMarkup 默认 true，控制工具标记支持。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:26"
+  },
+  {
+    "fact": "CursorStyleChatMessage 的 overrideStream 参数可覆盖消息自带的 contentStream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:31"
+  },
+  {
+    "fact": "CursorStyleChatMessage 透传 thinkingBackgroundColor 与 thinkingTextColor 作为思考过程配色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/CursorStyleChatMessage.kt:24"
+  },
+  {
+    "fact": "cursor 版 AiMessageComposable 的文档注明工具输出恒用折叠执行模式展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:38"
+  },
+  {
+    "fact": "cursor 版 effectiveShowThinkingProcess = forceShowThinkingProcess || 主题偏好 showThinkingProcess。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:61"
+  },
+  {
+    "fact": "cursor 版 StreamMarkdownRendererState 同样按 message.timestamp 记住。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:73"
+  },
+  {
+    "fact": "cursor 版链接回退：弹窗启用则预览，否则用系统浏览器打开（FLAG_ACTIVITY_NEW_TASK），失败忽略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:108"
+  },
+  {
+    "fact": "cursor 版 AI 消息标题栏左侧固定显示 \"Response\"，labelSmall 样式、70% 透明度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:138"
+  },
+  {
+    "fact": "cursor 版右侧详情按偏好拼接：roleName | modelName by provider。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:148"
+  },
+  {
+    "fact": "cursor 版在 key(message.timestamp) 下用 rememberRevisableTextStream(overrideStream ?: message.contentStream) 取流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:178"
+  },
+  {
+    "fact": "cursor 版 AI 消息渲染区横向内边距为 16.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:193"
+  },
+  {
+    "fact": "cursor 版 AiMessageComposable 在 onSizeChanged 中把高度写入 heightMemory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:124"
+  },
+  {
+    "fact": "cursor 版 LinkPreviewDialog 同样受 enableDialogs 门控。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/AiMessageComposable.kt:216"
+  },
+  {
+    "fact": "SummaryMessageComposable 把总结消息渲染为细分隔条，点击（弹窗启用时）弹出详情。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:50"
+  },
+  {
+    "fact": "总结分隔条的分隔线用 primary 色 50% 透明度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:60"
+  },
+  {
+    "fact": "总结分隔条中央为 Info 图标加 history_dialog_summary 标签的圆角徽标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:80"
+  },
+  {
+    "fact": "总结详情对话框 Surface 圆角 16.dp、阴影 8.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:108"
+  },
+  {
+    "fact": "总结详情内容区可滚动，最大高度 400.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:136"
+  },
+  {
+    "fact": "总结详情底部按钮含编辑（可选）、删除（error 红色）、关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:168"
+  },
+  {
+    "fact": "总结删除走 AlertDialog 二次确认，文案为 confirm_delete_summary 系列字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/SummaryMessageComposable.kt:181"
+  },
+  {
+    "fact": "cursor 版 UserMessageComposable 是 Cursor 风格的用户消息渲染器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:88"
+  },
+  {
+    "fact": "代发人消息背景用 secondaryContainer，文字用 onSecondaryContainer 配色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:135"
+  },
+  {
+    "fact": "cursor 版回复引用行全宽 surfaceVariant 底色、8.dp 圆角。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:145"
+  },
+  {
+    "fact": "cursor 版把图片链接与尾部附件放在同一行左对齐展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:184"
+  },
+  {
+    "fact": "cursor 版消息 Card 在隐藏占位时宽上限 320.dp，否则填满全宽。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:241"
+  },
+  {
+    "fact": "cursor 版水/液玻璃形状均为 RoundedCornerShape(8.dp)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:253"
+  },
+  {
+    "fact": "cursor 版用户消息标题为 \"Prompt by $proxySenderName\"（代发）或 \"Prompt\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:296"
+  },
+  {
+    "fact": "cursor 包独立定义了 private parseMessageContent，与 bubble 包的同名实现逻辑重复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/cursor/UserMessageComposable.kt:417"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "critic": "独立复核通过（134 条，1 处事实错误+7 处引用修正后复检通过）",
+  "issue": 19,
+  "refs_valid": "130/130 引用行号真实存在（critic 全量复核 130/130），lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "标准工具·系统操作/多媒体/UI：系统设置与应用管理、设备信息、Intent/广播、Shell/终端（会话复用/超时中断）、蓝牙/BLE（会话单例）、音乐播放（ExoPlayer）、FFmpeg、计算器、软件设置（模型配置/角色卡/沙盒包/语音服务/MCP 重启）、UI 自动化（标准版直接操作不可用，子 agent 循环与截图可用）。",
+  "updated": "2026-10-02",
+  "approved_by_comment_id": 5945771794,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 04:52 UTC"
+}

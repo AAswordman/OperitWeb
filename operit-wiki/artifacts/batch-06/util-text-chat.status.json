@@ -1,0 +1,11 @@
+{
+  "critic": "critic2-PASS",
+  "id": "util-text-chat",
+  "issue": 135,
+  "refs_valid": "192；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线；2026-10-03 用户指示直接上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "approved_by_comment_id": 0,
+  "updated": "2026-10-03"
+}

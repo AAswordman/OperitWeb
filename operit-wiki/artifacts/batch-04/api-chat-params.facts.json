@@ -1,0 +1,178 @@
+[
+  {
+    "fact": "`ChatConfigReadinessIssue` 枚举 7 种就绪问题：PROVIDER_MISSING、PROVIDER_UNAVAILABLE、ENDPOINT_INVALID、MODEL_MISSING、CODEX_LOGIN_REQUIRED、API_KEY_MISSING、API_KEY_INVALID",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:13"
+  },
+  {
+    "fact": "`ChatConfigReadinessResult.issue` 为 null 即就绪（isReady）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:21"
+  },
+  {
+    "fact": "`credentialOptionalProviders` 含 6 种可免 Key 的渠道：OPENAI_RESPONSES_GENERIC、OPENAI_CODEX、OPENAI_GENERIC、ANTHROPIC_GENERIC、GEMINI_GENERIC、OTHER",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:30"
+  },
+  {
+    "fact": "providerTypeId 为空 → PROVIDER_MISSING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:45"
+  },
+  {
+    "fact": "插件渠道 id（去空白转小写后比对）命中则直接就绪",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:51"
+  },
+  {
+    "fact": "`ApiProviderType.fromProviderTypeId` 解析不出 → PROVIDER_UNAVAILABLE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:56"
+  },
+  {
+    "fact": "OPENAI_CODEX 未登录（codexAuthenticated=false）→ CODEX_LOGIN_REQUIRED",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:58"
+  },
+  {
+    "fact": "解析出的模型名为空 → MODEL_MISSING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:62"
+  },
+  {
+    "fact": "MNN / LLAMA_CPP 端侧渠道直接就绪，不检查 endpoint 与 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:65"
+  },
+  {
+    "fact": "endpoint 经 `EndpointCompleter.completeEndpoint` 补全后必须 http/https 且有 host",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:70"
+  },
+  {
+    "fact": "非 http(s) endpoint → ENDPOINT_INVALID",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:71"
+  },
+  {
+    "fact": "已登录的 OPENAI_CODEX 跳过 Key 检查直接就绪",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:74"
+  },
+  {
+    "fact": "hasConfiguredKey：单 Key 非空，或池中有启用且非空的 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:80"
+  },
+  {
+    "fact": "keyIsRequired：渠道不在免 Key 集合，且 `ApiProviderConfigs.requiresApiKey` 为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:83"
+  },
+  {
+    "fact": "hasUsableKey 经 `ApiKeyFormatValidator.hasUsableKey(config)` 判定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:84"
+  },
+  {
+    "fact": "多 Key 模式下无可用 Key：配过 Key 报 API_KEY_INVALID，没配过报 API_KEY_MISSING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:89"
+  },
+  {
+    "fact": "Key 必填但没配 → API_KEY_MISSING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:96"
+  },
+  {
+    "fact": "Key 必填或已配但格式不可用 → API_KEY_INVALID",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:98"
+  },
+  {
+    "fact": "全部检查通过返回空 issue（就绪）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:101"
+  },
+  {
+    "fact": "`isHttpEndpoint` 解析抛异常直接返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ChatConfigReadiness.kt:110"
+  },
+  {
+    "fact": "`ModelConnectionTestType` 有 CHAT、TOOL_CALL、IMAGE、AUDIO、VIDEO 五种探针",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:19"
+  },
+  {
+    "fact": "`ModelConnectionTestOutcome` 有 PASSED、UNVERIFIED、FAILED 三种结论",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:27"
+  },
+  {
+    "fact": "`ModelConnectionTestItem.success` 仅 PASSED 为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:39"
+  },
+  {
+    "fact": "`ModelConnectionTestReport` 携带 configId、configName、providerType、请求/实际模型索引、实测模型名与探针条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:45"
+  },
+  {
+    "fact": "report.success 要求无 FAILED；verified 要求条目非空且全 PASSED",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:52"
+  },
+  {
+    "fact": "`buildToolCallProbeHistory(toolName)` 构造 4 轮探针：system、user 要求调工具、assistant 发起 tool 调用（ping）、tool_result 回 pong",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:74"
+  },
+  {
+    "fact": "探针必须以 user 轮开头（Poe 转 Anthropic 等网关拒绝 assistant 开头），应答必须是 TOOL_RESULT 轮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:65"
+  },
+  {
+    "fact": "`run` 用 `getValidModelIndex` 解析实际模型索引并取实测模型名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:89"
+  },
+  {
+    "fact": "`run` 经 `AIServiceFactory.createService` 建服务，并回调 `onActiveServiceChanged(service)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:100"
+  },
+  {
+    "fact": "探针请求统一 stream=false、enableRetry=false、recordTokenUsage=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:112"
+  },
+  {
+    "fact": "`runCase` 捕获 CancellationException 重抛，其他异常记为 FAILED 并带 e.message",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:127"
+  },
+  {
+    "fact": "CHAT 探针只发一句 \"Hi\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:138"
+  },
+  {
+    "fact": "TOOL_CALL 探针仅在 `configForTest.enableToolCall` 时运行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:142"
+  },
+  {
+    "fact": "TOOL_CALL 探针注册 echo 工具（text 参数），跑 buildToolCallProbeHistory(\"echo\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:145"
+  },
+  {
+    "fact": "IMAGE 探针仅在 enableDirectImageProcessing 时运行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:177"
+  },
+  {
+    "fact": "IMAGE 探针把 assets 拷到缓存，经 `ImagePoolManager.addImage` 注册；返回 \"error\" 则抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:181"
+  },
+  {
+    "fact": "IMAGE 探针 prompt=图片链接+IMAGE_PROMPT；`matchesImage` 命中为 PASSED，否则 UNVERIFIED",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:196"
+  },
+  {
+    "fact": "IMAGE 探针 finally 中移除图片并删除缓存文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:202"
+  },
+  {
+    "fact": "AUDIO 探针以 \"audio/mpeg\" 注册到 MediaPoolManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:212"
+  },
+  {
+    "fact": "VIDEO 探针以 \"video/mp4\" 注册到 MediaPoolManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:243"
+  },
+  {
+    "fact": "取消时先 `service.cancelStreaming()` 再重抛",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:270"
+  },
+  {
+    "fact": "run 体抛异常且尚无 CHAT 条目时，补一条 FAILED 的 CHAT 条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:276"
+  },
+  {
+    "fact": "finally 中 `onActiveServiceChanged(null)` 并 `service.release()`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:283"
+  },
+  {
+    "fact": "报告用测试配置的 id、name、apiProviderTypeId 与实测模型名组装",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelConfigConnectionTester.kt:286"
+  }
+]

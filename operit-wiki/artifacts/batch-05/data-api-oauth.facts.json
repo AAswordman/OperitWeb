@@ -1,0 +1,794 @@
+[
+  {
+    "fact": "CodexPkceCodes 只包含 verifier 与 challenge 两个字符串字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:18"
+  },
+  {
+    "fact": "CodexJwtClaims 包含 accountId、residency、email、expiresAtMillis 四个可空字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:23"
+  },
+  {
+    "fact": "CodexOAuthTokenResponse 包含 idToken、accessToken、refreshToken、expiresInSeconds 四个可空字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:30"
+  },
+  {
+    "fact": "requireComplete 要求 idToken、accessToken、refreshToken 都非空，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:36"
+  },
+  {
+    "fact": "CodexOAuthProtocol 是集中存放 Codex OAuth 常量与协议函数的 object。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:44"
+  },
+  {
+    "fact": "Codex 的 OAuth client_id 为 app_EMoamEEZ73f0CkXaXp7hrann（公开客户端标识，非密钥）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:45"
+  },
+  {
+    "fact": "Codex 授权服务器 ISSUER 为 https://auth.openai.com。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:46"
+  },
+  {
+    "fact": "CODEX_RESPONSES_ENDPOINT 为 https://chatgpt.com/backend-api/codex/responses。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:47"
+  },
+  {
+    "fact": "CODEX_USAGE_ENDPOINT 为 https://chatgpt.com/backend-api/wham/usage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:48"
+  },
+  {
+    "fact": "MODEL_CATALOG_ENDPOINT 为 https://models.opencode.ai/api.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:49"
+  },
+  {
+    "fact": "回环回调监听端口 PRIMARY_CALLBACK_PORT 为 1455。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:50"
+  },
+  {
+    "fact": "回环回调路径 CALLBACK_PATH 为 /auth/callback。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:51"
+  },
+  {
+    "fact": "Codex 登录会话超时 OAUTH_TIMEOUT_MILLIS 为 5 分钟。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:52"
+  },
+  {
+    "fact": "generatePkce 用 SecureRandom 生成 64 字节随机数，base64url 编码后作为 PKCE verifier。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:54"
+  },
+  {
+    "fact": "PKCE challenge 是 verifier 的 SHA-256 摘要再做 base64url 编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:56"
+  },
+  {
+    "fact": "generateState 用 SecureRandom 生成 32 字节随机数并 base64url 编码，作为 OAuth state。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:64"
+  },
+  {
+    "fact": "buildAuthorizationUrl 拼接 {ISSUER}/oauth/authorize，response_type=code。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:76"
+  },
+  {
+    "fact": "Codex 授权请求 scope 固定为 openid profile email offline_access。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:81"
+  },
+  {
+    "fact": "Codex 授权请求携带 code_challenge，且 code_challenge_method 固定为 S256。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:83"
+  },
+  {
+    "fact": "Codex 授权请求额外携带 id_token_add_organizations=true 与 codex_cli_simplified_flow=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:85"
+  },
+  {
+    "fact": "Codex 授权请求携带 originator=operit 标识调用方身份。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:88"
+  },
+  {
+    "fact": "parseJwtClaims 把 token 按 '.' 切成三段，base64url 解码第二段得到 payload。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:93"
+  },
+  {
+    "fact": "accountId 依次从 chatgpt_account_id、https://api.openai.com/auth 命名空间、organizations 首个 id 取首个非空值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:112"
+  },
+  {
+    "fact": "residency 取自 chatgpt_compute_residency，值为 no_constraint 时置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:119"
+  },
+  {
+    "fact": "email 取自 email 字段，或 https://api.openai.com/profile 命名空间下的 email。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:121"
+  },
+  {
+    "fact": "expiresAtMillis 由 JWT 的 exp（秒）乘以 1000 换算成毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:124"
+  },
+  {
+    "fact": "exchangeAuthorizationCode 向 {issuer}/oauth/token 发 POST，grant_type=authorization_code。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:162"
+  },
+  {
+    "fact": "授权码换 token 的表单携带 code_verifier，供服务端做 PKCE 校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:166"
+  },
+  {
+    "fact": "授权码换 token 成功后强制 requireComplete，缺任何一项直接抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:174"
+  },
+  {
+    "fact": "refreshAccessToken 向同一 token 端点发 grant_type=refresh_token，表单带 refresh_token 与 client_id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:179"
+  },
+  {
+    "fact": "刷新 token 不强制完整，允许响应只带新的 access_token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:181"
+  },
+  {
+    "fact": "revokeToken 向 {issuer}/oauth/revoke 发 POST，表单含 token、token_type_hint、client_id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:192"
+  },
+  {
+    "fact": "endpoint() 把 issuer 末尾斜杠去掉后再拼接路径，避免双斜杠。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:231"
+  },
+  {
+    "fact": "OAuth 请求非 2xx 时抛 IOException，消息含 HTTP 状态码与服务端 error_description/error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:223"
+  },
+  {
+    "fact": "toFormBody 把键值对做 URL 编码后拼接，Content-Type 为 application/x-www-form-urlencoded。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt:247"
+  },
+  {
+    "fact": "CodexAuthManager 是私有构造的单例，getInstance 用双重检查锁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:142"
+  },
+  {
+    "fact": "CodexAuthManager 的 OkHttpClient 连接、读取、写入超时均为 30 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:20"
+  },
+  {
+    "fact": "CodexAuthManager 内部持有 CodexOAuthClient 与 CodexUsageClient，共用同一个 OkHttpClient。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:24"
+  },
+  {
+    "fact": "authState 是 StateFlow<CodexAuthState?>，直接暴露 preferences 的认证状态流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:29"
+  },
+  {
+    "fact": "usageSnapshotFlow 对外暴露已缓存的用量快照流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:30"
+  },
+  {
+    "fact": "saveLoginTokens 先 requireComplete，再解析 access token 的 JWT claims。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:33"
+  },
+  {
+    "fact": "access token 不是合法 JWT 时 saveLoginTokens 抛 IOException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:38"
+  },
+  {
+    "fact": "accountId 优先取 id token 的 accountId，退回 access token 的，两者皆无则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:41"
+  },
+  {
+    "fact": "过期时间优先取 JWT 的 exp，否则用 expires_in 换算为当前时间加秒数，都没有则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:42"
+  },
+  {
+    "fact": "saveLoginTokens 把 access/refresh token、过期时间、accountId、residency、email 组装成 CodexAuthState 存入 preferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:46"
+  },
+  {
+    "fact": "getValidAccessToken 在 token 距过期超过 5 分钟时直接返回当前 access token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:60"
+  },
+  {
+    "fact": "token 接近过期时用 refreshMutex 加锁，锁内二次检查后才决定是否刷新，避免并发重复刷新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:64"
+  },
+  {
+    "fact": "无登录状态时 getValidAccessToken 抛 IOException（Codex is not logged in）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:59"
+  },
+  {
+    "fact": "refreshAccessToken 用 refresh token 换新 token 并解析新 access token 的 claims。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:75"
+  },
+  {
+    "fact": "刷新响应没有带新的 refresh_token 时保留旧的 refresh token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:88"
+  },
+  {
+    "fact": "刷新成功后把更新后的 CodexAuthState 写回 preferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:94"
+  },
+  {
+    "fact": "logout 先尝试用 token_type_hint=refresh_token 吊销 refresh token，失败只记日志不中断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:102"
+  },
+  {
+    "fact": "logout 无论吊销成败，最终都会清空本地保存的凭证。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:106"
+  },
+  {
+    "fact": "currentAccountId 与 currentResidency 从当前状态读取 accountId 与 residency。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:111"
+  },
+  {
+    "fact": "fetchUsage 先拿有效 access token 与 accountId，再调用 usageClient.fetch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:115"
+  },
+  {
+    "fact": "用量拉取成功后才把快照存入 CodexUsagePreferences，失败不覆盖旧快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:126"
+  },
+  {
+    "fact": "REFRESH_WINDOW_MILLIS 为 5 分钟，是判定 token 是否需要刷新的提前量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:137"
+  },
+  {
+    "fact": "CodexUsageClient.fetch 向 CODEX_USAGE_ENDPOINT 发 GET，头带 Authorization: Bearer 与 ChatGPT-Account-ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:42"
+  },
+  {
+    "fact": "用量请求带 originator=operit 头标识调用方。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:44"
+  },
+  {
+    "fact": "用量请求的 User-Agent 为 Operit/{BuildConfig.VERSION_NAME}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:45"
+  },
+  {
+    "fact": "用量请求带 Cache-Control: no-cache，避免中间缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:47"
+  },
+  {
+    "fact": "residency 非空时用量请求额外带 x-openai-internal-codex-residency 头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:49"
+  },
+  {
+    "fact": "用量请求非 2xx 时抛 IOException，消息含 HTTP 状态码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:57"
+  },
+  {
+    "fact": "parseUsage 从 rate_limit.primary_window 与 secondary_window 解析两个用量窗口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:70"
+  },
+  {
+    "fact": "5 小时窗口按 windowDurationSeconds == 18000 匹配，7 天窗口按 604800 匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:80"
+  },
+  {
+    "fact": "parseWindow 要求 used_percent 存在且不小于 0，否则返回 null 丢弃该窗口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:90"
+  },
+  {
+    "fact": "usedPercent 超过 100 时钳制为 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:100"
+  },
+  {
+    "fact": "窗口时长取 limit_window_seconds，重置时间取 reset_at，两者缺失时为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:95"
+  },
+  {
+    "fact": "remainingPercent 等于 100 减 usedPercent，并钳制在 0 到 100 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexUsageClient.kt:19"
+  },
+  {
+    "fact": "GitHub 登录走自建 broker 中转，BROKER_BASE_URL 为 https://api.operit.app（client_secret 不进 App）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:144"
+  },
+  {
+    "fact": "GitHubOAuthBrokerService.startLogin 向 {broker}/oauth/github/start POST JSON 体 {completionRedirectUri}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:60"
+  },
+  {
+    "fact": "GitHubOAuthBrokerStartResponse 包含 transactionId、deliveryCredential、authorizationUrl、completionRedirectUri、expiresAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:18"
+  },
+  {
+    "fact": "GitHubOAuthBrokerService.claimLogin 向 {broker}/oauth/github/claim POST JSON 体 {transactionId, deliveryCredential}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:84"
+  },
+  {
+    "fact": "claimLogin 要求 HTTP 200 且响应体非空，否则返回失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:99"
+  },
+  {
+    "fact": "broker 返回 ok=false 时 claimLogin 直接失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:106"
+  },
+  {
+    "fact": "broker 返回 status 非 complete 时 claimLogin 失败并报告该 status。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:108"
+  },
+  {
+    "fact": "GitHubOAuthBrokerClaimResult 包含 accessToken、tokenType、scope、expiresIn、refreshToken、user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:39"
+  },
+  {
+    "fact": "GitHubOAuthBrokerService.httpErrorMessage 把 HTTP 状态码与响应体拼进异常消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt:130"
+  },
+  {
+    "fact": "GitHubApiService 封装 api.github.com 的用户、仓库、Release 操作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:122"
+  },
+  {
+    "fact": "GITHUB_API_BASE 为 https://api.github.com。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:149"
+  },
+  {
+    "fact": "OkHttp 拦截器给每个 GitHub 请求加 User-Agent: Operit-MCP-Client。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:131"
+  },
+  {
+    "fact": "请求缺 Accept 头时拦截器默认加 application/vnd.github.v3+json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:134"
+  },
+  {
+    "fact": "getCurrentUser 调 GET /user，未登录（无 token）时直接返回失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:154"
+  },
+  {
+    "fact": "getUser 按用户名查公开信息，登录时附带认证头以提高 API 配额。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:185"
+  },
+  {
+    "fact": "searchRepositories 调 /search/repositories，默认 sort=stars、order=desc、page=1、perPage=30。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:219"
+  },
+  {
+    "fact": "getUserRepositories 不传用户名时查 /user/repos。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:278"
+  },
+  {
+    "fact": "getUserRepositories 传用户名时查 /users/{username}/repos（实际请求用 HttpUrl.Builder 编码）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:278"
+  },
+  {
+    "fact": "getRepository 查 /repos/{owner}/{repo}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:332"
+  },
+  {
+    "fact": "getRepositoryReleases 查 /repos/{owner}/{repo}/releases。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:366"
+  },
+  {
+    "fact": "createRepository 向 /user/repos POST，默认建公开仓库（isPrivate=false）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:413"
+  },
+  {
+    "fact": "createTextFile 先查文件现有 sha（404 视为新建），再 PUT /repos/{owner}/{repo}/contents/{path}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:456"
+  },
+  {
+    "fact": "createTextFile 提交的文件内容先做 Base64 编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:481"
+  },
+  {
+    "fact": "getRepositoryContentFile 遇到 404 返回成功 null，表示文件不存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:537"
+  },
+  {
+    "fact": "findReleaseByTag 在 getReleaseByTag 报 HTTP 404 时返回 null 而不是失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:583"
+  },
+  {
+    "fact": "createRelease 向 /repos/{owner}/{repo}/releases POST 创建 Release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:592"
+  },
+  {
+    "fact": "updateRelease 用 PATCH 更新指定 releaseId 的 Release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:640"
+  },
+  {
+    "fact": "downloadReleaseAsset 按传入的 downloadUrl 下载并返回字节数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:689"
+  },
+  {
+    "fact": "deleteRelease 与 deleteReleaseAsset 用 DELETE 删除 Release 或其附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:709"
+  },
+  {
+    "fact": "uploadReleaseAsset 向 uploads.github.com POST 附件，文件名作为 query 参数 name。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:769"
+  },
+  {
+    "fact": "buildHttpException 把 HTTP 状态码与响应体拼进异常消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:815"
+  },
+  {
+    "fact": "MarketStatsApiService 是 Operit 应用市场（Market V2）的客户端。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:510"
+  },
+  {
+    "fact": "市场动态接口基地址为 https://api.operit.app，静态资源基地址为 https://static.operit.app。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1361"
+  },
+  {
+    "fact": "市场请求的 User-Agent 为 Operit-Market-V2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1358"
+  },
+  {
+    "fact": "市场请求的连接、读取、写入超时均为 15 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1359"
+  },
+  {
+    "fact": "marketSession 是 @Volatile 缓存的市场会话令牌，用 MARKET_SESSION_LOCK 做双重检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1106"
+  },
+  {
+    "fact": "ensureMarketSession 无缓存会话时用 GitHub token 向服务端换取市场会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1116"
+  },
+  {
+    "fact": "换取市场会话调 POST /market/v2/auth/github，请求头带 GitHub token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1126"
+  },
+  {
+    "fact": "市场鉴权响应要求 ok=true 且 session 非空，否则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1146"
+  },
+  {
+    "fact": "requestDynamic 默认给请求加 Authorization: Bearer {marketSession}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1078"
+  },
+  {
+    "fact": "trackDownload 不带市场会话且不跟随重定向。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:757"
+  },
+  {
+    "fact": "trackDownload 把 3xx 响应也视为下载打点成功。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:768"
+  },
+  {
+    "fact": "getManifest 拉取 /market/v2/manifest.json 获取市场类型、分类与状态清单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:521"
+  },
+  {
+    "fact": "getStats 取某类型榜单第一页，按条目 id 聚合成下载量统计。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:533"
+  },
+  {
+    "fact": "榜单分页 totalPages 按 ((total + pageSize - 1) / pageSize) 计算且至少为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:579"
+  },
+  {
+    "fact": "getEntry 按 entryId 的分片拉取 /market/v2/entries/{shard}.json 再按 id 取条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:781"
+  },
+  {
+    "fact": "条目分片算法 marketShard 是 fnv1a32Hex(entryId) 取前 2 个十六进制字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1330"
+  },
+  {
+    "fact": "getComments 拉取 /market/v2/comments/{entryId}/page-{page}.json，404 时返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:794"
+  },
+  {
+    "fact": "postComment、editComment、deleteComment 分别用 POST、PATCH、DELETE 操作评论。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:807"
+  },
+  {
+    "fact": "publish 向 /market/v2/publish POST，服务端无条目返回时本地拼一个 pending 条目兜底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:927"
+  },
+  {
+    "fact": "publishNewVersion 向 /market/v2/entries/{id}/versions POST 发布新版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:981"
+  },
+  {
+    "fact": "withdrawEntry 用 DELETE 撤下条目，并在本地把状态标为 withdrawn。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1008"
+  },
+  {
+    "fact": "榜单排序参数映射：likes→likes、downloads→downloads，其他一律→updated。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1176"
+  },
+  {
+    "fact": "downloadCountValue 优先取 stats.downloads，再取 downloadCount（>0），最后取 downloads。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1315"
+  },
+  {
+    "fact": "likesCount 优先取 stats.likes，否则累加 reaction 为 +1 或 like 的数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:1319"
+  },
+  {
+    "fact": "MarketV2Entry 的 stateCode 默认为 approved。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt:317"
+  },
+  {
+    "fact": "Codex 的 OAuth 凭证保存在 EncryptedSharedPreferences 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:146"
+  },
+  {
+    "fact": "Codex 凭证存储名为 codex_oauth_credentials。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:107"
+  },
+  {
+    "fact": "Codex 凭证库的 MasterKey 用 AES256_GCM 方案，键加密 AES256_SIV、值加密 AES256_GCM。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:150"
+  },
+  {
+    "fact": "CodexAuthPreferences.save 要求 accessToken、refreshToken、accountId 非空且 expiresAtMillis 大于 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:33"
+  },
+  {
+    "fact": "residency 或 email 为空时 save 删除对应键，而不是存空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:46"
+  },
+  {
+    "fact": "启动读取 Codex 凭证遇到 SecurityException 时删除加密库并返回未登录，让设置页能正常打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:65"
+  },
+  {
+    "fact": "Codex 用量快照保存在明文 DataStore codex_usage_preferences 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexUsagePreferences.kt:19"
+  },
+  {
+    "fact": "CodexUsagePreferences.save 把 accountId、usage、fetchedAtMillis 一起写入快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexUsagePreferences.kt:46"
+  },
+  {
+    "fact": "用量快照解码失败时记日志并返回 null，不抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexUsagePreferences.kt:41"
+  },
+  {
+    "fact": "GitHub 的 access token 保存在明文 DataStore github_auth_preferences 中（未加密）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:20"
+  },
+  {
+    "fact": "GitHub 登录申请的 scope 为 notifications,public_repo,user:email,read:user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:42"
+  },
+  {
+    "fact": "GitHub 会话有效要求 authVersion 不小于 3 且已授权 scope 包含全部必需 scope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:90"
+  },
+  {
+    "fact": "GitHubAuthPreferences.saveAuthInfo 在登录成功后清除进行中的 OAuth 事务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:161"
+  },
+  {
+    "fact": "getActiveOAuthTransaction 发现事务已过期时自动清除并返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:245"
+  },
+  {
+    "fact": "getAuthorizationHeader 返回 Bearer {token} 格式的认证头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:271"
+  },
+  {
+    "fact": "GitHubAuthPreferences.logout 清空整个 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:227"
+  },
+  {
+    "fact": "GitHub token 无 TOKEN_EXPIRES_AT 记录时 isTokenExpired 返回 false（视为不过期）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt:181"
+  },
+  {
+    "fact": "CodexOAuthCoordinator.startLogin 打开回环回调服务器，生成 PKCE 与 state，会话有效期 5 分钟。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:33"
+  },
+  {
+    "fact": "CodexOAuthCoordinator.completeLogin 校验回调的 state 与会话一致，不一致抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:57"
+  },
+  {
+    "fact": "Codex 回调带 error 参数时抛错并携带 error_description。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:60"
+  },
+  {
+    "fact": "Codex 回调缺 code 参数时抛错（Codex OAuth callback has no authorization code）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:66"
+  },
+  {
+    "fact": "换到 token 后经 authManager.saveLoginTokens 落库并返回 CodexAuthState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:73"
+  },
+  {
+    "fact": "CodexOAuthCoordinator.cancel 关闭回环回调服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt:80"
+  },
+  {
+    "fact": "回环回调服务器绑定在 127.0.0.1 的 1455 端口，只接受本机连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt:94"
+  },
+  {
+    "fact": "Codex 的 OAuth redirectUri 为 http://localhost:{port}/auth/callback。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt:16"
+  },
+  {
+    "fact": "回环服务器只接受 GET 请求，其他方法直接拒绝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt:47"
+  },
+  {
+    "fact": "回环服务器拒绝带 scheme 或 authority 的绝对 URI，只认路径恰好为 /auth/callback 的请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt:55"
+  },
+  {
+    "fact": "命中回调时回环服务器返回 200 与 Codex login complete. Return to Operit. 页面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt:86"
+  },
+  {
+    "fact": "GitHub 内嵌登录的完成回调地址为 https://api.operit.app/oauth/github/complete。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthCoordinator.kt:90"
+  },
+  {
+    "fact": "GitHubOAuthCoordinator.startLogin 经 broker 开启事务后，把 transactionId、deliveryCredential、expiresAt 存入 preferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthCoordinator.kt:18"
+  },
+  {
+    "fact": "GitHubOAuthCoordinator.completeLogin 要求回调的 transactionId 与进行中事务一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthCoordinator.kt:40"
+  },
+  {
+    "fact": "GitHub 回调 status=denied 时视为用户取消授权并清理事务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthCoordinator.kt:45"
+  },
+  {
+    "fact": "GitHub claim 成功后调 saveAuthInfo 落库并清理 OAuth 事务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthCoordinator.kt:67"
+  },
+  {
+    "fact": "CodexProvider.getApiKey 直接返回 authManager.getValidAccessToken()，即 OAuth access token 充当模型调用的 API key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/CodexProvider.kt:20"
+  },
+  {
+    "fact": "getUserRepositories 不传用户名（查当前用户仓库）时必须登录，否则直接返回失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt:304"
+  },
+  {
+    "fact": "CodexLoginDialog 在 LaunchedEffect(Unit) 内于 Dispatchers.IO 上调 coordinator.startLogin() 生成登录会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:61"
+  },
+  {
+    "fact": "CodexLoginDialog 拿到 authorizationUrl 后用 Intent.ACTION_VIEW + FLAG_ACTIVITY_NEW_TASK 启动系统浏览器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:64"
+  },
+  {
+    "fact": "CodexLoginDialog 用 withTimeout(remainingMillis) 等待回环服务器的 awaitCallback()，超时则抛 TimeoutCancellationException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:73"
+  },
+  {
+    "fact": "CodexLoginDialog 等到回调 Uri 后先置 isCompleting=true，进入收尾阶段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:76"
+  },
+  {
+    "fact": "CodexLoginDialog 调 coordinator.completeLogin(activeSession, callbackUri) 换 token 并返回 CodexAuthState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:77"
+  },
+  {
+    "fact": "CodexLoginDialog 登录成功弹 codex_login_success Toast（Toast.LENGTH_LONG）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:80"
+  },
+  {
+    "fact": "CodexLoginDialog 登录成功后调 onLoginSuccess(state)，再调 onDismissRequest() 关对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:83"
+  },
+  {
+    "fact": "CodexLoginDialog 的 finally 关闭 callbackServer，并在 NonCancellable 上下文里清空 session。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:98"
+  },
+  {
+    "fact": "CodexLoginDialog 的取消按钮置 cancelRequested=true 并关闭回环服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:106"
+  },
+  {
+    "fact": "CodexLoginDialog 的 onDismissRequest 在 isCompleting 阶段不再触发取消。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:113"
+  },
+  {
+    "fact": "CodexLoginDialog 对话框按 isLaunching 显示 codex_login_starting / codex_login_waiting 文案，配 CircularProgressIndicator 与 OpenInBrowser 图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt:126"
+  },
+  {
+    "fact": "GitHubLoginMode 为私有枚举，仅含 CHOOSER / EMBEDDED / EXTERNAL 三种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:50"
+  },
+  {
+    "fact": "GitHubLoginDialog 用 rememberSaveable 保存 loginMode，默认 CHOOSER，先弹登录方式选单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:61"
+  },
+  {
+    "fact": "GitHubLoginMethodDialog 用 Button（配 Language 图标）提供内嵌登录入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:99"
+  },
+  {
+    "fact": "GitHubLoginMethodDialog 用 OutlinedButton（配 OpenInBrowser 图标）提供外部浏览器登录入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:108"
+  },
+  {
+    "fact": "GitHubEmbeddedLoginDialog 用 coordinator.startEmbeddedLogin() 开启 broker 事务，拿到 GitHubOAuthBrokerStartResponse。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:133"
+  },
+  {
+    "fact": "内嵌登录事务未就绪时显示加载框，关闭时调 coordinator.cancelLogin()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:151"
+  },
+  {
+    "fact": "GitHubEmbeddedLoginDialog 用 BrowserCallbackDialog（ui.common.browser 包）加载 authorizationUrl，传入 completionRedirectUri 与 expiresAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:181"
+  },
+  {
+    "fact": "内嵌登录的 onCompletion 调 coordinator.completeLogin(completionUri) 完成登录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:188"
+  },
+  {
+    "fact": "内嵌登录成功后弹 main_github_login_success(user.login) Toast。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:192"
+  },
+  {
+    "fact": "GitHubExternalLoginDialog 在 Dispatchers.IO 上用 GitHubOAuthLoopbackCallbackServer.open() 打开回环服务器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:244"
+  },
+  {
+    "fact": "GitHubExternalLoginDialog 用 startLogin(loopbackServer.completionRedirectUri) 开启 broker 事务，再用外部浏览器打开 transaction.authorizationUrl。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:247"
+  },
+  {
+    "fact": "GitHubExternalLoginDialog 用 withTimeout 等待 loopbackServer.awaitCompletion()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:262"
+  },
+  {
+    "fact": "外部登录回调到达后调 coordinator.completeLogin(completionUri) 拿 user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:265"
+  },
+  {
+    "fact": "外部登录成功后弹 main_github_login_success(user.login) Toast。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:268"
+  },
+  {
+    "fact": "GitHubExternalLoginDialog 的 finally 关闭回环服务器，并在 NonCancellable 上下文调 coordinator.cancelLogin()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:296"
+  },
+  {
+    "fact": "GitHubExternalLoginDialog 的取消按钮在 isCompleting 阶段禁用（enabled = !isCompleting）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:336"
+  },
+  {
+    "fact": "外部登录对话框按 isLaunching 显示 github_login_starting / github_login_external_waiting 文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubLoginDialog.kt:326"
+  },
+  {
+    "fact": "clearGitHubOAuthBrowserSession 在 Dispatchers.Main.immediate 上清除 WebStorage 全部数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthBrowserSession.kt:11"
+  },
+  {
+    "fact": "clearGitHubOAuthBrowserSession 调 CookieManager.removeAllCookies 并 flush，仅在 continuation.isActive 时 resume，保证挂起点只恢复一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthBrowserSession.kt:16"
+  },
+  {
+    "fact": "GitHubOAuthLoopbackCallbackServer 的 completionRedirectUri 为 http://127.0.0.1:{serverSocket.localPort}/oauth/github/complete。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:15"
+  },
+  {
+    "fact": "GitHubOAuthLoopbackCallbackServer.open() 在 127.0.0.1 上绑定 ServerSocket(0, 1, …)，端口由内核分配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:110"
+  },
+  {
+    "fact": "open() 要求分配到的端口不小于 MIN_LOOPBACK_PORT（1024），否则关闭并抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:112"
+  },
+  {
+    "fact": "awaitCompletion() 循环 accept 连接，只接受 GET 且路径恰为 /oauth/github/complete 的请求，把查询串拼回回调 Uri。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:24"
+  },
+  {
+    "fact": "GitHub 回环服务器的请求行读取设置了 5 秒超时（REQUEST_READ_TIMEOUT_MILLIS）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:29"
+  },
+  {
+    "fact": "readCompletionUri 拒绝带 scheme 或 authority 的绝对 URI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:59"
+  },
+  {
+    "fact": "请求路径与回调路径不一致时 readCompletionUri 返回 null，随后回 404。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:64"
+  },
+  {
+    "fact": "命中回调时回环服务器回 200 与 GitHub login complete. Return to Operit. 页面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/github/GitHubOAuthLoopbackCallbackServer.kt:100"
+  }
+]

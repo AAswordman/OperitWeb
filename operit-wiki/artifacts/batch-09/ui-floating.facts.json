@@ -1,0 +1,594 @@
+[
+  {
+    "fact": "FloatingMode 是悬浮窗形态枚举，定义 6 种形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:4"
+  },
+  {
+    "fact": "FloatingMode.WINDOW 为窗口聊天形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:4"
+  },
+  {
+    "fact": "FloatingMode.BALL 为聊天球形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:5"
+  },
+  {
+    "fact": "FloatingMode.VOICE_BALL 为语音球形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:6"
+  },
+  {
+    "fact": "FloatingMode.FULLSCREEN 为全屏语音/对话形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:7"
+  },
+  {
+    "fact": "FloatingMode.RESULT_DISPLAY 为 AI 回复结果展示气泡形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:8"
+  },
+  {
+    "fact": "FloatingMode.SCREEN_OCR 为屏幕圈选 OCR 形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingMode.kt:9"
+  },
+  {
+    "fact": "FloatingChatWindow 是悬浮窗总入口 composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:70"
+  },
+  {
+    "fact": "FloatingChatWindow 参数 currentMode/previousMode 默认均为 WINDOW",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:79"
+  },
+  {
+    "fact": "FloatingChatWindow 用 AnimatedContent 按 currentMode 切换六种界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:157"
+  },
+  {
+    "fact": "AnimatedContent 只监听 currentMode，避免消息更新时触发切换动画",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:158"
+  },
+  {
+    "fact": "窗口↔全屏切换用 220ms 缩放（initialScale 0.92）+淡入淡出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:175"
+  },
+  {
+    "fact": "其他模式→球模式时，球延迟 150ms 从 scale 0.0 爆炸式出现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:184"
+  },
+  {
+    "fact": "球模式→其他模式时，新界面延迟 100ms 从 scale 0.0 展开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:192"
+  },
+  {
+    "fact": "球模式之间切换用 250ms 交叉淡入淡出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:199"
+  },
+  {
+    "fact": "BALL 分支内按 previousMode 区分渲染聊天球或语音球",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:208"
+  },
+  {
+    "fact": "RESULT_DISPLAY 分支渲染 FloatingResultDisplay",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:215"
+  },
+  {
+    "fact": "悬浮窗内容用 CompositionLocalProvider 提供 LocalThemePreferenceSnapshot 主题快照",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingChatWindow.kt:155"
+  },
+  {
+    "fact": "rememberFloatContext 是悬浮窗共享状态容器的构建入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:22"
+  },
+  {
+    "fact": "rememberFloatContext 构造参数含 previousMode（默认 WINDOW）、onModeChange、saveWindowState",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:32"
+  },
+  {
+    "fact": "FloatContext 的回调经 rememberUpdatedState 持有最新值，避免作为 remember key 导致重建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:85"
+  },
+  {
+    "fact": "SideEffect 把最新的回调写回 floatContext.onModeChange 等字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:105"
+  },
+  {
+    "fact": "FloatContext.previousMode 用 mutableStateOf 保存上一个形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:172"
+  },
+  {
+    "fact": "pendingScreenSelection 标记圈选 OCR 返回后自动勾选“屏幕内容”附件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatContext.kt:196"
+  },
+  {
+    "fact": "FloatingChatBallMode 点击进入 WINDOW 窗口形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingChatBallMode.kt:19"
+  },
+  {
+    "fact": "FloatingChatBallMode 在 AI 回复完成后切到 RESULT_DISPLAY 展示结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingChatBallMode.kt:23"
+  },
+  {
+    "fact": "FloatingChatBallMode 在结果展示关闭时回到 BALL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingChatBallMode.kt:30"
+  },
+  {
+    "fact": "FloatingVoiceBallMode 点击直接进入 FULLSCREEN 全屏语音形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingVoiceBallMode.kt:19"
+  },
+  {
+    "fact": "FloatingVoiceBallMode 的 onTriggerResult 切 RESULT_DISPLAY，3 秒后自动回 BALL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingVoiceBallMode.kt:27"
+  },
+  {
+    "fact": "自动回球前会检查当前仍是 RESULT_DISPLAY，避免用户已切换到其他形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingVoiceBallMode.kt:29"
+  },
+  {
+    "fact": "SiriBall 是聊天球/语音球共用的球体渲染 composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:47"
+  },
+  {
+    "fact": "SiriBall 用 4 色光斑绘制：主蓝 0xFF0A84FF、紫、粉红、青",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:53"
+  },
+  {
+    "fact": "SiriBall 光斑 15 秒慢旋转（LinearEasing 无限循环）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:164"
+  },
+  {
+    "fact": "球体呼吸缩放动画 breathe 周期为 3000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:175"
+  },
+  {
+    "fact": "球体外圈音波扩散分 3 层绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:181"
+  },
+  {
+    "fact": "SiriBall 内建 SpeechInteractionManager，语音结果以 PromptFunctionType.VOICE 发送",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:72"
+  },
+  {
+    "fact": "SiriBall 在 ballState 为 Loading 且 AI 处理完成时触发 onTriggerResult",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:108"
+  },
+  {
+    "fact": "SiriBall 按压时球体缩小（isPressed = ballState == StatePressing）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt:111"
+  },
+  {
+    "fact": "FloatingResultDisplay 显示最后一条 AI 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingResultDisplay.kt:25"
+  },
+  {
+    "fact": "无 AI 消息时显示 floating_hello 文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingResultDisplay.kt:31"
+  },
+  {
+    "fact": "FloatingResultDisplay 点击结果气泡回到 BALL 形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/FloatingResultDisplay.kt:46"
+  },
+  {
+    "fact": "球体粒子拖尾系统在 LaunchedEffect(Unit) 中用 while(true)+withFrameNanos 逐帧更新粒子",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/BallParticles.kt:116"
+  },
+  {
+    "fact": "SpeechInteractionManager.startListening 是语音监听入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:121"
+  },
+  {
+    "fact": "startListening 每次开始监听时清空 latestPartialText",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:134"
+  },
+  {
+    "fact": "语音识别启动失败时重试，最多 12 次（attempt < 12）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:160"
+  },
+  {
+    "fact": "识别走 SpeechServiceFactory，配置 continuousMode 与 partialResults 均为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:166"
+  },
+  {
+    "fact": "SpeechInteractionManager.stopListening(isCancel) 停止监听",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:192"
+  },
+  {
+    "fact": "SpeechInteractionManager.handleRecognitionResult 处理识别结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:214"
+  },
+  {
+    "fact": "识别文本增量累积：新文本不是上次前缀延续时，用“。”拼接 latestPartialText",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:219"
+  },
+  {
+    "fact": "识别中静默 2000ms 自动发送累积文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:228"
+  },
+  {
+    "fact": "stopListening 后 3000ms fallback 超时兜底发送",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:280"
+  },
+  {
+    "fact": "stripWakePhrasePrefixIfNeeded 去除识别文本中的唤醒词前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:243"
+  },
+  {
+    "fact": "发送完成后清空 latestPartialText",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt:303"
+  },
+  {
+    "fact": "FloatingFullscreenMode 只是转发到 screen 包的同名函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/FloatingFullscreenMode.kt:20"
+  },
+  {
+    "fact": "全屏语音界面的实际实现是 screen 包的 FloatingFullscreenMode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/screen/FloatingFullscreenScreen.kt:94"
+  },
+  {
+    "fact": "FULLSCREEN_TTS_CAPTURE_SUPPRESS_MS=1200L，TTS 首句朗读时抑制麦克风 1200ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:30"
+  },
+  {
+    "fact": "isWaveActive 标记是否处于语音态（波浪模式）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:49"
+  },
+  {
+    "fact": "FloatingFullscreenModeViewModel.enterWaveMode 进入语音态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:330"
+  },
+  {
+    "fact": "FloatingFullscreenModeViewModel.exitWaveMode 退出语音态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:357"
+  },
+  {
+    "fact": "prepareVoiceCaptureForAiTurn 在 AI 轮次开始前暂停录音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:144"
+  },
+  {
+    "fact": "awaitAiTurnAndResumeVoiceCapture 每 120ms 轮询 AI 忙闲，轮次结束恢复录音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:158"
+  },
+  {
+    "fact": "AI 轮次恢复录音的轮询条件含 isWaveActive 与恢复标志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:160"
+  },
+  {
+    "fact": "startInactivityMonitor 启动无操作超时监控，超时自动退出全屏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:481"
+  },
+  {
+    "fact": "inactivityTimeoutSeconds 默认取 WakeWordPreferences 的语音通话空闲超时默认值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:72"
+  },
+  {
+    "fact": "AI 朗读或工具调用/生成期间不计入空闲超时",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:489"
+  },
+  {
+    "fact": "maybeAutoAttachByKeyword 按用户输入关键词自动附加附件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:609"
+  },
+  {
+    "fact": "关键词自动附件的分隔符为 |, ，; ；换行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:646"
+  },
+  {
+    "fact": "语音态下用 AvatarEmotionManager.analyzeEmotion 分析 AI 回复情绪",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:679"
+  },
+  {
+    "fact": "extractMoodTagValue 从 AI 回复中提取 mood 标签值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:676"
+  },
+  {
+    "fact": "全屏语音最终识别结果以 PromptFunctionType.VOICE 发送",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:103"
+  },
+  {
+    "fact": "全屏编辑面板的文本也以 PromptFunctionType.VOICE 发送",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt:557"
+  },
+  {
+    "fact": "XmlTextProcessor.processStreamToText 把 AI 回复字符串流转为字符流并去掉 XML 标签内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/XmlTextProcessor.kt:25"
+  },
+  {
+    "fact": "XmlTextProcessor 内部用 stringStreamToCharStream 做流式字符展开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/XmlTextProcessor.kt:45"
+  },
+  {
+    "fact": "BottomControlBar 的 holdToSpeakTriggerMs=450L，输入框空时按住 450ms 进入按住说话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:163"
+  },
+  {
+    "fact": "AnimatedGlowBorder 是底部输入条的发光边框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:525"
+  },
+  {
+    "fact": "发光边框的流动动画周期 9000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:535"
+  },
+  {
+    "fact": "发光边框的呼吸凸起动画周期 1800ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:544"
+  },
+  {
+    "fact": "MicrophoneButton 点按进入语音态、长按开始录音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:858"
+  },
+  {
+    "fact": "录音中拖拽取消/编辑阈值 dragThreshold 为 60px",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:951"
+  },
+  {
+    "fact": "底部输入条附件 chips 含朗读静音选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:224"
+  },
+  {
+    "fact": "底部输入条附件 chips 含屏幕内容选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:241"
+  },
+  {
+    "fact": "底部输入条附件 chips 含通知选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:252"
+  },
+  {
+    "fact": "底部输入条附件 chips 含位置选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:263"
+  },
+  {
+    "fact": "底部输入条附件 chips 含圈选识别选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt:274"
+  },
+  {
+    "fact": "MessageDisplay 过滤掉 sender 为 think 的消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/MessageDisplay.kt:55"
+  },
+  {
+    "fact": "MessageDisplay 用 LazyColumn(reverseLayout=true) 倒序展示消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/MessageDisplay.kt:77"
+  },
+  {
+    "fact": "MessageDisplay 顶部 96dp、底部 72dp 渐隐",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/MessageDisplay.kt:83"
+  },
+  {
+    "fact": "MessageDisplay 渐隐用 BlendMode.DstIn 实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/MessageDisplay.kt:100"
+  },
+  {
+    "fact": "EditPanel 是语音识别文本的编辑面板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/EditPanel.kt:52"
+  },
+  {
+    "fact": "EditPanel 输入框高度 120dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/EditPanel.kt:102"
+  },
+  {
+    "fact": "WaveVisualizerSection 默认语音态波浪 300dp、非语音态 120dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/WaveVisualizerSection.kt:61"
+  },
+  {
+    "fact": "AiLoadingWaveOverlay 用双反向旋转圆弧加多轨道圆点表示 AI 加载中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/WaveVisualizerSection.kt:218"
+  },
+  {
+    "fact": "rememberNoiseBitmap 生成 120px 噪点位图用于全屏背景质感",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/screen/FloatingFullscreenScreen.kt:638"
+  },
+  {
+    "fact": "FloatingChatWindowModeViewModel 管理窗口模式的拖动与缩放状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/viewmodel/FloatingChatWindowViewModel.kt:17"
+  },
+  {
+    "fact": "handleResize 把窗口尺寸钳在 150dp–0.8×屏宽 / 200dp–0.8×屏高之间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/viewmodel/FloatingChatWindowViewModel.kt:90"
+  },
+  {
+    "fact": "handleScaleChange 把缩放钳在 0.3–1.0 之间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/viewmodel/FloatingChatWindowViewModel.kt:106"
+  },
+  {
+    "fact": "toggleScale 在 0.3→0.5→0.7→1.0 四档缩放间循环",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/viewmodel/FloatingChatWindowViewModel.kt:121"
+  },
+  {
+    "fact": "toggleAttachmentPanel 切换附件面板显示状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/viewmodel/FloatingChatWindowViewModel.kt:141"
+  },
+  {
+    "fact": "ResizeEdge 是窗口边缘调整方向的枚举",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/models/ChatModels.kt:4"
+  },
+  {
+    "fact": "MessageItem 是窗口模式的消息条目 composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/ChatMessages.kt:12"
+  },
+  {
+    "fact": "窗口模式消息渲染用 CursorStyleChatMessage 且 enableDialogs=false，避免悬浮窗内弹窗导致闪退",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/ChatMessages.kt:45"
+  },
+  {
+    "fact": "FloatingAttachmentPanel 声明屏幕内容/通知/位置/圈选 OCR/应用包名五个附件选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/AttachmentPanel.kt:59"
+  },
+  {
+    "fact": "FloatingChatWindowMode 是窗口模式界面的入口 composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:94"
+  },
+  {
+    "fact": "ReportFloatingChatViewEffect 向 ChatViewHookPluginRegistry 上报视图打开/更新/关闭事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:110"
+  },
+  {
+    "fact": "FloatingChatWindowContent 用自定义 Layout 按 windowState 的宽高与缩放测量布局",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:159"
+  },
+  {
+    "fact": "RecentChatSelectorOverlay 取按更新时间倒序的最近 20 条会话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:234"
+  },
+  {
+    "fact": "RecentChatSelectorOverlay 切换会话走 chatCore.switchChatLocal",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:294"
+  },
+  {
+    "fact": "MainWindowBox 是窗口模式的主窗口盒子",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:349"
+  },
+  {
+    "fact": "CloseButtonEffect 关闭时先 200ms 淡出再调用 onClose",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:424"
+  },
+  {
+    "fact": "TitleBar 高 48dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:445"
+  },
+  {
+    "fact": "标题栏全屏按钮切换到 FULLSCREEN 形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:479"
+  },
+  {
+    "fact": "标题栏最小化按钮切换到 BALL 形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:482"
+  },
+  {
+    "fact": "标题栏 Home 按钮启动 MainActivity（FLAG_ACTIVITY_NEW_TASK）后关闭悬浮窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:531"
+  },
+  {
+    "fact": "ChatContentArea 点击空白处收起键盘并清除输入焦点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:646"
+  },
+  {
+    "fact": "ChatMessagesView 是窗口模式的聊天消息视图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:676"
+  },
+  {
+    "fact": "InputDialogView 是窗口模式的大输入对话框视图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:929"
+  },
+  {
+    "fact": "RightEdgeScaleHandle 是右边缘宽度缩放手柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:1103"
+  },
+  {
+    "fact": "CornerScaleHandle 是角落缩放手柄，按拖动方向换算缩放增量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:1185"
+  },
+  {
+    "fact": "BottomResizeHandle 是底部高度调整手柄",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:1266"
+  },
+  {
+    "fact": "ProcessingStatusIndicator 按 InputProcessingState 显示处理中/工具调用/错误状态条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt:1348"
+  },
+  {
+    "fact": "FloatingChatWindowInputControls 是窗口模式输入区入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/FloatingChatWindowInputControls.kt:74"
+  },
+  {
+    "fact": "窗口模式底部输入框 maxLines=2",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/FloatingChatWindowInputControls.kt:153"
+  },
+  {
+    "fact": "AI 处理中时窗口模式发送按钮变为取消按钮（调用 onCancelMessage）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/FloatingChatWindowInputControls.kt:233"
+  },
+  {
+    "fact": "附件请求发出后延迟 500ms 关闭附件面板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/FloatingChatWindowInputControls.kt:276"
+  },
+  {
+    "fact": "窗口模式的圈选 OCR 附件直接切换到 SCREEN_OCR 形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/FloatingChatWindowInputControls.kt:295"
+  },
+  {
+    "fact": "FloatingScreenOcrMode 转发到 FloatingScreenOcrScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/FloatingScreenOcrMode.kt:8"
+  },
+  {
+    "fact": "进入圈选模式后调用 capture_screenshot 工具截屏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:336"
+  },
+  {
+    "fact": "computeCropBounds 把 UI 选区矩形映射回原图裁剪像素边界",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:95"
+  },
+  {
+    "fact": "hitTestHandle 识别选区 8 个方向手柄与内部移动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:124"
+  },
+  {
+    "fact": "SelectionDragHandle 是选区拖拽手柄方向的枚举",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:264"
+  },
+  {
+    "fact": "选区宽高小于 10px 时提示选区太小并重置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:463"
+  },
+  {
+    "fact": "圈选 OCR 用 OCRUtils.recognizeText，质量为 HIGH",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:772"
+  },
+  {
+    "fact": "圈选识别结果拼成 text/plain 的 AttachmentInfo（screen_ocr.txt）加入附件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:797"
+  },
+  {
+    "fact": "圈选确认后置 pendingScreenSelection=true 并返回 previousMode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:812"
+  },
+  {
+    "fact": "圈选遮罩用 graphicsLayer alpha 0.99 离屏缓冲配合 BlendMode.Clear 在选区“挖洞”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/screenocr/screen/FloatingScreenOcrScreen.kt:418"
+  },
+  {
+    "fact": "FloatingWindowTheme 是悬浮窗的独立静态主题，不依赖 Activity 主题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingWindowTheme.kt:14"
+  },
+  {
+    "fact": "FloatingWindowTheme 主色为 Purple40 0xFF6650a4，与主应用默认主色匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingWindowTheme.kt:27"
+  },
+  {
+    "fact": "FloatingWindowTheme 的 bodyLarge 为 14sp，比主应用默认小一号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/FloatingWindowTheme.kt:68"
+  },
+  {
+    "fact": "GlassyChip 是玻璃拟态选择芯片：selected/text/icon/showIcon/showText 参数，可点击。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/GlassyChip.kt:29"
+  },
+  {
+    "fact": "GlassyChip 选中时背景黑 0.6f、边框与文字用青色 0xFF00E5FF，未选中为黑 0.25f/白低透明度，三者均 300ms tween 渐变。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/GlassyChip.kt:41"
+  },
+  {
+    "fact": "LoadingDotsIndicator 用三个 6.dp 圆点、600ms keyframes 跳动动画（160ms 错峰）表示加载中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/components/ChatIndicators.kt:15"
+  },
+  {
+    "fact": "AvatarEmotionManager 是 object 单例，文件注释说明其表情推理逻辑从 PetOverlayService 迁移而来",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:11"
+  },
+  {
+    "fact": "inferEmotionFromText 把文本转小写后做中文关键词加 emoji 子串匹配：开心类→HAPPY，生气类与难过类→SAD，害羞类→CONFUSED，无命中→IDLE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:17"
+  },
+  {
+    "fact": "AvatarEmotion 枚举本身没有愤怒状态，生气关键词被近似映射为 SAD（avatar 表情只表达难过不表达愤怒）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:29"
+  },
+  {
+    "fact": "extractMoodTagValue 用忽略大小写的 <mood>([^<]+)</mood> 正则取文本中所有 mood 标签的最后一个，经 AvatarMoodTypes.normalizeKey 规范化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:40"
+  },
+  {
+    "fact": "analyzeEmotion 优先解析 mood 标签（经 builtInFallbackEmotion 转为 AvatarEmotion），标签缺失或转换失败时回退关键词推理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:61"
+  },
+  {
+    "fact": "stripXmlLikeTags 分三步清理标签：成对标签循环替换最多 5 轮、自闭合标签、残余任意标签，最后 trim",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:84"
+  },
+  {
+    "fact": "analyzeEmotion 的每条分支都打 AppLogger.d 日志，日志内容包含原始文本全文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt:62"
+  }
+]

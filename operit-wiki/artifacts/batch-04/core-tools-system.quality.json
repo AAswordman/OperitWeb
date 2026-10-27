@@ -1,0 +1,112 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/AdminShellExecutor.kt",
+    "line": 124,
+    "severity": "high",
+    "category": "security",
+    "title": "`wipe` 前缀匹配直接触发 wipeData(0)，无二次确认",
+    "detail": "执行命令用 `command.startsWith(\"wipe\")` 匹配，一旦命中就调用 devicePolicyManager.wipeData(0) 清除整机数据，且无二次确认流程。任何以 wipe 开头的东西都会触发（也包括误输入）。对于一个 AI 智能体可调用的 shell 入口，这是极高危的操作。",
+    "evidence": "command.startsWith(\"lockscreen\") -> {\n                            devicePolicyManager.lockNow()\n                            return@withContext ShellExecutor.CommandResult(\n                                    true,\n                                    \"Screen locked\",\n                                    \"\",\n                                    0\n                            )\n                        }\n                        command.startsWith(\"wipe\") -> {\n                            devicePolicyManager.wipeData(0)\n                            return@withContext ShellExecutor.CommandResult(\n                                    true,\n                                    \"Device wipe initiated\",\n                                    \"\",\n                                    0\n                            )\n                        }",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AccessibilityActionListener.kt",
+    "line": 117,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "handleAccessibilityEvent 是无调用者的死代码，监听器实际不接收任何事件",
+    "detail": "事件处理函数 handleAccessibilityEvent 被声明为 private，且全仓库没有调用点；startListening 只检查无障碍服务是否启用、从不向 UIHierarchyManager 注册回调。因此 AccessibilityActionListener 的\"监听\"是假的：startListening 返回成功，但 actionCallback 永远不会被触发。",
+    "evidence": "   * 处理从远程无障碍服务通过AIDL回 调传来的事件\n     * @param event 无障碍事件\n     */\n    private fun handleAccessibilityEvent(event: AccessibilityEvent) {\n        if (!isListening.get()) return\n\n        val callback = actionCallback ?: return",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/ShizukuAuthorizer.kt",
+    "line": 281,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "用新 lambda 调用 removeRequestPermissionResultListener，移除永远不成功",
+    "detail": "两次 `Shizuku.removeRequestPermissionResultListener { _, _ -> }` 都传入一个新建的 lambda 实例。Rikka Shizuku 的 remove 方法是按 listener 实例匹配的，新实例与之前 addRequestPermissionResultListener 注册的实例不同，移除是空操作。结果：注释说的\"移除之前的监听器避免重复\"没有发生，重复请求权限会累积多个监听器。",
+    "evidence": "// 移除之前的监听器避免重复\n            try {\n                if (permissionRequestListenerRegistered) {\n                    Shizuku.removeRequestPermissionResultListener { _, _ -> }\n                    permissionRequestListenerRegistered = false\n                }\n            } catch (e: Exception) {\n                AppLogger.e(TAG, \"Error removing existing permission listener\", e)\n            }",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/StandardShellExecutor.kt",
+    "line": 56,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "先 waitFor 再读流：输出超管道缓冲时进程永久卡死",
+    "detail": "executeCommand 流程是 Runtime.exec → process.waitFor(COMMAND_TIMEOUT) → 再读 inputStream/errorStream。子进程的 stdout/stderr 管道缓冲区有限（通常 64KB），若命令输出超过缓冲且未被读取，子进程在写流时阻塞，父进程在 waitFor 阻塞——经典双向死锁。30 秒超时只管\"不结束\"不管\"输出太多\"。",
+    "evidence": "// 使用Runtime执行简单命令\n                    val process = Runtime.getRuntime().exec(command)\n\n                    // 设置超时\n                    val completed = process.waitFor(COMMAND_TIMEOUT, TimeUnit.SECONDS)\n                    if (!completed) {\n                        process.destroy()\n                        return@withContext ShellExecutor.CommandResult(\n                                false,\n                                \"\",\n                                \"Command timed out after $COMMAND_TIMEOUT seconds\",\n                                -1\n                        )\n                    }",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/AdminActionListener.kt",
+    "line": 146,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "startAdminEventMonitoring 是空实现，但 startListening 报告成功",
+    "detail": "startAdminEventMonitoring 方法体内只有一条日志和四行注释，没有注册任何实际监控。startListening 仍然返回 ListeningResult(true, ...)。上层（ActionManager）会以为设备管理员级监听已生效，实际一个事件都不会产生——沉默的失败比报错更危险。",
+    "evidence": "private fun startAdminEventMonitoring() {\n        AppLogger.d(TAG, \"开始管理员级别事件监控 - 可监听系统状态和安全事件\")\n        \n        // 设备管理员可以监听：\n        // - 锁屏/解锁事件\n        // - 应用安装/卸载事件\n        // - 系统安全策略变化\n        // - 密码尝试失败事件\n    }",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/RootAuthorizer.kt",
+    "line": 291,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "checkKernelSu 名义查 KernelSU，实际任何 su 成功都被认定为 KernelSU",
+    "detail": "方法名叫 checkKernelSu，返回值是 `isKernelSu || exitCode == 0`：只要 `su --version` 命令执行成功（退出码 0），无论输出是否包含 KernelSU 都返回 true。调用处据此打印\"检测到KernelSU\"并把 useExecForCommands 设为 true。命名与语义不一致会导致后续维护者误判检测逻辑。",
+    "evidence": "// 检查输出是否包含KernelSU\n            val isKernelSu = result.contains(\"KernelSU\", ignoreCase = true)\n            if (isKernelSu) {\n                AppLogger.d(TAG, \"检测到KernelSU\")\n                useExecForCommands = true\n            }\n            \n            return isKernelSu || exitCode == 0",
+    "confidence": "high"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/Terminal.kt",
+    "line": 134,
+    "severity": "warning",
+    "category": "correctness",
+    "title": "executeCommand 的 deferred.await() 无超时，终端不回包就永久挂起",
+    "detail": "executeCommand 用 CompletableDeferred 等待 terminalManager 的 commandEvents 发出 isCompleted 事件后 complete，之后 `val result = deferred.await()` 无任何超时保护。executeHiddenCommand 有 120000ms 超时，而这条路径没有。若底层终端模块丢失事件或崩溃，调用协程将永久挂起，阻塞上层智能体流程。",
+    "evidence": "// 等待收集器准备就绪\n        collectorReady.await()\n        \n        // 直接向指定会话发送命令，不切换当前会话\n        terminalManager.sendCommandToSession(sessionId, command, commandId)\n\n        val result = deferred.await()\n        \n        job.cancel()",
+    "confidence": "medium"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/ShellExecutorFactory.kt",
+    "line": 26,
+    "severity": "suggestion",
+    "category": "maintainability",
+    "title": "executors 缓存读写无同步，并发首次访问可能重复初始化",
+    "detail": "getExecutor 先查 executors 缓存再创建+initialize()+缓存，全程无 synchronized。两个线程同时首次请求同一级别时，可能各自 new 出实例并各自调 initialize()，后一个覆盖前一个的缓存项。initialize() 目前较轻，但语义上是共享单例的竞争条件。",
+    "evidence": "executors[permissionLevel]?.let {\n                // AppLogger.d(TAG, \"Returning cached executor for level: $permissionLevel\")\n                return it\n            }\n\n            // 创建新的执行器实例\n            val executor =\n                    when (permissionLevel) {\n                        AndroidPermissionLevel.ROOT -> RootShellExecutor(context)\n                        AndroidPermissionLevel.ADMIN -> AdminShellExecutor(context)\n                        AndroidPermissionLevel.DEBUGGER -> DebuggerShellExecutor(context)\n                        AndroidPermissionLevel.ACCESSIBILITY -> AccessibilityShellExecutor(context)\n                        AndroidPermissionLevel.STANDARD -> StandardShellExecutor(context)\n                    }",
+    "confidence": "medium"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/DebuggerShellExecutor.kt",
+    "line": 331,
+    "severity": "suggestion",
+    "category": "correctness",
+    "title": "`command.contains(\">\")` 朴素检测重定向，引号里的 > 也会误判",
+    "detail": "是否走\"增强环境前缀（umask/PATH）\"分支取决于 `command.contains(\">\")`，但 echo \"a > b\" 这种引号内的 > 同样会被判为重定向。它只是让命令多带了一层环境前缀，一般不改变结果，但说明重定向检测是字符串包含级别的、非语法级的，存在误判空间。",
+    "evidence": "val containsRedirection = command.contains(\">\")\n\n                    // 处理命令，确保使用完整路径\n                    val processedCommand =\n                            if (command.contains(\"|\") && command.contains(\"grep\")) {\n                                // 替换 'grep' 为 '/system/bin/grep'，确保使用系统grep命令\n                                command.replace(\" grep \", \" /system/bin/grep \")",
+    "confidence": "medium"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/shell/RootShellExecutor.kt",
+    "line": 496,
+    "severity": "suggestion",
+    "category": "performance",
+    "title": "LibSuShellProcess 的 Channel 容量 256 且 DROP_OLDEST，爆发输出静默丢行",
+    "detail": "stdoutChannel/stderrChannel 都用 capacity=256 + BufferOverflow.DROP_OLDEST。命令输出突发超过 256 行未被及时消费时，老的行被静默丢弃，调用方拿到的 stdout 是不完整的，且没有任何警告。适合交互式读取，但做批量命令结果采集时可能丢数据。",
+    "evidence": "private val stdoutChannel = Channel<String>(capacity = 256, onBufferOverflow = BufferOverflow.DROP_OLDEST)\n    private val stderrChannel = Channel<String>(capacity = 256, onBufferOverflow = BufferOverflow.DROP_OLDEST)",
+    "confidence": "medium"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/system/action/RootActionListener.kt",
+    "line": 167,
+    "severity": "suggestion",
+    "category": "performance",
+    "title": "getevent 进程退出后 finally 里无条件自重启，可能变成紧循环",
+    "detail": "startRootLevelMonitoring 的 finally 块里 `if (isActive) startRootLevelMonitoring()`。如果 getevent 因为设备原因（如 selinux 拒绝）反复秒退，监控协程会不断重建 Root 进程，形成无间隔的紧循环，消耗 CPU 并刷日志。建议加退避延迟或连续失败计数。",
+    "evidence": "} catch (e: Exception) {\n                AppLogger.e(TAG, \"Root级别监控任务出错\", e)\n            } finally {\n                if (isActive) {\n                    AppLogger.d(TAG, \"Restarting root monitoring process...\")\n                    startRootLevelMonitoring()",
+    "confidence": "medium"
+  }
+]

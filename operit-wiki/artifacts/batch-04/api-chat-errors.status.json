@@ -1,0 +1,14 @@
+{
+  "id": "api-chat-errors",
+  "title": "错误/限流/重试",
+  "issue": 51,
+  "status": "approved",
+  "source_repo": "operit",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "critic": "",
+  "refs_valid": "32/32 引用行号真实存在（critic 逐条核引用复验通过），lint 硬失败 0/警告 0",
+  "approved_by_comment_id": 5945778883,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 04:52 UTC",
+  "updated": "2026-10-02"
+}

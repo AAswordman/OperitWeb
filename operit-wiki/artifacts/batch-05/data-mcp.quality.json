@@ -1,0 +1,90 @@
+[
+  {
+    "confidence": "high",
+    "description": "extractZipFile 解压 ZIP 时直接把 entryName 拼到目标目录，没有 canonical 路径校验。恶意 ZIP 的条目名含 ../ 即可写出插件目录之外（Zip Slip），覆盖任意文件。",
+    "evidence": "val outFile = File(targetDir, entryName)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt",
+    "line": 712,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "Node 桥接器监听 127.0.0.1:8752 且全程无鉴权（全文阅读未找到任何 auth/token 校验）。设备上任意有网络权限的本地进程都能连上 8752 下发 register/spawn，让 bridge 执行任意命令。",
+    "evidence": "host: '127.0.0.1',",
+    "file": "app/src/main/assets/bridge/index.js",
+    "line": 196,
+    "severity": "high"
+  },
+  {
+    "confidence": "medium",
+    "description": "uninstallMCPServer 用 File(pluginsBaseDir, pluginId).deleteRecursively() 递归删除，pluginId 未校验 .. 或分隔符。插件 id 可来自导入的配置（仅要求非空），构造 ../ 即可删出插件目录之外。",
+    "evidence": "val pluginDir = File(pluginsBaseDir, pluginId)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt",
+    "line": 399,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "sendCommand 把完整 params（含 register/spawn 传入的 env 环境变量、密钥）拼进 AppLogger.d 日志。日志可被导出，env 中的密钥有泄漏风险。",
+    "evidence": "\"${context.getString(R.string.mcp_send_command)}[$cmdId]: $cmdType ${context.getString(R.string.mcp_service_label)}: $serviceName ${context.getString(R.string.mcp_other_params)}: ${params.toString()}\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPBridge.kt",
+    "line": 511,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "installPluginInternal 在下载开始前就删除旧插件目录，后续下载或解压失败时插件丢失，且没有回滚或备份。",
+    "evidence": "val pluginDir = File(pluginsBaseDir, server.id)\n                if (pluginDir.exists()) {\n                    AppLogger.d(TAG, \"删除已存在的插件目录: ${pluginDir.path}\")\n                    pluginDir.deleteRecursively()\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt",
+    "line": 438,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "clearSession 只把 sharedSessionId 置 null，不关闭终端里的实际会话。被丢弃的会话在终端侧继续存活，资源不释放。",
+    "evidence": "/**\n     * 清除共享会话引用\n     * 注意：这不会实际关闭会话，只是清除引用\n     */\n    suspend fun clearSession() {\n        mutex.withLock {\n            AppLogger.d(TAG, \"Clearing shared session reference: $sharedSessionId\")\n            sharedSessionId = null\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/plugins/MCPSharedSession.kt",
+    "line": 69,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "MCPBridge.startBridge 在启动前用 PortProcessKiller.killListeners(port) 对占用 8752 的进程 kill -9。误杀占用该端口的其他进程无任何确认，强杀也不给进程清理机会。",
+    "evidence": "kill -9 \"${'$'}pid\" 2>/dev/null || true",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/PortProcessKiller.kt",
+    "line": 25,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "PluginMetadata.bearerToken（远程 MCP 服务鉴权令牌）随 mcp_config.json 明文落盘，没有加密或系统密钥库保护。",
+    "evidence": "val configJson = gson.toJson(_mcpConfig.value)\n            mcpConfigFile.writeText(configJson)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt",
+    "line": 504,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "downloadFromUrl 下载 GitHub 仓库 ZIP 时跟踪 totalBytesRead 但没有下载体积上限。超大或恶意仓库 ZIP 可耗尽存储空间。",
+    "evidence": "val tempFile = File(context.cacheDir, \"mcp_${serverId}_repo.zip\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt",
+    "line": 623,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "ServerConfig.autoApprove（MCPLocalServer.kt:131）从配置 JSON 解析后经 normalize（:382）、addOrUpdateMCPServer（:545）、导入路径（:628）层层透传进最终使用的 ServerConfig；另有 MCPDeployer.kt:459、McpConfigImportParser.kt:87 的提取读取——但全仓库没有任何代码读取该字段来做实际的工具调用自动审批决策（bridge JS 无提及；测试断言仅验证解析）。字段语义疑似预留未实现，建议确认语义或移除，避免读者误以为有自动审批能力。",
+    "evidence": "            @SerializedName(\"autoApprove\")\n            val autoApprove: List<String>? = emptyList(),",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPLocalServer.kt",
+    "line": 130,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "getInstalledPluginPath 在目录名与 serverId 不匹配时取第一个子目录作为兜底。目录排序不稳定，返回的路径不确定属于哪个插件，建议记录精确映射。",
+    "evidence": "    fun getInstalledPluginPath(serverId: String): String? {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mcp/MCPRepository.kt",
+    "line": 273,
+    "severity": "suggestion"
+  }
+]

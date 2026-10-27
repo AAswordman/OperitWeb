@@ -1,0 +1,128 @@
+[
+  {
+    "severity": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt",
+    "line": 45,
+    "title": "远程下载的 JS 脚本未经完整性校验即被执行",
+    "description": "runQuickPluginCreatorSetup 从写死的 jsdelivr CDN 地址（SANDBOX_PACKAGE_DEV_INSTALL_SCRIPT_URL，仅钉住 @main 分支，可随分支更新而变）下载 install_or_update.js，下载后不做任何哈希或签名校验，就直接经 toolHandler.executeTool 以 operit_editor:debug_run_sandbox_script（参数 source_path=下载文件）执行。攻击者若能污染 CDN 缓存、劫持分支内容或中间人（虽为 HTTPS，但无完整性校验兜底），即可让 App 执行任意脚本，且该脚本以编辑器包的调试脚本执行权限运行。缓解因素：URL 写死为 HTTPS 且域名固定，攻击面限于供应链投毒。",
+    "evidence": "        }\n\n        val result =\n            toolHandler.executeTool(\n                AITool(\n                    name = \"$OPERIT_EDITOR_PACKAGE_NAME:debug_run_sandbox_script\",\n                    parameters =\n                        listOf(\n                            ToolParameter(\n                                name = \"source_path\",\n                                value = scriptFile.absolutePath",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt",
+    "line": 110,
+    "title": "下载连接的 disconnect 不在 finally 中，异常时泄漏",
+    "description": "downloadSandboxPackageDevInstallScript 中 connection.disconnect() 写在拷贝逻辑之后、没有任何 try/finally 包裹：connect() 成功后若 responseCode 检查抛异常或流拷贝中途抛 IOException，disconnect() 会被跳过，底层 HttpURLConnection 及其 socket 不会被显式释放，依赖 GC 回收。在弱网/大文件场景下重复触发可能耗尽连接资源。",
+    "evidence": "                output.write(buffer, 0, read)\n            }\n            output.flush()\n        }\n    }\n    connection.disconnect()\n\n    return scriptFile\n}",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt",
+    "line": 207,
+    "title": "下载目标文件名取自服务端资产名，未做路径清洗",
+    "description": "downloadArtifactProjectVersionToTempFile 的目标文件名直接取服务端返回的 version.assetName（File(downloadDir, assetName)），未做任何清洗。若资产名含 \"/\" 或 \"../\"，文件会写到 market_downloads 之外（仍在 App 私有目录内）。实际风险较低：下载地址是 GitHub Release 的 browser_download_url，GitHub 本身不允许资产名含 \"/\"；但客户端对服务端字段零校验， defense-in-depth 不足。",
+    "evidence": "): File {\n    val downloadUrl = version.downloadUrl.trim().ifBlank { throw IllegalStateException(\"Missing v2 asset download URL\") }\n    val downloadDir = File(context.cacheDir, \"market_downloads\")\n    if (!downloadDir.exists() && !downloadDir.mkdirs()) {\n        throw IllegalStateException(\"Failed to create market download cache\")\n    }\n\n    val targetFile = File(downloadDir, version.assetName.ifBlank { \"${version.runtimePackageId}.bin\" })\n    val connection = URL(downloadUrl).openConnection() as HttpURLConnection\n    connection.instanceFollowRedirects = true\n    connection.connectTimeout = 30_000",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt",
+    "line": 470,
+    "title": "发布用的最低 App 版本是硬编码常量，会随版本迭代过期",
+    "description": "RepoMarketPublishViewModel 与 ArtifactMarketViewModel 各自硬编码 private const val CURRENT_APP_VERSION = \"1.11.0+5\"，并作为发布请求的 minAppVer 写入市场（buildV2PublishRequest / registerMarketEntry 的 minAppVer）。App 版本迭代后该常量若忘记同步，所有新发布条目的最低支持版本都会写错。而同一模块的 MarketV2Entry.resolveCurrentAppVersionCompatibility 已正确使用 BuildConfig.VERSION_NAME，说明正确做法已知，发布路径却没用。",
+    "evidence": "        }\n    }\n\n    companion object {\n        private const val TAG = \"RepoMarketPublishViewModel\"\n        private const val CURRENT_APP_VERSION = \"1.11.0+5\"\n    }\n}",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt",
+    "line": 549,
+    "title": "发布前重名检查只看排行第一页，分页外冲突漏检",
+    "description": "ensureFreshPublishIdentityAvailable 与 searchOpenEntriesByExactTitle 的重名/重 ID 检查都只拉 getArtifactRankPage(page = 1) 第一页。市场条目超过一页时，第一页之外的同名或同包 ID 条目不会被发现，冲突检查形同虚设，可能导致重复发布同名构件。",
+    "evidence": "        }\n    }\n\n    private suspend fun searchOpenEntriesByExactTitle(title: String): Result<List<com.ai.assistance.operit.data.api.ArtifactProjectRankEntryResponse>> {\n        val normalizedTitle = normalizePublishTitle(title)\n        return marketStatsApiService.getArtifactRankPage(\n            type = supportedTypes.firstOrNull()?.toMarketStatsType()?.wireValue ?: PublishArtifactType.SCRIPT.wireValue,\n            metric = com.ai.assistance.operit.ui.features.packages.market.MarketSortOption.UPDATED.toRankMetric(),\n            page = 1\n        ).map { page ->\n            page.items.filter { entry ->",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt",
+    "line": 208,
+    "title": "Release 资产全量载入内存做哈希比对，大文件有 OOM 风险",
+    "description": "GitHubReleaseAsset 引用模式下，githubApiService.downloadReleaseAsset 返回完整 ByteArray；DirectUpload 模式下 ToolPkgArtifactMinifier.processArtifactFile 同样返回完整字节数组并再算一次 sha256。大构件（几十 MB 的 toolpkg）在发布/校验链路上被整体载入内存两次以上，低端机有 OOM 风险。",
+    "evidence": "                                return@withContext Result.failure(error)\n                            }\n                        val asset =\n                            release.assets.firstOrNull { it.name == source.assetName }\n                                ?: return@withContext Result.failure(\n                                    IllegalStateException(\"Selected GitHub Release asset was not found\")\n                                )\n                        val assetBytes =\n                            githubApiService.downloadReleaseAsset(asset.browser_download_url).getOrElse { error ->\n                                return@withContext Result.failure(error)\n                            }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt",
+    "line": 178,
+    "title": "升级先删旧包再装新包，导入失败时旧版本丢失且无回滚",
+    "description": "installArtifactProjectVersion 的升级路径是：先 packageManager.deletePackage(旧包)，再 addPackageFileFromExternalStorage(新包)。若删除成功但导入失败（文件损坏、存储不足、导入器返回非 Success），用户原来的旧版本已被删掉且无法恢复——升级失败变成数据丢失。finally 只清理临时文件，不做回滚。",
+    "evidence": "            installState.kind == LocalArtifactInstallStateKind.NAME_CONFLICT\n        ) {\n            val installedPackageName = installState.snapshot?.packageName ?: version.runtimePackageId\n            val deleted =\n                withContext(Dispatchers.IO) {\n                    packageManager.deletePackage(installedPackageName)\n                }\n            if (!deleted) {\n                throw IllegalStateException(\"替换已安装插件 `${installedPackageName}` 失败。\")\n            }\n        }",
+    "confidence": "high"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt",
+    "line": 105,
+    "title": "草稿随每次按键写 SharedPreferences，无防抖",
+    "description": "RepoMarketPublishScreen 用 LaunchedEffect(title, description, detail, repositoryUrl, installConfig, category, allowPublicUpdates) 在 7 个字段任一变化时调 viewModel.saveDraft() 写 SharedPreferences。用户每敲一个字符就触发一次 apply() 写盘，输入法连续输入时产生大量无用 I/O；且 LaunchedEffect 每次重组都会取消重建协程。建议防抖或只在失焦/退出时保存。",
+    "evidence": "    var errorMessage by remember { mutableStateOf<String?>(null) }\n    var categories by remember { mutableStateOf<List<MarketV2ManifestCategory>>(emptyList()) }\n    val isOwnerOnlyEntryMetadataLocked = isVersionMode && !canEditEntry\n\n    if (!isEditMode) {\n        LaunchedEffect(title, description, detail, repositoryUrl, installConfig, category, allowPublicUpdates) {\n            viewModel.saveDraft(\n                title = title,\n                description = description,\n                detail = detail,\n                repositoryUrl = repositoryUrl,",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warn",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt",
+    "line": 318,
+    "title": "Forge 发布仓库写死为公开仓库，无私有选项",
+    "description": "ensureForgeRepository 在需要时调用 createRepository(name=OperitForge, isPrivate=false, autoInit=true)：发布仓库固定为用户账号下的公开仓库。虽然 UI 有两步确认对话框，但代码层面没有任何私有仓库选项——所有经 DirectUpload 发布的构件必然进入公开 Release，publisherLogin 即 GitHub 用户名亦公开。对于含敏感逻辑的内部插件，用户可能误以为只是\"发布到市场\"而没意识到底层是公开 GitHub 仓库。",
+    "evidence": "        }\n\n        if (!allowCreateForgeRepo) {\n            return Result.success(null)\n        }\n\n        return githubApiService.createRepository(\n            name = OPERIT_FORGE_REPO_NAME,\n            description = \"Operit publish-only artifact repository for release assets.\",\n            isPrivate = false,\n            autoInit = true",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt",
+    "line": 336,
+    "title": "仓库 URL 解析接受任意 github.com 子域名，可收紧",
+    "description": "parseRepoPublishTarget 接受 host == \"github.com\" 或 host.endsWith(\".github.com\") 的任意子域名。用户输入 evil.github.com/owner/repo 也能通过解析，后续 githubApiService.getRepository(owner, repo) 会按解析出的 owner/repo 调 API——虽最终调的是正规 API，但宽松的域名白名单与用户看到的 URL 不一致，易造成\"以为是 github.com 实则是子域名\"的混淆。建议收紧为仅 github.com / www.github.com（与 GitHubForgePublishService.parseGitHubRepositoryUrl 的严格校验保持一致）。",
+    "evidence": "        fun cleanRepoName(repoRaw: String): String = repoRaw.removeSuffix(\".git\")\n        fun normalizeGithubSourceUrl(owner: String, repo: String, rest: List<String>): String =\n            \"https://github.com/$owner/$repo${if (rest.isNotEmpty()) \"/${rest.joinToString(\"/\")}\" else \"\"}\"\n\n        return when {\n            host == \"github.com\" || host.endsWith(\".github.com\") -> {\n                if (segments.size < 2) return null\n                val owner = segments[0]\n                val repo = cleanRepoName(segments[1])\n                if (owner.isBlank() || repo.isBlank()) return null\n                val refType: String",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt",
+    "line": 1503,
+    "title": "文件末尾约 150 行注释掉的旧 logo 卡片代码未清理",
+    "description": "ArtifactPublishScreen.kt 末尾约 150 行的 ArtifactPublishLogoCard 可组合函数被整块 /* */ 注释掉后留在源码里（引用了 UploadFile/RestartAlt/Visibility 等现仍在 import 的图标）。注释掉的代码随版本堆积会成为维护噪音，且其中引用的字符串资源与状态变量名可能与后续重构脱节。",
+    "evidence": "            onDismiss = { showMarketPreview = false }\n        )\n    }\n}\n\n/*\nprivate fun ArtifactPublishLogoCard(\n    logoPainter: androidx.compose.ui.graphics.painter.Painter?,\n    selectedLogoAsset: ToolPkgLogoAsset?,\n    packageLogo: ToolPkgLogoAsset?,\n    isLoading: Boolean,",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt",
+    "line": 33,
+    "title": "用英文错误消息文本做分支判断，本地化即失效",
+    "description": "runQuickPluginCreatorSetup 用 enableMessage.startsWith(\"Package not found\", ignoreCase = true) 判断编辑器包缺失——这是对英文错误消息文本的字符串匹配。一旦 PackageManager 返回文案被本地化或改写（如加标点、改大小写之外的措辞），判断即失效，进而把\"包不存在\"误判为\"包存在\"继续往下执行。建议用结构化错误码而非消息文本做分支。",
+    "evidence": "    toolHandler: AIToolHandler\n): ToolResult {\n    return try {\n        val scriptFile = downloadSandboxPackageDevInstallScript()\n        val enableMessage = packageManager.enablePackage(OPERIT_EDITOR_PACKAGE_NAME)\n        if (enableMessage.startsWith(\"Package not found\", ignoreCase = true)) {\n            return ToolResult(\n                toolName = \"$OPERIT_EDITOR_PACKAGE_NAME:debug_run_sandbox_script\",\n                success = false,\n                result = StringResultData(\"\"),\n                error = enableMessage",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt",
+    "line": 406,
+    "title": "同名资产先删后传，破坏版本号不可变性",
+    "description": "uploadAssetReplacingExisting 在上传前删掉同一 Release 下同名（忽略大小写）的旧资产。结合 ensureRelease 对同 tag 的 Release 做 update 而非新建，重复发布同一版本号会静默替换资产字节——而市场侧已注册的 sha256 是旧字节的哈希（新发布会走 publishNewVersion 重新注册，但 tag 名可被外部直接引用）。版本号-资产内容的不可变性约定被打破。",
+    "evidence": "                prerelease = false\n            ).map { release -> EnsuredRelease(release = release, created = false) }\n        }\n    }\n\n    private suspend fun uploadAssetReplacingExisting(\n        owner: String,\n        repo: String,\n        release: GitHubRelease,\n        descriptor: PublishArtifactDescriptor,\n        content: ByteArray",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt",
+    "line": 765,
+    "title": "CURRENT_APP_VERSION 在两个 ViewModel 中重复定义",
+    "description": "CURRENT_APP_VERSION = \"1.11.0+5\" 在 RepoMarketPublishViewModel 与 ArtifactMarketViewModel 中各定义一份，内容完全相同。两处各自演进时必然出现一边更新一边遗忘的分叉；应抽到公共位置（如 ArtifactMarketModels.kt）统一引用。",
+    "evidence": "        }\n    }\n\n    companion object {\n        private const val TAG = \"ArtifactMarketViewModel\"\n        private const val CURRENT_APP_VERSION = \"1.11.0+5\"\n        private const val PUBLISH_DRAFT_SAVED_AT_KEY = \"savedAtEpochMs\"\n    }\n}",
+    "confidence": "high"
+  }
+]

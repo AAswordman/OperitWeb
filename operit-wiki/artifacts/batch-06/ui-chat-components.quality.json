@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "description": "exportAndroidApp 用硬编码的调试密钥签名所有导出的 APK：keystore 密码 \"android\"、别名 \"androidkey\"、密钥密码 \"android\"。这是 Android 公开的默认调试密钥，任何人都可以用同一密钥给这些导出的应用签发伪造更新，用户一旦安装同包名应用即面临更新劫持。",
+    "evidence": "apkEditor\n                    .withSignature(\n                            keyStoreFile,\n                            \"android\", // 密码\n                            \"androidkey\", // 别名\n                            \"android\" // 密钥密码\n                    )\n                    .setOutput(outputFile)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ExportDialogs.kt",
+    "line": 826,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "parseMessageContentForEditor 的切分正则用非贪婪匹配，遇到同名嵌套标签会提前闭合：如 <think>外层<think>内层</think>剩余</think> 会被切成 XML 块 <think>外层<think>内层</think> 加残留文本 剩余</think>，经 recomposeMessageFromParts 拼回后原始嵌套结构被破坏。",
+    "evidence": "val regex = \"<([a-zA-Z0-9_-]+)([^>]*)>([\\\\s\\\\S]*?)</\\\\1>\".toRegex(RegexOption.DOT_MATCHES_ALL)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt",
+    "line": 79,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "createTempCameraUri 对 cacheDir 下的临时拍照文件调用 deleteOnExit()。Android 进程通常被系统直接杀掉而非正常退出，deleteOnExit 钩子几乎不执行，废弃的 temp_image_*.jpg 会在缓存目录长期堆积。",
+    "evidence": "File.createTempFile(\"temp_image_\", \".jpg\", context.cacheDir).apply {\n                createNewFile()\n                deleteOnExit()\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt",
+    "line": 591,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "SharedIncomingContentHandler 用 LaunchedEffect(sharedFiles, sharedFileText) 把待分享内容入队；effect 的 key 相等时不重触发。首次消费后 pending 置空，若系统再次投递值相等的分享内容（同一 Intent 重发），不会再次弹出目标选择对话框，分享被静默吞掉。",
+    "evidence": "LaunchedEffect(sharedFiles, sharedFileText) {\n        if (!sharedFiles.isNullOrEmpty()) {\n            pendingSharedFilesForSelection = sharedFiles\n            pendingSharedFileTextForSelection = sharedFileText\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SharedFileTargetDialog.kt",
+    "line": 202,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "getAttachmentSource 对 content:// URI 直接返回 uri.toString() 充作“path”交给 onAttachImage/onAttachFile。若下游按文件路径处理（含 File() 构造或路径拼接），content URI 会失败；应保留 Uri 或经 ContentResolver 拷贝为本地文件后再传路径。",
+    "evidence": "private fun getAttachmentSource(uri: Uri): String? {\n    return when (uri.scheme) {\n        \"file\" -> uri.path\n        \"content\" -> uri.toString()\n        else -> null\n    }\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/AttachmentSelector.kt",
+    "line": 598,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "FullscreenInputDialog 的关闭按钮、系统返回/点外部（onDismissRequest）与确认键全部走 finishEditing()，即任何关闭路径都会把编辑内容回写。用户没有“丢弃本次编辑”的路径，误触关闭也会覆盖原输入框内容。",
+    "evidence": "fun finishEditing() {\n        onValueChange(editorValue)\n        onDismiss()\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/FullscreenInputDialog.kt",
+    "line": 35,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "SimpleLinearProgressIndicator 在不确定进度时用静态 30% 填充且无动画（注释明确“这里不再有动画效果”）。用户无法区分“任务进行中”与“界面卡住”。",
+    "evidence": "// 不确定性进度条 - 静态填充30%作为替代\n            // 注意：这里不再有动画效果，如果需要动画可以使用其他方式实现\n            Box(\n                    modifier = Modifier\n                            .fillMaxWidth(0.3f)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/SimpleLinearProgressIndicator.kt",
+    "line": 47,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "ChatScrollNavigator 的 ChatLazyListState 重载只有 1 个（:99，非 2 个）；ScrollToBottomButton 的 ChatLazyListState 重载（:97）内部在 :147 调用 animateScrollToEnd，但该扩展在 lazy 类型上无对应实现（ChatScrollExtensions 的两个 animateScrollToEnd 只扩展 androidx LazyListState），这条死代码路径疑似未经编译。",
+    "evidence": "fun ChatScrollNavigator(\n    chatHistory: List<ChatMessage>,\n    currentChatId: String?,\n    scrollState: ChatLazyListState,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt",
+    "line": 99,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "ChatArea 用 Column + verticalScroll 全量组合消息，无 UI 层虚拟化；长会话依赖数据层显示窗口（hasOlderDisplayHistory / onLoadOlderDisplayWindow，“加载更多历史”）控制单次进入组合的消息数。窗口内仍是 forEachIndexed 全量组合，超大单窗口下首帧与内存开销随消息数线性增长。",
+    "evidence": ".verticalScroll(scrollState)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatArea.kt",
+    "line": 401,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "MessageEditor 从纯文本模式切回可视化时直接重跑 parseMessageContentForEditor；纯文本模式下手写的未闭合/非法标签会被静默降级为 TEXT 块，无任何提示，用户不易察觉结构已被改写。",
+    "evidence": "LaunchedEffect(isRawEditMode) {\n        if (!isRawEditMode) {\n            // Just switched from raw to visual editor, re-parse the content\n            partsState = parseMessageContentForEditor(editingMessageContent.value)\n        }\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/MessageEditor.kt",
+    "line": 142,
+    "severity": "suggestion"
+  }
+]

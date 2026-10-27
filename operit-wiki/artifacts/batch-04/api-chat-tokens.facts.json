@@ -1,0 +1,118 @@
+[
+  {
+    "fact": "TokenTrackingAIService 的职责：只记录带 provider 确认用量的成功正式推理请求（类 KDoc）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:27"
+  },
+  {
+    "fact": "TokenTrackingAIService(delegate, context, configId) : AIService，是装饰器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:28"
+  },
+  {
+    "fact": "repository = TokenUsageRepository.getInstance(context.applicationContext)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:33"
+  },
+  {
+    "fact": "activeRequests 是 ConcurrentHashMap.newKeySet<RequestTracker>；cancellationEpoch 由 cancellationLock 保护",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:34"
+  },
+  {
+    "fact": "inputTokenCount / cachedInputTokenCount / outputTokenCount / providerModel 直接委托",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:38"
+  },
+  {
+    "fact": "cancelStreaming：epoch 加 1，逐个 cancel 活跃请求，再调 delegate.cancelStreaming()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:44"
+  },
+  {
+    "fact": "每次 sendMessage 创建一个 RequestTracker(configId, providerModel)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:76"
+  },
+  {
+    "fact": "onStarted：在锁内比较 epoch，过期则 request.cancel()，再把请求加入 activeRequests",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:78"
+  },
+  {
+    "fact": "onFinished：在锁内把请求移出 activeRequests",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:87"
+  },
+  {
+    "fact": "recordTokenUsage=false 时直接透传 delegate，不挂任何跟踪钩子",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:93"
+  },
+  {
+    "fact": "recordTokenUsage=true 时包装 onUsageReported：先 request.onUsage(usage, attempt) 再 forwardUsageObserver",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:120"
+  },
+  {
+    "fact": "recordTokenUsage=true 时包装 onUsageFinalized：先 request.onSuccess(attempt) 再 forwardUsageFinalizedObserver",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:127"
+  },
+  {
+    "fact": "forwardUsageObserver：CancellationException 原样抛出，其他异常记日志吞掉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:150"
+  },
+  {
+    "fact": "forwardUsageFinalizedObserver：CancellationException 原样抛出，其他异常记日志吞掉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:165"
+  },
+  {
+    "fact": "wrapStream：inner 是 TextStreamEventCarrier 用 TrackingRevisableStream，否则用 TrackingStream",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:173"
+  },
+  {
+    "fact": "TrackingStream.collect：onStarted → throwIfCancelled → 内层采集 → ensureActive → persist(request.finish()) → finally onFinished()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:198"
+  },
+  {
+    "fact": "TrackingRevisableStream 复用相同采集逻辑，并保留 eventChannel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:211"
+  },
+  {
+    "fact": "RequestTracker.attempts 是 linkedMapOf<Int, ProviderUsageSnapshot>；onUsage 的 key = attempt.coerceAtLeast(1)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:244"
+  },
+  {
+    "fact": "RequestTracker.merge：update.completeSnapshot 为 true 则整体替换，否则用新值非空字段补旧值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:317"
+  },
+  {
+    "fact": "RequestTracker.onSuccess 记录 successfulAttempt（coerceAtLeast(1)）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:256"
+  },
+  {
+    "fact": "RequestTracker.finish：已取消 / 无成功 attempt / 快照无已知字段时返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:270"
+  },
+  {
+    "fact": "RequestTracker.finish 要求 providerModel 为 \"provider:model\" 格式：require(separator > 0 && separator < lastIndex)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:279"
+  },
+  {
+    "fact": "推理 token 落库口径：reasoningIncludedInOutput == false 时用 saturatedAdd 并入 persistedOutputTokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:283"
+  },
+  {
+    "fact": "全部 token 字段为 null 时 finish 返回 null，不落库",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:292"
+  },
+  {
+    "fact": "TokenUsageRecordEntity：occurredAtMs=startedAtMs，configId，provider/model 按冒号切分，requestCount=1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:300"
+  },
+  {
+    "fact": "cacheWriteTokens 仅在 cacheWriteSeparateBilling 为 true 时落库，否则记 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:308"
+  },
+  {
+    "fact": "markPersisted 用 compareAndSet(false, true) 保证单次请求只落库一次",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:315"
+  },
+  {
+    "fact": "落库跑在 Dispatchers.IO + NonCancellable；失败只记日志不抛",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:344"
+  },
+  {
+    "fact": "saturatedAdd 在溢出时钳到 Long.MAX_VALUE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/TokenTrackingAIService.kt:357"
+  }
+]

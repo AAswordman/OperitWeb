@@ -1,0 +1,322 @@
+[
+  {
+    "fact": "MNNProvider 是 AIService 的实现类，用 MNN 官方 LLM 引擎做端侧实际推理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:35"
+  },
+  {
+    "fact": "构造函数参数 modelName 是模型文件夹名称，如 \"Qwen2-1.5B-Instruct-MNN\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:37"
+  },
+  {
+    "fact": "构造函数参数 forwardType 是硬件后端类型编号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:38"
+  },
+  {
+    "fact": "构造函数参数 threadCount 是推理线程数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:39"
+  },
+  {
+    "fact": "providerType 缺省为 ApiProviderType.MNN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:40"
+  },
+  {
+    "fact": "enableToolCall 缺省 false，supportsVision/supportsAudio/supportsVideo 缺省 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:41"
+  },
+  {
+    "fact": "日志标签 TAG 为 \"MNNProvider\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:48"
+  },
+  {
+    "fact": "getModelDir 把模型放在公共下载目录 Download/Operit/models/mnn/<modelName>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:55"
+  },
+  {
+    "fact": "输入/输出/缓存输入三组 token 计数器均为 Long 类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:70"
+  },
+  {
+    "fact": "isCancelled 用 @Volatile 修饰，保证跨线程可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:74"
+  },
+  {
+    "fact": "providerModel 返回 providerType.name:modelName 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:86"
+  },
+  {
+    "fact": "resetTokenCounts 把三个 token 计数器清零",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:89"
+  },
+  {
+    "fact": "cancelStreaming 置 isCancelled=true，并调用 llmSession?.cancel() 中断底层推理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:97"
+  },
+  {
+    "fact": "超过 3000 字符的日志经 logLargeString 分片输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:104"
+  },
+  {
+    "fact": "initModel 在 Dispatchers.IO 上执行，llmSession 已存在则直接复用成功",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:132"
+  },
+  {
+    "fact": "模型目录不存在时 initModel 返回 mnn_model_dir_not_exist 错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:143"
+  },
+  {
+    "fact": "llm_config.json 不存在时 initModel 返回 mnn_config_not_exist 错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:150"
+  },
+  {
+    "fact": "forwardType 映射：0→cpu、3→opencl、4→auto、6→opengl、7→vulkan，未知值记警告并用 cpu",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:158"
+  },
+  {
+    "fact": "vulkan/opencl/opengl 后端用 \"normal\" 内存模式，cpu 后端用 \"low\" 内存模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:175"
+  },
+  {
+    "fact": "MNN 缓存目录为 context.cacheDir/mnn_cache，用于 mnn_cachefile.bin 等临时文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:183"
+  },
+  {
+    "fact": "MNNLlmSession.create 以 precision=\"low\" 创建会话以提升性能",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:194"
+  },
+  {
+    "fact": "会话创建返回 null 时 initModel 返回 mnn_cannot_create_session 错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:203"
+  },
+  {
+    "fact": "countTokens 优先用 session.countTokens，异常时回退 estimateTokens 估算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:219"
+  },
+  {
+    "fact": "readModelMaxAllTokens 从 llm_config.json 读 max_all_tokens，缺省 2048",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:236"
+  },
+  {
+    "fact": "readModelCapabilities 从 llm_config.json 读 is_visual/is_audio 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:262"
+  },
+  {
+    "fact": "readModelCapabilities 结果缓存在 cachedModelIsVisual/cachedModelIsAudio 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:271"
+  },
+  {
+    "fact": "extForMimeType 支持图片 png/jpg/webp/gif 与音频 mp3/wav/ogg/webm",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:294"
+  },
+  {
+    "fact": "extForMimeType 支持视频 mp4/webm/ogv",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:300"
+  },
+  {
+    "fact": "writeBase64ToTempFile 把 base64 媒体写入 cacheDir/mnn_multimodal 临时文件，失败时删除并返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:306"
+  },
+  {
+    "fact": "transcodeToWav16kMono 经 FFmpegUtil 把音频转码为 16k 单声道 wav",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:322"
+  },
+  {
+    "fact": "extractVideoFrame 经 FFmpegUtil 从视频抽一帧并缩到 640 宽 jpg",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:335"
+  },
+  {
+    "fact": "多模态开关：allowVision=supportsVision&&caps.isVisual，音频同理，视频要求 caps.isAudio 或 caps.isVisual",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:357"
+  },
+  {
+    "fact": "图片链接经 MediaLinkParser.replaceImageLinks 替换为 <img>路径</img> 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:388"
+  },
+  {
+    "fact": "音频经转码为 wav 后替换为 <audio>路径</audio> 标签，转码失败则用原路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:399"
+  },
+  {
+    "fact": "视频可同时抽帧和转音频，拼成 <img>帧</img><audio>wav</audio> 两段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:418"
+  },
+  {
+    "fact": "trimHistoryToTokenBudget 保留首条 system，用二分裁剪历史使 token 数不超预算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:435"
+  },
+  {
+    "fact": "PromptTurnKind 映射：SYSTEM→system；USER/SUMMARY/TOOL_RESULT→user；ASSISTANT/TOOL_CALL→assistant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:507"
+  },
+  {
+    "fact": "不保留思考内容时，ASSISTANT 消息经 ChatUtils.removeThinkingContent 去掉思考段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:516"
+  },
+  {
+    "fact": "历史内容经 ChatUtils.stripOpenAiResponsesProtocolMarkup 去除协议标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:521"
+  },
+  {
+    "fact": "shouldUseInternalToolCall 要求 enableToolCall 为 true 且 availableTools 非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:526"
+  },
+  {
+    "fact": "applyRequestJinjaContext 构建含 enable_thinking 和 tools 数组的 jinja 上下文 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:545"
+  },
+  {
+    "fact": "jinja 上下文经 session.setConfig 写入，失败时抛 IllegalStateException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:559"
+  },
+  {
+    "fact": "estimateTokens 按 4 字符=1 token 估算，最少计 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:572"
+  },
+  {
+    "fact": "buildPrompt 按 user/assistant/system 模板把历史拼成纯文本 prompt",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:579"
+  },
+  {
+    "fact": "sendMessage 入口先置 isCancelled=false，并为本次请求新建临时文件列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:614"
+  },
+  {
+    "fact": "initModel 失败时 sendMessage 抛 IOException，错误信息透传给调用方渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:623"
+  },
+  {
+    "fact": "聊天历史为空时 sendMessage 直接 return@stream，不做推理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:631"
+  },
+  {
+    "fact": "工具调用模式下历史经 StructuredToolCallBridge.buildMnnChatHistory 构建，否则用 flattenTypedHistory",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:650"
+  },
+  {
+    "fact": "max_tokens 参数缺省 512，上限钳制到 8192",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:659"
+  },
+  {
+    "fact": "maxPromptTokens = maxAllTokens - effectiveMaxNewTokens，最小 128",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:660"
+  },
+  {
+    "fact": "输入 token 数用 session.countTokensWithHistory 计算，并经 onTokensUpdated 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:665"
+  },
+  {
+    "fact": "generateStream 的 token 回调：已取消返回 false 中断推理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:687"
+  },
+  {
+    "fact": "非工具调用模式逐 token 直接 emit，工具调用模式先缓冲到 toolCallOutputBuffer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:694"
+  },
+  {
+    "fact": "每产出一个 token 就经 onTokensUpdated 回调更新计数（异常被吞掉）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:703"
+  },
+  {
+    "fact": "工具调用输出经 StructuredToolCallBridge.convertToolCallPayloadToXml 转为 XML 后 emit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:721"
+  },
+  {
+    "fact": "LocalGenerationEnd.end 统一收尾：取消/成功/用量上报/失败时抛 mnn_reasoning_error",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:711"
+  },
+  {
+    "fact": "CancellationException 原样传播，不 emit 错误文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:739"
+  },
+  {
+    "fact": "finally 块删除本次请求产生的所有多模态临时文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:745"
+  },
+  {
+    "fact": "testConnection 做连通性检查，跑在 Dispatchers.IO 上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:752"
+  },
+  {
+    "fact": "testConnection 汇总模型目录文件大小，并检查 llm.mnn、llm.mnn.weight、llm_config.json、tokenizer.txt 四个关键文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:774"
+  },
+  {
+    "fact": "testConnection 会实际调用 initModel 初始化模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:787"
+  },
+  {
+    "fact": "applyModelParameters 只处理启用的参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:816"
+  },
+  {
+    "fact": "采样参数映射：temperature 直传、top_p→topP",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:822"
+  },
+  {
+    "fact": "采样参数映射：top_k→topK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:831"
+  },
+  {
+    "fact": "采样参数映射：min_p→minP",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:836"
+  },
+  {
+    "fact": "presence_penalty/frequency_penalty/repetition_penalty 统一映射为 MNN 的 penalty",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:842"
+  },
+  {
+    "fact": "requestedMaxNewTokens 从 max_tokens 参数单独提取，缺省 -1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:657"
+  },
+  {
+    "fact": "requestedMaxNewTokens 作为生成上限参数传入 session.generateStream",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:686"
+  },
+  {
+    "fact": "max_tokens 同时写入 configMap['max_new_tokens']（846 行过期注释\"这里不设置\"与紧随其后的代码自相矛盾）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:848"
+  },
+  {
+    "fact": "高级采样参数 tfsz→tfsZ、typical 直接透传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:856"
+  },
+  {
+    "fact": "高级采样参数 n_gram→n_gram、ngram_factor 直接透传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:866"
+  },
+  {
+    "fact": "自定义参数 INT 类型按 apiName 直接透传给 MNN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:879"
+  },
+  {
+    "fact": "自定义参数 FLOAT/BOOLEAN/STRING 类型转换后按 apiName 透传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:887"
+  },
+  {
+    "fact": "自定义参数 OBJECT 类型尝试解析为 JSONObject/JSONArray，解析失败回退为字符串后透传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:900"
+  },
+  {
+    "fact": "自定义 OBJECT 参数解析失败时回退为字符串，避免崩溃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:912"
+  },
+  {
+    "fact": "参数集非空则拼成 JSON 调 session.setConfig，失败只记警告不抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:941"
+  },
+  {
+    "fact": "formatFileSize 按 B/KB/MB/GB 两位小数格式化文件大小",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:968"
+  },
+  {
+    "fact": "calculateInputTokens 初始化失败时回退 buildPrompt+countTokens 估算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:982"
+  },
+  {
+    "fact": "getModelsList 委托 ModelListFetcher.getMnnLocalModels 从固定目录读取本地模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:1002"
+  },
+  {
+    "fact": "release 释放 llmSession 的 native 资源并置 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt:1011"
+  }
+]

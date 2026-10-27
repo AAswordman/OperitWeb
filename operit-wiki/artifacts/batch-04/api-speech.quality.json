@@ -1,0 +1,62 @@
+[
+  {
+    "category": "concurrency",
+    "severity": "warning",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt",
+    "line": 282,
+    "title": "startRecognition 缺 recognitionMutex，并发启动可竞态",
+    "detail": "SherpaSpeechProvider.startRecognition 用 recognitionMutex.withLock 串行化（第 231 行），SherpaMnnSpeechProvider.startRecognition（第 282 行）只靠非原子的 if (isRecognizing) return false 检查就往下走。两个并发调用可同时通过检查，各自创建 AudioRecord 与 OnlineStream，后创建的覆盖 stream 引用，先创建的流泄漏且两路录音线程并行写同一识别器。",
+    "evidence": "    override suspend fun startRecognition(\n            languageCode: String,\n            continuousMode: Boolean,\n            partialResults: Boolean,\n            audioSource: Int,\n    ): Boolean {\n        if (!isInitialized.value) {\n            if (!initialize()) return false\n        }\n        if (isRecognizing) return false"
+  },
+  {
+    "category": "performance",
+    "severity": "warning",
+    "confidence": "medium",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt",
+    "line": 32,
+    "title": "工厂方法多处 runBlocking 阻塞调用线程，主线程调用有 ANR 风险",
+    "detail": "createSpeechService（第 32 行）、createWakeSpeechService（第 41 行）、httpConfig 读取（第 57 行）、云端 provider 构造（第 69/79 行）、getInstance（第 185 行）共 6 处 runBlocking。若调用方在主线程直接调 getInstance/createSpeechService，DataStore 读取慢时阻塞 UI 线程；suspend 上下文里调还会占住协程线程。",
+    "evidence": "        val profile = runBlocking { profiles.getCurrentSttProfile() }"
+  },
+  {
+    "category": "maintainability",
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/PersonalWakeFeatureExtractor.kt",
+    "line": 379,
+    "title": "l2NormalizeInPlace 疑似死代码",
+    "detail": "private fun l2NormalizeInPlace 仅在第 379 行定义，全文件无调用点；extractFeatures 归一化走的是 cmvnInPlace（第 80 行）。保留无用私有函数增加维护噪音，可删除或确认是否为预留实现。注意：`PersonalWakeListener` 有同名存活副本（:385，被 :339 调用），此处死的是 extractor 内的重复版本。",
+    "evidence": "    private fun l2NormalizeInPlace(x: FloatArray) {"
+  },
+  {
+    "category": "resource",
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/OpenAISttProvider.kt",
+    "line": 316,
+    "title": "startRecognition 外层异常路径未关闭录音流、未删临时 wav",
+    "detail": "第 166-168 行创建 FileOutputStream 并占位写 WAV 头；若之后抛异常进入第 316 行外层 catch，只置 recognitionState=ERROR 与 RecognitionError(-1)，不关闭 stream、不删除 cache 下的 openai_stt_<uuid>.wav。文件句柄靠 GC 回收，失败重试会在 cache 堆积空 wav。",
+    "evidence": "        } catch (e: Exception) {\n            AppLogger.e(TAG, \"OpenAI STT startRecognition failed\", e)\n            _recognitionState.value = SpeechService.RecognitionState.ERROR\n            _recognitionError.value = SpeechService.RecognitionError(-1, e.message ?: \"startRecognition failed\")\n            false\n        }"
+  },
+  {
+    "category": "maintainability",
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/SherpaMnnSpeechProvider.kt",
+    "line": 165,
+    "title": "自带 VAD 长期禁用（createVad 空实现 + TODO）",
+    "detail": "createVad（第 165 行）直接 vad=null，注释称模型加载曾导致崩溃、TODO 待修；initialize 里 VAD 失败也被当可选（第 82 行）。MNN 版实际走 createSileroVad 另建 OnnxSileroVad 或无 VAD 降级直送。TODO 无 issue 关联，长期搁置会让双 VAD 路径认知负担持续存在。",
+    "evidence": "    private fun createVad() {\n        // 暂时禁用 VAD 功能，因为模型加载会导致崩溃\n        // TODO: 需要检查 VAD 模型格式或使用兼容的模型版本\n        AppLogger.w(TAG, \"VAD is temporarily disabled due to compatibility issues\")\n        vad = null"
+  },
+  {
+    "category": "maintainability",
+    "severity": "suggestion",
+    "confidence": "high",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/speech/SpeechServiceFactory.kt",
+    "line": 134,
+    "title": "SherpaMnnSpeechProvider 无任何实例化点，663 行引擎不可达",
+    "detail": "全 app/src 范围检索，SherpaMnnSpeechProvider 只出现在自身文件；工厂的 SHERPA_NCNN 分支只创建 SherpaSpeechProvider（第 134 行）。663 行的 MNN 引擎（含独立的流式/端点/VAD 逻辑）目前没有任何调用者，属不可达代码。",
+    "evidence": "                            SpeechServiceType.SHERPA_NCNN -> SherpaSpeechProvider(appContext)"
+  }
+]

@@ -1,0 +1,468 @@
+[
+  {
+    "fact": "StandardBrowserSessionTools 是实现 ToolExecutor 的浏览器会话操控类，持有 internal Context 供同包 websession 辅助函数使用",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:72",
+    "symbol": "StandardBrowserSessionTools"
+  },
+  {
+    "fact": "浏览器会话状态是进程级共享的：companion object 里 sessions 是 ConcurrentHashMap<String, WebSession>，sessionOrder 配合 sessionOrderLock 维护 Tab 顺序，activeSessionId 是 @Volatile 的当前会话指针",
+    "kind": "state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:97",
+    "symbol": "sessions"
+  },
+  {
+    "fact": "StandardBrowserSessionTools 的 invoke 按工具名分发 22 个 browser_* 工具，未知名字走 else 返回 Unsupported browser session tool",
+    "kind": "dispatch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:213",
+    "symbol": "invoke"
+  },
+  {
+    "fact": "22 个浏览器工具在 ToolRegistration.kt 集中注册，从 browser_click（1230 行）到 browser_wait_for（1373 行）",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1230"
+  },
+  {
+    "fact": "browser_navigate 的 url 参数必填，为空直接返回错误；无活动会话时会新建一个 about:blank 标签页",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:246",
+    "symbol": "browserNavigate"
+  },
+  {
+    "fact": "browser_navigate、browser_resize、browser_tabs 的 create 动作执行前都先调用 ensureOverlayPermission 检查悬浮窗权限，无权限直接返回错误",
+    "kind": "permission",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:251"
+  },
+  {
+    "fact": "browser_click 要求 ref 或 selector 二选一必填；button 仅允许 left/right/middle；modifiers 必须是 Alt/Control/ControlOrMeta/Meta/Shift 的 JSON 数组，非法值直接报错",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:286",
+    "symbol": "browserClick"
+  },
+  {
+    "fact": "点击、悬停、拖拽、打字、填表、选择下拉等工具引用的元素 ref 必须存在于当前页面快照中，否则提示重新抓快照（requireSnapshotNode）",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:315"
+  },
+  {
+    "fact": "browser_type 要求 ref 与 text 双必填，submit/slowly 为布尔开关；browser_press_key 要求 key 必填",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1636",
+    "symbol": "browserType"
+  },
+  {
+    "fact": "browser_fill_form 的 fields 必须是含非空 ref 的 JSON 数组；browser_select_option 的 values 必须是非空 JSON 数组",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1236",
+    "symbol": "browserFillForm"
+  },
+  {
+    "fact": "browser_evaluate 执行任意 JS 函数源码（function 必填），browser_run_code 执行 Playwright 风格代码串（code 必填），两者都是无沙箱的任意代码执行",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1190",
+    "symbol": "browserEvaluate"
+  },
+  {
+    "fact": "browser_snapshot 支持 selector 限定子树、depth 非负整数限制深度；提供 filename 时快照写文件、响应只给文件链接",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1011",
+    "symbol": "browserSnapshot"
+  },
+  {
+    "fact": "browser_take_screenshot 的 type 仅允许 png/jpeg/jpg（默认 png），element 与 fullPage 互斥，element 模式要求 ref 必填",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1609",
+    "symbol": "browserTakeScreenshot"
+  },
+  {
+    "fact": "browser_tabs 的 action 仅允许 list/create/select/close；select 必须给 index；close 缺 index 时关闭当前偏好会话",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1523",
+    "symbol": "browserTabs"
+  },
+  {
+    "fact": "browser_wait_for 的 time 必须是数字（秒，实际睡眠钳制 0-30000ms），time/text/textGone 三者至少提供其一",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:952",
+    "symbol": "browserWaitFor"
+  },
+  {
+    "fact": "browser_handle_dialog 的 accept 必填（true/1/yes 大小写不敏感视为接受），要求会话存在待处理的 pendingDialog",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1278",
+    "symbol": "browserHandleDialog"
+  },
+  {
+    "fact": "browser_console_messages 的 level 仅允许 error/warning/info/debug（默认 info）",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1328"
+  },
+  {
+    "fact": "browser_network_requests 的 includeStatic 默认 false，两者都支持 filename 写文件",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1346"
+  },
+  {
+    "fact": "browser_file_upload 的 paths 必须是绝对路径且逐项存在、是文件；空串表示取消当前文件选择器；无选择器回调时直接报错",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:866",
+    "symbol": "browserFileUpload"
+  },
+  {
+    "fact": "browser_resize 的 width/height 必须为正整数，并做三重上限校验：单边不超过 4096 CSS 像素、CSS 像素总数不超过 8388608、布局像素总数不超过 33554432",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1401",
+    "symbol": "browserResize"
+  },
+  {
+    "fact": "每个浏览器动作走“标记-执行-结算”管线：captureActionMarkers 记录动作前标记，settleBrowserAction 按策略等待页面稳定（文档 ready/导航变化/文本出现/固定时长），默认动作超时 10 秒",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:184",
+    "symbol": "BrowserActionSettlementPolicy"
+  },
+  {
+    "fact": "主线程同步工具 runOnMainSync 默认超时 8 秒，已在主线程则直接执行，否则用 mainHandler.post + CountDownLatch 等待，超时抛 RuntimeException",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:1775",
+    "symbol": "runOnMainSync"
+  },
+  {
+    "fact": "浏览器会话默认冒充桌面 Chrome 124 的 User-Agent，另有 Android 13 Pixel 7 Chrome 120 的移动 UA 可用",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardBrowserSessionTools.kt:87"
+  },
+  {
+    "fact": "StandardWebVisitTool 是实现 ToolExecutor 的一次性只读页面访问类：无点击/填表/截图能力，与浏览器会话工具互补",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:93",
+    "symbol": "StandardWebVisitTool"
+  },
+  {
+    "fact": "visit_web 在 ToolRegistration.kt:1206 注册；其 invoke 不按工具名分派，参数为 url、visit_key、link_number、include_image_links、headers、user_agent、user_agent_preset",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1206"
+  },
+  {
+    "fact": "visit_web 的目标 URL 有三种来源：直接给 url，或 visit_key + link_number 从访问缓存的链接列表按序号续访，两者皆无则报错",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:136",
+    "symbol": "invoke"
+  },
+  {
+    "fact": "visit_web 只放行 http/https 协议，Uri.parse 取 scheme 校验；WebView 的 shouldOverrideUrlLoading 同样拦截非 http/https 跳转",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:210"
+  },
+  {
+    "fact": "visit_web 用 1x1 像素不可触摸悬浮 WebView 加载页面并注入 JS 提取：全部超链接（href+文本）、可选图片链接、全部 meta、正文取 document.body.innerText",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:1500",
+    "symbol": "extractPageContent"
+  },
+  {
+    "fact": "visit_web 的正文内联上限 12000 字符，超限自动写 App 内部 cleanOnExit 目录文件并只给前 8000 字符预览，置 contentTruncated 与 originalContentLength",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:103"
+  },
+  {
+    "fact": "visit_web 的自定义请求头经过 sanitizeHeaderName/sanitizeHeaderValue 清洗：头名含换行或冒号直接丢弃，头值剥离换行符，防 HTTP 头注入",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:1649"
+  },
+  {
+    "fact": "visit_web 每次抓取后做完整资源清理：stopLoading、清历史/缓存/表单/SSL 偏好、loadUrl(about:blank)、onPause、destroy 并 System.gc()",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:916",
+    "symbol": "cleanupWebView"
+  },
+  {
+    "fact": "visit_web 遇到 SSL 错误时记警告后调用 handler.proceed() 继续加载，仅在抓取对话框显示 SSL 徽标，存在中间人风险下仍抓取的问题",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:1259"
+  },
+  {
+    "fact": "visit_web 默认冒充桌面 Chrome 108 的 UA（比浏览器会话工具的 Chrome 124 旧两代），user_agent_preset 支持 desktop 与 android/mobile 预设切换",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:95"
+  },
+  {
+    "fact": "visit_web 结果写入进程级 visitCache（ConcurrentHashMap），key 为 UUID visitKey；getCachedVisitResult 供外部按 key 取回，供 link_number 续访",
+    "kind": "state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWebVisitTool.kt:109"
+  },
+  {
+    "fact": "StandardHttpTools 是普通类（不实现 ToolExecutor），构造只收 Context；内部用 PreparedHttpRequest 数据类封装一次请求预处理结果",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:41",
+    "symbol": "StandardHttpTools"
+  },
+  {
+    "fact": "HTTP 工具统一冒充桌面 Chrome 122 的 UA；Cookie 按 host 存在 companion 级别的 ConcurrentHashMap 共享池，所有实例共用",
+    "kind": "constant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:53"
+  },
+  {
+    "fact": "http_request、multipart_request、manage_cookies 在 ToolRegistration.kt 的 1967/1989/2008 行注册；http_request 另有流式入口 httpRequestStream",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1967"
+  },
+  {
+    "fact": "prepareHttpRequest 是 HTTP 请求的核心预处理：url 必填且仅允许 http/https；method 仅允许 GET/POST/PUT/DELETE/HEAD/OPTIONS/PATCH/TRACE；body_type 仅允许 json/form/text/xml，multipart 会被明确拒绝并提示用 multipart_request",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:207",
+    "symbol": "prepareHttpRequest"
+  },
+  {
+    "fact": "HTTP 请求默认超时为连接 15 秒、读取 20 秒、写入 15 秒，非法数字回退默认值；follow_redirects 默认开启，proxy_host 非空且 proxy_port 大于 0 时走 HTTP 代理",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:88"
+  },
+  {
+    "fact": "ignore_ssl=true 时走 applyUnsafeSsl：信任所有证书且 hostnameVerifier 恒返回 true，调用者可任意开启，关闭了 TLS 证书校验",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:124",
+    "symbol": "applyUnsafeSsl"
+  },
+  {
+    "fact": "httpRequest 按响应 Content-Type 声明的 charset 解码文本（默认 UTF-8），解码失败文本字段写 [Binary Content, decoding failed]；Base64 字段始终编码原始字节",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:315",
+    "symbol": "httpRequest"
+  },
+  {
+    "fact": "http_request 不做 2xx 校验：404/500 等同样返回 success=true，状态码只记录在 HttpResponseData.statusCode 字段里",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:338"
+  },
+  {
+    "fact": "httpRequestStream 的流式事件序列是 response_started（含 url/状态码/响应头）→ 若干 1024 字符的 chunk（含 chunkIndex 与累计 receivedBytes）→ 最后的完整 HttpResponseData",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:344",
+    "symbol": "httpRequestStream"
+  },
+  {
+    "fact": "manage_cookies 支持 get/set/clear 三个动作：get 按 domain 查共享池（空 domain 返回全部）；set 要求 domain 必填；clear 空 domain 时连系统 WebView Cookie 一起清",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:512",
+    "symbol": "manageCookies"
+  },
+  {
+    "fact": "multipart_request 仅允许 POST/PUT；form_data 是 JSON 键值对；files 数组每项需 field_name 与 file_path，可选 content_type（默认 application/octet-stream）；文件不存在或不可读直接报错",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:620",
+    "symbol": "multipartRequest"
+  },
+  {
+    "fact": "HTTP 工具无重试逻辑：httpRequest、httpRequestStream、manageCookies、multipartRequest 的异常都转成 success=false 的 ToolResult；headers/cookies 解析失败静默降级为空",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardHttpTools.kt:339"
+  },
+  {
+    "fact": "StandardChatManagerTool 是普通类，只持有 Context；通过绑定 FloatingChatService 拿到 ChatServiceCore 再操作会话，服务连接超时 15 秒",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:95",
+    "symbol": "StandardChatManagerTool"
+  },
+  {
+    "fact": "聊天管理工具在 ToolRegistration.kt 注册 15 个：start_chat_service、stop_chat_service、create_new_chat、list_chats、find_chat、agent_status、switch_chat、update_chat_title、delete_chat、send_message_to_ai、send_message_to_ai_streaming、call_chat_model、list_character_cards、get_chat_messages、get_chat_messages_range",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1612"
+  },
+  {
+    "fact": "会话数据经 ChatHistoryManager 单例持久化，以字符串 chatId 标识；当前会话由 currentChatIdFlow 维护",
+    "kind": "state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:874"
+  },
+  {
+    "fact": "create_new_chat 支持 group、set_as_current_chat、character_card_id 参数，创建后用集合差集找新会话 ID（5 秒超时），默认轮询等待切换完成",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1354",
+    "symbol": "createNewChat"
+  },
+  {
+    "fact": "list_chats 支持 query/match/limit/sort_by/sort_order，limit 默认 50 钳制 1-200，sort_by 仅允许 updatedAt/createdAt/messageCount",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1482",
+    "symbol": "listChats"
+  },
+  {
+    "fact": "delete_chat 拒绝删除 locked=true 的会话；update_chat_title、switch_chat、get_chat_messages 等操作前都先校验会话存在",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1006",
+    "symbol": "locked"
+  },
+  {
+    "fact": "get_chat_messages 的 order 仅允许 asc/desc（默认 desc），limit 默认 20 钳制 1-200；get_chat_messages_range 要求 0≤start≤end",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:663",
+    "symbol": "parsedStart"
+  },
+  {
+    "fact": "send_message_to_ai 阻塞等待完整 AI 回复，默认超时 180 秒；超时或异常时会调用 core.cancelMessage 取消残留流",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1994",
+    "symbol": "sendMessageToAI"
+  },
+  {
+    "fact": "send_message_to_ai_streaming 走 channelFlow：先发 start 事件，再发若干 chunk（含 chunkIndex 与累计字符数），终局发 MessageSendResultData",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:2057",
+    "symbol": "sendMessageToAIStream"
+  },
+  {
+    "fact": "发送消息前有并发预检：startMessageToAIStream 等待目标会话无活跃流，否则返回 Previous message is still being processed；可指定 chat_id 后台发送而不切换 UI",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1889"
+  },
+  {
+    "fact": "call_chat_model 直接走 EnhancedAIService.callFunctionModel，不落会话：function_type 与 turns 必填，turns 每项校验 kind/content/toolName/metadata",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1667",
+    "symbol": "callChatModel"
+  },
+  {
+    "fact": "agent_status 把 InputProcessingState 映射为 idle/processing/connecting/receiving/executing_tool/tool_progress/processing_tool_result/summarizing/executing_plan/completed/error 等可读状态",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:714",
+    "symbol": "agentStatus"
+  },
+  {
+    "fact": "ensureServiceConnected 在 floating_chat_prefs 标记 service_disabled_due_to_crashes=true 时拒绝启动/绑定，是频繁崩溃的熔断器",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardChatManagerTool.kt:1110"
+  },
+  {
+    "fact": "StandardWorkflowTools 是普通类，工作流持久化经 WorkflowRepository，JSON 解析配置 ignoreUnknownKeys 并用 __type 做多态区分",
+    "kind": "class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:33",
+    "symbol": "StandardWorkflowTools"
+  },
+  {
+    "fact": "工作流工具在 ToolRegistration.kt 注册：create_workflow（1524 行）、trigger_workflow（1599 行）等；本文件内无 registerTool 调用，只提供处理函数",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1524"
+  },
+  {
+    "fact": "工作流 = id + name + description + 节点列表 + 连接列表 + enabled 开关；节点分 trigger/execute/condition/logic/extract 五种类型",
+    "kind": "model",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:933",
+    "symbol": "parseNodes"
+  },
+  {
+    "fact": "create_workflow 校验 name 非空，解析 nodes/connections JSON，用 UUID.randomUUID 生成 id，enabled 缺省 true",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:118",
+    "symbol": "createWorkflow"
+  },
+  {
+    "fact": "update_workflow 按“提供则覆盖、否则保留旧值”逐字段合并：内容变更走 updateWorkflow，仅启停变更走 setWorkflowEnabled，无变更直接返回原对象",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:269",
+    "symbol": "updateWorkflow"
+  },
+  {
+    "fact": "patch_workflow 做增量更新：node_patches/connection_patches 每项 op 只能是 add/update/remove；add 禁止 id 重复，update 缺 id 或节点不存在抛错，remove 级联删除相关连接",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:449",
+    "symbol": "patchWorkflow"
+  },
+  {
+    "fact": "patch 不允许改节点类型（ensureSameType 抛错）；patch 结束后自动清理非法连接（源/目标节点不存在或自环的连接被移除）",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:540"
+  },
+  {
+    "fact": "节点间数据传递靠 ParameterValue.NodeReference(nodeId)：ExecuteNode 的 actionConfig、ConditionNode 的 left/right、ExtractNode 的 source 可引用其他节点输出",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:1281",
+    "symbol": "parseParameterValue"
+  },
+  {
+    "fact": "trigger_workflow 手动触发执行；对 CancellationException 特殊处理：在 NonCancellable 上下文中调 workflowRepository.cancelWorkflow 取消工作流后重新抛出",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:884",
+    "symbol": "triggerWorkflow"
+  },
+  {
+    "fact": "TriggerNode 的 triggerType 缺省 manual；定时/条件触发逻辑不在本文件实现，仅解析存储 triggerType/triggerConfig，语义在 WorkflowRepository/引擎侧",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:982"
+  },
+  {
+    "fact": "连接解析时自环连接被丢弃；resolveNodeId 支持按节点数组下标容错解析（LLM 误填下标时的兼容）",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardWorkflowTools.kt:1150"
+  },
+  {
+    "fact": "MemoryQueryToolExecutor 实现 ToolExecutor 接口，在 invoke 的 when 分支里分发 12 个记忆工具名，未知名字返回 Unknown tool 失败",
+    "kind": "dispatch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:188",
+    "symbol": "invoke"
+  },
+  {
+    "fact": "记忆工具在 ToolRegistration.kt 注册：query_memory（809 行）、get_memory_by_title（822 行）、update_user_profile（836 行）、create_memory（863 行）、update_memory（876 行）、delete_memory（890 行）、move_memory（903 行）、link_memories（926 行）、query_memory_links（941 行）等",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:809"
+  },
+  {
+    "fact": "query_memory 的 query 必填（但 * 为通配查全部，缺 limit 时默认 Int.MAX_VALUE）；支持 folder_path、limit、start_time/end_time（仅按创建时间过滤）、snapshot_id、threshold、caller_card_id",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:213",
+    "symbol": "executeQueryMemory"
+  },
+  {
+    "fact": "记忆搜索是加权混合检索：keywordWeight（关键词）、tagWeight（标签）、vectorWeight（语义向量）、edgeWeight（图边）四权重 + relevanceThreshold 相关性阈值（缺省 0.0）",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:294"
+  },
+  {
+    "fact": "query_memory 支持跨次去重快照：同一 snapshot_id 内已返回的记忆 id 不再返回；每个 profile 最多保留 32 个快照，超限按最后访问时间淘汰最老的",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:36"
+  },
+  {
+    "fact": "get_memory_by_title 按标题精确查找；文档节点支持分块读取，优先级为 query 模糊搜块 > chunk_range 范围取块 > chunk_index 单块，均做越界校验",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:404",
+    "symbol": "handleDocumentChunkRetrieval"
+  },
+  {
+    "fact": "记忆 CRUD 按标题定位：create_memory 要求 title 与 content 双必填；update/delete/move 按标题查找，不存在直接失败",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:516"
+  },
+  {
+    "fact": "update_user_profile 把 markdown 全量覆盖写入该 profile 的 user.md（经 MemorySpaceProfileDocumentRepository），无确认步骤",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:710",
+    "symbol": "executeUpdateUserProfile"
+  },
+  {
+    "fact": "update_user_preferences 是旧版兼容适配器：把 birth_date/gender/personality 等参数追加为 ## Imported profile update 段落写进 user.md，新提示词只暴露 update_user_profile",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:755"
+  },
+  {
+    "fact": "link_memories 在两个记忆间创建有向链接：link_type 缺省 related，weight 缺省 0.7 并钳制 0-1，可带 description",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:807",
+    "symbol": "executeLinkMemories"
+  },
+  {
+    "fact": "记忆链接的更新/删除支持 link_id 直接定位，或 source_title + target_title（+可选 link_type）定位；多链接匹配且未明确时失败",
+    "kind": "tool",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:1084"
+  },
+  {
+    "fact": "多 profile 隔离：每个 profileId 有独立的 MemoryRepository 缓存；角色卡绑定 FIXED_PROFILE 模式时优先用绑定 profile，否则用活跃记忆空间 id",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:89",
+    "symbol": "resolveActiveProfileId"
+  },
+  {
+    "fact": "MemoryQueryToolExecutor 的 validateParameters 只校验 query_memory 的 query 非空，其余 11 个工具一律返回有效",
+    "kind": "mechanism",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/MemoryQueryToolExecutor.kt:1374",
+    "symbol": "validateParameters"
+  }
+]

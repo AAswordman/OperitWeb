@@ -1,0 +1,1 @@
+[{"confidence":"high","description":"父类构造参数续行缩进不一致：thinkingOptionId 一行用了 8 空格，上一行 thinkingConfigurations 用 4 空格。纯格式问题，不影响行为。","evidence":"        thinkingOptionId = thinkingOptionId","file":"app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/XaiProvider.kt","line":38,"severity":"suggestion"}]

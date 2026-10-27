@@ -1,0 +1,838 @@
+[
+  {
+    "fact": "FpsCounter 是可组合函数，内部注册 Choreographer.FrameCallback 统计帧回调，在 DisposableEffect 里注销回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/FpsCounter.kt:47"
+  },
+  {
+    "fact": "FpsCounter 每秒计算一次 FPS，阈值：≥55 显示绿色、≥30 显示橙色、其余显示红色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/FpsCounter.kt:38"
+  },
+  {
+    "fact": "FpsCounter 内部有一个 LaunchedEffect，循环体为 while(true){delay(500)} 且循环体内无任何操作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/FpsCounter.kt:86"
+  },
+  {
+    "fact": "JLatexMathCompatibility.ensureRegistered() 使用双重检查锁（@Volatile registered 标志）注册 JLatexMath 缺失的宏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt:84"
+  },
+  {
+    "fact": "ensureRegistered 注册的宏映射：color→color_macro、oiint→oiint_macro、oiiint→oiiint_macro",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt:84"
+  },
+  {
+    "fact": "ensureRegistered 同时注册 Unicode 字符映射：U+222F→\\oiint、U+2230→\\oiiint（symbolFormulaMappings）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt:88"
+  },
+  {
+    "fact": "advanceTeXParserPosition 用反射修改 TeXParser 私有字段 pos，失败时记日志而不抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt:18"
+  },
+  {
+    "fact": "buildClosedIntegralAtom 用 SymbolAtom 的 \"oint\" 与 \"int\" 拼装闭合积分原子",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt:55"
+  },
+  {
+    "fact": "LatexCache 是 object 单例，drawable 缓存为 LRU，上限 50 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:21"
+  },
+  {
+    "fact": "LatexCache 的 bitmap 缓存上限为 maxMemory/8（KB），sizeOf 按 byteCount/1024 计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:27"
+  },
+  {
+    "fact": "bitmap 缓存的 entryRemoved 回调里回收被驱逐的 bitmap（recycle）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:34"
+  },
+  {
+    "fact": "getDrawable 与 getLatexBitmap 均为 @Synchronized 同步方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:60"
+  },
+  {
+    "fact": "getDrawable 在构建公式前先调用 JLatexMathCompatibility.ensureRegistered()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:62"
+  },
+  {
+    "fact": "buildCacheKey 用反射读取 builder 的 textSize/color/align/padding/background 字段，反射失败时回退为纯 formula 作为 key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:175"
+  },
+  {
+    "fact": "LatexCache 对外提供 clearCache() 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:149"
+  },
+  {
+    "fact": "LatexCache 对外提供 getStats() 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt:227"
+  },
+  {
+    "fact": "MarkdownText 是可组合入口，直接委托 StreamMarkdownRenderer(content=text, onLinkClick={ openMarkdownLink(context, url) })",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MarkdownTextComposable.kt:30"
+  },
+  {
+    "fact": "openMarkdownLink 对无 scheme 的相对链接（如 README 内的 README.md/#anchor）只弹 Toast 提示，不执行打开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MarkdownTextComposable.kt:58"
+  },
+  {
+    "fact": "openMarkdownLink 用 ACTION_VIEW 打开链接并包 try/catch，ActivityNotFoundException 记日志并 Toast，不崩溃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MarkdownTextComposable.kt:63"
+  },
+  {
+    "fact": "openMarkdownLink 捕获 SecurityException 时同样记日志并 Toast，不崩溃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MarkdownTextComposable.kt:68"
+  },
+  {
+    "fact": "MessageContentParser 的 companion object 代理 ChatMarkupRegex 的 xmlStatusPattern、xmlToolResultPattern、namePattern、toolParamPattern",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MessageContentParser.kt:8"
+  },
+  {
+    "fact": "MessageContentParser 中的 xmlToolRequestPattern 为 private，其余 pattern 对外可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/MessageContentParser.kt:11"
+  },
+  {
+    "fact": "RainbowBorderOverlay 用 rememberInfiniteTransition 把动画值从 0 做到 1，时长 4000ms、LinearEasing、Reverse 模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/RainbowBorderOverlay.kt:28"
+  },
+  {
+    "fact": "RainbowBorderOverlay 使用 6 色渐变色彩带",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/RainbowBorderOverlay.kt:38"
+  },
+  {
+    "fact": "RainbowBorderOverlay 在 Canvas 里按 72 步画同心圆角矩形环带，用 PathOperation.Difference 挖空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/RainbowBorderOverlay.kt:56"
+  },
+  {
+    "fact": "彩虹环带的 alpha 按 (1-startT)^1.55 衰减，渐隐宽度为 minDimension*0.046",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/RainbowBorderOverlay.kt:90"
+  },
+  {
+    "fact": "ShowerSurfaceView 是继承 com.ai.assistance.showerclient.ui.ShowerSurfaceView 的空壳子类，供虚拟屏 overlay 挂载视频画面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/ShowerSurfaceView.kt:8"
+  },
+  {
+    "fact": "UIAutomationProgressOverlay 是 PhoneAgent UI 自动化进度悬浮卡片，采用双重检查锁单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:92"
+  },
+  {
+    "fact": "进度悬浮窗类型为 TYPE_APPLICATION_OVERLAY，Android O 以下用 TYPE_PHONE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:136"
+  },
+  {
+    "fact": "悬浮窗 flags 为 FLAG_NOT_FOCUSABLE|FLAG_LAYOUT_IN_SCREEN|FLAG_LAYOUT_NO_LIMITS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:142"
+  },
+  {
+    "fact": "悬浮窗内容用 ComposeView 承载，配置 DisposeOnDetachedFromWindow 与 ServiceLifecycleOwner",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:95"
+  },
+  {
+    "fact": "ProgressInfo 数据类包含 currentStep、totalSteps、statusText 三个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:101"
+  },
+  {
+    "fact": "UIAutomationProgressOverlay 对外提供 show 入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:277"
+  },
+  {
+    "fact": "UIAutomationProgressOverlay 对外提供 hide 入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:307"
+  },
+  {
+    "fact": "UIAutomationProgressOverlay 对外提供 updateProgress 入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:299"
+  },
+  {
+    "fact": "setOverlayVisible 是 suspend 函数，在截图/操作期间临时隐藏悬浮窗（加 FLAG_NOT_TOUCHABLE 并改 alpha/visibility）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:350"
+  },
+  {
+    "fact": "moveOverlayBy 支持拖拽移动悬浮窗位置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:385"
+  },
+  {
+    "fact": "setBorderEnabled 控制全屏彩虹边框 borderView 的显隐",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:260"
+  },
+  {
+    "fact": "ProgressCard 带有暂停/继续与取消两个操作按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:510"
+  },
+  {
+    "fact": "statusIconFor 按状态文案包含 \"execut\"/\"done\"/\"success\" 选择不同的状态图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIAutomationProgressOverlay.kt:527"
+  },
+  {
+    "fact": "显示悬浮窗前检查 Settings.canDrawOverlays 悬浮窗权限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:121"
+  },
+  {
+    "fact": "UIOperationOverlay 是 UI 操作视觉反馈悬浮窗，采用单例模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:70"
+  },
+  {
+    "fact": "UIOperationOverlay 的 flags 额外加 FLAG_NOT_TOUCHABLE|FLAG_NOT_TOUCH_MODAL，不拦截底层触摸",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:192"
+  },
+  {
+    "fact": "UIOperationOverlay 定义 TapEvent/SwipeEvent/TextInputEvent 三种事件类型，均以 UUID 为标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:83"
+  },
+  {
+    "fact": "showTap 在显示前把 y 坐标减去 statusBarHeight",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:246"
+  },
+  {
+    "fact": "showTextInput 在显示前把 y 坐标减去 statusBarHeight",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:283"
+  },
+  {
+    "fact": "showSwipe 在显示前把起止 y 坐标减去 statusBarHeight",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:265"
+  },
+  {
+    "fact": "showTap 的操作事件到期后经 handler.postDelayed 移除，默认 1500ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:247"
+  },
+  {
+    "fact": "showTextInput 的操作事件到期后经 handler.postDelayed 移除，默认 2000ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:284"
+  },
+  {
+    "fact": "showSwipe 的操作事件到期后经 handler.postDelayed 移除，默认 1500ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:266"
+  },
+  {
+    "fact": "scheduleAutoCleanup 在 500ms 后检查事件队列全空则隐藏悬浮窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:299"
+  },
+  {
+    "fact": "hide() 延迟 600ms 执行以让动画播完",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:310"
+  },
+  {
+    "fact": "hideImmediately() 立即清空并隐藏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:321"
+  },
+  {
+    "fact": "TapIndicator 为青色涟漪动画 600ms，SwipeIndicator 为橙色彗星动画 1000ms，TextInputIndicator 为黑色呼吸气泡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/UIOperationOverlay.kt:402"
+  },
+  {
+    "fact": "VirtualDisplayOverlay 按 agentId 用 ConcurrentHashMap 管理单例，提供 getInstance/hide(agentId)/hideAll()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:86"
+  },
+  {
+    "fact": "hideAll() 遍历 instances 逐个 hide，单个 hide 抛异常时被空 catch 吞掉",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:100"
+  },
+  {
+    "fact": "mapOffsetToRemote 把 overlay 坐标归一化后映射到远端设备坐标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:112"
+  },
+  {
+    "fact": "VirtualDisplayOverlay.show(displayId) 展示虚拟屏小窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:220"
+  },
+  {
+    "fact": "captureCurrentFramePng() 捕获当前帧为 PNG 字节数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:255"
+  },
+  {
+    "fact": "自动化控制条提供 showAutomationControls/updateAutomationProgress/hideAutomationControls，左侧面板宽 56dp（automationPanelWidthPx）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:257"
+  },
+  {
+    "fact": "hide(cancelAutomation) 会调用 PhoneAgentJobRegistry.cancelAgent 并执行 ShowerController.shutdown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:294"
+  },
+  {
+    "fact": "toggleFullScreen 切换全屏；snapToEdge 贴边最小化为可见 36dp、屏外 12dp、高 48dp 的条状",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:342"
+  },
+  {
+    "fact": "animateToPosition 动画时长 300ms；小窗布局为视频区 0.4×屏宽再加 56dp 面板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:406"
+  },
+  {
+    "fact": "全屏下 OverlayCard 用 pointerInteropFilter 转发触摸，仅处理单指的 DOWN/MOVE/UP/CANCEL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:700"
+  },
+  {
+    "fact": "触摸转发经 touchForwardMutex 序列化，把历史触点逐个 mapOffsetToRemote 后调用 ShowerController.injectTouchEvent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:686"
+  },
+  {
+    "fact": "OverlayCard 用 AndroidView 挂载 ShowerSurfaceView",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:658"
+  },
+  {
+    "fact": "factory 中 ShowerSurfaceView 经 bindController 绑定 ShowerController 控制器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:742"
+  },
+  {
+    "fact": "VirtualDisplayOverlay 每 500ms 轮询 getVideoSize，虚拟屏断开则 cancelAgent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:596"
+  },
+  {
+    "fact": "AutomationControlBar 显示 \"n/m\" 进度、暂停/继续与退出按钮；贴边态显示应用图标或箭头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt:1257"
+  },
+  {
+    "fact": "RenderBatchCoordinator 合并渲染更新：requestUpdate 递增 requestedRevision，已有活跃 job 时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinator.kt:23"
+  },
+  {
+    "fact": "RenderBatchCoordinator 的 job 循环 while(appliedRevision != requestedRevision){ delay(intervalMs); onFlush() }，finally 里置空 job",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinator.kt:25"
+  },
+  {
+    "fact": "RenderBatchCoordinator 注释说明调用被 owning Compose scope 串行化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinator.kt:10"
+  },
+  {
+    "fact": "MarkdownCodeTypeface 是单例缓存，加载 terminal 模块的 R.font.jetbrains_mono_nerd_font_regular，失败回退 Typeface.MONOSPACE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownCodeTypeface.kt:12"
+  },
+  {
+    "fact": "MarkdownCodeTypeface 提供 getMarkdownCodeTypeface(context) 与无参版本（用 OperitApplication.instance）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownCodeTypeface.kt:20"
+  },
+  {
+    "fact": "MarkdownNodeGrouper.kt 定义 sealed 类 MarkdownGroupedItem：Single(index) 与 Group(startIndex, endIndexInclusive, stableKey)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownNodeGrouper.kt:15"
+  },
+  {
+    "fact": "MarkdownNodeGrouper 接口包含 group 方法与 @Composable RenderGroup 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownNodeGrouper.kt:23"
+  },
+  {
+    "fact": "NoopMarkdownNodeGrouper 把每个节点映射为一个 Single，不做分组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownNodeGrouper.kt:45"
+  },
+  {
+    "fact": "StreamMarkdownRenderer 定义 RENDER_INTERVAL_MS=200L、FADE_IN_DURATION_MS=800、MAX_CONSECUTIVE_RENDERED_NEWLINES=2",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:80"
+  },
+  {
+    "fact": "MarkdownRenderMode 枚举含 STREAMING 与 STATIC，配套 LocalMarkdownRenderMode composition local",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:86"
+  },
+  {
+    "fact": "流式入口做换行归一化：CRLF 合并，最多保留 2 个连续换行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:117"
+  },
+  {
+    "fact": "replaceRollbackTail 支持 StreamRollbackPrefix，回滚时只重绘被撤销的尾部而非全文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:170"
+  },
+  {
+    "fact": "MarkdownNode.toStableNode() 把解析节点转为稳定节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:215"
+  },
+  {
+    "fact": "XmlContentRenderer 是接口，DefaultXmlRenderer 用 Surface 包裹等宽文本作为默认实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:264"
+  },
+  {
+    "fact": "StreamMarkdownRendererState 标记为 @Stable，字段含 nodes、renderNodes、nodeAnimationStates、collectedContent(SmartString)、xmlNodeStreams、streamParsingCompletedSuccessfully、rendererId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:328"
+  },
+  {
+    "fact": "流式入口 StreamMarkdownRenderer(markdownStream: Stream<Char>) 用 StreamInterceptor 把字符收集进 collectedContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:381"
+  },
+  {
+    "fact": "流式 LaunchedEffect 按 nativeMarkdownSplitByBlock(200ms) 切块处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:486"
+  },
+  {
+    "fact": "切块规则：HTML_BREAK 合并、HORIZONTAL_RULE 独立成块、BLOCK_LATEX 先按 PLAIN_TEXT 累积再转回、CODE_BLOCK/TABLE/XML_BLOCK 不进内联解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:510"
+  },
+  {
+    "fact": "XML_BLOCK 的流用 share(replay=Int.MAX_VALUE) 共享并记入 xmlNodeStreams",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:553"
+  },
+  {
+    "fact": "INLINE_LATEX 先按 PLAIN_TEXT 累积，闭合后再替换为 INLINE_LATEX 节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:608"
+  },
+  {
+    "fact": "BatchNodeUpdater 按 200ms 节流更新；流式 finally 块调用 synchronizeRenderNodes",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:651"
+  },
+  {
+    "fact": "静态入口的 rendererId 为 \"static-renderer-${content.hashCode()}\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:600"
+  },
+  {
+    "fact": "MarkdownNodeCache 按字节估算限制大小：maxMemory/64，夹在 256KB–4MB 之间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:691"
+  },
+  {
+    "fact": "静态入口在 content 与流式已收集内容一致且同步完成时跳过解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:640"
+  },
+  {
+    "fact": "静态解析在 Dispatchers.IO 执行，完成后回主线程调用 replaceStaticNodes",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:939"
+  },
+  {
+    "fact": "parseMarkdownToNodes 是 internal suspend 全量解析函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:741"
+  },
+  {
+    "fact": "AnimatedNode 用 graphicsLayer 做绘制隔离",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:1000"
+  },
+  {
+    "fact": "FADE_IN_DURATION_MS = 800，淡入动画持续时间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:81"
+  },
+  {
+    "fact": "UnifiedMarkdownCanvas 按 grouper 分组渲染节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:1078"
+  },
+  {
+    "fact": "BatchNodeUpdater 提供 requestUpdate/requestStructuralUpdate/appendBlockChunk 三个入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:1148"
+  },
+  {
+    "fact": "synchronizeRenderNodes 分三步：更新/新增节点、裁掉多余节点、清理 XML 流，16ms 后开启动画",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt:1171"
+  },
+  {
+    "fact": "XmlRenderPluginRegistry.kt 定义 sealed 类 XmlRenderResult：ComposableRender、Text、ComposeDslScreen(containerPackageName, screenPath, state, memo, moduleSpec)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:40"
+  },
+  {
+    "fact": "XmlRenderPlugin 接口含 id、supports(tagName)、suspend resolve(...)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:60"
+  },
+  {
+    "fact": "Registry 用 CopyOnWriteArrayList 存插件，register/unregister 加 @Synchronized，changeVersion 为 StateFlow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:90"
+  },
+  {
+    "fact": "@Composable RenderIfMatched 按 (renderInstanceKey, tagName, plugin.id, registryVersion) remember 解析结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:117"
+  },
+  {
+    "fact": "RenderIfMatched 在 LaunchedEffect 里调 plugin.resolve，失败显示错误文本、未完成显示 LinearProgressIndicator，返回 Boolean 表示是否命中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:180"
+  },
+  {
+    "fact": "RenderComposeDslScreen 用 PackageManager.acquireToolPkgExecutionEngine 获取执行引擎，在 DisposableEffect 里释放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:235"
+  },
+  {
+    "fact": "ComposeDsl 屏读取工具包脚本资源并调 executeComposeDslScript 执行，再经 ToolPkgComposeDslParser 解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:350"
+  },
+  {
+    "fact": "ComposeDsl 屏的 onLoad 动作自动派发",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:541"
+  },
+  {
+    "fact": "dispatchTextInputAction 处理文本输入动作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:417"
+  },
+  {
+    "fact": "dispatchAction 处理动作交互",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:385"
+  },
+  {
+    "fact": "文本输入动作用 CompletableDeferred ticket 队列做同步，全部完成后重渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/XmlRenderPluginRegistry.kt:268"
+  },
+  {
+    "fact": "CanvasMarkdownNodeRenderer 定义 MAX_CANVAS_HEIGHT_PX=250000f、FALLBACK_MAX_TEXT_CHARS=20000、TYPEWRITER_WINDOW_MS=200，行距倍数 1.3f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:73"
+  },
+  {
+    "fact": "drawOnlyWhenVisible 用 onGloballyPositioned 取 boundsInWindow，与 getGlobalVisibleRect 比较，不可见时 drawWithContent 跳过绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:80"
+  },
+  {
+    "fact": "PaintCache 用 ConcurrentHashMap 缓存 Paint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:184"
+  },
+  {
+    "fact": "LayoutCache 为 LRU 缓存 100 个 StaticLayout",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:281"
+  },
+  {
+    "fact": "DrawInstruction 为 sealed 类型，含 Text、Line、TextLayout 三种绘制指令",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:140"
+  },
+  {
+    "fact": "CanvasMarkdownNodeRenderer 按 MarkdownProcessorType 分发：HEADER/列表/PLAIN_TEXT 走 UnifiedCanvasRenderer，HTML_BREAK 渲染为单个 \"\\n\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:531"
+  },
+  {
+    "fact": "CODE_BLOCK 节点解析 ``` 语言行后交给 EnhancedCodeBlock，TABLE 节点交给 EnhancedTableBlock",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:600"
+  },
+  {
+    "fact": "BLOCK_QUOTE 用 Surface 加边框渲染，并去掉每行的 \"> \" 前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:620"
+  },
+  {
+    "fact": "HORIZONTAL_RULE 渲染为 HorizontalDivider，XML_BLOCK 交给 xmlRenderer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:657"
+  },
+  {
+    "fact": "IMAGE 节点：完整图片 markdown 走 MarkdownImageRenderer(maxImageHeight=140)，否则按纯文本渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:673"
+  },
+  {
+    "fact": "BLOCK_LATEX 用 AndroidView 托管 TextView，结合 LatexCache.getDrawable 与 LatexDrawableSpan 渲染，异常时回退为等宽原文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:700"
+  },
+  {
+    "fact": "UnifiedCanvasRenderer 在流式模式下对末节点做打字机效果：按字符在 200ms 窗口内累计显露，含 ImageSpan 的布局跳过该效果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:834"
+  },
+  {
+    "fact": "Canvas 绘制时对可见区域做 clip 裁剪，只画可见部分",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:1146"
+  },
+  {
+    "fact": "链接点击通过 URLSpan 反查实现：500ms 内、移动 10px 以内判定为 tap",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:993"
+  },
+  {
+    "fact": "calculateLayout 里标题降一档字号（H1→headlineMedium…），列表用正则解析序号/符号，无序列表圆点按首行基线对齐",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:1213"
+  },
+  {
+    "fact": "段落在布局时按 \\n\\n 切分；SingleTextCanvas 负责单文本绘制；SafeMeasureOrFallback 在 measure 异常时回退为 Text 渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:1000"
+  },
+  {
+    "fact": "extractLatexContent 剥离 $$…$$、\\[…\\]、$…$、\\(…\\) 分隔符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMarkdownNodeRenderer.kt:1745"
+  },
+  {
+    "fact": "CanvasMonospaceCodeBlockBody 是 Canvas 等宽代码块体，用 12sp JetBrains Mono 绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:106"
+  },
+  {
+    "fact": "字符宽度取 ceil(measureText(\"M\"))，行高为 1.25 倍，基线按行高计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:137"
+  },
+  {
+    "fact": "行号 gutter 至少占 2 位数字宽度，颜色 0xFF6A737D，背景 0xFF252526",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:191"
+  },
+  {
+    "fact": "自动换行用 editorNextSymbolOffset/editorCellWidth 处理字素簇与 emoji 宽度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:728"
+  },
+  {
+    "fact": "可见行区间用二分查找定位，上下各 overscan 6 行做虚拟化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:264"
+  },
+  {
+    "fact": "触摸滚动手动实现：awaitEachGesture、touchSlop、手势方向判定、VelocityTracker 加 spline decay fling",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:449"
+  },
+  {
+    "fact": "同色连续 run 批量合并为一次 drawText，emoji/符号走 systemGlyphPaint 绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:831"
+  },
+  {
+    "fact": "流式时若距底部 80px 以内则自动跟随到底部",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/CanvasMonospaceCodeBlockBody.kt:410"
+  },
+  {
+    "fact": "EnhancedCodeBlock 背景色 0xFF1E1E1E（VS Code 暗色主题），工具栏背景 0xFF252526",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:107"
+  },
+  {
+    "fact": "代码块最大可滚动高度为屏幕高度一半，夹在 240.dp–560.dp 之间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:85"
+  },
+  {
+    "fact": "preferStreamingBody 在渲染模式为 STREAMING 时为 true；流式下跳过语法高亮（highlightedLines 为空列表）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:70"
+  },
+  {
+    "fact": "流式下 Mermaid/HTML 预览按钮被禁用并置灰（0xFF666666）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:184"
+  },
+  {
+    "fact": "codeLines 用 remember(code){ code.lines() } 派生，行高亮缓存 lineCache 以 \"$language:$line\" 为 key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:115"
+  },
+  {
+    "fact": "复制按钮把代码写入剪贴板，并显示 1500ms 的已复制提示条（背景 0xFF0366D6）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:290"
+  },
+  {
+    "fact": "代码块无障碍语义为 \"$language 代码块\"，无语言时仅为\"代码块\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:125"
+  },
+  {
+    "fact": "MermaidRenderer 用 WebView 加载 mermaid@10.6.1（jsdelivr），暗色主题，securityLevel 设为 'loose'",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:427"
+  },
+  {
+    "fact": "Mermaid 预览页内置自定义缩放控件（+/−/↺），支持拖拽与双指捏合缩放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:418"
+  },
+  {
+    "fact": "Mermaid 的 WebView 开启 JS 与 DOM 存储，混合内容模式为 MIXED_CONTENT_ALWAYS_ALLOW",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:607"
+  },
+  {
+    "fact": "Mermaid 的 WebViewClient 拦截所有 URL 导航（shouldOverrideUrlLoading 返回 true），页面完成后禁用文本选择",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:615"
+  },
+  {
+    "fact": "MermaidRenderer 在 DisposableEffect 里 stopLoading、清历史、removeAllViews 并 destroy WebView",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:640"
+  },
+  {
+    "fact": "HtmlPreviewRenderer 的 WebView 关闭 JS（javaScriptEnabled=false）、DOM 存储、文件访问与内容访问，背景白色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:700"
+  },
+  {
+    "fact": "highlightSyntaxLine 的配色：关键字 0xFF569CD6、字符串 0xFFCE9178、注释 0xFF6A9955、数字 0xFFB5CEA8、类型 0xFF4EC9B0、函数 0xFFDCDCAA、普通文本 0xFFD4D4D4",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:748"
+  },
+  {
+    "fact": "kotlin/java/swift/typescript/javascript/dart 共用一套语法高亮分支；mermaid 分支高亮关键字与箭头；// 注释（含行内）单独处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:760"
+  },
+  {
+    "fact": "预览态可开全屏 Dialog（usePlatformDefaultWidth=false），黑色底，右上角有关闭按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt:312"
+  },
+  {
+    "fact": "EnhancedTableBlock 常量：列最小宽 80.dp、最大宽 320.dp，单元格水平/垂直内边距 8dp，圆角 4dp，外边框 1dp，网格线 0.5dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:57"
+  },
+  {
+    "fact": "表格单行测量字符上限 TABLE_MAX_MEASURE_LINE_CHARS=512，行距倍数 1.3f，fling 衰减率 4.5f、最小速度 120、最大速度 9000",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:65"
+  },
+  {
+    "fact": "parseTable 为 internal 函数：用正则识别表头分隔行，parseCells 按 | 切分并去掉首尾竖线，把 <br/> 替换为换行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:623"
+  },
+  {
+    "fact": "parseTable 把不足 maxColumns 的行补空字符串对齐列数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:662"
+  },
+  {
+    "fact": "measureTableLayout 把列宽夹在最小/最大之间，表头行用粗体，单元格经 buildMarkdownInlineSpannableFromText 构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:420"
+  },
+  {
+    "fact": "单元格 StaticLayout 用 ALIGN_CENTER 对齐、includePad=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:570"
+  },
+  {
+    "fact": "表格支持横向拖拽滚动，松手后按 exp 衰减做 fling，速度夹在 ±9000 内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:187"
+  },
+  {
+    "fact": "表格内链接点击通过 URLSpan 命中测试实现，超出 touchSlop 则取消点击判定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:339"
+  },
+  {
+    "fact": "表格无障碍语义为 table_block 字符串；表头背景为 surfaceVariant 0.3 透明度，边框为 outline 0.5 透明度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:130"
+  },
+  {
+    "fact": "SideEffect 在流式追加导致内容变窄时把 scrollOffsetPx 钳制回 maxScrollPx 以内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt:215"
+  },
+  {
+    "fact": "MarkdownInlineSpannable.kt 定义 INLINE_LATEX_PLACEHOLDER='\\uFFFC'，MAX_INLINE_RENDER_DEPTH=24",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:33"
+  },
+  {
+    "fact": "LatexDrawableSpan 是 ReplacementSpan：把公式放在周围文本视觉中心而非基线对齐，getSize 扩展 fontMetrics，draw 平移到 baseline+textCenter−height/2",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:45"
+  },
+  {
+    "fact": "NestedInlineNodeCache 为 LRU 256 条目，getOrParse 经 NativeMarkdownSplitter.parseInlineToStableNodes 解析并加 synchronized",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:100"
+  },
+  {
+    "fact": "行内代码背景透明度：浅色文字 0.18、深色文字 0.12；InlineCodeStyleSpan 字号缩放 0.9 并用 JetBrains Mono",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:120"
+  },
+  {
+    "fact": "InlineCodeMarkerSpan 参数：水平内边距 4dp、垂直内缩 2dp、圆角 4dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:150"
+  },
+  {
+    "fact": "inlineCodeRangeAt 定位偏移处的行内代码区间；selectedTextWithInlineCodeMarkers 在选中文本的代码区间外补反引号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:180"
+  },
+  {
+    "fact": "drawInlineCodeBackgrounds 按行分段画圆角背景，并处理 RTL 段落方向",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:250"
+  },
+  {
+    "fact": "LINK 节点挂 URLSpan+UnderlineSpan+ForegroundColorSpan(primary)；BOLD/ITALIC/STRIKETHROUGH/UNDERLINE 挂对应 StyleSpan",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:380"
+  },
+  {
+    "fact": "INLINE_LATEX 经 LatexCache.getDrawable 渲染（builder 设 textSize、padding 2、文字色、透明背景、ALIGN_LEFT），失败记日志并回退原文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:440"
+  },
+  {
+    "fact": "appendInlineNode 有递归保护：深度≥24 或节点已访问则直接追加解析后文本，防止循环",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:367"
+  },
+  {
+    "fact": "buildMarkdownInlineSpannableFromText 空文本返回空 builder；解析为空时返回纯文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:560"
+  },
+  {
+    "fact": "extractInlineLatexContent 剥离 $$…$$、\\[…\\]、$…$、\\(…\\) 分隔符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownInlineSpannable.kt:310"
+  },
+  {
+    "fact": "isCompleteImageMarkdown 要求同时含 \"![\"、\"](\" 且 ) 出现在 ( 之后",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:80"
+  },
+  {
+    "fact": "extractMarkdownImageAlt 取 ![ 与 ] 之间的文本，extractMarkdownImageUrl 取 ( 与 ) 之间的文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:90"
+  },
+  {
+    "fact": "isLargeImage 按 URL 后缀（.jpg/.jpeg/.png/.bmp/.tiff/.webp）判断大图，定义后未被调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:103"
+  },
+  {
+    "fact": "MarkdownImageRenderer 参数：imageMarkdown、modifier、maxImageHeight=160、enableDialogs=true；不完整语法直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:115"
+  },
+  {
+    "fact": "图片 URL 为空直接返回；视频 URL 转交 MarkdownVideoRenderer(maxVideoHeight=220)；音频 URL 转交 MarkdownAudioRenderer",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:140"
+  },
+  {
+    "fact": "图片用 Coil SubcomposeAsyncImage 加载，crossfade，ContentScale.Fit，高度上限 maxImageHeight，圆角 12dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:170"
+  },
+  {
+    "fact": "图片加载中显示 50dp 浅灰盒加 20dp 进度圈；失败显示红色\"图片加载失败\"单行省略文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:196"
+  },
+  {
+    "fact": "图片 alt 说明居中显示，bodySmall、onSurfaceVariant 0.7 透明度，单行省略",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:204"
+  },
+  {
+    "fact": "图片可点击（enableDialogs 时）打开全屏 Dialog",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:229"
+  },
+  {
+    "fact": "detectTransformGestures 缩放限制 0.5–3.0（coerceIn）且平移钳制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:280"
+  },
+  {
+    "fact": "全屏预览黑底 0.9 透明度（Color.Black.copy(alpha=0.9f)）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:259"
+  },
+  {
+    "fact": "全屏预览有关闭按钮（onDismiss）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:347"
+  },
+  {
+    "fact": "下载结果显示\"已保存\"/\"保存失败\"（R.string.image_saved/save_failed）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:405"
+  },
+  {
+    "fact": "全屏预览有重置缩放按钮（scale=1f/offset=Offset.Zero）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:414"
+  },
+  {
+    "fact": "全屏预览有下载按钮，点击后经 saveImageFromUrl 异步下载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:368"
+  },
+  {
+    "fact": "saveImageFromUrl 文件名为 markdown_yyyyMMdd_HHmmss.jpg；Android Q 及以上经 MediaStore 存到 Pictures/Markdown，MIME 为 image/jpeg",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:420"
+  },
+  {
+    "fact": "Android Q 以下用传统文件方式存到 Pictures/Markdown 目录；下载经 java.net.URL.openConnection，异常返回 false 并记日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt:450"
+  },
+  {
+    "fact": "MarkdownVideoRenderer 支持的扩展名：mp4、webm、mkv、mov、m4v、3gp、avi、ogv",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:34"
+  },
+  {
+    "fact": "isLikelyVideoUrl 先经 normalizeMarkdownMediaUrl 规范化再取扩展名判断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:39"
+  },
+  {
+    "fact": "MarkdownVideoRenderer 参数：videoMarkdown、modifier、maxVideoHeight=220；语法不完整或 URL 为空/非视频直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:48"
+  },
+  {
+    "fact": "视频播放器用 ExoPlayer.Builder(context).build() 并按 URL remember；LaunchedEffect 里 setMediaItem、prepare，playWhenReady=false 不自动播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:60"
+  },
+  {
+    "fact": "DisposableEffect 里依次 stop、clearMediaItems、release，包 try/catch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:70"
+  },
+  {
+    "fact": "视频用 StyledPlayerView（useController=true、RESIZE_MODE_FIT），16:9 比例，高度上限 maxVideoHeight，圆角 12dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt:100"
+  },
+  {
+    "fact": "MarkdownAudioRenderer 支持的扩展名：mp3、wav、ogg、oga、m4a、aac、flac、opus、weba",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownAudioRenderer.kt:30"
+  },
+  {
+    "fact": "normalizeMarkdownMediaUrl 去掉 # 与 ? 后缀、trim 并转小写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownAudioRenderer.kt:33"
+  },
+  {
+    "fact": "MarkdownAudioRenderer 播放器生命周期与视频一致（prepare、不自动播放、dispose 时释放），StyledPlayerView 无宽高比、垂直内边距 8dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownAudioRenderer.kt:63"
+  },
+  {
+    "fact": "markdownToPlainTextForCopy 是 internal suspend 函数：末尾缺换行时补 \\n 以冲刷 native 流式解析器的前瞻",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:14"
+  },
+  {
+    "fact": "复制用纯文本复用 parseMarkdownToNodes 产出的同一份 AST，与屏幕渲染共享边界判断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:10"
+  },
+  {
+    "fact": "纯文本把 2 个以上换行（含 \\h 水平空白）折叠为 \\n\\n 并 trim",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:22"
+  },
+  {
+    "fact": "公式先记为占位符 U+E000<index>U+E001，收集完后经 latexToPlainText 回调替换（默认恒等）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:127"
+  },
+  {
+    "fact": "joinBlocks：相邻列表项（有序/无序混排）之间只用单个换行，其余相邻块之间空一行；HTML_BREAK 不参与渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:36"
+  },
+  {
+    "fact": "代码块复制为 \"----<lang>-----\\n<代码>\"（有语言时），无语言时直接为代码原文",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:106"
+  },
+  {
+    "fact": "表格复制为行用 \\n、单元格用 \\t 连接的纯文本，单元格内联样式经 parseInlineToStableNodes 还原",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:116"
+  },
+  {
+    "fact": "链接复制为\"文本 (url)\"格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:86"
+  },
+  {
+    "fact": "图片复制为 alt 文本；标题去掉开头的 # 与空格；无序列表项前缀\"• \"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownPlainTextRenderer.kt:68"
+  }
+]

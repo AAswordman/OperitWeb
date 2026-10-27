@@ -1,0 +1,338 @@
+[
+  {
+    "fact": "KimiProvider 的类文档声明它是 Kimi K2.5 Provider（Moonshot API）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:19"
+  },
+  {
+    "fact": "类文档声明 thinking 启用时 reasoning_content 的处理镜像 DeepseekProvider 的行为",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:20"
+  },
+  {
+    "fact": "KimiProvider 声明为 open class，可被继续继承",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:22"
+  },
+  {
+    "fact": "构造函数默认 providerType 为 ApiProviderType.MOONSHOT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:28"
+  },
+  {
+    "fact": "构造函数默认 supportsVision、supportsAudio、supportsVideo 均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:29"
+  },
+  {
+    "fact": "构造函数默认 enableToolCall 为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:32"
+  },
+  {
+    "fact": "thinkingConfigurations 构造参数默认为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:33"
+  },
+  {
+    "fact": "thinkingOptionId 构造参数默认为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:34"
+  },
+  {
+    "fact": "KimiProvider 在构造器末尾以 : OpenAIProvider(...) 继承 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:35"
+  },
+  {
+    "fact": "private val configuredApiEndpoint 在构造时保存 apiEndpoint 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:49"
+  },
+  {
+    "fact": "createRequestBody 被重写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:51"
+  },
+  {
+    "fact": "内部局部函数 applyThinkingParams 封装思考参数注入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:60"
+  },
+  {
+    "fact": "思考参数经 ThinkingConfigurationApplier.apply 注入，传入 providerType.name、modelName、configuredApiEndpoint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:61"
+  },
+  {
+    "fact": "思考参数注入另传入 thinkingConfigurations、enableThinking、thinkingOptionId（optionId 实参）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:68"
+  },
+  {
+    "fact": "enableThinking 为 false 时先调 super.createRequestBodyInternal 拿到基类请求体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:75"
+  },
+  {
+    "fact": "非 thinking 分支在 stream 为真时写入 stream_options.include_usage=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:78"
+  },
+  {
+    "fact": "非 thinking 分支同样调用 applyThinkingParams 后经 createJsonRequestBody 返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:80"
+  },
+  {
+    "fact": "thinking 分支请求体手写 model 字段为 modelName",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:85"
+  },
+  {
+    "fact": "thinking 分支请求体手写 stream 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:86"
+  },
+  {
+    "fact": "thinking 分支在 stream 为真时写入 stream_options.include_usage=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:88"
+  },
+  {
+    "fact": "thinking 分支调用 applyThinkingParams(jsonObject) 注入思考配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:90"
+  },
+  {
+    "fact": "只有 isEnabled 的模型参数才会被写入请求体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:93"
+  },
+  {
+    "fact": "INT、FLOAT、STRING、BOOLEAN 类型参数按 valueType 强转后写入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:99"
+  },
+  {
+    "fact": "OBJECT 类型参数以 { 开头解析为 JSONObject，以 [ 开头解析为 JSONArray",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:107"
+  },
+  {
+    "fact": "OBJECT 参数解析失败时记 AppLogger.w 警告日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:112"
+  },
+  {
+    "fact": "OBJECT 参数解析失败时回退为原始字符串写入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:117"
+  },
+  {
+    "fact": "effectiveEnableToolCall 要求 enableToolCall 为真且 availableTools 非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:125"
+  },
+  {
+    "fact": "工具启用时经 buildToolDefinitions 生成工具定义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:129"
+  },
+  {
+    "fact": "工具启用时请求体写入 tools 数组和 tool_choice=auto",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:131"
+  },
+  {
+    "fact": "toolsJson 记录工具定义的字符串形式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:133"
+  },
+  {
+    "fact": "toolsJson 传给 calculateAndStoreInputTokens 供 token 统计使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:140"
+  },
+  {
+    "fact": "历史先经 prepareHistoryForProvider 预处理为 providerReadyHistory",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:137"
+  },
+  {
+    "fact": "calculateAndStoreInputTokens 统计输入 token 时固定 preserveThinkInHistory=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:140"
+  },
+  {
+    "fact": "消息数组由 buildMessagesWithReasoning 构建，传入 effectiveEnableToolCall",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:144"
+  },
+  {
+    "fact": "写请求日志前把 tools 数组替换为 [N tools omitted for brevity] 占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:152"
+  },
+  {
+    "fact": "日志前经 sanitizeImageDataForLogging 脱敏图片数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:156"
+  },
+  {
+    "fact": "最终请求体以 tag KimiProvider 和前缀 Final Kimi K2.5 request body 经 logLargeString 打日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:157"
+  },
+  {
+    "fact": "createRequestBody 返回 createJsonRequestBody(jsonObject.toString())",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:159"
+  },
+  {
+    "fact": "buildMessagesWithReasoning 是私有函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:162"
+  },
+  {
+    "fact": "函数内维护 queuedAssistantToolText、queuedAssistantReasoning、queuedToolCalls、queuedOpenToolCalls、openToolCalls、nextToolCallOrdinal 六个队列状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:170"
+  },
+  {
+    "fact": "appendQueuedAssistantToolText 对空文本直接返回，否则用换行拼接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:178"
+  },
+  {
+    "fact": "appendQueuedAssistantReasoning 对空推理内容直接返回，否则用换行拼接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:188"
+  },
+  {
+    "fact": "queueToolCalls 把文本内容和推理内容分别入队",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:197"
+  },
+  {
+    "fact": "queueToolCalls 对每个 toolCall 做深拷贝后分配 generatedToolCallId(nextToolCallOrdinal++) 生成的本地顺序 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:202"
+  },
+  {
+    "fact": "queueToolCalls 同时登记 StructuredToolCallBridge.OpenToolCall(callId, toolCallName)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:206"
+  },
+  {
+    "fact": "emitQueuedToolCallsIfNeeded 在队列为空时直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:214"
+  },
+  {
+    "fact": "攒发的 assistant 消息固定为 role=assistant",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:218"
+  },
+  {
+    "fact": "攒发的 assistant 消息始终带 reasoning_content 字段，取 queuedAssistantReasoning.orEmpty()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:220"
+  },
+  {
+    "fact": "攒发时文本为空则 content 置 null，否则经 buildContentField 构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:222"
+  },
+  {
+    "fact": "攒发后把 queuedOpenToolCalls 并入 openToolCalls 并清空全部队列状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:230"
+  },
+  {
+    "fact": "flushOpenToolCallsAsUnmatched 先冲刷攒发队列，openToolCalls 为空则直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:238"
+  },
+  {
+    "fact": "冲刷未匹配时先记 AppLogger.w，含 openToolCalls 数量和 reason",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:241"
+  },
+  {
+    "fact": "未匹配的 tool_calls 被转成 role=tool、带 tool_call_id 的占位消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:248"
+  },
+  {
+    "fact": "占位 tool 消息的内容来自 StructuredToolCallBridge.unmatchedToolResultContent(reason, matchingName)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:252"
+  },
+  {
+    "fact": "历史遍历用 comparableContentForTurn(turn, preserveThinkInHistory=true) 取可比内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:265"
+  },
+  {
+    "fact": "useToolCall 为真时按 PromptTurnKind 分发处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:266"
+  },
+  {
+    "fact": "SYSTEM 回合先以 system_boundary 为原因冲刷未匹配，再发 role=system 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:270"
+  },
+  {
+    "fact": "USER 和 SUMMARY 回合先以 user_boundary 为原因冲刷未匹配，再发 role=user 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:279"
+  },
+  {
+    "fact": "ASSISTANT 回合用 ChatUtils.extractThinkingContent 拆分 thinking 标签内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:290"
+  },
+  {
+    "fact": "ASSISTANT 回合用 parseXmlToolCalls 从正文解析 XML 工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:291"
+  },
+  {
+    "fact": "ASSISTANT 回合解析出的工具调用经 wrapPackageToolCallsWithProxy 包装包工具调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:294"
+  },
+  {
+    "fact": "ASSISTANT 回合有新 toolCalls 且 openToolCalls 非空时先以 assistant_tool_call_before_result 冲刷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:301"
+  },
+  {
+    "fact": "ASSISTANT 回合无 toolCalls 时以 assistant_boundary 冲刷后直接发 assistant 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:306"
+  },
+  {
+    "fact": "直接发出的 assistant 消息带 reasoning_content，空正文用 [Empty] 占位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:309"
+  },
+  {
+    "fact": "ASSISTANT 直接消息发出后调 appendReadableImageMessageIfNeeded 追加可读图片消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:313"
+  },
+  {
+    "fact": "TOOL_CALL 回合同样经 parseXmlToolCalls 和 wrapPackageToolCallsWithProxy 处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:323"
+  },
+  {
+    "fact": "TOOL_CALL 回合有新调用且 openToolCalls 非空时以 typed_tool_call_before_result 冲刷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:330"
+  },
+  {
+    "fact": "TOOL_CALL 回合无 payload 时以 typed_tool_call_without_payload 冲刷，发 reasoning_content 为空字符串的 assistant 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:336"
+  },
+  {
+    "fact": "TOOL_RESULT 回合先调 emitQueuedToolCallsIfNeeded 把攒发的 assistant 消息落盘",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:353"
+  },
+  {
+    "fact": "TOOL_RESULT 回合用 parseXmlToolResults 解析工具结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:354"
+  },
+  {
+    "fact": "工具结果经 StructuredToolCallBridge.consumeMatchingToolCalls 与 openToolCalls 按名称匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:361"
+  },
+  {
+    "fact": "匹配上的工具结果以 role=tool、tool_call_id 对应的消息发出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:368"
+  },
+  {
+    "fact": "匹配上的工具结果内容经 buildContentField(role=tool) 构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:371"
+  },
+  {
+    "fact": "匹配数少于结果数时记警告 发现未匹配的tool_result",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:378"
+  },
+  {
+    "fact": "匹配处理后以 tool_result_partial_batch 为原因冲刷剩余未匹配调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:383"
+  },
+  {
+    "fact": "工具结果中的可读图片源经 appendReadableImageMessageIfNeeded 以 tool result 名义追加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:386"
+  },
+  {
+    "fact": "TOOL_RESULT 回合的文本内容非空时作为 role=user 消息发出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:393"
+  },
+  {
+    "fact": "TOOL_RESULT 无结构化匹配时以 tool_result_without_structured_match 冲刷，文本非空转 user 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:405"
+  },
+  {
+    "fact": "useToolCall 为假时 SYSTEM/USER/SUMMARY 直接转为对应 role 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:416"
+  },
+  {
+    "fact": "useToolCall 为假时 TOOL_RESULT 直接转为 role=user 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:438"
+  },
+  {
+    "fact": "useToolCall 为假时 ASSISTANT 仍用 ChatUtils.extractThinkingContent 拆 thinking，消息带 reasoning_content",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:444"
+  },
+  {
+    "fact": "useToolCall 为假时 TOOL_CALL 转为 reasoning_content 为空字符串的 assistant 消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:460"
+  },
+  {
+    "fact": "历史遍历结束后以 history_end 为原因做最后一次未匹配 tool_calls 冲刷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:477"
+  },
+  {
+    "fact": "sendMessage 被重写后直接委托给 super.sendMessage，不做任何改写",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/KimiProvider.kt:481"
+  }
+]

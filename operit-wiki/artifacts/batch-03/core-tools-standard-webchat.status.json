@@ -1,0 +1,11 @@
+{
+  "critic": "独立复核通过（83 条，8 处引用行号修正后复检通过）",
+  "issue": 22,
+  "refs_valid": "82/82 facts 引用行号真实存在，lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "标准工具·浏览器/网络/聊天/工作流：22 个 browser_* 会话操控、visit_web 一次性抓取、http_request/multipart_request/manage_cookies、15 个聊天管理工具、工作流 CRUD/patch/触发、12 个记忆查询与管理工具。",
+  "updated": "2026-10-02",
+  "approved_by_comment_id": 5915592468
+}

@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "severity": "suggestion",
+    "description": "C++ 侧 countRun 桩函数恒返回 0，参数全部未使用，是残留死代码。",
+    "evidence": "inline int countRun(const char16_t* /*chars*/, int /*len*/, int /*i*/, char16_t /*ch*/) { return 0; }",
+    "file": "app/src/main/cpp/streamnative/plugins/StreamMarkdownPlugin.cpp",
+    "line": 6
+  },
+  {
+    "confidence": "medium",
+    "severity": "warn",
+    "description": "C++ PrefixMatcher 失配时直接 i=0，无部分回退；注释承认只够 1-2 字符定界符用，重叠定界符序列的切分结果不可靠。",
+    "evidence": "// no partial fallback (enough for our 1-2 char delimiters)",
+    "file": "app/src/main/cpp/streamnative/plugins/StreamMarkdownPlugin.cpp",
+    "line": 36
+  },
+  {
+    "confidence": "high",
+    "severity": "suggestion",
+    "description": "Kotlin StreamMarkdownTablePlugin.emptyLineCount 只被赋 0、从未累加，是无用字段。",
+    "evidence": "private var emptyLineCount = 0 // 用于检测表格结束的空行计数",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt",
+    "line": 1381
+  },
+  {
+    "confidence": "high",
+    "severity": "warn",
+    "description": "StreamMarkdownInlineCodePlugin 的 KDoc 声称支持 ``code`` 双反引号，但起始模式是单个反引号加 noneOf('`','\\n')，第二个反引号必定失配，文档与实现不符。",
+    "evidence": "group(GROUP_DELIMITER) { char('`') }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt",
+    "line": 152
+  },
+  {
+    "confidence": "high",
+    "severity": "suggestion",
+    "description": "NativeXmlSplitter.splitXmlTag 每次调用都 new Regex 编译同一正则，应提为伴生常量复用。",
+    "evidence": "val tagNameMatch = Regex(\"<([A-Za-z][A-Za-z0-9_]*)[\\\\s>]\").find(chunk)",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeXmlSplitter.kt",
+    "line": 28
+  },
+  {
+    "confidence": "medium",
+    "severity": "warn",
+    "description": "segmentsToJIntArray 在 NewIntArray 返回 null（OOM）时返回 nullptr，而 Kotlin 侧 external 声明返回非空 IntArray，会触发空指针崩溃。",
+    "evidence": "if (out == nullptr) {",
+    "file": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp",
+    "line": 10
+  },
+  {
+    "confidence": "high",
+    "severity": "suggestion",
+    "description": "nativeMarkdownSplitBySession 在 Char 流与 String 流上各有一套近 300 行实现，逻辑几乎完全重复，应抽取公共核心。",
+    "evidence": "private fun Stream<Char>.nativeMarkdownSplitBySession(",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt",
+    "line": 21
+  },
+  {
+    "confidence": "medium",
+    "severity": "warn",
+    "description": "StreamXmlPlugin 自述不支持同名嵌套标签；<a><a></a></a> 的内层结束标签会提前关闭外层分组，后续内容错位。",
+    "evidence": " * limitation: it does not handle nested tags of the same name.",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt",
+    "line": 10
+  },
+  {
+    "confidence": "medium",
+    "severity": "warn",
+    "description": "nativePush 在 handle==0 时静默返回空数组，调用方无法区分\"无输出\"与\"会话无效\"两种情形。",
+    "evidence": "if (handle == 0 || chunk == nullptr) {",
+    "file": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp",
+    "line": 64
+  },
+  {
+    "confidence": "medium",
+    "severity": "suggestion",
+    "description": "C++ StreamMarkdownTablePlugin 的 foundHeaderSeparator_ 只在 reset 中清零、从未被置 true，是残留状态。",
+    "evidence": "if (tableRowCount_ == 2 && !foundHeaderSeparator_) {",
+    "file": "app/src/main/cpp/streamnative/plugins/StreamMarkdownPlugin.cpp",
+    "line": 1295
+  }
+]

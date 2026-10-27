@@ -1,0 +1,114 @@
+[
+  {
+    "confidence": "high",
+    "description": "sample() 操作符的内层 launch 用 while(true) 无限循环且永不结束，导致外层 coroutineScope 永远无法完成，collect 调用永久挂起。",
+    "evidence": "launch {\n            while (true) {\n                delay(period.inWholeMilliseconds)\n                if (hasValue) {\n                    @Suppress(\"UNCHECKED_CAST\") emit(latestValue as T)\n                }\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt",
+    "line": 535,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "MutableSharedStream 工厂函数接受 extraBufferCapacity、onBufferOverflow、context 参数，但 MutableSharedStreamImpl 内部订阅者通道恒为 Channel(Channel.UNLIMITED)，这三个参数从未被真正使用，背压策略形同虚设。",
+    "evidence": "fun <T> MutableSharedStream(\n        replay: Int = 0,\n        extraBufferCapacity: Int = 0,\n        onBufferOverflow: BufferOverflow = BufferOverflow.SUSPEND,\n        context: CoroutineContext = EmptyCoroutineContext,",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt",
+    "line": 298,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "share() 的 LAZILY 模式在订阅计数归零时只取消上游任务而不清空重放缓冲；新订阅者到来重启上游后，旧值与新一轮重放值会重复累积进 replayBuffer。",
+    "evidence": "} else if (count == 0) {\n                            // 当没有订阅者时，取消上游流的收集\n                            upstreamJob?.cancel()\n                            upstreamJob = null\n                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt",
+    "line": 370,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "state() 的 LAZILY 分支只在订阅计数大于 0 时启动上游，没有像 share() 那样在计数归零时取消上游；订阅者全部离开后上游收集仍在后台空转。",
+    "evidence": "subscriptionCountFlow.collect { count ->\n                        if (count > 0 && upstreamJob == null) {\n                            upstreamJob =\n                                    scope.launch {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt",
+    "line": 418,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "KmpPattern.repeat() 直接用 conditions.addAll 追加子模式条件，绕过了 add() 中的 groupIds 登记；若被重复的子模式含 group()，该组 ID 丢失，performRegexMatchingIfNeeded 二次正则提组时取不到它。",
+    "evidence": "val subPattern = kmpPattern(builder)\n        for (i in 1..count) {\n            conditions.addAll(subPattern.conditions)\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt",
+    "line": 640,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "顶层预定义条件 DIGITS/LETTERS 等的 description 是大写（如 \"DIGITS\"），而 PredicateCondition.toRegexPattern 的 when 只匹配小写 \"digit\" 等，落到 else 返回 \".\"；二次正则确认时这些条件的语义被错误地泛化为任意字符。",
+    "evidence": "return when (description) {\n            \"digit\" -> \"\\\\d\"\n            \"not digit\" -> \"\\\\D\"\n            \"letter\" -> \"[a-zA-Z]\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt",
+    "line": 107,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "take(count) 取满后只是不再发射，但继续收集上游；若上游是 intervalStream 这类无限流，上游协程永远不会停止。",
+    "evidence": "fun <T> Stream<T>.take(count: Int): Stream<T> = stream {\n    var remaining = count\n    collect { value ->\n        if (remaining > 0) {\n            emit(value)\n            remaining--\n        }\n    }\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt",
+    "line": 33,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "AbstractStream.unlock() 先把缓冲拷贝为临时列表并清空原队列，再逐个发射；若中途某项抛异常，剩余未发射的缓冲项已不在队列中，会被静默丢弃。",
+    "evidence": "val tempList = ArrayList<T>(buffer)\n                    buffer.clear()\n                \n                    // 无论流是否关闭，都尝试处理所有缓冲项\n                    for (item in tempList) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/Stream.kt",
+    "line": 136,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "StreamKmpGraph.characterStreamBuffer 对每个处理的字符做 append，只在 reset() 时清空；长文本流式处理场景下内存无界增长。",
+    "evidence": "private val characterStreamBuffer = StringBuilder()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt",
+    "line": 199,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "shareRevisable() 把修订事件通道以 replay=Int.MAX_VALUE 共享，SAVEPOINT/ROLLBACK 事件无限累积，新订阅者重放全部历史事件。",
+    "evidence": "val sharedEventStream = carrier.eventChannel.share(\n        scope = scope,\n        replay = Int.MAX_VALUE,",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/RevisableTextStream.kt",
+    "line": 168,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "setupFailureTransitions 是简化实现：所有非起始节点的失败转移都指向起始节点，KMP 的失败函数退化为朴素回溯，重叠匹配可能被漏掉。",
+    "evidence": "// 将所有节点的失败转换设为起始节点（简化版本）\n        for (node in nodes) {\n            if (node != startNode) {\n                graph.setFailure(node, startNode)\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt",
+    "line": 476,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "splitBy 的 WAITFOR 状态分支用空的 catch (e: Exception) 吞掉接收字符时的异常，失败原因无日志、无传播。",
+    "evidence": "try {\n                                            nextChar = upstreamChannel.receiveCatching().getOrNull()\n                                        } catch (e: Exception) {\n                                            // WAITFOR状态时接收字符失败\n                                        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamOperators.kt",
+    "line": 337,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "MutableSharedStreamImpl.emit 在锁内快照订阅者通道、锁外逐个 send；若某订阅者在快照后取消订阅，其通道已被 cancel，send 会抛 ClosedSendChannelException 中断本次发射。",
+    "evidence": "val subscriberChannels =\n            synchronized(stateLock) {\n                if (isClosed) {\n                    emptyList()\n                } else {\n                    appendToReplayBufferLocked(value)\n                    subscribers.values.toList()\n                }\n            }\n\n        for (channel in subscriberChannels) {\n            channel.send(SharedEvent.Value(value))\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/HotStream.kt",
+    "line": 114,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "StreamKmpGraph.findMatches 内的局部变量 currentMatchLength 与类的同名字段（line 200）重名遮蔽，阅读时易混淆两者。",
+    "evidence": "fun findMatches(text: String): List<String> {\n        val matches = mutableListOf<String>()\n        var currentMatchLength = 0",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/stream/StreamKmpGraph.kt",
+    "line": 362,
+    "severity": "suggestion"
+  }
+]

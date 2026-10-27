@@ -1,0 +1,52 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt",
+    "line": 26,
+    "title": "日志输出 Key 首尾明文片段",
+    "severity": "warning",
+    "category": "security",
+    "confidence": "medium",
+    "evidence": "        AppLogger.d(\"ApiKeyProvider\", \"Using single API key: ${apiKey.take(4)}...${apiKey.takeLast(4)}\")",
+    "description": "SingleApiKeyProvider.getApiKey 在 debug 日志中打印 Key 前 4、后 4 个字符；日志落盘后可被读取，属于部分密钥材料泄露。建议只输出打码占位或完全不输出。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt",
+    "line": 88,
+    "title": "持锁期间做持久化写",
+    "severity": "warning",
+    "category": "performance",
+    "confidence": "medium",
+    "evidence": "            val nextIndex = (startIndex + 1) % candidateKeys.size\n            modelConfigManager.updateConfigKeyIndex(configId, nextIndex)",
+    "description": "getApiKey 在 mutex.withLock 临界区内调用 modelConfigManager.updateConfigKeyIndex（磁盘持久化）；并发取 Key 时所有调用者串行等待一次磁盘写。可先在锁内算好索引，出锁后再持久化。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt",
+    "line": 71,
+    "title": "startOrResume 的运行态检查无同步",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "    ) {\n        if (isRunning()) return\n",
+    "description": "isRunning() 检查与 job = scope.launch 赋值之间无同步；两路并发调用 startOrResume 都通过检查时会启动两个测试任务，后赋值的 job 覆盖前者，旧任务泄漏且两者互相覆盖 _state。建议加锁或用原子状态机。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt",
+    "line": 184,
+    "title": "可用性测试恒用模型索引 0",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "            val modelNameToTest = getModelByIndex(baseConfig.modelName, 0)",
+    "description": "testSingleKey 拼测试配置时模型名固定取索引 0，而非用户当前选中的模型索引；若索引 0 的模型不可用而选中模型可用，Key 会被误标为 UNAVAILABLE，进而被轮询排除。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt",
+    "line": 143,
+    "title": "每测完一个 Key 全量持久化一次",
+    "severity": "suggestion",
+    "category": "performance",
+    "confidence": "medium",
+    "evidence": "                                configManager.updateApiKeyPoolSettings(\n                                    configId = configId,\n                                    useMultipleApiKeys = useMultipleApiKeys,\n                                    apiKeyPool = workingPool\n                                )",
+    "description": "每个 Key 测完都在 poolUpdateMutex 锁内调用 updateApiKeyPoolSettings 全量写回整池；N 个 Key 触发 N 次磁盘写。可攒批到全部结束再写一次，或只在 running=false 时落盘。"
+  }
+]

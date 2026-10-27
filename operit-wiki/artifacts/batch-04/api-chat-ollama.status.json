@@ -1,0 +1,13 @@
+{
+  "id": "api-chat-ollama",
+  "title": "Ollama 供应商",
+  "issue": 44,
+  "status": "approved",
+  "source_repo": "operit",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "critic": "",
+  "summary": "Ollama 供应商：12 条 facts，走查 1 条，lint 硬失败 0/警告 0。",
+  "updated": "2026-10-02",
+  "refs_valid": "12/12 引用行号真实存在（critic 逐条核引用复验通过），lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "approved_by_comment_id": 5925862566
+}

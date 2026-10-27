@@ -1,0 +1,22 @@
+[
+ {
+  "severity": "suggestion",
+  "category": "maintainability",
+  "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt",
+  "line": 12,
+  "title": "providerType 默认值 NOUS_PORTAL 永不生效",
+  "detail": "NousPortalProvider 构造参数 providerType 默认为 ApiProviderType.NOUS_PORTAL，但唯一构造点 AIServiceFactory 在 NOUS_PORTAL 分支总是显式传入 providerType（AIServiceFactory.kt:656），默认值写了也用不上，属于冗余参数。",
+  "evidence": "    providerType: ApiProviderType = ApiProviderType.NOUS_PORTAL,",
+  "confidence": "medium"
+ },
+ {
+  "severity": "warning",
+  "category": "security",
+  "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt",
+  "line": 112,
+  "title": "默认向第三方 API 发送标识本应用的请求头",
+  "detail": "继承自 OpenRouterProvider 的行为：用户未自定义时，每个请求自动带上 HTTP-Referer: ai.assistance.operit 与 X-Title: Assistance App，把应用身份明文发给 NousPortal 服务端。这是 OpenRouter 系接口的惯例做法，但属于向第三方泄露客户端标识，建议在文档或设置中告知用户。",
+  "evidence": "        private const val DEFAULT_HTTP_REFERER = \"ai.assistance.operit\"\n        private const val DEFAULT_X_TITLE = \"Assistance App\"",
+  "confidence": "medium"
+ }
+]

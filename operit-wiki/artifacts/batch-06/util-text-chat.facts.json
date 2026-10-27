@@ -1,0 +1,786 @@
+[
+  {
+    "fact": "ChatMarkupRegex 是 object 单例，集中存放聊天消息 XML 标记的正则表达式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:5"
+  },
+  {
+    "fact": "工具标签后缀字符集 TOOL_TAG_SUFFIX_REGEX_SOURCE 为 [A-Za-z0-9_]+。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:6"
+  },
+  {
+    "fact": "Gemini 思考签名 meta 的 provider 常量为 \"gemini:thought_signature\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:7"
+  },
+  {
+    "fact": "OpenAI Responses 推理载荷 meta 的 provider 常量为 \"openai:responses_reasoning\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:8"
+  },
+  {
+    "fact": "OpenAI Responses 输出项 meta 的 provider 常量为 \"openai:responses_output_item\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:9"
+  },
+  {
+    "fact": "TOOL_TAG_NAME_REGEX_SOURCE 匹配 tool 或 tool_xxx 后缀，且用负向前瞻把 tool_result 排除在外。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:10"
+  },
+  {
+    "fact": "TOOL_RESULT_TAG_NAME_REGEX_SOURCE 匹配 tool_result 或 tool_result_xxx 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:12"
+  },
+  {
+    "fact": "toolCallPattern 用反向引用配对匹配 <tool name=\"...\">...</tool>，并捕获标签名、工具名与正文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:27"
+  },
+  {
+    "fact": "metaProviderAttrRegex 从 meta 起始标签中提取 provider=\"...\" 属性值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:19"
+  },
+  {
+    "fact": "metaBodyRegex 提取 <meta>…</meta> 的标签体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:20"
+  },
+  {
+    "fact": "xmlStatusPattern 解析 <status type=\"…\" uuid=\"…\" title=\"…\" subtitle=\"…\">…</status>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:72"
+  },
+  {
+    "fact": "xmlToolResultPattern 解析 <tool_result name=\"…\" status=\"…\"><content>…</content></tool_result>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:76"
+  },
+  {
+    "fact": "xmlToolRequestPattern 解析 <tool name=\"…\" description=\"…\">…</tool>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:81"
+  },
+  {
+    "fact": "toolParamPattern 匹配 <param name=\"…\">…</param> 参数标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:91"
+  },
+  {
+    "fact": "nameAttr 正则提取 name=\"…\" 属性值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:93"
+  },
+  {
+    "fact": "contentTag 匹配 <content>…</content>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:107"
+  },
+  {
+    "fact": "thinkTag 匹配 <think>/<thinking> 配对标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:127"
+  },
+  {
+    "fact": "searchTag 匹配 <search>…</search>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:137"
+  },
+  {
+    "fact": "metaTag 匹配 <meta>…</meta>，用否定前瞻避免跨越嵌套的 meta 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:147"
+  },
+  {
+    "fact": "emotionTag 匹配 <emotion>…</emotion>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:152"
+  },
+  {
+    "fact": "memoryTag 匹配 <memory>…</memory>，区分大小写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:157"
+  },
+  {
+    "fact": "replyToTag 解析 <reply_to sender=\"…\" timestamp=\"…\">…</reply_to>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:162"
+  },
+  {
+    "fact": "attachmentDataTag 解析携带 id/filename/type/size 属性的 attachment 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:166"
+  },
+  {
+    "fact": "anyXmlTag 匹配任意 <…> 标签，用于最终兜底清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:195"
+  },
+  {
+    "fact": "pruneToolResultContentPattern 按 status 属性裁剪 tool_result 标签的内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:197"
+  },
+  {
+    "fact": "isToolTagName 用全匹配判断标签名是否为工具标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:202"
+  },
+  {
+    "fact": "normalizeToolLikeTagName 把 tool_* 归一为 \"tool\"，把 tool_result_* 归一为 \"tool_result\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:210"
+  },
+  {
+    "fact": "containsAnyToolLikeTag 同时检查 tool 与 tool_result 起始标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:226"
+  },
+  {
+    "fact": "extractOpeningTagName 提取 XML 字符串的起始标签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:230"
+  },
+  {
+    "fact": "generateRandomToolTagName 生成 \"tool_\" 加 4 位随机码的标签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:234"
+  },
+  {
+    "fact": "随机标签码用 SecureRandom 从 62 个字母数字字符中生成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:24"
+  },
+  {
+    "fact": "geminiThoughtSignatureMetaTag 构造 <meta provider=\"gemini:thought_signature\">签名</meta>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:238"
+  },
+  {
+    "fact": "extractGeminiThoughtSignature 只提取最后一个匹配 provider 的 meta 体，非空才返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:250"
+  },
+  {
+    "fact": "removeGeminiThoughtSignatureMeta 按 provider 删除对应 meta 标签后做 trimEnd。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:314"
+  },
+  {
+    "fact": "removeOpenAiResponsesProtocolMeta 组合删除 reasoning 与 output_item 两类 meta。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt:304"
+  },
+  {
+    "fact": "WaifuMessageProcessor 是 object 单例，把 AI 回复按句切分并模拟逐句发送。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:22"
+  },
+  {
+    "fact": "实体占位符前后缀为 \"{WAIFUENTITY:\" 与 \"}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:24"
+  },
+  {
+    "fact": "打字机延迟上限 MAX_TYPING_DELAY_MS 为 3000 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:26"
+  },
+  {
+    "fact": "SENTENCE_SPLIT_REGEX 在 。！？~～、!? 与英文句号处切分，英文句号后跟数字或引号时不切分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:29"
+  },
+  {
+    "fact": "MARKDOWN_ENTITY_REGEX 匹配 Markdown 图片与链接 !?[text](url)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:34"
+  },
+  {
+    "fact": "BARE_URL_REGEX 匹配 http(s) 裸 URL，EMAIL_ADDRESS_REGEX 匹配邮箱，DOMAIN_URL_REGEX 匹配无协议域名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:35"
+  },
+  {
+    "fact": "StreamingSession 用 emittedSegments 记录已输出分句，实现流式增量输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:45"
+  },
+  {
+    "fact": "collectStableSegments 只取稳定分句，不含尾部不完整句。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:50"
+  },
+  {
+    "fact": "collectFinalSegments 取全部分句，含尾部不完整句。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:60"
+  },
+  {
+    "fact": "collectSegments 发现本次分句短于已输出或前缀变化时直接丢弃该快照，不可回滚。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:64"
+  },
+  {
+    "fact": "streamSegments 先按 Markdown 块切分流，再逐块处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:101"
+  },
+  {
+    "fact": "streamSegments 直接丢弃 XML_BLOCK 块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:119"
+  },
+  {
+    "fact": "CODE_BLOCK/TABLE/IMAGE 块会收齐整块后整体参与分句。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:123"
+  },
+  {
+    "fact": "ensureBlockLatexDelimiters 在块级 LaTeX 缺少分隔符时补上 $$ 包裹。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:164"
+  },
+  {
+    "fact": "calculateTypingDelayMs 首句、长度≤0 或每字延迟≤0 时返回 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:182"
+  },
+  {
+    "fact": "calculateTypingDelayMs 按句长×每字延迟计算并钳制在 3000ms 内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:182"
+  },
+  {
+    "fact": "streamSegmentsWithTypingQueue 用无界 Channel 做生产者-消费者队列，逐句 delay 后输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:194"
+  },
+  {
+    "fact": "streamTtsText 输出 Stream<Char>，丢弃 XML_BLOCK 与 CODE_BLOCK 并在块后补换行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:266"
+  },
+  {
+    "fact": "streamTtsText 合并连续换行并去掉行首空白。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:256"
+  },
+  {
+    "fact": "removeSentenceEndPunctuation 去掉句末 。！？.!?，但保留 \"...\" 结尾。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:283"
+  },
+  {
+    "fact": "initialize 在应用启动时注入 CustomEmojiRepository 与 ActivePromptManager。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:295"
+  },
+  {
+    "fact": "splitMessageBySentences 对完整消息做分句。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:306"
+  },
+  {
+    "fact": "分句前先把 Markdown 实体、URL、邮箱替换为占位符，防止被错误切分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:346"
+  },
+  {
+    "fact": "mergePunctuationOnlySegments 把纯标点分句并入上一句，上一句含换行时除外。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:508"
+  },
+  {
+    "fact": "shouldHoldLastStableSentence 在末句无稳定结尾且无后续稳定边界时扣留末句。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:667"
+  },
+  {
+    "fact": "findLastUnclosedInlineMarkdownStart 检测 **、__、~~、` 四种未闭合行内标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:680"
+  },
+  {
+    "fact": "buildRenderableContentForWaifu 用 StructuredAssistantContentParser 解析后只保留 TEXT 块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:739"
+  },
+  {
+    "fact": "cleanContentForWaifu 移除思考内容、Gemini 签名 meta、围栏代码块、status/tool/tool_result/emotion 标签与 Markdown 语法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:766"
+  },
+  {
+    "fact": "cleanContentForWaifu 最后用 anyXmlTag 兜底清理并把空白压缩为单个空格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:813"
+  },
+  {
+    "fact": "HEADER、BLOCK_QUOTE、CODE_BLOCK、有序/无序列表、BLOCK_LATEX、TABLE、IMAGE 的块边界可作为稳定文本结尾。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:833"
+  },
+  {
+    "fact": "splitIntoSegments 在 runBlocking 中用 nativeMarkdownSplitByBlock 按块切分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:871"
+  },
+  {
+    "fact": "processEmotionTags 把 <emotion>情绪</emotion> 替换为 ![情绪](图片地址) Markdown 图片。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:938"
+  },
+  {
+    "fact": "自定义表情用 file:// 绝对路径，assets 表情用 file:///android_asset/emoji/ 前缀，路径中空格与括号做 URL 编码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:932"
+  },
+  {
+    "fact": "separateEmotionAndText 把 emotion 图片拆成独立列表项，文本保留在相邻项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:950"
+  },
+  {
+    "fact": "getRandomEmojiPath 只从自定义表情按当前 activePrompt 查找，随机取一张且文件必须存在，否则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:1014"
+  },
+  {
+    "fact": "注释说明 thinkContentPattern 预编译是为了避免每次 toRegex 走 ICU Pattern.compile 卡死主线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:7"
+  },
+  {
+    "fact": "thinkContentPattern 匹配 <think>/<thinking> 到闭合标签或文本末尾，可处理未闭合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:10"
+  },
+  {
+    "fact": "stripOpenAiResponsesProtocolMarkup 在删除 meta 的基础上再删除 search 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:50"
+  },
+  {
+    "fact": "isGeminiProviderModel 按 providerModel 冒号前段是否为 GOOGLE 或 GEMINI_GENERIC 判断。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:63"
+  },
+  {
+    "fact": "removeThinkingContent 删除 <think>/<thinking>/<search> 及其内容（含未闭合），无标记时直接 trim 返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:71"
+  },
+  {
+    "fact": "extractThinkingContent 返回 Pair(去思考内容, 思考内容)，供 DeepSeek reasoning_content 使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:83"
+  },
+  {
+    "fact": "estimateTokenCount 按中文字符×1.5、其他字符×0.25 估算 token 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:104"
+  },
+  {
+    "fact": "extractJson 先剥 ``` 代码围栏，再取首个 { 到最后一个 }。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:115"
+  },
+  {
+    "fact": "extractJsonArray 取首个 [ 到最后一个 ]。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/ChatUtils.kt:140"
+  },
+  {
+    "fact": "BlockKind 枚举只有 TEXT 与 XML 两种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:7"
+  },
+  {
+    "fact": "Block 数据类含 kind、rawContent、content、tagName、rawTagName、attrs、closed 七个字段，closed 默认为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:14"
+  },
+  {
+    "fact": "parse 用 NativeXmlSplitter.splitXmlTag 切分；无切分结果时整段作为单个 TEXT 块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:26"
+  },
+  {
+    "fact": "buildBlock 对 \"text\" 段建 TEXT 块，否则用 ChatMarkupRegex.normalizeToolLikeTagName 归一化标签名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:52"
+  },
+  {
+    "fact": "extractXmlInnerContent 取起始标签 > 之后到最后一个闭合标签之间的内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:69"
+  },
+  {
+    "fact": "extractXmlAttributes 用正则从起始标签提取属性名与单双引号值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:102"
+  },
+  {
+    "fact": "isXmlFullyClosed 以 /> 结尾判闭合，否则检查是否包含对应闭合标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:123"
+  },
+  {
+    "fact": "StreamingJsonXmlConverter 把工具调用参数的 JSON 流增量转换为 XML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:7"
+  },
+  {
+    "fact": "Event 为密封类，只有 Tag 与 Content 两种事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:13"
+  },
+  {
+    "fact": "状态机共有 WAIT_BRACE、WAIT_KEY_QUOTE、READ_KEY、WAIT_COLON、WAIT_VALUE、READ_STRING、READ_PRIMITIVE、ESCAPE、UNICODE_ESCAPE、WAIT_COMMA 十个状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:23"
+  },
+  {
+    "fact": "键读取完毕时输出换行加 <param name=\"key\"> 并置 hasOpenParam=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:95"
+  },
+  {
+    "fact": "字符串值逐字符以 Event.Content 输出并做 XML 转义，遇到闭合引号输出 </param>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:122"
+  },
+  {
+    "fact": "转义序列 \\n \\r \\t \\b \\f \\\" \\\\ \\/ 被还原为对应字符后输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:136"
+  },
+  {
+    "fact": "\\uXXXX 转义解析 4 位十六进制为字符输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:151"
+  },
+  {
+    "fact": "复杂值（[ 或 { 开头）按嵌套深度跟踪，直到深度归零才闭合 param。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:183"
+  },
+  {
+    "fact": "hasUnfinishedParam 暴露是否有未闭合 <param>，供调用方决定是否补 </tool>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:66"
+  },
+  {
+    "fact": "flush 只在可收尾的原始值状态下补发 </param>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:222"
+  },
+  {
+    "fact": "escapeXml 把 & < > \" ' 转为 &amp; &lt; &gt; &quot; &apos;。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt:233"
+  },
+  {
+    "fact": "getExtractionScript 返回一段 JS IIFE，用于在页面内抽取简化树。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:10"
+  },
+  {
+    "fact": "IGNORE_TAGS 忽略 SCRIPT、STYLE、META、LINK、HEAD、NOSCRIPT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:11"
+  },
+  {
+    "fact": "INTERACTIVE_TAGS 为 A、BUTTON、INPUT、TEXTAREA、SELECT、OPTION。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:12"
+  },
+  {
+    "fact": "IMPORTANT_ATTRIBUTES 保留 id、class、href、src、alt、title、type、value、placeholder、name、role、aria-label、onclick。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:13"
+  },
+  {
+    "fact": "JS 抽取的最大深度 MAX_DEPTH 为 20。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:19"
+  },
+  {
+    "fact": "JS 抽取的最大元素数 MAX_ELEMENTS 为 500。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:20"
+  },
+  {
+    "fact": "findTopmostModal 按定位、z-index、role=dialog、aria-modal 与弹窗关键词打分，≥5 分且可见判为顶层弹窗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:24"
+  },
+  {
+    "fact": "getCssSelector 有 id 直接用 id 选择器，否则拼 class 链，否则用 nth-of-type。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:54"
+  },
+  {
+    "fact": "isInteractive 判定交互元素：交互标签、onclick 属性或 cursor:pointer。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:90"
+  },
+  {
+    "fact": "getNodeDescription 按 aria-label、alt、title、placeholder、name、直接文本、截断全文的优先级取描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:107"
+  },
+  {
+    "fact": "getNodeDescription 的全文回退超 80 字符时截为 77 字符加 ...。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:138"
+  },
+  {
+    "fact": "simplifyNode 剪掉不可见、忽略标签、超深的节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:141"
+  },
+  {
+    "fact": "无交互、无文本、无交互后代的节点直接拍平为其子节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:168"
+  },
+  {
+    "fact": "INPUT 按 type 区分 input_button 与 input_text。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:179"
+  },
+  {
+    "fact": "TEXTAREA 与 SELECT 归为 input_text 类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:181"
+  },
+  {
+    "fact": "parseAndSimplify 用 kotlinx.serialization 解析抽取结果 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:218"
+  },
+  {
+    "fact": "interactionMap 的字符串键转 Int，转换失败的 -1 项被过滤掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:223"
+  },
+  {
+    "fact": "解析失败时 println 打印错误并返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt:238"
+  },
+  {
+    "fact": "TextSegmenter 是 object 单例，基于 JiebaSegmenter 分词。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:12"
+  },
+  {
+    "fact": "分词器预热文本 PREWARM_TEXT 为 \"搜索记忆 分词预热\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:15"
+  },
+  {
+    "fact": "分词缓存上限 MAX_CACHE_SIZE 为 1000，超限时删掉一半键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:31"
+  },
+  {
+    "fact": "initialize 加锁初始化，可选加载自定义词典，首次用一次真实分词触发 Jieba 词典加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:49"
+  },
+  {
+    "fact": "loadCustomDictionaryIfNeeded 在文件不存在或已加载过时跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:69"
+  },
+  {
+    "fact": "segment 用 Jieba SEARCH 模式分词并过滤单字，空文本返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:95"
+  },
+  {
+    "fact": "分词失败时回退为空白与中英文标点切分并过滤单字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:113"
+  },
+  {
+    "fact": "clearCache 清空分词缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:121"
+  },
+  {
+    "fact": "calculateRelevance 先截断 5000 字符，无直接子串匹配直接返回 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:131"
+  },
+  {
+    "fact": "精确匹配数过半或≥3 时用快速公式 (exact×2)/(n×3) 打分。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:150"
+  },
+  {
+    "fact": "总分公式为 (精确匹配×2+分词匹配)/(关键词数×3)，钳制在 0~1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:166"
+  },
+  {
+    "fact": "TokenCacheManager 缓存对话历史 token 计算结果，避免重复计算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:9"
+  },
+  {
+    "fact": "calculateInputTokens 把 toolsJson 拼到 system 消息前（或作为首条 system 消息），以便前缀匹配缓存工具定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:104"
+  },
+  {
+    "fact": "公共前缀完全等于上次历史时直接复用 previousHistoryTokenCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:131"
+  },
+  {
+    "fact": "findCommonPrefixLength 逐条比 Pair 相等找公共前缀长度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:179"
+  },
+  {
+    "fact": "calculateTokensForHistory 对每条 content 调 ChatUtils.estimateTokenCount 求和。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:200"
+  },
+  {
+    "fact": "resetTokenCounts 清空历史与全部计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:52"
+  },
+  {
+    "fact": "setOutputTokens 用 API 返回的实际输出 token 覆盖估算并钳制≥0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:70"
+  },
+  {
+    "fact": "updateActualTokens 接收服务端缓存统计（actualInput/cachedInput）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:81"
+  },
+  {
+    "fact": "updateState=false 时只做只读预估，不更新内部缓存状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt:148"
+  },
+  {
+    "fact": "KaTeX 包路径 ASSET_PATH 为 \"js/katex.min.js\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:9"
+  },
+  {
+    "fact": "注入的 JS 函数名为 __operitLatexToMathMlBatch。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:11"
+  },
+  {
+    "fact": "convertAll 空列表直接返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:18"
+  },
+  {
+    "fact": "convertAll 逐公式调用 QuickJS 批量转换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:21"
+  },
+  {
+    "fact": "KaTeX 解析失败的公式保留原文并打警告日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:34"
+  },
+  {
+    "fact": "MathML 经 MathMlPlainTextConverter.convert 转纯文本，异常时保留原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:38"
+  },
+  {
+    "fact": "getEngine 用双重检查加锁实现单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:50"
+  },
+  {
+    "fact": "createEngine 从 assets 按 UTF-8 读 KaTeX 源码，为空则 require 报错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:57"
+  },
+  {
+    "fact": "createEngine 先垫 var exports/module 再求值 KaTeX 源码与 BOOTSTRAP。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:65"
+  },
+  {
+    "fact": "BOOTSTRAP 用 katex.renderToString(formula, {displayMode:false, output:\"mathml\", throwOnError:true, strict:\"ignore\"})，异常返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt:84"
+  },
+  {
+    "fact": "convert 用 Jsoup 解析并取首个 math 元素，无 math 元素则抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:9"
+  },
+  {
+    "fact": "convert 渲染后压缩空白并修正括号逗号两侧空格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:12"
+  },
+  {
+    "fact": "mfrac 渲染为 (分子)/(分母)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:30"
+  },
+  {
+    "fact": "msqrt 渲染为 √(…)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:35"
+  },
+  {
+    "fact": "mroot 渲染为 root(次数, 被开方数)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:36"
+  },
+  {
+    "fact": "msup/msub 优先用 Unicode 上下标字符映射，缺失时回退为 ^(…)/_(…)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:46"
+  },
+  {
+    "fact": "mtable 渲染为 [行1; 行2]，单元格间用 \", \" 连接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:84"
+  },
+  {
+    "fact": "mo 对 \\u2061（不可见乘号）输出空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:105"
+  },
+  {
+    "fact": "mo 对加减乘除、比较、箭头等运算符两侧加空格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:92"
+  },
+  {
+    "fact": "FUNCTION_NAMES 含 sin、cos、tan、log、ln、exp、lim、max、min 等，mi 命中时后加空格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:121"
+  },
+  {
+    "fact": "LARGE_OPERATORS 为 ∑、∏、∫、∬、∭、lim，大运算符表达式后加空格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:127"
+  },
+  {
+    "fact": "SUPERSCRIPTS/SUBSCRIPTS 覆盖数字 0-9、+-=() 及 i、n。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/MathMlPlainTextConverter.kt:129"
+  },
+  {
+    "fact": "clean(text, regexPattern) 空模式直接返回原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsCleaner.kt:16"
+  },
+  {
+    "fact": "clean(text, regexPattern) 非法正则打 error 日志并返回原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsCleaner.kt:27"
+  },
+  {
+    "fact": "clean(text, regexPatterns: List) 逐个模式顺序替换，跳过空模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsCleaner.kt:40"
+  },
+  {
+    "fact": "clean(text, regexPatterns: List) 非法模式打 error 日志后跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsCleaner.kt:60"
+  },
+  {
+    "fact": "MAX_SEGMENT_LENGTH 为 50。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:4"
+  },
+  {
+    "fact": "END_CHARS 为 \"!?;:。！？；：\\n\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:5"
+  },
+  {
+    "fact": "findFirstEndCharIndex 返回首个分句结束字符下标，无则返回 -1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:7"
+  },
+  {
+    "fact": "nextSegmentEnd 在首个结束符后吞掉连续的结束符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:14"
+  },
+  {
+    "fact": "无结束符且长度≥50 时整段切出，否则返回 -1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:22"
+  },
+  {
+    "fact": "split 循环切分并 trim，跳过空段，剩余尾巴整体作为一段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:35"
+  },
+  {
+    "fact": "'.' 仅在后接字符为空、非数字、非 '.' 时才算分句结束。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TtsSegmenter.kt:47"
+  },
+  {
+    "fact": "StringCollectorProcessor 把流收集为字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:15"
+  },
+  {
+    "fact": "MarkdownProcessorType 枚举含 9 种块级类型、8 种内联类型及 PLAIN_TEXT、HTML_BREAK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:36"
+  },
+  {
+    "fact": "MarkdownNode 节点 id 用 AtomicLong 全局自增。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:55"
+  },
+  {
+    "fact": "MarkdownNode 的 content 为 SmartString，children 为 Compose SnapshotStateList。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:60"
+  },
+  {
+    "fact": "MarkdownNodeStable 是 @Stable 的不可变快照数据类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:67"
+  },
+  {
+    "fact": "String.toCharStream 把字符串拆为字符流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:75"
+  },
+  {
+    "fact": "Stream<String>.toCharStream 转换时保留 TextStreamEventCarrier 与 StreamRollbackPrefix。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:94"
+  },
+  {
+    "fact": "MarkdownNodeProcessor 在 Dispatchers.Default 上把流收集为 MarkdownNode。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:105"
+  },
+  {
+    "fact": "getBlockPlugins 返回 11 个块级插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:128"
+  },
+  {
+    "fact": "StreamMarkdownBlockLaTeXPlugin(includeDelimiters=false) 处理 $$…$$ 且剥离分隔符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:126"
+  },
+  {
+    "fact": "StreamMarkdownBlockBracketLaTeXPlugin(includeDelimiters=true) 处理 \\[…\\] 且保留分隔符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:129"
+  },
+  {
+    "fact": "StreamXmlPlugin(includeTagsInOutput=true) 把 XML 块保留标签输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:136"
+  },
+  {
+    "fact": "getInlinePlugins 返回 8 个内联插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:147"
+  },
+  {
+    "fact": "StreamMarkdownInlineLaTeXPlugin(includeDelimiters=false) 处理 $…$。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:148"
+  },
+  {
+    "fact": "StreamMarkdownInlineParenLaTeXPlugin(includeDelimiters=true) 处理 \\(…\\) 且保留分隔符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:151"
+  },
+  {
+    "fact": "getTypeForPlugin 按插件类映射到 MarkdownProcessorType。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:154"
+  },
+  {
+    "fact": "MarkdownUIBinder.bind 把 StreamGroup 递归转为 MarkdownNode 树再交给 renderStrategy。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/MarkdownProcessor.kt:186"
+  },
+  {
+    "fact": "SmartString 是带 toString 缓存的高性能字符串构建器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:14"
+  },
+  {
+    "fact": "plus(String) 追加字符串并置缓存失效，支持链式调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:24"
+  },
+  {
+    "fact": "plus(Char) 追加字符并置缓存失效，支持链式调用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:37"
+  },
+  {
+    "fact": "toString 仅在 builder 长度变化时重建字符串并缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:47"
+  },
+  {
+    "fact": "clear 清空内容并重置缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:80"
+  },
+  {
+    "fact": "truncate 无快照截断，要求长度在 0..builder.length 范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:87"
+  },
+  {
+    "fact": "replace 整体替换内容但保留 buffer 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/markdown/SmartString.kt:100"
+  },
+  {
+    "fact": "聊天界面把 `<status type=\"warning\">` 标签渲染为警告卡片：summaryText 硬编码取字符串 status_warning_ai_error_summary（\"AI犯了一个错误\"），detailText 取标签里的 warningMessage 原文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1329"
+  },
+  {
+    "fact": "ConversationMarkupManager.createWarningStatus 生成 `<status type=\"warning\">$warningMessage</status>` 文本标记，是 warning 卡片的统一构造入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationMarkupManager.kt:43"
+  },
+  {
+    "fact": "模型只输出思考内容、removeThinking 后正文为空时，EnhancedAIService 插入纯思考告警（\"警告：请输出正文内容，禁止仅输出思考内容。\"），然后让 AI 继续生成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1789"
+  },
+  {
+    "fact": "纯思考告警以 PromptTurnKind.TOOL_RESULT 写进 conversationHistory，会参与后续轮次消息组装；习惯性只吐 thinking 的模型会每轮触发该警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:1799"
+  }
+]

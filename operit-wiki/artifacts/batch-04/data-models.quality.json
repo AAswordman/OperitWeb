@@ -1,0 +1,57 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt",
+    "line": 787,
+    "title": "多文件下载的临时文件重命名结果被忽略",
+    "detail": "downloadAllFiles 中 tempFile.renameTo(targetFile) 的返回值被丢弃；若重命名失败（磁盘满、跨文件系统、权限），.tmp 残留且本次文件被当作成功，下载状态最终置 Completed。同一文件 541 行的单文件路径会检查返回值并报 Failed，两处逻辑不一致。",
+    "evidence": "                // 将临时文件重命名为目标文件\n                if (tempFile.exists()) {\n                    tempFile.renameTo(targetFile)\n                }",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "high",
+    "description": "多文件下载中临时文件重命名失败不会被发现，状态仍置 Completed，与单文件路径的检查逻辑不一致。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt",
+    "line": 390,
+    "title": "仓库文件 Path 为空时整单下载被 NPE 中断",
+    "detail": "files.map { PersistentFileTask(it.Path!!, it.Size) } 对 ModelScope 返回的每个文件做非空断言；任一文件的 Path 为 null 即抛 NPE，被外层 catch 转为整个模型下载 Failed。而 downloadAllFiles 内部对空 Path 用 `file.Path ?: continue` 跳过，两处策略不一致。",
+    "evidence": "                    val persistentTasks = files.map { PersistentFileTask(it.Path!!, it.Size) }",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "description": "ModelScope 文件列表中若某文件 Path 为空，整个模型下载失败，而非跳过该文件。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/model/EmbeddingConverter.kt",
+    "line": 16,
+    "title": "向量字节长度非 4 倍数时静默截断",
+    "detail": "convertToEntityProperty 用 ByteBuffer.asFloatBuffer() 转回 FloatArray；若库中字节数组长度不是 4 的倍数，尾部字节被静默丢弃，得到维度错误的 Embedding 且无任何报错，污染后续语义检索。",
+    "evidence": "        val floatBuffer = buffer.asFloatBuffer()\n        val floatArray = FloatArray(floatBuffer.remaining())\n        floatBuffer.get(floatArray)\n        return Embedding(floatArray)",
+    "severity": "warning",
+    "category": "correctness",
+    "confidence": "medium",
+    "description": "损坏的向量字节被静默截断为错误维度的 Embedding，无报错。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt",
+    "line": 113,
+    "title": "模型存储目录以 public val 暴露",
+    "detail": "MODEL_DIR 是 companion object 中的公开 val，外部可直接拿到内部存储目录 File 并绕过 isModelDownloaded/deleteModel 等封装读写。建议改为 private 或 internal。",
+    "evidence": "        val MODEL_DIR = File(\n            Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),\n            \"Operit/models/mnn\"\n        )",
+    "severity": "suggestion",
+    "category": "maintainability",
+    "confidence": "high",
+    "description": "内部模型存储目录以公开 val 暴露，封装被绕过。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/mnn/MnnModelDownloadManager.kt",
+    "line": 145,
+    "title": "持久化状态异步加载与初态读取存在竞态",
+    "detail": "init 中 loadPersistentStates() 用 applicationScope.launch 异步执行；若 UI 在加载完成前调用 getDownloadState，未完成下载的模型初态为 Idle 而非 Paused，暂停恢复的进度展示可能短暂错误。",
+    "evidence": "    private fun loadPersistentStates() {\n        applicationScope.launch {\n            val stateFile = File(context.filesDir, PERSISTENT_STATE_FILE_NAME)",
+    "severity": "suggestion",
+    "category": "correctness",
+    "confidence": "medium",
+    "description": "下载状态恢复是异步的，恢复完成前读取状态可能得到错误的 Idle。"
+  }
+]

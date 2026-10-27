@@ -1,0 +1,82 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "PathValidator.validateAndroidPath / validateLinuxPath 只检查路径非空与前缀（/ 或 ~），没有任何路径穿越（..）或敏感目录拦截。/data/data/xxx/../shared_prefs 之类的路径可直接通过校验，AI 构造 \"..\" 即可走出预期目录。",
+    "evidence": "if (!path.startsWith(\"/\")) {\n            return ToolResult(\n                toolName = toolName,\n                success = false,\n                result = FileOperationData(\n                    operation = toolName,\n                    path = path,\n                    successful = false,\n                    details = \"Invalid path: '$path'. Path must be an absolute path starting with '/'.\"\n                ),",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt",
+    "line": 17,
+    "severity": "high",
+    "title": "PathValidator 无路径穿越防护，仅做前缀格式校验"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "delete_file 支持 recursive（默认 false），调用链中无任何二次确认、无回收站、无软删除：deleteFile 内对目录直接 deleteRecursively。AI 一次误调用 recursive=true 即可清空整棵文档树，且不可恢复。",
+    "evidence": "val recursive =\n            tool.parameters.find { it.name == \"recursive\" }?.value?.toBoolean() ?: false",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt",
+    "line": 2061,
+    "severity": "high",
+    "title": "delete_file 无二次确认无回收站，recursive 误删不可恢复"
+  },
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "downloadFile 只校验 URL 以 http:// 或 https:// 开头（:4395），除此之外接受任意 URL：内网地址（169.254.169.254、192.168.x.x）、file 协议绕过（被挡）、重定向到内网都未被拦截。下载内容直接落盘到 destination，是标准的 SSRF 落盘面。",
+    "evidence": "if (!resolvedUrl.startsWith(\"http://\") && !resolvedUrl.startsWith(\"https://\")) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt",
+    "line": 4395,
+    "severity": "high",
+    "title": "download_file 仅做 scheme 校验，接受任意 http(s) URL（SSRF 落盘面）"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "detail": "open_file 用 FileProvider.getUriForFile 生成 content Uri 后发 ACTION_VIEW，share_file 发 ACTION_SEND：任意 AI 可读文件可被递交给外部应用打开/分享。open/share 在 Linux 环境被禁用（LinuxFileSystemTools :1143/:1254），但 android 与 repo(SAF) 环境下完全开放。",
+    "evidence": "val uri = FileProvider.getUriForFile(context, authority, file)\n            // ...\n                Intent(Intent.ACTION_VIEW).apply {",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt",
+    "line": 4544,
+    "severity": "warning",
+    "title": "open_file/share_file 把文件递交给外部应用，数据外泄面"
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "detail": "SAF 的 guessPermissions() 直接 return \"r--r--r--\"，file_info 在 repo 环境下报告的权限是写死字符串，不是真实权限。AI 依据该字段判断可写性会得到错误结论。",
+    "evidence": "private fun guessPermissions(): String {\n        return \"r--r--r--\"\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt",
+    "line": 1045,
+    "severity": "warning",
+    "title": "SAF file_info 权限字段写死为 r--r--r--，非真实权限"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "moveFile 先 renameTo，失败回退 copy+delete：copy 成功但 delete 失败时源与目标同时存在（重复文件）；copy 中途失败则目标残留不完整文件。整个移动非原子，调用方看到的 success=true 掩盖了中间态。",
+    "evidence": "if (sourceFile.renameTo(destFile)) {\n                return ToolResult(\n                    toolName = tool.name,\n                    success = true,\n                    result =\n                    FileOperationData(\n                        operation = \"move\",\n                        path = sourcePath,\n                        successful = true,\n                        details =\n                        \"Successfully moved $sourcePath to $destPath\"\n                    ),\n                    error = \"\"\n                )\n            } else {\n                // If simple rename fails, try copy and delete (could be across\n                // filesystems)",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt",
+    "line": 2314,
+    "severity": "warning",
+    "title": "move_file 回退路径非原子，copy/delete 中间失败留残留"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "write_file 的 append 参数默认 \"false\"（ToolRegistration.kt:4207）：AI 少传一个参数即全量覆写目标文件。与 delete_file 一样无确认、无备份，覆写后原内容不可恢复。",
+    "evidence": "val append =\n            tool.parameters.find { it.name == \"append\" }?.value?.toBoolean() ?: false",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt",
+    "line": 1809,
+    "severity": "warning",
+    "title": "write_file 默认全量覆写，误调用即丢数据"
+  },
+  {
+    "category": "robustness",
+    "confidence": "medium",
+    "detail": "SAF 写文件遇到不支持的扩展名直接 throw IllegalArgumentException（:179）。AIToolHandler.executeTool 对 executor.invoke 的异常是通知钩子后重新抛出（而非转为失败 ToolResult），该异常会沿调用栈上抛，调用方若无 try/catch 即崩溃式失败，而非优雅的工具错误。",
+    "evidence": "else -> throw IllegalArgumentException(\"Unsupported file extension for SAF create: $fileName\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt",
+    "line": 179,
+    "severity": "suggestion",
+    "title": "SAF 写文件用抛异常而非返回失败结果，调用方易崩溃"
+  }
+]

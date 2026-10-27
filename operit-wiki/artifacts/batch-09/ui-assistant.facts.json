@@ -1,0 +1,574 @@
+[
+ {
+  "fact": "AssistantConfigViewModel 继承 ViewModel，构造参数为 AvatarRepository 与 Context",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:30"
+ },
+ {
+  "fact": "UiState.isLoading 默认为 false，标记异步操作中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:34"
+ },
+ {
+  "fact": "UiState.avatarConfigs 为 List<AvatarConfig>，默认空列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:35"
+ },
+ {
+  "fact": "UiState.currentAvatarModel 为当前选中模型的 AvatarModel，可为空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:37"
+ },
+ {
+  "fact": "UiState.config 为当前模型的 AvatarInstanceSettings，可为空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:38"
+ },
+ {
+  "fact": "UiState.isVoiceCallAvatarEnabled 记录语音通话助手开关状态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:39"
+ },
+ {
+  "fact": "UiState.emotionAnimationMapping 为 AvatarEmotion 到动画名的映射",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:40"
+ },
+ {
+  "fact": "UiState.moodAnimationMapping 为情绪触发 key 到动画名的映射",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:41"
+ },
+ {
+  "fact": "UiState.customMoodDefinitions 为用户自定义情绪定义列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:42"
+ },
+ {
+  "fact": "UiState.scrollPosition 保存配置屏的滚动位置",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:45"
+ },
+ {
+  "fact": "UiState.isImporting 标记模型导入进行中",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:46"
+ },
+ {
+  "fact": "uiState 以 StateFlow 对外暴露，内部为 MutableStateFlow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:50"
+ },
+ {
+  "fact": "init 中 combine 合并 repository.configs、currentAvatar、instanceSettings、settings 四路 Flow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:54"
+ },
+ {
+  "fact": "无已选模型时 currentSettings 取默认 AvatarInstanceSettings",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:63"
+ },
+ {
+  "fact": "DragonBones 新模型首次选中默认缩放为 0.5f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:65"
+ },
+ {
+  "fact": "currentAvatarConfig 按 currentAvatar.id 在 configs 中查找",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:69"
+ },
+ {
+  "fact": "emotionAnimationMapping 取自 currentConfig.getEmotionAnimationMapping()，为空时取空 Map",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:70"
+ },
+ {
+  "fact": "moodAnimationMapping 取自 currentConfig.getMoodAnimationMapping()，为空时取空 Map",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:71"
+ },
+ {
+  "fact": "customMoodDefinitions 取自 currentConfig.getCustomMoodDefinitions()，为空时取空列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:72"
+ },
+ {
+  "fact": "combine 收到最新状态后用 collectLatest 整体替换 _uiState.value",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:89"
+ },
+ {
+  "fact": "updateUiState 按字段 copy，未传字段保持原值；errorMessage 直接覆盖",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:94"
+ },
+ {
+  "fact": "switchAvatar 在 viewModelScope 中调用 repository.switchAvatar(modelId)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:131"
+ },
+ {
+  "fact": "updateScale 用 copy(scale) 更新当前配置后调用 repository.updateAvatarSettings 持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:134"
+ },
+ {
+  "fact": "updateTranslateX 用 copy(translateX) 更新后持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:141"
+ },
+ {
+  "fact": "updateTranslateY 用 copy(translateY) 更新后持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:148"
+ },
+ {
+  "fact": "updateCustomSetting 在 value 为 null 时移除该自定义设置 key",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:159"
+ },
+ {
+  "fact": "updateEmotionAnimationMapping 在动画名空白时移除该情绪的映射",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:174"
+ },
+ {
+  "fact": "updateEmotionAnimationMapping 直接调用 repository.updateAvatarEmotionAnimationMapping，不经协程",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:181"
+ },
+ {
+  "fact": "updateMoodAnimationMapping 先用 AvatarMoodTypes.normalizeKey 规范化 triggerKey",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:186"
+ },
+ {
+  "fact": "updateMoodAnimationMapping 规范化后 key 为空时直接返回",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:188"
+ },
+ {
+  "fact": "updateMoodAnimationMapping 调用 repository.updateAvatarMoodAnimationMapping 持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:200"
+ },
+ {
+  "fact": "upsertCustomMoodDefinition 要求 promptHint 去空白后非空，否则报 avatar_custom_type_prompt_hint_required",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:217"
+ },
+ {
+  "fact": "自定义情绪 key 不合法时报 avatar_custom_type_invalid_key 错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:221"
+ },
+ {
+  "fact": "自定义情绪 key 与已有定义重复时报 avatar_custom_type_duplicate_key 错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:239"
+ },
+ {
+  "fact": "自定义情绪已存在时按 targetIndex 原地替换，否则追加",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:250"
+ },
+ {
+  "fact": "重命名自定义情绪时把旧 key 的动画映射迁移到新 key",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:256"
+ },
+ {
+  "fact": "自定义情绪增删改最终调用 repository.updateAvatarMoodConfig 持久化定义与映射",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:263"
+ },
+ {
+  "fact": "deleteCustomMoodDefinition 用 filterNot 移除定义，并从动画映射中删除该 key",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:273"
+ },
+ {
+  "fact": "updateVoiceCallAvatarEnabled 直接调用 repository，不经协程",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:286"
+ },
+ {
+  "fact": "deleteAvatar 先置 isLoading=true，调用 repository.deleteAvatar(modelId)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:293"
+ },
+ {
+  "fact": "renameAvatar 调用 repository.renameAvatar(modelId, newName)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:318"
+ },
+ {
+  "fact": "importAvatarFromZip 置 isLoading 与 isImporting 后调用 repository.importAvatarFromUri(uri)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:343"
+ },
+ {
+  "fact": "updateScrollPosition 直接 copy 更新 UiState.scrollPosition",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:379"
+ },
+ {
+  "fact": "AssistantConfigViewModel.Factory 用 AvatarRepository.getInstance(context, AvatarModelFactoryImpl()) 构建仓库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/viewmodel/AssistantConfigViewModel.kt:387"
+ },
+ {
+  "fact": "AssistantConfigScreen 为助手配置屏的 @Composable 入口函数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:45"
+ },
+ {
+  "fact": "控制器工厂 AvatarControllerFactoryImpl 在 remember 中创建，避免重组重建",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:50"
+ },
+ {
+  "fact": "sharedAvatarController 由工厂为当前模型创建控制器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:53"
+ },
+ {
+  "fact": "语音配置全部订阅 WakeWordPreferences 的 Flow，以 collectAsState 读取",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:57"
+ },
+ {
+  "fact": "唤醒识别模式默认取 WakeRecognitionMode.STT",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:60"
+ },
+ {
+  "fact": "个人唤醒模板 Flow 初始值为空列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:61"
+ },
+ {
+  "fact": "语音关键词附件初始值取自 WakeWordPreferences.getDefaultVoiceAutoAttachItems(context)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:72"
+ },
+ {
+  "fact": "麦克风权限请求使用 RequestPermission 契约",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:77"
+ },
+ {
+  "fact": "麦克风授权通过后保存 alwaysListening=true",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:81"
+ },
+ {
+  "fact": "麦克风授权被拒时弹 microphone_permission_denied_toast 提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:86"
+ },
+ {
+  "fact": "当前 Tab 与预览折叠状态用 rememberSaveable 保存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:98"
+ },
+ {
+  "fact": "文件选择器用 ACTION_OPEN_DOCUMENT 打开系统文档选择",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:143"
+ },
+ {
+  "fact": "导入文件选择器经 EXTRA_MIME_TYPES 限定可选类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:147"
+ },
+ {
+  "fact": "导入支持 application/zip 与 application/x-zip-compressed",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:149"
+ },
+ {
+  "fact": "导入支持 fbx 的三种 MIME：model/vnd.autodesk.fbx、model/fbx、application/fbx",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:151"
+ },
+ {
+  "fact": "导入支持 model/gltf-binary 与 model/gltf+json",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:154"
+ },
+ {
+  "fact": "导入支持 video/mp4 与 application/octet-stream",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:156"
+ },
+ {
+  "fact": "文件选择返回 OK 时调用 viewModel.importAvatarFromZip(uri)",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:135"
+ },
+ {
+  "fact": "滚动位置经 snapshotFlow 回写 viewModel.updateScrollPosition",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:173"
+ },
+ {
+  "fact": "operationSuccess 为 true 时弹 operation_success 的 Snackbar",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:179"
+ },
+ {
+  "fact": "errorMessage 非空时弹错误 Snackbar，随后清除错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:183"
+ },
+ {
+  "fact": "TabRow 包含 avatar_config 与 voice_wakeup_section_title 两个 Tab",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:200"
+ },
+ {
+  "fact": "头像预览区固定高度 220.dp",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:221"
+ },
+ {
+  "fact": "折叠按钮点击切换 isAvatarPreviewCollapsed",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:235"
+ },
+ {
+  "fact": "识别模式下拉显示 STT 与个人模板两种选项",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:301"
+ },
+ {
+  "fact": "个人模板模式下可一键清空已录模板",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:372"
+ },
+ {
+  "fact": "开启常听前先检查 RECORD_AUDIO 权限是否已授予",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:389"
+ },
+ {
+  "fact": "STT 模式下显示唤醒词输入框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:408"
+ },
+ {
+  "fact": "唤醒词为空时回退为 DEFAULT_WAKE_PHRASE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:418"
+ },
+ {
+  "fact": "正则开关变更调用 saveWakePhraseRegexEnabled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:439"
+ },
+ {
+  "fact": "无操作超时输入只保留数字，并 clamp 到 1..600 秒",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:456"
+ },
+ {
+  "fact": "问候语开关变更调用 saveWakeGreetingEnabled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:481"
+ },
+ {
+  "fact": "问候语文本为空时回退为 DEFAULT_WAKE_GREETING_TEXT",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:495"
+ },
+ {
+  "fact": "唤醒建新会话开关调用 saveWakeCreateNewChatOnWakeEnabled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:516"
+ },
+ {
+  "fact": "自动新会话分组文本调用 saveAutoNewChatGroup 持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:529"
+ },
+ {
+  "fact": "语音关键词附件开关调用 saveVoiceAutoAttachEnabled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:566"
+ },
+ {
+  "fact": "附件网格变更经 saveVoiceAutoAttachItems 持久化",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:576"
+ },
+ {
+  "fact": "个人唤醒配置弹窗在录音中时禁止关闭",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:597"
+ },
+ {
+  "fact": "三段模板全部录完且不在录音中才能点保存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:663"
+ },
+ {
+  "fact": "每段模板经 PersonalWakeEnrollment.recordOneTemplate(context) 录制",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:639"
+ },
+ {
+  "fact": "三段录音保存为 PersonalWakeTemplate(features) 列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:671"
+ },
+ {
+  "fact": "isLoading 或 isImporting 为 true 时显示全屏半透明加载遮罩",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:693"
+ },
+ {
+  "fact": "导入中遮罩文字为 importing_model，否则为 processing",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/screens/AssistantConfigScreen.kt:709"
+ },
+ {
+  "fact": "AvatarConfigSection 顶部含语音通话助手总开关",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:107"
+ },
+ {
+  "fact": "总开关回调直接绑定 viewModel::updateVoiceCallAvatarEnabled",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:109"
+ },
+ {
+  "fact": "控制器为 null 时可用动画列表置空",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:121"
+ },
+ {
+  "fact": "可用动画从 avatarController.availableAnimations 读取并去空白去重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:129"
+ },
+ {
+  "fact": "可用动画列表每 300ms 轮询刷新一次",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:136"
+ },
+ {
+  "fact": "MoodTriggerMappingSection 渲染情绪触发映射区",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:144"
+ },
+ {
+  "fact": "模型下拉 ModelSelector 选中时调用 viewModel.switchAvatar",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:164"
+ },
+ {
+  "fact": "导入按钮点击回调 onImportClick",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:172"
+ },
+ {
+  "fact": "缩放滑杆范围 0.1f..2.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:205"
+ },
+ {
+  "fact": "X 位移滑杆范围 -500f..500f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:216"
+ },
+ {
+  "fact": "Y 位移滑杆范围 -500f..500f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:227"
+ },
+ {
+  "fact": "MMD 类型额外显示 4 组相机参数滑杆",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:232"
+ },
+ {
+  "fact": "MMD 相机俯仰滑杆范围 -90f..90f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:257"
+ },
+ {
+  "fact": "MMD 相机偏航滑杆范围 -180f..180f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:277"
+ },
+ {
+  "fact": "MMD 相机距离滑杆范围 0.02f..12.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:297"
+ },
+ {
+  "fact": "MMD 环绕轴心高度显示值 clamp 到 -2.0f..2.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:310"
+ },
+ {
+  "fact": "GLTF 相机俯仰默认 8f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:323"
+ },
+ {
+  "fact": "GLTF 相机俯仰滑杆范围 -89f..89f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:348"
+ },
+ {
+  "fact": "GLTF 环绕轴心高度显示值 clamp 到 -2.0f..2.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:401"
+ },
+ {
+  "fact": "FBX 相机俯仰默认 8f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:414"
+ },
+ {
+  "fact": "FBX 相机俯仰滑杆范围 -89f..89f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:439"
+ },
+ {
+  "fact": "FBX 相机距离滑杆范围 0.02f..12.0f",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:479"
+ },
+ {
+  "fact": "页面底部依次渲染 HowToImportSection 与 AllAvatarImportGuideSection",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:505"
+ },
+ {
+  "fact": "MoodTriggerMappingSection 遍历 AvatarMoodTypes.builtInDefinitions 渲染内置情绪卡片",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:595"
+ },
+ {
+  "fact": "无自定义情绪时显示 avatar_custom_type_none 提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:634"
+ },
+ {
+  "fact": "自定义情绪逐个渲染 MoodMappingCard 并支持编辑与删除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:639"
+ },
+ {
+  "fact": "MoodMappingCard 为每个情绪提供动画选择、预览与清除映射按钮",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:668"
+ },
+ {
+  "fact": "AnimationSelectionField 为只读下拉，按模型可用动画列表渲染选项",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:795"
+ },
+ {
+  "fact": "MoodTypeEditorDialog 要求 key 与 promptHint 均非空才能确认",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:860"
+ },
+ {
+  "fact": "ModelSelector 删除模型前弹 confirm_delete_model_title 确认框",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:984"
+ },
+ {
+  "fact": "ModelSelector 重命名弹窗标题为 rename_avatar_model_title",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:1006"
+ },
+ {
+  "fact": "AvatarEmotion 共 7 种：IDLE、LISTENING、THINKING、HAPPY、SAD、CONFUSED、SURPRISED",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:1093"
+ },
+ {
+  "fact": "previewMoodTrigger 先尝试 playTrigger，失败则播映射动画",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:1141"
+ },
+ {
+  "fact": "预览结束后按估算时长延时，再把情绪切回 IDLE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarConfigSection.kt:1152"
+ },
+ {
+  "fact": "AvatarPreviewSection 接收 uiState 与 avatarController 渲染预览",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:30"
+ },
+ {
+  "fact": "情绪映射变化时调用 avatarController.updateEmotionAnimationMapping 推送",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:74"
+ },
+ {
+  "fact": "映射变化时自动 setEmotion 预览被改动的情绪",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:85"
+ },
+ {
+  "fact": "mood 映射变化推送 avatarController.updateTriggerAnimationMapping",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:95"
+ },
+ {
+  "fact": "运行时设置包含 SCALE、TRANSLATE_X、TRANSLATE_Y 及全部 customSettings",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:104"
+ },
+ {
+  "fact": "设置变化时调用 avatarController.updateSettings 推送",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:116"
+ },
+ {
+  "fact": "实际渲染用 AvatarView，渲染错误经 AppLogger.e 记录",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:119"
+ },
+ {
+  "fact": "当前模型无可用控制器时显示 unsupported_model_type 提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:136"
+ },
+ {
+  "fact": "无模型且配置列表为空时显示 no_models_available 提示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/AvatarPreviewSection.kt:147"
+ },
+ {
+  "fact": "HowToImportSection 为可折叠的模型导入教程区",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt:38"
+ },
+ {
+  "fact": "教程区提供 loongbones 在线编辑器链接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt:39"
+ },
+ {
+  "fact": "教程区提供 egret 旧版编辑器下载链接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt:40"
+ },
+ {
+  "fact": "DragonBones 注意事项用 errorContainer 底色高亮显示",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt:129"
+ },
+ {
+  "fact": "两个编辑器按钮用 ACTION_VIEW 打开外部链接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/HowToImportSection.kt:144"
+ },
+ {
+  "fact": "CompactSwitchRow 为标题加描述加开关的紧凑设置行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:52"
+ },
+ {
+  "fact": "VoiceAutoAttachGrid 按附件类型渲染可点击的附件卡片",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:83"
+ },
+ {
+  "fact": "已用类型从 VoiceAutoAttachType.entries 中排除，未用类型显示添加卡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:92"
+ },
+ {
+  "fact": "附件网格自适应列宽最小 96.dp",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:96"
+ },
+ {
+  "fact": "新建附件条目的 id 取 item_ 加当前毫秒时间戳",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:360"
+ },
+ {
+  "fact": "附件类型共 4 种：SCREEN_OCR、NOTIFICATIONS、LOCATION、TIME",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:382"
+ },
+ {
+  "fact": "SCREEN_OCR 附件图标为 ScreenshotMonitor",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/VoiceAutoAttachComponents.kt:411"
+ },
+ {
+  "fact": "SettingItem 为图标加标题加值加箭头的可点击设置行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/assistant/components/SettingItem.kt:38"
+ }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimiterRegistry.kt",
+    "line": 11,
+    "title": "配额变更不传播到已创建的 RateLimitedAIService",
+    "detail": "getOrCreate 在配置变化时重建 limiter 并替换 map 条目，但 RateLimitedAIService 在构造时就持有旧 limiter 引用；已创建的服务实例继续用旧限流器，新配额对它们不生效。",
+    "evidence": "        return limiters.compute(key) { _, existing ->\n            if (existing == null || existing.maxRequestsPerMinute != maxRequestsPerMinute) {\n                SlidingWindowRateLimiter(maxRequestsPerMinute = maxRequestsPerMinute)\n            } else {\n                existing\n            }\n        }!!",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/HttpStatusCodeException.kt",
+    "line": 17,
+    "title": "多密钥下 429 被全部压住时用户无任何提示",
+    "detail": "候选密钥数>1 时压住 429 中间提示是合理的（轮询会试其他密钥），但如果所有密钥都被限流，用户全程看不到任何限流提示。",
+    "evidence": "    val candidateKeyCount = apiKeyProvider.getCandidateKeyCount()\n    val shouldSuppress = candidateKeyCount > 1\n    if (shouldSuppress) {\n        AppLogger.w(\n            logTag,\n            \"多密钥轮询遇到 429，跳过本次中间提示，继续尝试其他密钥。candidateKeyCount=$candidateKeyCount\",\n            exception\n        )\n    }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "performance",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/RateLimitedAIService.kt",
+    "line": 63,
+    "title": "限流/并发等待用 50ms 忙轮询而非挂起原语",
+    "detail": "awaitRateLimit 与 acquireConcurrency 都用 tryAcquire + delay(50ms) 循环等待；等待期间每 50ms 醒一次做无用功，可用信号量/条件挂起替代。",
+    "evidence": "                suspend fun awaitRateLimit() {\n                    val limiter = rateLimiter ?: return\n                    while (true) {\n                        throwIfCancelled()\n                        val retryAfterMs = limiter.tryAcquire()\n                        if (retryAfterMs <= 0L) return\n                        delay(retryAfterMs.coerceAtMost(CANCELLATION_POLL_INTERVAL_MS))\n                    }\n                }",
+    "confidence": "low"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/SlidingWindowRateLimiter.kt",
+    "line": 15,
+    "title": "窗口时间取自系统时钟，时钟回拨会拉长限流窗口",
+    "detail": "tryAcquire 默认 nowMs = System.currentTimeMillis()；系统时钟回拨（NTP 校准）时时间戳淘汰条件 nowMs - first >= windowMs 短期内不成立，窗口被拉长。",
+    "evidence": "    suspend fun tryAcquire(nowMs: Long = System.currentTimeMillis()): Long {\n        if (maxRequestsPerMinute <= 0) return 0L",
+    "confidence": "low"
+  }
+]

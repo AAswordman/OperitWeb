@@ -1,0 +1,318 @@
+[
+ {
+  "fact": "AIToolHandler 是工具系统的调度核心，private constructor 单例，只能通过 getInstance(context) 获取实例",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:29"
+ },
+ {
+  "fact": "getInstance 用 @Volatile 修饰 INSTANCE 并配合 synchronized 做双重检查，保证单例线程安全",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:36"
+ },
+ {
+  "fact": "availableTools 是 ConcurrentHashMap<String, ToolExecutor> 类型的工具注册表，键为工具名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:45"
+ },
+ {
+  "fact": "toolHooks 是 CopyOnWriteArrayList<AIToolHook>，存放工具调用生命周期的钩子",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:46"
+ },
+ {
+  "fact": "registerDefaultTools 用 AtomicBoolean 加 synchronized 双重检查，保证全部内置工具只注册一次",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:211"
+ },
+ {
+  "fact": "registerTool 是工具注册的唯一方法：把执行器写入注册表，若提供 descriptionGenerator 则同步注册到权限系统的操作描述",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:179"
+ },
+ {
+  "fact": "registerTool 有重载版本，接受 (AITool) -> ToolResult 类型的 lambda 并自动包装成 ToolExecutor",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:193"
+ },
+ {
+  "fact": "unregisterTool 按工具名从注册表中移除执行器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:59"
+ },
+ {
+  "fact": "getAllToolNames 返回注册表中全部工具名的排序列表",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:160"
+ },
+ {
+  "fact": "executeTool 的调用链是：通知请求到达 → 钩子拦截检查 → 获取执行器（缺失返回 Tool not found）→ 参数校验 → 执行；异常时通知钩子并重新抛出",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:363"
+ },
+ {
+  "fact": "executeToolAndStream 返回 Flow<ToolResult>，把执行器的流式中间结果逐个 emit 并通知钩子",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:419"
+ },
+ {
+  "fact": "getToolExecutorOrActivate 在执行器缺失时先补注册默认工具；工具名含冒号时自动激活对应工具包；MCP 服务不活跃时自动重新激活",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:303"
+ },
+ {
+  "fact": "checkToolInterception 逐个询问钩子，任一返回 Block 即拦截；钩子回调抛异常时直接按 Block 处理，属于 fail-closed",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:100"
+ },
+ {
+  "fact": "buildToolInterceptionResult 构造 success=false、error 为拦截原因的 ToolResult",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:120"
+ },
+ {
+  "fact": "ToolExecutor 接口要求实现 invoke；invokeAndStream 默认实现为 flowOf(invoke(tool))；validateParameters 默认返回有效",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:479"
+ },
+ {
+  "fact": "reset() 清空注册表、置空 PackageManager 实例、重置默认工具注册标志，三者都在同一 synchronized 块内",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:274"
+ },
+ {
+  "fact": "notifyHooks 对每个钩子回调用 try/catch 包裹，单个钩子异常只记日志，不中断其他钩子的分发",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:84"
+ },
+ {
+  "fact": "replaceToolInvocation 把响应原文中调用位置的文本替换为 **Tool Result [工具名]:** 结果块，完成结果回填",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:233"
+ },
+ {
+  "fact": "getToolDescription 委托 ToolPermissionSystem 获取工具的人类可读描述，供工具权限设置界面（ToolPermissionSettingsScreen）使用",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:167"
+ },
+ {
+  "fact": "getOrCreatePackageManager 懒初始化并缓存 PackageManager 实例",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:224"
+ },
+ {
+  "fact": "addToolHook 添加钩子时先判重，clearToolHooks 清空全部钩子",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHandler.kt:67"
+ },
+ {
+  "fact": "AIToolHookDecision 是密封类，只有两种决策：Allow 与携带 reason 字符串的 Block",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHook.kt:7"
+ },
+ {
+  "fact": "AIToolHook 接口定义 7 个生命周期回调，全部有默认空实现，只有 onToolCallIntercept 默认返回 Allow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/AIToolHook.kt:16"
+ },
+ {
+  "fact": "ToolExecutionLimits.MAX_FILE_READ_BYTES = 32000，是文件读取的字节上限",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:4"
+ },
+ {
+  "fact": "ToolExecutionLimits.DEFAULT_FILE_READ_PART_LINES = 200，是文件分段读取的默认行数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:5"
+ },
+ {
+  "fact": "ToolExecutionLimits.MAX_TEXT_RESULT_LENGTH = 5000，是文本结果的长度上限",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:6"
+ },
+ {
+  "fact": "ToolExecutionLimits.MAX_SINGLE_TOOL_RESULT_MESSAGE_CHARS 等于 MAX_FILE_READ_BYTES 的两倍，是单个工具结果发回模型的字符上限",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:8"
+ },
+ {
+  "fact": "ToolProgressEvent 包含 toolName、progress(Float)、message、priority、level 五个字段",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:7"
+ },
+ {
+  "fact": "ToolProgressBus 是 object 单例，对外暴露 StateFlow<ToolProgressEvent?> 类型的进度流，初始为 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:15"
+ },
+ {
+  "fact": "SUMMARY_PROGRESS_TOOL_NAME = \"__SUMMARY__\"，其优先级 1000 为全场最高",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:16"
+ },
+ {
+  "fact": "进度优先级内置规则：grep_context=100、grep_code=10、find_files=5，其余工具为 0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:21"
+ },
+ {
+  "fact": "ToolProgressBus.update 只在五种情况下替换当前事件：无当前事件、同一工具、当前进度已完成(>=1f)、新优先级更高、同优先级且 level 更高",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:35"
+ },
+ {
+  "fact": "ToolProgressBus.clear() 把进度流置为 null",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolProgressBus.kt:57"
+ },
+ {
+  "fact": "ToolPackage 的字段包括 name、多语言 description/displayName、tools、states、env、isBuiltIn、enabledByDefault（JSON 名为 enabled_by_default）、category（默认 Other）、author（兼容字符串或数组）、version",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:301"
+ },
+ {
+  "fact": "LocalizedText.resolve(context) 按系统 locale 回退取值：languageTag → language → default → en → zh → 首个值",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:43"
+ },
+ {
+  "fact": "LocalizedTextSerializer 在仅含 default 值时序列化为纯字符串，否则序列化为 map；反序列化兼容字符串与对象两种形态",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:128"
+ },
+ {
+  "fact": "StringOrStringListSerializer 反序列化时兼容字符串或字符串数组并去空；序列化时单个元素写成纯字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:170"
+ },
+ {
+  "fact": "EnvVar 声明包的环境变量：name、description、required（默认 true）、defaultValue；EnvVarSerializer 兼容旧格式的裸字符串（视为必填）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:203"
+ },
+ {
+  "fact": "ToolPackageState 定义条件工具集：id、condition（默认 \"true\"）、inheritTools、excludeTools、tools",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:340"
+ },
+ {
+  "fact": "PackageTool 的 script 字段是定义工具行为的 JavaScript 脚本，advice 标记是否为建议型工具",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:352"
+ },
+ {
+  "fact": "PackageToolParameter 包含 name、description、type、required（默认 true）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:364"
+ },
+ {
+  "fact": "PackageToolExecutor.invoke 要求工具名恰为 packageName:toolName 两段式；包名不匹配或包内无此工具都返回失败的 ToolResult",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:382"
+ },
+ {
+  "fact": "PackageToolExecutor.invoke 用 runBlocking 执行 jsToolManager.executeScript(packageTool.script, tool) 并取流的最后一个结果",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:418"
+ },
+ {
+  "fact": "PackageToolExecutor.invokeAndStream 按名称后缀在包内查找工具，直接返回脚本执行的 Flow",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:423"
+ },
+ {
+  "fact": "PackageToolExecutor.validateParameters 校验必填参数是否齐全，缺失时在 errorMessage 中列出缺失参数名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:431"
+ },
+ {
+  "fact": "PackageToolExecutor.describePackage() 生成带本地化描述与参数类型表的人类可读包说明",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolPackage.kt:478"
+ },
+ {
+  "fact": "registerAllTools 是 ToolRegistration.kt 中的顶层函数，是全部 182 个内置工具的唯一注册入口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:36"
+ },
+ {
+  "fact": "182 次 registerTool 调用的工具名无重复注册",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:270"
+ },
+ {
+  "fact": "execute_shell 与 close_all_virtual_displays 在注释中标注为“不在提示词加入的工具”",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:270"
+ },
+ {
+  "fact": "4 个工具用匿名 object : ToolExecutor 同时实现 invoke 与 invokeAndStream：execute_in_terminal_session_streaming、send_message_to_ai_streaming、http_request、apply_file",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:338"
+ },
+ {
+  "fact": "parseProxyInvocation 要求代理调用恰好包含一个 tool_name 与一个 params 参数，params 必须为 JSON 对象；另允许透传 __operit_package_caller_name 等三个包上下文参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:103"
+ },
+ {
+  "fact": "CLI 搜索工具与代理工具在 toolExposureMode 不是 CLI 模式时直接返回不可用错误",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1024"
+ },
+ {
+  "fact": "CLI 代理工具执行前走 executeProxyTargetWithPermissionCheck：调用 ToolPermissionSystem.checkToolPermission 做工具权限检查，拒绝时通知 granted=false",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:221"
+ },
+ {
+  "fact": "package_proxy 要求目标工具名使用 packageName:toolName 限定格式，并禁止目标为 package_proxy 自身",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1140"
+ },
+ {
+  "fact": "update_user_preferences 是为兼容已发布包与持久化调用保留的别名，故意不在系统提示词中出现，新会话只用 update_user_profile",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:852"
+ },
+ {
+  "fact": "executeUiToolWithVisibility 在 UI 工具执行前隐藏 FloatingChatService 悬浮窗并显示状态指示器，执行后在 finally 中恢复",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:39"
+ },
+ {
+  "fact": "sleep 工具的 duration_ms 默认 1000，负值经 coerceAtLeast(0) 钳制为 0",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1380"
+ },
+ {
+  "fact": "use_package 通过 handler.getOrCreatePackageManager().executeUsePackageTool 激活沙盒包",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1002"
+ },
+ {
+  "fact": "toast 与 send_notification 注册时未提供 descriptionGenerator，是仅有的两个没有描述生成器的工具",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:2275"
+ },
+ {
+  "fact": "浏览器工具组共 22 个，从 browser_click 到 browser_wait_for，全部委托 ToolGetter.getBrowserSessionTools(context).invoke(tool) 执行",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1230"
+ },
+ {
+  "fact": "蓝牙工具组覆盖经典蓝牙与 BLE 两套操作，起始于 get_bluetooth_state",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:2432"
+ },
+ {
+  "fact": "calculate 工具在 executor 内部 try/catch，异常转为 success=false 的 ToolResult 而不是抛出",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1179"
+ },
+ {
+  "fact": "ToolResultData 是 @Serializable 的密封基类，定义抽象 toString() 与 toJson()，toJson 使用 classDiscriminator = \"__type\"",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:17"
+ },
+ {
+  "fact": "BooleanResultData、StringResultData、IntResultData 的注释标明它们是从 AITool.kt 迁移过来的基础结果类型",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:32"
+ },
+ {
+  "fact": "BinaryResultData 持有 ByteArray，手动重写了 equals（contentEquals）与 hashCode，toString 只报告字节数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:211"
+ },
+ {
+  "fact": "文件类结果（FilePartContentData 等）的 env 字段用 @EncodeDefault 标注，默认值为 \"android\"，标记结果来源环境",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:229"
+ },
+ {
+  "fact": "TerminalCommandResultData 用 sessionId 标识终端会话，HiddenTerminalCommandResultData 改用 executorKey",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:264"
+ },
+ {
+  "fact": "TerminalStreamEventData 等流式事件类在 type 为 chunk 时 toString 直接返回分片内容",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:288"
+ },
+ {
+  "fact": "FileApplyResultData 的 toString 把 diff 包进 <file-diff> 标签与 CDATA 段，供渲染器解析",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:546"
+ },
+ {
+  "fact": "HttpResponseData 的 toString 最多展示 5 个 cookie，每个 cookie 值截断 30 字符",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:600"
+ },
+ {
+  "fact": "VisitWebResultData 的伴生对象定义 MAX_INLINE_LINKS 与 MAX_INLINE_IMAGES 均为 120，超限截断并提示用 read_file_part 或 grep_code 查看落盘文件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:1061"
+ },
+ {
+  "fact": "FindFilesResultData 的 toString 在文件数超过 20 个时只列出前 10 个",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:1143"
+ },
+ {
+  "fact": "GrepResultData 的 toString 最多展示 30 个匹配组，超限折叠并汇总",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:1659"
+ },
+ {
+  "fact": "ChatMessagesResultData 的 toString 只输出对话 id、排序、limit 与消息总数，不输出消息正文",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:2135"
+ },
+ {
+  "fact": "MessageSendResultData 的 toString 把发送消息截断为 50 字符预览、AI 回复截断为 200 字符预览",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:2227"
+ },
+ {
+  "fact": "模型配置与语音配置结果中的 API Key 只保存 apiKeySet 布尔值与 apiKeyPreview 预览，不保存明文密钥",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:2322"
+ },
+ {
+  "fact": "ModelConfigResultItem 包含 mnnForwardType/mnnThreadCount 与 llamaThreadCount/llamaContextSize 等端侧推理参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:2537"
+ },
+ {
+  "fact": "WorkflowListResultData 与 WorkflowDetailResultData 的伴生对象各提供一个 empty() 工厂，用于错误时构造空结果",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:1852"
+ },
+ {
+  "fact": "ScriptExecutionTraceData 的 toString 按 kind 输出 [LOG]/[INTERMEDIATE]/[TRACE] 前缀",
+  "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolResultDataClasses.kt:191"
+ }
+]

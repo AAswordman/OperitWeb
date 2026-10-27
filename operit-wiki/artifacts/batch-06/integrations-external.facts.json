@@ -1,0 +1,646 @@
+[
+  {
+    "fact": "A2aHttpHandler 是 A2A 1.0 的 JSON-RPC 接入层，挂在已有的外部 HTTP 服务上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:26"
+  },
+  {
+    "fact": "A2aHttpHandler 构造时创建 A2aTaskManager，并注入鉴权回调 requireBearerToken。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:30"
+  },
+  {
+    "fact": "Agent Card 路径常量为 /.well-known/agent-card.json。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:577"
+  },
+  {
+    "fact": "A2A JSON-RPC 路径常量为 /a2a。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:578"
+  },
+  {
+    "fact": "A2A 协议版本常量为 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:579"
+  },
+  {
+    "fact": "handleAgentCard 只接受 GET 请求，非 GET 返回 405。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:32"
+  },
+  {
+    "fact": "Agent Card 的 protocolVersion 字段为 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:43"
+  },
+  {
+    "fact": "Agent Card 的 name 字段为 Operit。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:44"
+  },
+  {
+    "fact": "Agent Card 声明 capabilities.streaming 为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:59"
+  },
+  {
+    "fact": "Agent Card 声明 capabilities.pushNotifications 为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:60"
+  },
+  {
+    "fact": "Agent Card 只注册了一个 skill，id 为 operit-chat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:69"
+  },
+  {
+    "fact": "Agent Card 的 securitySchemes 声明了 bearerAuth（Bearer 方案）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:79"
+  },
+  {
+    "fact": "Agent Card 的 securityRequirements 要求 bearerAuth。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:89"
+  },
+  {
+    "fact": "Agent Card 的 version 取自 BuildConfig.VERSION_NAME。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:90"
+  },
+  {
+    "fact": "Agent Card 的 JSON-RPC 端点 URL 由请求 Host 头拼出 http://host/a2a。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:488"
+  },
+  {
+    "fact": "buildJsonRpcEndpoint 拒绝含 /、?、# 的 Host 头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:488"
+  },
+  {
+    "fact": "handleJsonRpc 只接受 POST 请求，非 POST 返回 JSON-RPC 错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:95"
+  },
+  {
+    "fact": "handleJsonRpc 先执行 requireBearerToken 鉴权，鉴权失败直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:105"
+  },
+  {
+    "fact": "请求体解析失败返回 JSON-RPC parse error（-32700）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:110"
+  },
+  {
+    "fact": "请求 JSON 结构非法返回 invalid request（-32600）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:125"
+  },
+  {
+    "fact": "A2A 请求必须带 Content-Length，且在 1 到 1MB 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:454"
+  },
+  {
+    "fact": "JSON-RPC 的 jsonrpc 字段必须为 2.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:435"
+  },
+  {
+    "fact": "JSON-RPC 的 id 只接受字符串或数字。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:439"
+  },
+  {
+    "fact": "a2a-version 请求头与 1.0 不一致时返回 -32009 版本不支持错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:475"
+  },
+  {
+    "fact": "SendMessage 先提交任务；returnImmediately 为 true 直接返回任务快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:133"
+  },
+  {
+    "fact": "SendMessage 在 returnImmediately 为 false 时阻塞等待任务到达终态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:139"
+  },
+  {
+    "fact": "SendStreamingMessage 提交后进入 SSE 流式响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:147"
+  },
+  {
+    "fact": "GetTask 按 id 查询任务快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:153"
+  },
+  {
+    "fact": "ListTasks 支持按 contextId 和状态过滤并分页。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:87"
+  },
+  {
+    "fact": "CancelTask 按 id 取消任务并返回最新快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:163"
+  },
+  {
+    "fact": "SubscribeToTask 订阅任务事件流，不允许订阅已终态任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:264"
+  },
+  {
+    "fact": "未知方法名返回 method not found（-32601）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:173"
+  },
+  {
+    "fact": "A2aHttpHandler.close 关闭底层的 A2aTaskManager。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:198"
+  },
+  {
+    "fact": "流式响应用 64KB 的 PipedInputStream/ PipedOutputStream 搭桥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:594"
+  },
+  {
+    "fact": "流式事件通道是无界 Channel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:209"
+  },
+  {
+    "fact": "流式响应头包含 A2A-Version、no-cache、keep-alive 和 X-Accel-Buffering: no。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:268"
+  },
+  {
+    "fact": "流式先推送任务初始快照，再逐个推送事件，直到收到 final 状态事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:224"
+  },
+  {
+    "fact": "Artifact 事件序列化为 artifactUpdate，append 为 true、lastChunk 为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:279"
+  },
+  {
+    "fact": "任务 JSON 含 id、contextId、status；有输出时才带 artifacts。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:308"
+  },
+  {
+    "fact": "状态 JSON 的错误消息 messageId 为 任务 id 加 -status 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:321"
+  },
+  {
+    "fact": "artifact 的 artifactId 为任务 id 加 -result 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:334"
+  },
+  {
+    "fact": "SendMessage 的 configuration.returnImmediately 缺省为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:341"
+  },
+  {
+    "fact": "请求携带 taskPushNotificationConfig 会直接抛不支持推送通知异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:342"
+  },
+  {
+    "fact": "A2A 只接受 role 为 ROLE_USER 的消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:357"
+  },
+  {
+    "fact": "A2A 消息必须带 messageId。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:359"
+  },
+  {
+    "fact": "A2A 消息若带 taskId 会被拒绝（不支持往已有任务追加消息）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:361"
+  },
+  {
+    "fact": "A2A 消息的 parts 必须是非空数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:367"
+  },
+  {
+    "fact": "A2A 只接受纯文本 part，每个 part 必须恰好只有一个 text 键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:374"
+  },
+  {
+    "fact": "多个文本 part 用换行拼接，且拼接后不能为空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:379"
+  },
+  {
+    "fact": "ListTasks 的 pageSize 缺省 50，上限 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:395"
+  },
+  {
+    "fact": "ListTasks 的状态过滤值必须在 8 种合法任务状态集合内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:390"
+  },
+  {
+    "fact": "pageToken 无效时抛协议异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:411"
+  },
+  {
+    "fact": "还有下一页时返回 nextPageToken 为本页最后一个任务 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:424"
+  },
+  {
+    "fact": "acceptedOutputModes 不含 text/plain 时返回 -32005 错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aHttpHandler.kt:672"
+  },
+  {
+    "fact": "A2aTaskManager 把 A2A 任务的生命周期限定在外部 HTTP 服务存续期内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:56"
+  },
+  {
+    "fact": "A2aTaskManager 把同一个 A2A contextId 映射到同一个 Operit 聊天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:68"
+  },
+  {
+    "fact": "A2aTaskManager 内部持有 ExternalChatRequestExecutor 执行实际聊天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:66"
+  },
+  {
+    "fact": "submit 为每个任务生成随机 UUID 作为任务 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:72"
+  },
+  {
+    "fact": "submit 在 IO 线程启动任务执行并立即返回任务快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:76"
+  },
+  {
+    "fact": "listTasks 按任务 id 排序后返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:89"
+  },
+  {
+    "fact": "close 取消所有任务并清空任务与上下文映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:110"
+  },
+  {
+    "fact": "执行 A2A 任务时构造的 ExternalChatRequest 中 createIfNone 为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:125"
+  },
+  {
+    "fact": "已有聊天 id 时复用该聊天，否则新建聊天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:121"
+  },
+  {
+    "fact": "A2A 任务执行时 returnToolStatus 为 false，输出会被清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:124"
+  },
+  {
+    "fact": "任务启动成功后把 contextId 到 chatId 的映射写入 contextChats。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:143"
+  },
+  {
+    "fact": "A2A 任务的流式输出用 ExternalChatResponseSanitizer.sanitizeStream 清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:144"
+  },
+  {
+    "fact": "空的分块不会追加到任务输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:144"
+  },
+  {
+    "fact": "最终状态为 Error 时任务标记失败，否则标记完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:150"
+  },
+  {
+    "fact": "任务被取消时标记为 CANCELED 并重新抛出 CancellationException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:155"
+  },
+  {
+    "fact": "会话清理放在 finally 块保证执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:159"
+  },
+  {
+    "fact": "未提供 contextId 时生成随机 UUID 作为上下文 id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:163"
+  },
+  {
+    "fact": "查询不存在的任务 id 抛 -32001 未知任务异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:365"
+  },
+  {
+    "fact": "8 种任务状态：SUBMITTED、WORKING、INPUT_REQUIRED、AUTH_REQUIRED、COMPLETED、CANCELED、FAILED、REJECTED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:350"
+  },
+  {
+    "fact": "终态为 COMPLETED、CANCELED、FAILED、REJECTED 四种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:344"
+  },
+  {
+    "fact": "任务状态变更经监听器集合广播事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:336"
+  },
+  {
+    "fact": "事件投递失败只记日志，不中断其他监听器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:339"
+  },
+  {
+    "fact": "awaitTerminalTask 用 CompletableDeferred 等待任务到达终态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:180"
+  },
+  {
+    "fact": "订阅已终态任务且 requireActive 为 true 时抛不支持操作异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:264"
+  },
+  {
+    "fact": "A2aProtocolException 默认错误码为 -32602。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/a2a/A2aTaskManager.kt:364"
+  },
+  {
+    "fact": "ExternalChatRequest 是外部聊天请求的数据模型，字段用 snake_case 序列化名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:9"
+  },
+  {
+    "fact": "ExternalChatRequest.message 为空时执行器直接返回 Missing extra: message 失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:103"
+  },
+  {
+    "fact": "ExternalChatRequest.createIfNone 缺省为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:21"
+  },
+  {
+    "fact": "ExternalChatRequest.returnToolStatus 缺省为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:25"
+  },
+  {
+    "fact": "ExternalChatRequest.timeoutMs 和 autoExitAfterMs 缺省为 -1（不限制）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:29"
+  },
+  {
+    "fact": "ExternalChatResult 含 request_id、success、chat_id、ai_response、error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:42"
+  },
+  {
+    "fact": "ExternalChatHttpRequest 是独立的 @Serializable data class（非继承），除 request_id/message 等基础字段外另含 stream、response_mode、callback_url。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:58"
+  },
+  {
+    "fact": "response_mode 只接受 sync 或 async_callback，其他值返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:93"
+  },
+  {
+    "fact": "request_id 为空时自动生成随机 UUID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:92"
+  },
+  {
+    "fact": "ExternalChatRequestExecutor.execute 是同步执行入口，内部调 send_message_to_ai 工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:43"
+  },
+  {
+    "fact": "ExternalChatRequestExecutor.startStreaming 是流式执行入口，内部调 startMessageToAIStream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:72"
+  },
+  {
+    "fact": "执行器每次执行都新建 StandardChatManagerTool 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:129"
+  },
+  {
+    "fact": "showFloating 为 true 时先调用 start_chat_service 启动聊天服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:139"
+  },
+  {
+    "fact": "start_chat_service 的 initial_mode 和 timeout_ms（取自 autoExitAfterMs）作为参数传入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:134"
+  },
+  {
+    "fact": "start_chat_service 失败时直接返回失败结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:123"
+  },
+  {
+    "fact": "createNewChat 为 false、chatId 为空且 createIfNone 为 false 时，取当前聊天 id；取不到则失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:157"
+  },
+  {
+    "fact": "createNewChat 为 true 时调用 create_new_chat 建新聊天，可带 group 参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:171"
+  },
+  {
+    "fact": "发送消息的参数含 message；不建新聊天且指定 chat_id 时带上 chat_id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:186"
+  },
+  {
+    "fact": "timeoutMs 大于 0 时作为 timeout_ms 参数传给发送工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:192"
+  },
+  {
+    "fact": "stopAfter 为 true 时清理阶段调用 stop_chat_service 停止聊天服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:207"
+  },
+  {
+    "fact": "执行结果的 ai_response 按 returnToolStatus 做清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:228"
+  },
+  {
+    "fact": "ExternalChatStreamingSession 的 cleanup 用 AtomicBoolean 保证只执行一次。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatRequestExecutor.kt:26"
+  },
+  {
+    "fact": "ExternalChatResponseSanitizer 在 returnToolStatus 为 true 时原样返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatResponseSanitizer.kt:18"
+  },
+  {
+    "fact": "清洗器剥离 status、tool、tool_result 三类 XML 标签组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatResponseSanitizer.kt:91"
+  },
+  {
+    "fact": "清洗后做空白规范化：回车转行、多余空格与 3 个以上连续换行被压缩。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatResponseSanitizer.kt:91"
+  },
+  {
+    "fact": "流式清洗按 32 字符批量或中英文标点自然边界刷新文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatResponseSanitizer.kt:70"
+  },
+  {
+    "fact": "ExternalChatHttpServer 监听 0.0.0.0，端口取自 ExternalHttpApiPreferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:548"
+  },
+  {
+    "fact": "ExternalChatHttpServer 内部同时持有 ExternalChatRequestExecutor 和 A2aHttpHandler。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:48"
+  },
+  {
+    "fact": "路由：/.well-known/agent-card.json 走 A2A 的 handleAgentCard。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:78"
+  },
+  {
+    "fact": "路由：/a2a 走 A2A 的 handleJsonRpc。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:79"
+  },
+  {
+    "fact": "路由：GET /api/health 返回服务健康信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:80"
+  },
+  {
+    "fact": "路由：POST /api/external-chat 是外部聊天主入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:81"
+  },
+  {
+    "fact": "健康检查同样要求 Bearer 鉴权。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:103"
+  },
+  {
+    "fact": "健康响应含 enabled、serviceRunning、port、versionName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/externalchat/ExternalChatModels.kt:133"
+  },
+  {
+    "fact": "聊天接口先做 Bearer 鉴权，鉴权失败直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:125"
+  },
+  {
+    "fact": "聊天接口要求请求带 Content-Length 并读取请求体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:435"
+  },
+  {
+    "fact": "response_mode 非法时返回 400。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:165"
+  },
+  {
+    "fact": "stream=true 与 async_callback 混用被拒绝。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:186"
+  },
+  {
+    "fact": "stream=true 走 SSE 流式响应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:197"
+  },
+  {
+    "fact": "async_callback 要求 callback_url 为 http/https。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:213"
+  },
+  {
+    "fact": "async_callback 先回 202 Accepted，再在后台执行并 POST 回调结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:229"
+  },
+  {
+    "fact": "sync 模式用 runBlocking 执行并直接返回结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:236"
+  },
+  {
+    "fact": "SSE 事件类型有 start、delta、done、error 四种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:560"
+  },
+  {
+    "fact": "SSE 流式输出同样按 returnToolStatus 做清洗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:289"
+  },
+  {
+    "fact": "SSE 客户端断开时取消底层流会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:333"
+  },
+  {
+    "fact": "requireBearerToken 从配置读取期望 token，未配置返回 401。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:379"
+  },
+  {
+    "fact": "鉴权只认 Authorization: Bearer 前缀的 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:391"
+  },
+  {
+    "fact": "所有 API 响应都带 CORS 头，允许任意来源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:539"
+  },
+  {
+    "fact": "SSE 响应禁用 gzip。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:96"
+  },
+  {
+    "fact": "stopServer 时先关闭 A2A 任务管理器再停 HTTP 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpServer.kt:70"
+  },
+  {
+    "fact": "ExternalChatHttpServer 由 AIForegroundService 创建并随服务启停。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt:837"
+  },
+  {
+    "fact": "ExternalChatReceiver 是 exported 的广播接收器，监听 com.ai.assistance.operit.EXTERNAL_CHAT。",
+    "ref": "app/src/main/AndroidManifest.xml:385"
+  },
+  {
+    "fact": "ExternalChatReceiver 用 goAsync 在 IO 线程执行，避免阻塞主线程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:51"
+  },
+  {
+    "fact": "广播的 12 个 extras 与 ExternalChatRequest 字段一一对应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:57"
+  },
+  {
+    "fact": "调用方可用 reply_action 自定义结果广播的 action。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:53"
+  },
+  {
+    "fact": "调用方可用 reply_package 把结果广播限定到指定包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:54"
+  },
+  {
+    "fact": "结果广播携带 success、chat_id、ai_response、error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:112"
+  },
+  {
+    "fact": "广播入口与 HTTP 入口、A2A 入口共用同一个 ExternalChatRequestExecutor。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/intent/ExternalChatReceiver.kt:56"
+  },
+  {
+    "fact": "WorkflowTaskerActivityConfig 是 Tasker 动作插件的配置 Activity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerActivity.kt:22"
+  },
+  {
+    "fact": "Tasker 动作插件的输入是字符串列表 params。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerActivity.kt:61"
+  },
+  {
+    "fact": "params 为空时插件直接返回成功，不做任何事。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerActivity.kt:73"
+  },
+  {
+    "fact": "插件执行时调用 WorkflowRepository.triggerWorkflowsByTaskerEvent 匹配工作流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerActivity.kt:85"
+  },
+  {
+    "fact": "插件异常时返回 TaskerPluginResultError 便于在 Tasker 侧调试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerActivity.kt:86"
+  },
+  {
+    "fact": "Tasker 触发节点匹配：任意传入参数与节点配置的 command 忽略大小写相等。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:851"
+  },
+  {
+    "fact": "只有启用的工作流参与 Tasker 触发匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:846"
+  },
+  {
+    "fact": "WorkflowTaskerReceiver 是 exported 的广播接收器，监听 TRIGGER_WORKFLOW 和 Tasker 的 FIRE_SETTING。",
+    "ref": "app/src/main/AndroidManifest.xml:460"
+  },
+  {
+    "fact": "WorkflowTaskerReceiver.createTriggerIntent 会把 Intent 限定到本应用包名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerReceiver.kt:30"
+  },
+  {
+    "fact": "Intent 触发节点匹配：节点配置的 action 与收到 Intent 的 action 忽略大小写相等。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:897"
+  },
+  {
+    "fact": "Intent 的 extras 全部转字符串后作为触发参数传入工作流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:880"
+  },
+  {
+    "fact": "WorkflowBootReceiver 在开机完成后重排所有启用的工作流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/WorkflowTaskerReceiver.kt:74"
+  },
+  {
+    "fact": "AIAgentActionUpdate 是 Tasker 事件插件的输入，含 task_type、arg1、arg2、arg3。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/AIAgentTasker.kt:24"
+  },
+  {
+    "fact": "AIAgentActionUpdate 另含 arg4、arg5、args_json 输入字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/AIAgentTasker.kt:34"
+  },
+  {
+    "fact": "AIAgentActionEventRunner 是条件型 runner，isEvent 为 true 表示这是事件而非条件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/AIAgentTasker.kt:69"
+  },
+  {
+    "fact": "trigger_tasker_event 工具让 AI 主动向 Tasker 发事件，参数 task_type 必填。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1462"
+  },
+  {
+    "fact": "triggerAIAgentAction 把参数 Map 转成 JSON 存入 args_json 并发起 Tasker 查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/AIAgentTasker.kt:116"
+  },
+  {
+    "fact": "AI Agent Action 配置 Activity 在 Tasker 中显示为 AI Agent Action 事件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/tasker/AIAgentTasker.kt:101"
+  },
+  {
+    "fact": "ToolRegistration.registerAllTools 是全部 AI 工具的集中注册入口（自 AIToolHandler 抽离为独立文件）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:36"
+  },
+  {
+    "fact": "代理调用的参数白名单只有 tool_name/params 加 __operit_package_caller_name/__operit_package_chat_id/__operit_package_caller_card_id，未知参数直接返回错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:80"
+  },
+  {
+    "fact": "代理执行有三道门：isReservedProxyTarget 拒绝保留目标、角色卡工具权限校验（isProxyTargetAllowedForRoleCard）、权限系统 checkToolPermission，任一失败都不执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1104"
+  },
+  {
+    "fact": "executeUiToolWithVisibility 在 UI 类工具执行期间隐藏悬浮窗、finally 块中恢复，避免工具操作与悬浮窗互相遮挡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:39"
+  },
+  {
+    "fact": "WorkflowRepository 以文件形式存工作流（非 Room）：写盘用 AtomicFile 保证崩溃安全，全库操作经 workflowStoreMutex 串行化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:216"
+  },
+  {
+    "fact": "WorkflowRepository 为每个工作流维护独立的执行日志目录（getExecutionLogDirectory/saveExecutionRecord），执行记录与定义分离存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/WorkflowRepository.kt:242"
+  }
+]

@@ -1,0 +1,110 @@
+[
+  {
+    "confidence": "高",
+    "detail": "FpsCounter 内部的 LaunchedEffect 循环体为空操作：while(true){delay(500)} 只为触发重组而每 500ms 唤醒一次协程。FPS 计数本身由 Choreographer.FrameCallback 驱动，该循环不产生任何状态变更，属于无意义的周期性唤醒。",
+    "evidence": "        while (true) {\n            delay(500) // 每500毫秒强制刷新一次\n            // 空操作，只是为了触发重组\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/FpsCounter.kt",
+    "line": 86,
+    "severity": "suggestion",
+    "title": "FpsCounter 存在每 500ms 唤醒一次的空循环 LaunchedEffect"
+  },
+  {
+    "confidence": "中",
+    "detail": "bitmap 缓存上限为 maxMemory/8，即堆内存的 12.5% 专供 LaTeX 公式位图使用。公式位图通常数量少、复用率高，该配额在低内存设备上会与 Coil 等图片加载器竞争内存，entryRemoved 虽会 recycle，但配额本身偏大。",
+    "evidence": "    private val BITMAP_CACHE_SIZE = maxMemory / 8",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt",
+    "line": 22,
+    "severity": "warn",
+    "title": "LaTeX bitmap 缓存占用 maxMemory/8，配额偏大"
+  },
+  {
+    "confidence": "高",
+    "detail": "XML_BLOCK 的字符流用 share(replay=Int.MAX_VALUE) 共享，重放缓存无界增长。工具调用返回的 XML 块若很长（如大段 compose DSL 或工具结果），全部字符会常驻内存直到 xmlNodeStreams 被清理。",
+    "evidence": "                    if (tempBlockType == MarkdownProcessorType.XML_BLOCK) {\n                        blockGroup.stream.share(scope = scope, replay = Int.MAX_VALUE)\n                    } else {\n                        blockGroup.stream\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/StreamMarkdownRenderer.kt",
+    "line": 553,
+    "severity": "warn",
+    "title": "XML_BLOCK 流 share(replay=Int.MAX_VALUE) 无界重放缓存"
+  },
+  {
+    "confidence": "高",
+    "detail": "advanceTeXParserPosition 用反射修改 TeXParser 的私有字段 pos。JLatexMath 版本升级一旦改名或删除该字段，反射即失效；当前用 runCatching 包住并记日志，失效时 color 宏的解析位置推进静默跳过，公式渲染结果错位且无显性报错。",
+    "evidence": "private fun advanceTeXParserPosition(parser: TeXParser, consumedLength: Int) {\n    runCatching {\n        val positionField = TeXParser::class.java.getDeclaredField(\"pos\").apply {\n            isAccessible = true\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/JLatexMathCompatibility.kt",
+    "line": 18,
+    "severity": "warn",
+    "title": "反射修改 TeXParser 私有字段 pos，库升级即失效"
+  },
+  {
+    "confidence": "中",
+    "detail": "buildCacheKey 用反射读取 JLatexMathDrawable.Builder 的 textSize/color/align/padding/background 私有字段。字段变更时回退为纯 formula 作为 key：不同字号/颜色的同一公式会命中同一缓存条目，返回尺寸或颜色错误的 drawable，属于静默的正确性降级。",
+    "evidence": "            fun safeGetField(fieldName: String) {\n                try {\n                    builderClass.getDeclaredField(fieldName).apply {\n                        isAccessible = true",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/LatexCache.kt",
+    "line": 177,
+    "severity": "warn",
+    "title": "buildCacheKey 反射读 builder 私有字段，失效时静默降级缓存 key"
+  },
+  {
+    "confidence": "高",
+    "detail": "Mermaid 预览的 WebView 开启 javaScriptEnabled 并设置 MIXED_CONTENT_ALWAYS_ALLOW，同时 mermaid 初始化配置 securityLevel:'loose'（允许 HTML 标签）。聊天内容里的 mermaid 代码由 AI 生成，若被诱导注入恶意 HTML/JS，将在该 WebView 内执行；虽无 addJavascriptInterface，但仍可发起网络请求或渲染钓鱼式内容。",
+    "evidence": "                    securityLevel: 'loose',\n            // 设置混合内容模式\n            settings.mixedContentMode = android.webkit.WebSettings.MIXED_CONTENT_ALWAYS_ALLOW",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedCodeBlock.kt",
+    "line": 427,
+    "severity": "warn",
+    "title": "Mermaid WebView 混合内容全放行且 mermaid 安全级别为 loose"
+  },
+  {
+    "confidence": "中",
+    "detail": "MarkdownVideoRenderer 与 MarkdownAudioRenderer 在每个媒体块的组合作用域里按 URL remember 一个 ExoPlayer，并在 LaunchedEffect 里立即 prepare。一条消息含多个视频/音频块时，会同时存在多个已 prepare 的播放器实例，占用解码器与内存资源。",
+    "evidence": "    val player = remember(videoUrl) { ExoPlayer.Builder(context).build() }\n\n    LaunchedEffect(player, videoUri) {\n        player.setMediaItem(MediaItem.fromUri(videoUri))\n        player.prepare()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownVideoRenderer.kt",
+    "line": 60,
+    "severity": "warn",
+    "title": "每个音视频块独立创建 ExoPlayer 并立即 prepare"
+  },
+  {
+    "confidence": "中",
+    "detail": "measureTableLayout 对每个单元格构建两次 StaticLayout：measureCellDesiredWidth 内部调一次 createCellStaticLayout 测宽度，最终布局循环（:533）再调一次。单元格越多、表格越大，布局开销翻倍，且 remember 键包含 tableContent，流式追加时整表重复测量。",
+    "evidence": "            val layout = createCellStaticLayout(cell, paint, innerWidthPx, lineSpacingMultiplier)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/EnhancedTableBlock.kt",
+    "line": 533,
+    "severity": "warn",
+    "title": "表格每个单元格构建两次 StaticLayout，测量开销翻倍"
+  },
+  {
+    "confidence": "高",
+    "detail": "isLargeImage 按 URL 后缀判断大图，定义后在全文件无任何调用点（grep 全文件仅 :103 一处定义），属于遗留死代码。",
+    "evidence": "/** 判断是否为大图片 简单根据图片URL后缀来判断 */\nprivate fun isLargeImage(url: String): Boolean {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt",
+    "line": 103,
+    "severity": "suggestion",
+    "title": "isLargeImage 定义后从未被调用（死代码）"
+  },
+  {
+    "confidence": "高",
+    "detail": "hideAll 遍历逐个 hide，单个 overlay.hide() 抛异常时被空 catch 吞掉且无日志。某个 agent 的悬浮窗销毁失败时无任何可观测痕迹，排查困难。",
+    "evidence": "        fun hideAll() {\n            val overlays = instances.values.toList()\n            instances.clear()\n            overlays.forEach { overlay ->\n                try {\n                    overlay.hide()\n                } catch (_: Exception) {\n                }\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt",
+    "line": 100,
+    "severity": "suggestion",
+    "title": "hideAll 空 catch 吞掉单个 overlay 销毁异常"
+  },
+  {
+    "confidence": "中",
+    "detail": "saveImageFromUrl 用 java.net.URL(imageUrl).openConnection() 下载图片，未设置 connectTimeout/readTimeout。网络异常时 connection.connect() 可无限阻塞，挂住 Dispatchers.IO 线程；且未校验 HTTP 响应码，错误页面也会被当图片写入相册。",
+    "evidence": "                            // 下载图片\n                            val connection = java.net.URL(imageUrl).openConnection()\n                            connection.connect()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/markdown/MarkdownImageRenderer.kt",
+    "line": 459,
+    "severity": "suggestion",
+    "title": "保存图片下载未设超时、未校验 HTTP 响应码"
+  },
+  {
+    "confidence": "高",
+    "detail": "OverlayCard 内用 while 循环每 500ms 轮询 ShowerController.getVideoSize() 判断虚拟屏是否断开。常驻轮询在小窗展示期间持续消耗 CPU 与唤醒，改为 ShowerController 的状态回调可消除轮询。",
+    "evidence": "                        lastReady = ready\n                        delay(500)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/common/displays/VirtualDisplayOverlay.kt",
+    "line": 616,
+    "severity": "suggestion",
+    "title": "每 500ms 轮询 getVideoSize，可改为状态回调"
+  }
+]

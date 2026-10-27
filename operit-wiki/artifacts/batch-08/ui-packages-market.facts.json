@@ -1,0 +1,474 @@
+[
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:7",
+    "fact": "MarketInstallStage 枚举定义 9 个安装阶段：CONNECTING、FETCHING_METADATA、CHECKING_LOCAL、DOWNLOADING、VERIFYING、IMPORTING_REPOSITORY、IMPORTING_CONFIG、INSTALLING、RECORDING"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:23",
+    "fact": "MarketInstallProgress 数据类携带 stage 与可空的 progress（Float）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:27",
+    "fact": "MarketInstallStateStore 是 object 单例，用 MutableStateFlow<Map<String, MarketInstallProgress>> 持有每个 entryId 的安装进度"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:32",
+    "fact": "start(entryId) 加 @Synchronized：先 trim entryId，为空或已存在则返回 false，否则写入 CONNECTING 初始进度并返回 true"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:41",
+    "fact": "update(entryId, stage, progress) 加 @Synchronized，把 progress 钳制在 0f..1f 范围内"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallStateStore.kt:49",
+    "fact": "finish(entryId) 加 @Synchronized，从 map 中移除该 entry 的进度记录"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:17",
+    "fact": "MarketLocalInstallStateKind 三态：NOT_INSTALLED、INSTALLED、UPDATE_AVAILABLE"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:153",
+    "fact": "writeMarketInstallMarker 把标记写到安装根目录下的 .operit/market.json（常量 MARKET_MARKER_DIR_NAME 与 MARKET_MARKER_FILE_NAME）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:29",
+    "fact": "writeMarketInstallMarker 取 entry.latestVersion?.id 为 versionId；entryId 或 versionId 为空抛 IllegalStateException"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:34",
+    "fact": "标记目录创建失败抛 IllegalStateException"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:38",
+    "fact": "标记内容是 Gson 序列化的 MarketInstallMarker(entryId, versionId)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:52",
+    "fact": "resolveMarketLocalInstallStates：marker 缺失→NOT_INSTALLED；marker.versionId 等于当前版本 id→INSTALLED；否则→UPDATE_AVAILABLE"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:133",
+    "fact": "readMarketInstallMarker 捕获全部异常只记警告并跳过，不中断整批扫描"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:90",
+    "fact": "mcp 纯配置安装的标记目录在 filesDir/market_install_markers/mcp_config/<safeServerId>"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:91",
+    "fact": "serverId 经正则 [\\\\/:*?\"<>|\\u0000-\\u001F] 替换为下划线并去掉首尾点/空格，防路径穿越"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInstallMarker.kt:66",
+    "fact": "findInstalledMarketMarkerRoots 只返回 marker.entryId 与目标 entryId 相等的根目录"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:35",
+    "fact": "MarketEntryInstallController.install 按 entry.type.lowercase() 分发：skill 走仓库导入、mcp 走配置合并或仓库安装、script/package 走制品工程安装"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:40",
+    "fact": "未知 entry 类型直接抛 IllegalArgumentException"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:34",
+    "fact": "install 开场先上报 MarketInstallStage.CONNECTING"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:50",
+    "fact": "installSkillEntry：repoUrl 为空抛异常；先上报 IMPORTING_REPOSITORY，再删旧标记根目录，最后仓库导入并写 marker"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:73",
+    "fact": "installMcpEntry：installConfig 非空且不需要物理安装时走纯配置路径：上报 IMPORTING_CONFIG、删旧标记、mergeConfigFromJson"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:95",
+    "fact": "MCP 纯配置路径为解析出的每个 serverId 写一份标记"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:84",
+    "fact": "MCP 配置合并失败记日志后抛 IllegalStateException（mcp_market_config_import_failed_with_error）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:109",
+    "fact": "MCP 仓库路径用 entry.id/name/description 等拼 PluginMetadata 并调 installMCPServerWithObject 安装"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:176",
+    "fact": "installArtifactEntry 安装的是工程的 defaultVersion（按 defaultVersionId 查找），找不到抛 IllegalStateException"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:193",
+    "fact": "deleteInstalledMarkerRoot 对匹配 entryId 的所有标记根目录执行 deleteRecursively"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:205",
+    "fact": "trackEntryAssetDownload 上报下载量，失败只记警告不抛异常"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:220",
+    "fact": "canInstallFromUnifiedMarket：skill 要求 source.url 非空；mcp 要求 source.url 或 installConfig 任一非空；script/package 要求 artifact 非空且首个 asset 的 id 非空"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketEntryInstallController.kt:230",
+    "fact": "parseMcpServerIds 经 McpConfigImportParser.parse(installConfig).servers 取 id 集合"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketReviewStatus.kt:31",
+    "fact": "MarketReviewState 五态：PENDING、APPROVED、CHANGES_REQUESTED、REJECTED、WITHDRAWN"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketReviewStatus.kt:132",
+    "fact": "MarketV2Entry.resolveMarketReviewSnapshot：approved/open→APPROVED；changes_requested→CHANGES_REQUESTED；rejected/security_blocked→REJECTED；withdrawn/closed/removed→WITHDRAWN；其余→PENDING"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketReviewStatus.kt:146",
+    "fact": "另有 MarketV2PublisherEntrySummary 版 resolveMarketReviewSnapshot 重载，映射规则相同"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketReviewStatus.kt:39",
+    "fact": "MarketReviewReason 十种原因，每种带 code（如 metadata-incomplete）与 labelName（如 reason:metadata-incomplete）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketReviewStatus.kt:114",
+    "fact": "审核原因文案走 R.string.market_review_reason_* 字符串资源"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketAgreementDialog.kt:28",
+    "fact": "MarketAgreementDialog 有 mandatory 参数控制是否允许关闭"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketAgreementDialog.kt:37",
+    "fact": "首次展示强制 5 秒倒计时：repeat(5){delay(1000); remainingSeconds--} 后才启用同意按钮"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketAgreementDialog.kt:64",
+    "fact": "对话框展示 CURRENT_MARKET_AGREEMENT_VERSION 当前协议版本号"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:254",
+    "fact": "UnifiedMarketScreen 以 mandatory = !isAgreementAccepted() 弹出协议，同意后调 acceptCurrentAgreement()"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:109",
+    "fact": "MarketHomeTab 三 tab：ALL、CATEGORIES、MINE"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:128",
+    "fact": "11 个固定分类 id（search_research、dev_code 等）映射到名称字符串资源"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:143",
+    "fact": "11 个分类各有 Material Icons 图标映射"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:159",
+    "fact": "未知分类 id 回退直接显示 categoryId 本身"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:191",
+    "fact": "showMarketAgreementDialog 初始值为 !isAgreementAccepted()"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:679",
+    "fact": "通知 kind 文案硬编码中文（如 comment_new→\"新评论\"）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:552",
+    "fact": "MarketNotificationsPane 用 key=\"market-notifications\" 的独立 UnifiedMarketBrowseViewModel 实例"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:736",
+    "fact": "我的页用 githubAuth 登录态与 userInfo 的 combine 驱动"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketScreen.kt:818",
+    "fact": "发布入口提供三个选项：制品、skill、mcp"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseControls.kt:30",
+    "fact": "MarketBrowseControls 是一行横向滚动的排序 FilterChip 加精选开关"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseControls.kt:36",
+    "fact": "sortOptions 默认 MarketSortOption.entries；featuredOnly 默认 true"
+  },
+  {
+    "fact": "featuredOnly 选中时 FilterChip 显示 Check 图标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseControls.kt:67"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseControls.kt:72",
+    "fact": "MarketStatsSummary 显示下载图标与 market_stat_downloads_short 文案"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseSection.kt:7",
+    "fact": "MarketBrowseSectionConfig 携带搜索占位、标题、空态文案资源与 sortOptions"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseSection.kt:19",
+    "fact": "MarketBrowseSection 是泛型组合函数，把 MarketBrowseList 与 MarketBrowseCard 组装起来"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseSection.kt:17",
+    "fact": "entryFactory 把条目 T 转成 MarketBrowseEntry（model/onViewDetails/onInstall）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseSection.kt:40",
+    "fact": "滚动位置经 initialFirstVisibleItemIndex/ScrollOffset 传入，变化经 onScrollPositionChanged 回传"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketStatsSupport.kt:5",
+    "fact": "MarketStatsType 四种 wireValue：script、package、skill、mcp"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketStatsSupport.kt:9",
+    "fact": "MarketSortOption 三种：UPDATED、DOWNLOADS、LIKES，各带 labelRes"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketStatsSupport.kt:17",
+    "fact": "toRankMetric：UPDATED→\"updated\"、DOWNLOADS→\"downloads\"、LIKES→\"likes\""
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketStatsSupport.kt:24",
+    "fact": "PublishArtifactType.toMarketStatsType 只映射 SCRIPT/PACKAGE"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseList.kt:129",
+    "fact": "搜索非空时禁用下拉刷新（isRefreshing 要求 searchQuery.isBlank()）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseList.kt:136",
+    "fact": "滑到倒数第 2 个条目且有更多页、未在加载时触发 onLoadMore，用 lastLoadMoreIndex 防重复"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseList.kt:321",
+    "fact": "UPDATED 排序按日期分组头，空日期归入\"更早\""
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseList.kt:58",
+    "fact": "卡片动作状态优先级：进行中安装（含进度）> 版本不兼容警告 > 本地安装状态"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseList.kt:74",
+    "fact": "本地状态映射：INSTALLED→Installed、UPDATE_AVAILABLE→Updatable、无记录→Available"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseEntryMappers.kt:62",
+    "fact": "toUnifiedMarketBrowseEntry：版本不兼容时动作状态为 Unavailable(Warning)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseEntryMappers.kt:45",
+    "fact": "卡片描述取 detail 为空则用 description，并截断到 100 字符"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketBrowseEntryMappers.kt:55",
+    "fact": "heartCount 硬编码为 0"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketTopBarSearchSupport.kt:108",
+    "fact": "BindMarketSearchToTopBar 把搜索框内容绑定到顶栏标题区"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketTopBarSearchSupport.kt:156",
+    "fact": "搜索框组合时自动请求焦点并弹出键盘"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketTopBarSearchSupport.kt:148",
+    "fact": "外部 searchQuery 变化时同步回填到输入框并把光标移到末尾"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:264",
+    "fact": "详情内容区用 stickyHeader 实现\"关于/评论\"粘性双 tab"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:173",
+    "fact": "MarketCommentSortOption 只有一个选项 NEWEST"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:177",
+    "fact": "sortMarketComments 按 parentId 建树：根评论按 createdAt 倒序，子评论按正序"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:187",
+    "fact": "parentId 为空、自指或父评论不存在时都当作根评论处理"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1306",
+    "fact": "评论卡片长按弹出菜单：回复始终可见；编辑仅评论作者可见；删除对作者或条目所有者可见"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1426",
+    "fact": "评论正文默认折叠 8 行（MARKET_COMMENT_BODY_COLLAPSED_LINES），溢出时显示展开/收起"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1344",
+    "fact": "评论对话框发布中禁用输入与关闭，发布按钮要求正文非空"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1387",
+    "fact": "formatMarketDetailDate 解析 yyyy-MM-dd'T'HH:mm:ss'Z' 输出 yyyy-MM-dd，失败回退 raw.take(10)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1398",
+    "fact": "formatMarketDetailCompactDate 输出 yy/MM/dd"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1418",
+    "fact": "splitMarketTags 按逗号/中文逗号/换行切分、去空、去重"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1409",
+    "fact": "marketDetailInitial 取文本首字符大写，空文本返回 \"?\""
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/UnifiedMarketDetailScreen.kt:1429",
+    "fact": "BindUnifiedMarketDetailTopBarTitle 滚动时把标题同步到顶栏"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:139",
+    "fact": "isPreviewMode = fromManage && entry.isOpen() && review.state != APPROVED"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:284",
+    "fact": "预览模式显示审核状态横幅（buildPreviewBannerMessage）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:267",
+    "fact": "版本不兼容时显示红色横幅：BELOW_MINIMUM/ABOVE_MAXIMUM 各有文案"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:237",
+    "fact": "主按钮启用条件：可安装 && 版本兼容 && 无进行中安装 && 本地非已安装"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:503",
+    "fact": "版本历史对话框选择版本后经 withSelectedVersion 刷新"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:798",
+    "fact": "withSelectedVersion 把选中版本移到 versions 首位并设为 latestVersion"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:140",
+    "fact": "点赞按钮用本地 hasThumbsUp 状态，已点赞后不再重复发送"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketDetailEntryScreen.kt:403",
+    "fact": "点赞按钮要求 currentUser 非空（登录）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:80",
+    "fact": "loadEntryComments(entryId, perPage=50) 按 entryId 缓存评论"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:218",
+    "fact": "loadEntryReactions 不请求服务端，按 entryLikes 本地合成一条 \"+1\" reaction"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:234",
+    "fact": "addReactionToEntry 调 marketApiService.addReaction，成功后追加到本地列表"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:322",
+    "fact": "头像缓存内存 + SharedPreferences 双层，超 500 条触发清理"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:326",
+    "fact": "cleanupAvatarCache 一次删掉 keys.take(size/2)"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:93",
+    "fact": "评论加载 404 时当作空列表，不报错"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/MarketInteractionController.kt:115",
+    "fact": "评论分页/编辑/删除的 perPage 默认都是 50"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:38",
+    "fact": "UnifiedMarketBrowseScope 用 kind 区分 ALL/TYPE/CATEGORY/TYPE_CATEGORY"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:100",
+    "fact": "_featuredOnly 默认 true"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:117",
+    "fact": "entries = combine(_entries, _searchQuery, _featuredOnly) 做本地过滤"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:122",
+    "fact": "搜索忽略大小写匹配 title/description/detail/categoryId/type/publisherLogin"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:352",
+    "fact": "排序：UPDATED→updatedTimestamp 倒序；DOWNLOADS→downloads 倒序；LIKES→likeCount 倒序"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:215",
+    "fact": "服务端分页 currentPage/totalPages，loadMoreEntries 页码递增"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:264",
+    "fact": "installEntry：MarketInstallStateStore.start 失败直接返回"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketBrowseViewModel.kt:147",
+    "fact": "切换排序会重新 loadEntries"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketDetailViewModel.kt:141",
+    "fact": "installEntry：start→install→update→finally 刷新本地状态+finish"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketDetailViewModel.kt:150",
+    "fact": "安装异常写入 _errorMessage 并记日志"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketDetailViewModel.kt:100",
+    "fact": "postEntryComment 先判 GitHub 登录，未登录写 login_required 错误"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketDetailViewModel.kt:110",
+    "fact": "评论发布成功后从服务端重载（CommentPostSuccessBehavior.RELOAD_FROM_SERVER）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketDetailViewModel.kt:130",
+    "fact": "loadEntryReactions 用 entry.marketLikeCount() 喂给控制器"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketManageViewModel.kt:24",
+    "fact": "UnifiedMarketManageKind 五种：SCRIPT/PACKAGE/ARTIFACT/SKILL/MCP"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketManageViewModel.kt:27",
+    "fact": "ARTIFACT 同时覆盖 script 与 package 两种 wireValue"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketManageViewModel.kt:152",
+    "fact": "withdrawEntry 把 stateCode 置为 \"withdrawn\""
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketManageScreen.kt:68",
+    "fact": "管理页四个类型 tab：SCRIPT/PACKAGE/SKILL/MCP"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketManageScreen.kt:266",
+    "fact": "管理页条目按 relation 分 owner/contributor 两组展示"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketManageScreen.kt:132",
+    "fact": "未登录时显示 GitHub 登录引导（need_login_github_manage_artifacts）"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/UnifiedMarketAuthorViewModel.kt:48",
+    "fact": "UnifiedMarketAuthorViewModel 按 authorId 调 getPublisherEntries 拉取条目"
+  },
+  {
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/UnifiedMarketAuthorScreen.kt:69",
+    "fact": "作者页条目按 relation 分 owner/contributor 展示"
+  }
+]

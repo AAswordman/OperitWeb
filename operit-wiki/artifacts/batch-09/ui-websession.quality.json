@@ -1,0 +1,52 @@
+[
+ {
+  "severity": "warn",
+  "category": "performance",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt",
+  "line": 143,
+  "title": "悬浮球三个无限动画在可见期间持续重组",
+  "detail": "bobbing（900ms）、wiggle（1200ms）、pulse（1100ms）三个 infiniteRepeatable 动画在悬浮球可见时无条件运行，即使无下载、无交互也持续触发重组，增加 CPU/电量消耗；可考虑仅在有下载活动时开启动画。",
+  "evidence": "val transition = rememberInfiniteTransition(label = \"web-session-indicator\")\nval bobbingDp by transition.animateFloat(-2f, 2f, infiniteRepeatable(tween(900, LinearEasing), Reverse), \"bobbing\")\nval wiggleDeg by transition.animateFloat(-8f, 8f, infiniteRepeatable(tween(1200, LinearEasing), Reverse), \"wiggle\")",
+  "confidence": "medium"
+ },
+ {
+  "severity": "suggestion",
+  "category": "correctness",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt",
+  "line": 152,
+  "title": "地址栏输入框未指定 URL 键盘类型",
+  "detail": "编辑态 BasicTextField 的 keyboardOptions 只设了 imeAction = Go，未设 keyboardType = Uri；输入法可能对 URL 做首字母大写/自动纠错（如 Example.com），建议关闭自动纠错并使用 Uri 键盘。",
+  "evidence": "BasicTextField(\n    value = urlDraft,\n    onValueChange = onUrlDraftChange,\n    singleLine = true,\n    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Go),",
+  "confidence": "medium"
+ },
+ {
+  "severity": "suggestion",
+  "category": "correctness",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt",
+  "line": 217,
+  "title": "删除文件连记录一次点击无二次确认",
+  "detail": "onDeleteDownload(item.id, true) 会同时删除磁盘文件与记录，点击 TextButton 直接执行，无确认对话框；误删后文件不可恢复，建议加二次确认。",
+  "evidence": "if (item.canDelete && item.canDeleteFile) {\n    TextButton(onClick = { onDeleteDownload(item.id, true) }) {\n        Text(stringResource(R.string.web_session_download_delete_file_and_record))",
+  "confidence": "medium"
+ },
+ {
+  "severity": "suggestion",
+  "category": "performance",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt",
+  "line": 40,
+  "title": "DateFormat 每次重组都重新创建",
+  "detail": "val dateFormat = DateFormat.getDateTimeInstance(SHORT, SHORT) 写在 composable 函数体内，未用 remember 缓存；每次重组都新建实例，建议 remember 起来。",
+  "evidence": "val dateFormat = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)",
+  "confidence": "medium"
+ },
+ {
+  "severity": "suggestion",
+  "category": "correctness",
+  "file": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt",
+  "line": 751,
+  "title": "地址栏无搜索兜底，非 URL 文本直接喂给 WebView",
+  "detail": "normalizeNavigationUrl 对含空格的输入直接原样返回（如用户输入关键词），没有搜索引擎回退；WebView 加载失败即白屏，建议接搜索 fallback。",
+  "evidence": "return if (!trimmed.contains(\"://\") && trimmed.contains(\".\") && !trimmed.contains(\" \")) {\n    \"https://$trimmed\"\n} else {\n    trimmed\n}",
+  "confidence": "medium"
+ }
+]

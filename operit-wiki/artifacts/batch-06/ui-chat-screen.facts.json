@@ -1,0 +1,330 @@
+[
+  {
+    "fact": "AIChatScreen 是聊天主界面的 @Composable 入口函数，函数声明在 screens/AIChatScreen.kt 第 120 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:120"
+  },
+  {
+    "fact": "AIChatScreen 标注了 @RequiresApi(Build.VERSION_CODES.O)、@OptIn(ExperimentalMaterial3Api::class)、@Composable 与 @Preview(showBackground = true)，位于 screens/AIChatScreen.kt 第 115-119 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:115"
+  },
+  {
+    "fact": "AIChatScreen 经 viewModel ?: viewModel { ChatViewModel(context.applicationContext) } 初始化 ChatViewModel（screens/AIChatScreen.kt 第 143 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:143"
+  },
+  {
+    "fact": "AIChatScreen 用 rememberSaveable { UUID.randomUUID().toString() } 生成 chatViewId（screens/AIChatScreen.kt 第 286 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:286"
+  },
+  {
+    "fact": "AIChatScreen 打开/更新时经 ChatViewHookPluginRegistry.dispatchAsync 派发 ChatViewEvent.VIEW_OPENED 与 VIEW_UPDATED（screens/AIChatScreen.kt 第 312-317 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:312"
+  },
+  {
+    "fact": "AIChatScreen 在 DisposableEffect 中派发 ChatViewEvent.VIEW_CLOSED（screens/AIChatScreen.kt 第 321-322 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:321"
+  },
+  {
+    "fact": "AIChatScreen 收集 ChatViewModel 的 scrollToBottomEvent（screens/AIChatScreen.kt 第 328 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:328"
+  },
+  {
+    "fact": "AIChatScreen 的自动滚动在 LaunchedEffect 中 collect scrollToBottomEvent，条件满足时调用 scrollState.animateScrollTo(scrollState.maxValue)（screens/AIChatScreen.kt 第 672-680 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:672"
+  },
+  {
+    "fact": "AIChatScreen 自动滚动的 try-catch 块中 catch (e: Exception) 为空，日志行被注释掉（screens/AIChatScreen.kt 第 681-684 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:681"
+  },
+  {
+    "fact": "AIChatScreen 当 modelName 包含 deepseek-r1-0528-qwen3-8b:free（忽略大小写）时弹出模型建议弹窗（screens/AIChatScreen.kt 第 342 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:342"
+  },
+  {
+    "fact": "AIChatScreen 经 SharedIncomingContentHandler 把外部传入内容转交给 ChatViewModel.handleSharedFiles 与 handleSharedText（screens/AIChatScreen.kt 第 377-384 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:377"
+  },
+  {
+    "fact": "AIChatScreen 按 UserPreferencesManager.CHAT_STYLE_BUBBLE 映射为 ChatStyle.BUBBLE，否则为 ChatStyle.CURSOR（screens/AIChatScreen.kt 第 197 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:197"
+  },
+  {
+    "fact": "AIChatScreen 经 LocalTopBarActions.current 设置顶栏动作（screens/AIChatScreen.kt 第 774 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:774"
+  },
+  {
+    "fact": "ChatInputBottomBar 是私有 composable 函数，声明在 screens/AIChatScreen.kt 第 1481 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1481"
+  },
+  {
+    "fact": "ChatInputBottomBar 用 isMessageProcessing 判定消息是否处理中，isQueueBlocked = isMessageProcessing || isSummarizing || isSendTriggeredSummarizing（screens/AIChatScreen.kt 第 1547-1556 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1547"
+  },
+  {
+    "fact": "ChatInputBottomBar 只在插入文本超过阈值时才读取 clipboardManager.primaryClip，避免每次按键触发系统已读取剪贴板提示（screens/AIChatScreen.kt 第 1607-1618 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1607"
+  },
+  {
+    "fact": "ChatInputBottomBar 发送前先调用 ChatInputHookRegistry.dispatchSubmitRequested；队列发送入口在第 1717 行，主发送入口在第 1810 行（screens/AIChatScreen.kt）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1717"
+  },
+  {
+    "fact": "ChatInputSubmitActions.BLOCK 时把队列项恢复到待发送队列并显示提示消息；CONSUME 时仅显示提示消息不发送（screens/AIChatScreen.kt 第 1729-1737 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1729"
+  },
+  {
+    "fact": "sendQueuedItemNow 定义在 screens/AIChatScreen.kt 第 1713 行，支持取消当前对话后发送队列项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1713"
+  },
+  {
+    "fact": "enqueueDraftToPendingQueue 定义在 screens/AIChatScreen.kt 第 1784 行，把草稿加入待发送队列并清空输入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1784"
+  },
+  {
+    "fact": "AIChatScreen 导出取消按钮处留有注释 TODO：实现取消导出的逻辑（screens/AIChatScreen.kt 第 1405 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/AIChatScreen.kt:1405"
+  },
+  {
+    "fact": "ConfigurationScreen 是 API Key 首次配置页的 @Composable 函数，声明在 screens/ConfigurationScreen.kt 第 28 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/ConfigurationScreen.kt:28"
+  },
+  {
+    "fact": "ConfigurationScreen 用 ApiKeyFormatValidator.normalize(apiKeyInput) 归一化输入（screens/ConfigurationScreen.kt 第 38 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/ConfigurationScreen.kt:38"
+  },
+  {
+    "fact": "ConfigurationScreen 主按钮逻辑：已输入 token 且格式合法时调用 onSaveApiKey，否则弹 TokenInfoDialog 跳转领 token（screens/ConfigurationScreen.kt 第 153-159 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/ConfigurationScreen.kt:153"
+  },
+  {
+    "fact": "ConfigurationScreen 的输入框使用 bringIntoViewOnImeFocus 修饰符（screens/ConfigurationScreen.kt 第 119 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/screens/ConfigurationScreen.kt:119"
+  },
+  {
+    "fact": "ApiKeyFormatValidator.normalize 去除输入首尾空白（data/model/ApiKeyFormatValidator.kt 第 4 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:4"
+  },
+  {
+    "fact": "ChatViewModel 是 class ChatViewModel(private val context: Context) : ViewModel()，声明在 viewmodel/ChatViewModel.kt 第 103 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:103"
+  },
+  {
+    "fact": "ChatViewModel 经 ChatRuntimeHolder.getInstance(context) 持有运行时（viewmodel/ChatViewModel.kt 第 166 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:166"
+  },
+  {
+    "fact": "ChatViewModel 从 chatRuntimeHolder.getCore(ChatRuntimeSlot.MAIN) 取出各 delegate（viewmodel/ChatViewModel.kt 第 454 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:454"
+  },
+  {
+    "fact": "ChatViewModel 对外暴露的 delegate 派生状态全部用 by lazy 延迟初始化（viewmodel/ChatViewModel.kt 第 155、199-207 行等）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:199"
+  },
+  {
+    "fact": "ChatHistoryDisplayMode 枚举含 BY_CHARACTER_CARD、BY_FOLDER、CURRENT_CHARACTER_ONLY 三个值（viewmodel/ChatViewModel.kt 第 97-100 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:97"
+  },
+  {
+    "fact": "ChatViewModel 的历史显示模式缺省值为 CURRENT_CHARACTER_ONLY（viewmodel/ChatViewModel.kt 第 345 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:345"
+  },
+  {
+    "fact": "currentChatIsLoading 用 combine(currentChatId, activeStreamingChatIds) 做会话级隔离（viewmodel/ChatViewModel.kt 第 267-270 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:267"
+  },
+  {
+    "fact": "currentChatInputProcessingState 用 combine(currentChatId, inputProcessingStateByChatId) 做会话级隔离（viewmodel/ChatViewModel.kt 第 279-282 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:279"
+  },
+  {
+    "fact": "ChatViewModel.sendUserMessage 先调 hideMentionSuggestionPanel() 再委托 messageCoordinationDelegate.sendUserMessage（viewmodel/ChatViewModel.kt 第 1460-1463 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1460"
+  },
+  {
+    "fact": "ChatViewModel.shareMessages 在第 1004 行定义，经 MessageImageGenerator 生成图片后用 FileProvider 分享。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1004"
+  },
+  {
+    "fact": "ChatViewModel.rollbackToMessage 在第 1309 行定义；rewindAndResendMessage 在第 1204 行定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1309"
+  },
+  {
+    "fact": "ChatViewModel.dismissErrorDialog 在 ChatViewModel.kt 第 1659 行定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1659"
+  },
+  {
+    "fact": "dismissErrorDialog 函数体内对当前会话调用 setInputProcessingStateForChat(chatId, InputProcessingState.Idle)，把当前会话输入状态置为 Idle。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1659"
+  },
+  {
+    "fact": "ChatViewModel.onCleared 在第 2441 行定义，取消监听 job、清理悬浮窗、解绑 UI bridge、关闭语音服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2441"
+  },
+  {
+    "fact": "ChatViewModel.updateUserMessage 在第 1363 行定义，经 normalizeMentionDeletion 处理 mention token 删除（第 1364 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1363"
+  },
+  {
+    "fact": "ChatViewModel.selectMentionPackage（第 1431 行）与 selectMentionWorkspaceEntry（第 1440 行）把 mention token 替换为文本并挂载附件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1431"
+  },
+  {
+    "fact": "ChatViewModel.findActiveMentionTrigger 是私有函数（第 1959 行），从光标向前扫描 @ 与 / 触发符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1959"
+  },
+  {
+    "fact": "ChatViewModel.handleSharedText（第 2052 行）与 handleSharedFiles（第 2079 行）经 resolveTargetChatIdForSharedContent（第 2004 行）确定目标会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2052"
+  },
+  {
+    "fact": "ChatViewModel.handleSharedFiles 在分享文件间插入 delay(100)（viewmodel/ChatViewModel.kt 第 2110 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2110"
+  },
+  {
+    "fact": "ChatViewModel.handleAttachment（第 1728 行）、attachPastedText（第 1758 行）、insertAttachmentReference（第 1780 行）分别处理文件附件、粘贴文本与附件引用插入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1728"
+  },
+  {
+    "fact": "ChatViewModel.captureScreenContent（第 1799 行）、captureNotifications（第 1830 行）、captureLocation（第 1861 行）、captureMemoryFolders（第 1894 行）分别采集屏幕、通知、定位与记忆文件夹。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:1799"
+  },
+  {
+    "fact": "ChatViewModel.toggleWebView 在第 2187 行；prepareWorkspaceServer 在第 2255 行，用 LocalWebServer.ServerType.WORKSPACE 启动本地服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2187"
+  },
+  {
+    "fact": "ChatViewModel.bindChatToWorkspace（第 2486 行）与 unbindChatFromWorkspace（第 2511 行）管理会话与工作区的绑定关系。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2486"
+  },
+  {
+    "fact": "ChatViewModel.executeCommandInWorkspace 在第 2566 行定义，先 cd 到工作区目录再执行命令并收集输出到 _workspaceCommandExecutionState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2566"
+  },
+  {
+    "fact": "ChatViewModel.speakMessage 在第 2999/3003 行定义，经 TtsCleaner.clean、WaifuMessageProcessor.cleanContentForWaifu、TtsSegmenter.split 分段播报。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:2999"
+  },
+  {
+    "fact": "ChatViewModel.speakMessage 的日志含消息内容预览 speechPreview(message)（viewmodel/ChatViewModel.kt 第 3016 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:3016"
+  },
+  {
+    "fact": "ChatViewModel.toggleAutoRead 在第 3146 行定义；onFloatingButtonClick 在第 1673 行，toggleFloatingMode 在第 1716 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/ChatViewModel.kt:3146"
+  },
+  {
+    "fact": "UiStateDelegate 是 UI 状态 delegate 类（viewmodel/UiStateDelegate.kt 第 17 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/UiStateDelegate.kt:17"
+  },
+  {
+    "fact": "UiStateDelegate 用 ArrayDeque<ChatToastEvent> 做 toast 队列保序（viewmodel/UiStateDelegate.kt 第 26 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/UiStateDelegate.kt:26"
+  },
+  {
+    "fact": "UiStateDelegate.masterPermissionLevel 缺省为 PermissionLevel.ASK（viewmodel/UiStateDelegate.kt 第 31-32 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/UiStateDelegate.kt:31"
+  },
+  {
+    "fact": "UiStateDelegate.fileChooserRequest 为 StateFlow<Intent?>（viewmodel/UiStateDelegate.kt 第 35-36 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/UiStateDelegate.kt:35"
+  },
+  {
+    "fact": "PendingMessageQueueStore 是 internal 类，按 chatId 存 PendingMessageQueueState（viewmodel/PendingMessageQueueStore.kt 第 16 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStore.kt:16"
+  },
+  {
+    "fact": "PendingMessageQueueStore 用 AtomicLong(1L) 生成待发送消息 id（viewmodel/PendingMessageQueueStore.kt 第 18 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStore.kt:18"
+  },
+  {
+    "fact": "PendingMessageQueueStore.consumeAutoDequeueSignal 仅在 wasBlocked 且队列不再阻塞、未被抑制且消息非空时返回 true（viewmodel/PendingMessageQueueStore.kt 第 71-83 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStore.kt:71"
+  },
+  {
+    "fact": "PendingMessageQueueStore.removeChat 在删除会话时清除该会话的待发送队列（viewmodel/PendingMessageQueueStore.kt 第 89 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStore.kt:89"
+  },
+  {
+    "fact": "FloatingWindowDelegate.toggleFloatingMode 在第 162 行定义，用 startForegroundService 启动 FloatingChatService（第 180 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/FloatingWindowDelegate.kt:162"
+  },
+  {
+    "fact": "FloatingWindowDelegate.launchInMode 用 intent.putExtra(\"INITIAL_MODE\", mode.name) 透传初始模式（viewmodel/FloatingWindowDelegate.kt 第 219 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/FloatingWindowDelegate.kt:219"
+  },
+  {
+    "fact": "FloatingWindowDelegate.clearFloatingCrashDisableFlag 清除 floating_chat_prefs 中的崩溃停用标记（viewmodel/FloatingWindowDelegate.kt 第 147 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/FloatingWindowDelegate.kt:147"
+  },
+  {
+    "fact": "FloatingWindowDelegate 在 onServiceDisconnected、registerReceiver、unbindService、clearCallbacks、unregisterReceiver 处各有一个空的 catch (_: Exception) 块（viewmodel/FloatingWindowDelegate.kt 第 91、118、250、255、277 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/viewmodel/FloatingWindowDelegate.kt:91"
+  },
+  {
+    "fact": "MentionTokenUtils 定义 MentionTokenRange 数据类（util/MentionTokenUtils.kt 第 3 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MentionTokenUtils.kt:3"
+  },
+  {
+    "fact": "MentionTokenUtils.findMentionTokens 在第 47 行定义，返回含尾随空白的 token 范围。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MentionTokenUtils.kt:47"
+  },
+  {
+    "fact": "MentionTokenUtils.findCommittedMentionTokens 只取有尾随空白的已提交 token（第 86 行）；findMentionTokenEndingAtCursor 在第 90 行定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MentionTokenUtils.kt:86"
+  },
+  {
+    "fact": "AttachmentUtils 是 object 单例（attachments/AttachmentUtils.kt 第 6 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/attachments/AttachmentUtils.kt:6"
+  },
+  {
+    "fact": "AttachmentUtils.formatFileSize 用整数除法分 B/KB/MB/GB（attachments/AttachmentUtils.kt 第 8 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/attachments/AttachmentUtils.kt:8"
+  },
+  {
+    "fact": "AttachmentUtils.getDisplayName 缺省 20 字符截断并保留扩展名（attachments/AttachmentUtils.kt 第 18 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/attachments/AttachmentUtils.kt:18"
+  },
+  {
+    "fact": "AttachmentUtils.getIconForMimeType 直接 return 0，为未实现的桩（attachments/AttachmentUtils.kt 第 30-34 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/attachments/AttachmentUtils.kt:30"
+  },
+  {
+    "fact": "MessageImageGenerator 是 object 单例（util/MessageImageGenerator.kt 第 60 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt:60"
+  },
+  {
+    "fact": "MessageImageGenerator.generateMessageImage 是 suspend 函数（第 81 行），空消息列表抛 IllegalArgumentException（第 110 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt:81"
+  },
+  {
+    "fact": "MessageImageGenerator 要求 Context 为 Activity，否则抛 IllegalStateException（util/MessageImageGenerator.kt 第 119 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt:119"
+  },
+  {
+    "fact": "MessageImageGenerator 把 ComposeView 包进 ScrollView 并平移到屏幕外参与真实绘制，等待 delay(500) 后捕获（util/MessageImageGenerator.kt 第 350 行附近）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt:350"
+  },
+  {
+    "fact": "MessageImageGenerator 生成的图片写到 cacheDir/shared_images/messages_<timestamp>.png（util/MessageImageGenerator.kt 第 403–409 行附近，函数内 IO 段）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/util/MessageImageGenerator.kt:407"
+  },
+  {
+    "fact": "ChatHistorySelector 是会话列表面板的 @Composable 函数（components/ChatHistorySelector.kt）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:426"
+  },
+  {
+    "fact": "ChatHistorySelector 的内容搜索带 400ms 防抖，标题/分组无命中且查询长度 >= 2 时才调 chatHistoryManager.searchChatIdsByContent（components/ChatHistorySelector.kt 第 589-594 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:589"
+  },
+  {
+    "fact": "ChatHistorySelector 的删除操作走 promptDeleteChat/requestDeleteChat，锁定会话直接删除否则弹确认框（components/ChatHistorySelector.kt 第 476-484 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:483"
+  },
+  {
+    "fact": "ChatHistorySelector 的拖拽排序回调里按 flatItems 重算 displayOrder 并触发 onUpdateChatOrderAndGroup（components/ChatHistorySelector.kt 第 640-700 行附近）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:777"
+  },
+  {
+    "fact": "ChatHistorySelector 的设置对话框提供三种显示模式与自动切换角色卡/会话开关（components/ChatHistorySelector.kt 第 1550-1620 行附近）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatHistorySelector.kt:1617"
+  }
+]

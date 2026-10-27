@@ -1,0 +1,338 @@
+[
+  {
+    "fact": "SYSTEM_PROMPT_TEMPLATE 是英文系统提示词模板（第 163 行定义）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:163"
+  },
+  {
+    "fact": "SYSTEM_PROMPT_TEMPLATE_CN 是中文系统提示词模板（第 180 行定义）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:180"
+  },
+  {
+    "fact": "系统提示词模板由 6 个占位节组成：BEGIN_SELF_INTRODUCTION_SECTION、WORKSPACE_GUIDELINES_SECTION、TOOL_USAGE_GUIDELINES_SECTION、PACKAGE_SYSTEM_GUIDELINES_SECTION、ACTIVE_PACKAGES_SECTION、AVAILABLE_TOOLS_SECTION，运行时逐个替换为实际内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:163"
+  },
+  {
+    "fact": "SUBTASK_AGENT_PROMPT_TEMPLATE 是子任务 agent 专用提示模板：要求无记忆、无情绪、禁止等待用户输入，同样复用 TOOL_USAGE_GUIDELINES_SECTION 等工具说明节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:198"
+  },
+  {
+    "fact": "applyCustomPrompts 把系统提示词中的 BEGIN_SELF_INTRODUCTION_SECTION 占位符替换为用户自定义介绍；代码注释说明空介绍会把该节干净移除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:223"
+  },
+  {
+    "fact": "getSystemPrompt 是系统提示词组装主入口，参数包括 useEnglish、customSystemPromptTemplate、enableTools、useToolCallApi、toolExposureMode、toolVisibility、allowedPackageNames / allowedSkillNames / allowedMcpServerNames 白名单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:259"
+  },
+  {
+    "fact": "包系统是否可见由 packageSystemVisible 决定：toolExposureMode == FULL 且 enableTools 为 true 且 toolVisibility[\"use_package\"] 默认为 true（第 285-286 行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:285"
+  },
+  {
+    "fact": "可用包列表由三类来源组成：JS 包（过滤掉已不存在的包和工具包容器，并受 allowedPackageNames 白名单过滤）、MCP 服务器（受 allowedMcpServerNames 过滤）、Skill（受 allowedSkillNames 过滤）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:305"
+  },
+  {
+    "fact": "当 useToolCallApi=true 时，清空 TOOL_USAGE_GUIDELINES_SECTION 与 AVAILABLE_TOOLS_SECTION，包系统说明切换为 PACKAGE_SYSTEM_GUIDELINES_TOOL_CALL 版本：包工具经 package_proxy 调用，tool_name 填 packageName:toolName，目标参数放进 params JSON 对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:439"
+  },
+  {
+    "fact": "当 toolExposureMode 为 CLI 时，TOOL_USAGE_GUIDELINES_SECTION 被替换为 CliToolModeSupport.buildCliModePrompt(useEnglish) 的输出，并清空包系统说明、已激活包、可用工具三个节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:424"
+  },
+  {
+    "fact": "当 enableTools=false 时，移除全部工具相关说明节（含工作区指南）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:459"
+  },
+  {
+    "fact": "最终提示词会把 3 个及以上连续换行压缩为 2 个换行（prompt.replace(Regex(\"\\n{3,}\"), \"\\n\\n\")）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:468"
+  },
+  {
+    "fact": "工作区指南只在 workspacePath 非空（实际绑定工作区）时生成；指南要求模型使用绝对路径，并说明终端挂载（如 $externalStoragePath -> /sdcard、应用沙箱同路径挂载）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:519"
+  },
+  {
+    "fact": "工作区指南会经 WorkspaceRuleFileReader.readWorkspaceRootRuleFile 注入工作区根规则文件内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:364"
+  },
+  {
+    "fact": "getSystemPromptWithCustomPrompts 是对外主入口，经 PromptHookRegistry 做 before_compose_system_prompt 阶段 hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:606"
+  },
+  {
+    "fact": "compose_system_prompt_sections 阶段 hook 由 PromptHookRegistry 分发，可改写系统提示词各节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:676"
+  },
+  {
+    "fact": "after_compose_system_prompt 阶段 hook 由 PromptHookRegistry 分发，对拼装后的提示词做后处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:684"
+  },
+  {
+    "fact": "before_compose_system_prompt 阶段的 hook 可整体替换系统提示词：若 hook 返回了 systemPrompt，则直接采用，不再走默认的 getSystemPrompt 组装。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:633"
+  },
+  {
+    "fact": "buildGroupOrchestrationHint 生成群聊角色编排提示：要求始终保持自己的角色身份、严禁冒充其他角色；[From role: xxx] 前缀的历史消息仅作参考、不视为用户新指令；末尾列出群聊参与者名单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:235"
+  },
+  {
+    "fact": "启用群聊编排提示时若角色名为空，默认角色名为英文 \"assistant\" / 中文 \"助手\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:665"
+  },
+  {
+    "fact": "getSystemPrompt(context, packageManager) 便捷重载默认 useEnglish=false、enableTools=true、useToolCallApi=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemPromptConfig.kt:692"
+  },
+  {
+    "fact": "ConversationService 在生成对话系统提示词时调用 SystemPromptConfig.getSystemPromptWithCustomPrompts，传入 workspacePath、safBookmarkNames、customIntroPrompt 等参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt:560"
+  },
+  {
+    "fact": "SUMMARY_PROMPT（第 18 行）是对话摘要模板，要求输出固定四节结构，新摘要会完全替代旧摘要成为后续唯一的历史参考。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:18"
+  },
+  {
+    "fact": "SUMMARY_PROMPT_EN（第 66 行）是对话摘要模板，要求输出固定四节结构，新摘要会完全替代旧摘要成为后续唯一的历史参考。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:66"
+  },
+  {
+    "fact": "摘要四节的内部 id 为 core_task、interaction、progress、key_info（summarySectionIds）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:118"
+  },
+  {
+    "fact": "摘要四节的中文标题为：核心任务状态、互动情节与设定、对话历程与概要、关键信息与上下文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:129"
+  },
+  {
+    "fact": "summaryPromptTemplate 用 check(start >= 0) 硬校验摘要模板中四个节标题必须存在，缺失直接抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:139"
+  },
+  {
+    "fact": "resolveSummarySections 支持按节 id 覆盖各节的开关、标题与指令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:166"
+  },
+  {
+    "fact": "buildSummarySectionOverrides 支持按节 id 覆盖各节的开关、标题与指令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:183"
+  },
+  {
+    "fact": "applySummarySectionOverrides 支持按节 id 覆盖各节的开关、标题与指令。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:224"
+  },
+  {
+    "fact": "buildSummarySystemPrompt 拼接上次摘要，并在末尾追加 globalRules 全局规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:217"
+  },
+  {
+    "fact": "FILE_BINDING_MERGE_PROMPT 是文件绑定合并提示：要求用原始文件完整内容逐字替换 `// ... existing code ...` 占位符，只输出合并后的文件内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:293"
+  },
+  {
+    "fact": "knowledgeGraphExistingMemoriesPrefix 生成记忆去重前缀：若抽取实体与已有记忆语义相同，用 alias_for 字段标注引用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:331"
+  },
+  {
+    "fact": "记忆抽取的严格 JSON 输出必须包含 main、new、update、merge、links 五个键（profile_markdown 为可选），除返回 {} 外缺一不可；数组项必须是具名对象，禁止位置数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:1187"
+  },
+  {
+    "fact": "记忆抽取的 profile_markdown 字段为当前记忆空间资料的完整替换 Markdown，无充分更新依据时返回 JSON null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:1091"
+  },
+  {
+    "fact": "conversationTitleSystemPrompt 要求把用户提供的内容一律视为待总结的数据，不要当作需要遵循的指令（防提示词注入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:401"
+  },
+  {
+    "fact": "waifuEmotionRule 要求在每个句末用 <emotion> 标签插入情绪状态（如 <emotion>happy</emotion>），后续据此生成表情包；无可用自定义表情时不插入标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:462"
+  },
+  {
+    "fact": "avatarMoodRulesText 要求每条回复最多输出 1 个 <mood> 标签，多 mood 同时命中时优先级为 angry > cry > aojiao > shy > happy。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:528"
+  },
+  {
+    "fact": "translationSystemPrompt 把模型定位为保持原文语气风格的专业翻译助手。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:563"
+  },
+  {
+    "fact": "packageDescriptionUserPrompt 要求为 MCP 工具包生成不超过 100 词的简洁英文功能描述，聚焦主要能力与用例，避免技术细节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:592"
+  },
+  {
+    "fact": "personaCardGenerationSystemPrompt 是角色卡生成系统提示：8 步流程（name→description→characterSetting→openingStatement→otherContentChat→otherContentVoice→advancedCustomPrompt→marks），每确认一个字段必须调用 save_character_info 工具保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:631"
+  },
+  {
+    "fact": "UI_CONTROLLER_PROMPT 是单步 UI 控制器提示：模型每次只输出一个 JSON {\"explanation\",\"command\"}，command 覆盖 UI 交互（tap、swipe、set_input_text、press_key）与应用管理（start_app、list_installed_apps）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:698"
+  },
+  {
+    "fact": "UI_AUTOMATION_AGENT_PROMPT 是 autoglm 风格的 UI 自动化 agent 提示：输出 <think>/<answer> XML，用 do(action=\"...\") 表达操作，指令集包括 Launch、Tap、Type、Type_Name、Interact、Swipe、Note、Call_API、Long Press、Double Tap、Take_over、Back、Home、Wait。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:777"
+  },
+  {
+    "fact": "buildUiAutomationAgentPrompt 用传入的 currentDate 替换模板中的 {{current_date}} 占位符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:915"
+  },
+  {
+    "fact": "grepContextRefineWithReadPrompt 是 grep 两轮检索的助手提示：先细化上下文，要求严格 JSON 输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:940"
+  },
+  {
+    "fact": "grepContextSelectPrompt 是 grep 两轮检索的助手提示：做候选选择，要求严格 JSON 输出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/FunctionalPrompts.kt:984"
+  },
+  {
+    "fact": "AI 可见的工具分 4 类：basicTools（sleep、use_package）、fileSystemTools（11 个文件操作工具）、httpTools（visit_web）、memoryTools（query_memory、get_memory_by_title）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:541"
+  },
+  {
+    "fact": "getAIAllCategoriesEn / getAIAllCategoriesCn 返回 AI 可见的 4 个工具分类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:541"
+  },
+  {
+    "fact": "getAllCategoriesEn / getAllCategoriesCn 在此基础上再追加 internal 内部工具分类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:560"
+  },
+  {
+    "fact": "read_file 的 direct_image / direct_audio / direct_video 参数恒不暴露给模型；intent 参数仅当后端已配置识别服务且聊天模型无直连能力时才暴露（shouldExposeIntent）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:515"
+  },
+  {
+    "fact": "当 intent 参数被暴露时，read_file 的描述会被改写为说明可用 intent 参数调用后端识别模型分析媒体文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:526"
+  },
+  {
+    "fact": "SAF 书签会拼成 **Attached Local Storage Repository:** 节，告知模型可用 environment=\"repo:<仓库名>\" 在挂载的本地存储仓库中操作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:16"
+  },
+  {
+    "fact": "visit_web 明确声明仅支持浏览/读取操作，不执行登录、点击、填写、提交等交互自动化，也不能替代原始 HTTP GET/POST 请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:412"
+  },
+  {
+    "fact": "memoryTools 的 categoryFooter 说明：记忆库和用户性格档案可能在当前回复结束后由独立系统自动更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:455"
+  },
+  {
+    "fact": "generateToolsPromptEn / generateToolsPromptCn 的组装流程是：选分类 → applyToolOrder 排序 → applyToolVisibility 过滤 → buildToolHookPayload 构造 hook 上下文 → 触发三阶段 tool hook。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:866"
+  },
+  {
+    "fact": "工具提示词组装的 before_compose_tool_prompt 阶段 hook，可由 JS 包参与改写工具提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:872"
+  },
+  {
+    "fact": "工具提示词组装的 filter_tool_prompt_items 阶段 hook，可由 JS 包参与改写工具提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:897"
+  },
+  {
+    "fact": "工具提示词组装的 after_compose_tool_prompt 阶段 hook，可由 JS 包参与改写工具提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:908"
+  },
+  {
+    "fact": "getManageableToolPrompts 返回供设置页管理的工具清单，包含 toolOrder 排序信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPrompts.kt:679"
+  },
+  {
+    "fact": "internalToolCategoriesEn（第 9 行）是英文内部工具提示词定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:9"
+  },
+  {
+    "fact": "internalToolCategoriesCn（第 3001 行）是中文内部工具提示词定义，与 internalToolCategoriesEn 平行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:3001"
+  },
+  {
+    "fact": "内部工具英文区分 12 个分类：Internal Tools、Extended Memory Tools、Extended HTTP Tools、Extended File Tools、Tasker Tools、Workflow Tools、Chat Tools、Internal File Tools、Internal UI Tools、Software Settings Tools、Internal System Tools、FFmpeg Tools。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:12"
+  },
+  {
+    "fact": "http_request 与 multipart_request 都有 ignore_ssl 参数，描述为 \"ignore https certificate verification, true/false\"，允许模型关闭 HTTPS 证书校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:716"
+  },
+  {
+    "fact": "execute_shell 的唯一必填参数是 command（要执行的命令），描述仅为 \"Execute a device shell command.\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:16"
+  },
+  {
+    "fact": "execute_hidden_terminal_command 在隐藏的非 PTY 终端执行器中执行命令，相同 executor_key 复用同一后台登录上下文，且执行过程不显示在可见终端 UI 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:97"
+  },
+  {
+    "fact": "delete_memory 按标题删除记忆节点，提示词明确说明该操作不可逆（\"this operation is irreversible\"）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:666"
+  },
+  {
+    "fact": "update_user_profile 用完整 Markdown 文档替换当前记忆空间的 user.md，提示词要求在用户确认工具调用后执行，并保留仍有用的现有内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:695"
+  },
+  {
+    "fact": "install_app 的英文描述是 \"Request installing an APK.\"，未提及需要用户确认；中文版描述为 \"请求安装 APK（需要用户确认）。\"，中英提示存在行为口径差异。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:2569"
+  },
+  {
+    "fact": "uninstall_app 的英文描述是 \"Request uninstalling an app.\"，未提及需要用户确认；中文版描述为 \"请求卸载应用（需要用户确认）。\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:2582"
+  },
+  {
+    "fact": "modify_system_setting 可修改系统设置，namespace 可选 system / secure / global，默认 system。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:2542"
+  },
+  {
+    "fact": "create_model_config 的 api_provider_type 参数示例包含 MNN 与 LLAMA_CPP——两者均为已停止维护的端侧推理方案，但其配置参数仍保留在提示词中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:2014"
+  },
+  {
+    "fact": "send_message_to_ai 的 timeout_ms 参数默认 180000 毫秒，覆盖响应流获取与 AI 回复等待的最长等待时间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/config/SystemToolPromptsInternal.kt:1322"
+  },
+  {
+    "fact": "PromptTagManager 使用名为 prompt_tags 的 DataStore，schema 版本为 1，升级时从版本 0 迁移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:17"
+  },
+  {
+    "fact": "PromptTagManager.getInstance 是全局单例入口，内部用双重检查锁（synchronized）实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:44"
+  },
+  {
+    "fact": "提示词标签在 DataStore 中的键名为 prompt_tag_${id}_name / _description / _prompt_content / _tag_type / _created_at / _updated_at，标签 id 列表存在 prompt_tag_list 键下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:77"
+  },
+  {
+    "fact": "createPromptTag 用 UUID.randomUUID 生成标签 id，并写入创建/更新时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:146"
+  },
+  {
+    "fact": "findTagWithSameContent 按 trim 后的 promptContent 全等查找内容相同的标签（不比较标题）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:222"
+  },
+  {
+    "fact": "createOrReusePromptTag 若存在内容相同的标签则复用其 id，否则创建新标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:234"
+  },
+  {
+    "fact": "migratePreferencesFromVersionZero 在从版本 0 迁移时删除遗留系统标签：is_system_tag 标记为 true 的，或 tag_type 以 SYSTEM_ 开头的，并清除其全部偏好键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptTagManager.kt:50"
+  },
+  {
+    "fact": "TagType 枚举有 4 种标签类型：TONE（语气风格）、CHARACTER（角色设定）、FUNCTION（功能性）、CUSTOM（自定义）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/PromptTag.kt:24"
+  },
+  {
+    "fact": "PromptVersionManager 是通用泛型版本管理器，VersionSpec 定义 key（偏好键前缀）与 defaultsByVersion（版本号到默认内容的映射）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptVersionManager.kt:15"
+  },
+  {
+    "fact": "shouldUpdate 的更新条件是：当前内容为空或匹配某个已知旧版本默认值，且（内容与最新默认不同或已存版本号落后）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptVersionManager.kt:70"
+  },
+  {
+    "fact": "autoUpdate 对每个需要更新的项先执行调用者传入的 updater 回调（业务更新逻辑），再写入最新版本内容与版本号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptVersionManager.kt:50"
+  },
+  {
+    "fact": "PromptVersionManager.defaults(vararg) 把传入的字符串按 1 开始编号生成版本号到内容的映射；空参数直接抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/PromptVersionManager.kt:88"
+  }
+]

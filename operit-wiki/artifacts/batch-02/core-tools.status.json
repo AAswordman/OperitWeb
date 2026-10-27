@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 3,
+  "refs_valid": "facts 120 条引用行号真实存在，lint 硬失败 0/警告 0；2026-10-02 v2 死链回炉：正文 [[ ]] wikilink 与裸 slug 全部转为 entry.html 真链接并补细页索引，内容变更打回待评审；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "工具系统（总览）：AITool/ToolParameter/ToolInvocation/ToolResult 数据模型与 ToolExecutionManager 执行编排（解析→三关拦截→并行/串行执行→有序聚合）。",
+  "updated": "2026-10-02",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914918115,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

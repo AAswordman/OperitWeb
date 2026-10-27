@@ -1,0 +1,13 @@
+{
+  "critic": "独立 critic 逐条核引用全过（113/113 facts、7/7 evidence、MMD 未停维专项确认），结论通过（core-avatar.critic.md）",
+  "id": "core-avatar",
+  "issue": 73,
+  "refs_valid": "113/113 引用行号真实存在（脚本逐条核验：文件存在+行号在界+断言符号在±5行窗口内），lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "虚拟形象引擎：6 种形象路线（DragonBones/WebP/MP4/glTF/FBX/MMD）统一为模型-控制器-渲染器三层；AvatarController 以 StateFlow 发布情绪/动画/循环/nonce 状态；AvatarMoodTypes 内置 5 mood 并解析模型返回的 <mood> 标签；三工厂负责模型/控制器/渲染器构造；各路线原生渲染（JNI/ImageDecoder/ExoPlayer/Filament/MMD native）；走查 7 条（警告 3：渲染错误被吞、angry 别名误映射 SAD、MMD 双发射中间态）。",
+  "title": "虚拟形象引擎",
+  "approved_by_comment_id": 5926577946,
+  "updated": "2026-10-02"
+}

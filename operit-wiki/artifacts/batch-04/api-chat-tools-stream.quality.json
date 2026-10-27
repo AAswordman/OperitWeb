@@ -1,0 +1,42 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt",
+    "line": 319,
+    "evidence": "            \"apiKey\" to config.apiKey,",
+    "severity": "警告",
+    "confidence": "high",
+    "description": "模型配置的 apiKey 被原样塞进发给 JS 工具包 hook 的 eventPayload。包内 JS 可直接读取该 key，属信任边界跨越；虽为 provider 插件调用云端所必需，但包来源不可信时存在外传风险。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt",
+    "line": 384,
+    "evidence": "        } catch (_: Exception) {\n            JSONObject()\n        }",
+    "severity": "建议",
+    "confidence": "high",
+    "description": "decodeJsonObjectString 解析失败时静默返回空对象（decodeJsonArrayString 同理）。customHeaders/customParameters 格式写错时无任何报错，请求直接按无自定义头/参数发出，排障困难。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt",
+    "line": 234,
+    "evidence": "                Channel<Any?>(capacity = Channel.UNLIMITED)",
+    "severity": "建议",
+    "confidence": "medium",
+    "description": "中间结果 channel 无界缓冲；若 JS hook 高频吐中间结果，内存随之无界增长，无背压保护。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/StructuredToolCallBridge.kt",
+    "line": 434,
+    "evidence": "                                \"发现未匹配的tool_result: ${resultsList.size - matchedCalls.size}\"",
+    "severity": "建议",
+    "confidence": "high",
+    "description": "匹配不上 open 调用的 tool_result 只记一条 debug 日志后被丢弃，不进入历史；若因 name 解析偏差导致系统性失配，线上难以察觉（debug 日志默认不可见）。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ToolPkgJsAiProviderService.kt",
+    "line": 485,
+    "evidence": "        return longValueExact().coerceAtLeast(0L)",
+    "severity": "建议",
+    "confidence": "medium",
+    "description": "token 计数用 longValueExact 精确转换；若 provider 返回小数（如 1.5）会抛 ArithmeticException 中断整个调用，而非按非法值拒绝。结合注释“绝不 Int 截断”看是刻意严格，但该异常类型不易被调用方识别处理。"
+  }
+]

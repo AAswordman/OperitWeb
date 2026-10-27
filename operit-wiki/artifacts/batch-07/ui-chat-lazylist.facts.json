@@ -1,0 +1,526 @@
+[
+  {
+    "fact": "50 个 kt 文件的包名均为 com.ai.assistance.operit.ui.features.chat.components.lazy，是上游 androidx.compose.foundation.lazy 相关源码的本地化副本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:17"
+  },
+  {
+    "fact": "RecyclerLazyColumn 是对外入口组合函数，默认 state 为 rememberLazyListState()。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:385"
+  },
+  {
+    "fact": "RecyclerLazyColumn 内部转调 LazyList。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:398"
+  },
+  {
+    "fact": "RecyclerLazyColumn 传入 isVertical = true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:405"
+  },
+  {
+    "fact": "LazyRow 内部转调 LazyList。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:338"
+  },
+  {
+    "fact": "LazyRow 传入 isVertical = false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:344"
+  },
+  {
+    "fact": "RecyclerLazyColumn 的 verticalArrangement 默认为非反向时 Arrangement.Top、反向时 Arrangement.Bottom。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:390"
+  },
+  {
+    "fact": "RecyclerLazyColumn 的历史重载函数体只做参数转发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:427"
+  },
+  {
+    "fact": "RecyclerLazyColumn 还有第二个 @Deprecated(HIDDEN) 标记的历史重载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:441"
+  },
+  {
+    "fact": "LazyListScope.item 的接口默认实现直接抛 error(\"The method is not implemented\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:52"
+  },
+  {
+    "fact": "LazyListScope.items(count) 的接口默认实现直接抛 error(\"The method is not implemented\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:82"
+  },
+  {
+    "fact": "LazyListScope.stickyHeader 内部转调 item(key, contentType) 实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:141"
+  },
+  {
+    "fact": "items(List<T>) 扩展函数把 key 工厂映射为按 index 取 items[index] 的实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/RecyclerLazyColumn.kt:173"
+  },
+  {
+    "fact": "LazyList 是 internal 组合函数，负责组装 modifier 链与测量策略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:57"
+  },
+  {
+    "fact": "LazyList 的 beyond-bounds 修饰符只在 userScrollEnabled 为 true 时挂载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:115"
+  },
+  {
+    "fact": "LazyList 的 modifier 链以 remeasurementModifier、awaitLayoutModifier、lazyLayoutSemantics 开头。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:133"
+  },
+  {
+    "fact": "链的后半为 beyondBoundsModifier、itemAnimator.modifier、scrollableArea。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:142"
+  },
+  {
+    "fact": "rememberLazyListMeasurePolicy 的 remember key 包含除 itemProviderLambda 与 coroutineScope 外的全部参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:188"
+  },
+  {
+    "fact": "beforeContentPadding 按 isVertical 与 reverseLayout 的四种组合从 contentPadding 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:232"
+  },
+  {
+    "fact": "测量策略内部调用 measureLazyList 执行实际测量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:353"
+  },
+  {
+    "fact": "测量结束后调用 state.applyMeasureResult(measureResult, isLookingAhead) 回写状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:388"
+  },
+  {
+    "fact": "defaultLazyListBeyondBoundsItemCount() 返回 0，即默认不额外布局视口外条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyList.kt:421"
+  },
+  {
+    "fact": "measureLazyList 是 internal 纯测量函数，返回 LazyListMeasureResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:51"
+  },
+  {
+    "fact": "measureLazyList 在空数据集时直接返回零尺寸的 LazyListMeasureResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:82"
+  },
+  {
+    "fact": "measureLazyList 先把 scrollToBeConsumed 作用到锚点偏移 currentFirstItemScrollOffset 上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:140"
+  },
+  {
+    "fact": "currentFirstItemScrollOffset 为负时向前逐个测量条目直到偏移归零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:174"
+  },
+  {
+    "fact": "measureLazyList 用 getAndMeasure 向后逐个测量条目直到填满视口，且至少保留一个条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:218"
+  },
+  {
+    "fact": "条目不够填满视口时用 toScrollBack 回滚补齐。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:245"
+  },
+  {
+    "fact": "createItemsAfterList 在可见条目之后额外组合 beyondBoundsItemCount 个条目与 pinned 条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:461"
+  },
+  {
+    "fact": "createItemsBeforeList 在首可见条目之前额外组合 beyondBoundsItemCount 个条目与 pinned 条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:496"
+  },
+  {
+    "fact": "calculateItemsOffsets 在有富余空间（hasSpareSpace）时进入 Arrangement 排布分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:547"
+  },
+  {
+    "fact": "排布分支里用 density.arrange 按 vertical/horizontal Arrangement 计算条目 offsets。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:563"
+  },
+  {
+    "fact": "无富余空间时顺序累加偏移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasure.kt:592"
+  },
+  {
+    "fact": "LazyListMeasuredItemProvider 的子约束在主轴上放开为 Constraints.Infinity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasuredItemProvider.kt:33"
+  },
+  {
+    "fact": "LazyListMeasuredItem 的 size 是各 placeable 主轴尺寸之和，mainAxisSizeWithSpacings 再加上 spacing。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasuredItem.kt:97"
+  },
+  {
+    "fact": "粘性头条目被标记 nonScrollableItem = true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutStickyItems.kt:209"
+  },
+  {
+    "fact": "applyScrollDelta 遇 nonScrollableItem 直接返回，滚动 delta 不作用于它。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasuredItem.kt:172"
+  },
+  {
+    "fact": "LazyListMeasuredItem.place 在 lookahead pass 只记录 lookaheadOffset，跳过动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasuredItem.kt:201"
+  },
+  {
+    "fact": "copyWithScrollDeltaWithoutRemeasure 直接给已测条目加 delta，只做重放置而不重新测量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasureResult.kt:89"
+  },
+  {
+    "fact": "copyWithAnchorOffsetCompensation 用于条目尺寸变化时的锚点偏移补偿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListMeasureResult.kt:152"
+  },
+  {
+    "fact": "LazyListState 实现 ScrollableState 接口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:160"
+  },
+  {
+    "fact": "LazyListState.onScroll 把拖动距离累加到 scrollToBeConsumed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:502"
+  },
+  {
+    "fact": "onScroll 累积超过 0.5px 时优先尝试免 remeasure 快捷路径，走不通才 forceRemeasure。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:512"
+  },
+  {
+    "fact": "LazyListState.scrollToItem 是挂起函数，直接 snap 到目标 index。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:389"
+  },
+  {
+    "fact": "LazyListState.requestScrollToItem 请求在下次 remeasure 时定位到目标 index。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:416"
+  },
+  {
+    "fact": "LazyListState.animateScrollToItem 通过 LazyLayoutScrollScope.animateScrollToItem 实现平滑滚动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:580"
+  },
+  {
+    "fact": "NumberOfItemsToTeleport = 100。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:782"
+  },
+  {
+    "fact": "animateScrollToItem 远距离传送时用 numOfItemsForTeleport 跳过中间条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutScrollScope.kt:218"
+  },
+  {
+    "fact": "LazyListState.Saver 用 listSaver 只保存首可见 index 与 offset。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:706"
+  },
+  {
+    "fact": "snapToItemIndexInternal 在位置真正变化时调用 itemAnimator.reset()，避免位移被误动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:434"
+  },
+  {
+    "fact": "applyMeasureResult 在 lookahead 发生后的 approach pass 把结果记为 approachLayoutInfo。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:606"
+  },
+  {
+    "fact": "其余 pass（含 lookahead pass 与普通 pass）更新 layoutInfoState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:624"
+  },
+  {
+    "fact": "LazyListScrollPosition 持有 index、scrollOffset、lastKnownFirstItemKey 三元组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListScrollPosition.kt:36"
+  },
+  {
+    "fact": "NearestItemsSlidingWindowSize = 30，NearestItemsExtraItemCount = 100，用于 key-index 滑动窗口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListScrollPosition.kt:119"
+  },
+  {
+    "fact": "LazyLayoutScrollScope.animateScrollToItem 的距离阈值为 TargetDistance=2500.dp、BoundDistance=1500.dp、MinimumDistance=50.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutScrollScope.kt:35"
+  },
+  {
+    "fact": "LazyLayoutScrollScope(state, scrollScope) 把 LazyListState 适配为 LazyLayoutScrollScope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListScrollScope.kt:33"
+  },
+  {
+    "fact": "LazyLayoutItemAnimator.onMeasured 在每次测量后检测位置变化并启动动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimator.kt:70"
+  },
+  {
+    "fact": "onMeasured 里把 consumedScroll 视为无需动画的 delta，构造成 IntOffset scrollOffset。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimator.kt:100"
+  },
+  {
+    "fact": "该 scrollOffset 被直接加到 animation.rawOffset 上扣除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimator.kt:162"
+  },
+  {
+    "fact": "消失中的条目绘制在独立的 DisplayingDisappearingItemsNode 图层上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimator.kt:542"
+  },
+  {
+    "fact": "LazyLayoutItemAnimation.animatePlacementDelta 的动画目标恒为 IntOffset.Zero 的增量动画。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimation.kt:140"
+  },
+  {
+    "fact": "被打断的 duration 动画切换为 InterruptionSpec，即 StiffnessMediumLow 的 spring。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimation.kt:276"
+  },
+  {
+    "fact": "LazyLayoutItemAnimation.NotInitialized 为 IntOffset(Int.MAX_VALUE, Int.MAX_VALUE)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemAnimation.kt:239"
+  },
+  {
+    "fact": "LazyItemScope.animateItem 的出现/位移/消失 spec 默认均为 spring(stiffness = Spring.StiffnessMediumLow)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyItemScope.kt:93"
+  },
+  {
+    "fact": "LazyItemScope.fillParentMaxSize 的 fraction 限定在 0~1，默认 1f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyItemScope.kt:44"
+  },
+  {
+    "fact": "LazyScopeMarker 是 @DslMarker 注解，用于区分 lazy layout scope 与 item scope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyScopeMarker.kt:20"
+  },
+  {
+    "fact": "LazyLayoutPrefetchState.schedulePrecomposition 只做预组合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:120"
+  },
+  {
+    "fact": "LazyLayoutPrefetchState.schedulePrecompositionAndPremeasure 做预组合加预测量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:167"
+  },
+  {
+    "fact": "PrefetchHandle 提供 cancel() 方法，可取消已调度的预取请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:218"
+  },
+  {
+    "fact": "PrefetchHandle 提供 markAsUrgent() 方法，标记请求为紧急。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:228"
+  },
+  {
+    "fact": "HandleAndRequestImpl 先推进 compose 与 apply 阶段，时间不够 return true 等下一帧。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:666"
+  },
+  {
+    "fact": "接着执行嵌套预取阶段，时间不够 return true 等下一帧。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:696"
+  },
+  {
+    "fact": "最后 measure 阶段做预测量，时间不够 return true 等下一帧。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:716"
+  },
+  {
+    "fact": "urgent 请求在 shouldExecute 中 required 取 0，无视平均耗时直接执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:578"
+  },
+  {
+    "fact": "嵌套预取通过 TraversableNode 在预组合槽位中查找子 LazyLayout 的 prefetchState 并递归执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:828"
+  },
+  {
+    "fact": "UnspecifiedNestedPrefetchCount = -1，表示嵌套预取数尚未确定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:275"
+  },
+  {
+    "fact": "PrefetchMetrics 按 contentType 分别统计 compose/apply/measure 的加权平均耗时。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPrefetchState.kt:350"
+  },
+  {
+    "fact": "PrefetchScheduler 接口已整体 @Deprecated，不再支持自定义 scheduler。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/PrefetchScheduler.kt:33"
+  },
+  {
+    "fact": "AndroidPrefetchScheduler 是 PrefetchScheduler 的 Android 平台实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/PrefetchScheduler.android.kt:95"
+  },
+  {
+    "fact": "AndroidPrefetchScheduler 用 Choreographer.getInstance() 驱动帧回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/PrefetchScheduler.android.kt:109"
+  },
+  {
+    "fact": "DefaultLazyListPrefetchStrategy 在滚动时预取滚动方向的下一个条目，变向时取消旧请求。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListPrefetchStrategy.kt:160"
+  },
+  {
+    "fact": "LazyListPrefetchStrategy(nestedPrefetchItemCount = 2) 工厂函数创建默认策略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListPrefetchStrategy.kt:128"
+  },
+  {
+    "fact": "CacheWindowLogic 向前预取窗口逐项调用 getItemSizeOrPrefetch 调度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/CacheWindowLogic.kt:307"
+  },
+  {
+    "fact": "向后保留窗口（keepAroundWindow）按 viewport 比例计算，只复用已缓存尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/CacheWindowLogic.kt:156"
+  },
+  {
+    "fact": "LazyLayoutCacheWindow(ahead/behind: Dp) 提供 Dp 绝对值窗口表达。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutCacheWindow.kt:64"
+  },
+  {
+    "fact": "LazyLayoutCacheWindow(aheadFraction/behindFraction) 提供 viewport 比例窗口表达。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutCacheWindow.kt:92"
+  },
+  {
+    "fact": "LazyListCacheWindowStrategy 的 DefaultNestedPrefetchCount = 2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListCacheWindowStrategy.kt:149"
+  },
+  {
+    "fact": "StickyItemsPlacement.StickToTopPlacement 取小于等于首可见项的最后一个 header 吸附到顶部。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutStickyItems.kt:131"
+  },
+  {
+    "fact": "吸附项偏移钳制在 -beforeContentPadding，并被下一个接近顶部的 header 顶上去。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutStickyItems.kt:98"
+  },
+  {
+    "fact": "rememberLazyListSemanticState 为 LazyListState 创建 LazyLayoutSemanticState。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListSemantics.kt:24"
+  },
+  {
+    "fact": "estimatedLazyScrollOffset = firstVisibleItemScrollOffset + firstVisibleItemIndex * 500。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutSemantics.kt:252"
+  },
+  {
+    "fact": "lazyLayoutSemantics 提供 collectionInfo 无障碍语义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutSemantics.kt:127"
+  },
+  {
+    "fact": "lazyLayoutSemantics 提供 ScrollAxisRange 与 scrollToIndex 无障碍语义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutSemantics.kt:188"
+  },
+  {
+    "fact": "LazySaveableStateHolder 只保存当前可见条目的 savable 状态，避免 TransactionTooLargeException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazySaveableStateHolder.kt:35"
+  },
+  {
+    "fact": "LazyLayoutItemReusePolicy 按 contentType 计同类型最多保留 7 个复用槽位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayout.kt:152"
+  },
+  {
+    "fact": "7 个复用槽位对应 RecyclerView 的 5 个 scrap + 2 个 cache。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayout.kt:170"
+  },
+  {
+    "fact": "LazyLayout 基于 SubcomposeLayout，测量与放置共用同一套 subcompose 槽位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayout.kt:135"
+  },
+  {
+    "fact": "AwaitFirstLayoutModifier 用 CompletableDeferred 让 scroll 等调用等待首次布局完成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListState.kt:461"
+  },
+  {
+    "fact": "ObservableScopeInvalidator 是 neverEqualPolicy 的 MutableState<Unit> 包装，用于手动触发重测量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/ObservableScopeInvalidator.kt:29"
+  },
+  {
+    "fact": "LazyLayoutScrollDeltaBetweenPasses 忽略小于 1.dp 的 lookahead 与 approach 双 pass 滚动差值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutScrollDeltaBetweenPasses.kt:61"
+  },
+  {
+    "fact": "beyond-bounds 布局一次最多布局视口条目数乘以 BeyondBoundsViewportFactor = 2 的条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutBeyondBoundsModifierLocal.kt:153"
+  },
+  {
+    "fact": "LazyListBeyondBoundsState 的 firstPlacedIndex 取首可见索引减 beyondBoundsItemCount 后与 0 取大。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListBeyondBoundsModifier.kt:42"
+  },
+  {
+    "fact": "LazyLayoutIntervalContent 是 interval 内容的抽象基类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutIntervalContent.kt:25"
+  },
+  {
+    "fact": "getContentType 默认委托给 interval 的 type lambda。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutIntervalContent.kt:39"
+  },
+  {
+    "fact": "LazyListIntervalContent 的 headerIndexes 记录所有 stickyHeader 条目的索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListIntervalContent.kt:67"
+  },
+  {
+    "fact": "LazyLayoutItemContentFactory 用 lambdasCache 按 key 缓存条目组合 lambda。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemContentFactory.kt:40"
+  },
+  {
+    "fact": "rememberLazyListItemProviderLambda 用 remember 缓存 LazyListItemProvider 的 lambda。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListItemProvider.kt:39"
+  },
+  {
+    "fact": "LazyLayoutItemProvider.findIndexByKey 按 key 查找索引，找不到回退到 lastKnownIndex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutItemProvider.kt:103"
+  },
+  {
+    "fact": "LazyListLayoutInfo.visibleItemsAverageSize() 计算可见条目平均尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListLayoutInfo.kt:88"
+  },
+  {
+    "fact": "LazyListLayoutInfo.calculateContentSize() 用平均尺寸乘以总条目数估算内容总尺寸。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListLayoutInfo.kt:95"
+  },
+  {
+    "fact": "LazyLayoutMeasurePolicy 是 fun interface，定义 measure(constraints): MeasureResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutMeasurePolicy.kt:30"
+  },
+  {
+    "fact": "LazyLayoutMeasureScopeImpl 用 measurablesCache 与 placeablesCache 按 index 缓存测量结果。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutMeasureScope.kt:82"
+  },
+  {
+    "fact": "updatedVisibleItems 合并 positionedItems 与 stickingItems 生成可见条目信息列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutMeasuredItem.kt:75"
+  },
+  {
+    "fact": "LazyLayoutKeyIndexMap 接口的默认实现 NearestRangeKeyIndexMap 只维护滑动窗口内映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutKeyIndexMap.kt:52"
+  },
+  {
+    "fact": "calculateNearestItemsRange 按首可见索引计算需要维护映射的 key 范围。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutNearestRangeState.kt:53"
+  },
+  {
+    "fact": "LazyLayoutPinnableItem 实现 PinnableContainer 接口，为条目提供 pin 支持。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPinnableItem.kt:101"
+  },
+  {
+    "fact": "pin 时 pinsCount++ 做引用计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPinnableItem.kt:142"
+  },
+  {
+    "fact": "release 时 pinsCount--，为零时释放 pinned 条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPinnableItem.kt:149"
+  },
+  {
+    "fact": "DefaultLazyKey 是 Parcelable 的 data class，包装默认的 index key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutPlatform.android.kt:26"
+  },
+  {
+    "fact": "IntervalList 用二分查找按 index 定位区间，并缓存 lastInterval 加速顺序访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/IntervalList.kt:157"
+  },
+  {
+    "fact": "LazyLayoutBeyondBoundsInfo.addInterval/removeInterval 登记与移除界外布局区间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutBeyondBoundsInfo.kt:59"
+  },
+  {
+    "fact": "calculateLazyLayoutPinnedIndices 合并用户 pinned 列表与界外布局区间得到最终 pinned 索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutBeyondBoundsState.kt:50"
+  },
+  {
+    "fact": "LazyLayoutSemanticState.scrollOffset 用 estimatedLazyScrollOffset 估算。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutSemanticState.kt:36"
+  },
+  {
+    "fact": "LazyLayoutSemanticState.viewport 取 layoutInfo 的 viewportSize。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyLayoutSemanticState.kt:62"
+  },
+  {
+    "fact": "LazyItemScopeImpl.fillParentMaxSize 通过 ParentSizeNode 按父约束乘以 fraction 实现。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyItemScopeImpl.kt:138"
+  },
+  {
+    "fact": "LazyItemScopeImpl.animateItem 转调 LazyLayoutAnimateItemElement 接入动画编排。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyItemScopeImpl.kt:80"
+  },
+  {
+    "fact": "LazyListItemInfo 暴露条目的 index 与 key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListItemInfo.kt:27"
+  },
+  {
+    "fact": "LazyListItemInfo 暴露条目的 offset（相对容器起始的主轴偏移）与 size（主轴尺寸）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/lazy/LazyListItemInfo.kt:36"
+  },
+  {
+    "fact": "ChatScrollExtensions.kt 直接 import 本地 lazy 包的 LazyListState 并为其扩展 animateScrollToEnd。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollExtensions.kt:5"
+  },
+  {
+    "fact": "ChatScrollNavigator.kt 把本地 lazy 包的 LazyListState alias 为 ChatLazyListState 使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ChatScrollNavigator.kt:69"
+  },
+  {
+    "fact": "ScrollToBottomButton.kt 把本地 lazy 包的 LazyListState alias 为 ChatLazyListState 使用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/ScrollToBottomButton.kt:26"
+  }
+]

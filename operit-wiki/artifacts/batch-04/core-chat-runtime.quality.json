@@ -1,0 +1,52 @@
+[
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt",
+    "line": 1401,
+    "title": "processAiMessage 非角色隔离模式下 thinking 内容未被清理",
+    "detail": "非角色隔离分支直接返回原始 message.content，前面计算的 cleanedContent（已去掉 thinking）和 contentWithoutStatus（已去 status 标签）被弃用。AI 的思考过程文本会进入模型上下文，浪费 token 并可能干扰后续生成；角色隔离分支中只有 other-role 子分支用了清理后的内容，current-role 子分支同样返回原始 message.content，两条路径行为不一致。",
+    "evidence": "        val cleanedContent = ChatUtils.removeThinkingContent(message.content).trim()\n        val contentWithoutStatus = removeStatusTags(cleanedContent)\n\n        // 非角色隔离模式：直接返回 assistant 消息\n        if (!isRoleScopedMode) {\n            return PromptTurn(\n                kind = PromptTurnKind.ASSISTANT,\n                content = message.content\n            )\n        }",
+    "confidence": "high"
+  },
+  {
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt",
+    "line": 1312,
+    "title": "shouldGenerateSummary 按消息数触发时只统计 user 消息",
+    "detail": "变量名 userAiMessagesSinceLastSummary 和日志文案都暗示统计\"新消息\"，但 count 条件只算 sender == \"user\"，AI 回复不计入。用户感知的\"消息条数阈值\"与实际触发条件不一致，总结可能比预期触发得更晚。",
+    "evidence": "            val userAiMessagesSinceLastSummary = relevantMessages.count { it.sender == \"user\"}\n\n            if (userAiMessagesSinceLastSummary >= summaryMessageCountThreshold) {\n                AppLogger.d(TAG, \"自上次总结后新消息数量达到阈值 ($userAiMessagesSinceLastSummary)，生成总结.\")",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warning",
+    "category": "security",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt",
+    "line": 160,
+    "title": "proxySenderName 只转义双引号就拼入标签",
+    "detail": "safeProxySenderName 只把双引号替换为单引号，<、>、& 未转义就拼进 <proxy_sender name=\"...\"/>。调用方传入的代理发送者名称可破坏标签结构，污染发给模型的提示词；若名称来自不可信输入则构成提示词注入面。",
+    "evidence": "                val safeProxySenderName = proxySenderName.replace(\"\\\"\", \"'\")\n                \"<proxy_sender name=\\\"$safeProxySenderName\\\"/>\"",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warning",
+    "category": "performance",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/chat/AIMessageManager.kt",
+    "line": 453,
+    "title": "插件接管流 replay = Int.MAX_VALUE 无界缓冲",
+    "detail": "插件接管路径用 share(scope, replay = Int.MAX_VALUE) 共享流，整轮流式输出被缓存在内存中。普通模式的 shareRevisable 同样 replay = Int.MAX_VALUE。超长输出时内存随流长度线性增长，无上限。",
+    "evidence": "                val pluginStream = pluginExecution.stream.share(\n                    scope = scope,\n                    replay = Int.MAX_VALUE,\n                    propagateCompletionCause = false,",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "performance",
+    "file": "app/src/main/java/com/ai/assistance/operit/core/chat/hooks/ChatRuntimeHookRegistry.kt",
+    "line": 59,
+    "title": "ChatRuntimeHookRegistry.dispatch 串行无超时",
+    "detail": "dispatch 逐个同步调用 hook.onEvent，一个慢 hook 会阻塞后续所有 hook，且无超时或隔离机制。目前唯一的事件是 STATE_CHANGED，若未来接入耗时 hook 可能拖慢状态变更通知。",
+    "evidence": "        hooks.forEach { hook ->\n            try {\n                hook.onEvent(event, context)\n            } catch (error: Exception) {",
+    "confidence": "low"
+  }
+]

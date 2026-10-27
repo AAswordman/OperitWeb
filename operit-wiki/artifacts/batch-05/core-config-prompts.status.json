@@ -1,0 +1,14 @@
+{
+  "critic": "独立 critic 初验打回后修错，经多轮独立复验通过（core-config-prompts.critic.md）",
+  "id": "core-config-prompts",
+  "issue": 74,
+  "refs_valid": "84/84 引用行号真实存在且 ±5 窗口有支撑原文（第三轮独立复验：[59] 拆 2 条、[72] 移 :17），lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "系统提示词与功能提示配置",
+  "approved_by_comment_id": 5945969239,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 05:09 UTC",
+  "updated": "2026-10-02"
+}

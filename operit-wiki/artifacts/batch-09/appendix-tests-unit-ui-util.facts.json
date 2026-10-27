@@ -1,0 +1,598 @@
+[
+ {
+  "fact": "ComposeDslFilePickerRequestTest（4 个 @Test）覆盖 parseComposeDslFilePickerRequest 的请求解析",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:11"
+ },
+ {
+  "fact": "文件选择请求默认走 DOCUMENT 模式",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:16"
+ },
+ {
+  "fact": "默认 MIME 为 [\"*/*\"]、allowMultiple=false、persistPermission=true",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:18"
+ },
+ {
+  "fact": "支持 IMAGE / VIDEO / MEDIA / DIRECTORY / CAMERA 五种 picker 模式",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:39"
+ },
+ {
+  "fact": "已下线的 \"photo\" 模式被拒绝，报错含 \"unsupported file picker mode\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:58"
+ },
+ {
+  "fact": "image 模式传 mimeTypes 报错 \"does not support mimeTypes\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:66"
+ },
+ {
+  "fact": "directory 传 allowMultiple、camera 传 persistPermission=false 均被拒绝",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:72"
+ },
+ {
+  "fact": "payload() 固定 executionContextKey=test-context",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:83"
+ },
+ {
+  "fact": "assertInvalid 期望 IllegalArgumentException 且消息包含预期子串",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslFilePickerRequestTest.kt:90"
+ },
+ {
+  "fact": "ComposeDslTextFieldEchoGuardTest（7 个 @Test）是 issue #1150 的回归测试：快速删除时过期树快照不得覆盖输入框",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextFieldEchoGuardTest.kt:10"
+ },
+ {
+  "fact": "聚焦时自身删除的过期回声判为 OWN_ECHO",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextFieldEchoGuardTest.kt:20"
+ },
+ {
+  "fact": "树与输入框收敛后清 pending 回声判 CONVERGED",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextFieldEchoGuardTest.kt:31"
+ },
+ {
+  "fact": "编辑历史外的未知值（如 worldbook 插入模板）判 EXTERNAL_CHANGE",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextFieldEchoGuardTest.kt:47"
+ },
+ {
+  "fact": "失焦时任何差异值都直接应用（EXTERNAL_CHANGE）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextFieldEchoGuardTest.kt:67"
+ },
+ {
+  "fact": "ComposeDslTextInputDispatchQueue 按键顺序串行派发，一次只在途一个 edit",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputDispatchQueueTest.kt:42"
+ },
+ {
+  "fact": "completeAll 后迟到的 settle 不重启派发、不触发 drain 回调",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputDispatchQueueTest.kt:64"
+ },
+ {
+  "fact": "awaitAll 等待全部条目 settle（runTest + testScheduler 驱动）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/composedsl/ComposeDslTextInputDispatchQueueTest.kt:92"
+ },
+ {
+  "fact": "RenderBatchCoordinator 在 200ms 批处理窗口内多次 requestUpdate 只 flush 一次",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinatorTest.kt:33"
+ },
+ {
+  "fact": "flush 期间的 requestUpdate 在 coordinator 空闲前被排空（共 flush 2 次）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinatorTest.kt:55"
+ },
+ {
+  "fact": "BatchNodeUpdater.appendBlockChunk 把工具 XML 尾部变更渲染进 renderNodes",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/common/markdown/RenderBatchCoordinatorTest.kt:76"
+ },
+ {
+  "fact": "calculateMessageTokenSpeed(100L, 4000L) = 25.0 token/s",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/ChatAreaTokenSpeedTest.kt:10"
+ },
+ {
+  "fact": "输出 token 非正或时长非正时返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/ChatAreaTokenSpeedTest.kt:15"
+ },
+ {
+  "fact": "cleanMessageContentForCopy 移除多个 openai:responses_reasoning meta",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:11"
+ },
+ {
+  "fact": "移除 gemini:thought_signature 保留前后文本",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:26"
+ },
+ {
+  "fact": "非内部 meta（如 provider=\"other\"）与 markdown 原样保留",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:30"
+ },
+ {
+  "fact": "cleanMessageContentForXmlCopy 保留 tool / tool_result 标记、去掉 provider meta",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:52"
+ },
+ {
+  "fact": "buildSelectedMessagesPlainText 按消息顺序拼接、用 \\n\\n 分隔",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:78"
+ },
+ {
+  "fact": "buildSelectedMessagesPlainText 只保留 user/ai，过滤 system 与 HIDDEN_PLACEHOLDER",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:96"
+ },
+ {
+  "fact": "100 条 4KB 消息只转换一次（conversionCount == 100），防重复转换",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/MessageCopyTextTest.kt:121"
+ },
+ {
+  "fact": "extractClipboardPastedText 提取光标处插入的文本",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachmentTest.kt:16"
+ },
+ {
+  "fact": "替换选区时提取替换文本",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachmentTest.kt:26"
+ },
+ {
+  "fact": "剪贴板 \\r\\n 归一化为 \\n 后匹配",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachmentTest.kt:36"
+ },
+ {
+  "fact": "插入文本与剪贴板不匹配时返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachmentTest.kt:46"
+ },
+ {
+  "fact": "extractInsertedText 在周边文本变化时返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/PastedTextAttachmentTest.kt:66"
+ },
+ {
+  "fact": "formatCacheHitRate(657280, 685487) = \"95.88%\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/TokenHitRateFormatTest.kt:10"
+ },
+ {
+  "fact": "99.999% 截断为 99.99%，不四舍五入",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/TokenHitRateFormatTest.kt:16"
+ },
+ {
+  "fact": "命中率 100% 显示 \"100.00%\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/TokenHitRateFormatTest.kt:26"
+ },
+ {
+  "fact": "输入为 0 时显示 \"-\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/TokenHitRateFormatTest.kt:31"
+ },
+ {
+  "fact": "StatusCardHtmlDocumentTest 是 issue #930 的回归测试：图标字体必须内联，文档不得再走网络取资源",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocumentTest.kt:11"
+ },
+ {
+  "fact": "渲染文档包含 @font-face 与 base64 内联 woff2",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocumentTest.kt:19"
+ },
+ {
+  "fact": "文档不含 http:// 与 https://",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocumentTest.kt:29"
+ },
+ {
+  "fact": "liga 特性声明保留，图标连字可渲染",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocumentTest.kt:40"
+ },
+ {
+  "fact": "字体文件字节数 456052 与 SHA-256 被锁定，防误换回子集字体",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocumentTest.kt:88"
+ },
+ {
+  "fact": "PendingMessageQueueStore 按 chatId 隔离，切到别的聊天不丢队列",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStoreTest.kt:13"
+ },
+ {
+  "fact": "suppressNextAutoDequeue 只消费一次自动出队信号",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/chat/viewmodel/PendingMessageQueueStoreTest.kt:25"
+ },
+ {
+  "fact": "scanMarkdownSyntax 产出 MARKER / HEADING / QUOTE 等分类的 HighlightedText",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:21"
+ },
+ {
+  "fact": "code 与 link 优先于嵌套 marker",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:32"
+ },
+ {
+  "fact": "围栏代码块内视为 CODE",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:49"
+ },
+ {
+  "fact": "fence info 含反引号时拒绝为围栏",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:66"
+ },
+ {
+  "fact": "未闭合分隔符产出空 ranges（防灾难性回溯的守卫）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:77"
+ },
+ {
+  "fact": "ranges 有序且满足 start < end <= source.length",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/components/MarkdownSyntaxHighlightingTest.kt:123"
+ },
+ {
+  "fact": "通用 provider（OPENAI_GENERIC / OPENAI_RESPONSES / ANTHROPIC_GENERIC / GEMINI_GENERIC）不触发海外警告",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/sections/ProviderRegionWarningTypeTest.kt:15"
+ },
+ {
+  "fact": "OPENROUTER / FOUR_ROUTER 用 INTERNATIONAL_PROXY 警告",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/sections/ProviderRegionWarningTypeTest.kt:28"
+ },
+ {
+  "fact": "OPENAI / GOOGLE / ANTHROPIC / MISTRAL / NVIDIA / NOUS_PORTAL 用 OVERSEAS 警告",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/settings/sections/ProviderRegionWarningTypeTest.kt:45"
+ },
+ {
+  "fact": "DAILY 模式选中锚定日期当天",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsActivityRangePolicyTest.kt:16"
+ },
+ {
+  "fact": "WEEKLY 用周日开始的自然周（2026-08-16 至 2026-08-22）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsActivityRangePolicyTest.kt:40"
+ },
+ {
+  "fact": "CUMULATIVE 从历史起点到锚定日",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsActivityRangePolicyTest.kt:55"
+ },
+ {
+  "fact": "历史起点在锚定日之后时 CUMULATIVE 返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsActivityRangePolicyTest.kt:73"
+ },
+ {
+  "fact": "DatePicker 毫秒按 UTC 日历解析，东西时区一致（西时区不再回退一天）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDatePickerTest.kt:28"
+ },
+ {
+  "fact": "结束日期包含当天：+1 天 0 点为半开终点，同日为合法 1 天范围",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDatePickerTest.kt:42"
+ },
+ {
+  "fact": "DST 春季拨快日（美东 2026-03-08）单日范围为 23 小时",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDatePickerTest.kt:64"
+ },
+ {
+  "fact": "结束早于开始被拒绝",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDatePickerTest.kt:71"
+ },
+ {
+  "fact": "秋季回拨 10 天上限按自然日校验：多 1 小时仍 VALID，超 1 天 TOO_LONG",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDatePickerTest.kt:87"
+ },
+ {
+  "fact": "无守卫路由 canLeaveRoute 返回 true",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuardRegistryTest.kt:13"
+ },
+ {
+  "fact": "注册守卫只控制自身路由，不影响其他路由",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuardRegistryTest.kt:19"
+ },
+ {
+  "fact": "过期注销不移除新注册的守卫",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/RouteBackGuardRegistryTest.kt:32"
+ },
+ {
+  "fact": "配置变化不 pop：同 manager 同 screenKey 复用同一 owner 与 VM",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:95"
+ },
+ {
+  "fact": "pop 时 remove 触发 onCleared 与 viewModelScope 取消，再进为新 owner/VM",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:111"
+ },
+ {
+  "fact": "remove 未知 key 是 no-op",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:127"
+ },
+ {
+  "fact": "retainOnly 只保留存活键（如抽屉 resetTo 后只剩 home）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:158"
+ },
+ {
+  "fact": "clearAll 清空全部 owner",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:174"
+ },
+ {
+  "fact": "keepAlive 路由键形如 \"toolpkg_keepalive:pkg:mod\"，再次进入复用 owner/VM",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:257"
+ },
+ {
+  "fact": "retainedRouteKeysOnContentAttach 合并当前键与 alive 键并去重",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:280"
+ },
+ {
+  "fact": "AppContent 首次组合 attach 只同步一次；pop 后转场完成前不清理仍渲染的离页 owner",
+  "ref": "app/src/test/java/com/ai/assistance/operit/ui/main/navigation/ScreenRouteViewModelStoreOwnerManagerTest.kt:301"
+ },
+ {
+  "fact": "attachmentTag 匹配 <attachment id=\"1\"> 显式附件块",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexAttachmentTest.kt:10"
+ },
+ {
+  "fact": "attachmentSelfClosingTag 匹配自闭合附件",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexAttachmentTest.kt:14"
+ },
+ {
+  "fact": "proxySenderTag 提取 name=\"bot\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexAttachmentTest.kt:22"
+ },
+ {
+  "fact": "containsAnyToolLikeTag 识别 tool / tool_result，纯文本返回 false",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexContainsTest.kt:14"
+ },
+ {
+  "fact": "extractGeminiThoughtSignature 空 body 返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexMetaTest.kt:10"
+ },
+ {
+  "fact": "removeGeminiThoughtSignatureMeta 移除多个签名保留正文",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexMetaTest.kt:18"
+ },
+ {
+  "fact": "多个 meta 中取最后一个签名",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexMetaTest.kt:22"
+ },
+ {
+  "fact": "removeOpenAiResponsesReasoningMeta 保留 <meta charset> 可见内容",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexMetaTest.kt:35"
+ },
+ {
+  "fact": "extractOpenAiResponsesOutputItemPayloads 兼容双引号与单引号写法",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexMetaTest.kt:53"
+ },
+ {
+  "fact": "extractOpeningTagName 从 <status type=\"ok\"> 读出 \"status\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexOpeningTagTest.kt:10"
+ },
+ {
+  "fact": "残缺标签 \"<\" 返回 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexOpeningTagTest.kt:18"
+ },
+ {
+  "fact": "namePattern 从 <tool name=\"run\"> 提取 \"run\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexPatternTest.kt:10"
+ },
+ {
+  "fact": "toolParamPattern 提取参数名与 body",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexPatternTest.kt:14"
+ },
+ {
+  "fact": "generateRandomToolTagName 以 tool_ 开头、总长 9",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexRandomTagTest.kt:11"
+ },
+ {
+  "fact": "generateRandomToolResultTagName 以 tool_result_ 开头、总长 16",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexRandomTagTest.kt:17"
+ },
+ {
+  "fact": "searchTag / thinkTag 大小写不敏感",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexSearchTest.kt:10"
+ },
+ {
+  "fact": "xmlStatusPattern 提取 uuid / title / subtitle（groupValues[2]/[3]/[4]）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexStatusTest.kt:10"
+ },
+ {
+  "fact": "isToolTagName 接受 tool / tool_code，拒绝 tool_result",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:21"
+ },
+ {
+  "fact": "normalizeToolLikeTagName 归一后缀、未知标签原样保留",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:43"
+ },
+ {
+  "fact": "geminiThoughtSignatureMetaTag 包裹签名为 meta 标签",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:83"
+ },
+ {
+  "fact": "extractGeminiThoughtSignature 取最后一个、忽略其他 provider",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:101"
+ },
+ {
+  "fact": "toolCallPattern 提取 name 与 body（groupValues[2]/[3]）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:131"
+ },
+ {
+  "fact": "xmlToolResultPattern 提取 name / status / content",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexTest.kt:162"
+ },
+ {
+  "fact": "isToolTagName 接受大写 TOOL_EXEC，拒绝 null",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexToolNameTest.kt:11"
+ },
+ {
+  "fact": "toolResultAnyPattern 提取 body（groupValues[2]）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatMarkupRegexToolResultTest.kt:21"
+ },
+ {
+  "fact": "extractJson 大括号逆序时返回原文",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsExtractJsonEdgeTest.kt:9"
+ },
+ {
+  "fact": "extractJson 处理无语言围栏",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsExtractJsonEdgeTest.kt:17"
+ },
+ {
+  "fact": "extractJson 保留嵌套对象",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsJsonExtractionTest.kt:9"
+ },
+ {
+  "fact": "isGeminiProviderModel 接受 google / gemini_generic，拒绝空串与 anthropic:claude",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsProviderModelTest.kt:20"
+ },
+ {
+  "fact": "stripGeminiThoughtSignatureMeta 对 pairs 保留 role",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsStripMetaCollectionsTest.kt:12"
+ },
+ {
+  "fact": "对 PromptTurn 保留 kind",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsStripMetaCollectionsTest.kt:19"
+ },
+ {
+  "fact": "removeThinkingContent 移除 think / thinking / search 块",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:53"
+ },
+ {
+  "fact": "未闭合 <think> 截断保留 prefix",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:72"
+ },
+ {
+  "fact": "extractThinkingContent 返回 (clean, thinking) 对，多块合并为 \"a\\nb\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:86"
+ },
+ {
+  "fact": "estimateTokenCount(\"abcd\")=1L、(\"你好\")=3L",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:106"
+ },
+ {
+  "fact": "extractJson 无对象时返回原文",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:126"
+ },
+ {
+  "fact": "stripGeminiThoughtSignatureMetaTurns 无变化时复用原 Turn 对象（===）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTest.kt:143"
+ },
+ {
+  "fact": "estimateTokenCount(\"\")=0L、(\"abcdefgh\")=2L、(\"你好世\")=4L",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsTokenEstimateTest.kt:9"
+ },
+ {
+  "fact": "MathMlPlainTextConverter 把二次公式 MathML 转为 \"x = (− b ± √(b² − 4ac))/(2a)\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/MathMlPlainTextConverterTest.kt:33"
+ },
+ {
+  "fact": "求和上下限转为 \"∑_(n = 0)^(∞) i²\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/MathMlPlainTextConverterTest.kt:54"
+ },
+ {
+  "fact": "矩阵转为 \"[a, b; c, d]\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/MathMlPlainTextConverterTest.kt:71"
+ },
+ {
+  "fact": "StreamingJsonXmlConverter 跨 feed 累积分块键名",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterChunkTest.kt:11"
+ },
+ {
+  "fact": "跨 feed 累积 unicode 转义（\\u0041 → A）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterChunkTest.kt:16"
+ },
+ {
+  "fact": "单引号转义为 &apos;，双引号转义为 &quot;",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterEscapeTest.kt:10"
+ },
+ {
+  "fact": "完整字符串后 flush 无输出",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterFlushTest.kt:11"
+ },
+ {
+  "fact": "未完成原始值 flush 补 \"1</param>\"",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterFlushTest.kt:19"
+ },
+ {
+  "fact": "嵌套对象引号保留为 &quot;",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterObjectTest.kt:11"
+ },
+ {
+  "fact": "false 与空白逗号原始值正确闭合",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterPrimitiveTest.kt:10"
+ },
+ {
+  "fact": "未闭合复杂值 flush 为空",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterPrimitiveTest.kt:24"
+ },
+ {
+  "fact": "\\/a 解码为 /a，\\f 解码为换页符",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterStringTest.kt:12"
+ },
+ {
+  "fact": "字符串值产出 <param name=\"name\">value</param>",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterTest.kt:12"
+ },
+ {
+  "fact": "<&> 转义为 &lt;&amp;&gt;",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterTest.kt:54"
+ },
+ {
+  "fact": "hasUnfinishedParam 标记未完成参数",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/StreamingJsonXmlConverterTest.kt:94"
+ },
+ {
+  "fact": "ToolingRegressionTest 用 27 个用例回归 ChatMarkupRegex 全部常用模式",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ToolingRegressionTest.kt:7"
+ },
+ {
+  "fact": "replyToTag 提取 sender / timestamp / body",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ToolingRegressionTest.kt:102"
+ },
+ {
+  "fact": "attachmentDataTag 提取 id / filename / type / payload",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ToolingRegressionTest.kt:109"
+ },
+ {
+  "fact": "TtsSegmenter 小数点不切分（12.25、v1.2）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/TtsSegmenterTest.kt:9"
+ },
+ {
+  "fact": "句末点仍正常切分",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/TtsSegmenterTest.kt:19"
+ },
+ {
+  "fact": "calculateTypingDelayMs 首段立即（0L）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:14"
+ },
+ {
+  "fact": "长段延迟封顶 3000L",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:39"
+ },
+ {
+  "fact": "ensureBlockLatexDelimiters 缺 $$ 时补 $$",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:63"
+ },
+ {
+  "fact": "已有 $$ 或 \\[ \\] 不重复包裹",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:71"
+ },
+ {
+  "fact": "孤立 $$ 不变成 $$$$$$",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:99"
+ },
+ {
+  "fact": "句子切分集成测试缺 libstreamnative.so 时 assumeNoException 静默跳过",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:107"
+ },
+ {
+  "fact": "splitMessageBySentences 保持 $$ LaTeX 块完整不切分",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/WaifuMessageProcessorTest.kt:117"
+ },
+ {
+  "fact": "HotStream share 转发上游失败并重放部分内容",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/stream/HotStreamTest.kt:36"
+ },
+ {
+  "fact": "propagateCompletionCause=false 时记录失败但不抛给观察者（completionCause 可查）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/stream/HotStreamTest.kt:73"
+ },
+ {
+  "fact": "TextStreamRevisionTracker.append 返回同一 SmartString（assertSame）",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTrackerTest.kt:13"
+ },
+ {
+  "fact": "rollback 截断到 savepoint，被丢弃后缀的 savepoint 失效",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/stream/TextStreamRevisionTrackerTest.kt:27"
+ },
+ {
+  "fact": "removeThinkingContent 删除 <think> 块后 trim 首尾空白（\"  <think>x</think> answer  \" → \"answer\"）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingTest.kt:8"
+ },
+ {
+  "fact": "extractThinkingContent 无思考块时返回 (原文, \"\")。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingTest.kt:12"
+ },
+ {
+  "fact": "extractThinkingContent 把 <think> 与 <thinking> 两段思考内容用 \\n 拼接（\"a\\nb\"），每段 trim。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingTest.kt:18"
+ },
+ {
+  "fact": "<thinking> 变体标签同样被 removeThinkingContent 删除。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingEdgeTest.kt:8"
+ },
+ {
+  "fact": "纯思考内容（<think>x</think>）提取后正文部分为 \"\"，思考部分为 \"x\"。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingEdgeTest.kt:13"
+ },
+ {
+  "fact": "<search> 块被 removeThinkingContent 删除（仅 <search> 内容时返回 \"\"）。",
+  "ref": "app/src/test/java/com/ai/assistance/operit/util/ChatUtilsThinkingEdgeTest.kt:18"
+ }
+]

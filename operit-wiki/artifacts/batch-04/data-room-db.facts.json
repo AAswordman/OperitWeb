@@ -1,0 +1,414 @@
+[
+  {
+    "fact": "数据库版本号常量 APP_DATABASE_VERSION = 21",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:24"
+  },
+  {
+    "fact": "@Database 声明 5 个实体：ChatEntity、MessageEntity、MessageVariantEntity、TokenUsageRecordEntity、TokenStatsModelEntity",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:31"
+  },
+  {
+    "fact": "@Database 的 version 指向 APP_DATABASE_VERSION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:35"
+  },
+  {
+    "fact": "exportSchema = false，不导出 Room schema 历史文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:36"
+  },
+  {
+    "fact": "AppDatabase 继承 RoomDatabase，提供 5 个抽象 DAO 入口：chatDao、messageDao、messageVariantDao、chatContentDao、tokenUsageDao",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:43"
+  },
+  {
+    "fact": "对外暴露 DATABASE_VERSION 常量，值等于 APP_DATABASE_VERSION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:49"
+  },
+  {
+    "fact": "单例 INSTANCE 用 @Volatile 修饰",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:51"
+  },
+  {
+    "fact": "getDatabase 用 synchronized 双重检查锁创建单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:442"
+  },
+  {
+    "fact": "数据库文件名为 \"app_database\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:445"
+  },
+  {
+    "fact": "buildDatabase 经 Room.databaseBuilder 构建实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:510"
+  },
+  {
+    "fact": "addMigrations 把 MIGRATION_1_2 起的全部迁移注册进 builder",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:517"
+  },
+  {
+    "fact": "迁移链末尾是 MIGRATION_20_21",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:536"
+  },
+  {
+    "fact": "MIGRATION_1_2 创建 chats 表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:55"
+  },
+  {
+    "fact": "messages 表外键 chatId 引用 chats(id)，ON DELETE CASCADE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:83"
+  },
+  {
+    "fact": "该迁移为 messages(chatId) 建索引 index_messages_chatId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:89"
+  },
+  {
+    "fact": "MIGRATION_10_11 给 chats 加 workspaceEnv 列，失败时静默吞掉异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:99"
+  },
+  {
+    "fact": "MIGRATION_11_12 给 chats 加 characterGroupId 列（绑定群组角色卡）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:112"
+  },
+  {
+    "fact": "MIGRATION_12_13 给 messages 加 inputTokens、outputTokens 列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:124"
+  },
+  {
+    "fact": "该迁移给 messages 加 cachedInputTokens 列和 sentAt 列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:134"
+  },
+  {
+    "fact": "该迁移给 messages 加 outputDurationMs 列和 waitDurationMs 列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:142"
+  },
+  {
+    "fact": "MIGRATION_13_14 删除 problem_records 表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:153"
+  },
+  {
+    "fact": "MIGRATION_14_15 给 messages 加 selectedVariantIndex 列（默认 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:161"
+  },
+  {
+    "fact": "MIGRATION_14_15 创建 message_variants 表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:160"
+  },
+  {
+    "fact": "message_variants 表外键 chatId 引用 chats(id)，ON DELETE CASCADE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:180"
+  },
+  {
+    "fact": "message_variants 建唯一索引 (chatId, messageTimestamp, variantIndex)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:188"
+  },
+  {
+    "fact": "MIGRATION_15_16 给 messages 加 displayMode 列，默认 'NORMAL'",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:197"
+  },
+  {
+    "fact": "MIGRATION_16_17 为 messages 建复合索引 (chatId, timestamp)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:206"
+  },
+  {
+    "fact": "MIGRATION_17_18 给 messages 加 isFavorite 列（默认 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:215"
+  },
+  {
+    "fact": "MIGRATION_18_19 给 messages 和 message_variants 同时加 completedAt 列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:224"
+  },
+  {
+    "fact": "MIGRATION_19_20 给 chats 加 pinned 列（默认 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:235"
+  },
+  {
+    "fact": "MIGRATION_20_21 是 internal 可见",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:240"
+  },
+  {
+    "fact": "MIGRATION_20_21 同时重写 SupportSQLiteDatabase 和 SQLiteConnection 两个 migrate 重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:242"
+  },
+  {
+    "fact": "该迁移补建 messages 的两个索引，保证 Room 校验通过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:263"
+  },
+  {
+    "fact": "该迁移创建 token_usage_records 表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:270"
+  },
+  {
+    "fact": "该迁移创建 token_stats_models 表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:298"
+  },
+  {
+    "fact": "该表主键为 (configId, provider, model)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:309"
+  },
+  {
+    "fact": "该迁移把 messages 里 sender='ai' 的历史 token 数据回填进 token_usage_records",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:324"
+  },
+  {
+    "fact": "validateRecoveryCopy 把源库拷贝为 room_health_validation_<uuid> 的隔离副本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:459"
+  },
+  {
+    "fact": "恢复校验时先删掉 room_master_table，强制 Room 逐表比对真实 schema",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:485"
+  },
+  {
+    "fact": "恢复校验用 buildDatabase 打开副本并访问 writableDatabase 触发完整迁移链",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:489"
+  },
+  {
+    "fact": "恢复校验在 finally 里删除全部校验文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:501"
+  },
+  {
+    "fact": "databaseFiles 返回数据库本体及 -wal、-shm、-journal 三个附属文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:540"
+  },
+  {
+    "fact": "closeDatabase 关闭 INSTANCE 并置空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:548"
+  },
+  {
+    "fact": "ObjectBoxManager 是 object 单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:9"
+  },
+  {
+    "fact": "ObjectBoxManager 用 ConcurrentHashMap<String, BoxStore> 按 profileId 缓存 store",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:10"
+  },
+  {
+    "fact": "get 在 storeLock 同步块内按 profileId 取或建 BoxStore",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:13"
+  },
+  {
+    "fact": "profileId 为 \"default\" 时库目录名为 objectbox，否则为 objectbox_<profileId>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:24"
+  },
+  {
+    "fact": "buildStore 用 MyObjectBox.builder 指定 applicationContext 和目录构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:25"
+  },
+  {
+    "fact": "close(profileId) 从缓存移除并关闭对应 store",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:33"
+  },
+  {
+    "fact": "delete 先关闭 store 再递归删除其目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:43"
+  },
+  {
+    "fact": "closeAll 关闭全部 store 并清空缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:54"
+  },
+  {
+    "fact": "ChatDao 是 @Dao 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:14"
+  },
+  {
+    "fact": "getAllChats 返回 Flow，按 pinned 降序、displayOrder 升序排列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:17"
+  },
+  {
+    "fact": "getTotalChatCount 返回聊天总数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:21"
+  },
+  {
+    "fact": "getChatById 按 id 查单个聊天，不存在返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:30"
+  },
+  {
+    "fact": "insertChat 用 OnConflictStrategy.REPLACE 插入或替换聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:33"
+  },
+  {
+    "fact": "deleteChat 按 id 删除聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:36"
+  },
+  {
+    "fact": "updateChatMetadata 一次更新 updatedAt、title、inputTokens、outputTokens、currentWindowSize",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:40"
+  },
+  {
+    "fact": "updateChatLocked 更新锁定状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:96"
+  },
+  {
+    "fact": "updateChatPinned 更新置顶状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:100"
+  },
+  {
+    "fact": "deleteChatsInGroup 只删除分组下未锁定的聊天（locked = 0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:120"
+  },
+  {
+    "fact": "getBranchesByParentId 按 parentChatId 查分支对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:144"
+  },
+  {
+    "fact": "getMainChats 查 parentChatId 为 NULL 的主对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:152"
+  },
+  {
+    "fact": "getChatsByCharacterCardOrNull 返回指定角色卡的对话加上未绑定的对话",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:168"
+  },
+  {
+    "fact": "deleteUnlockedChatsByCharacterCardName 批量删除某角色卡下未锁定对话并返回行数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:176"
+  },
+  {
+    "fact": "getCharacterCardChatStats 按角色卡统计聊天数与消息数，返回 Flow",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:267"
+  },
+  {
+    "fact": "getCharacterGroupChatStats 按角色群组统计聊天数与消息数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:278"
+  },
+  {
+    "fact": "getCharacterGroupChatStats 返回 Flow<List<CharacterGroupChatStats>>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:286"
+  },
+  {
+    "fact": "CONTENT_CHUNK_CHARACTER_COUNT = 65_536，保证每行文本远小于 CursorWindow 上限",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:11"
+  },
+  {
+    "fact": "MESSAGE_CONTENT_ROW_QUERY 用 SUBSTR(content, 1, 65536) 截断首块并附带 LENGTH(content)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:13"
+  },
+  {
+    "fact": "ChatContentDao 是抽象类 DAO，内部查询方法为 protected abstract",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:78"
+  },
+  {
+    "fact": "getSelectedContentCharacterCountsByChat 按选中版本统计每聊天的正文字符数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:274"
+  },
+  {
+    "fact": "getMessagesForChat 经 materializeMessages 把分块行还原为完整 MessageEntity",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:277"
+  },
+  {
+    "fact": "materializeMessage 在正文超长时循环拉取后续分块拼回完整 content",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:414"
+  },
+  {
+    "fact": "分块读取时 checkNotNull 校验消息块非空，缺失则抛异常（\"Message disappeared while reading content: messageId=...\"）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:427"
+  },
+  {
+    "fact": "getVariantsForMessages 用时间范围查询加内存过滤，避免大列表展开成 SQLite 绑定变量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:372"
+  },
+  {
+    "fact": "MessageDao 是 @Dao 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:13"
+  },
+  {
+    "fact": "getTotalMessageCount 返回消息总数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:16"
+  },
+  {
+    "fact": "getLocatorPreviewsForChat 按 chatId 查询消息预览与长度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:52"
+  },
+  {
+    "fact": "其 SQL 对 HIDDEN_PLACEHOLDER 的用户消息返回空预览和 0 长度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:40"
+  },
+  {
+    "fact": "searchLocatorPreviewsForChat 用 INSTR/LOWER 做不区分大小写的关键词上下文预览",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:83"
+  },
+  {
+    "fact": "insertMessage 用 REPLACE 策略插入单条消息并返回行 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:139"
+  },
+  {
+    "fact": "copyMessagesToChat 用 INSERT INTO ... SELECT 把消息复制到目标聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:191"
+  },
+  {
+    "fact": "getMaxOrderIndex 返回某聊天的最大 orderIndex，不存在返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:207"
+  },
+  {
+    "fact": "deleteAllMessagesForChat 删除某聊天的全部消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:211"
+  },
+  {
+    "fact": "searchChatIdsByContent 用 LIKE 前后通配加 ESCAPE 做不区分大小写的内容搜索",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:240"
+  },
+  {
+    "fact": "renameRoleName 批量重命名消息中的角色名并返回影响行数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:244"
+  },
+  {
+    "fact": "MessageVariantDao 是 @Dao 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageVariantDao.kt:11"
+  },
+  {
+    "fact": "insertVariant 用 REPLACE 策略插入单条变体并返回行 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageVariantDao.kt:13"
+  },
+  {
+    "fact": "copyVariantsToChat 用 INSERT INTO ... SELECT 把变体复制到目标聊天",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageVariantDao.kt:56"
+  },
+  {
+    "fact": "deleteAllVariantsForChat 删除某聊天的全部变体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageVariantDao.kt:81"
+  },
+  {
+    "fact": "TokenUsageModelAggregateRow 是 token 计费聚合的行类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:10"
+  },
+  {
+    "fact": "该行类型的 providerModel 派生属性为 \"$provider:$model\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:26"
+  },
+  {
+    "fact": "TokenUsageActivityDayRow 只含 localDate 与 tokens 两个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:30"
+  },
+  {
+    "fact": "TokenUsageDao 是抽象类 DAO",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:36"
+  },
+  {
+    "fact": "insertRecord 用 REPLACE 策略插入 token 使用记录并返回行 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:39"
+  },
+  {
+    "fact": "upsertStatsModel 插入或替换模型计费配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:45"
+  },
+  {
+    "fact": "getStatsModel 按 (configId, provider, model) 三元组查计费配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:53"
+  },
+  {
+    "fact": "clearPricing 把指定模型的全部计费字段置 NULL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:71"
+  },
+  {
+    "fact": "deleteEmptyStatsModels 删除全部计费字段为 NULL 的模型配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:89"
+  },
+  {
+    "fact": "aggregateModelsForLifetime 用 allModels 开关控制是否限定 providerModels 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:114"
+  },
+  {
+    "fact": "getActivityDaysInRange 用 strftime 按本地日期聚合每日 token",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/TokenUsageDao.kt:186"
+  },
+  {
+    "fact": "ChatMessageCount 是 (chatId, count) 的数据类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatMessageCount.kt:3"
+  }
+]

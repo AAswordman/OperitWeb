@@ -1,0 +1,146 @@
+[
+ {
+  "fact": "operit.app 插件市场共 1452 个插件；下载量 Top50 榜单生成于 2026-09-27，第 1 名温柔巡检 41,758 次下载。",
+  "ref": "https://static.operit.app/market/v2/lists/all/downloads/page-1.json"
+ },
+ {
+  "fact": "Top50 中第 7 名主动消息守卫与第 15 名朋友圈的 release 包已被作者删除且无公开源码仓，不可读；其余 48 个插件源码已全部读取分析。",
+  "ref": "https://static.operit.app/market/v2/lists/all/downloads/page-1.json"
+ },
+ {
+  "fact": "48 个已读插件中 35 个是 ToolPkg bundle、11 个是单文件 JS 沙盒包、1 个 Skill、1 个 MCP。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "选型分界：只给 AI 加工具函数用单文件 JS 沙盒包；要 UI 面板/XML 渲染/workflow 模板/prompt 注入才上 ToolPkg。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "ToolPkg bundle 事实标准结构：manifest.json + main.js（只做注册）+ packages/*.js（工具实现）+ shared/core/（公共逻辑）+ ui/。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "registerToolPkg() 零注册是合法模式：42_低电量模板包直接 return true，不注册任何工具/hook。",
+  "ref": "低电量关怀工作流模板/main.js"
+ },
+ {
+  "fact": "48 个插件没有一个用 ToolPkg.registerTool 注册 AI 工具；工具全部走子包 METADATA tools[] 声明 + exports.工具名导出。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "ToolPkg.register* 只用于 UI 路由、导航入口、XML 渲染插件、工具箱模块与各类 hook。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "工具返回统一信封 {success, message, data}；失败时 message 写中文人话原因。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "Top 插件人手一个 wrap() 包装器：try/catch 包裹工具函数，异常转为 complete({success:false, message})，错误不抛给引擎。",
+  "ref": "温柔巡检/packages/gentle_guardian_tools.js"
+ },
+ {
+  "fact": "46_表情包渲染器未命中表情时返回纠错推荐文本而不是抛错，AI 侧永远拿到可读结果。",
+  "ref": "表情包渲染器/main.js"
+ },
+ {
+  "fact": "密钥类配置走 env 声明 + getEnv() 读取是官方机制；05_小红书是教科书级范例（4 个 env 声明，零硬编码密钥）。",
+  "ref": "小红书图文阅读器/packages/xhsreader.js"
+ },
+ {
+  "fact": "env 读取标准姿势：typeof getEnv === 'function' 防御检查 + 读不到走默认值。",
+  "ref": "微信聊天气泡/dist/main.js"
+ },
+ {
+  "fact": "26_视频解析用密钥三级回退：调用参数 api_key → 专用 env → 通用 env。",
+  "ref": "热门平台视频图文元数据解析/main.js"
+ },
+ {
+  "fact": "48 个插件中只有 11 个声明了 env；28_记忆系统调了三个 getEnv 却零声明，用户无从得知要配什么。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "30_心潮看板在随包分发的 JS 里硬编码 Bearer token 且走 http 明文，是头号反模式。",
+  "ref": "心潮看板/dist/ui/dashboard.ui.js"
+ },
+ {
+  "fact": "第三方插件联网走 Tools.Net.http（{url, method, headers, body, 超时}），10 个插件 0 用 OkHttp.newClient()。",
+  "ref": "AI的电子嘴巴/dist/packages/voice_bar.js"
+ },
+ {
+  "fact": "26_视频解析对 OCR 批量识别做串行 + 600ms 间隔限流，单张失败只记 error 继续循环。",
+  "ref": "热门平台视频图文元数据解析/main.js"
+ },
+ {
+  "fact": "每个联网包都该自带 test 工具：配完 Key 先调 test 看连通性与延迟。",
+  "ref": "热门平台视频图文元数据解析/main.js"
+ },
+ {
+  "fact": "27_网易云用 1 个通用网关 ncmapi_call + N 个薄封装，200+ 接口不用写 200 个函数。",
+  "ref": "网易云音乐 API 增强版/main.js"
+ },
+ {
+  "fact": "Hook 标准形状：stage 守卫 → enabled 守卫 → 空输入守卫 → try/catch 失败 return null（fail-open）。",
+  "ref": "传话筒/dist/main.js"
+ },
+ {
+  "fact": "prompt 注入必须做幂等标记：注入前 indexOf(标记) 检查是否已注入，防止重复叠加。",
+  "ref": "聊天美化/dist/main.js"
+ },
+ {
+  "fact": "registerXmlRenderPlugin 是聊天内富 UI 的标准入口：回调返回 {handled, composeDsl:{screen, state}, text}。",
+  "ref": "微信语音气泡/dist/main.js"
+ },
+ {
+  "fact": "21_虚拟红包给每个渲染返回带 text 降级字段，纯文本客户端不丢消息。",
+  "ref": "虚拟红包/dist/main.js"
+ },
+ {
+  "fact": "UI 面板挂载公式：registerUiRoute(runtime: compose_dsl) + registerNavigationEntry(surface: main_sidebar_plugins)。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "重型 UI 范式（19_CoRead）：manifest resources 声明静态资源 → readResource 解包 → file:// 加载进 WebView → JS Bridge 双向通信。",
+  "ref": "CoRead/dist/ui/reader/index.ui.js"
+ },
+ {
+  "fact": "工具 description 是给 AI 看的调用手册：03_聊天记录转换把批量输入格式写死，降低 AI 传参犯错率。",
+  "ref": "AI聊天记录转换工具/dist/packages/migrator_tools.js"
+ },
+ {
+  "fact": "advice:true 工具只进 prompt 不占注册表：33_本地图片显示 40 行零代码，纯靠两条 advice 工具教会 AI 引用本地图片。",
+  "ref": "本地图片显示/main.js"
+ },
+ {
+  "fact": "用户输入拼进 shell 必须经 shQuote 转义（单引号转义）；34_开发Agent 的 pm install 拼接与 41_实时巡航的 am force-stop 拼接是注入反例。",
+  "ref": "家机锁/main.js"
+ },
+ {
+  "fact": "31_想念脉冲用幂等安装工具现场生成/更新工作流（Workflow-as-code），换设备一键恢复。",
+  "ref": "主动想念脉冲/main.js"
+ },
+ {
+  "fact": "17_碎碎念是三层架构范本：shared 纯函数数据层（可单元测试）+ 薄工具包装层 + UI 复用 service。",
+  "ref": "碎碎念/src/shared/murmur_service.ts"
+ },
+ {
+  "fact": "本地 JSON 写文件用 tmp + 原子 move + .bak 备份，防写坏（17_碎碎念、11_电子嘴巴）。",
+  "ref": "碎碎念/src/shared/murmur_service.ts"
+ },
+ {
+  "fact": "31_想念脉冲用 DEFAULT_DB 常量 + load 失败回退实现配置自举与损坏自愈，首次运行零配置。",
+  "ref": "主动想念脉冲/main.js"
+ },
+ {
+  "fact": "11/13/19/23/24/30 等包的 dist 里出现 ToolPkg._m([...],90) XOR 混淆段（市场链路植入的归因 blob），构建产物与源码不一致。",
+  "ref": "市场 Top50 插件源码走查（48 个插件逐包分析，归档备查）"
+ },
+ {
+  "fact": "OpenWebSearch 用 MCP_TOOL_*_NAME=<disabled> 环境变量实现工具级 kill switch，改配置即下线单个工具。",
+  "ref": "open-websearch-mcp/src/tools/setupTools.ts"
+ },
+ {
+  "fact": "ApkTool工具整个插件就是一个 JSON：commands 命令模板 + args 参数表（file 类型带 file_filter），零代码成插件。",
+  "ref": "apptool-skill/apktool_skill.json"
+ }
+]

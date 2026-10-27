@@ -1,0 +1,694 @@
+[
+  {
+    "fact": "MemoryRepository 类的构造参数是 (context: Context, profileId: String)，每个 profile 有独立的仓库实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:55"
+  },
+  {
+    "fact": "MemoryRepository 用 ObjectBoxManager.get(context, profileId) 获取按 profile 隔离的 ObjectBox 存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:90"
+  },
+  {
+    "fact": "MemoryRepository 维护 memoryBox（Memory 实体 Box）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:91"
+  },
+  {
+    "fact": "MemoryRepository 维护 tagBox（MemoryTag 实体 Box）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:92"
+  },
+  {
+    "fact": "MemoryRepository 维护 linkBox（MemoryLink 实体 Box）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:93"
+  },
+  {
+    "fact": "MemoryRepository 维护 chunkBox（DocumentChunk 实体 Box）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:94"
+  },
+  {
+    "fact": "MemoryRepository 依赖 MemorySearchSettingsPreferences 读取检索权重与 embedding 云配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:96"
+  },
+  {
+    "fact": "MemoryRepository 依赖 CloudEmbeddingService 生成云端向量 embedding。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:97"
+  },
+  {
+    "fact": "链接强度常量 STRONG_LINK = 1.0f，语义为强关联（如“A 是 B”）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:59"
+  },
+  {
+    "fact": "链接强度常量 MEDIUM_LINK = 0.7f，语义为中等关联（如“A 与 B 相关”）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:62"
+  },
+  {
+    "fact": "链接强度常量 WEAK_LINK = 0.3f，语义为弱关联（如“A 有时与 B 相连”）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:65"
+  },
+  {
+    "fact": "搜索融合的 RRF 常数 SEARCH_RRF_K = 60.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:67"
+  },
+  {
+    "fact": "关键词覆盖率加成系数 SEARCH_KEYWORD_COVERAGE_BONUS = 0.6。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:68"
+  },
+  {
+    "fact": "默认相关性阈值 SEARCH_RELEVANCE_THRESHOLD = 0.025。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:69"
+  },
+  {
+    "fact": "悬空链接清理的节流间隔 DANGLING_LINK_CLEANUP_INTERVAL_MS = 30_000L（30 秒）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:66"
+  },
+  {
+    "fact": "normalizeFolderPath 对文件夹路径做规范化（trim、反斜杠转正斜杠、按 / 切分去空段）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:72"
+  },
+  {
+    "fact": "normalizeFolderPath 在输入为 null 或空白时返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:76"
+  },
+  {
+    "fact": "sanitizeIndexKey 用正则 [^a-zA-Z0-9._-] 把 profileId 中的非法字符替换为下划线，空白则用 \"default\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:84"
+  },
+  {
+    "fact": "sanitizedProfileKey 是清洗后的 profile 键，用于构造 HNSW 索引文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:98"
+  },
+  {
+    "fact": "lastDanglingCleanupAtMs 用 @Volatile 修饰，用于跨线程的悬空链接清理节流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:99"
+  },
+  {
+    "fact": "saveMemory 在保存时把 credibility 和 importance 都钳制到 [0.0, 1.0] 区间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:839"
+  },
+  {
+    "fact": "saveMemory 在保存前记录旧 embedding 的维度 previousDimension，用于决定索引重建范围。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:836"
+  },
+  {
+    "fact": "generateTextForEmbedding 对文档节点取 title、普通记忆取 content 作为 embedding 输入文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:823"
+  },
+  {
+    "fact": "saveMemory 只有在 embedding 输入文本非空时才生成 embedding。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:842"
+  },
+  {
+    "fact": "createMemory 的 contentType 默认 \"text/plain\"，source 默认 \"user_input\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2199"
+  },
+  {
+    "fact": "createMemory 会对传入的 tags 做 trim、去空、去重后再关联。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2205"
+  },
+  {
+    "fact": "updateMemory 仅在内容/可信度/重要性变化（或文档节点标题变化）时才重新生成 embedding。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2253"
+  },
+  {
+    "fact": "updateMemory 更新标签时先清空旧标签再逐个添加新标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2294"
+  },
+  {
+    "fact": "updateMemory 只在重新生成了 embedding 时才重建向量索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2310"
+  },
+  {
+    "fact": "findMemoryById 按 ObjectBox id 查找记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:855"
+  },
+  {
+    "fact": "findMemoryByUuid 按 uuid 精确查找记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:864"
+  },
+  {
+    "fact": "findMemoryByTitle 按标题精确查找第一条记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:873"
+  },
+  {
+    "fact": "findMemoriesByTitle 按标题精确查找全部匹配的记忆列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:882"
+  },
+  {
+    "fact": "deleteMemory 删除记忆前会先删除文档节点的所有 DocumentChunk。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:895"
+  },
+  {
+    "fact": "deleteMemory 会收集并删除与被删记忆相连的所有链接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:905"
+  },
+  {
+    "fact": "deleteMemory 成功删除记忆后会把它从向量索引中移除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:913"
+  },
+  {
+    "fact": "cleanupDanglingLinksIfNeeded 按 30 秒间隔节流，清理两端已不存在的悬空链接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:948"
+  },
+  {
+    "fact": "悬空链接的判定包括：源或目标 id <= 0，或源/目标 id 不在现有记忆 id 集合中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:934"
+  },
+  {
+    "fact": "addTagToMemory 按标签名做大小写敏感精确查询，找不到则创建新 MemoryTag。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1013"
+  },
+  {
+    "fact": "addTagToMemory 在记忆已关联该标签时不会重复添加。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1021"
+  },
+  {
+    "fact": "linkMemories 在相同源记忆+目标+类型 的链接已存在时直接返回，不创建重复链接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1051"
+  },
+  {
+    "fact": "linkMemories 把链接权重钳制到 [0.0, 1.0] 区间以保证数据完整性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1059"
+  },
+  {
+    "fact": "updateLink 更新链接后会重新 put 源记忆，以刷新 ObjectBox 的 ToMany 关系缓存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:980"
+  },
+  {
+    "fact": "deleteLink 删除链接后也会重新 put 源记忆，保证其他线程/后续查询拿到最新关系。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1001"
+  },
+  {
+    "fact": "getOutgoingLinks 返回记忆的出边 links（先 reset 关系缓存）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1069"
+  },
+  {
+    "fact": "getIncomingLinks 返回记忆的入边 backlinks（先 reset 关系缓存）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1076"
+  },
+  {
+    "fact": "queryMemoryLinks 支持按 linkId / 源 / 目标 / 类型过滤，默认返回最近的 20 条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1086"
+  },
+  {
+    "fact": "queryMemoryLinks 的 limit 被钳制在 1..200 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1096"
+  },
+  {
+    "fact": "queryMemoryLinks 每次查询前先执行悬空链接清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1094"
+  },
+  {
+    "fact": "searchMemories 的默认参数：scoreMode=BALANCED、keywordWeight=10.0f、tagWeight=0.0f、semanticWeight=0.5f、edgeWeight=0.4f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1135"
+  },
+  {
+    "fact": "searchMemories 的 relevanceThreshold 默认值为 SEARCH_RELEVANCE_THRESHOLD（0.025）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1139"
+  },
+  {
+    "fact": "searchMemoriesDebug 与 searchMemories 走同一套计算，但返回结构化的 MemorySearchDebugInfo 调试信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1157"
+  },
+  {
+    "fact": "searchMemories 支持按 createdAt 时间戳范围（createdAtStartMs/createdAtEndMs）过滤记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1209"
+  },
+  {
+    "fact": "搜索范围会先过滤掉文件夹占位记忆（isFolderPlaceholderMemory）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1207"
+  },
+  {
+    "fact": "查询为 \"*\" 时返回文件夹/时间过滤后的全部记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1274"
+  },
+  {
+    "fact": "查询为空白字符串时返回文件夹/时间过滤后的全部记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1281"
+  },
+  {
+    "fact": "splitSearchKeywords 在查询含 '|' 时按竖线分割，否则按空白分割。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:189"
+  },
+  {
+    "fact": "buildLexicalQueryTokens 最多保留 32 个词条，按词条长度降序排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:208"
+  },
+  {
+    "fact": "expandKeywordToken 保留原词并用 Jieba 分词（TextSegmenter）补充分片，提高中文长句召回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:140"
+  },
+  {
+    "fact": "TextSegmenter 底层使用 JiebaSegmenter 做中文分词。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt:3"
+  },
+  {
+    "fact": "isSearchableLexicalBody 要求词条长度在 2..24 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:660"
+  },
+  {
+    "fact": "isSearchableLexicalBody 要求词条含字母/数字或 CJK 字符（0x4E00..0x9FFF）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:661"
+  },
+  {
+    "fact": "buildWildcardRegex 把含 * 的词条按字面片段转义后用 .* 连接成正则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:664"
+  },
+  {
+    "fact": "通配符正则使用 IGNORE_CASE 与 DOT_MATCHES_ALL 选项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:672"
+  },
+  {
+    "fact": "含 * 的查询分片走内存标题过滤（textMatchesLexicalToken），而非 ObjectBox contains 查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:704"
+  },
+  {
+    "fact": "标题候选按“命中词条数→importance→updatedAt”降序排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:722"
+  },
+  {
+    "fact": "resolveSearchWeights 在 BALANCED 模式下三路乘子均为 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:230"
+  },
+  {
+    "fact": "KEYWORD_FIRST 模式的权重乘子为 (1.3, 0.8, 0.9)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:231"
+  },
+  {
+    "fact": "SEMANTIC_FIRST 模式的权重乘子为 (0.8, 1.3, 1.1)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:232"
+  },
+  {
+    "fact": "语义关键词归一化因子 semanticKeywordNormFactor = 1/sqrt(keywordCount)，关键词越多单条语义分摊越小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:235"
+  },
+  {
+    "fact": "computeRrfBaseScore(rank) = 1.0 / (60.0 + rank)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:248"
+  },
+  {
+    "fact": "computeKeywordCoverageMultiplier = 1.0 + 0.6 * (命中词条数/总词条数)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:257"
+  },
+  {
+    "fact": "关键词分支分数 = RRF 基分 * importance * 有效关键词权重 * 覆盖率乘子。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1360"
+  },
+  {
+    "fact": "标签分支使用与关键词分支相同的 RRF + 覆盖率公式，权重为有效标签权重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1391"
+  },
+  {
+    "fact": "反向包含检索在查询文本包含记忆标题时命中（如查询“长安大学在西安”命中标题“长安大学”）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1398"
+  },
+  {
+    "fact": "语义检索仅在 effectiveSemanticWeight > 0 且 cloudConfig.isReady() 时执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1421"
+  },
+  {
+    "fact": "CloudEmbeddingConfig.isReady 要求 enabled 为 true 且 endpoint/apiKey/model 均非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/CloudEmbeddingConfig.kt:14"
+  },
+  {
+    "fact": "getSemanticMemoryCandidatesFromIndex 从 HNSW 索引取全部可用候选，再按余弦相似度排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:590"
+  },
+  {
+    "fact": "语义候选会二次校验：数据库中的 embedding 维度必须与查询向量维度一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:601"
+  },
+  {
+    "fact": "图谱扩展取总分最高的 10 条记忆作为种子节点，沿出边和入边传播分数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1467"
+  },
+  {
+    "fact": "图谱传播的基础加成 basePropagationScore = 0.03 * effectiveEdgeWeight。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1474"
+  },
+  {
+    "fact": "单条边的传播分数 = 源分数 * 边权重 * 有效边权重 + 基础加成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1489"
+  },
+  {
+    "fact": "最终结果过滤掉总分低于 relevanceThreshold 的记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1530"
+  },
+  {
+    "fact": "isFolderPlaceholderMemory 把标题为 \".folder_placeholder\" 或资源标题的记忆视为文件夹占位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:211"
+  },
+  {
+    "fact": "searchChunksInDocument 在非文档节点上返回空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1650"
+  },
+  {
+    "fact": "searchChunksInDocument 的 limit 至少为 1，空白查询时返回按索引排序的前 limit 个区块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1655"
+  },
+  {
+    "fact": "updateChunk 更新区块内容后会重新生成 embedding，并按新向量维度重建该文档的区块索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1797"
+  },
+  {
+    "fact": "createMemoryFromDocument 按“两个以上换行”切分文档文本为区块。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:786"
+  },
+  {
+    "fact": "createMemoryFromDocument 会删除区块中的分隔符行（*** / --- / === 等）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:788"
+  },
+  {
+    "fact": "createMemoryFromDocument 用文档名生成文档记忆的 embedding。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:771"
+  },
+  {
+    "fact": "createMemoryFromDocument 创建的记忆标记 isDocumentNode = true 并记录 documentPath。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:776"
+  },
+  {
+    "fact": "向量索引目录由 OperitPaths.vectorIndexDir(context) 提供。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:273"
+  },
+  {
+    "fact": "记忆 HNSW 索引文件名格式为 memory_hnsw_<清洗后profileKey>_<维度>.idx。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:293"
+  },
+  {
+    "fact": "文档区块索引文件名格式为 doc_index_<清洗后profileKey>_<记忆id>_<维度>.hnsw。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:297"
+  },
+  {
+    "fact": "VectorIndexManager 使用 FLOAT_COSINE_DISTANCE（余弦距离）构建 HNSW 索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/vector/VectorIndexManager.kt:35"
+  },
+  {
+    "fact": "记忆向量索引按维度整体重建，因为 HNSW 删除会留 tombstone、增量 add 易命中容量异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:353"
+  },
+  {
+    "fact": "ensureMemoryVectorIndex 在索引文件不存在时先全量重建，再以只读方式打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:557"
+  },
+  {
+    "fact": "resolveDocumentIndexDimension 在未指定维度时取各区块 embedding 维度的众数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:472"
+  },
+  {
+    "fact": "rebuildDocumentChunkIndex 会删除与目标维度不一致的旧索引文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:518"
+  },
+  {
+    "fact": "loadCloudEmbeddingConfig 读取云端 embedding 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1818"
+  },
+  {
+    "fact": "saveCloudEmbeddingConfig 保存前先对配置做 normalized()（去首尾空格）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1822"
+  },
+  {
+    "fact": "getEmbeddingDimensionUsage 统计记忆与区块中缺失 embedding 的数量及各维度的分布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1826"
+  },
+  {
+    "fact": "rebuildVectorIndices 在云 embedding 配置未就绪时抛 IllegalStateException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1858"
+  },
+  {
+    "fact": "rebuildVectorIndices 用一段探针文本生成探测 embedding 来确定目标维度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1885"
+  },
+  {
+    "fact": "rebuildVectorIndices 会把内容为空但仍有 embedding 的记忆的 embedding 清空为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:1908"
+  },
+  {
+    "fact": "getGraphForMemories 先把输入记忆扩展一跳邻居，再构建图谱。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2039"
+  },
+  {
+    "fact": "getMemoryGraph 在构图前先清理悬空链接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2485"
+  },
+  {
+    "fact": "图谱节点中文档节点用紫色 0xFF9575CD。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2504"
+  },
+  {
+    "fact": "图谱节点颜色：首标签为 Person 用绿色 0xFF81C784，Concept 用蓝色 0xFF64B5F6，其他用浅灰。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2509"
+  },
+  {
+    "fact": "buildGraphFromMemories 会检测跨文件夹连接并标记 isCrossFolderLink。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2534"
+  },
+  {
+    "fact": "getAllFolderPaths 把 folderPath 为空的记忆归入 memory_uncategorized（未分类）字符串资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2076"
+  },
+  {
+    "fact": "getMemoriesByFolderPath 返回该文件夹及其所有子文件夹（路径前缀匹配）的记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2084"
+  },
+  {
+    "fact": "renameFolder 重命名时把子文件夹路径做前缀替换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2134"
+  },
+  {
+    "fact": "moveMemoriesToFolder 在目标为“未分类”时把 folderPath 置为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2154"
+  },
+  {
+    "fact": "createFolder 的做法是创建一个标题为 memory_repository_folder_description_title 的占位记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2183"
+  },
+  {
+    "fact": "createFolder 在文件夹已存在时直接返回 true，不重复创建占位记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2177"
+  },
+  {
+    "fact": "deleteFolder 把该文件夹下记忆的 folderPath 置为 null（移入未分类）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2579"
+  },
+  {
+    "fact": "exportMemoriesToJson 只导出非文档节点的记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2592"
+  },
+  {
+    "fact": "导出数据的数据格式版本 version = \"1.0\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2645"
+  },
+  {
+    "fact": "导出链接时只保留两端都是非文档节点的链接，并去重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2629"
+  },
+  {
+    "fact": "importMemoriesFromJson 的默认导入策略是 ImportStrategy.SKIP。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2664"
+  },
+  {
+    "fact": "ImportStrategy 有 SKIP（跳过已存在）、UPDATE（更新已存在）、CREATE_NEW（强制新建）三种策略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:80"
+  },
+  {
+    "fact": "CREATE_NEW 策略在导入时为记忆强制生成新的随机 UUID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2777"
+  },
+  {
+    "fact": "MemoryImportResult 记录新创建、更新、跳过的记忆数和新创建的链接数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryExportModel.kt:101"
+  },
+  {
+    "fact": "导入链接时用 uuidMap 把导出时的旧 UUID 映射到本地 Memory 对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2717"
+  },
+  {
+    "fact": "mergeMemories 要求至少找到 2 个不同的源记忆，否则返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2328"
+  },
+  {
+    "fact": "mergeMemories 在 store.runInTx 事务中完成新记忆创建、链接重定向和旧记忆删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2335"
+  },
+  {
+    "fact": "mergeMemories 把源记忆的所有出/入边重定向到合并后的新记忆。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2373"
+  },
+  {
+    "fact": "mergeMemories 的新记忆 source 字段固定为 \"merged_from_memory\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2341"
+  },
+  {
+    "fact": "deleteMemoriesByUuids 在 UUID 集合为空时直接返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2417"
+  },
+  {
+    "fact": "deleteMemoriesByUuids 在事务内批量删除链接、区块和记忆本体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2439"
+  },
+  {
+    "fact": "deleteMemoriesByUuids 在事务外清理被删记忆的向量索引和区块索引文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:2478"
+  },
+  {
+    "fact": "Memory 实体用 @Entity 标注，id 默认 0，uuid 默认随机生成。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:14"
+  },
+  {
+    "fact": "Memory.folderPath 用 @Index 标注以加速文件夹查询。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:41"
+  },
+  {
+    "fact": "Memory.embedding 用 EmbeddingConverter 转成 ByteArray 存入 ObjectBox。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:43"
+  },
+  {
+    "fact": "Memory.backlinks 用 @Backlink(to = \"target\") 标注，是 MemoryLink.target 的反向关系。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:65"
+  },
+  {
+    "fact": "Memory.documentChunks 用 @Backlink(to = \"memory\") 标注，是文档节点的内容区块集合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:69"
+  },
+  {
+    "fact": "DocumentChunk 含 content、chunkIndex、embedding 字段，并以 ToOne 关联所属 Memory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/DocumentChunk.kt:16"
+  },
+  {
+    "fact": "MemoryAutoSaveCandidateRepository 构造参数为 (context: Context, profileId: String)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:11"
+  },
+  {
+    "fact": "MemoryAutoSaveCandidateRepository 同样用 ObjectBoxManager.get(context, profileId) 按 profile 隔离存储。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:15"
+  },
+  {
+    "fact": "enqueue 默认 sourceType = SOURCE_TYPE_REPLY_FINALIZED_AUTO，新候选状态为 pending。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:21"
+  },
+  {
+    "fact": "enqueueSelectedUserMessages 对时间戳做 >0 过滤、去重、升序；chatId 为空或列表为空时直接返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:40"
+  },
+  {
+    "fact": "enqueueSelectedUserMessages 入队的候选 sourceType = SOURCE_TYPE_SELECTED_USER_MESSAGE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:50"
+  },
+  {
+    "fact": "getPendingAndFailedCandidates 查询 status 为 pending 或 failed 的候选，按 createdAt 升序返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:55"
+  },
+  {
+    "fact": "countPendingAndFailedChats 统计待处理/失败候选中去重后的 chatId 数量（空白 chatId 排除）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:71"
+  },
+  {
+    "fact": "markProcessing 把候选置为 processing 状态，并清空 lastError、更新 updatedAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:83"
+  },
+  {
+    "fact": "markPending 把候选状态打回 pending，用于失败后重试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:95"
+  },
+  {
+    "fact": "markFailed 把候选置为 failed，attemptCount 加 1，lastError 截断为 500 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:112"
+  },
+  {
+    "fact": "deleteCandidates 按 id 逐个删除候选记录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryAutoSaveCandidateRepository.kt:107"
+  },
+  {
+    "fact": "MemoryAutoSaveCandidate 的状态常量为 pending / processing / failed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:21"
+  },
+  {
+    "fact": "MemoryAutoSaveCandidate 的来源常量为 reply_finalized_auto（回复定稿自动）与 selected_user_message（选中用户消息）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:25"
+  },
+  {
+    "fact": "EnhancedAIService 在回复定稿后调用 MemoryAutoSaveCandidateRepository.enqueue 入队自动保存候选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt:2048"
+  },
+  {
+    "fact": "MemoryAutoSaveScheduler（定时任务）使用 MemoryAutoSaveCandidateRepository 拉取待处理候选并执行保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt:99"
+  },
+  {
+    "fact": "MessageCoordinationDelegate 在消息协调流程中入队记忆自动保存候选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/MessageCoordinationDelegate.kt:1501"
+  },
+  {
+    "fact": "AgentChatInputSection 读取 countPendingAndFailedCandidates() 展示待处理记忆数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/input/agent/AgentChatInputSection.kt:2278"
+  },
+  {
+    "fact": "ClassicChatSettingsBar 读取 countPendingAndFailedCandidates() 展示待处理记忆数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/style/input/classic/ClassicChatSettingsBar.kt:267"
+  },
+  {
+    "fact": "MemorySpaceProfileDocumentRepository.getInstance 用 @Volatile 加 synchronized 双重检查创建单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:34"
+  },
+  {
+    "fact": "单例构造时保存的是 context.applicationContext（取不到才用原 context），防 Activity 泄漏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:37"
+  },
+  {
+    "fact": "画像文档的存储目录名为 `memory-space-profiles`，位于 filesDir 下。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:23"
+  },
+  {
+    "fact": "documentFile 要求 memorySpaceId 非空，否则 require 抛错；画像文档路径为 `memory-space-profiles/<memorySpaceId>/user.md`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:228"
+  },
+  {
+    "fact": "画像文档内容上限 MAX_CONTENT_CHARS = 12_000 字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:20"
+  },
+  {
+    "fact": "save 在内容超 12_000 字符时 require 抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:85"
+  },
+  {
+    "fact": "load 在文件不存在时先在写锁内创建空文件，再以 UTF-8 读出全文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:73"
+  },
+  {
+    "fact": "所有写入走 writeAtomically：用 Android AtomicFile 先 startWrite 写 UTF-8 字节再 finishWrite，失败走 failWrite 并重抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:299"
+  },
+  {
+    "fact": "saveAutomatic 先读该记忆空间的配置：profileAutoUpdateEnabled 未开或 profileAutoUpdateLocked 已锁定时返回 false 不写入，否则写入并返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:94"
+  },
+  {
+    "fact": "initialize 用 Mutex 保证只执行一次；schema_version 小于 CURRENT_SCHEMA_VERSION（2）时跑迁移，并用 SharedPreferences commit() 同步写回版本号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:54"
+  },
+  {
+    "fact": "迁移走三分支：有旧结构化画像元数据走 migrateLegacyStructuredProfiles；有记忆空间元数据走 migratePublishedGlobalDocuments 并为每个空间补空文档；否则也跑旧画像迁移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:114"
+  },
+  {
+    "fact": "migratePublishedGlobalDocuments 用“归档名是其余空间名列表的子序列”来唯一确定根 user.md 的归属空间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:167"
+  },
+  {
+    "fact": "根 user.md 归属候选多于 1 个时只记警告并保留源文件，不做迁移。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:175"
+  },
+  {
+    "fact": "旧结构化画像转 Markdown 时生成 `# About me` 标题及 `## Basic information` / `## Personality` / `## Preferred assistant style` 三节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:256"
+  },
+  {
+    "fact": "画像生日按 `yyyy-MM-dd`（Locale.ROOT）格式化写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:274"
+  },
+  {
+    "fact": "parsePublishedArchive 按 `## ` 标题切分归档，但把 `Basic information`、`Personality`、`Preferred assistant style` 三节视为内容而非新画像。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:238"
+  },
+  {
+    "fact": "delete 同时删除该空间的 user.md 文件和整个空间目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/MemorySpaceProfileDocumentRepository.kt:106"
+  }
+]

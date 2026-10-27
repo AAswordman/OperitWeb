@@ -1,0 +1,112 @@
+[
+  {
+    "category": "security",
+    "confidence": "medium",
+    "evidence": "val result = withContext(Dispatchers.IO) {\n    AndroidShellExecutor.executeShellCommand(\n        \"pm $action $packageName ${permission.rawName}\"\n    )\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt",
+    "line": 169,
+    "severity": "warn",
+    "title": "pm 授权命令用字符串拼接，rawName 来自 dumpsys 解析",
+    "detail": "togglePermission 与 PermissionItem 的 onToggle 都用字符串拼接构造 shell 命令 \"pm $action $packageName ${permission.rawName}\" 再交给 AndroidShellExecutor 执行。rawName 虽经 [\\w.]+ 正则从 dumpsys 输出提取、当前注入面有限，但解析逻辑一旦放宽即形成命令注入；更稳妥做法是把参数数组传给执行器而非拼字符串。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "permissions.add(\n    PermissionInfo(\n        name = context.getString(R.string.debug_info),\n        description = ...,\n        granted = false,\n        dangerous = false,\n        group = \"undefined\",\n        rawName = \"debug.info\"\n    )\n)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/apppermissions/AppPermissionsScreen.kt",
+    "line": 1438,
+    "severity": "warn",
+    "title": "调试/错误占位行可被拨动并执行 pm 命令",
+    "detail": "getAppPermissions 解析失败时会插入一条 rawName=\"debug.info\"（或 \"error.info\"）的占位 PermissionInfo，但它同样被 PermissionItem 渲染成可拨动的 Switch。用户拨动它会真实执行 \"pm grant <包名> debug.info\"，属于误操作执行无意义命令。"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "evidence": "if (urlConfig.signInUrl.isNotEmpty()) {\n    webView.loadUrl(urlConfig.signInUrl)\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt",
+    "line": 159,
+    "severity": "warn",
+    "title": "用户配置的 URL 未校验 scheme 即 loadUrl",
+    "detail": "signInUrl 与各 tab 的 url 均来自用户可编辑的 UrlConfigManager 配置，webView.loadUrl(url) 前未做 scheme 校验。若配置写入 file:// 或 javascript: 等 scheme，会被 WebView 直接加载（shouldOverrideUrlLoading 对 http/https 之外仅放行不拦截）。"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "evidence": "// 对于其他协议（如javascript:, about:等），也让WebView处理\n// 不要尝试用外部应用打开\n}\nreturn false",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt",
+    "line": 130,
+    "severity": "warn",
+    "title": "非白名单协议一律放行给 WebView 处理",
+    "detail": "shouldOverrideUrlLoading 只把 alipays:/alipay:/weixin:/weixins: 转外部应用、http/https 留给 WebView，其余协议（如注释明示的 javascript:、about:）同样返回 false 交给 WebView 处理。javascript: URL 会在 WebView 上下文中执行脚本。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "} catch (e: Exception) {\n    AppLogger.e(TAG, \"Error saving permission level\", e)\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/viewmodel/PermissionGuideViewModel.kt",
+    "line": 133,
+    "severity": "warn",
+    "title": "保存权限级别失败仅打日志，用户无感知",
+    "detail": "savePermissionLevel 的 try/catch 里，落盘抛异常时只打 AppLogger.e 日志，isCompleted 不置位且界面无任何提示，用户停在权限级别页点确认无反应、不知道失败原因。"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "evidence": "Surface(\n    modifier = Modifier.fillMaxWidth(),\n    color = Color.White,\n    shadowElevation = 2.dp\n)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt",
+    "line": 211,
+    "severity": "suggestion",
+    "title": "底部栏硬编码白色，深色模式割裂",
+    "detail": "底部导航栏 Surface 与 Row 背景写死 Color.White，深色模式下与 MaterialTheme 配色脱节，会出现白色底栏。应改用 MaterialTheme.colorScheme.surface。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "// 初始化\nLaunchedEffect(Unit) { viewModel.checkPermissions(context) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/permission/screens/PermissionGuideScreen.kt",
+    "line": 106,
+    "severity": "suggestion",
+    "title": "从系统设置返回后权限状态不自动刷新",
+    "detail": "从系统设置页返回后不会自动重检权限——checkPermissions 只在 LaunchedEffect(Unit) 初始化时跑一次，用户必须手动点刷新按钮，否则界面状态与实际授予情况脱节。"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "evidence": "if (finishedUrl.contains(destination.url) ||\n    destination.url.contains(finishedUrl)) {\n    selectedTabIndex = index\n}",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/token/TokenConfigWebViewScreen.kt",
+    "line": 143,
+    "severity": "suggestion",
+    "title": "标签匹配用子串 contains，易误命中",
+    "detail": "onPageFinished 用 finishedUrl.contains(destination.url) || destination.url.contains(finishedUrl) 做子串匹配来修正选中标签，URL 带查询参数或路径前缀相近时可能选中错误的 tab。"
+  },
+  {
+    "title": "并发权限确认请求被静默丢弃，第二个请求挂起至 60 秒超时",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt",
+    "line": 386,
+    "severity": "warn",
+    "category": "correctness",
+    "detail": "PermissionRequestOverlay.show() 在 overlayView != null 时直接 return 且不回调用 onResult。此时 ToolPermissionSystem.requestPermission 已把 suspendCancellableCoroutine 的 continuation 挂在 currentPermissionCallback 上等待回调：第二个工具的确认请求既无弹窗也无回调，只能等 withTimeoutOrNull 的 60 秒超时后拿到 CONFIRMATION_TIMEOUT。应排队或直接回 DENY。",
+    "evidence": "    ) {\n        if (overlayView != null) return\n\n        if (!hasOverlayPermission()) {\n            AppLogger.e(TAG, \"Cannot show overlay without permission\")\n            onResult(PermissionRequestResult.DENY)",
+    "confidence": "high"
+  },
+  {
+    "title": "无悬浮窗权限时跳系统设置后，原工具请求直接判失败",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/permissions/ToolPermissionSystem.kt",
+    "line": 243,
+    "severity": "suggestion",
+    "category": "correctness",
+    "detail": "requestPermission 发现无悬浮窗权限时，先调 requestOverlayPermission() 跳系统设置，再立即回调用 OVERLAY_PERMISSION_REQUIRED（isGranted=false）结束本次门禁。用户按引导打开权限返回后，原工具调用已结束，必须重新触发一次工具调用才能再次确认；更顺的做法是授权返回后自动重试本次请求。",
+    "evidence": "                mainHandler.post {\n                    // Use overlay to show permission request\n                    if (!permissionRequestOverlay.hasOverlayPermission()) {\n                        AppLogger.w(TAG, \"No overlay permission, requesting...\")\n                        permissionRequestOverlay.requestOverlayPermission()\n                        currentPermissionCallback?.invoke(\n                            ToolPermissionCheckResult.OVERLAY_PERMISSION_REQUIRED\n                        )",
+    "confidence": "high"
+  },
+  {
+    "title": "确认弹窗用 FLAG_NOT_FOCUSABLE，返回键无法关闭",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/permissions/PermissionRequestOverlay.kt",
+    "line": 404,
+    "severity": "suggestion",
+    "category": "correctness",
+    "detail": "悬浮窗 flags 含 FLAG_NOT_FOCUSABLE，返回键事件到不了弹窗：用户只能点拒绝/允许/总是允许，或等待 60 秒超时。若刻意做成强制三选一则无妨，否则应提供可取消的退出路径。",
+    "evidence": "            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or\n                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or\n                    WindowManager.LayoutParams.FLAG_LAYOUT_NO_LIMITS",
+    "confidence": "medium"
+  }
+]

@@ -1,0 +1,57 @@
+[
+  {
+    "category": "performance",
+    "confidence": "high",
+    "description": "全局 mutex 横跨 LLM 流式分析，并发保存被队头阻塞：saveMemory 在 mutex.withLock 内调用 generateAnalysis（网络流式，可耗时数分钟），autoCategorizeMemories 持同一把锁做 AI 分类；定时自动保存的 tick 会因子任务阻塞而被 runOnce 的防重入守卫跳过。",
+    "detail": "saveMemory 在 mutex.withLock 内调用 generateAnalysis，后者经 aiService.sendMessage 做网络流式分析（可耗时数分钟）。autoCategorizeMemories 同样持同一把锁做 AI 批量分类。后果：一次手动保存/自动分类会阻塞所有其他 saveMemoryNow（含定时自动保存），而 MemoryAutoSaveScheduler.runOnce 的 AtomicBoolean 防重入会让被阻塞期间的 tick 直接跳过，定时保存可能被反复饿死。",
+    "evidence": "        mutex.withLock {\n            val profileId = profileIdOverride ?: preferencesManager.activeMemorySpaceIdFlow.first()\n            val memoryRepository = MemoryRepository(context, profileId)",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt",
+    "line": 323,
+    "severity": "warning",
+    "title": "全局 mutex 横跨 LLM 流式分析，并发保存被队头阻塞"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "description": "createdMemories 按标题做键，AI 返回重名实体会静默覆盖：MutableMap<String, Memory> 以标题为键，两个同名 extractedEntities 后者覆盖前者，links 解析只会连到最后一个。",
+    "detail": "createdMemories 是 MutableMap<String, Memory>，以记忆标题为键（line 399）。AI 返回的 extractedEntities 若有两个同名 title，后者静默覆盖前者；links 按标题解析时只会连到最后一个。同名冲突在 findAndDescribeDuplicates 里只对候选记忆做过提示，对本次分析新产生的实体没有去重保护。",
+    "evidence": "                    // Map the title of the entity (whether it's an alias or new) to the resolved memory object.\n                    // This ensures that links pointing to the alias title will resolve to the correct canonical memory.\n                    createdMemories[entity.title] = memory",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt",
+    "line": 514,
+    "severity": "warning",
+    "title": "createdMemories 按标题做键，AI 返回重名实体会静默覆盖"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "description": "autoCategorizeMemoriesAsync 吞掉全部异常，调用方无从得知失败：catch (e: Exception) 只记日志，无回调无状态返回，无法重试或提示。",
+    "detail": "后台协程内 try/catch (e: Exception) 只记一条 AppLogger.e 日志，没有回调、没有状态返回。与 saveMemoryAsync（提供 onSuccess/onError 回调）相比，自动分类的调用方无法感知失败、无法重试或提示用户。",
+    "evidence": "        coroutineScope.launch {\n            try {\n                autoCategorizeMemories(context, aiService)\n            } catch (e: Exception) {\n                AppLogger.e(TAG, \"自动分类记忆失败\", e)\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt",
+    "line": 104,
+    "severity": "suggestion",
+    "title": "autoCategorizeMemoriesAsync 吞掉全部异常，调用方无从得知失败"
+  },
+  {
+    "category": "security",
+    "confidence": "medium",
+    "description": "parseAnalysisResult 把 AI 返回的完整 JSON 打到 debug 日志：含对话提取的实体内容，可能含用户敏感信息，建议脱敏。",
+    "detail": "AI 返回的完整 JSON 指令（含从对话中提取的实体内容，可能含用户敏感信息）经 AppLogger.d 完整输出。debug 日志可被 logcat 采集，建议脱敏或降级。",
+    "evidence": "        AppLogger.d(TAG, \"AI 返回的完整 JSON 指令:\\n${json.toString(2)}\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryLibrary.kt",
+    "line": 821,
+    "severity": "suggestion",
+    "title": "parseAnalysisResult 把 AI 返回的完整 JSON 打到 debug 日志"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "description": "start() 每次调用都覆盖 instance：构造器 public，若存在第二个实例并 start，旧实例的 loopJob 仍在运行，形成双轮询并行处理（isRunning 是实例级）。",
+    "detail": "start() 先检查 loopJob 是否活跃，但 instance = this 无条件执行；构造器是 public 的。若某处 new 了第二个 MemoryAutoSaveScheduler 并 start，instance 被替换，而旧实例的 loopJob 仍在跑——两个实例各有自己的 isRunning/loopJob，会形成双轮询并行处理候选。",
+    "evidence": "    fun start() {\n        if (loopJob?.isActive == true) return\n        instance = this\n        loopJob =\n            scope.launch(Dispatchers.IO) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/library/MemoryAutoSaveScheduler.kt",
+    "line": 48,
+    "severity": "suggestion",
+    "title": "start() 每次调用都覆盖 instance，构造出第二个实例会导致双轮询"
+  }
+]

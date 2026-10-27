@@ -1,0 +1,586 @@
+[
+  {
+    "fact": "ChatHistoryManager 的构造器是私有的，实例只能经由 getInstance 获取。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:92"
+  },
+  {
+    "fact": "getInstance 使用 @Volatile 标记的 INSTANCE 加 synchronized 双重检查锁创建单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:103"
+  },
+  {
+    "fact": "ChatHistoryManager 内部持有 Room 数据库实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:114"
+  },
+  {
+    "fact": "ChatHistoryManager 内部持有 ChatDao、MessageDao、MessageVariantDao、ChatContentDao 四个 DAO。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:116"
+  },
+  {
+    "fact": "init 块在 Dispatchers.IO 上起独立协程做一次 getAllChats 查询以预热数据库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:430"
+  },
+  {
+    "fact": "写并发控制使用全局锁 globalMutex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:446"
+  },
+  {
+    "fact": "写并发控制使用按会话 ID 细分的 Mutex 池 chatMutexes。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:449"
+  },
+  {
+    "fact": "当前会话 ID 存放在 DataStore 的 CURRENT_CHAT_ID 键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:76"
+  },
+  {
+    "fact": "currentChatIdFlow 读取 DataStore，IOException 时回退为空偏好而不抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:562"
+  },
+  {
+    "fact": "setCurrentChatId 把会话 ID 写入 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1425"
+  },
+  {
+    "fact": "clearCurrentChatId 从 DataStore 移除当前会话 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1432"
+  },
+  {
+    "fact": "chatHistoriesFlow 把 ChatDao 查询映射为 ChatHistory 列表并用 SharingStarted.Lazily 共享。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:502"
+  },
+  {
+    "fact": "chatHistoriesFlow 的映射里消息列表恒为空，注释说明为提高侧边栏性能不加载完整消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:471"
+  },
+  {
+    "fact": "saveChatHistory 在会话锁内先删该会话全部消息和变体，再批量插入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:609"
+  },
+  {
+    "fact": "saveChatHistory 的删除再插入序列没有包在事务里。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:622"
+  },
+  {
+    "fact": "addMessage 调用 persistMessageLocked，orderIndex 取该会话最大值加 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:705"
+  },
+  {
+    "fact": "addMessage 在会话锁内执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:887"
+  },
+  {
+    "fact": "updateChatOrderAndGroup 在全局锁内批量更新会话的排序和分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:902"
+  },
+  {
+    "fact": "updateGroupName 在全局锁内批量更新分组名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:929"
+  },
+  {
+    "fact": "deleteGroup 在全局锁内执行，先删未锁定会话再把锁定会话移出分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:956"
+  },
+  {
+    "fact": "deleteMessage 先删该消息的变体，再删消息行，再刷新会话元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:994"
+  },
+  {
+    "fact": "deleteMessageVariant 删除序号 0 的变体时把第一个变体提拔为基座并整体重编号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1020"
+  },
+  {
+    "fact": "updateMessage 在会话锁内执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1131"
+  },
+  {
+    "fact": "updateMessage 选中变体大于 0 时只更新变体行并提前返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1133"
+  },
+  {
+    "fact": "updateMessage 找不到同时间戳消息时改为插入该消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1203"
+  },
+  {
+    "fact": "setMessageFavorite 在收藏状态相同时直接返回不写库。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1229"
+  },
+  {
+    "fact": "addMessageVariant 只允许给 AI 消息添加变体，非 AI 消息抛错。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1249"
+  },
+  {
+    "fact": "addMessageVariant 的新变体序号为现有变体数加 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1261"
+  },
+  {
+    "fact": "selectMessageVariant 切换选中变体，序号大于 0 时先校验变体存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1290"
+  },
+  {
+    "fact": "deleteMessagesFrom 删除指定时间戳及之后的消息和变体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1317"
+  },
+  {
+    "fact": "clearChatMessages 清空会话全部消息和变体并把 token 计数归零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1351"
+  },
+  {
+    "fact": "updateChatTitle 在会话锁内更新标题并刷新更新时间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1375"
+  },
+  {
+    "fact": "updateChatTokenCounts 更新会话的 promptTokens 和 completionTokens。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1399"
+  },
+  {
+    "fact": "canDeleteChatHistory 在会话不存在或被锁定时返回 false，查询失败也返回 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1450"
+  },
+  {
+    "fact": "deleteChatHistory 对被锁定会话返回 false 不执行删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1463"
+  },
+  {
+    "fact": "deleteChatHistory 删除当前会话时会清除 DataStore 里的当前会话 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1475"
+  },
+  {
+    "fact": "createNewChat 标题为本地化“新对话”加时分秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1492"
+  },
+  {
+    "fact": "createNewChat 的分组按显式指定、从某会话继承、不分组三档确定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1520"
+  },
+  {
+    "fact": "createNewChat 默认把新会话设为当前会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1536"
+  },
+  {
+    "fact": "renameManagedWorkspace 只允许重命名托管工作区，名字非空且不含路径分隔符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1554"
+  },
+  {
+    "fact": "resolveAnchoredMessageLocked 双锚点插入取两条消息时间戳中点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:729"
+  },
+  {
+    "fact": "resolveAnchoredMessageLocked 只有前锚点时取前锚点时间戳加 1 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:820"
+  },
+  {
+    "fact": "resolveAnchoredMessageLocked 只有后锚点时取后锚点时间戳减 1 毫秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:824"
+  },
+  {
+    "fact": "resolveAnchoredMessageLocked 中点间隔不超过 1 毫秒时拒绝插入并打 warn 日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:803"
+  },
+  {
+    "fact": "addSummaryMessageBetweenSliceNeighbors 在相邻消息已有总结消息时取消插入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:830"
+  },
+  {
+    "fact": "validateArchivedMessageVariants 要求含变体的消息必须是 AI 发送。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:579"
+  },
+  {
+    "fact": "validateArchivedMessageVariants 要求变体序号为正且互不重复，选中序号必须存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:598"
+  },
+  {
+    "fact": "createBranch 复制父会话元数据，parentChatId 指向父 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1747"
+  },
+  {
+    "fact": "createBranch 的新分支 locked 和 pinned 均为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1776"
+  },
+  {
+    "fact": "createBranch 用 SQL 的 INSERT INTO ... SELECT 批量复制消息到指定时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:147"
+  },
+  {
+    "fact": "createBranch 在全局锁内把新分支设为当前会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1795"
+  },
+  {
+    "fact": "getBranches 按 parentChatId 查询分支列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1812"
+  },
+  {
+    "fact": "searchChatIdsByContent 对反斜杠、百分号、下划线做 LIKE 转义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1719"
+  },
+  {
+    "fact": "exportChatHistoriesToDownloads 导出目录固定为 OperitBackupDirs.chatDir 即 backup/chat。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1940"
+  },
+  {
+    "fact": "导出文件名格式为 chat_backup_yyyy-MM-dd_HH-mm-ss。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1943"
+  },
+  {
+    "fact": "导出失败时删除残留文件并返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2038"
+  },
+  {
+    "fact": "MARKDOWN 格式导出打成 zip，每会话一个 .md 文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1946"
+  },
+  {
+    "fact": "zip 内文件名把标题中的非法字符替换为下划线，超 50 字符截断，重名加序号后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1956"
+  },
+  {
+    "fact": "JSON 导出流式写 Operit 归档，含 archiveType、formatVersion、exportedAt。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:204"
+  },
+  {
+    "fact": "HTML 和 TXT 导出正文总字符数达到 4_000_000 才走流式长文本导出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:1920"
+  },
+  {
+    "fact": "流式导出写缓冲为 64KB，每 256KB 回调一次进度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:96"
+  },
+  {
+    "fact": "流式导出每写完一个会话 yield 一次让出协程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2144"
+  },
+  {
+    "fact": "CSV 导出由 ChatHistoryCsv 流式写，format_version 为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatHistoryCsv.kt:15"
+  },
+  {
+    "fact": "CSV 记录类型分为 chat、message、variant 三类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatHistoryCsv.kt:16"
+  },
+  {
+    "fact": "CSV 字段含逗号、引号或换行时才加引号，引号内双引号转义为两个引号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatHistoryCsv.kt:176"
+  },
+  {
+    "fact": "importChatHistoriesFromUri 对 MARKDOWN 格式先尝试按 zip 解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2164"
+  },
+  {
+    "fact": "importOperitChatHistoriesStream 用 JsonReader 流式逐会话解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:355"
+  },
+  {
+    "fact": "流式导入遇到 BEGIN_OBJECT 视为 Operit 归档读取 chats 数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:369"
+  },
+  {
+    "fact": "流式导入遇到 BEGIN_ARRAY 视为旧版会话数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:398"
+  },
+  {
+    "fact": "导入时空消息会话跳过计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:303"
+  },
+  {
+    "fact": "导入时已存在 ID 记 updated，新 ID 记 new。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:311"
+  },
+  {
+    "fact": "ChatImportResult 的 total 等于 new 加 updated。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2882"
+  },
+  {
+    "fact": "convertToOperitFormat 对 OPERIT 先用 kotlinx 解码，失败回退 Gson。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2265"
+  },
+  {
+    "fact": "CLAUDE 格式暂不支持，回退到通用 JSON 转换器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2305"
+  },
+  {
+    "fact": "getChatHistoriesByCharacterCard 默认角色卡返回该卡加未绑定会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:540"
+  },
+  {
+    "fact": "getChatHistoriesByCharacterCard 非默认角色卡只返回该卡会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:547"
+  },
+  {
+    "fact": "clearCharacterCardBinding 把已删除角色卡绑定的会话置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2326"
+  },
+  {
+    "fact": "reassignChatsToCharacterCard 批量把某角色卡的会话转到新卡并返回行数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2341"
+  },
+  {
+    "fact": "characterCardStatsFlow 按角色卡统计会话数和消息数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:529"
+  },
+  {
+    "fact": "assignCharacterCardToChats 等批量接口对空列表直接返回 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2772"
+  },
+  {
+    "fact": "loadChatMessageLocatorPreviews 取每条消息前 48 字符的轻量预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2470"
+  },
+  {
+    "fact": "HIDDEN_PLACEHOLDER 显示模式的用户消息在定位预览里内容置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:38"
+  },
+  {
+    "fact": "getLatestSummaryTimestamp 查 sender 为 summary 的最大时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:106"
+  },
+  {
+    "fact": "loadMessagesAfterLatestSummaryInRange 只加载最新总结之后指定范围的消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:2379"
+  },
+  {
+    "fact": "ChatEntity 映射表 chats，主键 id 默认随机 UUID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:10"
+  },
+  {
+    "fact": "ChatEntity 的 displayOrder 默认负 createdAt，新会话排前面。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatEntity.kt:20"
+  },
+  {
+    "fact": "MessageEntity 映射表 messages，外键指向 chats.id 且级联删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:10"
+  },
+  {
+    "fact": "messages 表在 chatId 和 chatId 加 timestamp 上建索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageEntity.kt:19"
+  },
+  {
+    "fact": "MessageVariantEntity 映射表 message_variants，外键级联到 chats。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:9"
+  },
+  {
+    "fact": "message_variants 表在 chatId、messageTimestamp、variantIndex 上建唯一索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:20"
+  },
+  {
+    "fact": "MessageVariantEntity.applyTo 把变体内容覆盖到基座消息上。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MessageVariantEntity.kt:40"
+  },
+  {
+    "fact": "ChatHistory 的 id 默认随机 UUID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatHistory.kt:10"
+  },
+  {
+    "fact": "ChatMessage 的 sender 取值为 user 或 ai。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:11"
+  },
+  {
+    "fact": "总结消息的 sender 取值为 summary。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:863"
+  },
+  {
+    "fact": "ChatMessage 的 timestamp 默认走 ChatMessageTimestampAllocator.next 分配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:13"
+  },
+  {
+    "fact": "ChatMessage 的 selectedVariantIndex 为 0 表示原始回答。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:15"
+  },
+  {
+    "fact": "ChatMessage 构造时把外部传入的时间戳同步进分配器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessage.kt:35"
+  },
+  {
+    "fact": "ChatMessageTimestampAllocator 用 CAS 循环保证进程内时间戳单调递增不重复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocator.kt:14"
+  },
+  {
+    "fact": "ChatMessageTimestampAllocator.observe 用于导入时把分配器水位推高。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ChatMessageTimestampAllocator.kt:24"
+  },
+  {
+    "fact": "Operit 归档的 archiveType 常量为 operit_chat_archive。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:15"
+  },
+  {
+    "fact": "Operit 归档当前格式版本为 2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/OperitChatArchive.kt:16"
+  },
+  {
+    "fact": "ChatFormat 枚举包含 OPERIT、CHATGPT、CHATBOX、CLAUDE、MARKDOWN、GENERIC_JSON、CSV、PLAIN_TEXT、UNKNOWN 九个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormat.kt:8"
+  },
+  {
+    "fact": "ExportFormat 枚举包含 JSON、MARKDOWN、HTML、TXT、CSV 五个值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormat.kt:38"
+  },
+  {
+    "fact": "ChatGPTConverter 从 current_node 沿 parent 回溯 mapping 还原消息链。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:76"
+  },
+  {
+    "fact": "ChatGPTConverter 跳过非用户自定义的系统消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:109"
+  },
+  {
+    "fact": "ChatGPTConverter 跳过非 text 内容的消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:119"
+  },
+  {
+    "fact": "ChatGPTConverter 模型缺省 gpt-3.5-turbo。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:150"
+  },
+  {
+    "fact": "ChatGPTConverter 供应商缺省填 OpenAI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:157"
+  },
+  {
+    "fact": "ChatGPTConverter 分组缺省填 Imported from ChatGPT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatGPTConverter.kt:65"
+  },
+  {
+    "fact": "ChatBoxConverter 支持对象格式和 KV 导出格式，顶层数组直接抛不支持。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatBoxConverter.kt:50"
+  },
+  {
+    "fact": "ChatBoxConverter 的 KV 格式判定位含 chat-sessions-list 且有 session 开头键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatBoxConverter.kt:233"
+  },
+  {
+    "fact": "ChatBoxConverter 无时间戳时用基准加序号乘 100 递增。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatBoxConverter.kt:166"
+  },
+  {
+    "fact": "ChatBoxConverter 模型缺省 chatbox，供应商取导出里的 provider 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatBoxConverter.kt:170"
+  },
+  {
+    "fact": "MarkdownConverter 把整个文件视为一个对话解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/MarkdownConverter.kt:43"
+  },
+  {
+    "fact": "MarkdownConverter 用 chat-info 和 msg 注释还原对话结构。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/MarkdownConverter.kt:107"
+  },
+  {
+    "fact": "GenericJsonConverter 支持对话数组、消息数组、单个对话对象、单个消息对象。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/GenericJsonConverter.kt:57"
+  },
+  {
+    "fact": "GenericJsonConverter 把 system 角色规范化为 user。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/GenericJsonConverter.kt:205"
+  },
+  {
+    "fact": "GenericJsonConverter 模型缺省 unknown，供应商缺省 imported。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/GenericJsonConverter.kt:182"
+  },
+  {
+    "fact": "MarkdownExporter.exportSingle 写 chat-info 注释和 YAML front matter，消息按角色分节。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/MarkdownExporter.kt:32"
+  },
+  {
+    "fact": "TextExporter 用 60 字符宽分隔线，内容按 64KB 分片写并回调进度。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/TextExporter.kt:16"
+  },
+  {
+    "fact": "HtmlExporter 对标题、分组、模型名做 HTML 转义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:334"
+  },
+  {
+    "fact": "HtmlExporter 把代码围栏转 pre code 块，其余行转义后加 br。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/exporter/HtmlExporter.kt:363"
+  },
+  {
+    "fact": "ChatContentDao 的正文查询只取前 65_536 字符，超长消息分片追读拼回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatContentDao.kt:11"
+  },
+  {
+    "fact": "ChatDao 会话列表按 pinned 降序、displayOrder 升序排列。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:17"
+  },
+  {
+    "fact": "ChatDao.deleteChatsInGroup 的 SQL 只删除未锁定会话。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:120"
+  },
+  {
+    "fact": "ChatDao.updateChatCharacterCardName 会把 characterGroupId 置 NULL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/ChatDao.kt:77"
+  },
+  {
+    "fact": "MessageDao.searchChatIdsByContent 用 ESCAPE 反斜杠且大小写不敏感。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/dao/MessageDao.kt:239"
+  },
+  {
+    "fact": "hydrateMessages 按 messageTimestamp 把变体分组拼回消息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:139"
+  },
+  {
+    "fact": "hydrateMessages 的 chatId 重载按可见消息时间戳范围拉变体避免全表扫描。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:161"
+  },
+  {
+    "fact": "ChatHistoryDelegate 持有 ChatHistoryManager 单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:50"
+  },
+  {
+    "fact": "ChatHistoryDelegate 用 80 条一批的倒序分页组装当前会话显示窗口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:44"
+  },
+  {
+    "fact": "ChatHistoryDelegate 删除当前会话前先切到替代会话再调 deleteChatHistory。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ChatHistoryDelegate.kt:1061"
+  },
+  {
+    "fact": "ChatFormatDetector 是 Kotlin object 单例，职责是自动识别待导入聊天记录文件的格式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:9"
+  },
+  {
+    "fact": "detectFormat 收到空白内容直接返回 ChatFormat.UNKNOWN。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:17"
+  },
+  {
+    "fact": "detectFormat 的检测顺序固定：先 Markdown，再 CSV，再 JSON（以 `{` 或 `[` 开头），最后默认纯文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:24"
+  },
+  {
+    "fact": "Markdown 强匹配：任一行去首尾空白后以 `<!-- chat-info:` 或 `<!-- msg:` 开头即判为 Markdown。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:126"
+  },
+  {
+    "fact": "Markdown 弱匹配要求同时满足：有 `#` 开头的标题行，且有整行严格匹配 `## User/Assistant/AI/System/Model/用户/助手/系统/模型`（可选中英文冒号、不区分大小写）的对话标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:142"
+  },
+  {
+    "fact": "CSV 判定要同时满足两个条件：首行小写化后含 timestamp/role/content/sender 之一，且含逗号的行数超过总行数的一半。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:165"
+  },
+  {
+    "fact": "ChatGPT 格式的判定特征是对象键同时包含 `mapping` 和 `current_node`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:82"
+  },
+  {
+    "fact": "Operit 自家格式的判定特征是对象键同时包含 `id`、`title`、`messages`、`createdAt`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:87"
+  },
+  {
+    "fact": "Claude 格式的判定特征是键包含 `uuid` 或 `chat_messages`，满足其一即可。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:93"
+  },
+  {
+    "fact": "JSON 顶层是空数组时判为 GENERIC_JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:54"
+  },
+  {
+    "fact": "JSON 内容解析抛异常时 detectFormat 返回 UNKNOWN。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:70"
+  },
+  {
+    "fact": "JSON 解析器配置为 `Json { ignoreUnknownKeys = true }`，未知键被忽略。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:47"
+  },
+  {
+    "fact": "detectFormatByExtension 按扩展名推测：json 返回 null（需内容检测）、md/markdown→MARKDOWN、csv→CSV、txt→PLAIN_TEXT、html/htm→UNKNOWN（暂不支持导入）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:172"
+  },
+  {
+    "fact": "通用 JSON 的判定特征是键同时含 `role` 与 `content`，或 `messages` 数组首项同时含 role 与 content。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt:98"
+  }
+]

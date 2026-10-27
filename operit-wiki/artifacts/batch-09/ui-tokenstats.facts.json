@@ -1,0 +1,914 @@
+[
+  {
+    "fact": "TokenActivityUiState.loading 默认为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:42"
+  },
+  {
+    "fact": "TokenActivityUiState.viewMode 默认为 TokenActivityViewMode.DAILY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:43"
+  },
+  {
+    "fact": "TokenActivityUiState.rangeData 为可空的 TokenActivityRangeData，默认为 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:44"
+  },
+  {
+    "fact": "TokenStatsUiState.loading 默认为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:48"
+  },
+  {
+    "fact": "TokenStatsUiState.errorMessage 默认为 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:49"
+  },
+  {
+    "fact": "TokenStatsUiState.refreshVersion 默认为 0L，每次加载成功后 +1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:50"
+  },
+  {
+    "fact": "TokenStatsUiState.lifetime 为可空的 TokenStatsLifetimeOverview（全局累计）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:51"
+  },
+  {
+    "fact": "TokenStatsUiState.range 为可空的 TokenStatsRangeData（当前范围数据）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:52"
+  },
+  {
+    "fact": "TokenStatsUiState.currentRange 为可空的 TokenStatsTimeRange（当前日期范围）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:53"
+  },
+  {
+    "fact": "TokenStatsUiState.targetCurrency 默认为 PricingCurrency.CNY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:54"
+  },
+  {
+    "fact": "TokenStatsUiState.tokenDisplayUnit 默认为 TokenStatsDisplayUnit.MILLIONS（百万单位）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:55"
+  },
+  {
+    "fact": "TokenStatsUiState.manualRate 默认为 TokenCostCurrency.DEFAULT_USD_TO_CNY_RATE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:56"
+  },
+  {
+    "fact": "TokenStatsUiState.rateIsEstimated 默认为 true（汇率为估算值）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:57"
+  },
+  {
+    "fact": "TokenStatsUiState.selectedModels 默认为空集（空集表示全选）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:58"
+  },
+  {
+    "fact": "TokenStatsUiState.availableDisplayModels 默认为空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:59"
+  },
+  {
+    "fact": "TokenStatsUiState.knownModelNames 默认为空 Map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:60"
+  },
+  {
+    "fact": "TokenStatsUiState.configurationNames 默认为空 Map",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:61"
+  },
+  {
+    "fact": "TokenStatsUiState.priceSettings 默认为空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:62"
+  },
+  {
+    "fact": "TokenStatsUiState.activity 默认为 TokenActivityUiState()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:63"
+  },
+  {
+    "fact": "TokenStatsActionMessage.text 为 String 类型的消息文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:67"
+  },
+  {
+    "fact": "TokenStatsActionMessage.isError 默认为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:68"
+  },
+  {
+    "fact": "TokenUsageStatisticsViewModel 类声明上标注了 @SuppressLint(\"StaticFieldLeak\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:71"
+  },
+  {
+    "fact": "ViewModel 的 settings 参数默认为 TokenStatsPreferencesStore(context)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:74"
+  },
+  {
+    "fact": "ViewModel 的 zone 参数默认为 ZoneId.systemDefault()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:75"
+  },
+  {
+    "fact": "ViewModel 的 nowMs 参数默认取 System.currentTimeMillis()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:76"
+  },
+  {
+    "fact": "ViewModel 的 dispatcher 参数默认为 Dispatchers.Main.immediate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:78"
+  },
+  {
+    "fact": "ViewModel 内部持有 context.applicationContext 作为 appContext",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:80"
+  },
+  {
+    "fact": "ViewModel 通过 TokenStatsSettingsManager 读写定价设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:81"
+  },
+  {
+    "fact": "ViewModel 通过 ModelConfigManager 查询模型配置名称",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:82"
+  },
+  {
+    "fact": "_state 为 MutableStateFlow(TokenStatsUiState())",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:85"
+  },
+  {
+    "fact": "state 以 asStateFlow() 对外只读暴露",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:86"
+  },
+  {
+    "fact": "actionMessage 以 StateFlow 对外暴露",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:89"
+  },
+  {
+    "fact": "load() 调用 loadInternal(loadViewMode = false)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:101"
+  },
+  {
+    "fact": "loadForEntry() 调用 loadInternal(loadViewMode = true)，入场时从设置恢复视图模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:103"
+  },
+  {
+    "fact": "setActivityViewMode 用 activityRangeAnchorDate 从当前范围取锚定日期",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:108"
+  },
+  {
+    "fact": "setActivityViewMode 在 CUMULATIVE 模式下查询 TokenStatsQueryService.earliestOccurredDate 作为累计起点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:113"
+  },
+  {
+    "fact": "setActivityViewMode 把新模式经 settings.saveActivityViewMode 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:124"
+  },
+  {
+    "fact": "setActivityViewMode 把新区范围经 settings.saveTimeRange 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:125"
+  },
+  {
+    "fact": "toggleTokenDisplayUnit 用 tokenDisplayUnit.toggled() 翻转显示单位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:142"
+  },
+  {
+    "fact": "toggleTokenDisplayUnit 经 settings.saveTokenDisplayUnit 持久化新单位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:146"
+  },
+  {
+    "fact": "loadInternal 先取消旧的 loadJob",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:156"
+  },
+  {
+    "fact": "loadInternal 用 loadGeneration 递增版本号，过期加载直接 return",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:157"
+  },
+  {
+    "fact": "loadInternal 从 settings.loadRateWithEstimate() 读取汇率与估算标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:161"
+  },
+  {
+    "fact": "loadInternal 从 settings.loadTargetCurrency() 读取目标币种",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:162"
+  },
+  {
+    "fact": "loadInternal 从 settings.loadTokenDisplayUnit() 读取 Token 显示单位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:163"
+  },
+  {
+    "fact": "loadInternal 仅在 loadViewMode=true 时从设置读取入场视图模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:164"
+  },
+  {
+    "fact": "loadInternal 无保存范围时用 defaultDateRange(nowMs(), zone) 兜底",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:165"
+  },
+  {
+    "fact": "loadInternal 在 coroutineScope 内并发发起多路 Dispatchers.IO 查询",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:179"
+  },
+  {
+    "fact": "pricesDeferred 并发查询 manager.allPriceSettings()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:180"
+  },
+  {
+    "fact": "lifetime 查询的 TokenStatsQueryParams 不带 providerModels，为全局口径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:190"
+  },
+  {
+    "fact": "rangeDeferred 用带当前筛选的 rangeParams 查询 TokenStatsQueryService.rangeData",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:199"
+  },
+  {
+    "fact": "无模型筛选时 availableDeferred 直接返回 null，不发起查询",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:203"
+  },
+  {
+    "fact": "activityDeferred 查询 TokenStatsQueryService.activitySnapshot",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:214"
+  },
+  {
+    "fact": "activity 快照经 TokenActivityAggregator.rangeData 聚合成范围数据",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:238"
+  },
+  {
+    "fact": "rememberModelNames 按 displayModelId 累积模型显示名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:282"
+  },
+  {
+    "fact": "providerModelsFor 在未选任何模型时返回 null（表示全选）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:296"
+  },
+  {
+    "fact": "setCustomRange 经 validateCustomRange 校验起止毫秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:305"
+  },
+  {
+    "fact": "超长但与当前范围完全一致的自定义范围被视为合法 no-op",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:317"
+  },
+  {
+    "fact": "saveCustomRange 在协程内保存范围后调用 load() 重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:333"
+  },
+  {
+    "fact": "toggleModel 切换选中模型后调用 load() 重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:339"
+  },
+  {
+    "fact": "selectAllModels 清空 selectedModels（即全选）后重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:349"
+  },
+  {
+    "fact": "setTargetCurrency 保存币种后调用 load() 重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:355"
+  },
+  {
+    "fact": "setManualRate 拒绝非有限或不大于 0 的汇率并返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:363"
+  },
+  {
+    "fact": "savePrice 经 manager.savePrice 保存定价草稿",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:374"
+  },
+  {
+    "fact": "deletePrice 对 CONFIG 作用域调用 manager.resetConfigPrice",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:390"
+  },
+  {
+    "fact": "deletePrice 对非 CONFIG 作用域调用 manager.restoreBuiltInPrice 恢复内置定价",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:392"
+  },
+  {
+    "fact": "ViewModel.Factory 只持有 applicationContext",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:409"
+  },
+  {
+    "fact": "MAX_CUSTOM_RANGE_DAYS = 3 * 366L（约 3 年）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:416"
+  },
+  {
+    "fact": "defaultDateRange 默认取最近 30 天窗口（今天-29 天起，明天零点止）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsViewModel.kt:429"
+  },
+  {
+    "fact": "ChartDetailMetric 为私有枚举，含 COST、REQUESTS、TOKENS 三个指标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:58"
+  },
+  {
+    "fact": "TokenUsageStatisticsScreen 为 @Composable 页面入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:73"
+  },
+  {
+    "fact": "showDateRange 用 rememberSaveable 保存，配置变化后保留",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:88"
+  },
+  {
+    "fact": "actionMessage 变化时弹 Toast 并调用 consumeActionMessage 消费",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:90"
+  },
+  {
+    "fact": "入场时 LaunchedEffect(Unit) 调用 viewModel.loadForEntry()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:96"
+  },
+  {
+    "fact": "整页包裹在 TokenStatsColorsProvider 内提供配色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:98"
+  },
+  {
+    "fact": "加载中且 range/lifetime 为空时显示 LoadingState",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:106"
+  },
+  {
+    "fact": "有错误且 range 为空时显示 ErrorState，重试按钮调用 viewModel::load",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:109"
+  },
+  {
+    "fact": "页面顺序按设计规范：时间控制 → 周期总览 → 2×2 核心指标 → 活跃记录 → Token 构成 → 模型累计 → 范围分析 → 趋势分析 → 配置详情 → 统计设置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:68"
+  },
+  {
+    "fact": "TokenStatsPageContent 为私有 @Composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:172"
+  },
+  {
+    "fact": "hasAnyData 要求 lifetime 请求数 > 0 或总事件数 > 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:178"
+  },
+  {
+    "fact": "TokenStatsTimeControlRow 为私有 @Composable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:344"
+  },
+  {
+    "fact": "TokenStatsModelDetailsSection 为私有 @Composable，含定价编辑入口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:377"
+  },
+  {
+    "fact": "TokenStatsTrendCard 为私有 @Composable，趋势分析单卡片指标切换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:464"
+  },
+  {
+    "fact": "趋势卡默认选中指标为 ChartDetailMetric.COST",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:470"
+  },
+  {
+    "fact": "趋势卡 COST 指标用折线图，valueSelector 取 it.totals.cost.knownAmount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:508"
+  },
+  {
+    "fact": "趋势卡 REQUESTS 指标用折线图，valueSelector 取 it.totals.requests.toDouble()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:534"
+  },
+  {
+    "fact": "趋势卡 TOKENS 指标用堆叠柱状图，并以 totalTokens.knownSum 为权威合计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:572"
+  },
+  {
+    "fact": "指标详情对话框 COST 只列出 cost.knownAmount > 0 的模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:696"
+  },
+  {
+    "fact": "TOKENS 详情首行展示 totalTokens.knownSum 作为权威合计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenUsageStatisticsScreen.kt:716"
+  },
+  {
+    "fact": "统计图表为纯 Compose Canvas 实现，不引入图表依赖",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:65"
+  },
+  {
+    "fact": "图表交互契约：点击与水平拖动才选中/切换桶详情",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:68"
+  },
+  {
+    "fact": "图表垂直手势不消费，LazyColumn 纵向滚动不受影响",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:70"
+  },
+  {
+    "fact": "桶详情以图表下方 tooltip 卡片呈现，无悬浮层不遮挡内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:71"
+  },
+  {
+    "fact": "TokenStatsStackedBarChart 为 internal 堆叠柱状图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:79"
+  },
+  {
+    "fact": "堆叠柱状图默认高度 158.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:88"
+  },
+  {
+    "fact": "TokenStatsLineChart 为 internal 折线图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:261"
+  },
+  {
+    "fact": "折线图默认高度 158.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:270"
+  },
+  {
+    "fact": "折线图无有效样本的桶不画点、线段断开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:259"
+  },
+  {
+    "fact": "TokenStatsAreaChart 为 internal 面积折线图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:438"
+  },
+  {
+    "fact": "面积折线图默认高度 150.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:447"
+  },
+  {
+    "fact": "面积填充用主色 0.26f 透明度到透明的纵向渐变",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:564"
+  },
+  {
+    "fact": "bucketTimeLabel 为 internal 函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:767"
+  },
+  {
+    "fact": "TEN_MINUTES/HOURLY 粒度桶标签格式为 HH:mm",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:770"
+  },
+  {
+    "fact": "DAILY 粒度桶标签格式为 MM/dd",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:772"
+  },
+  {
+    "fact": "bucketLabel 在 maxLabels<=2 时只显示首尾标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:792"
+  },
+  {
+    "fact": "bucketLabel 在 maxLabels==3 时显示首/中/尾三个标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:793"
+  },
+  {
+    "fact": "niceCeil 把数值向上取整到漂亮刻度（9→10、883→1000）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:804"
+  },
+  {
+    "fact": "formatCompactCount 把数量格式化为 1.2K / 3.4M 紧凑形式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:827"
+  },
+  {
+    "fact": "previousBucketIndex 在已到最前或无桶时返回 null（边界禁用）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:841"
+  },
+  {
+    "fact": "nextBucketIndex 在已到最后或无桶时返回 null（边界禁用）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:845"
+  },
+  {
+    "fact": "chartAccessibilityDescription 拼接摘要与明细行供 TalkBack 朗读",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:852"
+  },
+  {
+    "fact": "lineSegments 遇到 null 断段，每段只连接相邻有效点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsCharts.kt:859"
+  },
+  {
+    "fact": "TokenStatsColors 为配色令牌 data class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:17"
+  },
+  {
+    "fact": "TokenStatsChartStyle 为 internal 图表样式 data class",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:50"
+  },
+  {
+    "fact": "tokenStatsChartStyle 从 LocalTokenStatsColors 推导图表样式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:61"
+  },
+  {
+    "fact": "tokenStatsColors 从 MaterialTheme.colorScheme 构建配色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:75"
+  },
+  {
+    "fact": "heatmapLevels 为主色 5 档透明度阶（0.16/0.34/0.54/0.76/1.0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:102"
+  },
+  {
+    "fact": "componentColors 为三段堆叠色：未缓存/缓存/输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:117"
+  },
+  {
+    "fact": "visibleAccent 在主色与容器对比度不足 3f 时回退到内容色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:126"
+  },
+  {
+    "fact": "LocalTokenStatsColors 未提供时抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:137"
+  },
+  {
+    "fact": "TokenStatsColorsProvider 用 CompositionLocalProvider 下发配色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsColors.kt:142"
+  },
+  {
+    "fact": "TokenStatsSpacing 为 internal object：page=16.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:98"
+  },
+  {
+    "fact": "TokenStatsSpacing.section=8.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:100"
+  },
+  {
+    "fact": "formatMoney 用 4 位小数格式化金额",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:108"
+  },
+  {
+    "fact": "formatLifetimeMoney 用 2 位小数格式化总览费用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:112"
+  },
+  {
+    "fact": "formatCount 用千分位格式化整数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:115"
+  },
+  {
+    "fact": "knownTokenSum 取 totals.totalTokens.knownSum",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:123"
+  },
+  {
+    "fact": "saturatedTokenSum 用 TokenCostCalculator.saturatedAdd 做防溢出累加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:125"
+  },
+  {
+    "fact": "formatDateRangeLabel 用 endMs-1L 把左闭右开区间转闭区间展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:131"
+  },
+  {
+    "fact": "TokenStatsCard 为 12dp 圆角 + 1dp 描边的一级卡片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:149"
+  },
+  {
+    "fact": "TokenStatsSegmentedControl 遍历 TokenActivityViewMode.entries 渲染三段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:216"
+  },
+  {
+    "fact": "TokenStatsOverviewCard 为周期总览大卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:262"
+  },
+  {
+    "fact": "总览大数字（38.sp）所在行可点击，点击调用 onToggleTokenDisplayUnit 切换 Token 显示单位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:305"
+  },
+  {
+    "fact": "2×2 核心指标顺序固定：峰值 Token / 总请求、缓存率 / 输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:428"
+  },
+  {
+    "fact": "TokenStatsCompositionCard 展示缓存读取/未缓存输入/输出三条进度条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:540"
+  },
+  {
+    "fact": "LIFETIME_MODELS_COLLAPSED_COUNT = 5，模型排名默认折叠只显示前 5",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:576"
+  },
+  {
+    "fact": "TokenStatsModelRankSection 按 Token 降序排列模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:676"
+  },
+  {
+    "fact": "TokenStatsFilterBar 为范围分析筛选卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:735"
+  },
+  {
+    "fact": "TokenStatsCurrencyDropdown 遍历 PricingCurrency.entries 渲染币种选项",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:783"
+  },
+  {
+    "fact": "模型筛选可选项包含已被选中但被筛选出当前结果的模型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:810"
+  },
+  {
+    "fact": "TokenStatsConfigurationCardsSection 按 totalTokens 降序排列配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:915"
+  },
+  {
+    "fact": "已删除的配置显示 token_stats_config_deleted 文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:979"
+  },
+  {
+    "fact": "tokenStatsIdentityKey 用 \\u001f 分隔 configId/provider/model 拼身份键",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:1403"
+  },
+  {
+    "fact": "priceDraftForIdentity 为配置身份推导定价草稿",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:1407"
+  },
+  {
+    "fact": "mergePriceSettings 中配置级定价覆盖模型级定价",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:1449"
+  },
+  {
+    "fact": "formatRateInput 用 4 位小数并去尾零",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:1476"
+  },
+  {
+    "fact": "统计设置卡仅在目标币种为 CNY 时显示汇率编辑行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsComponents.kt:1294"
+  },
+  {
+    "fact": "datePickerMillisToLocalDate 按 UTC 解析日期选择器的毫秒值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:52"
+  },
+  {
+    "fact": "customRangeInclusiveEnd 把结束日期 +1 天转为左闭右开区间",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:55"
+  },
+  {
+    "fact": "customRangeInclusiveEnd 要求结束日期不早于开始日期（require）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:59"
+  },
+  {
+    "fact": "TokenStatsDateRangeDialog 为 internal 日期范围弹窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:68"
+  },
+  {
+    "fact": "日期范围弹窗最大宽度 360.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:105"
+  },
+  {
+    "fact": "未改动的初始超长范围在对话框内放行（isUnchangedInitialRange）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:119"
+  },
+  {
+    "fact": "日期选择 headline 用 yyyy/MM/dd 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:189"
+  },
+  {
+    "fact": "PriceSettingsDialog 为 internal 定价编辑弹窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:192"
+  },
+  {
+    "fact": "定价校验允许空字段，数字须有限且 >= 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:245"
+  },
+  {
+    "fact": "CONFIG 作用域要求 configId 非空才可保存（targetValid）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:249"
+  },
+  {
+    "fact": "切换到按次计费（BillingMode.COUNT）时清空 inputPrice 等按 Token 价格字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:287"
+  },
+  {
+    "fact": "切换到按 Token 计费（BillingMode.TOKEN）时清空 pricePerRequest 单价字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:276"
+  },
+  {
+    "fact": "formatEditablePrice 用 6 位小数并去尾零",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenStatsDialogs.kt:423"
+  },
+  {
+    "fact": "TokenActivitySection 为 internal 活跃记录卡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:79"
+  },
+  {
+    "fact": "活跃记录标题栏展示当前连续/最长连续天数胶囊",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:94"
+  },
+  {
+    "fact": "视图模式切换用 150ms Crossfade 过渡",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:104"
+  },
+  {
+    "fact": "DAILY 模式渲染热力图，WEEKLY 渲染柱状图，CUMULATIVE 渲染折线图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:130"
+  },
+  {
+    "fact": "热力图网格与星期标签按周一到周日排列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:150"
+  },
+  {
+    "fact": "热力图方格 12.dp、间距 4.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:153"
+  },
+  {
+    "fact": "levelColor：level 0 取 heatmapInactive 灰格，1..5 取主色透明度阶",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:166"
+  },
+  {
+    "fact": "热力图初始滚动到最右（等 scroll.maxValue > 0 后 scrollTo）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:236"
+  },
+  {
+    "fact": "HEATMAP_VIEW_SPEED_DP_PER_S = 150f，为查看/滚动仲裁的速度阈值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:683"
+  },
+  {
+    "fact": "HeatmapDragMode 含 VIEW（查看）与 SCROLL（滚动）两种仲裁结果",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:679"
+  },
+  {
+    "fact": "WEEKLY 模式用 TokenActivitySeriesStyle.BAR 风格时间序列图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:497"
+  },
+  {
+    "fact": "CUMULATIVE 模式用 LINE 风格时间序列图",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:524"
+  },
+  {
+    "fact": "柱状点宽 18.dp，折线点宽 14.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:548"
+  },
+  {
+    "fact": "TokenActivitySeriesPoint 含 startDate/endDate/tokens",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/TokenActivitySection.kt:668"
+  },
+  {
+    "fact": "activityRangeAnchorDate 取范围 endMs-1 的本地日期",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/ActivityDateRangePolicy.kt:10"
+  },
+  {
+    "fact": "activityRangeForMode 为 internal 范围策略函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/ActivityDateRangePolicy.kt:15"
+  },
+  {
+    "fact": "WEEKLY 模式按 (dayOfWeek.value % 7) 回退到周日对齐",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/ActivityDateRangePolicy.kt:22"
+  },
+  {
+    "fact": "CUMULATIVE 模式无历史起点时返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/ActivityDateRangePolicy.kt:25"
+  },
+  {
+    "fact": "validateCustomRange 为 internal 校验函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/CustomRangePolicy.kt:13"
+  },
+  {
+    "fact": "endMs <= startMs 时返回 INVALID_BOUNDS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/CustomRangePolicy.kt:19"
+  },
+  {
+    "fact": "起止天数超过上限时返回 TOO_LONG",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/tokenstats/CustomRangePolicy.kt:21"
+  },
+  {
+    "fact": "UrlConfigDialog 是编辑 UrlConfig 的配置弹窗，含配置名、登录 URL 输入框与 4 个标签页（标题/URL）字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/components/UrlConfigDialog.kt:31"
+  },
+  {
+    "fact": "UrlConfigDialog 弹窗内容纵向滚动（verticalScroll + rememberScrollState），字段缺省值从 currentConfig 回填。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/components/UrlConfigDialog.kt:56"
+  },
+  {
+    "fact": "UrlConfigDialog 确认按钮把 4 个 TabConfig 组装成新 UrlConfig 传给 onSave。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/components/UrlConfigDialog.kt:142"
+  },
+  {
+    "fact": "TabConfig 只含 title 与 url 两个字段，为 @Serializable data class。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:14"
+  },
+  {
+    "fact": "UrlConfig 的 name 默认为 \"DeepSeek\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:21"
+  },
+  {
+    "fact": "UrlConfig 的 signInUrl 默认为 \"https://platform.deepseek.com/sign_in\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:22"
+  },
+  {
+    "fact": "UrlConfig 默认 tabs 为 DeepSeek 平台 4 个页面：api_keys / usage / top_up / profile，标题走字符串资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:24"
+  },
+  {
+    "fact": "NavDestination 含 title / url / icon 三个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:32"
+  },
+  {
+    "fact": "getIconForIndex 按索引返回 Key / Dashboard / CreditCard / Person 四个导航图标，越界回退 Key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/model/UrlConfig.kt:39"
+  },
+  {
+    "fact": "DEEPSEEK_SIGNIN_URL 为 https://platform.deepseek.com/sign_in。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:5"
+  },
+  {
+    "fact": "DEEPSEEK_API_KEYS_URL 为 https://platform.deepseek.com/api_keys。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:7"
+  },
+  {
+    "fact": "DEEPSEEK_GET_API_KEYS_URL 为密钥查询端点 /api/v0/users/get_api_keys。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:8"
+  },
+  {
+    "fact": "DEEPSEEK_CREATE_API_KEY_URL 为密钥创建端点 /api/v0/users/create_api_key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:9"
+  },
+  {
+    "fact": "DEEPSEEK_DELETE_API_KEY_URL 为密钥删除端点 /api/v0/users/delete_api_key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:11"
+  },
+  {
+    "fact": "DEEPSEEK_PLATFORM_DOMAIN 为 \"platform.deepseek.com\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/network/DeepseekApiConstants.kt:13"
+  },
+  {
+    "fact": "UrlConfigManager 用 preferencesDataStore(name=\"url_config\") 持久化配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:19"
+  },
+  {
+    "fact": "URL 配置以单键 URL_CONFIG_KEY（\"url_config\"）存 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:23"
+  },
+  {
+    "fact": "PRESET_CONFIGS 预设了 Claude / ChatGPT / Gemini / Poe 四套 UrlConfig。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:26"
+  },
+  {
+    "fact": "urlConfigFlow 解码失败或无存档时回退到默认 DeepSeek 配置并本地化 tab 标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:73"
+  },
+  {
+    "fact": "saveUrlConfig 把 UrlConfig 序列化为 JSON 写入 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:87"
+  },
+  {
+    "fact": "resetToDefault 恢复默认 DeepSeek 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:94"
+  },
+  {
+    "fact": "localizePresetTabNames 把英文 tab 标题（Chat / Projects / Settings 等）映射为本地化字符串资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/preferences/UrlConfigManager.kt:99"
+  },
+  {
+    "fact": "DeepseekJsInterface 是 @JavascriptInterface 回调桥，提供 onKeysReceived / onKeyCreated / onKeyDeleted / onError 四个 JS 可调方法。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/DeepseekJsInterface.kt:15"
+  },
+  {
+    "fact": "onKeysReceived 日志只输出 json 前 100 字符，避免密钥全文进日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/DeepseekJsInterface.kt:18"
+  },
+  {
+    "fact": "onKeyCreated 把新建密钥原文记入 debug 日志（Key created: $key）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/DeepseekJsInterface.kt:29"
+  },
+  {
+    "fact": "onKeyDeleted 接收 Boolean，转发密钥删除成功与否。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/DeepseekJsInterface.kt:38"
+  },
+  {
+    "fact": "getPageInfoScript 收集页面 URL、标题、readyState、referrer、domain 与 DOM 计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:8"
+  },
+  {
+    "fact": "getApiKeysScript 先从 localStorage/sessionStorage 按 token/auth_token/accessToken/id_token/access_token 找 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:70"
+  },
+  {
+    "fact": "找不到 token 时 getApiKeysScript 用硬编码 token，并把它写回 localStorage 的 auth_token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:77"
+  },
+  {
+    "fact": "getApiKeysScript 用 Bearer token GET DEEPSEEK_GET_API_KEYS_URL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:89"
+  },
+  {
+    "fact": "密钥从 data.api_keys 或 data.biz_data.api_keys 提取字段 name/sensitive_id/created_at/last_use/tracking_id。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:113"
+  },
+  {
+    "fact": "提取到的密钥一次性经 Android.onKeysReceived 回调给原生层。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:148"
+  },
+  {
+    "fact": "deleteKeyScript(trackingId) 向 DEEPSEEK_DELETE_API_KEY_URL POST {tracking_id}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:167"
+  },
+  {
+    "fact": "密钥删除按 data.code === 0 判定成功，经 Android.onKeyDeleted 回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:209"
+  },
+  {
+    "fact": "getAuthTokenScript 枚举 document.cookie、localStorage、sessionStorage，记录长度 20–300 的 token 候选。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:220"
+  },
+  {
+    "fact": "injectTokenExtractorScript 劫持 window.fetch，捕获 Authorization: Bearer 头并存入 localStorage 的 auth_token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/JsScripts.kt:263"
+  },
+  {
+    "fact": "WebViewConfig.createWebView 返回一个预配置的 WebView 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:20"
+  },
+  {
+    "fact": "WebView 开启 javaScriptEnabled、domStorageEnabled、databaseEnabled。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:25"
+  },
+  {
+    "fact": "WebView 允许文件访问（allowFileAccess = true）与内容访问。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:31"
+  },
+  {
+    "fact": "WebView 显式设置 mixedContentMode=MIXED_CONTENT_ALWAYS_ALLOW，注释称对支付场景重要。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:37"
+  },
+  {
+    "fact": "User-Agent 伪装成 Chrome/124 移动浏览器，避免被 Google 登录等服务拦截。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:45"
+  },
+  {
+    "fact": "Android O+ 上开启 safeBrowsingEnabled，失败时捕获记警告。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:55"
+  },
+  {
+    "fact": "WebViewConfig 全局开启 WebView.setWebContentsDebuggingEnabled(true)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:77"
+  },
+  {
+    "fact": "onCreateWindow 劫持弹窗：alipays:/alipay:/weixin:/weixins: 协议跳转外部应用，普通链接强制在发起者 WebView 内加载。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:110"
+  },
+  {
+    "fact": "onConsoleMessage 把 JS console 转发到 AppLogger（WebViewConsole）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:157"
+  },
+  {
+    "fact": "onGeolocationPermissionsShowPrompt 直接允许所有地理位置请求（invoke(origin, true, false)）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:182"
+  },
+  {
+    "fact": "onJsAlert / onJsConfirm / onJsPrompt 全部自动 confirm 并只记日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/token/webview/WebViewConfig.kt:186"
+  }
+]

@@ -1,0 +1,82 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 1141,
+    "evidence": "            Process.killProcess(Process.myPid())\n            exitProcess(0)",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "退出应用时直接杀进程并 exitProcess(0)，跳过正常组件销毁流程；属用户主动触发的退出动作，风险可控但属强硬退出手段"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 302,
+    "evidence": "                val globalEnableReplyNotification = runBlocking {\n                    displayPreferences.enableReplyNotification.first()\n                }",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "notifyReplyCompleted 静态方法内多处用 runBlocking 读 DataStore，若被主线程调用会阻塞 UI 线程造成 ANR"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 78,
+    "evidence": "private fun AudioRecordingConfiguration.tryGetClientUid(): Int? {\n    return try {\n        val method =\n            javaClass.methods.firstOrNull { it.name == \"getClientUid\" && it.parameterTypes.isEmpty() }\n        val value = method?.invoke(this)",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "用反射调用 AudioRecordingConfiguration 的隐藏方法 getClientUid/getClientPackageName，新版本 Android 可能被隐藏 API 限制拦截导致外部录音检测失效"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 1487,
+    "evidence": "                val params = WindowManager.LayoutParams(\n                    1,\n                    1,",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "保活用 1x1 像素全透明悬浮窗（TYPE_APPLICATION_OVERLAY，alpha=0f），属不可见 overlay 保活技巧，属政策灰色地带"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt",
+    "line": 1509,
+    "evidence": "            return completePartialOpenTag(fragment, toolTagName, defaultNameValue = \"truncated_tool_call\") +\n                \"</$toolTagName>\"",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "截断工具调用修复会凭空补全标签并捏造默认工具名 truncated_tool_call，修复后的 XML 会被当作真实工具调用执行，可能执行不完整的调用"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt",
+    "line": 2142,
+    "evidence": "            } else if (!toolResultOverrideMessage.isNullOrEmpty()) {",
+    "severity": "warning",
+    "confidence": "medium",
+    "description": "handleToolInvocation 中工具执行结果为空且无覆盖消息时没有任何分支处理，本轮静默结束：不收尾、不重置 UI 状态，可能卡在 ExecutingTool"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt",
+    "line": 1171,
+    "evidence": "                                                execContext.streamBuffer.clear()\n                                                execContext.streamBuffer.append(snapshot)",
+    "severity": "warning",
+    "confidence": "medium",
+    "description": "ROLLBACK 事件处理在独立协程中 clear/append streamBuffer，与主收集循环的 append(content) 并发执行且无锁，存在竞态"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/EnhancedAIService.kt",
+    "line": 1764,
+    "evidence": "            // If content is empty, finish immediately\n            if (content.isEmpty()) {\n                return\n            }",
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "processStreamCompletion 中第二个 if (content.isEmpty()) 是死代码，前一个分支已 return"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 1833,
+    "evidence": "                Regex(phrase).containsMatchIn(recognized)",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "唤醒词正则模式直接编译用户输入的正则，异常虽被捕获但复杂正则存在 ReDoS 风险"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/AIForegroundService.kt",
+    "line": 276,
+    "evidence": "                    BitmapFactory.decodeStream(stream)",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "loadBitmapFromUri 直接全尺寸解码图片做通知大图标，未做 inSampleSize 缩放，大图有 OOM 风险"
+  }
+]

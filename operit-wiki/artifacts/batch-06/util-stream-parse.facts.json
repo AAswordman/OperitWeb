@@ -1,0 +1,346 @@
+[
+  {
+    "fact": "PluginState 是流处理插件的状态枚举，包含 IDLE、TRYING、PROCESSING、WAITFOR 四个状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPlugin.kt:13"
+  },
+  {
+    "fact": "PluginState.WAITFOR 表示插件处于等待状态：下一个字符决定已累积字符是继续处理还是返还给处理器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPlugin.kt:17"
+  },
+  {
+    "fact": "StreamPlugin 是字符流处理插件的接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPlugin.kt:24"
+  },
+  {
+    "fact": "processChar(c, atStartOfLine) 返回 true 表示字符应包含在最终组流中，返回 false 表示过滤掉该字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPlugin.kt:37"
+  },
+  {
+    "fact": "StreamPlugin 生命周期为 initPlugin 初始化、destroy 释放资源、reset 重置状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPlugin.kt:48"
+  },
+  {
+    "fact": "BaseJsonPlugin 是 StreamPlugin 的抽象类，用 openBraceCount/openBracketCount 跟踪括号嵌套层数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:9"
+  },
+  {
+    "fact": "BaseJsonPlugin 在 IDLE 状态遇到 '{' 进入 PROCESSING，并记 jsonType 为 OBJECT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:27"
+  },
+  {
+    "fact": "BaseJsonPlugin 在 IDLE 状态遇到 '[' 进入 PROCESSING，并记 jsonType 为 ARRAY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:33"
+  },
+  {
+    "fact": "BaseJsonPlugin 在字符串内处理转义：'\\\\' 置 isEscaped，'\"' 结束字符串状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:54"
+  },
+  {
+    "fact": "BaseJsonPlugin 只为外层 JSON 类型计数括号，OBJECT 只数 {}，ARRAY 只数 []",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:62"
+  },
+  {
+    "fact": "BaseJsonPlugin 括号计数归零时 finishProcessing，调用 reset 回到 IDLE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:70"
+  },
+  {
+    "fact": "shouldEmit 是抽象方法，由子类决定每个字符是否发射",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/BaseJsonPlugin.kt:110"
+  },
+  {
+    "fact": "StreamJsonPlugin 的 shouldEmit 恒返回 true，发射 JSON 结构的全部字符（含结构字符）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamJsonPlugin.kt:14"
+  },
+  {
+    "fact": "StreamPureJsonPlugin 在字符串内发射除转义符和引号外的字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPureJsonPlugin.kt:17"
+  },
+  {
+    "fact": "StreamPureJsonPlugin 在字符串外过滤 {}[]\",: 和空白字符，只发射内容字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamPureJsonPlugin.kt:28"
+  },
+  {
+    "fact": "Markdown 插件顺序重要：长定界符插件必须排在短的之前，如 Bold 在 Italic 前，否则 **text** 会被误判为两个斜体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:17"
+  },
+  {
+    "fact": "GROUP_DELIMITER、GROUP_HEADER_HASHES、GROUP_TEXT、GROUP_URL 是 KMP 分组编号常量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:25"
+  },
+  {
+    "fact": "StreamMarkdownFencedCodeBlockPlugin 识别 3 个以上反引号的围栏代码块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:36"
+  },
+  {
+    "fact": "围栏代码块的结束符只在行首尝试匹配",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:59"
+  },
+  {
+    "fact": "StreamMarkdownInlineCodePlugin 匹配等长反引号的行内代码，处理中遇到换行则匹配失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:143"
+  },
+  {
+    "fact": "StreamMarkdownBoldPlugin 识别 **text** 粗体，起始要求后跟非 * 非换行字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:223"
+  },
+  {
+    "fact": "StreamMarkdownItalicPlugin 识别 *text* 斜体，起始后不能是 *、换行或空格",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:295"
+  },
+  {
+    "fact": "斜体插件遇到连续 ** 会重置，避免把粗体误判为斜体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:317"
+  },
+  {
+    "fact": "StreamMarkdownHeaderPlugin 识别行首 1-6 个 # 加空格的 ATX 标题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:382"
+  },
+  {
+    "fact": "7 个以上 # 不算合法标题，匹配会失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:423"
+  },
+  {
+    "fact": "StreamMarkdownLinkPlugin 识别 [text](url) 格式的链接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:469"
+  },
+  {
+    "fact": "StreamMarkdownImagePlugin 识别 ![alt](url) 格式的图片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:559"
+  },
+  {
+    "fact": "StreamMarkdownBlockQuotePlugin 识别行首 \"> \" 的引用块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:666"
+  },
+  {
+    "fact": "引用块换行后进入 WAITFOR 状态，下一行行首不是 > 则结束引用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:682"
+  },
+  {
+    "fact": "StreamMarkdownHorizontalRulePlugin 识别 ---/ ***/___ 分隔线，要求同种标记至少出现 3 个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:751"
+  },
+  {
+    "fact": "StreamMarkdownStrikethroughPlugin 识别 ~~text~~ 删除线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:819"
+  },
+  {
+    "fact": "StreamMarkdownUnderlinePlugin 识别 __text__ 下划线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:892"
+  },
+  {
+    "fact": "StreamMarkdownOrderedListPlugin 识别行首\"数字. \"的有序列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:965"
+  },
+  {
+    "fact": "StreamMarkdownUnorderedListPlugin 识别行首 \"- \"/\"+ \"/\"* \" 的无序列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1037"
+  },
+  {
+    "fact": "StreamMarkdownInlineLaTeXPlugin 识别 $...$ 行内公式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1106"
+  },
+  {
+    "fact": "StreamMarkdownInlineParenLaTeXPlugin 识别 \\(...\\) 行内公式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1175"
+  },
+  {
+    "fact": "StreamMarkdownBlockLaTeXPlugin 识别 $$...$$ 块级公式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1246"
+  },
+  {
+    "fact": "StreamMarkdownBlockBracketLaTeXPlugin 识别 \\[...\\] 块级公式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1308"
+  },
+  {
+    "fact": "StreamMarkdownTablePlugin 以 tableRowMatcher 识别 | 开头的表格行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1388"
+  },
+  {
+    "fact": "表格行换行后 StreamMarkdownTablePlugin 进入 WAITFOR 等待确认下一行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1411"
+  },
+  {
+    "fact": "表格处理遇到 $ ` # > * - + 等其他块起始符时结束表格",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamMarkdownPlugin.kt:1403"
+  },
+  {
+    "fact": "StreamXmlPlugin 文档注明已知限制：不支持同名嵌套标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:9"
+  },
+  {
+    "fact": "StreamXmlPlugin 的标签名必须以 ASCII 字母开头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:44"
+  },
+  {
+    "fact": "StreamXmlPlugin 的标签名后续字符只允许字母、数字和下划线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:48"
+  },
+  {
+    "fact": "自闭合标签如 <br/> 被当作普通文本，不进入 XML 模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:114"
+  },
+  {
+    "fact": "结束标签后允许紧跟新标签开始，由 allowStartAfterEndTag 控制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:81"
+  },
+  {
+    "fact": "标点符号或 emoji 字符后允许 < 开始新标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/stream/plugins/StreamXmlPlugin.kt:28"
+  },
+  {
+    "fact": "NativeMarkdownSplitter 用 JNI 加载 streamnative 原生库",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:44"
+  },
+  {
+    "fact": "nativeCreateBlockSession、nativeCreateInlineSession、nativeDestroySession、nativePush 都是 external JNI 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:47"
+  },
+  {
+    "fact": "Session 包装原生 handle，push(chunk) 返回 IntArray 段数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:52"
+  },
+  {
+    "fact": "parseInlineToStableNodes 在内容为空时直接返回空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:60"
+  },
+  {
+    "fact": "toInlineStableNodes 把 (typeOrdinal,start,end) 三元组转为 MarkdownNodeStable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:10"
+  },
+  {
+    "fact": "typeOrdinal 为负或起止越界的三元组会被跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:15"
+  },
+  {
+    "fact": "HTML_BREAK 类型的节点内容固定为换行符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownSplitter.kt:24"
+  },
+  {
+    "fact": "NativeXmlSplitter 的 nativeSplitXmlSegments 是 external JNI 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeXmlSplitter.kt:9"
+  },
+  {
+    "fact": "splitXmlTag 把原生三元组转为 [tagName, chunk] 或 [\"text\", chunk]",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeXmlSplitter.kt:30"
+  },
+  {
+    "fact": "type==1 的段用正则提取标签名，提取失败记为 unknown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeXmlSplitter.kt:28"
+  },
+  {
+    "fact": "纯空白的文本块会被丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeXmlSplitter.kt:33"
+  },
+  {
+    "fact": "nativeMarkdownSplitBySession 是私有的流式切分核心，Char 流与 String 流各有一套实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:21"
+  },
+  {
+    "fact": "公开 API 包含 nativeMarkdownSplitByBlock",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:419"
+  },
+  {
+    "fact": "公开 API 包含 nativeMarkdownSplitByInline",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:443"
+  },
+  {
+    "fact": "String 流重载用 @JvmName 避免 JVM 签名冲突",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:467"
+  },
+  {
+    "fact": "换行或增量缓冲达到 maxDeltaChars 时触发 flush",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:184"
+  },
+  {
+    "fact": "无 flush 参数时每个字符都触发 flush",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:178"
+  },
+  {
+    "fact": "initialContent 用于恢复解析器状态而不重发已渲染的前缀",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:50"
+  },
+  {
+    "fact": "原生返回的负 typeOrdinal 是分组边界标记，Kotlin 侧关闭当前分组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:114"
+  },
+  {
+    "fact": "段类型变化时关闭旧 channel 并用 StreamGroup(tag, stream) 发射新分组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:280"
+  },
+  {
+    "fact": "切分异常时记日志并重抛，CancellationException 直接透传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:195"
+  },
+  {
+    "fact": "finally 中取消定时 flush 任务、关闭 channel、销毁原生 session",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/streamnative/NativeMarkdownStreamOperators.kt:206"
+  },
+  {
+    "fact": "JNI 函数名遵循 Java_包_类_方法 命名规范",
+    "ref": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp:30"
+  },
+  {
+    "fact": "nativePush 在 handle==0 或 chunk==null 时返回空数组",
+    "ref": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp:64"
+  },
+  {
+    "fact": "JNI 侧用 GetStringLength/GetStringChars 取 UTF-16，用后 ReleaseStringChars 释放",
+    "ref": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp:70"
+  },
+  {
+    "fact": "segmentsToJIntArray 把 Segment 展平为 3 倍长的 jint 数组",
+    "ref": "app/src/main/cpp/streamnative/native_markdown_splitter.cpp:7"
+  },
+  {
+    "fact": "nativeSplitXmlSegments 的 JNI 实现同样把 Segment 展平为 3 倍长 jint 数组",
+    "ref": "app/src/main/cpp/streamnative/native_xml_splitter.cpp:12"
+  },
+  {
+    "fact": "StreamOperators.cpp 的 MD_* 常量必须与 MarkdownProcessorType 序数一致",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:12"
+  },
+  {
+    "fact": "SEG_BREAK=-1 是分组边界标记，Kotlin 侧须当作关闭分组处理",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:38"
+  },
+  {
+    "fact": "Block 会话的插件顺序必须与 NestedMarkdownProcessor.getBlockPlugins() 一致",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:379"
+  },
+  {
+    "fact": "Inline 会话的插件顺序必须与 getInlinePlugins() 一致",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:399"
+  },
+  {
+    "fact": "原生侧大小写不敏感识别 <br> 系列为 HTML_BREAK",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:114"
+  },
+  {
+    "fact": "MarkdownSession::push 逐字符处理并用 globalOffset_ 维护跨 push 的全局索引",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:148"
+  },
+  {
+    "fact": "评估模式把字符同时喂给所有插件，首个进入 PROCESSING 的插件胜出",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:240"
+  },
+  {
+    "fact": "无插件处于 TRYING 时缓冲作为 PLAIN_TEXT 刷出",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:303"
+  },
+  {
+    "fact": "splitByXml 用 type 0 表示默认文本段",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:440"
+  },
+  {
+    "fact": "splitByXml 用 type 1 表示 XML 段",
+    "ref": "app/src/main/cpp/streamnative/StreamOperators.cpp:451"
+  },
+  {
+    "fact": "StructuredAssistantContentParser 用 NativeXmlSplitter.splitXmlTag 解析结构化内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/StructuredAssistantContentParser.kt:27"
+  },
+  {
+    "fact": "WaifuMessageProcessor 用 nativeMarkdownSplitByBlock 做流式 Markdown 分组渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt:116"
+  }
+]

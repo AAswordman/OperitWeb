@@ -1,0 +1,434 @@
+[
+  {
+    "fact": "用户脚本引擎是 Tampermonkey 式实现：脚本以 `// ==UserScript==` 元数据块声明权限与匹配规则，注入到 WebSession 的 WebView 中运行",
+    "kind": "concept",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:4",
+    "symbol": "UserscriptMetadataParser"
+  },
+  {
+    "fact": "UserscriptRunAt 只有三种注入时机：document-start、document-end、document-idle",
+    "kind": "enum",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptModels.kt:7",
+    "symbol": "UserscriptRunAt"
+  },
+  {
+    "fact": "run-at 解析大小写不敏感，缺省或非法值时默认 document-end",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptModels.kt:12",
+    "symbol": "UserscriptRunAt.fromRaw"
+  },
+  {
+    "fact": "元数据块用正则 `^[ \\t]*//[ \\t]*==UserScript==` 起止行定位，找不到就抛 Missing userscript metadata block",
+    "kind": "function",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:10",
+    "symbol": "UserscriptMetadataParser.parse"
+  },
+  {
+    "fact": "元数据行格式是 `// @key value`，key 允许字母数字冒号下划线连字符",
+    "kind": "format",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:6"
+  },
+  {
+    "fact": "缺 @name 直接抛异常，脚本没有名字装不上去",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:24",
+    "symbol": "UserscriptMetadataParser.parse"
+  },
+  {
+    "fact": "没写 @version 时版本号默认 \"0\"",
+    "kind": "default",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:49"
+  },
+  {
+    "fact": "@grant/@match/@include/@exclude 等多值字段会去重并去掉空白",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:64"
+  },
+  {
+    "fact": "@resource 按 `名字 URL` 解析，中间用空白分隔（limit=2），缺一半就丢弃该条",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:28"
+  },
+  {
+    "fact": "noframes 只要出现就生效；noframe 则要求值为 true（忽略大小写）",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:43"
+  },
+  {
+    "fact": "@webRequest 声明的规则字符串会原样收进 webRequestRules 列表",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:92"
+  },
+  {
+    "fact": "全部原始头（key/value）保留在 rawHeaders 里，供 GM.info 回放",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMetadataParser.kt:93"
+  },
+  {
+    "fact": "URL 匹配顺序：先看 @exclude-match，再看 @exclude，命中任一直接不运行",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:18",
+    "symbol": "UserscriptMatcher.matches"
+  },
+  {
+    "fact": "@noframes 的脚本在 iframe 里永远不运行",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:12",
+    "symbol": "UserscriptMatcher.matches"
+  },
+  {
+    "fact": "一个 @match/@include 都没写的脚本哪儿都不运行",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:25",
+    "symbol": "UserscriptMatcher.matches"
+  },
+  {
+    "fact": "@match 的 scheme 写 `*` 只匹配 http/https，不含其他 scheme",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:100"
+  },
+  {
+    "fact": "@match 的 host 写 `*` 匹配任意非空 host；`*.example.com` 同时匹配裸域和子域",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:111"
+  },
+  {
+    "fact": "glob 转正则时 `*` 变成 `.*`，其余正则特殊字符全部转义，匹配忽略大小写",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:134"
+  },
+  {
+    "fact": "@include 是对完整 URL 做 glob，不做 scheme/host 拆分",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:131"
+  },
+  {
+    "fact": "GM_xmlhttpRequest 的目标与页面同源时永远放行，不看 @connect",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:44",
+    "symbol": "UserscriptMatcher.isConnectAllowed"
+  },
+  {
+    "fact": "跨源请求且 @connect 为空时直接拒绝",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:50",
+    "symbol": "UserscriptMatcher.isConnectAllowed"
+  },
+  {
+    "fact": "@connect 支持 `*`、self、精确 host、`*.后缀` 四种写法",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptMatcher.kt:60",
+    "symbol": "UserscriptMatcher.isConnectAllowed"
+  },
+  {
+    "fact": "权限注册表共 33 个 capability：28 个 GM.*、unsafeWindow、window.close/focus/onurlchange、none",
+    "kind": "registry",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:16",
+    "symbol": "UserscriptCapabilityRegistry"
+  },
+  {
+    "fact": "GM_addValue 这种下划线写法是 GM.addValue 的别名，解析时归一到点式 canonical 名",
+    "kind": "registry",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:216",
+    "symbol": "UserscriptCapabilityRegistry.canonicalGrant"
+  },
+  {
+    "fact": "安装预览会把不认识的 @grant 单列成 unknownGrants 展示给用户",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:225",
+    "symbol": "UserscriptCapabilityRegistry.unknownGrants"
+  },
+  {
+    "fact": "@grant none 不能和其他 grant 混用，否则进 blockedReasons",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:228",
+    "symbol": "UserscriptCapabilityRegistry.blockedReasons"
+  },
+  {
+    "fact": "GM.webRequest 要求 document-start 注入和请求拦截两项底层能力",
+    "kind": "capability",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:152"
+  },
+  {
+    "fact": "window.onurlchange 同样要求 document-start 注入",
+    "kind": "capability",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:196"
+  },
+  {
+    "fact": "GM.audio 在 WebView 不支持静音控制时会被 blockedReasons 拦下",
+    "kind": "capability",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/UserscriptCapabilityRegistry.kt:166"
+  },
+  {
+    "fact": "脚本文件存在 <root>/scripts/<安全前缀>_<sha12>.user.js，root 取自 OperitPaths.webSessionUserscriptsDir()",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:59"
+  },
+  {
+    "fact": "@require/@resource 的远程文件下载缓存在 <root>/cache/ 下",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:60"
+  },
+  {
+    "fact": "注册表是 JSON 文件而非数据库：state/registry.json 存脚本与资源，state/logs.json 存日志，state/values/<id>.json 按脚本存键值",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptJsonStore.kt:52",
+    "symbol": "UserscriptJsonStore"
+  },
+  {
+    "fact": "所有写操作都经过 Mutex，保证并发安全",
+    "kind": "concurrency",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptJsonStore.kt:54"
+  },
+  {
+    "fact": "脚本 id 是自增的 nextScriptId，存在 registry.json 里",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptJsonStore.kt:122"
+  },
+  {
+    "fact": "安装时拒绝用更低版本覆盖已装版本（compareVersions < 0 抛异常）",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:135",
+    "symbol": "UserscriptRepository.install"
+  },
+  {
+    "fact": "安装记录源码的 sha256，进 sourceHash 字段",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:141"
+  },
+  {
+    "fact": "元数据和各规则列表以 JSON 字符串形式存进 entity（metadataJson/grantsJson/matchesJson…）",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:167"
+  },
+  {
+    "fact": "检查更新按 updateUrl → downloadUrl → sourceUrl 的优先级找目标地址",
+    "kind": "update",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:209",
+    "symbol": "UserscriptRepository.checkForUpdate"
+  },
+  {
+    "fact": "只有远端版本号更新才返回预览，否则返回 null（无更新）",
+    "kind": "update",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:219"
+  },
+  {
+    "fact": "版本号比较按非字母数字切分后逐段比，纯数字段按数值比（1.10 > 1.9）",
+    "kind": "parsing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:651"
+  },
+  {
+    "fact": "页面加载时 buildBootstrapPayload 只打包：启用中、无 blockedReasons、URL 匹配通过的脚本",
+    "kind": "injection",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:276",
+    "symbol": "UserscriptRepository.buildBootstrapPayload"
+  },
+  {
+    "fact": "注入给页面的 payload 包含脚本源码、@require 正文、GM_* 键值、resource 的文本与 base64 dataUrl",
+    "kind": "injection",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:316"
+  },
+  {
+    "fact": "相对路径的 @require/@resource 按脚本来源 URL 做 URI.resolve",
+    "kind": "install",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:591"
+  },
+  {
+    "fact": "data: URL 的依赖也支持：base64 解码或 URL 解码后写缓存",
+    "kind": "install",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:594"
+  },
+  {
+    "fact": "日志上限 200 条，每次写日志都裁剪",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:42"
+  },
+  {
+    "fact": "删脚本会删掉缓存的资源文件和 .user.js 源文件，再删注册表记录（含日志与键值）",
+    "kind": "lifecycle",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:238",
+    "symbol": "UserscriptRepository.deleteUserscript"
+  },
+  {
+    "fact": "已装脚本列表按名字大小写不敏感排序",
+    "kind": "query",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:374"
+  },
+  {
+    "fact": "URL 安装只接受 http/https，其他 scheme 直接拒绝",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:321",
+    "symbol": "WebSessionUserscriptManager.beginUrlInstall"
+  },
+  {
+    "fact": "远端脚本 HTTP 非 2xx 时安装预览直接抛错",
+    "kind": "install",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/storage/UserscriptRepository.kt:119",
+    "symbol": "UserscriptRepository.fetchRemotePreview"
+  },
+  {
+    "fact": "本地导入走系统文件选择器，只接受 text/*、application/javascript 等类型",
+    "kind": "install",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/install/UserscriptImportPickerActivity.kt:50"
+  },
+  {
+    "fact": "导入等待用 CompletableDeferred + 60 秒超时，超时返回 null",
+    "kind": "install",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/install/UserscriptImportCoordinator.kt:21"
+  },
+  {
+    "fact": "引擎要求 WebView 支持 DOCUMENT_START_SCRIPT 和 WEB_MESSAGE_LISTENER，否则整个用户脚本功能禁用",
+    "kind": "capability",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:108"
+  },
+  {
+    "fact": "attachSession 时注入 document-start 启动脚本（对所有源 `*`），并注册名为 OperitUserscriptBridge 的 WebMessageListener",
+    "kind": "injection",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:215",
+    "symbol": "WebSessionUserscriptManager.attachSession"
+  },
+  {
+    "fact": "JS 与原生之间走 OperitUserscriptBridge 消息通道，RPC 请求 20 秒超时（userscript_host_timeout）",
+    "kind": "bridge",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:39"
+  },
+  {
+    "fact": "页面就绪后 bootstrap 脚本发 bootstrap_request，原生回传匹配脚本的 payloadJson",
+    "kind": "bridge",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:544"
+  },
+  {
+    "fact": "脚本执行状态经 script_status 上报：running → success/error，UI 侧映射为 QUEUED/RUNNING/SUCCESS/ERROR",
+    "kind": "lifecycle",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:579"
+  },
+  {
+    "fact": "脚本用 new Function 执行，参数是 GM 对象 + 全套 GM_* 旧式函数 + unsafeWindow/window/close/focus",
+    "kind": "execution",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:991"
+  },
+  {
+    "fact": "注入代码末尾带 `//# sourceURL=userscript:<脚本名>`，方便调试定位",
+    "kind": "execution",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:990"
+  },
+  {
+    "fact": "@require 的代码拼在脚本源码前面一起执行",
+    "kind": "execution",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:986"
+  },
+  {
+    "fact": "document-start 的脚本立即装，document-end 等 DOMContentLoaded，document-idle 等 requestIdleCallback 或 window load",
+    "kind": "execution",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:1085"
+  },
+  {
+    "fact": "GM.info 伪装成 Tampermonkey：scriptHandler=\"Tampermonkey\"，version=\"5.3.3\"",
+    "kind": "compat",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:326"
+  },
+  {
+    "fact": "GM.* 点式与 GM_* 下划线式两套 API 同时暴露，Promise 版走 gmObject，同步旧版走 legacy",
+    "kind": "compat",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:845"
+  },
+  {
+    "fact": "GM_xmlhttpRequest 在原生侧二次校验 @connect，不通过就记 error 日志并返回 connect_not_allowed",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:1155"
+  },
+  {
+    "fact": "GM_xmlhttpRequest 的二进制请求体（ArrayBuffer/Blob/FormData）在 JS 侧直接抛错不支持",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:457"
+  },
+  {
+    "fact": "XHR 用 OkHttp 在原生侧发出",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:1233"
+  },
+  {
+    "fact": "XHR 事件按 readystatechange → progress → load → loadend 回调页面",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:1242"
+  },
+  {
+    "fact": "非 anonymous 的 XHR 自动带上 WebView 的 Cookie，响应的 Set-Cookie 写回 CookieManager",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:1211"
+  },
+  {
+    "fact": "GM.cookie 的读/写/删都经 CookieManager，另有 mirror 补全 WebView 不暴露的 domain/path/secure 等属性",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptCookieService.kt:42",
+    "symbol": "UserscriptCookieService"
+  },
+  {
+    "fact": "GM.setValue 等变更会广播给同脚本的其他会话（storage_changed，remote=true），实现跨标签页同步",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:951"
+  },
+  {
+    "fact": "GM.webRequest 规则在原生侧合并：cancel 取或，redirectUrl 后注册覆盖先注册，请求/响应头合并",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptWebRequestEngine.kt:79",
+    "symbol": "UserscriptWebRequestEngine.resolve"
+  },
+  {
+    "fact": "webRequest 规则匹配器支持 `*`、`/正则/`、含 `*` 的 glob、普通子串四种写法",
+    "kind": "matching",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptWebRequestEngine.kt:193"
+  },
+  {
+    "fact": "命中 cancel 的请求直接返回 204 \"Blocked\" 空响应",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:483"
+  },
+  {
+    "fact": "元数据里声明的 @webRequest 规则在脚本安装时自动注册（source=\"metadata\"），无需调用 GM.webRequest",
+    "kind": "network",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:966"
+  },
+  {
+    "fact": "url 变化（pushState/replaceState/popstate/hashchange）会触发 urlchange 事件并同步给原生侧",
+    "kind": "lifecycle",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptBootstrapScript.kt:237"
+  },
+  {
+    "fact": "GM.registerMenuCommand 注册的命令存在会话绑定里，原生通过 evaluateJavascript 回调页面执行",
+    "kind": "ui",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:297"
+  },
+  {
+    "fact": "通知走系统 Notification，Android 13+ 先检查 POST_NOTIFICATIONS 权限",
+    "kind": "ui",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:827"
+  },
+  {
+    "fact": "通知 id 是 50142 + scriptId，不同脚本互不覆盖",
+    "kind": "ui",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:83"
+  },
+  {
+    "fact": "detachSession 时取消该会话的 XHR、清空 webRequest 注册与 tab 状态，并通知 opener 会话标签已关",
+    "kind": "lifecycle",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:254",
+    "symbol": "WebSessionUserscriptManager.detachSession"
+  },
+  {
+    "fact": "每页的脚本状态机：DISABLED（禁用）/ UNSUPPORTED（grant 被拦）/ NOT_MATCHED / QUEUED（待注入）",
+    "kind": "lifecycle",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/WebSessionUserscriptManager.kt:1451"
+  },
+  {
+    "fact": "GM.getTab/GM.saveTab 的状态按 scriptId+sessionId 存在内存 ConcurrentHashMap，会话结束即清",
+    "kind": "storage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/runtime/UserscriptTabStateStore.kt:8",
+    "symbol": "UserscriptTabStateStore"
+  },
+  {
+    "fact": "UI 状态（脚本列表/日志/当前页状态/待安装预览）集中在 WebSessionUserscriptUiStateStore 的 StateFlow 里",
+    "kind": "ui",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/websession/userscript/ui/WebSessionUserscriptUiStateStore.kt:25"
+  }
+]

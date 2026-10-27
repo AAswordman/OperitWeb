@@ -1,0 +1,886 @@
+[
+  {
+    "fact": "PluginCreationIntent 是 sealed interface，声明 val requirement: String 与 fun toPrompt(context: Context): String。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:6"
+  },
+  {
+    "fact": "PluginCreationIntent.Fresh 是只带 requirement 的 data class，用于新建插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:11"
+  },
+  {
+    "fact": "PluginCreationIntent.Continue 携带 runtimePackageId 与 requirement，用于在已有包上继续开发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:24"
+  },
+  {
+    "fact": "PluginCreationIntent.Merge 携带 runtimePackageId 与 requirement，用于合并到已有包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:38"
+  },
+  {
+    "fact": "Fresh.toPrompt 使用 plugin_creation_fresh_task_line / fresh_package_rule_line / fresh_dev_directory_line 三组字符串资源组装提示词。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:13"
+  },
+  {
+    "fact": "Continue.toPrompt 把 runtimePackageId 作为格式化参数传入 task/package_rule/dev_directory 三行字符串资源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:29"
+  },
+  {
+    "fact": "buildCreationPrompt 按固定顺序拼接 8 行：taskLine、update_sandbox_package_dev、devDirectoryLine、packageRuleLine、copy_types_to_dev_dir、terminal_ts_js_hint、package_ts_hint、requirement_label，最后追加 trim 后的 requirement。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/PluginCreationIntent.kt:55"
+  },
+  {
+    "fact": "OPERIT_EDITOR_PACKAGE_NAME 常量值为 \"operit_editor\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:18"
+  },
+  {
+    "fact": "SANDBOX_PACKAGE_DEV_INSTALL_SCRIPT_URL 指向 https://cdn.jsdelivr.net/gh/AAswordman/Operit@main/tools/sandboxpackage_dev_install_or_update.js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:20"
+  },
+  {
+    "fact": "下载的脚本固定写到外部存储 Download/Operit/skills/SandboxPackage_DEV/scripts/install_or_update.js。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:22"
+  },
+  {
+    "fact": "runQuickPluginCreatorSetup(context, packageManager, toolHandler) 返回 ToolResult，是插件创建器一键初始化入口。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:25"
+  },
+  {
+    "fact": "先下载安装脚本，再调用 packageManager.enablePackage(\"operit_editor\") 启用编辑器包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:29"
+  },
+  {
+    "fact": "enablePackage 返回消息以 \"Package not found\" 开头（忽略大小写）时直接返回失败 ToolResult。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:33"
+  },
+  {
+    "fact": "通过 toolHandler.executeTool 执行工具 \"operit_editor:debug_run_sandbox_script\"，参数 source_path 为下载脚本的绝对路径。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:41"
+  },
+  {
+    "fact": "工具执行失败时返回 success=false 的 ToolResult，error 取工具错误或 quick_plugin_creator_setup_failed 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:55"
+  },
+  {
+    "fact": "runQuickPluginCreatorSetup 用 try/catch 包裹，异常时记 AppLogger.e 并返回失败 ToolResult，error 为 e.message 或异常类名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:65"
+  },
+  {
+    "fact": "downloadSandboxPackageDevInstallScript 先为目标文件创建父目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:80"
+  },
+  {
+    "fact": "下载连接设置 connectTimeout=20_000、readTimeout=30_000，User-Agent 为 Operit-QuickPluginCreator/1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:88"
+  },
+  {
+    "fact": "HTTP 响应码非 200 时抛 IllegalStateException(\"HTTP ${code}\")。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:96"
+  },
+  {
+    "fact": "用 BufferedInputStream 循环拷贝到 FileOutputStream，结束 flush 并 disconnect。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/QuickPluginCreatorSetupSupport.kt:101"
+  },
+  {
+    "fact": "MarketPublishPreviewDialog 参数为 title、description、detail、version、apiVersion、author、logoAsset、onDismiss。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:54"
+  },
+  {
+    "fact": "selectedMode 与 selectedDetailTab 用 rememberSaveable + mutableIntStateOf(0) 保存，旋转屏幕不丢失。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:64"
+  },
+  {
+    "fact": "标题为空显示 untitled 占位，描述为空显示 empty_description 占位，详情为空则回退用描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:68"
+  },
+  {
+    "fact": "作者为空显示 account 占位，版本为空默认 \"1.0.0\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:72"
+  },
+  {
+    "fact": "logo 缓存 key 为 \"market-preview:标题:版本:文件名:字节hash\"，列表与详情各拼 \":list\" / \":detail\" 后缀。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:75"
+  },
+  {
+    "fact": "预览用 Dialog(usePlatformDefaultWidth=false) 内嵌全屏 Surface，是全屏弹窗而非普通对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:88"
+  },
+  {
+    "fact": "顶部 TabRow 只有两个页签：列表外观与详情外观。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:110"
+  },
+  {
+    "fact": "列表模式用 MarketBrowseCard 渲染，showAction=false、interactive=false，按钮回调为空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:143"
+  },
+  {
+    "fact": "详情模式用 UnifiedMarketDetailHeaderCard，徽章为包类型、v版本号、ToolPkg API 版本三项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:157"
+  },
+  {
+    "fact": "详情头同时列出作者与分享者两个参与者，均取预览作者名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:183"
+  },
+  {
+    "fact": "下载量、点赞量、发布时间三项指标在预览中统一显示 \"--\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:197"
+  },
+  {
+    "fact": "详情内还有二级页签：关于与评论(0)，评论页显示 no_comments_yet。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:212"
+  },
+  {
+    "fact": "详情模式底部悬浮一个 disabled 的下载按钮，仅做样式预览不可点击。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/MarketPublishPreview.kt:244"
+  },
+  {
+    "fact": "LocalInstalledArtifactSnapshot 记录 packageName、sha256、isBuiltIn 三个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:13"
+  },
+  {
+    "fact": "LocalArtifactInstallStateKind 有 NOT_INSTALLED、EXACT_INSTALLED、SAME_PROJECT_VARIANT_INSTALLED、NAME_CONFLICT、BUILT_IN_CONFLICT 五种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:20"
+  },
+  {
+    "fact": "artifactRuntimePackageIds 只取 type 为 script/package 的条目；latestVersion 缺失或 runtimePackageId 为空时抛 error。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:33"
+  },
+  {
+    "fact": "getInstalledArtifactSnapshots 是 PackageManager 扩展函数，可按包名集合过滤。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:45"
+  },
+  {
+    "fact": "快照的 sha256 只在可发布源文件存在且为文件时计算，否则记空字符串；内置包常走空字符串分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:60"
+  },
+  {
+    "fact": "findInstalledArtifactSnapshot 先精确匹配包名，再按 sameArtifactRuntimePackageId 归一化匹配。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:76"
+  },
+  {
+    "fact": "resolveLocalArtifactInstallState 找不到已安装快照时返回 NOT_INSTALLED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:89"
+  },
+  {
+    "fact": "已安装 sha 与目标 sha 去空白转小写后相等即判 EXACT_INSTALLED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:97"
+  },
+  {
+    "fact": "已安装的是内置包且 sha 不一致时判 BUILT_IN_CONFLICT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:105"
+  },
+  {
+    "fact": "已安装 sha 落在同项目版本 sha 集合内判 SAME_PROJECT_VARIANT_INSTALLED，否则判 NAME_CONFLICT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:112"
+  },
+  {
+    "fact": "installArtifactProjectVersion 是挂起函数，参数含 projectVersions、version 与进度回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:134"
+  },
+  {
+    "fact": "安装前先上报 CHECKING_LOCAL 进度，并在 IO 线程取已安装快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:141"
+  },
+  {
+    "fact": "EXACT_INSTALLED 直接 return 不做任何事；BUILT_IN_CONFLICT 抛中文异常拒绝覆盖内置插件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:155"
+  },
+  {
+    "fact": "下载到临时文件后上报 INSTALLING；同项目变体或重名冲突时先 deletePackage，删除失败抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:165"
+  },
+  {
+    "fact": "通过 addPackageFileFromExternalStorage 导入，返回消息必须以 \"Successfully imported\" 开头否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:178"
+  },
+  {
+    "fact": "临时文件在 finally 中删除，成功失败都会清理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:186"
+  },
+  {
+    "fact": "下载目录为 context.cacheDir/market_downloads，不存在则 mkdirs，建不出抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:197"
+  },
+  {
+    "fact": "目标文件名取 version.assetName，为空则用 \"{runtimePackageId}.bin\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:207"
+  },
+  {
+    "fact": "下载连接 instanceFollowRedirects=true，connectTimeout 30 秒，readTimeout 60 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:209"
+  },
+  {
+    "fact": "HTTP 状态码不在 200..299 时抛 \"Download failed: HTTP $code\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:216"
+  },
+  {
+    "fact": "下载循环按 contentLengthLong 计算进度并上报 DOWNLOADING，未知长度时传 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:229"
+  },
+  {
+    "fact": "下载完上报 VERIFYING 并算 sha256；与 version.sha256 不一致（忽略大小写）则删文件抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:246"
+  },
+  {
+    "fact": "sha256Hex 用 MessageDigest SHA-256 分块计算并转小写十六进制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactLocalInstallSupport.kt:254"
+  },
+  {
+    "fact": "RepoMarketPublishViewModel 构造参数为 context 与 MarketStatsType，只服务 SKILL/MCP 两类仓库发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:38"
+  },
+  {
+    "fact": "草稿存于 SharedPreferences，key 为 \"{type.wireValue}_publish_draft\"，MODE_PRIVATE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:53"
+  },
+  {
+    "fact": "publishDraft 读取 title/description/detail/repositoryUrl/installConfig/category 六个字符串与 allowPublicUpdates，默认 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:55"
+  },
+  {
+    "fact": "parseEntry 把 MarketV2Entry 的 title/description/detail/source.url/latestVersion.installConfig/categoryId/allowPublicUpdates 转成草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:67"
+  },
+  {
+    "fact": "saveDraft 把 7 个字段写入 SharedPreferences 并 apply。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:78"
+  },
+  {
+    "fact": "logoutFromGitHub 在 viewModelScope 协程中登出，成功弹 Toast，失败写 errorMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:107"
+  },
+  {
+    "fact": "publish(...) 只是 submit(entryId=null) 的转发，代表全新发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:119"
+  },
+  {
+    "fact": "publishNewVersion 先 validateNewVersion 校验版本号递增，再按 canEditEntry 决定补丁可改字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:142"
+  },
+  {
+    "fact": "canEditEntry=false 时新版本补丁只允许改 description 与 detail。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:153"
+  },
+  {
+    "fact": "entryPatch 用 takeIf{it != entry.xxx} 只保留变化字段，再 takeIf hasChanges() 去掉全空补丁。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:172"
+  },
+  {
+    "fact": "updateEntryMetadata 未登录直接返回失败；调用 marketStatsApiService.updateEntry 更新元数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:180"
+  },
+  {
+    "fact": "submit 未登录直接失败；全程置 isLoading，finally 复位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:229"
+  },
+  {
+    "fact": "submit 按 entryId 是否为空分别调 marketStatsApiService.publish 或 publishNewVersion。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:253"
+  },
+  {
+    "fact": "buildV2PublishRequest 中 version 为空默认 \"1.0.0\"，formatVer 为 \"{type.wireValue}_v2\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:269"
+  },
+  {
+    "fact": "发布请求的 source.kind 固定为 \"github_repo\"，minAppVer 取硬编码 CURRENT_APP_VERSION。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:284"
+  },
+  {
+    "fact": "MCP 类型的 installConfig 为空时填 \"{}\"，其他类型一律 \"{}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:292"
+  },
+  {
+    "fact": "resolveRepoPublishTarget 解析 URL 失败抛 invalid_github_url；refName 为空时调 GitHub API 取默认分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:299"
+  },
+  {
+    "fact": "parseRepoPublishTarget 支持 github.com（含子域名）与 raw.githubusercontent.com，其他 host 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:314"
+  },
+  {
+    "fact": "URL 路径含 tree/blob 段时 refType=branch 且 refName 取第 4 段，否则 refName 为空走默认分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:329"
+  },
+  {
+    "fact": "normalizeGithubSourceUrl 去掉 .git 后缀并规范成 https://github.com/owner/repo 形式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:338"
+  },
+  {
+    "fact": "validateNewVersion 去掉 v/V 前缀后要求新版本严格大于已有最高版本，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:398"
+  },
+  {
+    "fact": "comparePublishVersions 先逐段比数字，再比后缀：后缀都空判相等，空后缀视为正式版大于预发布版。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:414"
+  },
+  {
+    "fact": "parsePublishVersion 把非数字的版本段按 0 处理，后缀取 \"-\" 之后 \"+\" 之前。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:429"
+  },
+  {
+    "fact": "未登录提示语按类型区分：SKILL 用 skill_publish_login_required，MCP 硬编码中文 \"GitHub 登录后才能发布 MCP。\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:442"
+  },
+  {
+    "fact": "CURRENT_APP_VERSION 硬编码为 \"1.11.0+5\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/market/viewmodel/RepoMarketPublishViewModel.kt:470"
+  },
+  {
+    "fact": "OPERIT_MARKET_OWNER=\"AAswordman\"，OPERIT_FORGE_REPO_NAME=\"OperitForge\"，PUBLISH_LOGO_MAX_BYTES=512*1024。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:10"
+  },
+  {
+    "fact": "LEGACY_TOOLPKG_API_VERSION=\"1.0.0\"，effectiveToolPkgApiVersion 对空值回退到它。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:13"
+  },
+  {
+    "fact": "ToolPkgLogoAsset 含 fileName、contentType、bytes 三个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:19"
+  },
+  {
+    "fact": "PublishArtifactType 只有 SCRIPT 与 PACKAGE 两种：script 对应 OperitScriptMarket，package 对应 OperitPackageMarket。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:44"
+  },
+  {
+    "fact": "SCRIPT 的 releaseTagPrefix 为 \"script\"，PACKAGE 为 \"package\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:49"
+  },
+  {
+    "fact": "PublishArtifactType.fromWireValue 做 trim+小写后匹配，找不到返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:74"
+  },
+  {
+    "fact": "PublishArtifactType.marketFormatVersion：SCRIPT 对应 \"script_v2\"，PACKAGE 对应 \"toolpkg_v2\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:96"
+  },
+  {
+    "fact": "PublishProgressStage 共 8 个：IDLE、VALIDATING、ENSURING_REPO、CREATING_RELEASE、UPLOADING_ASSET、RESOLVING_RELEASE_ASSET、REGISTERING_MARKET、COMPLETED。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:112"
+  },
+  {
+    "fact": "ForgeRepoInfo 记录 ownerLogin、repoName、htmlUrl、existedBefore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:123"
+  },
+  {
+    "fact": "LocalPublishableArtifact 含 type、packageName、displayName、description、author、sourceFile、inferredVersion、apiVersion。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:130"
+  },
+  {
+    "fact": "PublishArtifactSource 两种：DirectUpload(minifyArtifact) 直传，或 GitHubReleaseAsset(owner/repository/releaseTag/assetName) 引用已有 Release 资产。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:143"
+  },
+  {
+    "fact": "ArtifactPublishClusterContext 含 entryId、projectId、runtimePackageId、lockedDisplayName、canEditEntry 等 10 个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:162"
+  },
+  {
+    "fact": "PublishArtifactDescriptor 含 type、projectId、runtimePackageId、displayName、version、assetName、contentType、min/maxSupportedAppVersion、protection。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:179"
+  },
+  {
+    "fact": "normalizeMarketArtifactId 转小写、非字母数字变 \"-\"、合并连续 \"-\"、去首尾 \"-\"，全空回退 \"artifact\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:302"
+  },
+  {
+    "fact": "requiresStandaloneArtifactIdUpgrade 识别归一化后变成占位 \"artifact\" 的包 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:317"
+  },
+  {
+    "fact": "validateStandaloneArtifactRuntimePackageId 对无法生成稳定市场 ID 的包 ID 抛中文异常，要求改用含字母数字的包 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:323"
+  },
+  {
+    "fact": "sameArtifactRuntimePackageId 忽略大小写相等或归一化后相等即判同一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:331"
+  },
+  {
+    "fact": "buildPublishArtifactDescriptor 中无 publishContext 时先做独立包 ID 校验；续发时要求归一化包 ID 与上下文一致。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:342"
+  },
+  {
+    "fact": "版本号去掉 v/V 前缀，为空默认 \"1.0.0\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:367"
+  },
+  {
+    "fact": "续发必须带非空 lockedDisplayName；canEditEntry=false 的贡献者续发锁定显示名、项目显示名与分类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:374"
+  },
+  {
+    "fact": "资源文件名格式为 \"{归一化包ID}-v{版本}.{扩展名}\"，扩展名为空默认 \"bin\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:399"
+  },
+  {
+    "fact": "有 protection 的 script 走 application/octet-stream，否则按扩展名推断 contentType。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:408"
+  },
+  {
+    "fact": "descriptor 的 apiVersion 只在 PACKAGE 类型取有效 ToolPkg API 版本，SCRIPT 为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:416"
+  },
+  {
+    "fact": "buildPublishReleaseDescriptor 生成 tag \"{script|package}-{归一化ID}-v{版本}\"，release 名为 \"{显示名} v{版本}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:443"
+  },
+  {
+    "fact": "release 正文包含项目 ID、包 ID、显示名、版本、API 版本、保护标记与支持的 App 版本区间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:452"
+  },
+  {
+    "fact": "normalizeAppVersionOrNull 把非法输入抛异常、空输入返回 null，合法输入规范成字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:509"
+  },
+  {
+    "fact": "validateSupportedAppVersions 要求最低版本必填，且最低不能大于最高。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:517"
+  },
+  {
+    "fact": "compareAppVersions 逐级比 major/minor/patch，build 为空按 0 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:531"
+  },
+  {
+    "fact": "resolveAppVersionCompatibility 低于最低返回 BELOW_MINIMUM，高于最高返回 ABOVE_MAXIMUM，区间内返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:566"
+  },
+  {
+    "fact": "isOperit2VersionAllowed 在最高支持版本 >= 2.0.0 时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:604"
+  },
+  {
+    "fact": "formatSupportedAppVersions 输出 \"min - max\"、\">= min\"、\"<= max\" 或 \"Any\" 四种形式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:611"
+  },
+  {
+    "fact": "inferArtifactContentType：toolpkg→application/zip，js→application/javascript，ts→text/plain，json/hjson→application/json，zip→application/zip，其他→application/octet-stream。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/ArtifactMarketModels.kt:625"
+  },
+  {
+    "fact": "PublishArtifactRequest 含 localArtifact、displayName/description/detail、categoryId、version、min/maxSupportedAppVersion、publishContext、source。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:23"
+  },
+  {
+    "fact": "PublishAttemptResult 三种：NeedsForgeInitialization(带 publisherLogin)、Success(entry/release/asset/payload)、RegistrationFailed(errorMessage)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:37"
+  },
+  {
+    "fact": "GitHubForgePublishService 构造注入 context、githubApiService，marketStatsApiService 默认新建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:54"
+  },
+  {
+    "fact": "loadGitHubReleaseCatalog 在 IO 线程拉取仓库 Release 列表并过滤掉 draft。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:75"
+  },
+  {
+    "fact": "publishArtifact 整体跑在 Dispatchers.IO，未登录 GitHub 直接失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:93"
+  },
+  {
+    "fact": "发布前校验源文件存在可读，并校验最低/最高支持 App 版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:102"
+  },
+  {
+    "fact": "先调 getCurrentUser 拿当前登录用户，失败则整个发布失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:109"
+  },
+  {
+    "fact": "DirectUpload 流程：ensureForgeRepository 拿仓库，拿不到且不允许建仓则返回 NeedsForgeInitialization。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:130"
+  },
+  {
+    "fact": "ensureRelease 保证 tag 对应的 Release 存在后，上报 UPLOADING_ASSET。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:157"
+  },
+  {
+    "fact": "上传前用 ToolPkgArtifactMinifier.processArtifactFile 处理文件，写入 ToolPkgMarketOrigin（market=\"Operit\"）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:164"
+  },
+  {
+    "fact": "注册用的 sha256 是处理后字节的哈希，不是源文件哈希。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:190"
+  },
+  {
+    "fact": "GitHubReleaseAsset 流程按 tag 取 Release，按 assetName 找资产，找不到抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:199"
+  },
+  {
+    "fact": "远程资产先下载再算 sha256，require 与本地源文件哈希一致，否则拒绝发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:208"
+  },
+  {
+    "fact": "MarketRegistrationPayload 汇总下载地址 browser_download_url、sha256、版本、API 版本等注册信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:222"
+  },
+  {
+    "fact": "市场注册失败不抛异常，而是返回 PublishAttemptResult.RegistrationFailed，由上层展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:251"
+  },
+  {
+    "fact": "ensureForgeRepository 先查 \"{publisherLogin}/OperitForge\" 是否存在。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:285"
+  },
+  {
+    "fact": "已存在但 size==0（空仓库）时调 initializeForgeRepository 写入 README.md 初始化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:295"
+  },
+  {
+    "fact": "仓库不存在报 HTTP 404 且不允许建仓时返回 null；非 404 错误直接失败。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:310"
+  },
+  {
+    "fact": "建仓用 createRepository：公开仓库、autoInit=true，描述注明 publish-only artifact repository。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:318"
+  },
+  {
+    "fact": "parseGitHubRepositoryUrl 要求 https 协议与 github.com/www.github.com 域名，owner/repo 只允许字母数字_.-。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:332"
+  },
+  {
+    "fact": "ensureRelease 按 tag 查找：不存在则 createRelease（非草稿非预发布），存在则 updateRelease 更新名与正文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:373"
+  },
+  {
+    "fact": "uploadAssetReplacingExisting 先删掉 Release 下同名（忽略大小写）旧资产再上传。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:406"
+  },
+  {
+    "fact": "registerMarketEntry 组装 MarketV2PublishRequest：asset.kind=\"github_release_asset\"，带 ghOwner/ghRepo/ghReleaseTag/assetName/sha256。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:431"
+  },
+  {
+    "fact": "minAppVer 为空抛异常要求必填；maxAppVer 为空默认 \"1.99.99\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:447"
+  },
+  {
+    "fact": "无 existingEntryId 调 publish，有则调 publishNewVersion 并把返回映射成 stateCode=\"pending\" 的 MarketV2Entry。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:472"
+  },
+  {
+    "fact": "buildNewVersionEntryPatch 中 canEditEntry 可改标题/描述/详情/分类，否则只改描述/详情；全无变化返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:503"
+  },
+  {
+    "fact": "DEFAULT_MAX_SUPPORTED_APP_VERSION=\"1.99.99\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/market/GitHubForgePublishService.kt:532"
+  },
+  {
+    "fact": "ArtifactPublishDraft 共 14 个字段，version 默认 \"1.0.0\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:42"
+  },
+  {
+    "fact": "ArtifactMarketViewModel 构造参数为 context 与 ArtifactMarketScope。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:66"
+  },
+  {
+    "fact": "ViewModel 初始化时即 refreshPublishableArtifacts 加载可发布构件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:122"
+  },
+  {
+    "fact": "loadPublishDraft 无 savedAtEpochMs 标记时返回 null，不读半截草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:126"
+  },
+  {
+    "fact": "savePublishDraft 写入全部字段并打 savedAtEpochMs 时间戳。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:150"
+  },
+  {
+    "fact": "refreshPublishableArtifacts 在 IO 线程从 PackageManager 取可发布源并转 LocalPublishableArtifact。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:184"
+  },
+  {
+    "fact": "inferArtifactType：toolpkg 后缀且 isToolPkg 判 PACKAGE，非 toolpkg 判 SCRIPT，交叉情况丢弃。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:189"
+  },
+  {
+    "fact": "可发布构件按类型排序再按显示名忽略大小写排序。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:204"
+  },
+  {
+    "fact": "requestPublish 找不到本地构件直接写 \"Local artifact not found\" 错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:209"
+  },
+  {
+    "fact": "贡献者续发（canEditEntry=false）时显示名强制用上下文锁定的 lockedDisplayName。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:221"
+  },
+  {
+    "fact": "requestPublish 首次走 allowCreateForgeRepo=false，先确认仓库存在才继续。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:240"
+  },
+  {
+    "fact": "loadGitHubReleaseCatalog 委托 forgePublishService，失败记 githubReleaseCatalogError。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:244"
+  },
+  {
+    "fact": "updatePublishedArtifact 未登录直接写 \"GitHub login required\" 错误。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:271"
+  },
+  {
+    "fact": "更新已发布构件前同样做显示名查重。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:296"
+  },
+  {
+    "fact": "confirmForgeInitializationAndPublish 用缓存的 pendingPublishRequest 以 allowCreateForgeRepo=true 重走发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:328"
+  },
+  {
+    "fact": "executePublish 未登录直接失败；全程捕获 CancellationException 单独重抛。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:380"
+  },
+  {
+    "fact": "全新发布先做显示名/包 ID/归一化 ID 三重冲突检查；续发跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:393"
+  },
+  {
+    "fact": "续发先 validateContinuationVersion 要求版本号递增。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:394"
+  },
+  {
+    "fact": "发布进度回调把 PublishProgressStage 与对应文案写入 StateFlow 供界面展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:396"
+  },
+  {
+    "fact": "NeedsForgeInitialization 时置 requiresForgeInitialization=true 并回 IDLE，等用户二次确认。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:403"
+  },
+  {
+    "fact": "RegistrationFailed 时回 IDLE 并把错误信息展示，不抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:414"
+  },
+  {
+    "fact": "validateContinuationVersion 拉取项目详情，取已有最高版本做比较，无版本时跳过校验。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:457"
+  },
+  {
+    "fact": "searchOpenEntriesByExactTitle 只查 UPDATED 排行第 1 页中 state 为 open 的条目。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:541"
+  },
+  {
+    "fact": "ensureFreshPublishIdentityAvailable 汇总标题/包 ID/归一化 ID 三类冲突，一次性抛中文异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:561"
+  },
+  {
+    "fact": "stageMessage 把 8 个 PublishProgressStage 映射到对应阶段文案，IDLE 返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:617"
+  },
+  {
+    "fact": "成功消息格式为 \"{显示名} published to {owner}/{repo} {tag} {版本区间}\" 并追加市场排期提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:632"
+  },
+  {
+    "fact": "草稿 SharedPreferences key 为 \"artifact_publish_draft_{scope}\"，无上下文 scope 为 fresh，有上下文为 entry_{脱敏ID}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:728"
+  },
+  {
+    "fact": "CURRENT_APP_VERSION 硬编码为 \"1.11.0+5\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/artifact/viewmodel/ArtifactMarketViewModel.kt:765"
+  },
+  {
+    "fact": "ArtifactPublishEditInfo 含 type/title/description/detail/categoryId/版本/apiVersion/最低最高 App 版本/包 ID/源文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:93"
+  },
+  {
+    "fact": "MarketV2Entry.toArtifactPublishEditInfo 从 latestVersion 与同 versionId 的 asset 取版本与文件名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:111"
+  },
+  {
+    "fact": "MarketV2Entry.toArtifactPublishClusterContext(canEditEntry) 把条目转成续发上下文，lockedDisplayName 取条目标题。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:132"
+  },
+  {
+    "fact": "ArtifactPublishScreen 参数为 onNavigateBack、editingEntry(默认null)、publishContext(默认null)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:139"
+  },
+  {
+    "fact": "ViewModel 用 key \"artifact-publish-all\" 与 ArtifactMarketScope.ALL 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:145"
+  },
+  {
+    "fact": "界面订阅 artifacts、publishProgressStage、publishMessage/Error/Success、requiresForgeInitialization、isLoggedIn 等 10 个状态流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:150"
+  },
+  {
+    "fact": "编辑模式下 activePublishContext 强制为 null；非编辑有上下文即续发模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:164"
+  },
+  {
+    "fact": "非编辑且锁定显示名非空、canEditEntry=false 时显示名锁定；续发且不可编辑条目时分类锁定。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:169"
+  },
+  {
+    "fact": "draftScopeKey 按编辑/条目 ID/全新三种情况生成，用于草稿隔离与 rememberSaveable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:172"
+  },
+  {
+    "fact": "filteredArtifacts 按锁定或上下文的 runtimePackageId 过滤本地构件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:193"
+  },
+  {
+    "fact": "14 个表单字段全部用 rememberSaveable(draftScopeKey) 保存，进程重建不丢。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:219"
+  },
+  {
+    "fact": "LaunchedEffect(Unit) 刷新可发布构件并拉取市场分类清单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:283"
+  },
+  {
+    "fact": "恢复的草稿若启用 GitHub Release 资产且仓库地址非空，自动加载 Release 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:289"
+  },
+  {
+    "fact": "非编辑模式下 15 个字段任一变化都触发 savePublishDraft 持久化草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:296"
+  },
+  {
+    "fact": "publishSuccess 非空时清除当前作用域的草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:333"
+  },
+  {
+    "fact": "未选包时自动选中首个匹配的本地构件并回填显示名/描述/推断版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:339"
+  },
+  {
+    "fact": "toolpkg 的版本号锁定为包内声明的 inferredVersion，不可手动改。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:376"
+  },
+  {
+    "fact": "toolPkgApiVersion 对 PACKAGE 取有效 API 版本，编辑模式取已发布版本的值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:397"
+  },
+  {
+    "fact": "produceState 在 IO 线程读 toolpkg 内嵌 logo，失败记日志返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:406"
+  },
+  {
+    "fact": "publishSource：直传为 DirectUpload(minifyArtifact)；GitHub 模式需目录+Release+资产三者齐备否则为 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:452"
+  },
+  {
+    "fact": "未登录 GitHub 显示 errorContainer 提示卡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:590"
+  },
+  {
+    "fact": "续发但本地没有对应构件时显示缺失构件错误卡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:600"
+  },
+  {
+    "fact": "资产来源用分段按钮二选一：本地上传或 GitHub Release。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:701"
+  },
+  {
+    "fact": "PACKAGE 类型且有内嵌 logo 时展示 logo 卡片，可打开市场预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:889"
+  },
+  {
+    "fact": "最低/最高支持 App 版本为两个独立输入框，带输入提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1111"
+  },
+  {
+    "fact": "点发布时若最高版本 >= 2.0.0 先弹 Operit2 警告对话框，否则直接进确认框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1164"
+  },
+  {
+    "fact": "发布按钮启用条件：已登录、显示名/描述/分类非空、非发布中、编辑模式有类型或非编辑有构件与来源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1170"
+  },
+  {
+    "fact": "发布中弹不可取消的进度对话框，显示当前阶段文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1212"
+  },
+  {
+    "fact": "确认对话框按编辑/续发/全新三种模式展示不同的摘要内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1224"
+  },
+  {
+    "fact": "确认后编辑模式调 updatePublishedArtifact，全新/续发调 requestPublish。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1368"
+  },
+  {
+    "fact": "Operit2 警告框点继续才打开确认框，点取消关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1383"
+  },
+  {
+    "fact": "需要初始化 Forge 仓库时连弹两个确认框，第二次确认才建公开仓并继续发布。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1406"
+  },
+  {
+    "fact": "成功对话框点确认后清消息并 onNavigateBack。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1457"
+  },
+  {
+    "fact": "showMarketPreview 时调 MarketPublishPreviewDialog，作者取构件 author 首项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1490"
+  },
+  {
+    "fact": "文件末尾有一段约 150 行的 ArtifactPublishLogoCard 实现被整块注释掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/ArtifactPublishScreen.kt:1496"
+  },
+  {
+    "fact": "RepoMarketPublishScreen 参数为 type、onNavigateBack、editingEntry(默认null)、publishVersionOnly(默认false)、canEditEntry(默认false)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:59"
+  },
+  {
+    "fact": "入口 require type 只能是 SKILL 或 MCP，否则抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:66"
+  },
+  {
+    "fact": "ViewModel key 为 \"repo-publish-{wireValue}-{entryId}\"，用 applicationContext 创建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:73"
+  },
+  {
+    "fact": "isEditMode 取决于 editingEntry 非空；isVersionMode 为编辑且仅发版本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:79"
+  },
+  {
+    "fact": "初始表单来自 editingEntry.parseEntry 或 viewModel.publishDraft。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:81"
+  },
+  {
+    "fact": "version 字段全新发布默认 \"1.0.0\"，编辑模式默认空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:90"
+  },
+  {
+    "fact": "非编辑模式下 7 个字段任一变化都触发 saveDraft。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:105"
+  },
+  {
+    "fact": "LaunchedEffect(Unit) 拉取市场分类清单，失败写 errorMessage。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:119"
+  },
+  {
+    "fact": "编辑模式下仓库地址输入框只读，不可更改。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:179"
+  },
+  {
+    "fact": "installConfig 输入框只在 MCP 类型显示，带 Terminal 图标与示例占位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:223"
+  },
+  {
+    "fact": "编辑且非版本模式显示更新元数据按钮，调 updateEntryMetadata。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:251"
+  },
+  {
+    "fact": "全新或版本模式显示发布按钮，先校验必填再弹确认框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:292"
+  },
+  {
+    "fact": "确认后版本模式调 publishNewVersion，全新调 publish；成功后清草稿。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:340"
+  },
+  {
+    "fact": "成功 AlertDialog 的 onDismissRequest 为空实现，点外部不可关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:416"
+  },
+  {
+    "fact": "RepoCategoryDropdown 为只读文本框加下拉菜单，选项来自市场分类清单。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:417"
+  },
+  {
+    "fact": "RepoPublishInfoCard 按全新/编辑/版本模式显示不同的说明文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:468"
+  },
+  {
+    "fact": "RepoPublishConfirmDialog 汇总名称/描述/详情/分类/仓库/版本，底部红色文字提示 Git 导入部署。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:510"
+  },
+  {
+    "fact": "RepoPublishSuccessAction 枚举 PUBLISH、METADATA、VERSION 三种成功动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/packages/screens/RepoMarketPublishScreen.kt:620"
+  }
+]

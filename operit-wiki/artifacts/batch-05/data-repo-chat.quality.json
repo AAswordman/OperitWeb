@@ -1,0 +1,94 @@
+[
+  {
+    "confidence": "high",
+    "description": "saveChatHistoryInternal 先删该会话全部消息和变体、再批量插入，整个序列没有包在事务里。删除和插入之间若进程崩溃或抛错，该会话的消息会全部丢失且无法回滚。",
+    "evidence": "                // 先删除该聊天的所有现有消息\n                messageDao.deleteAllMessagesForChat(chatEntity.id)\n                messageVariantDao.deleteAllVariantsForChat(chatEntity.id)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 621,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "deleteChatHistory 对被锁定会话只打一条 warn 日志就返回 false。调用方若不检查返回值，用户会看到删除操作无任何反馈，属静默失败。",
+    "evidence": "                if (chat?.locked == true) {\n                    AppLogger.w(TAG, \"Chat $chatId is locked; skip deletion\")\n                    return false\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 1467,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "createNewChat 直接调 insertChat，没有经过 globalMutex 或 chatMutex。同一时刻若有其他协程在删除/更新同一会话，并发竞态窗口不受锁体系保护。",
+    "evidence": "        // 保存新聊天\n        val chatEntity = ChatEntity.fromChatHistory(newHistory)\n        chatDao.insertChat(chatEntity)",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 1530,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "exportChatHistoriesToDownloads 用 chatHistoriesFlow.first() 的缓存快照过滤导出集合。SharingStarted.Lazily 的 StateFlow 是缓存而非实时查询，若流尚未收到最新推送，导出的是旧数据。",
+    "evidence": "                val chatHistoriesBasic = chatHistoriesFlow.first().filter { it.id in selectedChatIds }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 1903,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "hydrateMessages 里 selectedVariantIndex 大于 0 时用 first 按序号找变体。若数据库里该序号的变体不存在（例如外部导入损坏），抛 NoSuchElementException，被外层 catch 吃掉后整个 loadChatMessages 返回空列表，会话显示为空白。",
+    "evidence": "                val selectedVariant =\n                    messageVariants.first { it.variantIndex == messageEntity.selectedVariantIndex }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 154,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "loadChatMessages 及其多个重载在异常时只打日志就返回空列表。调用方无法区分空会话和读失败，会把读失败当成正常空会话展示。",
+    "evidence": "            } catch (e: Exception) {\n                AppLogger.e(TAG, \"加载聊天消息失败\", e)\n                emptyList()\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 1651,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "流式导入号称逐会话解码，但 decodeStreamElement 里 Streams.parse 把单个会话整棵树读进内存再转字符串。单个会话极大（百万级消息）时内存占用高。",
+    "evidence": "    private fun <T> decodeStreamElement(\n        reader: JsonReader,\n        decode: (String) -> T,\n    ): T {\n        val element = Streams.parse(reader)\n        return decode(element.toString())",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 286,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "init 块用裸 CoroutineScope(Dispatchers.IO).launch 做数据库预热，作用域不与任何生命周期绑定。单例常驻进程内影响小，但属无主协程写法。",
+    "evidence": "        // 使用独立的协程作用域触发数据库初始化\n        CoroutineScope(Dispatchers.IO).launch {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 433,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "saveChatHistoryInternal 的 catch 块只做 throw e，没有任何额外处理或日志，属于空转 catch，可直接去掉。",
+    "evidence": "            } catch (e: Exception) {\n                throw e\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt",
+    "line": 662,
+    "severity": "suggestion"
+  },
+  {
+    "title": "BOM 头的 JSON 文件会被误判为纯文本",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt",
+    "line": 34,
+    "severity": "suggestion",
+    "category": "边界条件",
+    "detail": "detectFormat 只对内容做 trim()，而 Kotlin 的 trim() 不去除 UTF-8 BOM（U+FEFF）。带 BOM 的 JSON 文件 `startsWith(\"{\")` 为 false，会一路落到 PLAIN_TEXT，而不是走 JSON 检测。",
+    "evidence": "        val trimmedContent = content.trim()\n\n        // 检测 Markdown 格式\n        if (isMarkdownFormat(trimmedContent)) {",
+    "confidence": "medium"
+  },
+  {
+    "title": "CSV 头检测用子串匹配，英文散文可能被误判",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/converter/ChatFormatDetector.kt",
+    "line": 158,
+    "severity": "suggestion",
+    "category": "启发式误判",
+    "detail": "isCsvFormat 用 `firstLine.contains(\"role\")` 这类子串匹配判 CSV 头；一段含逗号较多的英文文本（如 \"the role of, ...\"）首行恰好含 role/content 等词时，可能被误判为 CSV。",
+    "evidence": "        val firstLine = lines.first().lowercase()\n        val hasCsvHeaders = firstLine.contains(\"timestamp\") ||\n                           firstLine.contains(\"role\") ||\n                           firstLine.contains(\"content\") ||\n                           firstLine.contains(\"sender\")",
+    "confidence": "medium"
+  }
+]

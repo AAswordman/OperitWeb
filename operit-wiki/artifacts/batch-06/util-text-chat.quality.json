@@ -1,0 +1,98 @@
+[
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "splitIntoSegments 在 runBlocking 中执行流收集，会阻塞调用线程；若在主线程触发分句可能导致卡顿。",
+    "evidence": "        runBlocking {\n            content.stream()\n                .nativeMarkdownSplitByBlock()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt",
+    "line": 871
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "description": "工具参数名直接拼入 XML 标签未做转义（参数值做了 escapeXml），参数名含引号或尖括号会破坏 XML 结构。",
+    "evidence": "                events.add(Event.Tag(\"\\n  <param name=\\\"${buffer}\\\">\"))",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt",
+    "line": 95
+  },
+  {
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "clean(single) 在 debug 日志中完整打印原文、模式与清洗结果，用户文本可能经 logcat 泄露。",
+    "evidence": "            AppLogger.d(TAG, \"clean(single): Original='$text' | Pattern='$regexPattern' | Cleaned='$cleanedText'\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/TtsCleaner.kt",
+    "line": 25
+  },
+  {
+    "severity": "warn",
+    "confidence": "high",
+    "description": "processEmotionTags/separateEmotionTags 自用 <emotion>([^<]+)</emotion>，不支持属性与多行内容；与 ChatMarkupRegex.emotionTag（支持属性/多行）不一致，带属性的 emotion 标签会被静默跳过。",
+    "evidence": "        val emotionRegex = Regex(\"<emotion>([^<]+)</emotion>\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt",
+    "line": 920
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "\\uXXXX 转义解析失败时被空 catch 静默吞掉，非法转义无任何日志。",
+    "evidence": "                        } catch (_: Exception) { }",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/StreamingJsonXmlConverter.kt",
+    "line": 158
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "parseAndSimplify 解析失败用 println 而非 AppLogger，日志不走统一通道。",
+    "evidence": "            println(\"Error parsing simplified HTML: ${e.message}\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt",
+    "line": 238
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "memoryTag 是唯一区分大小写的标签正则（无 IGNORE_CASE），<MEMORY> 等大写形式匹配不到。",
+    "evidence": "    val memoryTag = Regex(\n        \"<memory>.*?</memory>\",\n        RegexOption.DOT_MATCHES_ALL\n    )",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/ChatMarkupRegex.kt",
+    "line": 157
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "QuickJS 引擎单例创建后永不释放，KaTeX 包常驻内存。",
+    "evidence": "    private var engine: OperitQuickJsEngine? = null",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/LatexMathMlConverter.kt",
+    "line": 16
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "previousChatHistory 缓存全量历史（含拼入的 toolsJson），长会话内存占用随轮数增长。",
+    "evidence": "    private var previousChatHistory: List<Pair<String, String>> = emptyList()",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/TokenCacheManager.kt",
+    "line": 12
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "JS 抽取超 500 个元素后静默截断，调用方无法得知内容被丢弃。",
+    "evidence": "                const MAX_ELEMENTS = 500; // Increased limit",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/HtmlParserUtil.kt",
+    "line": 20
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "low",
+    "description": "分词失败回退按英文句号切分，可能把小数/版本号拆散。",
+    "evidence": "            return text.split(Regex(\"\\\\s+|,|，|\\\\.|。\"))",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/TextSegmenter.kt",
+    "line": 113
+  },
+  {
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "getRandomEmojiPath 内层 runBlocking 阻塞调用线程查表情库。",
+    "evidence": "                    runBlocking {",
+    "file": "app/src/main/java/com/ai/assistance/operit/util/WaifuMessageProcessor.kt",
+    "line": 1012
+  }
+]

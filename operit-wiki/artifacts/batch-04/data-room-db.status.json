@@ -1,0 +1,14 @@
+{
+  "critic": "",
+  "id": "data-room-db",
+  "issue": 60,
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "title": "Room 数据库与 DAO",
+  "refs_valid": "103/103 引用行号真实存在（critic 逐条核引用复验通过），lint 硬失败 0/警告 0",
+  "approved_by_comment_id": 5945966761,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 05:09 UTC",
+  "updated": "2026-10-02"
+}

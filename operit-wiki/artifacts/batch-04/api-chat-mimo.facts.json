@@ -1,0 +1,30 @@
+[
+  {
+    "fact": "MimoProvider 是小米 MiMo 模型的供应商实现，复用 KimiProvider 的 reasoning_content 兼容行为，使 thinking 内容可往返",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:8"
+  },
+  {
+    "fact": "继承 KimiProvider，而非直接继承 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:25"
+  },
+  {
+    "fact": "providerType 是可覆盖的构造参数，缺省为 ApiProviderType.MIMO",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:18"
+  },
+  {
+    "fact": "supportsVision、supportsAudio、supportsVideo、enableToolCall 四个能力开关缺省均为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:20"
+  },
+  {
+    "fact": "thinkingConfigurations 与 thinkingOptionId 缺省为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:23"
+  },
+  {
+    "fact": "重写 applyAuthenticationHeaders：先调 super，再在 currentApiKey 非空时追加 api-key 请求头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MimoProvider.kt:44"
+  },
+  {
+    "fact": "父链默认鉴权逻辑是 key 非空时加 Authorization: Bearer 头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:235"
+  }
+]

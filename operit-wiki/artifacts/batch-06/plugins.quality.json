@@ -1,0 +1,82 @@
+[
+  {
+    "confidence": "high",
+    "description": "onToolCallIntercept 是同步决策点：JS hook 抛异常或返回值非法时直接返回 AIToolHookDecision.Block。第三方容器插件的一次异常会静默阻止工具调用，用户看到的 Block 原因无法区分“插件故障”与“有意拦截”。建议：区分错误与拦截（错误走 Allow+告警，或在原因中标注 hook 异常）。",
+    "evidence": "                    return AIToolHookDecision.Block(\n                        \"ToolPkg tool lifecycle intercept hook failed: ${error.javaClass.simpleName}\"\n                    )",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgToolLifecycleBridge.kt",
+    "line": 86,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "createMenuItems 对插件调用没有任何 try/catch 隔离：任一 ChatMessageMenuItemPlugin 抛异常会中断整个消息菜单的构建。同目录 chatview（ChatViewHookPluginRegistry.dispatch）与 lifecycle 注册表都对单个插件做了 try/catch 隔离，这里是例外。建议：照抄 dispatch 的隔离模式。",
+    "evidence": "        return plugins\n            .flatMap { plugin -> plugin.createMenuItems(params) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/chatmessage/ChatMessageMenuItemRegistry.kt",
+    "line": 69,
+    "severity": "high"
+  },
+  {
+    "confidence": "medium",
+    "description": "ToolPkgHookExecutionBudget.create() 在构造时同步读取 DisplayPreferencesManager.getInstance(context).getToolPkgHookTimeoutSeconds()（DataStore 偏好）。chat-input 桥接在 Dispatchers.IO 内创建所以安全，但任何在主线程创建预算的调用方都会触发主线程偏好读取。建议：在 create() 内约束调用线程，或把超时秒数作为参数传入。",
+    "evidence": "            val timeoutSeconds =\n                DisplayPreferencesManager.getInstance(context).getToolPkgHookTimeoutSeconds()",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgHookExecutionBudget.kt",
+    "line": 23,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "应用生命周期 hook 派发没有任何执行预算：dispatchHooks 直接调用 runToolPkgMainHook 且不传超时参数，单个 JS 插件卡死会拖住整个生命周期事件派发。chat-input 与 prompt 桥接都有 ToolPkgHookExecutionBudget 做预算，这里没有。建议：给 lifecycle 派发也加上预算。",
+    "evidence": "                        inlineFunctionSource = hook.functionSource,\n                        eventPayload =\n                            mapOf(\n                                \"extras\" to params.extras\n                            )",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolbox/ToolboxPlugin.kt",
+    "line": 118,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "消息菜单项点击的 JS hook 执行失败时直接 return@withContext null：用户点击后没有任何反馈（无 Toast、无对话框、无错误提示），只有一条 AppLogger 日志。建议：失败时给用户一个可见提示。",
+    "evidence": "            val raw =\n                try {\n                    result.getOrThrow()\n                } catch (error: Exception) {\n                    AppLogger.e(\n                        TAG,\n                        \"ToolPkg chat message menu item failed: ${item.containerPackageName}:${item.itemId}\",\n                        error\n                    )\n                    return@withContext null\n                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt",
+    "line": 112,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "摘要 hook 超时时直接 break 丢弃，不像 prompt 桥接那样回调 onHookTimeout，也不给调用方任何提示。插件开发者无法区分“hook 没注册”与“hook 超时”。建议：与 prompt 桥接对齐，超时时回调 onHookTimeout。",
+    "evidence": "            if (timeoutMillis == null) {\n                budget.logDeadlineReached(\n                    tag = TAG,\n                    stage = current.stage,\n                    containerPackageName = resolvedContainer,\n                    hookId = resolvedHookId\n                )\n                break\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgSummaryHookBridge.kt",
+    "line": 68,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "冷启动工作流触发时把 extras 全部 value?.toString().orEmpty()：null 值变成空字符串，与“键缺失”无法区分，且丢失原始类型信息。建议：保留 null（Map<String, String?>），或用哨兵值区分。",
+    "evidence": "                                params.extras.mapValues { (_, value) ->\n                                    value?.toString().orEmpty()\n                                }",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/workflow/WorkflowLifecyclePlugin.kt",
+    "line": 36,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "消息处理 hook 采用“先试探后执行”：匹配的插件会被 JS 执行两次（probeOnly=true 试探 + 正式流式执行）。有副作用的插件（如计数、写状态）行为会翻倍。建议：在文档中明确试探调用可能产生副作用，或让试探与执行共享一次调用。",
+    "evidence": "        val probeEventPayload = buildMessageEventPayload(params = params, probeOnly = true)",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgCommonBridgePlugin.kt",
+    "line": 113,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "message_persisted hook 的唯一驱动方是 ChatHistoryDelegate（全仓库 6 处调用全在该文件）。消息若经其他路径落盘（如导入/恢复/同步写入），hook 不会被触发，插件看到的消息流不完整。建议：在文档中明确该 hook 只覆盖 ChatHistoryDelegate 写入路径。",
+    "evidence": "    fun dispatchMessagePersisted(chatId: String, message: ChatMessage) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageHookBridge.kt",
+    "line": 40,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "容器同步后无条件调用 ChatMessageMenuItemRegistry.notifyChanged()，即使本轮注册表内容没有任何变化也会触发 UI 刷新。建议：diff 后仅在变化时通知。",
+    "evidence": "        ChatMessageMenuItemRegistry.notifyChanged()",
+    "file": "app/src/main/java/com/ai/assistance/operit/plugins/toolpkg/ToolPkgChatMessageMenuItemBridge.kt",
+    "line": 92,
+    "severity": "suggestion"
+  }
+]

@@ -1,0 +1,726 @@
+[
+  {
+    "fact": "ModelConfigManager 使用名为 model_configs 的专有 DataStore 持久化全部模型配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:38"
+  },
+  {
+    "fact": "model_configs DataStore 的偏好 schema 当前版本为 4。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:39"
+  },
+  {
+    "fact": "versionedPreferencesDataStore 在每次迁移时按版本号逐版本循环执行 migrate，直到追平 currentVersion。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:84"
+  },
+  {
+    "fact": "偏好 schema 版本号存放在 __operit_preferences_schema_version 键中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:13"
+  },
+  {
+    "fact": "读取到的 schema 版本高于运行时 currentVersion 时抛出 PreferencesSchemaVersionTooNewException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:72"
+  },
+  {
+    "fact": "缺少对应版本的迁移函数时抛出 MissingPreferencesSchemaMigrationException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:62"
+  },
+  {
+    "fact": "ModelConfigManager 读写 JSON 使用的 Json 解析器开启 ignoreUnknownKeys 与 isLenient。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:92"
+  },
+  {
+    "fact": "ApiPreferences 使用名为 api_settings 的共享 DataStore，存放应用级偏好。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:36"
+  },
+  {
+    "fact": "ApiPreferences.getInstance 采用双重检查单例并持有 applicationContext。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:47"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences 使用名为 external_http_api_preferences 的 DataStore。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:17"
+  },
+  {
+    "fact": "FunctionalConfigManager 使用名为 functional_configs 的版本化 DataStore，schema 当前版本为 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:19"
+  },
+  {
+    "fact": "配置 ID 列表存放在 config_list 键中，值为 JSON 序列化的字符串数组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:66"
+  },
+  {
+    "fact": "单个模型配置存放在 config_{id} 键中，值为 JSON 序列化的 ModelConfigData。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:449"
+  },
+  {
+    "fact": "默认配置的固定 ID 为 default。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:69"
+  },
+  {
+    "fact": "新建默认配置的默认供应商类型为 ApiProviderType.DEEPSEEK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:73"
+  },
+  {
+    "fact": "新建默认配置的 API Key 初始值为空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:117"
+  },
+  {
+    "fact": "新建默认配置的 API 端点取自 ApiPreferences.DEFAULT_API_ENDPOINT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:118"
+  },
+  {
+    "fact": "新建默认配置的模型名取自 ApiPreferences.DEFAULT_MODEL_NAME。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:119"
+  },
+  {
+    "fact": "ApiPreferences.DEFAULT_API_ENDPOINT 的值为 https://api.deepseek.com/v1/chat/completions。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:186"
+  },
+  {
+    "fact": "ApiPreferences.DEFAULT_MODEL_NAME 的值为 deepseek-v4-flash。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ApiPreferences.kt:187"
+  },
+  {
+    "fact": "configListFlow 以 Flow 形式暴露全部配置 ID 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:427"
+  },
+  {
+    "fact": "configSummariesFlow 以 Flow 形式暴露全部配置摘要，供主界面模型选择器持续收集。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:436"
+  },
+  {
+    "fact": "getModelConfigFlow(configId) 以 Flow 形式返回指定配置的完整数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:565"
+  },
+  {
+    "fact": "getModelConfig(configId) 以挂起函数形式一次性读取指定配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:573"
+  },
+  {
+    "fact": "saveModelConfig 把 ModelConfigData 序列化为 JSON 写入 config_{id} 键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:487"
+  },
+  {
+    "fact": "所有配置更新都走 updateConfigInternal：一次 edit 事务内读出现有配置、应用变换、写回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:528"
+  },
+  {
+    "fact": "createConfig 用 UUID.randomUUID 生成新配置 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:595"
+  },
+  {
+    "fact": "createConfig 新建配置默认供应商类型为 OPENAI_GENERIC（OpenAI 兼容自定义端点）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:601"
+  },
+  {
+    "fact": "createConfig 会同步把新 ID 追加进 config_list。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:612"
+  },
+  {
+    "fact": "deleteConfig 禁止删除 ID 为 default 的默认配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:623"
+  },
+  {
+    "fact": "deleteConfig 删除配置前调用 remapDeletedConfigReferences，把引用该配置的功能映射回默认配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:634"
+  },
+  {
+    "fact": "deleteConfig 调用 preferences.remove 删除 config_{id} 记录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:644"
+  },
+  {
+    "fact": "deleteConfig 返回受影响的 FunctionType 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:647"
+  },
+  {
+    "fact": "ModelConfigData.apiKey 默认值为空字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:100"
+  },
+  {
+    "fact": "多 Key 模式开关 useMultipleApiKeys 默认关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:107"
+  },
+  {
+    "fact": "API Key 池 apiKeyPool 默认值为空列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:108"
+  },
+  {
+    "fact": "当前 Key 索引 currentKeyIndex 默认值为 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:109"
+  },
+  {
+    "fact": "Key 轮换模式 keyRotationMode 默认值为 ROUND_ROBIN，支持 ROUND_ROBIN 与 RANDOM。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:110"
+  },
+  {
+    "fact": "updateSingleApiKey 把 apiKey 设为新值并强制关闭多 Key 模式。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:582"
+  },
+  {
+    "fact": "updateConfigKeyIndex 更新当前使用的 Key 索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:578"
+  },
+  {
+    "fact": "updateApiKeyPoolSettings 整体替换多 Key 开关与 ApiKeyInfo 列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:794"
+  },
+  {
+    "fact": "ApiKeyInfo 记录 Key 的 id、key、name、isEnabled、availabilityStatus、usageCount、lastUsed 与 errorCount。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyInfo.kt:34"
+  },
+  {
+    "fact": "ApiKeyAvailabilityStatus 只有 UNTESTED、AVAILABLE、UNAVAILABLE 三种状态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyInfo.kt:11"
+  },
+  {
+    "fact": "ApiKeyFormatValidator.normalize 对 Key 做 trim。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:11"
+  },
+  {
+    "fact": "ApiKeyFormatValidator.isValid 要求 Key 非空且全部字符在可打印 ASCII 范围 0x21..0x7E 内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:13"
+  },
+  {
+    "fact": "ApiKeyFormatValidator.hasUsableKey 在单 Key 模式下只校验 config.apiKey。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:21"
+  },
+  {
+    "fact": "ApiKeyFormatValidator.hasUsableKey 在 Key 池模式下：若有 Key 被测过可用性，只认标记为 AVAILABLE 的；否则认全部启用的 Key。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt:25"
+  },
+  {
+    "fact": "StandardModelParameters.DEFINITIONS 定义了 7 个标准模型参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:46"
+  },
+  {
+    "fact": "标准参数 max_tokens 默认值 4096，类型 INT，分类 GENERATION，最小值 1。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:47"
+  },
+  {
+    "fact": "标准参数 temperature 默认值 1.0，类型 FLOAT，分类 CREATIVITY，取值范围 0.0~2.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:60"
+  },
+  {
+    "fact": "标准参数 top_p 默认值 1.0，类型 FLOAT，分类 CREATIVITY，取值范围 0.0~1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:73"
+  },
+  {
+    "fact": "标准参数 top_k 默认值 0，类型 INT，分类 CREATIVITY，取值范围 0~100，0 表示禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:86"
+  },
+  {
+    "fact": "标准参数 presence_penalty 默认值 0.0，类型 FLOAT，分类 REPETITION，取值范围 -2.0~2.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:99"
+  },
+  {
+    "fact": "标准参数 frequency_penalty 默认值 0.0，类型 FLOAT，分类 REPETITION，取值范围 -2.0~2.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:112"
+  },
+  {
+    "fact": "标准参数 repetition_penalty 默认值 1.0，类型 FLOAT，分类 REPETITION，取值范围 0.0~2.0，1.0 表示不惩罚。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/StandardModelParameters.kt:125"
+  },
+  {
+    "fact": "ModelConfigData 中 7 个标准参数各有一个 *Enabled 开关，默认全部关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:116"
+  },
+  {
+    "fact": "ModelConfigData.maxTokens 默认 4096。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:125"
+  },
+  {
+    "fact": "ModelConfigData.temperature 默认 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:126"
+  },
+  {
+    "fact": "ModelConfigData.topP 默认 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:127"
+  },
+  {
+    "fact": "ModelConfigData.topK 默认 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:128"
+  },
+  {
+    "fact": "ModelConfigData.presencePenalty 默认 0.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:129"
+  },
+  {
+    "fact": "ModelConfigData.frequencyPenalty 默认 0.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:130"
+  },
+  {
+    "fact": "ModelConfigData.repetitionPenalty 默认 1.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:131"
+  },
+  {
+    "fact": "updateParameters 按参数 id 把标准参数值与开关写回配置，自定义参数单独序列化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:818"
+  },
+  {
+    "fact": "updateCustomParameters 把参数 JSON 存入 customParameters，并据此设置 hasCustomParameters。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:808"
+  },
+  {
+    "fact": "ModelConfigData.customParameters 默认为空数组 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:134"
+  },
+  {
+    "fact": "getModelParametersForConfig 先映射 7 个标准参数，再解析 customParameters 追加自定义参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:978"
+  },
+  {
+    "fact": "自定义参数解析失败时只记日志 AppLogger.e，不抛异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1105"
+  },
+  {
+    "fact": "ApiProviderType 枚举共 38 个值，覆盖 OpenAI、Anthropic、Google、国产厂商、聚合网关与本地引擎。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:7"
+  },
+  {
+    "fact": "ApiProviderType.MNN 是 MNN 本地推理引擎的类型标识（停止维护）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:40"
+  },
+  {
+    "fact": "ApiProviderType.LLAMA_CPP 是 llama.cpp 本地推理引擎的类型标识（停止维护）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:41"
+  },
+  {
+    "fact": "ApiProviderType.fromProviderTypeId 按名称忽略大小写解析供应商类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:48"
+  },
+  {
+    "fact": "ModelConfigData.apiProviderType 默认为 DEEPSEEK。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:103"
+  },
+  {
+    "fact": "ModelConfigData.apiProviderTypeId 默认为 apiProviderType 的枚举名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:104"
+  },
+  {
+    "fact": "ModelConfigData.thinkingConfigurations 默认为空数组 JSON，用于存放思考规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:137"
+  },
+  {
+    "fact": "ModelConfigData.thinkingOptionId 默认为空字符串，用于存放选中的思考档位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:140"
+  },
+  {
+    "fact": "thinkingRulesForProvider 把供应商类型传给 ModelThinkingConfigDefaults.forProvider 取内置规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:365"
+  },
+  {
+    "fact": "firstThinkingOptionIdForModel 返回某供应商加模型下的首个思考档位 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:371"
+  },
+  {
+    "fact": "nextThinkingRulesForProvider 在供应商不变时保留现有规则；DeepSeek 且端点为 /responses 时追加 responses 规则；切换供应商时取新供应商内置规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:394"
+  },
+  {
+    "fact": "nextThinkingOptionIdForProvider 在供应商不变时保留用户已选档位；切换供应商时取新供应商首个档位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:409"
+  },
+  {
+    "fact": "updateModelConfig（带供应商类型版）在更新同时刷新思考规则与档位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:659"
+  },
+  {
+    "fact": "updateThinkingConfigurations 直接替换思考规则 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:763"
+  },
+  {
+    "fact": "updateThinkingOptionId 在保存前对档位 ID 做 trim。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:769"
+  },
+  {
+    "fact": "迁移 v0 会在配置列表为空时创建全新默认配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:103"
+  },
+  {
+    "fact": "迁移 v1 为思考规则为空的配置按供应商补齐内置规则与首个档位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:161"
+  },
+  {
+    "fact": "迁移 v2 把 OpenAI Chat 旧版无匹配器的 reasoning 规则替换为带模型匹配器的新规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:199"
+  },
+  {
+    "fact": "迁移 v3 为 DeepSeek 配置追加 deepseek-responses-reasoning-effort 规则。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:305"
+  },
+  {
+    "fact": "内置思考规则常量包含 openai-chat-reasoning-effort、deepseek-reasoning-effort 与 deepseek-responses-reasoning-effort 三个 ID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:74"
+  },
+  {
+    "fact": "ModelThinkingConfigDefaults.forProvider 按 providers 或 providerTypeIds 过滤内置规则并剥离这两个字段后返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:400"
+  },
+  {
+    "fact": "内置规则示例：openai-chat-reasoning-effort 适用于 OPENAI 与 OPENAI_GENERIC，用 modelRegex 匹配推理模型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ModelThinkingConfigDefaultsCollect.kt:9"
+  },
+  {
+    "fact": "updateGoogleSearch 控制 Gemini 的 Google Search Grounding 开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:898"
+  },
+  {
+    "fact": "updateDeepSeekWebSearch 控制 DeepSeek Responses 服务端搜索开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:902"
+  },
+  {
+    "fact": "updateCodexWebSearch 控制 Codex 认证登录下的服务端网络搜索开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:906"
+  },
+  {
+    "fact": "updateClaude1hPromptCache 控制 Claude 的 1 小时提示缓存 TTL 开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:910"
+  },
+  {
+    "fact": "updateToolCall 控制是否使用模型原生 Tool Call 接口而非 XML 格式调工具。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:917"
+  },
+  {
+    "fact": "ModelConfigData.enableToolCall 默认值为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:197"
+  },
+  {
+    "fact": "ModelConfigData.enableGoogleSearch 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:185"
+  },
+  {
+    "fact": "ModelConfigData.enableDeepSeekWebSearch 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:188"
+  },
+  {
+    "fact": "ModelConfigData.enableCodexWebSearch 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:191"
+  },
+  {
+    "fact": "ModelConfigData.enableClaude1hPromptCache 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:194"
+  },
+  {
+    "fact": "ModelConfigData.mnnForwardType 默认 0，表示前向计算类型（停止维护的 MNN 引擎参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:163"
+  },
+  {
+    "fact": "ModelConfigData.mnnThreadCount 默认 4，表示 MNN 推理线程数（停止维护的 MNN 引擎参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:164"
+  },
+  {
+    "fact": "ModelConfigData.llamaThreadCount 默认 4，表示 llama.cpp 推理线程数（停止维护的引擎参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:167"
+  },
+  {
+    "fact": "ModelConfigData.llamaContextSize 默认 2048，表示 llama.cpp 的 n_ctx（停止维护的引擎参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:168"
+  },
+  {
+    "fact": "ModelConfigData.llamaGpuLayers 默认 0，表示 llama.cpp 的 n_gpu_layers（停止维护的引擎参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:171"
+  },
+  {
+    "fact": "updateApiSettingsFull 在更新主配置的同时写入 MNN 线程数、前向类型与 llama 线程数、上下文、GPU 层数等本地引擎参数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:716"
+  },
+  {
+    "fact": "updateApiSettingsFull 对 llamaThreadCount 与 llamaContextSize 做 coerceAtLeast(1)，对 llamaGpuLayers 做 coerceAtLeast(0)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:745"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_CONTEXT_LENGTH 为 64.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:61"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_MAX_CONTEXT_LENGTH 为 200.0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:62"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_ENABLE_MAX_CONTEXT_MODE 为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:63"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_SUMMARY_TOKEN_THRESHOLD 为 0.70。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:65"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_ENABLE_SUMMARY 为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:66"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_ENABLE_SUMMARY_BY_MESSAGE_COUNT 为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:67"
+  },
+  {
+    "fact": "ModelConfigDefaults.DEFAULT_SUMMARY_MESSAGE_COUNT_THRESHOLD 为 16。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:68"
+  },
+  {
+    "fact": "updateContextSettings 更新 contextLength、maxContextLength 与 enableMaxContextMode。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:923"
+  },
+  {
+    "fact": "updateSummarySettings 更新总结开关、token 阈值、按条数阈值、自定义规则与分节覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:938"
+  },
+  {
+    "fact": "ModelConfigData.enableDirectImageProcessing 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:178"
+  },
+  {
+    "fact": "ModelConfigData.enableDirectAudioProcessing 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:181"
+  },
+  {
+    "fact": "ModelConfigData.enableDirectVideoProcessing 默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:182"
+  },
+  {
+    "fact": "ModelConfigData.customHeaders 默认为空对象 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:143"
+  },
+  {
+    "fact": "updateCustomHeaders 直接替换自定义请求头 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:775"
+  },
+  {
+    "fact": "ModelConfigData.requestLimitPerMinute 默认为 0，表示不限流。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:200"
+  },
+  {
+    "fact": "ModelConfigData.maxConcurrentRequests 默认为 0，表示不限制并发。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:201"
+  },
+  {
+    "fact": "updateRequestQueueSettings 对每分钟请求上限与最大并发数做 coerceAtLeast(0)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:781"
+  },
+  {
+    "fact": "ModelConfigSummary 是列表展示用的简化配置，包含 id、name、modelName、apiEndpoint、供应商类型与思考配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:206"
+  },
+  {
+    "fact": "ModelConfigSummary.modelIndex 表示 modelName 为逗号分隔多模型时选第几个，从 0 开始。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:214"
+  },
+  {
+    "fact": "getModelByIndex 按逗号切分 modelName 并取指定索引，越界时回退到第一个。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:219"
+  },
+  {
+    "fact": "getModelList 把逗号分隔的 modelName 解析为模型名列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:226"
+  },
+  {
+    "fact": "getValidModelIndex 在索引越界时返回 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:238"
+  },
+  {
+    "fact": "exportAllConfigs 把全部配置导出为 prettyPrint 格式的 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1117"
+  },
+  {
+    "fact": "importConfigs 返回 Triple(新增数, 更新数, 跳过数)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1139"
+  },
+  {
+    "fact": "importConfigs 跳过 id 或 name 为空的配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1152"
+  },
+  {
+    "fact": "importConfigs 对已存在的配置 ID 直接覆盖更新，对新 ID 追加进配置列表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1160"
+  },
+  {
+    "fact": "importConfigs 导入失败时记日志并抛出带 model_config_import_failed 文案的异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt:1174"
+  },
+  {
+    "fact": "FunctionalConfigManager 把 FunctionType 映射到 FunctionConfigMapping（配置 ID 加模型索引）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:32"
+  },
+  {
+    "fact": "remapDeletedConfigReferences 把引用被删配置的功能全部指回 default 配置且模型索引归零。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:42"
+  },
+  {
+    "fact": "functionConfigMappingWithIndexFlow 以 Flow 暴露完整的功能配置映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:138"
+  },
+  {
+    "fact": "getConfigIdForFunction 查不到映射时回退到 default 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:165"
+  },
+  {
+    "fact": "setConfigForFunction 可同时设置功能的配置 ID 与模型索引。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:182"
+  },
+  {
+    "fact": "resetAllFunctionConfigs 把全部功能重置为 default 配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:194"
+  },
+  {
+    "fact": "FunctionalConfigManager.DEFAULT_CONFIG_ID 为 default。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FunctionalConfigManager.kt:74"
+  },
+  {
+    "fact": "CodexAuthState 包含 accessToken、refreshToken、expiresAtMillis、accountId，以及可选的 residency 与 email。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:15"
+  },
+  {
+    "fact": "CodexAuthPreferences 把 Codex OAuth 凭据存放在 codex_oauth_credentials 的 EncryptedSharedPreferences 中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:107"
+  },
+  {
+    "fact": "CodexAuthPreferences 的 MasterKey 使用 AES256_GCM 方案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:150"
+  },
+  {
+    "fact": "CodexAuthPreferences 的键加密用 AES256_SIV，值加密用 AES256_GCM。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:152"
+  },
+  {
+    "fact": "CodexAuthPreferences.save 要求 accessToken、refreshToken、accountId 非空且过期时间大于 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:34"
+  },
+  {
+    "fact": "CodexAuthPreferences.clear 清空全部 Codex OAuth 状态并把内存态置空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:60"
+  },
+  {
+    "fact": "CodexAuthPreferences 读取时遇到 SecurityException 会删除加密存储并重建，保证设置页能打开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:68"
+  },
+  {
+    "fact": "CodexAuthPreferences.getInstance 是双重检查单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt:119"
+  },
+  {
+    "fact": "CodexAuthManager.getValidAccessToken 在 token 距过期不足 5 分钟时才刷新，刷新过程用 Mutex 互斥。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:57"
+  },
+  {
+    "fact": "CodexAuthManager.REFRESH_WINDOW_MILLIS 为 5 分钟。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:134"
+  },
+  {
+    "fact": "CodexAuthManager.refreshAccessToken 解析新 token 的 JWT 声明后保存更新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:75"
+  },
+  {
+    "fact": "CodexAuthManager.logout 先尝试撤销 refresh token，再清空本地凭据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:98"
+  },
+  {
+    "fact": "CodexAuthManager.saveLoginTokens 校验 token 齐全并从 JWT 解析 accountId 与过期时间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:32"
+  },
+  {
+    "fact": "CodexAuthManager.fetchUsage 成功后把用量快照存入 CodexUsagePreferences。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:115"
+  },
+  {
+    "fact": "CodexAuthManager 把 CodexAuthPreferences.authState 直接暴露为 authState 供 UI 订阅。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt:27"
+  },
+  {
+    "fact": "ExternalHttpApiConfig 包含 enabled、port 与 bearerToken 三个字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:20"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences.DEFAULT_PORT 为 8094。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:109"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences.ensureBearerToken 在 token 为空时自动生成并持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:55"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences.generateBearerToken 用去掉横线的 UUID 生成 token。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:130"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences.setPort 要求端口在 1..65535 范围内。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:47"
+  },
+  {
+    "fact": "ExternalHttpApiPreferences.isValidPort 定义合法端口为 1..65535。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt:124"
+  },
+  {
+    "fact": "ExternalChatHttpAutoStarter 读取该配置：未启用或端口非法时跳过自启动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/integrations/http/ExternalChatHttpAutoStarter.kt:29"
+  },
+  {
+    "fact": "FreeUsagePreferences 用 free_usage_preferences 的 SharedPreferences 记录免费 API 使用次数与下次可用日期。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:15"
+  },
+  {
+    "fact": "FreeUsagePreferences.recordUsage 采用指数退避：第 n 次使用后等待 2^(n-1) 天。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:135"
+  },
+  {
+    "fact": "FreeUsagePreferences.canUseFreeTier 在今天不早于下次可用日期时返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:125"
+  },
+  {
+    "fact": "FreeUsagePreferences 把校验文件写在公共下载目录的 Operit/usage_verification.dat（目录名与文件名常量 EXTERNAL_DIRECTORY/EXTERNAL_VERIFY_FILENAME 定义于 FreeUsagePreferences.kt:22-23）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:93"
+  },
+  {
+    "fact": "FreeUsagePreferences 的校验哈希就是 totalUsage|nextDate 的明文拼接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:120"
+  },
+  {
+    "fact": "FreeUsagePreferences 启动时比对外部校验文件：不一致时取外部与本地使用次数的最大值恢复。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:63"
+  },
+  {
+    "fact": "FreeUsagePreferences.resetUsage 只用于调试，会清零使用记录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt:161"
+  },
+  {
+    "fact": "EnvPreferences 用 env_preferences 的 SharedPreferences 存放面向工具包的环境变量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:76"
+  },
+  {
+    "fact": "EnvPreferences.getEnv 先查应用偏好，查不到再回退到 System.getenv。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:24"
+  },
+  {
+    "fact": "EnvPreferences.getEnv 对空键直接返回 null。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:26"
+  },
+  {
+    "fact": "EnvPreferences.setAllEnv 先清空再写入整份变量表。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:67"
+  },
+  {
+    "fact": "EnvPreferences.getInstance 是双重检查单例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt:80"
+  },
+  {
+    "fact": "services 层的 ApiConfigDelegate 持有 ModelConfigManager 实例。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:62"
+  },
+  {
+    "fact": "ApiConfigDelegate 用 flatMapLatest 订阅 getModelConfigFlow，随配置切换自动刷新。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:217"
+  },
+  {
+    "fact": "ApiConfigDelegate 在规格化 API Key 后调用 updateSingleApiKey 写回配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:566"
+  },
+  {
+    "fact": "ApiConfigDelegate 调用 updateModelConfig 落盘用户编辑后的 API 设置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:592"
+  },
+  {
+    "fact": "ApiConfigDelegate 调用 updateThinkingOptionId 保存用户选择的思考档位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:631"
+  },
+  {
+    "fact": "ApiConfigDelegate.getModelConfig 读不到配置时抛 requireNotNull 异常。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/services/core/ApiConfigDelegate.kt:410"
+  }
+]

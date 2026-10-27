@@ -1,0 +1,170 @@
+[
+  {
+    "fact": "`ApiKeyProvider` 接口声明 `suspend fun getApiKey(): String`，返回当前可用的 API Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:15"
+  },
+  {
+    "fact": "`ApiKeyProvider.getCandidateKeyCount()` 返回当前会参与轮询的 API Key 数量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:18"
+  },
+  {
+    "fact": "`SingleApiKeyProvider` 是单 Key 的简单实现，用于兼容旧配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:24"
+  },
+  {
+    "fact": "`SingleApiKeyProvider.getApiKey()` 在 debug 日志中只保留 Key 首尾各 4 个字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:26"
+  },
+  {
+    "fact": "`SingleApiKeyProvider.getCandidateKeyCount()`：Key 非空返回 1，为空返回 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:30"
+  },
+  {
+    "fact": "`MultiApiKeyProvider` 的构造参数为 configId 与 modelConfigManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:38"
+  },
+  {
+    "fact": "`MultiApiKeyProvider.getApiKey()` 用 `mutex.withLock` 把取 Key 全程包成临界区",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:45"
+  },
+  {
+    "fact": "配置不存在时抛 `IllegalStateException(\"Config with ID ... not found\")`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:47"
+  },
+  {
+    "fact": "取 Key 前先筛出启用的 Key：`config.apiKeyPool.filter { it.isEnabled }`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:50"
+  },
+  {
+    "fact": "`hasAnyAvailabilityMark` 为 true 表示至少有一个启用的 Key 被测过（availabilityStatus != UNTESTED）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:53"
+  },
+  {
+    "fact": "只要任一 Key 有可用性标记，候选集就只保留状态为 AVAILABLE 的 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:56"
+  },
+  {
+    "fact": "没有任何可用性标记时，全部启用的 Key 都参与轮询",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:57"
+  },
+  {
+    "fact": "候选集为空且有可用性标记时抛错，提示测试 Key 或清除可用性标记",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:68"
+  },
+  {
+    "fact": "池为空且无标记时，若 `config.apiKey` 非空则回退使用单 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:74"
+  },
+  {
+    "fact": "池为空、无可用 Key 且无回退单 Key 时抛 IllegalStateException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:76"
+  },
+  {
+    "fact": "轮询取 `config.currentKeyIndex % candidateKeys.size` 位置的 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:81"
+  },
+  {
+    "fact": "用完后把 `(startIndex + 1) % candidateKeys.size` 经 `updateConfigKeyIndex` 持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyProvider.kt:88"
+  },
+  {
+    "fact": "`ApiKeyPoolTestState` 记录 totalToTest、tested、available、unavailable、running、paused、lastError 七个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:31"
+  },
+  {
+    "fact": "测试协程跑在 `SupervisorJob() + Dispatchers.IO` 的独立 scope 里",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:42"
+  },
+  {
+    "fact": "`state: StateFlow<ApiKeyPoolTestState>` 对外暴露只读的测试进度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:45"
+  },
+  {
+    "fact": "`pause()` 取消当前测试任务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:50"
+  },
+  {
+    "fact": "`pauseAndJoin()` 取消测试任务并等待其结束",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:54"
+  },
+  {
+    "fact": "`close()` 取消整个测试协程域",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:58"
+  },
+  {
+    "fact": "`isRunning()` 等价于 `job?.isActive == true`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:61"
+  },
+  {
+    "fact": "`startOrResume` 若测试已在运行则直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:71"
+  },
+  {
+    "fact": "只测试启用且状态为 UNTESTED 的 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:75"
+  },
+  {
+    "fact": "无 Key 可测时把进度清零并标记 running=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:80"
+  },
+  {
+    "fact": "开测前把 totalToTest 设为待测 Key 数并置 running=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:94"
+  },
+  {
+    "fact": "用 `Channel<ApiKeyInfo>(Channel.UNLIMITED)` 做生产者-消费者分发待测 Key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:106"
+  },
+  {
+    "fact": "worker 数量取 `maxOf(1, min(concurrency, keysToTest.size))`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:113"
+  },
+  {
+    "fact": "worker 逐个从 Channel 取 Key 并调用 `testSingleKey` 判定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:116"
+  },
+  {
+    "fact": "测试通过记 AVAILABLE，否则记 UNAVAILABLE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:125"
+  },
+  {
+    "fact": "每测完一个 Key 就在 `poolUpdateMutex` 下更新 workingPool 中对应项的 availabilityStatus",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:133"
+  },
+  {
+    "fact": "每次更新后切到 Dispatchers.Main 回调 `onPoolUpdated(workingPool)`",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:140"
+  },
+  {
+    "fact": "每次更新后经 `configManager.updateApiKeyPoolSettings` 把整池持久化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:143"
+  },
+  {
+    "fact": "每测完一个 Key，tested 加 1，available/unavailable 按结果累加",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:152"
+  },
+  {
+    "fact": "全部测完后置 running=false、paused=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:163"
+  },
+  {
+    "fact": "任务被取消时置 running=false、paused=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:165"
+  },
+  {
+    "fact": "其他异常时置 running=false，并把异常信息记入 lastError",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:171"
+  },
+  {
+    "fact": "`testSingleKey` 用待测 Key 拼单 Key 测试配置：useMultipleApiKeys=false、清空池、模型取索引 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:188"
+  },
+  {
+    "fact": "`testSingleKey` 经 `AIServiceFactory.createService` 建服务，调 `testConnection().getOrThrow()` 判定连通",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:199"
+  },
+  {
+    "fact": "`testSingleKey` 在 finally 中 `service.release()` 释放服务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ApiKeyPoolAvailabilityTester.kt:202"
+  }
+]

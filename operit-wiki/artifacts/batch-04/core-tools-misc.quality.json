@@ -1,0 +1,66 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionParser.kt",
+    "line": 287,
+    "evidence": "ExpressionContext.setVariable(\"_convert_from\", 0.0) // 会被类型转换为字符串",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "convert() 三参数特殊处理里把单位名存入 `_convert_from`/`_convert_to` 临时变量，实际传入的是 Double 0.0（注释说\"会被类型转换为字符串\"并不成立）；而 ExpressionContext.kt:212 取值时用 `variables[\"_convert_from\"] as? String`，恒为 null 并抛 \"from_unit not provided\"，导致 convert(...) 永远失败。"
+  },
+  {
+    "file": "app/src/main/AndroidManifest.xml",
+    "line": 441,
+    "evidence": "android:name=\".core.tools.agent.ShowerBinderReceiver\"\n            android:exported=\"true\">",
+    "severity": "high",
+    "confidence": "high",
+    "description": "ShowerBinderReceiver 为 exported 接收器，监听 SHOWER_BINDER_READY 广播；onReceive 对广播发送方无任何校验，直接把外部传入的 binder 经 IShowerService.Stub.asInterface 信任并存入 ShowerBinderRegistry。任意第三方应用都可伪造该广播注入假的 IShowerService，进而劫持 PhoneAgent 的自动化输入输出。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/mcp/MCPToolParameter.kt",
+    "line": 121,
+    "evidence": "value.matches(Regex(\"-?\\\\d+(\\\\.\\\\d+)?\")) -> {",
+    "severity": "warning",
+    "confidence": "high",
+    "description": "smartConvert 在参数无类型声明时把纯数字字符串自动转成 Long/Double。邮编 \"00123\" 会变成 123、长数字电话号码变 Long，本应是字符串的入参在远端 MCP 工具眼里变了类型和值，静默改错。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/calculator/ExpressionContext.kt",
+    "line": 12,
+    "evidence": "private val variables = mutableMapOf<String, Any>()",
+    "severity": "warning",
+    "confidence": "medium",
+    "description": "ExpressionContext 是 object 单例，变量表是普通 mutableMapOf，setVariable/getVariable 无任何同步。多个工具执行并发调用计算器时可能互相覆盖变量或读到中间状态。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/PhoneAgent.kt",
+    "line": 716,
+    "evidence": "val regex = Regex(\"\"\"(\\w+)\\s*=\\s*(?:\\[(.*?)\\]|\\\"(.*?)\\\"|'([^']*)'|([^,)]+))\"\"\")",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "动作参数解析里未加引号分支 `([^,)]+)` 遇到逗号或右括号即停。若模型输出 Type 动作的 text 未加引号且内容含逗号，会被截断或错位解析。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/ShowerController.kt",
+    "line": 16,
+    "evidence": "private val instances = ConcurrentHashMap<String, ClientShowerController>()",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "按 agentId 缓存的控制器实例只在显式 shutdown(agentId) 时移除，长期运行的进程里 agentId 不断累积会有轻微泄漏。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/skill/SkillManager.kt",
+    "line": 157,
+    "evidence": "fun getAvailableSkills(): Map<String, SkillPackage> {\n        refreshAvailableSkills()",
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "getAvailableSkills/getSkillSystemPrompt 等读路径每次调用都触发 refreshAvailableSkills 全量扫盘。小规模下无碍，技能多了或调用频繁时会浪费 I/O。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/core/tools/agent/VirtualDisplayManager.kt",
+    "line": 82,
+    "evidence": "width + rowPadding / pixelStride,",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "把 ImageReader 行填充换算成 Bitmap 宽度时用整除；若 rowPadding 不是 pixelStride 整数倍，余数像素会被丢掉，位图实际宽度偏小（后续裁剪用了 width，影响有限）。"
+  }
+]

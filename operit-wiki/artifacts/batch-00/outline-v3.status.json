@@ -1,0 +1,10 @@
+{
+ "critic": "用户已批准",
+ "issue": 7,
+ "refs_valid": "116 页 seed 全部真实存在（脚本校验 0 缺失），id 无重复",
+ "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+ "source_repo": "operit",
+ "status": "approved",
+ "summary": "大纲 v3 已批准（2026-09-30 用户确认\"通过\"）：11 章 116 页，覆盖 app 1359/1362 kt；21 供应商独立页 + 7 跨供应商机制页；替代 outline-v2。流水线 Day 1 启动。",
+ "updated": "2026-09-30"
+}

@@ -1,0 +1,698 @@
+[
+  {
+    "fact": "SmoothLinearProgressIndicator 是启动页使用的超平滑进度条 Composable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:45"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 的 progress 参数范围 0.0-1.0，内部经 clampedProgress 钳制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:65"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 默认高度 8.dp，trackColor 默认为 surfaceVariant，progressColor 默认为 primary",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:49"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 默认中间过渡步数 intermediateSteps=8，每步动画时长 stepDuration=80 毫秒，最小变化阈值 minProgressDelta=0.05f",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:52"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 内部用 remember { Animatable(0f) } 持有当前动画进度值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:65"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 用 derivedStateOf 把 progress 钳制到 0f~1f 得到 clampedProgress",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:71"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 在 LaunchedEffect(clampedProgress) 中驱动动画，首次渲染直接 snapTo 到初始值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:73"
+  },
+  {
+    "fact": "进度变化量小于 minProgressDelta 时使用 tween(stepDuration*2, FastOutSlowInEasing) 的简单动画",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:84"
+  },
+  {
+    "fact": "大进度变化时在 Dispatchers.Default 上预计算插值步骤，避免占用 UI 线程",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:89"
+  },
+  {
+    "fact": "插值步骤逐个执行 animateTo，每步用 tween(stepDuration, LinearEasing)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:97"
+  },
+  {
+    "fact": "SmoothLinearProgressIndicator 最终渲染 Material3 LinearProgressIndicator，progress 喂 Animatable 动画值，strokeCap 为 Round 圆头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:112"
+  },
+  {
+    "fact": "generateSteps 步数小于等于 1 时直接返回 listOf(end)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:117"
+  },
+  {
+    "fact": "generateSteps 用 List(steps) 预分配固定大小列表，t=(i+1)/steps 经 easeInOutCubic 映射生成插值点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:121"
+  },
+  {
+    "fact": "easeInOutCubic 在 t<0.5 时返回 4t^3，否则返回 1+0.5*(2t-2)^3",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/components/AnimatedProgressBar.kt:129"
+  },
+  {
+    "fact": "LocalPluginLoadingState 是 staticCompositionLocalOf<PluginLoadingState>，未提供时抛 error",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/LocalPluginLoadingState.kt:6"
+  },
+  {
+    "fact": "PluginLoadingStateRegistry 用 @Volatile 保存全局唯一的 activeState 与 activeScope",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/LocalPluginLoadingState.kt:10"
+  },
+  {
+    "fact": "PluginLoadingStateRegistry.bind(state, scope) 绑定全局状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/LocalPluginLoadingState.kt:17"
+  },
+  {
+    "fact": "PluginLoadingStateRegistry.unbind 仅当传入的 state 与 activeState 为同一引用（===）时才清空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/LocalPluginLoadingState.kt:22"
+  },
+  {
+    "fact": "PluginStatus 枚举只有 WAITING、LOADING、SUCCESS、FAILED 四个状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:77"
+  },
+  {
+    "fact": "PluginInfo 是数据类，默认状态 WAITING，message 与 serviceName 默认为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:85"
+  },
+  {
+    "fact": "PluginInfo.shortName 取 id 按 / 分割的最后一段，取不到回退为 id 本身",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:92"
+  },
+  {
+    "fact": "PluginLoadingScreen 参数包括 isVisible、progress、message、pluginsStarted、pluginsTotal、pluginsList、isExpanded、onToggleExpansion，onSkip 与 onPluginClick 默认为空 lambda",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:102"
+  },
+  {
+    "fact": "PluginLoadingScreen 显隐用 AnimatedVisibility，进入 fadeIn 500ms，退出 fadeOut 800ms",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:118"
+  },
+  {
+    "fact": "PluginLoadingScreen 外层 Box 为 fillMaxSize 并 padding 16.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:131"
+  },
+  {
+    "fact": "AnimatedContent 按 isExpanded 切换：展开态贴底部 BottomCenter，折叠态贴右上 TopEnd",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:133"
+  },
+  {
+    "fact": "DraggableCollapsedIndicator 用 remember 保存 Offset.Zero，通过 detectDragGestures 实现拖动，change.consume 后 offset 累加 dragAmount",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:154"
+  },
+  {
+    "fact": "CollapsedLoadingIndicator 是 48.dp 圆形 Surface，内嵌 CircularProgressIndicator（strokeWidth 3.dp）与 \"$pluginsStarted/$pluginsTotal\" 文字",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:183"
+  },
+  {
+    "fact": "CollapsedLoadingIndicator 的 Surface 形状为 CircleShape，tonalElevation 2.dp，shadowElevation 8.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:195"
+  },
+  {
+    "fact": "ExpandedLoadingView 的 Surface 高度上限 450.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:227"
+  },
+  {
+    "fact": "ExpandedLoadingView 左上角是 KeyboardArrowDown 折叠按钮，右上角是 plugin_skip 跳过文字按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:243"
+  },
+  {
+    "fact": "ExpandedLoadingView 使用 SmoothLinearProgressIndicator，intermediateSteps=20、stepDuration=50",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:279"
+  },
+  {
+    "fact": "ExpandedLoadingView 显示 message 状态文本与 plugin_status（已启动/总数）统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:293"
+  },
+  {
+    "fact": "插件列表用 LazyColumn 展示，高度上限 200.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:329"
+  },
+  {
+    "fact": "只有状态为 FAILED 的插件行可点击，点击后打开该插件的日志对话框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:340"
+  },
+  {
+    "fact": "PluginStatusItem 用 animateFloatAsState 驱动 LOADING 状态的进度动画（目标值 1f/0f）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:365"
+  },
+  {
+    "fact": "WAITING 状态显示 10.dp 灰色圆点，LOADING 显示 24.dp 转圈，SUCCESS 显示 CheckCircle 图标，FAILED 显示 Error 图标并用 error 色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:387"
+  },
+  {
+    "fact": "SkipLoadingCallback 是只有一个 onSkip() 方法的回调接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:453"
+  },
+  {
+    "fact": "PluginLoadingState 对外暴露 9 个只读 StateFlow：progress、message、pluginsStarted、pluginsTotal、isVisible、isExpanded、plugins、pluginLogs、hasTimedOut",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:462"
+  },
+  {
+    "fact": "PluginLoadingState 内部用 AtomicBoolean mcpInitInProgress 与 Job mcpInitJob 管理 MCP 初始化任务",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:505"
+  },
+  {
+    "fact": "PluginLoadingState 用 pluginStateLock 对象锁保护插件列表、统计与日志的并发更新",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:511"
+  },
+  {
+    "fact": "toggleExpansion() 翻转 _isExpanded，forceExpanded() 为私有方法只置 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:519"
+  },
+  {
+    "fact": "setPlugins 从 MCPLocalServer.getPluginMetadata(id).name 获取插件显示名，取不到回退为 id 尾段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:545"
+  },
+  {
+    "fact": "setPlugins 在锁内一次性设置 _plugins、_pluginsTotal 与按 SUCCESS 统计的 _pluginsStarted",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:568"
+  },
+  {
+    "fact": "updatePluginStatus 用 copy 更新指定插件状态，并重算 SUCCESS 数量",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:575"
+  },
+  {
+    "fact": "appendPluginLog 单插件日志上限 200 万字符，超出只保留末尾 takeLast",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:602"
+  },
+  {
+    "fact": "updatePluginRegistration 只更新 serviceName 与消息，注释明确不改变主状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:619"
+  },
+  {
+    "fact": "skip() 取消超时计时器、隐藏界面并触发 onSkipCallback",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:676"
+  },
+  {
+    "fact": "startTimeoutCheck 默认超时 30000L，超时后置 hasTimedOut=true 并提示可点右上角跳过，不自动关闭界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:683"
+  },
+  {
+    "fact": "show() 置 isVisible=true 并重置 hasTimedOut=false；hide() 取消超时计时并置 isVisible=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:697"
+  },
+  {
+    "fact": "reset() 取消超时与 MCP 初始化任务，清空进度、消息、插件列表、日志与各标志位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:711"
+  },
+  {
+    "fact": "initializeMCPServer 用 mcpInitInProgress.compareAndSet(false, true) 防重入，重复调用打日志直接返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:729"
+  },
+  {
+    "fact": "initializeMCPServer 在 lifecycleScope.launch(Dispatchers.IO) 中执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:729"
+  },
+  {
+    "fact": "MCP 启动分阶段进度：0.05 初始化、0.1 启动服务、0.15 配置、0.2 服务就绪、0.25 初始化中、0.28 拉列表、0.32 准备、0.35 环境检查、0.38 开始逐个启动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:739"
+  },
+  {
+    "fact": "initializeMCPServer 调用 mcpRepository.refreshPluginList() 后取 installedPluginIds.first()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:770"
+  },
+  {
+    "fact": "无已安装插件时直接 progress=1.0 并 hide()，跳过加载界面",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:780"
+  },
+  {
+    "fact": "待启动插件过滤只看 isServerEnabled，remote 与本地类型当前都返回 true 即全部纳入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:789"
+  },
+  {
+    "fact": "initializeMCPServer 用 MCPStarter(context) 并调 startAllDeployedPlugins(progressListener) 启动全部已部署插件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:827"
+  },
+  {
+    "fact": "插件加载异常时更新消息为异常信息、进度置 1.0 并强制展开面板",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:828"
+  },
+  {
+    "fact": "initializeMCPServer 的 finally 块重置 mcpInitInProgress 为 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:842"
+  },
+  {
+    "fact": "onPluginStarting 按 index/total 更新总进度 0.4+0.1*index/total，并向插件日志追加 \"START\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:874"
+  },
+  {
+    "fact": "onPluginRegistered 注册失败时用日志最后一行或 plugin_registration_failed 置 FAILED 并强制展开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:877"
+  },
+  {
+    "fact": "onPluginStarted 成功置 SUCCESS，失败置 FAILED（plugin_verification_failed）并强制展开，总进度更新为 0.5+0.5*index/total",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:887"
+  },
+  {
+    "fact": "onPluginLog 追加日志，并取消息首行 160 字符作为行内摘要更新插件消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:905"
+  },
+  {
+    "fact": "onAllPluginsStarted 对 NODEJS_MISSING、BRIDGE_FAILED、OTHER_ERROR 三种状态显示专属错误消息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:921"
+  },
+  {
+    "fact": "插件成功率按 (successCount*100)/totalCount 计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:929"
+  },
+  {
+    "fact": "全部启动完成且无失败时 delay(100L) 后自动隐藏加载界面，否则强制展开",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:963"
+  },
+  {
+    "fact": "onAllPluginsVerified 回调体为空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:971"
+  },
+  {
+    "fact": "PluginLoadingScreenWithState 收集各 StateFlow 并用 remember 保存 selectedLogPluginId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:982"
+  },
+  {
+    "fact": "插件日志弹窗用 AlertDialog + SelectionContainer 展示，高度上限 420.dp 可滚动复制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/startup/screens/PluginLoadingScreen.kt:996"
+  },
+  {
+    "fact": "PerformanceTab 是私有枚举，含 CPU、MEMORY、NETWORK 三项，标题取 perf_tab_* 字符串资源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:68"
+  },
+  {
+    "fact": "PerformanceMonitorScreen 收集 PerformanceMonitorManager.stateFlow 的采样状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:80"
+  },
+  {
+    "fact": "PerformanceMonitorScreen 在 DisposableEffect 中 start(context) 开始采样，onDispose 时 stop()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:89"
+  },
+  {
+    "fact": "当前 tab 索引用 rememberSaveable 保存，旋转屏幕不丢失",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:94"
+  },
+  {
+    "fact": "性能页顶栏只申请暂停/继续按钮，图标在 PlayArrow 与 Pause 间切换，标题与返回由应用级 AppBar 统一管理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:110"
+  },
+  {
+    "fact": "latest 为空时显示 perf_sampling_hint 占位提示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:143"
+  },
+  {
+    "fact": "CpuPage 有四个数据系列：设备总 CPU、应用自身、全部插件求和、全部终端求和",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:160"
+  },
+  {
+    "fact": "CPU 设备卡片显示 \"x.x%\" 与核心数（perf_cpu_cores），曲线固定量程 fixedMax=100.0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:205"
+  },
+  {
+    "fact": "MemoryPage 三个系列为应用、插件、终端的 memoryKb 转 double",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:239"
+  },
+  {
+    "fact": "内存设备卡片已用量按 (deviceTotalMemMb - deviceAvailMemMb).coerceAtLeast(0) 计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:262"
+  },
+  {
+    "fact": "内存页附 perf_memory_metric_note 口径说明文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:290"
+  },
+  {
+    "fact": "NetworkPage 有四个系列：应用上行/下行、设备上行/下行，设备系列颜色透明度 0.5",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:302"
+  },
+  {
+    "fact": "历史中从无网络数据时网络页显示 perf_network_unavailable 而非曲线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:364"
+  },
+  {
+    "fact": "NetworkHeaderCard 同时展示应用与设备的上下行速率",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:340"
+  },
+  {
+    "fact": "实体明细按当前 tab 指标降序排列，NETWORK tab 排序键恒为 0.0 即保持原序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:385"
+  },
+  {
+    "fact": "EntityRow 按实体种类显示图标：APP=Speed、PLUGIN=Extension、TERMINAL=Terminal",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:605"
+  },
+  {
+    "fact": "EntityRow 右侧数值：CPU 显示 \"x.x%\"，内存显示 formatMb，网络 tab 显示空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:442"
+  },
+  {
+    "fact": "rowBackground 在使用背景图时用 surface 色，否则用 surfaceVariant 30% 透明",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:455"
+  },
+  {
+    "fact": "DeviceHeaderCard 的 LinearProgressIndicator 进度经 coerceIn(0f, 1f) 钳制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:503"
+  },
+  {
+    "fact": "formatMb 大于等于 1GB 显示 x.xxGB，大于等于 1MB 显示 x.xMB，否则显示 xKB",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:611"
+  },
+  {
+    "fact": "formatRate 按阈值自适应为 MB/s、KB/s 或 B/s",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorScreen.kt:621"
+  },
+  {
+    "fact": "PerformanceChartSeries 的 value 返回 null 表示该时刻无数据，绘制时自动断线",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:41"
+  },
+  {
+    "fact": "PerformanceLiveChart 先画可横滑的图例，历史少于 2 个点时只画空盒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:53"
+  },
+  {
+    "fact": "图例每项为 8.dp 色点加 labelSmall 文字，项间距 12.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:100"
+  },
+  {
+    "fact": "PerformanceChartCanvas 上下内边距分别为 4.dp 与 18.dp，标签字号 10.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:108"
+  },
+  {
+    "fact": "y 轴上限取 fixedMax，否则用 dynamicNiceMax 自适应",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:111"
+  },
+  {
+    "fact": "时间轴取首、中、末三个快照的 timestampMs，按 HH:mm:ss 格式左/中/右对齐绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:132"
+  },
+  {
+    "fact": "横向网格画在 1/4、1/2、3/4 高度处，纵向网格画在左/中/右，颜色透明度 0.6",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:148"
+  },
+  {
+    "fact": "y 轴标签取 yMax、yMax/2、0 三档，用 nativeCanvas 绘制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:177"
+  },
+  {
+    "fact": "value 为 null 时当前线段断开，只保留包含 2 个以上点的线段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:195"
+  },
+  {
+    "fact": "每段曲线绘制 4px 宽折线、12% 透明度面积填充与末端 5px 圆点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:220"
+  },
+  {
+    "fact": "dynamicNiceMax 取全部系列最大值向上取整到 0.2/0.5/1.0 × 10^ceil(log10(max)) 档",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:233"
+  },
+  {
+    "fact": "dynamicNiceMax 在最大值小于等于 0 时返回 1.0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/performance/PerformanceMonitorCharts.kt:233"
+  },
+  {
+    "fact": "DataRecoveryActivity 继承 ComponentActivity",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:82"
+  },
+  {
+    "fact": "DataRecoveryActivity.attachBaseContext 用 LocaleUtils.getLocalizedContext 包裹实现语言本地化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:80"
+  },
+  {
+    "fact": "DataRecoveryActivity.onCreate 用 setContent 以 OperitUtilityTheme 包裹 DataRecoveryScreen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:82"
+  },
+  {
+    "fact": "DataRecoveryScreen 通过 DataRecoveryViewModel.Factory(context) 获取 ViewModel 并收集 state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:99"
+  },
+  {
+    "fact": "快照导入用 ActivityResultContracts.OpenDocument 选择文件，结果存入 pendingRestoreUri",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:104"
+  },
+  {
+    "fact": "DataRecoveryScreen 顶栏标题为 title_activity_data_recovery 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:117"
+  },
+  {
+    "fact": "页面主体为 LazyColumn，项间距 14.dp，含状态面板、快照、文件管理、SQL、健康五个区块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:126"
+  },
+  {
+    "fact": "导出快照按钮调用 viewModel.exportRawSnapshot()，运行时禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:155"
+  },
+  {
+    "fact": "导入快照限定 mime 为 application/zip、application/octet-stream、*/*",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:163"
+  },
+  {
+    "fact": "导出完成后快照路径以等宽字体在 SelectionContainer 中展示可复制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:173"
+  },
+  {
+    "fact": "restoreCompleted 为 true 时显示“启动主应用” FilledTonalButton",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:180"
+  },
+  {
+    "fact": "文件管理区展示的 documents provider authority 为包名拼接 \".documents.data\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:197"
+  },
+  {
+    "fact": "SQL 区三个 AssistChip 分别填入 SAFE_MESSAGES_QUERY、SAFE_VARIANTS_QUERY、SAFE_CHATS_QUERY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:225"
+  },
+  {
+    "fact": "SQL 输入框为 OutlinedTextField，等宽字体，最小 4 行最大 8 行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:234"
+  },
+  {
+    "fact": "执行按钮调用 viewModel.runSql()，运行时禁用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:268"
+  },
+  {
+    "fact": "检查按钮调用 viewModel.inspectStorage()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:268"
+  },
+  {
+    "fact": "修复按钮仅当未运行且任一健康报告 canRepair 为 true 时可用，点击先弹二次确认对话框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:279"
+  },
+  {
+    "fact": "健康报告同时展示配置与数据库两份报告，并列出修复计划：配置文件重置 N 个文件、REBUILD_INDEXES、RUN_ROOM_MIGRATIONS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:325"
+  },
+  {
+    "fact": "修复前后原文件打包存档，配置与数据库的存档路径分别回显",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:342"
+  },
+  {
+    "fact": "healthRepairCompleted 为 true 时同样显示“启动主应用”按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:378"
+  },
+  {
+    "fact": "queryResult 非空时追加 QueryResultPanel 结果表区块",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:393"
+  },
+  {
+    "fact": "导入快照先弹 AlertDialog 确认，确认后才调 viewModel.restoreRawSnapshot(uri)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:404"
+  },
+  {
+    "fact": "修复二次确认对话框确认后调 viewModel.repairStorage()",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:412"
+  },
+  {
+    "fact": "ConfigurationAndDatabaseHealthReport 按状态着色：需人工恢复用 error 色，需修复用 tertiary 色，健康用 primary 色",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:451"
+  },
+  {
+    "fact": "健康摘要显示通过 x/y 项，并优先展示第一个失败详情，无失败则展示第一个警告详情",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:476"
+  },
+  {
+    "fact": "健康报告面板可点击展开，展开后逐项列出配置检查与数据库检查明细及数据库路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:495"
+  },
+  {
+    "fact": "StatusPanel 有错误时用 error 色显示错误，否则显示状态文本，默认显示 data_recovery_started",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:600"
+  },
+  {
+    "fact": "affectedRows 非空时状态面板下方显示影响行数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:604"
+  },
+  {
+    "fact": "RecoverySection 是带标题的 Card 容器，内容区 padding 14.dp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:643"
+  },
+  {
+    "fact": "QueryResultPanel 为 320.dp 高的可横向滑动结果表格。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:671"
+  },
+  {
+    "fact": "QueryResultPanel 表格列宽 180.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:704"
+  },
+  {
+    "fact": "QueryResultPanel 表头行用等宽字体（FontFamily.Monospace）渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:707"
+  },
+  {
+    "fact": "restartMainApp 找不到 launch intent 时弹 toast 提示 data_recovery_launch_failed",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:717"
+  },
+  {
+    "fact": "restartMainApp 用 FLAG_ACTIVITY_NEW_TASK | FLAG_ACTIVITY_CLEAR_TASK 拉起主应用，finishAffinity 后杀掉当前进程",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryActivity.kt:717"
+  },
+  {
+    "fact": "DataRecoveryViewModel.State 共 13 个字段，sqlText 默认值为 SAFE_MESSAGES_QUERY",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:33"
+  },
+  {
+    "fact": "runSql 先经 sanitizeSql 处理，空语句直接报错 data_recovery_sql_empty",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:53"
+  },
+  {
+    "fact": "runSql 在 viewModelScope.launch(Dispatchers.IO) 中执行数据库操作",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:62"
+  },
+  {
+    "fact": "SELECT/WITH/PRAGMA 开头的语句走 executeQuery 返回查询结果，否则走 execSQL 写库",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:65"
+  },
+  {
+    "fact": "写操作执行后用 SELECT changes() 查询影响行数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:79"
+  },
+  {
+    "fact": "runSql 异常时记 AppLogger.e(TAG, \"Recovery SQL failed\") 并把错误写回 state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:93"
+  },
+  {
+    "fact": "exportRawSnapshot 经 RawSnapshotBackupManager.exportToBackupDir 导出，进度回调映射为阶段文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:108"
+  },
+  {
+    "fact": "导出进度阶段包括 PREPARING、SCANNING_FILES、ZIPPING_FILES、ZIPPING_EXTERNAL_FILES、ZIPPING_SHARED_PREFS、ZIPPING_DATASTORE、ZIPPING_DATABASES、FINALIZING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:365"
+  },
+  {
+    "fact": "restoreRawSnapshot 经 RawSnapshotBackupManager.restoreFromBackupUri 恢复，完成后置 restoreCompleted=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:145"
+  },
+  {
+    "fact": "恢复进度阶段包括 PREPARING、READING_ZIP、EXTRACTING、REPLACING_FILES、REPLACING_EXTERNAL_FILES、REPLACING_SHARED_PREFS、REPLACING_DATASTORE、REPLACING_DATABASES、FINALIZING",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:367"
+  },
+  {
+    "fact": "inspectStorage 同时调 PreferencesHealthManager.inspect 与 RoomDatabaseHealthManager.inspect",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:165"
+  },
+  {
+    "fact": "repairStorage 无可修复项时直接报错 data_recovery_database_no_supported_repair",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:201"
+  },
+  {
+    "fact": "repairStorage 先修数据库再修配置，各自把源文件打包为 sourceArchive 并记录路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:201"
+  },
+  {
+    "fact": "修复后重查两份报告，全 HEALTHY 显示修复完成否则显示仍有剩余问题",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:238"
+  },
+  {
+    "fact": "RepairFailedException 时错误文案带上源文件存档路径（data_recovery_database_repair_failed_preserved）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:254"
+  },
+  {
+    "fact": "writableDatabase() 取 AppDatabase.getDatabase(context).openHelper.writableDatabase",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:317"
+  },
+  {
+    "fact": "executeQuery 用 writableDatabase().query(sql).use { cursor } 保证游标关闭",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:319"
+  },
+  {
+    "fact": "readCell 按列类型转换：NULL 显示 \"NULL\"，BLOB 显示为 BLOB(字节数)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:332"
+  },
+  {
+    "fact": "isQueryStatement 按 trimStart().lowercase() 后是否以 select/with/pragma 开头判断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:356"
+  },
+  {
+    "fact": "sanitizeSql 只做 trim 并去掉末尾一个分号",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:361"
+  },
+  {
+    "fact": "SAFE_MESSAGES_QUERY 查询 messages 表按内容体积倒序取前 50 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:429"
+  },
+  {
+    "fact": "SAFE_VARIANTS_QUERY 查询 message_variants 表按内容体积倒序取前 50 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:431"
+  },
+  {
+    "fact": "SAFE_CHATS_QUERY 查询 chats 表按标题与工作区字段体积倒序取前 50 条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:433"
+  },
+  {
+    "fact": "DataRecoveryViewModel.Factory 用 applicationContext 再套本地化 context 创建 ViewModel 防泄漏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/recovery/DataRecoveryViewModel.kt:416"
+  },
+  {
+    "fact": "崩溃堆栈经 intent extra `extra_stack_trace`（EXTRA_STACK_TRACE）传入 CrashReportActivity。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:58"
+  },
+  {
+    "fact": "MAX_CRASH_REPORT_CHARS = 24_000，堆栈展示前会被截断到该上限。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:59"
+  },
+  {
+    "fact": "堆栈文本经 ThrowableTextFormatter.truncateText 截断；extra 缺省时用 `No stack trace available.`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:65"
+  },
+  {
+    "fact": "onCreate 先调 CrashRecoveryState.consumePendingCrashReportLaunch(this) 消费待处理的崩溃上报启动标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:64"
+  },
+  {
+    "fact": "完整堆栈被打到 AppLogger.e 日志（含字符数与全文两行）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:70"
+  },
+  {
+    "fact": "崩溃上报界面主按钮是“重启应用”（红色错误配色），点击调 restartApp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:112"
+  },
+  {
+    "fact": "copyToClipboard 用 ClipData.newPlainText(`error_stack_trace`, text) 把堆栈写入系统剪贴板并弹 Toast。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:253"
+  },
+  {
+    "fact": "exportToFile 把堆栈以 UTF-8 写入公共 Downloads 目录的 `Operit/error/error-report-<yyyy-MM-dd_HH-mm-ss>.log`。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:267"
+  },
+  {
+    "fact": "导出堆栈到文件失败时弹失败 Toast 并记 AppLogger.e。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:278"
+  },
+  {
+    "fact": "logcat 导出经 LogcatExportHelper.exportLogs(context) 在协程内执行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:164"
+  },
+  {
+    "fact": "restartApp 用 AlarmManager.set(RTC, 当前时间+200ms) 延迟拉起主应用（取不到 launch intent 时回退 MainActivity，带 NEW_TASK|CLEAR_TASK），再 finishAffinity + killProcess + exitProcess(0)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:282"
+  },
+  {
+    "fact": "重启用的 PendingIntent 带 FLAG_CANCEL_CURRENT，API≥M 时叠加 FLAG_IMMUTABLE。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:288"
+  },
+  {
+    "fact": "AndroidManifest 中 CrashReportActivity 声明 android:exported=`false`，跑在独立 `:crash` 进程。",
+    "ref": "app/src/main/AndroidManifest.xml:279"
+  },
+  {
+    "fact": "堆栈详情区是占满剩余空间的 Card，用等宽字体加 verticalScroll 展示全文。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/error/CrashReportActivity.kt:208"
+  }
+]

@@ -1,0 +1,13 @@
+{
+  "critic": "独立复核通过（147 条，6 处引用行号修正后复检通过）",
+  "issue": 21,
+  "refs_valid": "146/146 引用行号真实存在，critic 逐条核引用修掉 5 处事实错误，lint 硬失败 0/警告 0",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "JS 引擎与 Java 互操作桥：QuickJS 引擎生命周期、JS 执行会话与超时取消、NativeInterface 方法门、JS↔Java 对象桥（代理+句柄+JSON 信封）、18 个 bootstrap 模块、Compose DSL 运行时、外部 dex/jar 隔离加载。146 条 facts，走查 10 条（高危 1/警告 4/建议 5）。",
+  "updated": "2026-10-02",
+  "approved_by_comment_id": 5945766995,
+  "approved_by": "luojiaping",
+  "approved_at": "2026-10-02 04:52 UTC"
+}

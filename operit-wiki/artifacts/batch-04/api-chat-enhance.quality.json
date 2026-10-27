@@ -1,0 +1,52 @@
+[
+  {
+    "category": "security",
+    "confidence": "high",
+    "detail": "checkToolPermission 中 invocation.rawText.contains(\"deny_tool\") 时 hasPromptForPermission 为 false，整段权限检查被跳过，直接放行并上报 \"Permission check bypassed by deny_tool tag.\"。deny_tool 标记来自 AI 生成的调用原文，等于模型自己能决定是否弹窗确认权限。",
+    "evidence": "        // 检查是否强制拒绝权限（deny_tool标记）\n        val hasPromptForPermission = !invocation.rawText.contains(\"deny_tool\")\n\n        if (hasPromptForPermission) {\n            // 检查权限，如果需要则弹出权限请求界面\n            val toolPermissionSystem = toolHandler.getToolPermissionSystem()\n            val permissionResult = toolPermissionSystem.checkToolPermission(permissionTool)\n\n            if (!permissionResult.isGranted) {\n\n        toolHandler.notifyToolPermissionChecked(\n            permissionTool,\n            granted = true,\n            reason = \"Permission check bypassed by deny_tool tag.\"\n        )\n        return Pair(true, null)",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ToolExecutionManager.kt",
+    "line": 457,
+    "severity": "high",
+    "title": "调用原文含 deny_tool 即跳过权限弹窗"
+  },
+  {
+    "category": "correctness",
+    "confidence": "high",
+    "detail": "createToolFromJson 的 String 分支只对 press_key、set_input_text、start_app 映射参数，其他类型走空分支静默得到零参数的工具，后续执行时参数缺失。",
+    "evidence": "            is String -> {\n                 // Fallback for when the AI returns a raw string instead of a JSON object.\n                 when (type) {\n                     \"press_key\" -> parameters.add(ToolParameter(\"key_code\", arg))\n                     \"set_input_text\" -> parameters.add(ToolParameter(\"text\", arg))\n                     \"start_app\" -> parameters.add(ToolParameter(\"package_name\", arg))\n                 }\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationService.kt",
+    "line": 958,
+    "severity": "warning",
+    "title": "字符串参数回退只处理三种工具类型"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "hasMultiplePerfectMatches 只统计相似度 1.0 的去空白子串出现次数；两个位置都以 0.95 通过 0.9 阈值时不会中止，补丁打到 bestMatchRange 指向的最早位置，存在改错位置的风险。",
+    "evidence": "            if (hasMultiplePerfectMatches(originalContent, op.oldContent)) {\n                AppLogger.w(TAG, \"Multiple perfect matches found for OLD block; aborting to avoid ambiguous replacement.\")\n                return Pair(false, \"Found multiple perfect matches for an OLD block in the target file. Please refine the patch so it only matches a single location.\")\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt",
+    "line": 280,
+    "severity": "warning",
+    "title": "仅多个完美匹配会中止，近似多匹配静默打到最早行"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "私有字段 roundSeparatorPattern 声明后全文件无引用，属于死代码。",
+    "evidence": "    // Pattern used to remove round separators from displayed content\n    private val roundSeparatorPattern = Regex(\"--- Round \\\\d+ ---\\n\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/ConversationRoundManager.kt",
+    "line": 25,
+    "severity": "suggestion",
+    "title": "roundSeparatorPattern 声明后未使用"
+  },
+  {
+    "category": "maintainability",
+    "confidence": "high",
+    "detail": "companion object 中的 EDIT_BLOCK_REGEX 正则与 PARALLEL_MIN_ITERATIONS 常量全文件无引用；parseEditOperations 实际是手写逐行解析，这两个符号疑似遗留。",
+    "evidence": "    companion object {\n        private const val TAG = \"FileBindingService\"\n        private val EDIT_BLOCK_REGEX =\n            \"\"\"\\[START-(REPLACE|DELETE)\\]\\s*\\n(.*?)\\[END-\\1\\]\"\"\".toRegex(\n                RegexOption.DOT_MATCHES_ALL\n            )\n        private const val PARALLEL_MIN_ITERATIONS = 2000\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/enhance/FileBindingService.kt",
+    "line": 13,
+    "severity": "suggestion",
+    "title": "EDIT_BLOCK_REGEX 与 PARALLEL_MIN_ITERATIONS 声明后未使用"
+  }
+]

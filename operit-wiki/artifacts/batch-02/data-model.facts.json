@@ -1,0 +1,258 @@
+[
+ {
+  "fact": "AppDatabase 是应用主数据库类，继承 RoomDatabase，管理聊天、消息、Token 统计三类数据",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:38"
+ },
+ {
+  "fact": "数据库当前版本号为 21，由常量 APP_DATABASE_VERSION 定义",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:24"
+ },
+ {
+  "fact": "DATABASE_VERSION 公开常量与 APP_DATABASE_VERSION 取同一值，供外部读取当前 schema 版本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:51"
+ },
+ {
+  "fact": "@Database 注解声明的实体为 ChatEntity、MessageEntity、MessageVariantEntity、TokenUsageRecordEntity、TokenStatsModelEntity 共 5 个",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:29"
+ },
+ {
+  "fact": "TokenUsageRecordEntity 与 TokenStatsModelEntity 是 Token 用量账本的两个实体，v21 迁移新增",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:32"
+ },
+ {
+  "fact": "@Database 注解设置 exportSchema = false，不导出 schema 文件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:36"
+ },
+ {
+  "fact": "AppDatabase 暴露 5 个 DAO 访问器：chatDao、messageDao、messageVariantDao、chatContentDao、tokenUsageDao",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:40"
+ },
+ {
+  "fact": "chatDao 是聊天表的 DAO 访问器，管理 chats 表的会话元数据",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:40"
+ },
+ {
+  "fact": "messageDao 是消息表的 DAO 访问器，是聊天消息落库的主要入口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:43"
+ },
+ {
+  "fact": "messageVariantDao 是消息变体表的 DAO 访问器，管理 AI 回复的多版本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:44"
+ },
+ {
+  "fact": "chatContentDao 是聊天内容表的 DAO 访问器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:45"
+ },
+ {
+  "fact": "tokenUsageDao 是 Token 用量表的 DAO 访问器，服务用量统计与定价核算",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:46"
+ },
+ {
+  "fact": "数据库实例通过 getDatabase(context) 获取，是 INSTANCE 空则 synchronized(this) 双重检查的单例",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:442"
+ },
+ {
+  "fact": "实际建库名是固定字符串 app_database，通过 buildDatabase(context.applicationContext, \"app_database\") 创建",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:445"
+ },
+ {
+  "fact": "closeDatabase 先关闭 INSTANCE 再将其置空，释放数据库连接",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:548"
+ },
+ {
+  "fact": "addMigrations 从 MIGRATION_1_2 起逐个注册迁移，迁移链头部即 v1 到 v2",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:517"
+ },
+ {
+  "fact": "buildDatabase 经 addMigrations 注册全部迁移后 build() 建库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:516"
+ },
+ {
+  "fact": "MIGRATION_1_2 创建 chats 与 messages 两张基础表，messages 通过外键 chatId 引用 chats.id 且 ON DELETE CASCADE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:58"
+ },
+ {
+  "fact": "MIGRATION_2_3 给 chats 表加 group 列，支持会话分组",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:359"
+ },
+ {
+  "fact": "MIGRATION_3_4 给 chats 表加 displayOrder 列并用 updatedAt 填充现有行，控制会话列表排序",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:369"
+ },
+ {
+  "fact": "MIGRATION_4_5 给 chats 表加 workspace 列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:380"
+ },
+ {
+  "fact": "MIGRATION_5_6 给 chats 表加 currentWindowSize 列，记录当前上下文窗口大小",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:390"
+ },
+ {
+  "fact": "MIGRATION_6_7 给 messages 表加 roleName 列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:402"
+ },
+ {
+  "fact": "MIGRATION_7_8 给 chats 表加 parentChatId 与 characterCardName 两列，支持子会话与绑定角色卡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:411"
+ },
+ {
+  "fact": "MIGRATION_8_9 给 messages 表加 provider 与 modelName 列，记录每条消息使用的供应商和模型名",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:422"
+ },
+ {
+  "fact": "MIGRATION_9_10 给 chats 表加 locked 列，锁定聊天禁止删除",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:434"
+ },
+ {
+  "fact": "MIGRATION_10_11 给 chats 表加 workspaceEnv 列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:100"
+ },
+ {
+  "fact": "MIGRATION_11_12 给 chats 表加 characterGroupId 列，用于绑定群组角色卡",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:113"
+ },
+ {
+  "fact": "MIGRATION_12_13 给 messages 表批量加 token 与耗时列：inputTokens、outputTokens、cachedInputTokens、sentAt、outputDurationMs、waitDurationMs",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:119"
+ },
+ {
+  "fact": "MIGRATION_13_14 直接 DROP TABLE problem_records，是整条迁移链里唯一删除表的一次",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:150"
+ },
+ {
+  "fact": "MIGRATION_14_15 给 messages 表加 selectedVariantIndex 列，并新建 message_variants 表存放 AI 回复的多个变体",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:161"
+ },
+ {
+  "fact": "message_variants 表的主键是自增 variantId，外键 chatId 引用 chats.id 且 ON DELETE CASCADE",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:165"
+ },
+ {
+  "fact": "message_variants 在 (chatId, messageTimestamp, variantIndex) 上建了唯一索引，防止同一消息的同一变体重复落库",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:188"
+ },
+ {
+  "fact": "MIGRATION_15_16 给 messages 表加 displayMode 列，默认值为 NORMAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:197"
+ },
+ {
+  "fact": "MIGRATION_16_17 在 messages 表加 (chatId, timestamp) 联合索引，加速按会话拉取历史",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:206"
+ },
+ {
+  "fact": "MIGRATION_17_18 给 messages 表加 isFavorite 列，支持收藏消息",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:215"
+ },
+ {
+  "fact": "MIGRATION_18_19 给 messages 与 message_variants 两张表同时加 completedAt 列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:224"
+ },
+ {
+  "fact": "MIGRATION_19_20 给 chats 表加 pinned 列，支持置顶会话",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:235"
+ },
+ {
+  "fact": "MIGRATION_20_21 新建 token_usage_records 表，记录每一次请求的 token 用量账本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:270"
+ },
+ {
+  "fact": "token_usage_records 表包含 occurredAtMs、configId、provider、model、requestCount、uncachedInputTokens、cachedInputTokens、cacheWriteTokens、totalInputTokens、outputTokens 列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:270"
+ },
+ {
+  "fact": "token_usage_records 在 occurredAtMs 上建索引，并在 (provider, model, configId, occurredAtMs) 上建联合索引，支持按时间与模型维度聚合查询",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:287"
+ },
+ {
+  "fact": "token_usage_records 的 importKey 列建了唯一索引，用于外部导入时去重",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:314"
+ },
+ {
+  "fact": "MIGRATION_20_21 新建 token_stats_models 表，主键是 (configId, provider, model) 三元组，存放各模型的定价数据",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:298"
+ },
+ {
+  "fact": "token_stats_models 包含 billingMode、currency、inputPricePerMillion、cachedInputPricePerMillion、cacheWritePricePerMillion、outputPricePerMillion、pricePerRequest 等定价列",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:298"
+ },
+ {
+  "fact": "v20 升级到 v21 时，迁移把 messages 表里 sender 为 ai 且 token 数据非空的历史记录汇总写入 token_usage_records，保留旧账本",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:320"
+ },
+ {
+  "fact": "v20 到 v21 的迁移同时把 message_variants 表的历史 token 记录也汇总写入 token_usage_records",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:337"
+ },
+ {
+  "fact": "MIGRATION_20_21 的注释说明它还补建 Room 声明的 messages 索引，保证迁移后 schema 校验通过",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:237"
+ },
+ {
+  "fact": "validateRecoveryCopy 把源数据库拷贝到随机名的隔离文件后，先 DROP 掉 room_master_table，强制 Room 逐表比对真实 schema 而不是信任一次哈希",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:455"
+ },
+ {
+  "fact": "validateRecoveryCopy 把 sourceSidecar 边车文件按后缀 copyTo 到隔离副本，保证副本与源库一致",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:471"
+ },
+ {
+  "fact": "validateRecoveryCopy 用 buildDatabase(appContext, validationName) 打开隔离副本做校验",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:488"
+ },
+ {
+  "fact": "validateRecoveryCopy 在 finally 中用 databaseFiles 枚举隔离副本并 deleteRecursively 删除，不留临时文件",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/AppDatabase.kt:499"
+ },
+ {
+  "fact": "ObjectBoxManager 是 object 单例，按 profileId 管理多个 BoxStore 实例",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:9"
+ },
+ {
+  "fact": "ObjectBoxManager 内部用 ConcurrentHashMap<String, BoxStore> 缓存已打开的 store，键为 profileId",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:10"
+ },
+ {
+  "fact": "ObjectBoxManager.get 用 synchronized(storeLock) 保证同一 profile 只建一个 BoxStore",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:13"
+ },
+ {
+  "fact": "profileId 为 default 时数据库目录名为 objectbox（保持向后兼容），其他 profile 为 objectbox_<profileId>",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:24"
+ },
+ {
+  "fact": "ObjectBox 数据库目录位于 context.filesDir 之下，与 Room 的 app_database 物理隔离",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:25"
+ },
+ {
+  "fact": "ObjectBoxManager.delete 先关闭 store 再递归删除整个数据库目录，是物理删除指定 profile 数据的唯一入口",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:43"
+ },
+ {
+  "fact": "ObjectBoxManager.closeAll 关闭所有已打开的 store 并清空缓存",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/db/ObjectBox.kt:54"
+ },
+ {
+  "fact": "Memory 实体标注 io.objectbox.annotation.Entity，是 ObjectBox 实体，记忆数据存 ObjectBox 而非 Room",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/Memory.kt:5"
+ },
+ {
+  "fact": "MemoryAutoSaveCandidate 与 DocumentChunk 同样标注 io.objectbox.annotation.Entity，自动保存候选与文档块也存 ObjectBox",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/MemoryAutoSaveCandidate.kt:5"
+ },
+ {
+  "fact": "MemoryRepository 构造时调用 ObjectBoxManager.get(context, profileId) 拿到该记忆空间的 BoxStore",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/MemoryRepository.kt:90"
+ },
+ {
+  "fact": "ChatHistoryManager 持有 AppDatabase.getDatabase(context) 实例，聊天历史的读写走 Room 的 DAO",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:114"
+ },
+ {
+  "fact": "ChatHistoryManager 内部拿到 database.messageDao()，消息落库经由 MessageDao",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/repository/ChatHistoryManager.kt:116"
+ },
+ {
+  "fact": "偏好设置走 DataStore Preferences，VersionedPreferencesDataStore 提供带版本化 schema 迁移的 preferencesDataStore 构造器",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/preferences/VersionedPreferencesDataStore.kt:36"
+ }
+]

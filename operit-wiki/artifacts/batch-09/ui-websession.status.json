@@ -1,0 +1,16 @@
+{
+  "id": "ui-websession",
+  "title": "内置浏览器界面",
+  "status": "approved",
+  "issue": 115,
+  "batch": "batch-09",
+  "refs_valid": "111；2026-10-01 误批准回滚（watcher 误将流水线留言判为通过），水位线已前移；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_repo": "~/workspace/Operit",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "critic": "",
+  "critic_conclusion": "",
+  "approved_by_comment_id": 5930113065,
+  "approved_by": null,
+  "approved_at": null,
+  "updated": "2026-10-02"
+}

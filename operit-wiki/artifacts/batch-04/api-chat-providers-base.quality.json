@@ -1,0 +1,42 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt",
+    "line": 23,
+    "evidence": "                override fun checkServerTrusted(\n                    chain: Array<out X509Certificate>?,\n                    authType: String?\n                ) {}",
+    "severity": "high",
+    "confidence": "high",
+    "description": "自定义 X509TrustManager 的 checkServerTrusted 为空实现，接受任意服务器证书，中间人可伪造任意证书截获模型请求流量。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/UnsafeModelSsl.kt",
+    "line": 36,
+    "evidence": "            .hostnameVerifier { _, _ -> true }",
+    "severity": "high",
+    "confidence": "high",
+    "description": "hostnameVerifier 恒返回 true，关闭主机名校验；配合空实现的证书校验，HTTPS 传输层安全完全失效。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt",
+    "line": 199,
+    "evidence": "        UnsafeModelSsl.apply(\n            OkHttpClient.Builder()",
+    "severity": "high",
+    "confidence": "high",
+    "description": "全应用共享的 SharedHttpClient.instance 被 UnsafeModelSsl 包裹，所有供应商的模型请求（携带 API Key）都走无证书校验、无主机名校验的 TLS，中间人可窃取 Key 与对话内容。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt",
+    "line": 49,
+    "evidence": "            UnsafeModelSsl.apply(\n                    OkHttpClient.Builder()",
+    "severity": "high",
+    "confidence": "high",
+    "description": "模型列表拉取用的私有 OkHttpClient 同样被 UnsafeModelSsl 包裹，拉取模型列表时的 API Key 与端点信息同样暴露在中间人风险下。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/ModelListFetcher.kt",
+    "line": 595,
+    "evidence": "                val modelsDir = File(\n                    Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),\n                    \"Operit/models/mnn\"\n                )",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "MNN 本地模型目录位于公共下载区，任何应用都可在该路径下创建文件夹；getMnnLocalModels 仅凭子文件夹含 llm.mnn 即认定为模型、id 直接取文件夹名，存在模型列表被第三方应用伪造/污染的风险（llama 的 .gguf 目录同理）。"
+  }
+]

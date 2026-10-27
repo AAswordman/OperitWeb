@@ -1,0 +1,46 @@
+[
+  {
+    "fact": "FourRouterProvider 是接入 4Router 聚合 API 的 LLM 供应商类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt:6"
+  },
+  {
+    "fact": "它直接继承 OpenAIProvider，12 个构造参数逐一透传给父类，类体无新增成员",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt:19"
+  },
+  {
+    "fact": "providerType 构造参数的默认值为 ApiProviderType.FOUR_ROUTER",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt:12"
+  },
+  {
+    "fact": "前 6 个构造参数为 apiEndpoint、apiKeyProvider、modelName、client、customHeaders（默认空 Map）、providerType",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt:9"
+  },
+  {
+    "fact": "后 6 个构造参数为 supportsVision、supportsAudio、supportsVideo、enableToolCall、thinkingConfigurations、thinkingOptionId，默认值均为 false 或空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/FourRouterProvider.kt:15"
+  },
+  {
+    "fact": "AIServiceFactory 在 ApiProviderType.FOUR_ROUTER 分支构造 FourRouterProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:635"
+  },
+  {
+    "fact": "工厂调用时显式传入 providerType、apiEndpoint、apiKeyProvider、modelName、httpClient 等参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:639"
+  },
+  {
+    "fact": "4Router 的默认模型名为 gpt-5.4-mini",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:191"
+  },
+  {
+    "fact": "4Router 的默认 endpoint 为 https://4router.net/v1/chat/completions",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:192"
+  },
+  {
+    "fact": "ApiProviderType.FOUR_ROUTER 的枚举注释为“4Router”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:31"
+  },
+  {
+    "fact": "继承自 OpenAIProvider 的 providerModel 属性返回“供应商名:模型名”格式的供应商标识",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:141"
+  }
+]

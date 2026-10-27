@@ -1,0 +1,54 @@
+[
+ {
+  "fact": "NousPortalProvider 是接入 NousPortal 推理 API 的 LLM 供应商类",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt:6"
+ },
+ {
+  "fact": "它直接继承 OpenRouterProvider，12 个构造参数逐一透传给父类，类体无新增成员",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt:19"
+ },
+ {
+  "fact": "providerType 构造参数的默认值为 ApiProviderType.NOUS_PORTAL",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt:12"
+ },
+ {
+  "fact": "前 6 个构造参数为 apiEndpoint、apiKeyProvider、modelName、client、customHeaders（默认空 Map）、providerType",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt:9"
+ },
+ {
+  "fact": "后 6 个构造参数为 supportsVision、supportsAudio、supportsVideo、enableToolCall、thinkingConfigurations、thinkingOptionId，默认值均为 false 或空字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/NousPortalProvider.kt:15"
+ },
+ {
+  "fact": "AIServiceFactory 在 ApiProviderType.NOUS_PORTAL 分支构造 NousPortalProvider",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:650"
+ },
+ {
+  "fact": "工厂调用时显式传入 providerType、apiEndpoint、apiKeyProvider、modelName、httpClient 等参数",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:654"
+ },
+ {
+  "fact": "NousPortal 的默认模型名为空字符串",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:196"
+ },
+ {
+  "fact": "NousPortal 的默认 endpoint 为 https://inference-api.nousresearch.com/v1/chat/completions",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/collects/ApiProviderConfigCollect.kt:197"
+ },
+ {
+  "fact": "ApiProviderType.NOUS_PORTAL 的枚举注释为“Nous Portal / Inference API”",
+  "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:32"
+ },
+ {
+  "fact": "继承的 OpenRouterProvider 在自定义头缺省时补默认头：HTTP-Referer 取 DEFAULT_HTTP_REFERER（ai.assistance.operit），X-Title 取 DEFAULT_X_TITLE（Assistance App）",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:115"
+ },
+ {
+  "fact": "继承的 OpenRouterProvider 用 ThinkingConfigurationApplier 生成统一 reasoning 对象",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:99"
+ },
+ {
+  "fact": "继承的 OpenRouterProvider 不走通用 enableThinking 开关，reasoning 来自模型配置的可编辑 thinking 规则",
+  "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenRouterProvider.kt:16"
+ }
+]

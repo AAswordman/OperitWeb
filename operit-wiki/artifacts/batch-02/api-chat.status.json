@@ -1,0 +1,13 @@
+{
+  "critic": "待评审",
+  "issue": 5,
+  "refs_valid": "112/112 facts 引用行号真实、符号 ±5 行窗口全命中（机器全查）；lint 硬失败 0/警告 0；2026-10-02 v2 死链回炉：正文 [[ ]] wikilink 与裸 slug 全部转为 entry.html 真链接并补细页索引，内容变更打回待评审；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "云端 Chat API 接入（总览，v3 回炉重造）：ModelConfigData 配置维度全览、ApiProviderType 39 供应商、FunctionType 11 功能类型、AIServiceFactory 装配调用链、本章 31 个细页地图索引。",
+  "updated": "2026-10-02",
+  "approved_by": "luojiaping",
+  "approved_by_comment_id": 5914915736,
+  "approved_at": "2026-09-30 15:58 UTC"
+}

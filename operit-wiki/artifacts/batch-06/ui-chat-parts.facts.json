@@ -1,0 +1,606 @@
+[
+  {
+    "fact": "CustomXmlRenderer 实现 XmlContentRenderer 接口，是聊天消息体 XML 标签的中央分发渲染器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:63"
+  },
+  {
+    "fact": "CustomXmlRenderer 构造参数 showThinkingProcess 默认为 true，控制是否显示思考过程。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:64"
+  },
+  {
+    "fact": "CustomXmlRenderer 构造参数 showStatusTags 默认为 true，控制是否显示状态标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:65"
+  },
+  {
+    "fact": "CustomXmlRenderer 构造参数 enableDialogs 默认为 true，控制是否启用弹窗功能。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:68"
+  },
+  {
+    "fact": "CustomXmlRenderer 构造参数 fallback 默认为 DefaultXmlRenderer()，用于处理未知标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:69"
+  },
+  {
+    "fact": "TOOL_PARAM_TOKEN_THRESHOLD 常量值为 50，用于判定流式工具参数是否切详细显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:61"
+  },
+  {
+    "fact": "builtInTags 集合包含 12 个内置标签：think、thinking、search、tool、status、tool_result、html、mood、font、details、detail、meta。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:73"
+  },
+  {
+    "fact": "RenderXmlContent 先对内容 trim，再提取标签名，并检查是否命中隐藏 meta。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:115"
+  },
+  {
+    "fact": "RenderXmlContent 为每种标签设置无障碍朗读描述，如 tool 对应 R.string.tool_call_block。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:124"
+  },
+  {
+    "fact": "think/thinking 标签用普通 Box 包裹，不加 contentDescription；其他标签的 Box 带无障碍描述。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:141"
+  },
+  {
+    "fact": "showThinkingProcess 为 false 时，think/thinking 标签直接跳过不渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:155"
+  },
+  {
+    "fact": "status 标签类型为 completion、complete 或 wait_for_user_need 且 showStatusTags 为 false 时跳过渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:164"
+  },
+  {
+    "fact": "无法提取标签名时，RenderXmlContentInternal 交给 fallback 默认渲染器处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:173"
+  },
+  {
+    "fact": "标签分发前优先走 XmlRenderPluginRegistry.RenderIfMatched，如 deepsearch 的 <plan> 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:180"
+  },
+  {
+    "fact": "未闭合的内置标签（除 tool/think/thinking/search 外）直接返回不显示，等待其闭合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:195"
+  },
+  {
+    "fact": "未闭合的未知标签交给 fallback 默认渲染器处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:201"
+  },
+  {
+    "fact": "闭合标签按标签名分发：think/thinking、search、tool、tool_result、status、html、mood、font、details/detail。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:208"
+  },
+  {
+    "fact": "shouldHideHiddenMeta 隐藏 provider 为 gemini:thought_signature、openai:responses_reasoning 或 openai:responses_output_item 的 meta 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:238"
+  },
+  {
+    "fact": "isXmlFullyClosed 以内容结尾 /> 判定自闭合，或包含 </tagName> 判定配对闭合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:247"
+  },
+  {
+    "fact": "extractContentFromXml 中起始标签本身不完整（找不到 >）时返回原始内容等待后续片段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:273"
+  },
+  {
+    "fact": "extractParamsFromTool 用 ChatMarkupRegex.toolParamPattern 提取全部参数名值对。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:297"
+  },
+  {
+    "fact": "resolveToolDisplayNameForRender 对 package_proxy/proxy 取 tool_name 参数并反转义 &quot;/&amp; 后作为显示名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:310"
+  },
+  {
+    "fact": "renderSearchContent 中结构化搜索走 StructuredSearchBody，非结构化走可折叠的 MarkdownTextComposable。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:328"
+  },
+  {
+    "fact": "parseStructuredSearchXml 用 XmlPullParser 解析 search 的 provider/action/status 属性及 query/source 子标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:569"
+  },
+  {
+    "fact": "搜索被判定为结构化要求有 search 根且 provider/action/status/query/source 任一非空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:643"
+  },
+  {
+    "fact": "搜索源 favicon 取自 https://www.google.com/s2/favicons?sz=64&domain=$host。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:717"
+  },
+  {
+    "fact": "renderThinkContent 中思考进行态判定为 xmlStream 非空且标签未闭合。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:726"
+  },
+  {
+    "fact": "思考进行中标题有流光动画：1400ms 线性无限循环，位移从 -140f 到 220f。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:747"
+  },
+  {
+    "fact": "思考展开逻辑：初始展开且已完成则展开；进行中跟随用户偏好 expandThinkingProcess；结束后总是折叠。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:784"
+  },
+  {
+    "fact": "思考正文自动贴底阈值为 80px，用户手动滚动离开底部后停止自动滚动。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:829"
+  },
+  {
+    "fact": "思考正文默认最大高度 300.dp，点击正文可切换全高显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:941"
+  },
+  {
+    "fact": "createThinkMarkdownCharStream 用尾部缓冲逐字过滤起始/结束标签，实现思考流式 markdown。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1030"
+  },
+  {
+    "fact": "renderToolRequest 用正则 name=\"([^\"]+)\" 提取工具名，缺失时为 Unknown tool。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1080"
+  },
+  {
+    "fact": "apply_file/create_file/edit_file 闭合时用 CompactToolDisplay，未闭合时用 DetailedToolDisplay。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1097"
+  },
+  {
+    "fact": "其他工具未闭合且参数 token 估计超过 50 时用 DetailedToolDisplay，否则用 CompactToolDisplay。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1119"
+  },
+  {
+    "fact": "IncrementalTokenEstimator 按中文字符 1.5、其他字符 0.25 估算 token 数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1152"
+  },
+  {
+    "fact": "renderToolResult 用 nameAttr/statusAttr/contentTag 提取工具名、状态与结果，状态缺省为 success。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1237"
+  },
+  {
+    "fact": "工具名为空时显示 R.string.unknown_tool。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1243"
+  },
+  {
+    "fact": "apply_file/create_file/edit_file 成功且结果含 <file-diff 时走 FileDiffDisplay 展示文件差异。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1254"
+  },
+  {
+    "fact": "file-diff 解析用 path/details 属性正则与 CDATA 正则提取路径、说明与差异内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1262"
+  },
+  {
+    "fact": "差异内容的三处 .replace(\"<\", \"<\") 等为恒等替换，是无效代码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1271"
+  },
+  {
+    "fact": "失败结果尝试从 <error> 标签提取错误信息，成功结果先移除 file-diff 块再显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1282"
+  },
+  {
+    "fact": "renderStatus 中 completion/complete 显示 ✓ Task completed，wait_for_user_need 显示 ✓ Ready for further assistance。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1321"
+  },
+  {
+    "fact": "warning 类型状态走 WarningStatusDisplay，详情弹窗仅在 enableDialogs 且详情非空时可开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1371"
+  },
+  {
+    "fact": "renderHtmlContent 用 WebView 渲染，javaScriptEnabled、domStorageEnabled 均为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1433"
+  },
+  {
+    "fact": "WebView 允许 file/content 访问及 file URL 跨域：allowFileAccessFromFileURLs 与 allowUniversalAccessFromFileURLs 均为 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1440"
+  },
+  {
+    "fact": "WebView 混合内容模式为 MIXED_CONTENT_ALWAYS_ALLOW。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1446"
+  },
+  {
+    "fact": "WebView 在 DisposableEffect 中 stopLoading、loadUrl(about:blank)、clearHistory、destroy。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1450"
+  },
+  {
+    "fact": "WebView 只在 fullHtml 变化时重载：LaunchedEffect(webView, fullHtml) 调用 loadDataWithBaseURL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1465"
+  },
+  {
+    "fact": "applyBuiltInStyles 支持 status-card/info-card/warning-card/success-card/metric-grid 五种类名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1501"
+  },
+  {
+    "fact": "processInlineComponents 把 <metric>、<badge>、<progress> 内联标签转为带样式 HTML。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1510"
+  },
+  {
+    "fact": "metric 标签图标缺省为 analytics，颜色缺省为 #007AFF。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1535"
+  },
+  {
+    "fact": "badge 按 success/warning/error/info 四种类型配背景色、文字色与边框色。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1590"
+  },
+  {
+    "fact": "progress 值钳制在 0-100，80+ 绿、50+ 蓝、30+ 橙、否则红。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1620"
+  },
+  {
+    "fact": "hexToRgb 解析失败时返回默认蓝色 0, 122, 255。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1577"
+  },
+  {
+    "fact": "renderMoodTag 不渲染任何内容，mood 只是虚拟形象情感触发标记。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/CustomXmlRenderer.kt:1776"
+  },
+  {
+    "fact": "ThinkToolsXmlNodeGrouper 实现 MarkdownNodeGrouper，默认 toolCollapseMode 为 ToolCollapseMode.ALL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:36"
+  },
+  {
+    "fact": "连续的 think+tool/tool_result/search 节点被合并为 stableKey 为 think-tools-$i 的分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:98"
+  },
+  {
+    "fact": "分组扫描时 think 与工具之间的纯空白文本节点会被跳过。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:59"
+  },
+  {
+    "fact": "isIgnorableXmlTagForToolGrouping 只把 meta 视为分组时可忽略的标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:429"
+  },
+  {
+    "fact": "连续的 tool/tool_result 合并为 tools-only-$i 分组，连续 search 合并为 search-only-$i 分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:151"
+  },
+  {
+    "fact": "shouldGroupToolByName 在 ALL/FULL 模式下对所有工具返回 true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:437"
+  },
+  {
+    "fact": "非 ALL/FULL 模式下仅名字含 search 或属于 10 个只读工具的才参与分组。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:444"
+  },
+  {
+    "fact": "shouldCollapseToolSequence 在 FULL 下恒折叠，ALL/READ_ONLY 下要求 toolCount>=2 且 xmlToolRelatedCount>=2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:462"
+  },
+  {
+    "fact": "shouldCollapseThinkSequence 在 FULL 下恒折叠，ALL/READ_ONLY 下有 search 或 tool>=2 时折叠。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:475"
+  },
+  {
+    "fact": "分组标题用 stringResource，如 tools_group_title_with_count 带工具数量。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:243"
+  },
+  {
+    "fact": "分组仅在仍有流式 xmlStream 且尾部无不合规节点时自动展开，流结束默认收起。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:284"
+  },
+  {
+    "fact": "用户手动切换分组展开后 userOverride 生效，不再跟随自动展开逻辑。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:296"
+  },
+  {
+    "fact": "isConformingTailNode 认定 think/thinking/search/meta 为合规尾节点。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ThinkToolsXmlNodeGrouper.kt:264"
+  },
+  {
+    "fact": "CompactToolDisplay 用 CanvasToolSummaryRow 显示工具名加参数头部预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:43"
+  },
+  {
+    "fact": "DetailedToolDisplay 摘要显示参数字节数标签 buildToolParamsSizeLabel。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:119"
+  },
+  {
+    "fact": "工具卡片点击仅在有参数且 enableDialog 时弹出 ContentDetailDialog。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:73"
+  },
+  {
+    "fact": "CodeContentWithLineNumbers 行号列固定 40.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:161"
+  },
+  {
+    "fact": "XML 标签行且短于 300 字符时做语法高亮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:180"
+  },
+  {
+    "fact": "FormattedXmlText 在 Dispatchers.Default 异步计算高亮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:224"
+  },
+  {
+    "fact": "尖括号用紫色 0xFF9C27B0 高亮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:247"
+  },
+  {
+    "fact": "标签字母用蓝色 0xFF2196F3 高亮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:274"
+  },
+  {
+    "fact": "unescapeXmlForDisplay 剥离 CDATA 包裹。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:316"
+  },
+  {
+    "fact": "unescapeXmlForDisplay 反转义 &lt;/&gt;/&amp;/&quot;/&apos; 五种实体。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:330"
+  },
+  {
+    "fact": "normalizeToolDisplayForStrictProxy 从 proxy 参数中提取 tool_name 与 params，还原真实工具名。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:371"
+  },
+  {
+    "fact": "parseProxyJsonParamsToXml 把代理的 JSON 参数对象转回 <param name=\"k\"> 行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:406"
+  },
+  {
+    "fact": "getToolIcon 按工具名关键词配图标：file/read/write 用 FileOpen，search/find/query 用 Search。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:547"
+  },
+  {
+    "fact": "getToolIcon 中 terminal/exec/command/shell 用 Terminal 图标，http/web/visit 用 Web 图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:556"
+  },
+  {
+    "fact": "buildParamsHeadPreview 取首个参数文本，最多 120 字符，超长加省略号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:532"
+  },
+  {
+    "fact": "calculateToolParamsBytes 按 UTF-8 字节数统计参数载荷大小。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolDisplayComponents.kt:489"
+  },
+  {
+    "fact": "FileDiff 是 UI 本地数据类，含 path、diffContent、details 三字段，避免依赖 core tools 包。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FileDiffDisplay.kt:28"
+  },
+  {
+    "fact": "FileDiffDisplay 按行首 + / - 统计增删行数，摘要如 3 insertions(+), 2 deletions(-)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FileDiffDisplay.kt:53"
+  },
+  {
+    "fact": "FileDiffDisplay 点击后弹出 ContentDetailDialog 并以 isDiffContent=true 渲染差异。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FileDiffDisplay.kt:42"
+  },
+  {
+    "fact": "DiffContentLazyColumn 中 + 行用 primaryContainer 0.2 底、- 行用 errorContainer 0.2 底、@@ 行用 secondaryContainer 0.2 底。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:176"
+  },
+  {
+    "fact": "ToolResultDisplay 摘要取结果前 200 字符，无内容时显示执行成功/失败文案。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolResultDisplay.kt:64"
+  },
+  {
+    "fact": "ToolResultDisplay 行尾有复制按钮，点击把完整结果写入剪贴板。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolResultDisplay.kt:171"
+  },
+  {
+    "fact": "ToolResultDetailDialog 结果区最大高度：紧凑屏 160.dp，否则 300.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ToolResultDisplay.kt:129"
+  },
+  {
+    "fact": "ParamVisualizer 用正则 <param\\s+name=\"([^\"]+)\">(.*?)</param> 解析参数并逐项展示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ParamVisualizer.kt:51"
+  },
+  {
+    "fact": "ParamVisualizer 每个参数行有独立复制按钮，复制该参数值。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ParamVisualizer.kt:85"
+  },
+  {
+    "fact": "ParamVisualizer 解析不出参数时直接显示原始内容文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/ParamVisualizer.kt:105"
+  },
+  {
+    "fact": "ContentDetailDialog 的 isDiffContent 参数默认为 false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:33"
+  },
+  {
+    "fact": "ContentDetailDialog 以内容 trim 后是否以 < 开头判断是否为 XML 内容。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:49"
+  },
+  {
+    "fact": "视图切换按钮只在 XML 且非 diff 内容时显示，可在可视化与源码间切换。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:92"
+  },
+  {
+    "fact": "ContentDetailDialog 内容区最大高度：紧凑屏 160.dp，否则 400.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:51"
+  },
+  {
+    "fact": "ContentDetailDialog 打开时自动滚动到底部：LaunchedEffect(lines.size) 跳到 lastIndex。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:123"
+  },
+  {
+    "fact": "ContentDetailDialog 内容分支：XML 走 ParamVisualizer，diff 走 DiffContentLazyColumn，其他走 CodeContentWithLineNumbers。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DialogComponents.kt:128"
+  },
+  {
+    "fact": "FontTagRenderer 读取 color/size/face/style/bgcolor 五个属性渲染 <font> 标签。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FontTagRenderer.kt:17"
+  },
+  {
+    "fact": "font size 1-7 映射为 10/12/14/16/18/20/24.sp，数字加 sp/px/dp 后缀按数值解析。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FontTagRenderer.kt:85"
+  },
+  {
+    "fact": "font face 支持 monospace/serif/sans-serif/cursive 四种族映射。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FontTagRenderer.kt:97"
+  },
+  {
+    "fact": "font style 含 bold/italic/underline/line-through 关键词时分别加粗/斜体/下划线/删除线。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/FontTagRenderer.kt:110"
+  },
+  {
+    "fact": "CanvasFontTextBlock 背景以 0.18 alpha 绘制 6.dp 圆角矩形。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasBlockComponents.kt:247"
+  },
+  {
+    "fact": "DetailsTagRenderer 从 <summary> 提取标题并从正文移除，正文用 MarkdownTextComposable 渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DetailsTagRenderer.kt:97"
+  },
+  {
+    "fact": "details 标签带 open 属性时默认展开。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DetailsTagRenderer.kt:37"
+  },
+  {
+    "fact": "DetailsTagRenderer 正文用 CanvasExpandableHeaderRow 做折叠头，箭头旋转 90 度动画 300ms。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/DetailsTagRenderer.kt:40"
+  },
+  {
+    "fact": "StatusCardHtmlDocument 是 internal object，ICON_FONT_ASSET 指向 fonts/material_symbols_rounded_static.woff2。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocument.kt:33"
+  },
+  {
+    "fact": "图标字体 base64 用 @Volatile 缓存，每张卡片独立 WebView 下只读一次 assets。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocument.kt:36"
+  },
+  {
+    "fact": "build 把 textColor 转为 #RRGGBB 十六进制并拼 data: URI 字体生成完整 HTML 文档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocument.kt:45"
+  },
+  {
+    "fact": "离线字体方案为修复 issue #930：此前从 fonts.googleapis.com 拉 5.36MB 可变字体，弱网要 10-40 秒。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocument.kt:12"
+  },
+  {
+    "fact": "随 APK 打包的静态 woff2 为 456,052 字节，约为可变字体的十二分之一。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/StatusCardHtmlDocument.kt:22"
+  },
+  {
+    "fact": "CanvasExpandableHeaderRow 全部用 Canvas 手绘：箭头旋转、标题文字、可选流光。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasBlockComponents.kt:51"
+  },
+  {
+    "fact": "CanvasIndentedGuide 默认缩进 10.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasBlockComponents.kt:181"
+  },
+  {
+    "fact": "竖线用 Brush.verticalGradient 上下渐隐。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasBlockComponents.kt:193"
+  },
+  {
+    "fact": "CanvasPillLabel 手绘胶囊：背景圆角矩形加 1.dp 边框描边。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasBlockComponents.kt:264"
+  },
+  {
+    "fact": "CANVAS_SINGLE_LINE_TEXT_LIMIT 为 160，Canvas 摘要行超长截断加省略号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:46"
+  },
+  {
+    "fact": "CanvasToolSummaryRow 标题宽度钳制在 80.dp 到 120.dp 之间。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:89"
+  },
+  {
+    "fact": "CanvasToolResultRow 左起 24.dp 缩进，依次画转角箭头、成功/失败图标、摘要、复制按钮。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:239"
+  },
+  {
+    "fact": "CanvasToolResultRow 成功时摘要色为 onSurface 0.8，失败时为 error 0.8。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:195"
+  },
+  {
+    "fact": "CanvasStatusCard 内边距 12.dp、外边距 4.dp、圆角 8.dp、边框 1.dp。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:356"
+  },
+  {
+    "fact": "CanvasWarningStatusRow 左侧画 2.dp 宽、16.dp 高的红色竖条。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/part/XmlCanvasSummaryComponents.kt:430"
+  },
+  {
+    "fact": "ChatAttachment 含 id、filename、mimeType，size 默认为 0、content 默认为空。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:67"
+  },
+  {
+    "fact": "AttachmentViewerDialog 在 visible 为 false 或 attachment 为空时直接返回不渲染。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:81"
+  },
+  {
+    "fact": "附件按 mimeType 路由：image/、audio/、video/ 与文本类分别处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:89"
+  },
+  {
+    "fact": "id 以 media_pool: 开头时去掉前缀，从 MediaPoolManager 取媒体数据预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:94"
+  },
+  {
+    "fact": "媒体池预览有 20MB 上限：base64 估计大小超限或解码后超限都不预览。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:102"
+  },
+  {
+    "fact": "媒体池预览文件写到 cacheDir/media_pool_preview 目录。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:118"
+  },
+  {
+    "fact": "fileFromPath 把 attachment.id 当本地文件路径，存在才用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:137"
+  },
+  {
+    "fact": "fileUri 对 content:// 与 file:// 直接解析，否则用 Uri.fromFile。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:144"
+  },
+  {
+    "fact": "图片预览限读 20MB 并用 ImageBitmapLimiter.decodeDownsampledBitmap 降采样解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:158"
+  },
+  {
+    "fact": "文本预览优先用 attachment.content，文件超过 512KB 则不读。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:173"
+  },
+  {
+    "fact": "音频预览用 AudioAttachmentPlayer，autoPlay=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:268"
+  },
+  {
+    "fact": "视频预览用 VideoAttachmentPlayer，autoPlay=false。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:285"
+  },
+  {
+    "fact": "文本预览有复制按钮，点击复制内容并关闭弹窗。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:330"
+  },
+  {
+    "fact": "有本地文件时提供外部打开按钮，经 FileProvider 生成 <package>.fileprovider 的 URI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:393"
+  },
+  {
+    "fact": "外部打开无匹配应用时弹 toast 显示 file_open_failed。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:408"
+  },
+  {
+    "fact": "readBytesLimited 用 64KB 缓冲分块读。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:433"
+  },
+  {
+    "fact": "读取数据超限时抛 IllegalArgumentException。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:439"
+  },
+  {
+    "fact": "isTextLikeMimeType 认定 text/、json、xml、yaml/yml、csv 为文本类。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:370"
+  },
+  {
+    "fact": "fileExtForMimeType 把 mp3/wav/ogg/webm/mp4/ogv 等映射到扩展名，其他取 mime 子类型。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AttachmentViewerDialog.kt:383"
+  },
+  {
+    "fact": "AudioAttachmentPlayer 用 ExoPlayer.Builder 建播放器，LaunchedEffect 里 setMediaItem、prepare。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AudioAttachmentPlayer.kt:28"
+  },
+  {
+    "fact": "AudioAttachmentPlayer 在 DisposableEffect 中 stop、clearMediaItems、release 释放播放器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AudioAttachmentPlayer.kt:37"
+  },
+  {
+    "fact": "AudioAttachmentPlayer 用 AndroidView 嵌 StyledPlayerView 并打开控制器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/AudioAttachmentPlayer.kt:48"
+  },
+  {
+    "fact": "VideoAttachmentPlayer 与音频版同构，多了 resizeMode=RESIZE_MODE_FIT。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/attachments/VideoAttachmentPlayer.kt:49"
+  },
+  {
+    "fact": "TokenInfoDialog 接收 onDismiss 与 onConfirm 两个回调。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/config/TokenInfoDialog.kt:21"
+  },
+  {
+    "fact": "TokenInfoDialog 的 DialogProperties 允许返回键与点击外部关闭。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/config/TokenInfoDialog.kt:25"
+  },
+  {
+    "fact": "TokenInfoDialog 标题与正文取 token_info_title、token_info_content 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/config/TokenInfoDialog.kt:45"
+  },
+  {
+    "fact": "TokenInfoDialog 取消与确认按钮取 token_info_cancel、token_info_confirm 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/chat/components/config/TokenInfoDialog.kt:67"
+  }
+]

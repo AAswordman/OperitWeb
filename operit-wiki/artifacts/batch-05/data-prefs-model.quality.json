@@ -1,0 +1,114 @@
+[
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 524,
+    "evidence": "preferences[configKey] = json.encodeToString(config)",
+    "severity": "high",
+    "confidence": "high",
+    "description": "API Key 明文落盘：ModelConfigData（含 apiKey 与 apiKeyPool 全部 Key）被 JSON 序列化后直接写入 model_configs DataStore，无任何加密。同一目录下 Codex OAuth 凭据使用了 EncryptedSharedPreferences，明文 Key 与加密凭据并存，安全水位不一致。攻击面：设备被 root 或备份数据被读取时全部供应商 Key 泄露。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 1130,
+    "evidence": "return json.encodeToString(allConfigs)",
+    "severity": "high",
+    "confidence": "high",
+    "description": "exportAllConfigs 把全部模型配置（含所有 API Key 明文）导出为 JSON 字符串。调用方若将其写入文件或经分享通道发出，等于一次性泄露用户全部供应商密钥；函数本身无任何脱敏或二次确认。 调用方 ChatBackupSettingsScreen.kt:648-662 点导出即直接落盘（model_config_backup_<时间戳>.json），安全警告对话框（ModelConfigExportWarningDialog）仅在导出完成后弹出（:1376），无导出前二次确认。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 1142,
+    "evidence": "val importedConfigs = json.decodeFromString<List<ModelConfigData>>(jsonContent)",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "importConfigs 对外部 JSON 仅校验 id/name 非空即逐条 saveConfigToDataStore 落盘：无 Key 格式校验、无来源签名；已存在的配置 ID（含 default）会被静默覆盖。恶意或损坏的导入文件可替换用户正在使用的 Key 与端点。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ExternalHttpApiPreferences.kt",
+    "line": 64,
+    "evidence": "preferences[KEY_BEARER_TOKEN] = generated",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "对外 HTTP API 的 bearerToken 以明文存放在 external_http_api_preferences DataStore 中。该 token 是外部调用本机 8094 端口服务的唯一鉴权凭据，明文存储使其与模型 API Key 处于同一泄露面。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 121,
+    "evidence": "return \"$totalUsage|$nextDate\"",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "generateVerificationHash 只是 totalUsage|nextDate 的明文拼接，无密钥、无 HMAC。所谓“外部验证文件”任何人可按格式伪造，防篡改设计名存实亡；用户清除数据后靠该文件恢复限额形同虚设。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 98,
+    "evidence": "return File(operitDir, EXTERNAL_VERIFY_FILENAME)",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "校验文件 usage_verification.dat 写在公共下载目录 Downloads/Operit/ 下（外部存储），而非应用私有目录。任何有存储权限的应用均可读写该文件，结合明文哈希格式可任意改写免费额度计数。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/FreeUsagePreferences.kt",
+    "line": 68,
+    "evidence": "val updatedTotalUsage = maxOf(extTotalUsage, currentTotalUsage)",
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "checkExternalVerification 在哈希不一致时取外部文件与本地计数的最大值恢复，并直接用外部文件的 nextDate 覆盖本地。若外部文件损坏或被篡改，会把本地计数抬高且等待日期错乱；恢复逻辑假设外部文件更可信，方向存疑。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/model/ApiKeyFormatValidator.kt",
+    "line": 8,
+    "evidence": "return normalized.isNotEmpty() && normalized.all { character ->\n            character.code in 0x21..0x7E\n        }",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "isValid 只检查 Key 非空且为可打印 ASCII，不做任何供应商格式校验（如 sk- 前缀、长度、字符集）。hasUsableKey 据此判定“可用 Key”，用户填入明显错误的 Key 也能经校验进入请求流程，错误要到网络层才暴露。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 623,
+    "evidence": "if (configId == DEFAULT_CONFIG_ID) {\n            // 不允许删除默认配置\n            return emptyList()\n        }",
+    "severity": "warn",
+    "confidence": "high",
+    "description": "deleteConfig 在三种不同情况下都返回 emptyList：删除 default 被拒绝、要删的 ID 不在列表中、正常删除但无功能引用。调用方无法区分“拒绝”“不存在”“成功”，UI 层难以给出准确反馈。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 567,
+    "evidence": "return configDataStore.data.map { preferences ->\n            val config = loadConfigFromDataStore(configId) ?: ModelConfigData(id = configId, name = context.getString(R.string.model_config_config_id, configId))",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "getModelConfigFlow 在 configDataStore.data 的 map 变换内部调用 loadConfigFromDataStore，而后者又执行 configDataStore.data.first()：同一 DataStore 的嵌套 collect。当前靠 DataStore.data 的热流语义能工作，但属于重入式读取模式，后续若改为冷流或加锁会引入死锁风险；建议改为直接使用 map 收到的 preferences 参数解析。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/ModelConfigManager.kt",
+    "line": 584,
+    "evidence": "it.copy(apiKey = apiKey, useMultipleApiKeys = false)",
+    "severity": "suggestion",
+    "confidence": "high",
+    "description": "updateSingleApiKey 在更新单个 Key 的同时静默关闭多 Key 模式（useMultipleApiKeys=false）。若用户本意只是换主 Key，Key 池会被整体停用且无提示；建议调用处显式确认模式切换。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/CodexAuthPreferences.kt",
+    "line": 68,
+    "evidence": "} catch (error: SecurityException) {\n            // Restored encrypted values can be unreadable when Android Keystore kept the key\n            // device-local. Reset only Codex OAuth state so the settings screen can open.\n            AppLogger.e(TAG, \"Codex OAuth credentials are unreadable; resetting encrypted store\", error)\n            resetEncryptedStore()",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "读取 Codex 加密凭据遇到 SecurityException（如备份恢复后 Keystore 丢失）时直接删除整个 codex_oauth_credentials 存储并重建，用户会被静默登出。虽有日志且保证设置页可打开，但丢失的是 OAuth refresh token，用户需重新走完整登录流程；可考虑先提示再清理。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt",
+    "line": 61,
+    "evidence": "if (current.expiresAtMillis - System.currentTimeMillis() > REFRESH_WINDOW_MILLIS) {",
+    "severity": "warn",
+    "confidence": "medium",
+    "description": "getValidAccessToken 用设备系统时钟判断 token 是否过期。若用户或恶意软件回拨系统时钟，已过期的 access token 会被继续使用；建议结合服务端返回的 401 做被动刷新兜底。"
+  },
+  {
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/EnvPreferences.kt",
+    "line": 56,
+    "evidence": "return prefs.all.mapNotNull { (k, v) ->\n            val key = k.trim()\n            val value = v as? String",
+    "severity": "suggestion",
+    "confidence": "medium",
+    "description": "getAllEnv 对 SharedPreferences 全量条目做 v as? String 过滤：若有其他代码往 env_preferences 写入非字符串值会被静默丢弃。建议写入侧统一约束类型或在丢弃时记日志。"
+  }
+]

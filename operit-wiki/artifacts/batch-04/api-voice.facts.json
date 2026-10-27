@@ -1,0 +1,890 @@
+[
+  {
+    "fact": "VoiceService 是语音服务的统一接口，定义与不同语音引擎交互的标准方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:3"
+  },
+  {
+    "fact": "VoiceService.isInitialized 表示当前语音引擎是否初始化完成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:6"
+  },
+  {
+    "fact": "VoiceService.isSpeaking 表示当前语音引擎是否正在播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:9"
+  },
+  {
+    "fact": "VoiceService.speakingStateFlow 是语音状态 Flow，供 UI 观察状态变化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:12"
+  },
+  {
+    "fact": "VoiceService.initialize() 是 suspend 函数，返回初始化是否成功",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:18"
+  },
+  {
+    "fact": "VoiceService.speak(text, interrupt=true, rate?, pitch?, extraParams) 把文本转语音并播放，interrupt 默认 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:35"
+  },
+  {
+    "fact": "speak 的 rate/pitch 为 null 时使用设置中的全局语速/音调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:39"
+  },
+  {
+    "fact": "VoiceService.stop() 停止当前播放，pause() 暂停，resume() 继续播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:49"
+  },
+  {
+    "fact": "VoiceService.shutdown() 释放语音引擎资源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:62"
+  },
+  {
+    "fact": "VoiceService.getAvailableVoices() 返回可用语音列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:68"
+  },
+  {
+    "fact": "VoiceService.setVoice(voiceId) 设置当前使用的语音",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:77"
+  },
+  {
+    "fact": "VoiceService.Voice 是数据类，字段为 id/name/locale/gender，gender 取值为 MALE、FEMALE 或 NEUTRAL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceService.kt:88"
+  },
+  {
+    "fact": "VoiceServiceFactory 是 object 单例工厂，用于创建不同类型的语音服务实例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:8"
+  },
+  {
+    "fact": "VoiceServiceType 枚举前 5 个值：SIMPLE_TTS、HTTP_TTS、OPENAI_WS_TTS、SILICONFLOW_TTS、MINIMAX_TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:16"
+  },
+  {
+    "fact": "VoiceServiceType 枚举后 4 个值：MIMO_TTS、DOUBAO_TTS、OPENAI_TTS、VITS_TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:24"
+  },
+  {
+    "fact": "createVoiceService 用 runBlocking 同步读取当前 TTS profile，再按 serviceType 分发构造",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:40"
+  },
+  {
+    "fact": "SIMPLE_TTS 对应 SimpleVoiceProvider（Android 系统 TTS）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:45"
+  },
+  {
+    "fact": "HTTP_TTS 对应 HttpVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:52"
+  },
+  {
+    "fact": "OPENAI_WS_TTS 对应 OpenAIRealtimeVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:57"
+  },
+  {
+    "fact": "OPENAI_TTS 对应 OpenAIVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:92"
+  },
+  {
+    "fact": "SILICONFLOW_TTS 对应 SiliconFlowVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:66"
+  },
+  {
+    "fact": "MINIMAX_TTS 对应 MiniMaxVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:74"
+  },
+  {
+    "fact": "MIMO_TTS 对应 MimoVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:80"
+  },
+  {
+    "fact": "DOUBAO_TTS 对应 DoubaoVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:86"
+  },
+  {
+    "fact": "VITS_TTS 对应 VitsVoiceProvider，取 profile.vitsConfig 构造",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:101"
+  },
+  {
+    "fact": "getInstance 缓存单例：当前 profile id 变化时 shutdown 旧实例并重建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:125"
+  },
+  {
+    "fact": "resetInstance 释放当前实例并清空 profile 记录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:127"
+  },
+  {
+    "fact": "TtsException(message, httpStatusCode?, errorBody?, cause?) 是 TTS 服务自定义异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/TtsException.kt:10"
+  },
+  {
+    "fact": "TtsException 携带可选的 HTTP 状态码与错误响应体",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/TtsException.kt:12"
+  },
+  {
+    "fact": "HttpTtsResponsePipelineStep 是 @Serializable 数据类，字段 type/path/headers",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:5"
+  },
+  {
+    "fact": "normalizedType 把 type 去空白转小写后用于分发",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:13"
+  },
+  {
+    "fact": "响应管线共 6 种步骤类型：parse_json、pick、parse_json_string、http_get、http_request_from_object、base64_decode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:21"
+  },
+  {
+    "fact": "SUPPORTED_TYPES 是 6 种步骤类型的集合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:24"
+  },
+  {
+    "fact": "HttpTtsResponsePipelineStep.parseList 解析 JSON 数组字符串，空白输入返回空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:39"
+  },
+  {
+    "fact": "encodeList 把步骤列表序列化为 JSON 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpTtsResponsePipelineStep.kt:44"
+  },
+  {
+    "fact": "HttpVoiceProvider 是 open 类，实现基于 HTTP 请求的通用 TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:46"
+  },
+  {
+    "fact": "豆包继承 HttpVoiceProvider（DoubaoVoiceProvider）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:8"
+  },
+  {
+    "fact": "MiniMax 通过 delegate 委托 HttpVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:39"
+  },
+  {
+    "fact": "MiMo 通过 delegate 委托 HttpVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:47"
+  },
+  {
+    "fact": "HttpVoiceProvider 默认配置为 SpeechServicesPreferences.DEFAULT_HTTP_TTS_PRESET",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:50"
+  },
+  {
+    "fact": "HttpVoiceProvider 的 OkHttpClient 连接/读/写超时均为 10 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:53"
+  },
+  {
+    "fact": "setConfiguration 更新 TtsHttpConfig 并把 _isInitialized 置 false 强制重新初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:129"
+  },
+  {
+    "fact": "initialize 要求 urlTemplate 非空，否则抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:146"
+  },
+  {
+    "fact": "initialize 要求模板含 {text} 占位符：POST 看 requestBody，GET 看 urlTemplate，缺失抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:150"
+  },
+  {
+    "fact": "initialize 要求 urlTemplate 以 http:// 或 https:// 开头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:165"
+  },
+  {
+    "fact": "initialize 调用 validateResponsePipeline 校验响应管线步骤",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:169"
+  },
+  {
+    "fact": "speak 把请求交给 QueuedTtsPlayback 排队播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:204"
+  },
+  {
+    "fact": "fetchAudioFile 先查 audioCache（ConcurrentHashMap），命中且文件存在则直接复用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:234"
+  },
+  {
+    "fact": "缓存键由 text.hashCode、语速、音调、voiceId 与排序后的 extraParams 拼接",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:976"
+  },
+  {
+    "fact": "POST 请求把占位符填进 requestBody 模板（replaceBodyPlaceholders）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:362"
+  },
+  {
+    "fact": "GET 请求把占位符填进 URL（finalUrl 拼接）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:380"
+  },
+  {
+    "fact": "请求体占位符含 text/rate/pitch/apiKey/model/locale/uuid/voice，extraParams 全部追加为占位符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:340"
+  },
+  {
+    "fact": "apiKey 非空且 headers 未配 Authorization 时自动加 Bearer 头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:405"
+  },
+  {
+    "fact": "自定义 headers 的值同样做占位符替换",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:413"
+  },
+  {
+    "fact": "请求日志经 HttpLogSanitizer.urlForLog/headersForLog 脱敏后输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:421"
+  },
+  {
+    "fact": "响应管线为空时直接用原始响应字节，为空则按步骤依次执行 resolvePipelineAudio",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:426"
+  },
+  {
+    "fact": "音频先落盘为 cacheDir 下 tts_<uuid>.bin 临时文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:431"
+  },
+  {
+    "fact": "resolvePipelineAudio 按 normalizedType 分发 6 种步骤，类型不匹配抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:625"
+  },
+  {
+    "fact": "管线最终结果非二进制时抛“最终不是音频”错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:656"
+  },
+  {
+    "fact": "parse_json 把二进制或文本载荷解析为 JsonElement",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:665"
+  },
+  {
+    "fact": "pick 要求当前值为 JSON，按 path 提取子节点",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:688"
+  },
+  {
+    "fact": "parseJsonPath 支持 $.a.b 与 data.audio、choices[0].message.audio.data 形式的键与下标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:921"
+  },
+  {
+    "fact": "http_get 步骤把当前字符串当 URL 发起 GET，headers 来自步骤配置",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:725"
+  },
+  {
+    "fact": "http_request_from_object 只允许 GET/POST 方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:774"
+  },
+  {
+    "fact": "http_request_from_object 的 POST 要求 body 与 content_type 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:792"
+  },
+  {
+    "fact": "base64_decode 用 Android Base64.DEFAULT 解码",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:820"
+  },
+  {
+    "fact": "validateResponsePipeline 拒绝未知步骤类型，pick 要求 path 非空且可解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:541"
+  },
+  {
+    "fact": "generateCacheKey 仅依赖 text.hashCode，存在哈希碰撞风险",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:976"
+  },
+  {
+    "fact": "shutdown 关闭播放队列并清空音频缓存文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:284"
+  },
+  {
+    "fact": "HttpVoiceProvider.getAvailableVoices 直接返回空列表，提示用 setVoice 直接指定",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:294"
+  },
+  {
+    "fact": "setVoice 只记录 currentVoiceId 即返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/HttpVoiceProvider.kt:302"
+  },
+  {
+    "fact": "DoubaoVoiceProvider 继承 HttpVoiceProvider，封装豆包 TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:8"
+  },
+  {
+    "fact": "豆包默认 endpoint 为 https://openspeech.bytedance.com/api/v1/tts",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:12"
+  },
+  {
+    "fact": "豆包默认 cluster=volcano_tts，默认音色 BV700_V2_streaming",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:13"
+  },
+  {
+    "fact": "豆包内置音色列表仅 1 个：BV700_V2_streaming（zh-CN/NEUTRAL）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:16"
+  },
+  {
+    "fact": "豆包响应管线：parse_json → pick(data) → base64_decode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:28"
+  },
+  {
+    "fact": "豆包每次 initialize 都重建 HTTP 配置（setConfiguration(buildHttpConfig())）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:44"
+  },
+  {
+    "fact": "豆包每次 speak 都重建 HTTP 配置（setConfiguration(buildHttpConfig())）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:51"
+  },
+  {
+    "fact": "豆包 speak 允许 extraParams 用 voice/cluster 覆盖默认音色与集群",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:53"
+  },
+  {
+    "fact": "豆包请求为 POST，请求体模板含 app/user/audio/request 四段，audio 编码 mp3",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:76"
+  },
+  {
+    "fact": "豆包请求用 {rate}/{pitch} 占位符透传语速音调，{uuid} 生成 reqid",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/DoubaoVoiceProvider.kt:76"
+  },
+  {
+    "fact": "MiniMaxVoiceProvider 实现 VoiceService，内部委托 HttpVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:39"
+  },
+  {
+    "fact": "MiniMax 默认 endpoint https://api.minimaxi.com/v1/t2a_v2，默认模型 speech-2.8-hd",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:11"
+  },
+  {
+    "fact": "MiniMax 默认音色 male-qn-qingse（zh-CN/MALE），内置列表仅 1 个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:13"
+  },
+  {
+    "fact": "MiniMax 响应管线：parse_json → pick(data.audio) → http_get（音频为 URL 二次拉取）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:31"
+  },
+  {
+    "fact": "MiniMax initialize 在 apiKey 为空时抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:51"
+  },
+  {
+    "fact": "MiniMax speak 在 apiKey 为空时抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:67"
+  },
+  {
+    "fact": "MiniMax 请求体 output_format=url，voice_setting 含 voice_id/speed/vol/pitch",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:122"
+  },
+  {
+    "fact": "MiniMax audio_setting 固定 32000Hz、128kbps、mp3、单声道",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:129"
+  },
+  {
+    "fact": "MiniMax modelName 为空时回退 DEFAULT_MODEL_NAME",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MiniMaxVoiceProvider.kt:75"
+  },
+  {
+    "fact": "MimoVoiceProvider 实现 VoiceService，内部委托 HttpVoiceProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:47"
+  },
+  {
+    "fact": "MiMo 默认 endpoint https://api.xiaomimimo.com/v1/chat/completions，默认模型 mimo-v2.5-tts",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:11"
+  },
+  {
+    "fact": "MiMo 内置中音色：冰糖、茉莉、苏打、白桦（zh-CN）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:25"
+  },
+  {
+    "fact": "MiMo 内置英音色：Mia、Chloe、Milo、Dean（en-US）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:31"
+  },
+  {
+    "fact": "MiMo 响应管线：parse_json → pick(choices[0].message.audio.data) → base64_decode",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:38"
+  },
+  {
+    "fact": "MiMo initialize 在 apiKey 为空时抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:60"
+  },
+  {
+    "fact": "MiMo speak 在 apiKey 为空时抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:75"
+  },
+  {
+    "fact": "MiMo 把 apiKey 放进 api-key 请求头，config 的 apiKey 字段置空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:116"
+  },
+  {
+    "fact": "MiMo 请求体为 OpenAI chat completions 格式，audio.format=wav、stream=false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:139"
+  },
+  {
+    "fact": "MiMo 提示词模板把语速音调写进 user 消息：请自然朗读。语速设置：{rate}x，音高设置：{pitch}x",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/MimoVoiceProvider.kt:126"
+  },
+  {
+    "fact": "OpenAIVoiceProvider 直调 OpenAI /audio/speech 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:25"
+  },
+  {
+    "fact": "OpenAI TTS 内置 6 个音色：alloy/echo/fable/onyx/nova/shimmer（en-US/NEUTRAL）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:46"
+  },
+  {
+    "fact": "OpenAI TTS initialize 校验 endpoint 非空、http(s) scheme、路径含 /audio/speech",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:94"
+  },
+  {
+    "fact": "OpenAI TTS initialize 校验 apiKey、model、voiceId 均非空",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:103"
+  },
+  {
+    "fact": "OpenAI TTS speed 取 extraParams speed 或全局语速，钳制在 0.25~4.0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:145"
+  },
+  {
+    "fact": "OpenAI TTS response_format 默认 mp3，可被 extraParams 覆盖",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:143"
+  },
+  {
+    "fact": "OpenAI TTS 请求头 Authorization: Bearer $apiKey",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:160"
+  },
+  {
+    "fact": "OpenAI TTS 响应扩展名白名单：mp3/opus/aac/flac/wav/pcm，否则按 mp3 存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:182"
+  },
+  {
+    "fact": "OpenAI TTS 音频落盘为 cacheDir 下 openai_tts_<uuid>.<ext>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:186"
+  },
+  {
+    "fact": "OpenAI TTS 播放经 playbackMutex 串行化，speak 前未初始化会自动 initialize",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:126"
+  },
+  {
+    "fact": "OpenAI TTS MediaPlayer 使用 CONTENT_TYPE_SPEECH + USAGE_ASSISTANT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:219"
+  },
+  {
+    "fact": "OpenAI TTS finishPlayback 把 _isSpeaking 置 false 并删除临时音频文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:251"
+  },
+  {
+    "fact": "OpenAI TTS stop 释放播放器并删除临时音频文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:277"
+  },
+  {
+    "fact": "OpenAI TTS stop complete 挂起的播放（done.complete）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIVoiceProvider.kt:285"
+  },
+  {
+    "fact": "OpenAIRealtimeVoiceProvider 走 OpenAI Realtime WebSocket 接口",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:32"
+  },
+  {
+    "fact": "Realtime 输出音频格式固定 audio/pcm、24000Hz、单声道",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:40"
+  },
+  {
+    "fact": "Realtime 内置 10 个音色：alloy/ash/ballad/cedar/coral/echo/marin/sage/shimmer/verse",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:53"
+  },
+  {
+    "fact": "Realtime WebSocket 客户端读超时为 0（长连接），ping 间隔 20 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:65"
+  },
+  {
+    "fact": "Realtime initialize 要求 endpoint 以 ws:// 或 wss:// 开头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:97"
+  },
+  {
+    "fact": "Realtime 建连后依次发送 conversation.item.create 与 response.create 事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:189"
+  },
+  {
+    "fact": "Realtime 音频 delta 事件名兼容 response.output_audio.delta 与 response.audio.delta",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:215"
+  },
+  {
+    "fact": "Realtime delta 经 Base64.DEFAULT 解码后追加进 ByteArrayOutputStream",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:219"
+  },
+  {
+    "fact": "Realtime response.done 状态为 failed 时按错误失败，否则完成音频收集",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:238"
+  },
+  {
+    "fact": "Realtime 把 PCM 包成 WAV：手写 44 字节 RIFF 头（wrapPcm16AsWav）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:417"
+  },
+  {
+    "fact": "Realtime buildRealtimeUrl 保留原有查询参数并强制追加 model 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:347"
+  },
+  {
+    "fact": "Realtime voice 以 voice_ 开头时转为 {id: voice} 对象，否则直接用字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:409"
+  },
+  {
+    "fact": "Realtime speed 钳制在 0.25~1.5",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:140"
+  },
+  {
+    "fact": "Realtime stop 取消 WebSocket 并把未完成的音频请求 complete 为空字节",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/OpenAIRealtimeVoiceProvider.kt:561"
+  },
+  {
+    "fact": "SiliconFlowVoiceProvider 封装硅基流动 TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:36"
+  },
+  {
+    "fact": "硅基流动 API 地址固定 https://api.siliconflow.cn/v1/audio/speech",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:42"
+  },
+  {
+    "fact": "硅基流动响应格式 mp3、采样率 32000、speed 1.0、gain 0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:43"
+  },
+  {
+    "fact": "硅基流动内置 8 个中文音色（alex/benjamin/charles/david/anna/bella/claire/diana）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:56"
+  },
+  {
+    "fact": "硅基流动默认音色 charles",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:62"
+  },
+  {
+    "fact": "硅基流动用双 Channel 队列：speakQueue（无界）做请求，playbackQueue 做播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:79"
+  },
+  {
+    "fact": "硅基流动 fetchAudioFile 未初始化直接返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:185"
+  },
+  {
+    "fact": "硅基流动 interrupt 且正在播放时先 stopPlaybackOnly",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:191"
+  },
+  {
+    "fact": "硅基流动请求前校验 generation，不一致丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:195"
+  },
+  {
+    "fact": "硅基流动用正则 <[^>]+> 剥离输入中的 HTML 标签",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:212"
+  },
+  {
+    "fact": "硅基流动输入剥离后为空则跳过请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:213"
+  },
+  {
+    "fact": "硅基流动 model/voice 解析优先级：extraParams > 构造配置 > 默认值 FunAudioLLM/CosyVoice2-0.5B",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:211"
+  },
+  {
+    "fact": "硅基流动 voice 值规则：speech: 开头直接用，否则拼成 model:voice",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:244"
+  },
+  {
+    "fact": "硅基流动请求体为手写 JSON 字符串，仅对双引号做转义",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:233"
+  },
+  {
+    "fact": "硅基流动用 HttpURLConnection POST，Authorization: Bearer $apiKey",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:273"
+  },
+  {
+    "fact": "硅基流动音频存为 cacheDir 下 siliconflow_tts*.mp3 临时文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:287"
+  },
+  {
+    "fact": "硅基流动下载后 generation 变化则删除临时文件并丢弃",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:295"
+  },
+  {
+    "fact": "硅基流动 setVoice 只接受内置列表或 speech: 开头 ID，否则返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:474"
+  },
+  {
+    "fact": "硅基流动 speak 日志打印完整请求体（含用户文本）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/SiliconFlowVoiceProvider.kt:269"
+  },
+  {
+    "fact": "SimpleVoiceProvider 基于 Android 系统 TextToSpeech",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:23"
+  },
+  {
+    "fact": "SimpleVoiceProvider 是 VoiceServiceType.SIMPLE_TTS 的实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:45"
+  },
+  {
+    "fact": "SimpleVoiceProvider 用 ArrayDeque<PendingUtterance> 维护待朗读队列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:69"
+  },
+  {
+    "fact": "SimpleVoiceProvider 注册 UtteranceProgressListener（setOnUtteranceProgressListener）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:167"
+  },
+  {
+    "fact": "UtteranceProgressListener 重写 onStart 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:169"
+  },
+  {
+    "fact": "UtteranceProgressListener 重写 onDone 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:193"
+  },
+  {
+    "fact": "UtteranceProgressListener 重写 onError 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:211"
+  },
+  {
+    "fact": "UtteranceProgressListener 重写 onRangeStart 回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:247"
+  },
+  {
+    "fact": "onRangeStart 记录当前 utterance 已朗读到的字符偏移 currentUtteranceRangeStart",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:250"
+  },
+  {
+    "fact": "SimpleVoiceProvider speak 时 interrupt 走 QUEUE_FLUSH，否则 QUEUE_ADD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:371"
+  },
+  {
+    "fact": "SimpleVoiceProvider 暂停期间的 speak 请求只缓存文本不提交",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:351"
+  },
+  {
+    "fact": "pause 调用 buildPausedSegmentsLocked 捕获待恢复片段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:431"
+  },
+  {
+    "fact": "buildPausedSegmentsLocked 取当前 utterance 未读完部分（substring(safeStart)）拼接后续队列文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:116"
+  },
+  {
+    "fact": "resume 把暂停片段逐段重播，第一段 FLUSH 其余 ADD",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:521"
+  },
+  {
+    "fact": "getAvailableVoices 把系统 voices 映射为 Voice，gender 按名称含 female/male 推断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:598"
+  },
+  {
+    "fact": "setVoice 按名称在系统 voices 中查找，找不到返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:642"
+  },
+  {
+    "fact": "ensureVoiceAndLocaleReady 优先按 voiceId 设声音，失败再按 locale 设语言",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:668"
+  },
+  {
+    "fact": "resolveBestLocale 按精确语言标签→同语言顺序选最优 Locale",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:713"
+  },
+  {
+    "fact": "resolveBestLocale 兜底用 isLanguageAvailable 选可用语言",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:720"
+  },
+  {
+    "fact": "locale 解析失败或语言不支持时抛 TtsException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/AccessibilityVoiceProvider.kt:684"
+  },
+  {
+    "fact": "QueuedTtsPlayback 是 internal 双队列播放器：speakQueue 无界收请求，playbackQueue 容量 1 串行播放",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:42"
+  },
+  {
+    "fact": "QueuedTtsPlayback 用 stopGeneration（AtomicLong）实现打断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:44"
+  },
+  {
+    "fact": "generation 不一致的请求在 playPreparedRequest 中被丢弃（return false 不播放）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:208"
+  },
+  {
+    "fact": "QueuedTtsPlayback.speak 在 interrupt 时先 clearForInterrupt 清空两队列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:87"
+  },
+  {
+    "fact": "QueuedTtsPlayback 每个请求带 CompletableDeferred，调用方 await 等播放结束",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:93"
+  },
+  {
+    "fact": "QueuedTtsPlayback 播放异常时 completeExceptionally 抛给调用方",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:63"
+  },
+  {
+    "fact": "QueuedTtsPlayback.shutdown 释放 MediaPlayer、cancel 协程域并关闭两 Channel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:147"
+  },
+  {
+    "fact": "QueuedTtsPlayback 拒绝播放不存在或空音频文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:202"
+  },
+  {
+    "fact": "QueuedTtsPlayback MediaPlayer 用 CONTENT_TYPE_SPEECH + USAGE_MEDIA",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:226"
+  },
+  {
+    "fact": "QueuedTtsPlayback 播放中每 100ms 轮询 isPlaying，暂停时也等待",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:243"
+  },
+  {
+    "fact": "QueuedTtsPlayback 播完在 finally 里释放 MediaPlayer 并复位状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/QueuedTtsPlayback.kt:250"
+  },
+  {
+    "fact": "VoiceListFetcher 是 object，提供拉取远端音色列表的工具方法",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:10"
+  },
+  {
+    "fact": "VoiceListFetcher 的 OkHttpClient 连接/读/写超时均为 30 秒",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:13"
+  },
+  {
+    "fact": "getVoicesListUrl 按 endpoint 生成 3 个候选：/v1/audio/voices、/v1/voices、/voices",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:25"
+  },
+  {
+    "fact": "extractBaseUrl 用 /v\\d+ 正则截掉版本号路径，失败回退原 URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:27"
+  },
+  {
+    "fact": "getVoicesList 逐个候选 GET（Bearer 头），首个非空列表即返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:64"
+  },
+  {
+    "fact": "parseVoices 兼容 data 数组或 voices 数组，id 取 id 字段或 voice 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:106"
+  },
+  {
+    "fact": "dedupeVoicesById 按 id 去重音色列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:126"
+  },
+  {
+    "fact": "dedupeVoicesById 冲突时保留 name/locale/gender 更全的一条（score 逻辑）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceListFetcher.kt:157"
+  },
+  {
+    "fact": "VitsVoiceProvider 是基于 ONNX Runtime 的本地 VITS TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:182"
+  },
+  {
+    "fact": "VITS_TTS 条目注释标明基于 VITS/Piper ONNX Runtime 推理形态的本地 TTS",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VoiceServiceFactory.kt:26"
+  },
+  {
+    "fact": "VitsVoiceProvider 包清单文件名为 operit-vits-tts.json",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:56"
+  },
+  {
+    "fact": "VitsVoiceProvider 播放分块 DEFAULT_CHUNK_FRAMES=2048 帧",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:55"
+  },
+  {
+    "fact": "VitsVoiceProvider 用双 Channel + generation 做排队与打断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:187"
+  },
+  {
+    "fact": "VitsVoiceProvider initialize 流程：解析包根目录→定位包文件→解析运行时配置→创建 ONNX session",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:256"
+  },
+  {
+    "fact": "VitsVoiceProvider SessionOptions 线程数取 options threads，默认 1，优化级别 ALL_OPT",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:261"
+  },
+  {
+    "fact": "VitsVoiceProvider 输入绑定解析失败时关闭已创建的 session 再抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:267"
+  },
+  {
+    "fact": "prepareSpeech 流程：tokenize 文本→runModel 推理得到 PCM",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:339"
+  },
+  {
+    "fact": "prepareSpeech 中 PCM 非空才进播放队列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:350"
+  },
+  {
+    "fact": "VitsVoiceProvider scales 输入为 [noiseScale, lengthScale/语速, noiseW]，语速下限钳制 0.01",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:402"
+  },
+  {
+    "fact": "VitsVoiceProvider sid 输入要求 speakerId 能转 Long，否则抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:415"
+  },
+  {
+    "fact": "VitsVoiceProvider 取 session 第一个输出为音频",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:425"
+  },
+  {
+    "fact": "VitsVoiceProvider 播放用 AudioTrack 单声道 16bit 流式模式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:440"
+  },
+  {
+    "fact": "VitsVoiceProvider resolvePackageRoot：目录直接用，zip 包解压到 filesDir/vits_tts_packages",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:672"
+  },
+  {
+    "fact": "VitsVoiceProvider zip 解压用 canonical 路径校验防 ZipSlip，不合规条目抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:683"
+  },
+  {
+    "fact": "VitsVoiceProvider 解压缓存签名为 路径|长度|修改时间 的 sha256 前 16 位",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:673"
+  },
+  {
+    "fact": "VitsVoiceProvider 模型/配置/词典定位优先级：manifest > options 路径 > 自动推断",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:727"
+  },
+  {
+    "fact": "VitsVoiceProvider 模型候选为 0 或多个时抛错（缺失/歧义）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:716"
+  },
+  {
+    "fact": "VitsVoiceProvider sample_rate 从顶层、audio 对象多路查找，缺失或<=0 抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:766"
+  },
+  {
+    "fact": "VitsVoiceProvider token map 来源：phoneme_id_map/token_id_map/tokens/vocab 或 symbols 数组",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:1156"
+  },
+  {
+    "fact": "VitsVoiceProvider tokenize 三路：extraParams 直接给 ids、text_mode=token_ids、按 frontend 分词",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:827"
+  },
+  {
+    "fact": "VitsVoiceProvider frontend 支持 lexicon（词典最长匹配）与 direct_symbols（按符号表贪心匹配）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:838"
+  },
+  {
+    "fact": "VitsVoiceProvider 分词后拼接 bos/eos，addBlank 时交错插入 blank token",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:851"
+  },
+  {
+    "fact": "VitsVoiceProvider lexicon 分词：空白跳过、ASCII 单词整体查词典",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:123"
+  },
+  {
+    "fact": "VitsVoiceProvider lexicon 分词：其余字符用最长匹配（longestEntryAt）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:138"
+  },
+  {
+    "fact": "VitsVoiceProvider loadLexicon 遇重复词或未知 token 抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:868"
+  },
+  {
+    "fact": "VitsVoiceProvider 输入绑定 ids 候选名：input/input_ids/ids/text/x，找不到抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:908"
+  },
+  {
+    "fact": "VitsVoiceProvider 可选输入 lengths/scales/sid 按候选名匹配，缺失则不传",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:907"
+  },
+  {
+    "fact": "VitsVoiceProvider 整型张量支持 INT64/INT32，超 int 范围抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:961"
+  },
+  {
+    "fact": "VitsVoiceProvider 浮点张量支持 FLOAT/DOUBLE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:1008"
+  },
+  {
+    "fact": "VitsVoiceProvider shape 未知维度按值数量推断，乘积不符抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:993"
+  },
+  {
+    "fact": "VitsVoiceProvider 输出转 PCM 支持 float/double/short/int/bytes 五种类型",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:1057"
+  },
+  {
+    "fact": "VitsVoiceProvider float 转 PCM 钳制 ±1 后乘 Short.MAX_VALUE，非有限值按 0 处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:1077"
+  },
+  {
+    "fact": "VitsVoiceProvider getAvailableVoices 按 speakerCount 生成 Speaker 0..N-1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:639"
+  },
+  {
+    "fact": "VitsVoiceProvider setVoice 只记录 speakerId 字符串，恒返回 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/voice/VitsVoiceProvider.kt:647"
+  }
+]

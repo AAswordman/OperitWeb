@@ -1,0 +1,22 @@
+[
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "textContent.replace(match.value, \"\") 会删除文本中所有与当前匹配块完全相同的子串，而不只是当前匹配的那一处。如果模型输出了两个完全相同的工具调用块，第二次循环时对应内容早已被删掉（结果碰巧正确）；更隐蔽的是，若普通正文恰好包含与工具调用块相同的字符串，会被误删。建议用按区间删除（如 removeRange(match.range)）只删当前匹配。",
+    "evidence": "            textContent = textContent.replace(match.value, \"\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt",
+    "line": 71,
+    "severity": "warning",
+    "title": "删除工具调用块用全量 replace 而非按区间删除"
+  },
+  {
+    "category": "correctness",
+    "confidence": "medium",
+    "detail": "工具调用 id 本质是 32 位 hashCode 的 36 进制截断（9 位），不同工具调用存在哈希碰撞导致 id 重复的理论可能。OpenAI 协议要求 tool call id 在一次请求内唯一，碰撞会让模型把两个调用的返回结果对应到同一个 id。建议改用递增序号或 UUID。",
+    "evidence": "    private fun generateMistralToolCallId(toolName: String, params: JSONObject, index: Int): String {\n        val raw = \"$toolName:${params.toString()}:$index\"\n        val hash = raw.hashCode()\n        val positive = if (hash == Int.MIN_VALUE) 0 else kotlin.math.abs(hash)\n        var base = positive.toString(36)\n        base = base.filter { it.isLetterOrDigit() }.lowercase()\n        if (base.isEmpty()) base = \"0\"\n        val padded = base.padStart(9, '0')\n        return if (padded.length > 9) padded.takeLast(9) else padded\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MistralProvider.kt",
+    "line": 77,
+    "severity": "suggestion",
+    "title": "工具调用 id 基于 32 位哈希截断，有碰撞可能"
+  }
+]

@@ -1,0 +1,786 @@
+[
+  {
+    "fact": "ToolPkgSourceType 枚举只有 ASSET 与 EXTERNAL 两个取值，表示插件包的两种来源",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:25"
+  },
+  {
+    "fact": "包生命周期为三态：Available（assets 与外部扫描到的全部包）→ Enabled（用户启用的）→ Used（当前会话已加载并注册给 AI 的）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:58"
+  },
+  {
+    "fact": "常量 PACKAGES_DIR 值为 packages，指定外部插件包目录名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:76"
+  },
+  {
+    "fact": "常量 TOOLPKG_EXTENSION 值为 .toolpkg，是插件包压缩文件扩展名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:77"
+  },
+  {
+    "fact": "常量 TOOLPKG_CACHE_DIR 值为 toolpkg_cache，指定插件包解压缓存目录名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:78"
+  },
+  {
+    "fact": "SharedPreferences 文件名常量为 com.ai.assistance.operit.core.tools.PackageManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:80"
+  },
+  {
+    "fact": "SharedPreferences 键 imported_packages 记录已导入的包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:81"
+  },
+  {
+    "fact": "SharedPreferences 键 disabled_packages 记录被禁用的包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:81"
+  },
+  {
+    "fact": "SharedPreferences 键 active_packages 记录当前会话激活的包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:81"
+  },
+  {
+    "fact": "SharedPreferences 键 toolpkg_subpackage_states 记录子包开关状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:82"
+  },
+  {
+    "fact": "PackageManager.getInstance 使用双重检查锁实现单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:96"
+  },
+  {
+    "fact": "PackageManager.peekInstance 只返回已存在的实例，不触发初始化，注释说明性能采样等场景不允许为读取数据而触发包管理器初始化",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:106"
+  },
+  {
+    "fact": "ensureInitialized 在主线程调用时直接返回不阻塞，注释说明 toolpkg 解析需要 WebView 主线程回调、永不在主线程阻塞",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:637"
+  },
+  {
+    "fact": "ensureInitializationStarted 初始化序列前段：清旧缓存 → 建外部目录 → 读插件排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:664"
+  },
+  {
+    "fact": "ensureInitializationStarted 初始化序列后段：loadAvailablePackages → initializeDefaultPackages → reconcileToolPkgCaches → refreshToolPkgRuntimeState",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:673"
+  },
+  {
+    "fact": "外部包缓存签名由路径、大小、修改时间、版本、main 入口组成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:839"
+  },
+  {
+    "fact": "assets 包缓存签名由 APK 内 CRC 与大小组成",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:865"
+  },
+  {
+    "fact": "单个包的缓存目录名 = 清洗后包名 + \"-\" + hashCode 十六进制",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:750"
+  },
+  {
+    "fact": "reconcileToolPkgCaches 保留 assets 容器与已启用容器的缓存，删除其余缓存",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:930"
+  },
+  {
+    "fact": "loadAvailablePackages 扫描流水线为：scanAssetPackages（phase=asset，JS 包标 isBuiltIn=true）→ scanExternalPackages（phase=external）→ mergePackageScanCandidateResults → validateToolPkgRelationships → applyPackageScanSnapshot",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1828"
+  },
+  {
+    "fact": "扫描候选按扩展名分类：.toolpkg→toolpkg、.js→script、其他→unsupported",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1109"
+  },
+  {
+    "fact": "外部 toolpkg 只能覆盖内置（ASSET）容器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1016"
+  },
+  {
+    "fact": "外部包与非内置容器重名时报 Duplicate package name 错误",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1201"
+  },
+  {
+    "fact": "外部扫描前先经 PluginDenylistRepository.findDeniedImport 做远程安全拒绝名单检查",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1292"
+  },
+  {
+    "fact": "外部扫描缓存签名混入拒绝名单的 cacheSignature 与 API 版本文本，拒绝名单变化会使签名失效",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1243"
+  },
+  {
+    "fact": "外部扫描签名缓存命中时跳过重复解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:1838"
+  },
+  {
+    "fact": "注册引擎阶段每个包使用全新的 JsEngine，并在 finally 中 destroy，超时 runtime 不保留状态、不阻塞下一个包的注册",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2007"
+  },
+  {
+    "fact": "parseJsPackage 从脚本头部 /* METADATA */ 注释块提取元数据（extractMetadataFromJs）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2467"
+  },
+  {
+    "fact": "提取的 HJSON 元数据转为 JSONObject",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2258"
+  },
+  {
+    "fact": "normalizeJsPackageMetadata 归一化 enabled_by_default 与 is_built_in 别名，category 缺省为 Other",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2337"
+  },
+  {
+    "fact": "JS 包工具缺 script 字段时补空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2330"
+  },
+  {
+    "fact": "JS 包解析时每个工具存完整脚本内容并记录函数名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2340"
+  },
+  {
+    "fact": "validateToolFunctionExists 用 5 种正则在脚本中查找工具函数，找不到只打 warning 不报错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2449"
+  },
+  {
+    "fact": "importPackageFileFromExternalStorage 支持 .toolpkg/.js/.ts/.hjson 四种文件导入",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2518"
+  },
+  {
+    "fact": "外部导入先过拒绝名单，toolpkg 复制到外部包目录后从目标路径重载",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2598"
+  },
+  {
+    "fact": "外部导入成功消息追加市场来源声明：this is the Operit marketplace … beware of resales",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2660"
+  },
+  {
+    "fact": "getExternalPackagesPath 返回 Android/data/<应用包名>/files/packages 路径",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2486"
+  },
+  {
+    "fact": "installDebugToolPkg 要求待安装文件已位于外部包目录内",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2772"
+  },
+  {
+    "fact": "installDebugToolPkg 删除同名重复压缩包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2792"
+  },
+  {
+    "fact": "installDebugToolPkg 可按 manifest 重置子包开关（resetSubpackageStatesToManifest）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2860"
+  },
+  {
+    "fact": "installDebugToolPkg 安装后销毁引擎、反注册工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2883"
+  },
+  {
+    "fact": "installDebugToolPkg 安装后重激活之前活跃的包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:2893"
+  },
+  {
+    "fact": "enablePackage 调用 collectRequiredToolPkgPackages 解析 requires",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3158"
+  },
+  {
+    "fact": "requires 解析中缺包、版本不满足、自依赖均抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3071"
+  },
+  {
+    "fact": "启用容器时连带默认开启其子包，并确保缓存存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3100"
+  },
+  {
+    "fact": "disablePackage 在有已启用包依赖它时拒绝，错误信息为 Cannot disable … it is required by: …",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3796"
+  },
+  {
+    "fact": "禁用容器会移除子包、反注册工具、删除缓存目录、销毁执行引擎",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3830"
+  },
+  {
+    "fact": "usePackage 拒绝激活容器本身，错误信息为 is not a package and cannot be activated",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3246"
+  },
+  {
+    "fact": "usePackage 校验 required 环境变量，缺失时返回缺失清单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3320"
+  },
+  {
+    "fact": "registerPackageTools 过滤掉 advice=true 的工具，advice 工具不注册给 AI",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3447"
+  },
+  {
+    "fact": "工具注册名为 包名:工具名 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3455"
+  },
+  {
+    "fact": "多 state 包按 ConditionEvaluator.evaluate 选 state",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3476"
+  },
+  {
+    "fact": "能力快照含 platform.name=android、权限等级、shizuku、虚拟显示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3533"
+  },
+  {
+    "fact": "deletePackage 删除子包时只做 disable",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3958"
+  },
+  {
+    "fact": "deletePackage 删除容器时从内存 map 移除、删缓存、销毁引擎",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:3993"
+  },
+  {
+    "fact": "PackageManager.destroy 关闭 WASM 运行时、toolPkgManager、mcpManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManager.kt:4095"
+  },
+  {
+    "fact": "ToolPkgManifest 的 schema_version 缺省为 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:213"
+  },
+  {
+    "fact": "ToolPkgManifest 的 api_version 缺省为 LEGACY（1.0.0）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:218"
+  },
+  {
+    "fact": "ToolPkgManifest 的 logo 字段只接受字符串型 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:225"
+  },
+  {
+    "fact": "ToolPkgManifest 的 author 接受字符串或列表两种形式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:228"
+  },
+  {
+    "fact": "ToolPkgManifest 的 enabled_by_default 缺省为 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:231"
+  },
+  {
+    "fact": "ToolPkgMainRegistration 含 23 个注册桶列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:338"
+  },
+  {
+    "fact": "ToolPkgMainRegistration 外加 marketOrigin 字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:362"
+  },
+  {
+    "fact": "parseToolPkgFromIndexedEntries：找 manifest → 解析 → requireSupported(apiVersion) → toolpkg_id 必填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:418"
+  },
+  {
+    "fact": "parseToolPkgFromIndexedEntries：main 入口必填且必须存在于压缩包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:428"
+  },
+  {
+    "fact": "子包解析要求 id 与 entry 必填，JS 解析失败只记错误，全部子包失败才抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:470"
+  },
+  {
+    "fact": "resources 要求 key 与 path 必填，目录型资源做 mime 检查",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:520"
+  },
+  {
+    "fact": "wasm 模块要求 id 必填且大小写不敏感去重，路径必须为 .wasm，exports 非空且去重，source_language 与 abi 必填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:580"
+  },
+  {
+    "fact": "workflow 模板要求 resource_key 必须存在且为文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:620"
+  },
+  {
+    "fact": "workspace 模板要求 resource_key 必须为目录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:640"
+  },
+  {
+    "fact": "parseMainRegistration 失败则整个包加载失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:704"
+  },
+  {
+    "fact": "UI 路由要求 id/route/screen 必填，screen 必须存在，runtime 缺省为 compose_dsl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:700"
+  },
+  {
+    "fact": "导航条目要求 id 必填、route 或 action 二选一、route 必须存在，surface 仅允许 toolbox 与 main_sidebar_plugins",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:730"
+  },
+  {
+    "fact": "桌面小部件要求 route 与 render 路由都必须存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:760"
+  },
+  {
+    "fact": "各类钩子要求 id 与 function 必填，且大小写不敏感去重",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:790"
+  },
+  {
+    "fact": "聊天消息菜单项的 senders 仅允许 user 与 ai，dialog screen 必须存在",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:820"
+  },
+  {
+    "fact": "AI Provider 解析 listModels、sendMessage、testConnection、calculateInputTokens 4 个 handler",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:639"
+  },
+  {
+    "fact": "AI Provider handler 缺失时 parseHandler 抛 IllegalArgumentException（is required）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:610"
+  },
+  {
+    "fact": "解析产出 ToolPackage 的 category 固定为 ToolPkg，tools 为空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1420"
+  },
+  {
+    "fact": "toolbox UI 模块自动生成导航条目（id 为 toolbox_ + 模块 id、surface=toolbox）与路由",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:672"
+  },
+  {
+    "fact": "buildZipEntryIndex 与 buildDirectoryEntryIndex 做大小写不敏感查找，首个命中为准",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1477"
+  },
+  {
+    "fact": "normalizeZipEntryPath 把反斜杠转斜杠，拒绝空路径与任何含 .. 的路径，是 ZipSlip 防护",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1527"
+  },
+  {
+    "fact": "extractZipEntriesFromExternal 与 extractZipEntriesFromAsset 对 normalize 返回 null 的条目直接跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1669"
+  },
+  {
+    "fact": "目录资源 mime 识别三种：vnd.android.document/directory、inode/directory、application/x-directory",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:19"
+  },
+  {
+    "fact": "findManifestEntry 优先级：根 manifest.hjson(0) > 根 manifest.json(1) > 嵌套 hjson(2) > 嵌套 json(3)，再按深度与名称排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1750"
+  },
+  {
+    "fact": "normalizeRequirements 要求 id 与 description 必填，min/max 版本解析且 min 不得大于 max，id 大小写不敏感去重",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1779"
+  },
+  {
+    "fact": "resolveLogoResource 要求 key 必须存在且为文件，扩展名/mime 限 svg/png/jpg/jpeg/webp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgParser.kt:1823"
+  },
+  {
+    "fact": "PackageManagerToolPkgFacade 是包管理器的内部门面类，构造参数为 PackageManager",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:18"
+  },
+  {
+    "fact": "buildToolPkgToolboxUiModules 按 runtime 与 toolbox surface 的导航条目过滤 uiRoutes，按 title/包名/模块 id 排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:26"
+  },
+  {
+    "fact": "buildToolPkgUiRoutes 缺省 runtime 为 TOOLPKG_RUNTIME_COMPOSE_DSL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:78"
+  },
+  {
+    "fact": "导航条目按 surface/order/title 排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:150"
+  },
+  {
+    "fact": "桌面小部件按 order/title/widgetId 排序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:178"
+  },
+  {
+    "fact": "getToolPkgContainerDetails 中 toolbox UI 模块仅在容器启用时返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:283"
+  },
+  {
+    "fact": "getToolPkgContainerDetails 中子包 enabled = 容器启用且子包在启用集合中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:298"
+  },
+  {
+    "fact": "importToolPkgWorkflowTemplate 要求容器已启用，模板 id 大小写不敏感匹配，模板资源必须为文件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:405"
+  },
+  {
+    "fact": "导入工作流模板时生成随机 UUID 作为新工作流 id，并重置 createdAt/updatedAt、清空执行统计",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:445"
+  },
+  {
+    "fact": "导入工作流模板经 WorkflowRepository.createWorkflow 在 runBlocking 中落库",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:465"
+  },
+  {
+    "fact": "importToolPkgWorkspaceTemplate 要求目标目录为空或不存在，不存在则 mkdirs",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:484"
+  },
+  {
+    "fact": "导入工作空间模板后校验目标目录含 .operit/config.json，否则抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:540"
+  },
+  {
+    "fact": "setToolPkgSubpackageEnabled 写子包开关状态并同步 enabled 集合，返回前二次读取校验 stateSaved 与 importedMatches",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:562"
+  },
+  {
+    "fact": "setToolPkgSubpackageEnabled 关闭子包时调用 unregisterPackageTools 反注册其工具",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:580"
+  },
+  {
+    "fact": "findPreferredPackageNameForSubpackageId 按 subpackageId 大小写不敏感查找，preferEnabled=true 时优先返回已启用的包名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:596"
+  },
+  {
+    "fact": "copyToolPkgResourceToFileBySubpackageId 优先从已启用容器拷贝资源，逐个容器尝试直到成功",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:632"
+  },
+  {
+    "fact": "copyToolPkgResourceToFile 要求容器已启用，资源 key 大小写不敏感匹配，导出失败记日志返回 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:683"
+  },
+  {
+    "fact": "getToolPkgResourceOutputFileName 取资源路径最后一段为文件名，目录型资源缺 .zip 后缀时补上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:729"
+  },
+  {
+    "fact": "getToolPkgComposeDslScript 仅返回 runtime 为 compose_dsl 的 UI 模块脚本，未指定 uiModuleId 时取第一个",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:823"
+  },
+  {
+    "fact": "runToolPkgMainHook 用 runCatching 包裹，参数含 event/eventName/eventPayload/timestampMs/functionName/toolPkgId/containerPackageName/__operit_ui_package_name/__operit_script_screen",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:891"
+  },
+  {
+    "fact": "runToolPkgMainHook 中 eventPayload 含 chatId 时注入 __operit_package_chat_id 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:956"
+  },
+  {
+    "fact": "runToolPkgMainHook 中 inlineFunctionSource 非空时注入 __operit_inline_function_name 与 __operit_inline_function_source 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:961"
+  },
+  {
+    "fact": "runToolPkgMainHook 执行上下文 key 缺省为 toolpkg_main:<容器包名>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:1062"
+  },
+  {
+    "fact": "runToolPkgMainHook 仅在 event 为 toolpkg_message_processing 时记录分段耗时日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:907"
+  },
+  {
+    "fact": "runToolPkgNavigationEntryAction 复用 runToolPkgMainHook，event 固定为 TOOLPKG_EVENT_NAVIGATION_ENTRY_ACTION，pluginId 取 entryId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:1044"
+  },
+  {
+    "fact": "readToolPkgWasmModuleBytes 要求容器已启用，module.exports 非空时校验 exportName 必须在列表中（大小写不敏感）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:1067"
+  },
+  {
+    "fact": "readToolPkgTextResource 归一化资源路径：反斜杠转斜杠并去前导斜杠",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageManagerToolPkgFacade.kt:1139"
+  },
+  {
+    "fact": "ToolPkgMainRegistrationScriptParser.parse 调用 JsEngine.executeToolPkgMainRegistrationFunction 执行主脚本的 registerToolPkg 函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:12"
+  },
+  {
+    "fact": "执行 registerToolPkg 时注入参数 __operit_registration_mode=true、__operit_plugin_id=registerToolPkg:<包id>、__operit_script_screen=<主脚本路径>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:23"
+  },
+  {
+    "fact": "注册解析失败时返回 Failure，错误信息格式为 main script '<路径>' failed while loading or running registerToolPkg(): <首行错误>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:191"
+  },
+  {
+    "fact": "UI 模块注册项要求 id 与 screen 必填，runtime 缺省 compose_dsl，title 缺省为 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:194"
+  },
+  {
+    "fact": "UI 路由注册项的 route 字段缺省时依次回退 routeId、buildToolPkgRouteId(toolPkgId, id)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:252"
+  },
+  {
+    "fact": "导航条目注册项的 surface 转小写，要求 id 必填、route 或 action 二选一、surface 必填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:285"
+  },
+  {
+    "fact": "导航条目 action 支持字符串简写（直接为函数名）与对象形式（function + function_source）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:379"
+  },
+  {
+    "fact": "桌面小部件注册项的 render 缺省时回退为 route",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:332"
+  },
+  {
+    "fact": "App 生命周期钩子注册项要求 id、event、function 三者必填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:418"
+  },
+  {
+    "fact": "AI Provider 的 4 个 handler 必须为对象，违规则抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:614"
+  },
+  {
+    "fact": "AI Provider handler 须含非空 function 字段，缺失时抛 IllegalArgumentException",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:622"
+  },
+  {
+    "fact": "AI Provider 注册项的 displayName 缺省为 id",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:578"
+  },
+  {
+    "fact": "parseLocalizedText 支持字符串、JSONObject、Map 与 JSON 字符串四种形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:670"
+  },
+  {
+    "fact": "parseLocalizedText 缺 default 键时取第一个值为 default",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:690"
+  },
+  {
+    "fact": "parseStringList 接受 JSONArray 或单个字符串，其余类型返回空列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMainRegistrationScriptParser.kt:652"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor 每包日志上限 120 条，单条消息上限 4000 字符，超限时移除最早条目",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:7"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.beginCall 解析包名失败返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:95"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor 从 params 的 toolPkgId/containerPackageName/__operit_ui_package_name 等 6 个键解析包名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:369"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.beginCall 也支持从 __operit_plugin_id 的 registerToolPkg: 前缀解析包名",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:366"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.finishCall 用 elapsedRealtime 计算耗时（防时钟回拨），内存增量按 jsMallocUsedKb 差值计算",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:133"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.finishCall 仅在失败且有消息时写 error 级日志",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:185"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.snapshot 的 averageDurationMs = totalDurationMs / completedCalls",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:285"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor.normalizeLevel 把 warn/warning 归一为 warn，未知级别归为 info",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:400"
+  },
+  {
+    "fact": "ToolPkgRuntimeMonitor 所有状态变更经同一 lock 同步",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgRuntimeMonitor.kt:88"
+  },
+  {
+    "fact": "ToolPkgManager.containersInternal 与 subpackageByPackageNameInternal 为 ConcurrentHashMap，存放容器与子包运行时",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:28"
+  },
+  {
+    "fact": "ToolPkgManager.canRegisterToolPkg 在容器名或任一子包名已存在时返回 false，阻止重复注册",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:60"
+  },
+  {
+    "fact": "ToolPkgManager.registerToolPkg 写入容器与子包运行时，返回子包的 ToolPackage 列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:87"
+  },
+  {
+    "fact": "ToolPkgManager.getToolPkgExecutionEngine 按 contextKey 复用 JsEngine，contextKey 归属的容器不一致时抛错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:134"
+  },
+  {
+    "fact": "ToolPkgManager.acquireToolPkgExecutionEngine 在获取引擎时把 activeLeases 加 1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:159"
+  },
+  {
+    "fact": "ToolPkgManager.releaseToolPkgExecutionEngine（identity 校验版）仅当引擎实例一致才释放，leases>1 时只减计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:231"
+  },
+  {
+    "fact": "ToolPkgManager.releaseToolPkgExecutionEngine（仅 key 版）注释说明保留给旧调用方，生命周期感知方用 identity 校验版",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:264"
+  },
+  {
+    "fact": "ToolPkgManager.cancelExecutionsForChat 对全部执行引擎调用 cancelExecutionsForChat(chatId, reason)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:283"
+  },
+  {
+    "fact": "ToolPkgManager.destroyToolPkgExecutionEngines 销毁指定容器的全部执行引擎",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:293"
+  },
+  {
+    "fact": "ToolPkgManager.destroy 用 AtomicBoolean 保证只执行一次，销毁全部执行引擎",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:320"
+  },
+  {
+    "fact": "ToolPkgManager.getToolPkgEngineRuntimeInfo 按容器汇总引擎数、线程 id、QuickJS 内存，用于性能分析界面归属插件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManager.kt:211"
+  },
+  {
+    "fact": "ToolPkgLoadOrderResolver.resolve 对已启用的容器做拓扑排序，返回 orderedContainers 与 failures",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:30"
+  },
+  {
+    "fact": "加载排序中 requires 引用按容器→子包（包名或 subpackageId）→普通包的顺序解析，全部大小写不敏感",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:64"
+  },
+  {
+    "fact": "加载排序中被依赖的包必须已启用，否则记 failure：requires 'x' to be enabled",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:150"
+  },
+  {
+    "fact": "加载排序中自依赖记 failure：cannot require itself",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:130"
+  },
+  {
+    "fact": "加载排序中依赖的容器加载失败会级联标记依赖方失败：which cannot be loaded",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:165"
+  },
+  {
+    "fact": "加载排序用 Kahn 算法（indegree）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:201"
+  },
+  {
+    "fact": "加载排序同级按 preferredOrder 索引、包名小写、包名原始大小写依次决胜",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:192"
+  },
+  {
+    "fact": "加载排序检测到环时把环内全部包记 failure：dependency cycle involving: …",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoadOrder.kt:227"
+  },
+  {
+    "fact": "ToolPkgComposeDslParser.parseRenderResult 要求根对象含 tree 节点，tree 缺 type 或解析失败返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:21"
+  },
+  {
+    "fact": "ToolPkgComposeDslParser.parseRenderResult 解析出 tree/state/memo 三部分",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:25"
+  },
+  {
+    "fact": "compose_dsl 节点 children 支持 JSONArray、List、单个 JSONObject 三种形态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:88"
+  },
+  {
+    "fact": "compose_dsl 节点 slots 支持 JSONObject 与 Map 两种形态，空 slot 不收录",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:105"
+  },
+  {
+    "fact": "ToolPkgComposeDslParser.extractActionId 支持 JSONObject 的 __actionId 键、__action: 前缀字符串、普通非空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:31"
+  },
+  {
+    "fact": "compose_dsl 渲染结果的字符串根对象支持二次解码（字符串内嵌 JSON）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslParser.kt:60"
+  },
+  {
+    "fact": "ToolPkgApiVersion 要求严格 major.minor.patch 格式，比较按 major/minor/patch 字典序",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:10"
+  },
+  {
+    "fact": "LEGACY_API_VERSION 为 1.0.0，API_VERSION_1_0_1 为 1.0.1，1.0.1 引入自 Operit 1.12.1+4",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:75"
+  },
+  {
+    "fact": "parseDeclaredApiVersion 对空 api_version 回退为 LEGACY_API_VERSION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:84"
+  },
+  {
+    "fact": "supportedApiVersions 在当前 Operit 版本 ≥ 1.12.1+4 时才加入 1.0.1，否则仅支持 1.0.0",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:88"
+  },
+  {
+    "fact": "requireSupported 用精确匹配校验声明版本是否在支持列表中，不在则抛错并列出支持版本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgApiVersion.kt:102"
+  },
+  {
+    "fact": "ToolPkgLoader.loadToolPkgFromExternalFile 用 ZipFile 打开外部 .toolpkg，建 zip 条目索引后经 withTemporaryToolPkgTextResourceResolver 解析",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoader.kt:10"
+  },
+  {
+    "fact": "ToolPkgLoader.loadToolPkgFromAsset 先读 manifest 预览算缓存，再对解压目录建目录条目索引解析，isBuiltIn=true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgLoader.kt:45"
+  },
+  {
+    "fact": "TOOLPKG_RUNTIME_COMPOSE_DSL 常量值为 compose_dsl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:3"
+  },
+  {
+    "fact": "TOOLPKG_EVENT_APPLICATION_ON_CREATE 等 6 个应用生命周期事件常量覆盖 on_create/on_foreground/on_background/on_low_memory/on_trim_memory/on_terminate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:5"
+  },
+  {
+    "fact": "TOOLPKG_EVENT_ACTIVITY_ON_CREATE 等 6 个 Activity 生命周期事件常量覆盖 on_create 到 on_destroy",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:13"
+  },
+  {
+    "fact": "TOOLPKG_EVENT_MESSAGE_PROCESSING 常量值为 toolpkg_message_processing，是唯一做分段耗时日志的事件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:17"
+  },
+  {
+    "fact": "23 个 TOOLPKG_REGISTRATION_* 常量定义 JS 侧注册函数名，均以 registerToolPkg 开头",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:41"
+  },
+  {
+    "fact": "导航 surface 常量只有 toolbox 与 main_sidebar_plugins 两种",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:83"
+  },
+  {
+    "fact": "buildToolPkgRouteId 生成路由 id 格式为 toolpkg:<容器包名>:ui:<路由id>",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgCommonPluginConstants.kt:86"
+  },
+  {
+    "fact": "ToolPkgManifestRequirement 的 min_version/max_version 经 @SerialName 映射，均为可选",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManifestRequirement.kt:13"
+  },
+  {
+    "fact": "versionConstraintText 把版本约束渲染为 min - max、>= min、<= max 三种文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManifestRequirement.kt:19"
+  },
+  {
+    "fact": "targetVersionFailure 在目标包无版本声明、版本非法、低于 min、高于 max 时返回失败描述，否则返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManifestRequirement.kt:28"
+  },
+  {
+    "fact": "ToolPkgPackageVersion 要求严格 major.minor.patch 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgManifestRequirement.kt:69"
+  },
+  {
+    "fact": "ToolPkgMarketOrigin 含 market、toolpkgId、version、author 四个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOrigin.kt:5"
+  },
+  {
+    "fact": "ToolPkgMarketOriginCodec 的 MARKET 常量为 Operit，XOR_KEY 为 0x5a",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOrigin.kt:16"
+  },
+  {
+    "fact": "encodeForMetadata 输出 xor-v1: 前缀 + XOR 混淆字节序列",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOrigin.kt:25"
+  },
+  {
+    "fact": "decodeMetadata 校验 xor-v1: 前缀，字节逐个与 0x5a 异或还原 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOrigin.kt:39"
+  },
+  {
+    "fact": "validateForPackage 要求 market == Operit、toolpkgId 与包 id 一致、version 非空，否则返回 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgMarketOrigin.kt:50"
+  },
+  {
+    "fact": "ToolPkgDebugInstallReceiver 监听广播 com.ai.assistance.operit.DEBUG_INSTALL_TOOLPKG，参数为 package_name、file_path、reset_subpackage_states",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgDebugInstallReceiver.kt:14"
+  },
+  {
+    "fact": "ToolPkgDebugInstallReceiver 在 IO 协程中调用 installDebugToolPkg 做调试安装",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgDebugInstallReceiver.kt:35"
+  },
+  {
+    "fact": "PackageDebugRefreshReceiver 监听广播 com.ai.assistance.operit.DEBUG_REFRESH_PACKAGES，参数为 reactivate_active_packages",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageDebugRefreshReceiver.kt:14"
+  },
+  {
+    "fact": "PackageDebugRefreshReceiver 在 IO 协程中调用 refreshExternalPackagesForDebug 刷新外部包",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/PackageDebugRefreshReceiver.kt:31"
+  },
+  {
+    "fact": "三个调试 receiver 在 manifest 中均为 exported=true，但受 android.permission.DUMP 权限保护",
+    "ref": "app/src/main/AndroidManifest.xml:358"
+  },
+  {
+    "fact": "ToolPkgComposeDslDebugDumpReceiver 监听 com.ai.assistance.operit.DUMP_COMPOSE_DSL_UI，用 goAsync 把当前 compose_dsl 快照写盘",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgComposeDslDebugDumpReceiver.kt:14"
+  },
+  {
+    "fact": "ToolPkgXmlRenderHookObjectResult 含 handled/text/content/composeDsl 四个可选字段，是 xml_render 钩子结果形状",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgHookModels.kt:10"
+  },
+  {
+    "fact": "ToolPkgToolLifecycleEventPayload 记录工具名、参数、授权与执行结果信息",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgHookModels.kt:16"
+  },
+  {
+    "fact": "ToolPkgPromptHookObjectResult 可改写 rawInput/processedInput/chatHistory/systemPrompt/toolPrompt/availableTools",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgHookModels.kt:39"
+  },
+  {
+    "fact": "ToolPkgManifestWorkflowTemplate 与 ToolPkgManifestWorkspaceTemplate 用 resource_key 指向资源，workspace 模板另有 project_type",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/packTool/ToolPkgTemplateModels.kt:6"
+  }
+]

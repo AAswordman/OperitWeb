@@ -1,0 +1,78 @@
+[
+  {
+    "fact": "QwenAIProvider 是针对阿里巴巴 Qwen（通义千问）模型的特定 API Provider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:14"
+  },
+  {
+    "fact": "QwenAIProvider 继承自 OpenAIProvider，以重用 OpenAI 兼容协议的大部分逻辑",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:30"
+  },
+  {
+    "fact": "构造函数参数 qwenProviderType 默认值为 ApiProviderType.ALIYUN",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:23"
+  },
+  {
+    "fact": "qwenProviderType 被转发给父类构造函数的 providerType 参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:36"
+  },
+  {
+    "fact": "ApiProviderType.ALIYUN 的注释为“阿里云 (通义千问系列)”",
+    "ref": "app/src/main/java/com/ai/assistance/operit/data/model/ModelConfigData.kt:19"
+  },
+  {
+    "fact": "private val configuredApiEndpoint = apiEndpoint 保存构造时传入的端点，供后续推理配置使用",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:44"
+  },
+  {
+    "fact": "buildInputAudioPayload 被重写：先调用父类实现生成默认音频载荷",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:46"
+  },
+  {
+    "fact": "仅当 qwenProviderType == ApiProviderType.ALIYUN 时，音频载荷的 data 字段被改写为 \"data:{mimeType};base64,{base64Data}\" 格式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:48"
+  },
+  {
+    "fact": "父类 OpenAIProvider.buildInputAudioPayload 的默认实现写入 data=link.base64Data 与 format=audioFormatFromMime(link.mimeType)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenAIProvider.kt:799"
+  },
+  {
+    "fact": "createRequestBody 被重写：先调用 super.createRequestBodyInternal 生成标准 OpenAI 格式请求体的 JSON 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:67"
+  },
+  {
+    "fact": "随后调用 applyQwenReasoningSettings 把 Qwen 的推理（enable_thinking）设置应用到请求 JSON 上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:70"
+  },
+  {
+    "fact": "记录最终请求体日志时，tools 数组被替换为 \"[N tools omitted for brevity]\" 以省略过长内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:79"
+  },
+  {
+    "fact": "日志前先经 sanitizeImageDataForLogging 脱敏图片数据，再用 logLargeString 以标签 QwenAIProvider 输出",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:81"
+  },
+  {
+    "fact": "最终请求体用 createJsonRequestBody(jsonObject.toString()) 构造成 RequestBody 返回",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:89"
+  },
+  {
+    "fact": "applyQwenReasoningSettings 是私有方法，调用 ThinkingConfigurationApplier.apply 并传入 providerTypeId = qwenProviderType.name",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:93"
+  },
+  {
+    "fact": "applyQwenReasoningSettings 同时传入 modelName、configuredApiEndpoint、thinkingConfigurations、enableThinking 与 thinkingOptionId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:100"
+  },
+  {
+    "fact": "sendMessage 被重写但直接调用父类实现，续写逻辑与 stream 参数处理都在父类中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/QwenAIProvider.kt:123"
+  },
+  {
+    "fact": "AIServiceFactory 中 ApiProviderType.ALIYUN 分支构造 QwenAIProvider（注释“阿里云（通义千问）使用QwenProvider”）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:493"
+  },
+  {
+    "fact": "AIServiceFactory 中 ApiProviderType.SILICONFLOW 分支同样构造 QwenAIProvider，此时 qwenProviderType 为 SILICONFLOW，音频 data URI 改写不生效",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/AIServiceFactory.kt:597"
+  }
+]

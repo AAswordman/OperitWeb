@@ -1,0 +1,262 @@
+[
+  {
+    "fact": "OpenCodeProvider 是装饰器：`class OpenCodeProvider private constructor(...) : AIService by delegate`，把 AIService 全部接口委托给内部 routed delegate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:23"
+  },
+  {
+    "fact": "OpenCodeProvider 构造函数私有",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:23"
+  },
+  {
+    "fact": "OpenCodeProvider 的实例通过 companion object 的 create 方法构建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:88"
+  },
+  {
+    "fact": "OpenCodeProvider 把 delegate 的 providerModel 透传出来：`override val providerModel: String = delegate.providerModel`，让共享的响应处理识别 Responses/Gemini 流",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:33"
+  },
+  {
+    "fact": "getModelsList 经 ModelListFetcher.getModelsList 拉取模型列表，传入 apiProviderType = ApiProviderType.OPENCODE",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:35"
+  },
+  {
+    "fact": "getModelsList 传入的 apiKey 来自 apiKeyProvider.getApiKey()，apiEndpoint 为 baseEndpoint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:36"
+  },
+  {
+    "fact": "sendMessage 先调用 ThinkingConfigurationApplier.modelParameters，providerTypeId 取 ApiProviderType.OPENCODE.name",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:60"
+  },
+  {
+    "fact": "ThinkingConfigurationApplier.modelParameters 的输入含 modelName、baseEndpoint、thinkingConfigurations、enableThinking、thinkingOptionId 与 protocol",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:60"
+  },
+  {
+    "fact": "thinkingEnabled = enableThinking || thinkingMapping.reasoningRequired",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:69"
+  },
+  {
+    "fact": "sendMessage 把 modelParameters 与 opencodeParameters 合并后传给 delegate",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:73"
+  },
+  {
+    "fact": "传给 delegate 的 enableThinking = thinkingEnabled && protocol == ApiProviderType.OPENAI_RESPONSES_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:74"
+  },
+  {
+    "fact": "create 把 config.modelName 去掉 \"opencode/\" 与 \"opencode-go/\" 前缀得到 model",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:99"
+  },
+  {
+    "fact": "create 用 OpenCodeRouting.endpointFor(config.apiEndpoint, model) 算出路由后的 endpoint",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:100"
+  },
+  {
+    "fact": "create 用 OpenCodeRouting.protocolFor(config.apiEndpoint, model) 判定协议",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:101"
+  },
+  {
+    "fact": "路由请求头固定写入 User-Agent = \"Operit/${BuildConfig.VERSION_NAME}\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:105"
+  },
+  {
+    "fact": "Go 端点额外写入请求头 x-opencode-session = \"operit-${config.id}\"，用于网关识别客户端与稳定 prompt-cache 路由",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:106"
+  },
+  {
+    "fact": "protocol 为 OPENAI_RESPONSES_GENERIC 时路由到 OpenCodeResponsesProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:111"
+  },
+  {
+    "fact": "protocol 为 ANTHROPIC_GENERIC 时路由到 OpenCodeClaudeProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:115"
+  },
+  {
+    "fact": "protocol 为 GEMINI_GENERIC 时路由到 OpenCodeGeminiProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:118"
+  },
+  {
+    "fact": "其余 protocol 全部路由到 OpenCodeChatProvider（OpenAI 兼容 chat 路由）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:121"
+  },
+  {
+    "fact": "OpenCodeRouting.protocolFor 先把模型名转小写并取最后一个 '/' 之后的子串作为 modelId",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:140"
+  },
+  {
+    "fact": "modelId 以 gemini- 开头 → GEMINI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:146"
+  },
+  {
+    "fact": "modelId 以 claude- 或 qwen3. 开头 → ANTHROPIC_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:147"
+  },
+  {
+    "fact": "Go 端点上 modelId 以 minimax- 开头 → ANTHROPIC_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:150"
+  },
+  {
+    "fact": "非 Go 端点上 modelId 以 minimax- 开头且以 -free 结尾 → ANTHROPIC_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:151"
+  },
+  {
+    "fact": "modelId 以 gpt-、grok- 或 muse-spark- 开头 → OPENAI_RESPONSES_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:152"
+  },
+  {
+    "fact": "非 Go 端点上 modelId 以 minimax- 开头（非 -free）→ OPENAI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:156"
+  },
+  {
+    "fact": "big-pickle、deepseek-、glm-、hy3、hy4-、kimi-、ling-、longcat-、mimo-、nemotron-、omen-、qwen3-coder、ring-、north-、laguna-、trinity-、x-preview- 开头 → OPENAI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:157"
+  },
+  {
+    "fact": "以上都不匹配时抛 IllegalArgumentException(\"Unsupported OpenCode model protocol: $modelName\")",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:173"
+  },
+  {
+    "fact": "OpenCodeRouting.endpointFor 对 OPENAI_RESPONSES_GENERIC 返回 \"$base/responses\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:178"
+  },
+  {
+    "fact": "OpenCodeRouting.endpointFor 对 ANTHROPIC_GENERIC 返回 \"$base/messages\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:179"
+  },
+  {
+    "fact": "OpenCodeRouting.endpointFor 对 GEMINI_GENERIC 返回 \"$base/models/$modelName\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:180"
+  },
+  {
+    "fact": "OpenCodeRouting.endpointFor 其余情况返回 \"$base/chat/completions\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:181"
+  },
+  {
+    "fact": "OpenCodeRouting.modelsEndpoint 返回 normalizedBase(baseEndpoint) + \"/models\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:187"
+  },
+  {
+    "fact": "OpenCodeRouting.catalogProviderId：Go 端点返回 \"opencode-go\"，否则返回 \"opencode\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:189"
+  },
+  {
+    "fact": "normalizedBase 去掉端点尾部斜杠，若不以 /v1 结尾则补上 /v1",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:193"
+  },
+  {
+    "fact": "OpenCodeRouting.apiBase 取端点 \"/models/\" 之前部分再做 normalizedBase",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:197"
+  },
+  {
+    "fact": "OpenCodeRouting.isGo 判定：端点小写去尾斜杠后以 /zen/go 或 /zen/go/v1 结尾",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:200"
+  },
+  {
+    "fact": "OpenCodeChatProvider 继承 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:218"
+  },
+  {
+    "fact": "OpenCodeChatProvider 的 providerType 为 OPENAI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:224"
+  },
+  {
+    "fact": "OpenCodeChatProvider.createRequestBody 强制 preserveThinkInHistory = true，让父类保留历史 assistant 消息中的 <think> 内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:242"
+  },
+  {
+    "fact": "OpenCodeChatProvider.customizeFinalRequestObject 遍历 messagesArray，仅对 role=assistant 的消息做 reasoning_content 拆分回填",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:261"
+  },
+  {
+    "fact": "extractReasoningContentIntoMessage 总是写入 reasoning_content 字段，即使 reasoning 为空字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:285"
+  },
+  {
+    "fact": "extractReasoningContentIntoMessage 经 ChatUtils.extractThinkingContent 从 content 拆出 <think> 内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:279"
+  },
+  {
+    "fact": "extractReasoningContentIntoMessage 把清理后的内容经 buildContentField(role=assistant) 写回 content",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:288"
+  },
+  {
+    "fact": "extractReasoningContentIntoMessage 仅处理纯文本 String 形态的 content，多模态 JSONArray 形态直接跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:273"
+  },
+  {
+    "fact": "OpenCodeResponsesProvider 继承 OpenAIProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:307"
+  },
+  {
+    "fact": "OpenCodeResponsesProvider 的 providerType 为 OPENAI_RESPONSES_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:313"
+  },
+  {
+    "fact": "OpenCodeResponsesProvider 的 useResponsesApi = true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:319"
+  },
+  {
+    "fact": "OpenCodeResponsesProvider.createRequestBody 在未开启 thinking 时用 ChatUtils.stripOpenAiResponsesReasoningMetaTurns 剥离历史中的 reasoning 元回合",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:321"
+  },
+  {
+    "fact": "OpenCodeResponsesProvider.createRequestBody 在开启 thinking 时原样使用 chatHistory",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:325"
+  },
+  {
+    "fact": "OpenCodeClaudeProvider 继承 ClaudeProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:353"
+  },
+  {
+    "fact": "OpenCodeClaudeProvider 的 providerType 为 ANTHROPIC_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:360"
+  },
+  {
+    "fact": "OpenCodeClaudeProvider 的 thinkingConfigurations 固定为 \"[]\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:362"
+  },
+  {
+    "fact": "OpenCodeClaudeProvider.addParameters 只处理 isEnabled 且 apiName 为 thinking、budget_tokens 或 output_config 的参数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:364"
+  },
+  {
+    "fact": "OBJECT 类型参数经 JSONObject 解析后写入，解析失败用 AppLogger.w 记录 \"Invalid OpenCode JSON parameter\" 警告并跳过",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:375"
+  },
+  {
+    "fact": "STRING/INT/FLOAT/BOOLEAN 类型参数直接按原类型写入请求 JSON",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:387"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 继承 GeminiProvider",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:405"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 的 providerType 为 GEMINI_GENERIC",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:411"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 的 thinkingConfigurations 固定为 \"[]\"",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:413"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider.createRequest 的请求 URL = OpenCodeRouting.apiBase(endpoint) + \"/models/\" + model + \":\" + method + suffix",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:421"
+  },
+  {
+    "fact": "流式请求 method 取 streamGenerateContent 并加 \"?alt=sse\" 后缀，非流式取 generateContent",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:422"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 用请求头 x-goog-api-key 传递 API key",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:429"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 把 routedHeaders 中的自定义头逐个加到请求上",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:430"
+  },
+  {
+    "fact": "OpenCodeGeminiProvider 在 debug 日志中打印最终请求 URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt:431"
+  }
+]

@@ -1,0 +1,249 @@
+[
+  {
+    "fact": "24 个文件系统工具经 StandardFileSystemTools 一套入口在 ToolRegistration.kt:1775（list_files）起集中注册，到 :2258（download_file）止",
+    "kind": "registration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1775",
+    "symbol": "registerStandardFileSystemTools"
+  },
+  {
+    "fact": "24 个工具名：list_files、read_file、read_file_part、read_file_full、read_file_binary、write_file、write_file_binary、delete_file、file_exists、move_file、copy_file、make_directory、find_files、file_info、apply_file、create_file、edit_file、zip_files、unzip_files、open_file、share_file、grep_code、grep_context、download_file",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1775"
+  },
+  {
+    "fact": "该注册段内还混入浏览器与 HTTP 等非文件工具（如 click_element、tap、http_request、multipart_request），文件工具与它们同属一段连续注册区",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1775"
+  },
+  {
+    "fact": "delete_file 的 executor 委托 fileSystemTools.deleteFile(tool) 执行",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolRegistration.kt:1897"
+  },
+  {
+    "fact": "运行环境由 environment 参数决定：isLinuxEnvironment 判定 environment == \"linux\"，isSafEnvironment 判定以 \"repo:\" 开头（忽略大小写）",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:146",
+    "symbol": "isSafEnvironment/isLinuxEnvironment"
+  },
+  {
+    "fact": "android 是默认环境：environment 为空或 android 时直接走本机 java.io.File 操作",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2059",
+    "symbol": "deleteFile"
+  },
+  {
+    "fact": "linux 环境经 getLinuxFileSystem() 获取文件系统：优先用 SSHFileConnectionManager 的 SSH 文件系统，无 SSH 连接时回退 TerminalManager 的本地终端文件系统",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:114",
+    "symbol": "getLinuxFileSystem"
+  },
+  {
+    "fact": "Linux 路径经 PathMapper.mapLinuxPath 映射到 Android 本机的 {filesDir}/usr/var/lib/proot-distro/installed-rootfs/ubuntu 下",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/util/PathMapper.kt:17",
+    "symbol": "PathMapper.mapLinuxPath"
+  },
+  {
+    "fact": "repo:<书签名> 环境走 SafFileSystemTools：从 apiPreferences.safBookmarksFlow 按书签名精确或忽略大小写匹配，取出用户授权的文档树 Uri",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt:67",
+    "symbol": "resolveTreeUriFromEnvironment"
+  },
+  {
+    "fact": "repo 环境与 linux 环境混用直接拒绝，返回 \"Repository environment cannot be used with linux environment\"",
+    "kind": "routing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2785"
+  },
+  {
+    "fact": "LinuxFileSystemTools 继承 StandardFileSystemTools，只覆写 Linux 下不支持的能力，其余全部复用父类实现",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/LinuxFileSystemTools.kt:33",
+    "symbol": "LinuxFileSystemTools"
+  },
+  {
+    "fact": "Linux 环境不支持图片、PDF、Word 等特殊文件读取，返回 \"Special file types (images, PDF, Word) are not supported in Linux environment\"",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/LinuxFileSystemTools.kt:156"
+  },
+  {
+    "fact": "Linux 环境下 open_file 不支持（\"Opening files is not supported in Linux environment. Use readFile instead.\"）",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/LinuxFileSystemTools.kt:1143"
+  },
+  {
+    "fact": "Linux 环境下 share_file 不支持（\"File sharing is not supported in Linux environment\"）",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/LinuxFileSystemTools.kt:1254"
+  },
+  {
+    "fact": "PathValidator 只做格式校验不做权限校验：Android 路径必须以 / 开头，否则返回 Invalid path 失败结果",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:20",
+    "symbol": "PathValidator.validateAndroidPath"
+  },
+  {
+    "fact": "Linux 路径校验要求以 / 或 ~ 开头（PathValidator.validateLinuxPath），同样只有格式检查",
+    "kind": "validation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/PathValidator.kt:45",
+    "symbol": "PathValidator.validateLinuxPath"
+  },
+  {
+    "fact": "所有工具入口先过 PathValidator，再按环境分发到 linuxTools / safTools / 本机实现",
+    "kind": "pipeline",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2072"
+  },
+  {
+    "fact": "read_file 读取超过 ToolExecutionLimits.MAX_FILE_READ_BYTES 的文件时自动截断",
+    "kind": "limit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1591"
+  },
+  {
+    "fact": "read_file_part 按 1-based 行号分段读，start_line 参数缺省为 1",
+    "kind": "limit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1682",
+    "symbol": "readFilePart"
+  },
+  {
+    "fact": "read_file_part 默认读取行数 200（ToolExecutionLimits.DEFAULT_FILE_READ_PART_LINES）",
+    "kind": "limit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:5"
+  },
+  {
+    "fact": "read_file_full 的 text_only 模式用 FileUtils.isTextLike(file, 512) 取前 512 字节预检是否为文本，非文本直接拒绝",
+    "kind": "limit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1453"
+  },
+  {
+    "fact": "特殊文件扩展名列表 SPECIAL_FILE_EXTENSIONS 含 doc/docx、pdf、jpg/jpeg/png/gif/bmp、mp3/wav/m4a/aac/flac/ogg/opus、mp4/mkv/mov/webm/avi/m4v",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:85",
+    "symbol": "SPECIAL_FILE_EXTENSIONS"
+  },
+  {
+    "fact": "特殊文件读取走 handleSpecialFileRead（图片 OCR/直传、PDF/Word 提文本、音视频给元信息）",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:953",
+    "symbol": "handleSpecialFileRead"
+  },
+  {
+    "fact": "write_file 的 append 参数默认 \"false\"，缺省即全量覆写目标文件",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1809"
+  },
+  {
+    "fact": "write_file 写入前自动创建父目录（mkdirs），父目录创建失败才报错",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1843",
+    "symbol": "writeFile"
+  },
+  {
+    "fact": "write_file_binary 取 base64Content 参数，用 android.util.Base64.decode 解码后 writeBytes 写入",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:1989",
+    "symbol": "writeFileBinary"
+  },
+  {
+    "fact": "move_file 先尝试 sourceFile.renameTo(destFile)，失败则回退 copy+delete（跨文件系统场景），整个移动非原子",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2329",
+    "symbol": "moveFile"
+  },
+  {
+    "fact": "delete_file 支持 recursive 参数（默认 false），无二次确认、无回收站，直接 delete / deleteRecursively",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2111",
+    "symbol": "deleteFile"
+  },
+  {
+    "fact": "apply_file 是 Flow<ToolResult> 流式工具，type 参数取值为 replace | delete | create",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:3870",
+    "symbol": "applyFile"
+  },
+  {
+    "fact": "apply_file 的结构化编辑经 EnhancedAIService.applyFileBindingOperations 做 AI 合并",
+    "kind": "integration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4166",
+    "symbol": "EnhancedAIService.applyFileBindingOperations"
+  },
+  {
+    "fact": "unzip_files 有 ZipSlip 防护：解压条目的 canonicalPath 必须以目标目录 canonicalPath 开头，否则抛 SecurityException",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:3745"
+  },
+  {
+    "fact": "unzip_files 解压用 FileOutputStream 直接写目标文件，同名文件被覆盖",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:3761"
+  },
+  {
+    "fact": "open_file 经 FileProvider.getUriForFile 取 content Uri，再发 ACTION_VIEW Intent 调外部应用打开",
+    "kind": "integration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4550",
+    "symbol": "openFile"
+  },
+  {
+    "fact": "share_file 经 FileProvider 取 Uri，再发 ACTION_SEND Intent 调系统分享",
+    "kind": "integration",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4814",
+    "symbol": "shareFile"
+  },
+  {
+    "fact": "download_file 只校验 URL 以 http:// 或 https:// 开头，否则拒绝；接受任意该 scheme 的 URL",
+    "kind": "security",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4395",
+    "symbol": "downloadFile"
+  },
+  {
+    "fact": "download_file 用 HttpMultiPartDownloader 4 线程（threadCount = 4）分段下载并回调进度",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4430"
+  },
+  {
+    "fact": "grep_context 是 agentic 搜索：for (round in 1..3) 跑三轮搜索+精炼，每轮更新 ToolProgressBus 进度",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:626",
+    "symbol": "grepContextAgentic"
+  },
+  {
+    "fact": "跨环境复制（如 android↔linux）用 10MB 缓冲统一分块传输",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:2517"
+  },
+  {
+    "fact": "SAF 写文件有扩展名→MIME 类型白名单，不在白名单的扩展名抛 IllegalArgumentException(\"Unsupported file extension for SAF create\")",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt:179"
+  },
+  {
+    "fact": "SAF 的 guessPermissions 恒返回 \"r--r--r--\"，file_info 在 SAF 下报告的权限是写死的",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt:1045",
+    "symbol": "guessPermissions"
+  },
+  {
+    "fact": "SAF 的 grep_code 直接返回错误，由 StandardFileSystemTools 的 find_files + read_file_full 组合接管",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt:1486"
+  },
+  {
+    "fact": "grep_context 在 SAF 也不支持",
+    "kind": "limitation",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:4681"
+  },
+  {
+    "fact": "SAF 的 move 用 copyFile 复制成功后再删除源（content Uri 走 deleteRecursive），两步实现",
+    "kind": "behavior",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/SafFileSystemTools.kt:574",
+    "symbol": "moveFile"
+  },
+  {
+    "fact": "StandardFileSystemTools 的日志 TAG 为 \"FileSystemTools\"",
+    "kind": "structure",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/defaultTool/standard/StandardFileSystemTools.kt:84",
+    "symbol": "TAG"
+  },
+  {
+    "fact": "MAX_FILE_READ_BYTES = 32000 是文件读取字节上限（ToolExecutionLimits）",
+    "kind": "limit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/core/tools/ToolExecutionLimits.kt:4"
+  }
+]

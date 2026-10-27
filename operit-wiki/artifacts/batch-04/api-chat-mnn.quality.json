@@ -1,0 +1,52 @@
+[
+  {
+    "severity": "warning",
+    "category": "performance",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt",
+    "line": 698,
+    "title": "generateStream 回调里逐 token runBlocking",
+    "detail": "推理是 native 回调线程逐 token 触发的同步回调，每产出一个 token 就 runBlocking { emit(token) }，把推理线程按 token 粒度阻塞在协程发送上。token 量大时阻塞开销累积，且回调线程被占住会影响底层调度。更稳的做法是把 token 送进 Channel，由协程侧消费 emit。",
+    "evidence": "                        if (emitDirectly) {\n                            finalOutputBuffer.append(token)\n                            runBlocking { emit(token) }\n                        } else {\n                            toolCallOutputBuffer.append(token)\n                        }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "warning",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt",
+    "line": 58,
+    "title": "使用已废弃的 Environment.getExternalStoragePublicDirectory",
+    "detail": "模型目录取自 Environment.getExternalStoragePublicDirectory(DIRECTORY_DOWNLOADS)，该 API 在 Android 10 起被废弃（分区存储）。新系统上公共下载目录访问受限，模型目录读写可能失败，且未来系统版本可能移除该 API。",
+    "evidence": "            val modelsDir = File(\n                Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS),\n                \"Operit/models/mnn\"\n            )",
+    "confidence": "high"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt",
+    "line": 703,
+    "title": "onTokensUpdated 异常被静默吞掉",
+    "detail": "token 回调里用 kotlin.runCatching 包住 onTokensUpdated 调用，异常被吞掉且无任何日志。上层用量统计回调一旦抛错，问题会被掩盖，排查困难。至少应记一条警告日志。",
+    "evidence": "                        kotlin.runCatching {\n                            kotlinx.coroutines.runBlocking {\n                                onTokensUpdated(_inputTokenCount, 0L, _outputTokenCount)\n                            }\n                        }",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt",
+    "line": 769,
+    "title": "testConnection 只统计顶层文件大小",
+    "detail": "模型总大小用 modelDirFile.listFiles()?.sumOf { it.length() } 计算，只累加目录顶层文件。如果模型文件放在子目录里，总大小会被低估，连接测试报告里显示的体积不准。",
+    "evidence": "            // 计算模型总大小\n            val totalSize = modelDirFile.listFiles()?.sumOf { it.length() } ?: 0L",
+    "confidence": "medium"
+  },
+  {
+    "severity": "suggestion",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/MNNProvider.kt",
+    "line": 971,
+    "title": "formatFileSize 用默认 locale 做小数格式化",
+    "detail": "String.format(\"%.2f KB\", ...) 未指定 Locale，部分 locale 下小数点会变成逗号（如德语），显示给用户的文件大小字符串格式不一致。应显式传 Locale.US。",
+    "evidence": "            sizeBytes < 1024 * 1024 -> String.format(\"%.2f KB\", sizeBytes / 1024.0)\n            sizeBytes < 1024 * 1024 * 1024 -> String.format(\"%.2f MB\", sizeBytes / (1024.0 * 1024.0))\n            else -> String.format(\"%.2f GB\", sizeBytes / (1024.0 * 1024.0 * 1024.0))",
+    "confidence": "medium"
+  }
+]

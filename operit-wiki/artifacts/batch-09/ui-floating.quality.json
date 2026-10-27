@@ -1,0 +1,104 @@
+[
+  {
+    "confidence": "high",
+    "detail": "BallParticles 的粒子运动循环用 LaunchedEffect(Unit)+while(true)+withFrameNanos 逐帧运行，协程没有任何取消条件。球体不可见（visibility=0）时内层判断会跳过更新，但协程仍每帧被唤醒空转；该 composable 只要在组合中就常驻消耗帧回调。",
+    "evidence": "        // 粒子运动循环\n        LaunchedEffect(Unit) {\n            while (true) {\n                withFrameNanos { _ ->\n                    if (visibility.value > 0f) {\n                        updateParticles()\n                    }\n                }\n            }\n        }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/BallParticles.kt",
+    "line": 117,
+    "severity": "warn",
+    "title": "粒子系统逐帧循环永不取消"
+  },
+  {
+    "confidence": "high",
+    "detail": "awaitAiTurnAndResumeVoiceCapture 用 while+delay(120) 反复轮询 isAiBusyOrSpeaking()，直到 AI 空闲才恢复语音采集。轮询期间协程常驻，若 AI 长时间忙碌（如长工具链）会持续空转；可用状态流收集替代轮询。",
+    "evidence": "            delay(120)\n            while (isActive && isWaveActive && shouldResumeVoiceCaptureAfterAiTurn) {\n                if (!isAiBusyOrSpeaking()) {\n                    resumeVoiceCaptureAfterAiTurn()\n                    break\n                }\n                delay(120)\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/viewmodel/FloatingFullscreenModeViewModel.kt",
+    "line": 158,
+    "severity": "warn",
+    "title": "AI 轮次结束用 120ms 忙轮询恢复录音"
+  },
+  {
+    "confidence": "medium",
+    "detail": "startListening 在协程内用 while(!ok && attempt<12) 重试启动语音识别，除协程取消外没有任何外部取消检查（如用户已退出语音态）。若底层服务持续返回失败，会占住该协程做完 12 次重试。",
+    "evidence": "                while (!ok && attempt < 12) {\n                    attempt++\n                    ok = speechService.startListening(\n                        SpeechConfig(\n                            language = \"zh-CN\",\n                            continuousMode = true,\n                            partialResults = true\n                        )",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/voice/SpeechInteractionManager.kt",
+    "line": 160,
+    "severity": "warn",
+    "title": "语音启动重试循环缺少外部取消检查"
+  },
+  {
+    "confidence": "medium",
+    "detail": "标题栏 Home 按钮的 onClick（主线程回调）里用 runBlocking 同步等待 syncCurrentChatIdToGlobal()，若该挂起函数耗时会直接阻塞 UI 线程，造成点击卡顿；应改用协程 launch 异步执行。",
+    "evidence": "                        onClick = {\n                            // 启动 MainActivity 返回主应用\n                            try {\n                                val context = floatContext.chatService\n                                if (context != null) {\n                                    runBlocking {\n                                        try {\n                                            context.getChatCore().syncCurrentChatIdToGlobal()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt",
+    "line": 520,
+    "severity": "warn",
+    "title": "标题栏返回主应用在主线程 runBlocking"
+  },
+  {
+    "confidence": "medium",
+    "detail": "SiriBall 用 rememberInfiniteTransition 驱动光斑 15s 旋转、3s 呼吸、3 层音波扩散等多个无限动画。球体被其他形态覆盖或窗口最小化时这些动画仍在跑，未见按可见性暂停的逻辑，可考虑在不可见时暂停以省电。",
+    "evidence": "    val infiniteTransition = rememberInfiniteTransition(label = \"siri\")\n    // 光斑旋转 - 慢速旋转\n    val rotation by infiniteTransition.animateFloat(\n        initialValue = 0f,\n        targetValue = 360f,\n        animationSpec = infiniteRepeatable(\n            animation = tween(15000, easing = LinearEasing),",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/ball/SiriBall.kt",
+    "line": 157,
+    "severity": "suggestion",
+    "title": "SiriBall 无限动画在球不可见时仍运行"
+  },
+  {
+    "confidence": "medium",
+    "detail": "标题栏、最小化/关闭按钮、右边缘与角落缩放手柄、底部调整条共 6 处用 awaitPointerEventScope+while(true) 常驻监听指针事件来更新 hover 状态。功能正确，但每个手柄各占一个常驻协程；hover 语义在触屏为主的设备上价值有限。",
+    "evidence": "            .pointerInput(Unit) {\n                awaitPointerEventScope {\n                    while (true) {\n                        val event = awaitPointerEvent()\n                        viewModel.titleBarHover = event.changes.any { it.pressed }\n                    }\n                }\n            }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt",
+    "line": 454,
+    "severity": "suggestion",
+    "title": "多处 while(true) 指针事件循环检测 hover"
+  },
+  {
+    "confidence": "low",
+    "detail": "RecentChatSelectorOverlay 在 LaunchedEffect 里对每条会话历史（最多 20 条）各 launch 一个协程去查角色卡与头像 URI，属于 N+1 式并发查询。可合并为一次批量查询，或在打开选择器前预加载。",
+    "evidence": "    LaunchedEffect(items) {\n        items.forEach { history ->\n            val characterName = history.characterCardName?.takeIf { it.isNotBlank() }\n            if (characterName != null && !avatarUriMap.containsKey(history.id)) {\n                coroutineScope.launch {\n                    val card = characterCardManager.findCharacterCardByName(characterName)\n                    val uri = card?.id?.let { id ->\n                        userPreferencesManager.getAiAvatarForCharacterCardFlow(id).first()\n                    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/window/screen/FloatingChatWindowScreen.kt",
+    "line": 238,
+    "severity": "suggestion",
+    "title": "会话选择器为每条历史单独启动协程查头像"
+  },
+  {
+    "confidence": "low",
+    "detail": "BottomControlBar 的按住 450ms 进入按住说话逻辑把 withTimeoutOrNull 包在 awaitEachGesture 嵌套里，再叠加拖拽取消/编辑分支，状态机分散在多个回调中。逻辑正确但难以一眼验证边界（如超时与抬手的竞态），建议抽成独立手势状态机并补单测。",
+    "evidence": "                                                val releasedBeforeTimeout = withTimeoutOrNull(holdToSpeakTriggerMs) {\n                                                    awaitEachGesture {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/fullscreen/components/BottomControlBar.kt",
+    "line": 399,
+    "severity": "suggestion",
+    "title": "按住说话手势逻辑嵌套层次深"
+  },
+  {
+    "title": "analyzeEmotion 用 AppLogger.d 记录用户/AI 原始文本全文",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt",
+    "line": 62,
+    "severity": "warn",
+    "category": "security",
+    "detail": "analyzeEmotion 三条分支日志都把完整文本打进 logcat（\"分析情感 - 原始文本: $text\" 等），含用户输入原文；若 release 包未关闭 debug 日志，即向系统日志泄露对话内容。日志应脱敏或降级为长度/结果摘要。",
+    "evidence": "    fun analyzeEmotion(text: String): AvatarEmotion {\n        AppLogger.d(\"AvatarEmotionManager\", \"分析情感 - 原始文本: $text\")",
+    "confidence": "high"
+  },
+  {
+    "title": "关键词子串匹配会被否定词误判",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt",
+    "line": 24,
+    "severity": "suggestion",
+    "category": "correctness",
+    "detail": "containsAny 用 String.contains 做子串匹配：\"不生气\"命中生气关键词→SAD，\"不开心\"命中开心关键词→HAPPY。否定、前缀否定（\"没那么难过\"）都会反转判断；至少应对常见否定词做排除。",
+    "evidence": "        fun containsAny(keys: List<String>): Boolean = \n            keys.any { t.contains(it) || text.contains(it) }",
+    "confidence": "high"
+  },
+  {
+    "title": "AvatarEmotion 无愤怒状态，生气被近似为难过",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/floating/ui/pet/AvatarEmotionManager.kt",
+    "line": 29,
+    "severity": "suggestion",
+    "category": "correctness",
+    "detail": "AvatarEmotion 枚举只有 IDLE/LISTENING/THINKING/HAPPY/SAD/CONFUSED/SURPRISED 七种情绪，没有愤怒；angryKeywords（生气/愤怒/😡）被映射为 SAD。悬浮宠物在用户生气时只能摆出难过表情，情绪表达失真；如需区分应给枚举加 ANGRY。",
+    "evidence": "            containsAny(angryKeywords) -> AvatarEmotion.SAD",
+    "confidence": "high"
+  }
+]

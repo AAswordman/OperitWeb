@@ -1,0 +1,122 @@
+[
+  {
+    "confidence": "high",
+    "description": "GitHub 的 access token（以及 refresh token）保存在明文 DataStore 中，没有加密。同一代码库里 Codex 的 OAuth 凭证用 EncryptedSharedPreferences（AES256_GCM）加密存储，GitHub 侧却用明文。设备备份、ADB 读取或沙箱逃逸可直接拿到 token，而该 token 的 scope 包含 public_repo（公有仓库写权限）。",
+    "evidence": "    preferencesDataStore(name = \"github_auth_preferences\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt",
+    "line": 20,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "GitHub OAuth broker 的 deliveryCredential（向 broker 领取 access token 的一次性凭证，等同口令）以明文写入 DataStore，与 token 同等敏感却未加密。",
+    "evidence": "            preferences[ACTIVE_OAUTH_DELIVERY_CREDENTIAL] = deliveryCredential",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt",
+    "line": 240,
+    "severity": "high"
+  },
+  {
+    "confidence": "high",
+    "description": "getUser 把 username 直接字符串拼进 URL 路径，未做路径段编码。username 含 / 可逃逸到其他路径；同文件 getUserRepositories 已用 HttpUrl.Builder 编码，风格不一致。",
+    "evidence": "                .url(\"$GITHUB_API_BASE/users/$username\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt",
+    "line": 188,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "createTextFile 与 getRepositoryContentFile 把 owner/repo/path 直接拼进 URL 路径。path 含 .. 或特殊字符时可构造越界请求；应按路径段逐段编码。",
+    "evidence": "                    .url(\"$GITHUB_API_BASE/repos/$owner/$repo/contents/$path\")",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt",
+    "line": 493,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "登录会话的 expiresAt（5 分钟）只在 CodexLoginDialog 做 UI 倒计时展示，completeLogin 不校验会话是否过期。超过 5 分钟才到达的授权码回调仍可换 token，会话超时形同虚设。",
+    "evidence": "        val expiresAt = System.currentTimeMillis() + CodexOAuthProtocol.OAUTH_TIMEOUT_MILLIS",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt",
+    "line": 37,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "refreshAccessToken 失败（如 refresh token 被服务端吊销）时抛异常，但旧凭证仍保留在本地。之后每次 getValidAccessToken 都会再次尝试刷新：无退避、无自动登出，用户看到的是反复失败而非明确的需要重新登录。",
+    "evidence": "    suspend fun refreshAccessToken(current: CodexAuthState): CodexAuthState {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/CodexAuthManager.kt",
+    "line": 75,
+    "severity": "warn"
+  },
+  {
+    "confidence": "high",
+    "description": "回环回调服务器写死监听 1455 端口。端口被占用（另一 Operit 实例或其他应用）时 ServerSocket 构造直接抛异常，登录流程无法启动且无备用端口。",
+    "evidence": "            val socket = ServerSocket(\n                CodexOAuthProtocol.PRIMARY_CALLBACK_PORT,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthLoopbackCallbackServer.kt",
+    "line": 94,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "parseJwtClaims 只做 base64 解码解析 claims，不校验 JWT 签名与 iss。本地用解析出的 exp 决定 token 刷新时机；token 经 TLS 来自 auth.openai.com 风险可控，但缺少签发方校验是纵深防御缺口。",
+    "evidence": "    fun parseJwtClaims(token: String): CodexJwtClaims? {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/CodexOAuthClient.kt",
+    "line": 93,
+    "severity": "warn"
+  },
+  {
+    "confidence": "medium",
+    "description": "GitHub OAuth 申请的 scope 包含 public_repo（公有仓库写权限：可建仓库、发 Release、删 Release）。发布市场条目确需写权限，但 scope 评审应确认无更小粒度的替代方案。",
+    "evidence": "        const val GITHUB_SCOPE = \"notifications,public_repo,user:email,read:user\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/preferences/GitHubAuthPreferences.kt",
+    "line": 42,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "httpErrorMessage 把完整响应体拼进异常消息，调用方经 AppLogger.e 写入日志。服务端返回体若含敏感信息，会随异常消息写入日志文件。",
+    "evidence": "    private fun httpErrorMessage(code: Int, message: String, body: String?): String {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt",
+    "line": 130,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "getUserRepositories 里计算出的 url 变量从未使用，实际请求用的是下面 HttpUrl.Builder 构造的 httpUrl。死代码易误导后续维护者改错地方。",
+    "evidence": "            val url = if (username != null) {\n                \"$GITHUB_API_BASE/users/$username/repos\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubApiService.kt",
+    "line": 277,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "ensureMarketSession 在协程上下文中用 runBlocking 阻塞 IO 线程等待 DataStore。功能正确，但阻塞了本可挂起的线程；应改为 suspend 化调用。",
+    "evidence": "                    kotlinx.coroutines.runBlocking {",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/MarketStatsApiService.kt",
+    "line": 1116,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "broker 与市场接口的基地址硬编码为 https://api.operit.app，无法切换测试或预发环境。",
+    "evidence": "        private const val BROKER_BASE_URL = \"https://api.operit.app\"",
+    "file": "app/src/main/java/com/ai/assistance/operit/data/api/GitHubOAuthBrokerService.kt",
+    "line": 144,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "high",
+    "description": "CodexOAuthCoordinator 自建了一个 OkHttpClient 传给 CodexOAuthClient，而 CodexAuthManager 内部已有一套共享 client。同一登录链路存在两套连接池与超时配置，分散管理。",
+    "evidence": "    private val oauthClient = CodexOAuthClient(\n        client = okhttp3.OkHttpClient.Builder()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexOAuthCoordinator.kt",
+    "line": 25,
+    "severity": "suggestion"
+  },
+  {
+    "confidence": "medium",
+    "description": "CodexLoginDialog 声明了 val scope = rememberCoroutineScope() 但全文件从未使用（登录全流程走 LaunchedEffect）。死代码会误导后续维护者以为有协程作用域可用；且 rememberCoroutineScope 的导入也可一并清理。",
+    "evidence": "    val coordinator = remember { CodexOAuthCoordinator(context) }\n    val scope = rememberCoroutineScope()\n    var session by remember { mutableStateOf<CodexOAuthLoginSession?>(null) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/codex/CodexLoginDialog.kt",
+    "line": 51,
+    "severity": "suggestion"
+  }
+]

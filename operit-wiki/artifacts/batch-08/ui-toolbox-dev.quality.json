@@ -1,0 +1,110 @@
+[
+  {
+    "confidence": "高",
+    "detail": "runQuery 把非 select/with/pragma 开头的语句直接 database.execSQL(trimmed)，trimmed 是用户在输入框里手写的原文。sanitizeSql 只做 trim 和去一个尾部分号，没有任何语句白名单或危险操作拦截。点一下运行就能执行 DROP TABLE / DELETE / UPDATE，作用的是 App 的真实数据库（writableDatabase），且界面上没有任何确认对话框。开发工具屏也不该让删库操作零确认。",
+    "evidence": "                } else {\n                    database.execSQL(trimmed)\n                    val affected = queryChanges()\n                    withContext(Dispatchers.Main) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerViewModel.kt",
+    "line": 91,
+    "severity": "high",
+    "title": "用户输入的任意 SQL 经 execSQL 直接打在正式库上，无二次确认"
+  },
+  {
+    "confidence": "高",
+    "detail": "LaunchedEffect(isStreaming, streamKey) 的 finally 里无条件关闭 channel（只要没关就关）。暂停就是把 isStreaming 置 false 导致协程取消，finally 随即关闭通道；streamKey 没变所以不会重建通道。再次点恢复时向已关闭的通道 send，直接抛 ClosedSendChannelException 被 catch 吃掉，渲染器收不到任何字符——恢复按钮形同虚设，演示停在暂停点再也动不了。",
+    "evidence": "    LaunchedEffect(isStreaming, streamKey) {\n        if (isStreaming) {\n            hasStarted = true\n            processedChars = 0\n            totalChars = fullMarkdownContent.length\n            try {\n                for (char in fullMarkdownContent) {",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/StreamMarkdownDemo.kt",
+    "line": 105,
+    "severity": "warn",
+    "title": "暂停后点恢复实际无法续播，通道已被 finally 关闭"
+  },
+  {
+    "confidence": "高",
+    "detail": "UIDebuggerViewModel 是双重检查锁单例，主应用界面、悬浮窗 UIDebuggerOverlay、UIDebuggerService 三处共用 getInstance()。onCleared 里 stopListening 并把 currentActionListener 置 null——只要宿主 Activity（如 UIDebuggerScreen 所在页）被销毁，悬浮窗里正在跑的 Activity 监听就被连带停掉，尽管代码注释自己也承认“可能有其他地方还在使用”。",
+    "evidence": "    override fun onCleared() {\n        super.onCleared()\n        viewModelScope.launch {\n            currentActionListener?.stopListening()\n            currentActionListener = null\n        }\n        // 注意：不要在这里清除单例实例，因为可能有其他地方还在使用\n    }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt",
+    "line": 440,
+    "severity": "warn",
+    "title": "单例 ViewModel 的 onCleared 会停掉悬浮窗共用的监听器"
+  },
+  {
+    "confidence": "高",
+    "detail": "getCommandHistory 恒返回 emptyList（JSON 解析分支直接 return emptyList，注释写着“此处为简化”）；saveCommandToHistory 里写 prefs 的两行被注释掉。于是：界面上的历史建议下拉永远为空，getSuggestedCommands 恒返回空；“清除历史”按钮删的是一个从没写过的键。内存里的 commandHistory 列表是 Screen 自己维护的，重启即丢。",
+    "evidence": "    fun getCommandHistory(): List<CommandRecord> {\n        val historyJson = prefs.getString(KEY_COMMAND_HISTORY, null) ?: return emptyList()\n        return try {\n            // 在实际实现中，使用JSON解析库如Gson或Moshi来解析历史记录\n            // 此处为简化，返回空列表\n            emptyList()",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/shellexecutor/ShellCommandManager.kt",
+    "line": 157,
+    "severity": "warn",
+    "title": "命令历史实际从未持久化，建议与清空按钮都是摆设"
+  },
+  {
+    "confidence": "高",
+    "detail": "clampOffset、calculateMaxOffset、drawCellText、SqlTableGestureHandler 在本文件中没有任何调用方——实际渲染走的是 AndroidView 托管的原生 SqlTableView。连 withFrameNanos、kotlinx.coroutines.Job 两个 import 也没用过。疑似从纯 Compose 自绘方案迁移到 SqlTableView 后遗留的残肢。",
+    "evidence": "private fun clampOffset(\n    offset: Offset,\n    viewportSize: IntSize,\n    columns: List<String>,\n    rows: Int,\n    headerHeight: Float,",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlViewerScreen.kt",
+    "line": 269,
+    "severity": "suggestion",
+    "title": "文件内有整套未使用的表格手势/绘制死代码"
+  },
+  {
+    "confidence": "高",
+    "detail": "LogRecordItem、CompactSearchField、generateColorFromString，以及 LogcatManager.loadInitialLogs/parseLogLine，在全仓库内零调用。LogcatScreen 现在只是导出日志文件和清空日志两个按钮的卡片页——日志查看列表功能疑似被砍掉后，解析与展示两层代码留成了死代码。",
+    "evidence": "fun LogRecordItem(record: LogRecord) {\n    val dateFormatter = remember { SimpleDateFormat(\"HH:mm:ss.SSS\", Locale.getDefault()) }",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatComponents.kt",
+    "line": 44,
+    "severity": "suggestion",
+    "title": "日志列表 UI 组件整套无人使用，当前日志屏只有导出/清空"
+  },
+  {
+    "confidence": "高",
+    "detail": "DebuggerMode(CLOSED/UI_ANALYSIS/ACTIVITY_MONITOR) 声明后从未被读取；CreatePackageDialog（新建包对话框，含应用名/包名/描述三个输入框）也没有任何调用方。疑似早期调试器模式切换与包管理功能的残留。",
+    "evidence": "// 调试器模式枚举 - 简化版本\nenum class DebuggerMode {\n    CLOSED,           // 关闭状态\n    UI_ANALYSIS,      // UI分析模式",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerComponents.kt",
+    "line": 420,
+    "severity": "suggestion",
+    "title": "DebuggerMode 枚举与 CreatePackageDialog 无引用"
+  },
+  {
+    "confidence": "中",
+    "detail": "coordsPattern 只匹配 \\d+，若某设备上报的 bounds 含负坐标（如异形屏/分屏边缘），find 直接失败，bounds 置 null——该元素在高亮层画不出红框、也点不中。至少该允许可选的负号。",
+    "evidence": "                val coordsPattern = \"\\\\[(\\\\d+),(\\\\d+)\\\\]\\\\[(\\\\d+),(\\\\d+)\\\\]\".toRegex()\n                val matchResult = coordsPattern.find(it)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/uidebugger/UIDebuggerViewModel.kt",
+    "line": 222,
+    "severity": "suggestion",
+    "title": "bounds 解析正则只认非负整数，负坐标元素直接丢边界"
+  },
+  {
+    "confidence": "中",
+    "detail": "LazyVerticalGrid 被塞进外层 verticalScroll 的 Column 里，自身高度写死 800.dp。测试组增删后要么底部截断（网格内部可滚但外层也在滚，嵌套滚动体验差），要么大面积留白。",
+    "evidence": "                columns = GridCells.Adaptive(minSize = 75.dp),\n                modifier = Modifier.fillMaxWidth().height(800.dp), // 设定一个足够的高度以避免嵌套滚动问题",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt",
+    "line": 141,
+    "severity": "suggestion",
+    "title": "测试网格写死 800.dp 高度，内容增减会溢出或留白"
+  },
+  {
+    "confidence": "中",
+    "detail": "countExportableLogLines 与 writeLogContent 各自把日志文件读一遍，大文件时双倍 IO；saveUsingMediaStore 里若 writeLogContent 中途抛异常，已 insert 的 MediaStore 条目不会被删除，下载目录留下一个内容不全的 operit_log_*.txt。",
+    "evidence": "    private fun countExportableLogLines(logFile: File): Long {\n        var count = 0L\n        logFile.bufferedReader().useLines { lines ->",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/logcat/LogcatExportHelper.kt",
+    "line": 60,
+    "severity": "suggestion",
+    "title": "导出前把日志文件完整读两遍，且 MediaStore 失败残留半截文件"
+  },
+  {
+    "confidence": "低",
+    "detail": "onDraw 里表头列分隔线 canvas.drawLine(x + cellWidth, 0f, x + cellWidth, height.toFloat(), gridPaint) 从顶部一直画到底部，表身行的横线之上又多了一套竖线，视觉上表头与表身的列线是连通的——若设计意图是表头独立，疑似笔误。",
+    "evidence": "                canvas.drawLine(x + cellWidth, 0f, x + cellWidth, height.toFloat(), gridPaint)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/sqlviewer/SqlTableView.kt",
+    "line": 213,
+    "severity": "suggestion",
+    "title": "表头纵向分隔线穿过整个表身"
+  },
+  {
+    "confidence": "高",
+    "detail": "全部 7 个 ToolGroup 的 isManual 都传 false，一键测试里的 filter { !it.isManual } 永远全过。若手动测试分组功能还没做，建议删掉该字段，免得后人误以为有分组被跳过。",
+    "evidence": "data class ToolGroup(val name: String, val sequential: Boolean, val isManual: Boolean, val tests: List<ToolTest>)",
+    "file": "app/src/main/java/com/ai/assistance/operit/ui/features/toolbox/screens/tooltester/ToolTesterScreen.kt",
+    "line": 377,
+    "severity": "suggestion",
+    "title": "ToolGroup.isManual 恒为 false，过滤逻辑是死分支"
+  }
+]

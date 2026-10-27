@@ -1,0 +1,52 @@
+[
+  {
+    "title": "catalogProviderId 无任何调用方",
+    "severity": "suggestion",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt",
+    "line": 189,
+    "confidence": "high",
+    "description": "OpenCodeRouting.catalogProviderId 在仓库内除自身定义外无任何调用处，属于死代码。",
+    "evidence": "    fun catalogProviderId(baseEndpoint: String): String =\n        if (isGo(baseEndpoint)) \"opencode-go\" else \"opencode\""
+  },
+  {
+    "title": "Claude 路由的 OBJECT 参数解析失败时静默丢弃",
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt",
+    "line": 375,
+    "confidence": "high",
+    "description": "OpenCodeClaudeProvider.putJsonParameter 对 OBJECT 类型参数用 runCatching 解析 JSON，失败时只打一条 warning 日志并跳过该参数；用户以为参数已生效，实际请求中缺失。",
+    "evidence": "            ParameterValueType.OBJECT -> {\n                val raw = parameter.currentValue.toString().trim()\n                runCatching { JSONObject(raw) }\n                    .onSuccess { jsonObject.put(parameter.apiName, it) }\n                    .onFailure { error ->\n                        AppLogger.w(\n                            \"OpenCodeClaudeProvider\",\n                            \"Invalid OpenCode JSON parameter: \" + parameter.apiName,\n                            error\n                        )"
+  },
+  {
+    "title": "未知模型协议在 protocolFor 抛 IllegalArgumentException",
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt",
+    "line": 173,
+    "confidence": "medium",
+    "description": "protocolFor 对无法匹配任何前缀的模型直接抛 IllegalArgumentException；create() 路径上未捕获，调用方若未处理会导致配置流程崩溃而非降级提示。",
+    "evidence": "            else -> throw IllegalArgumentException(\"Unsupported OpenCode model protocol: $modelName\")"
+  },
+  {
+    "title": "协议判定依赖硬编码的厂商模型前缀表",
+    "severity": "suggestion",
+    "category": "maintainability",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt",
+    "line": 157,
+    "confidence": "medium",
+    "description": "protocolFor 用约 17 个硬编码前缀（big-pickle/deepseek-/glm-/kimi- 等）判定 OPENAI_GENERIC，新模型接入必须改代码重新发布，无法通过配置扩展。",
+    "evidence": "            modelId.startsWith(\"big-pickle\") ||\n                modelId.startsWith(\"deepseek-\") ||\n                modelId.startsWith(\"glm-\") ||"
+  },
+  {
+    "title": "Gemini 请求 URL 直接拼接原始 modelName 未编码",
+    "severity": "warning",
+    "category": "correctness",
+    "file": "app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/OpenCodeProvider.kt",
+    "line": 424,
+    "confidence": "medium",
+    "description": "createRequest 用字符串拼接构造 \"/models/\" + model + \":\" + method，未做 URL 编码；protocolFor 自身用 substringAfterLast('/') 处理模型名，说明模型名可含 '/'，此类名字会破坏 URL 路径结构。",
+    "evidence": "        val requestUrl = base + \"/models/\" + opencodeModelName + \":\" + method + suffix"
+  }
+]

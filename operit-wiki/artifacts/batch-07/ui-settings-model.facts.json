@@ -1,0 +1,506 @@
+[
+  {
+    "fact": "ApiKeyVisualTransformation 是 VisualTransformation 实现，用于在 API Key 输入框只做显示层遮盖而不改变实际文本。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ApiKeyVisualTransformation.kt:8"
+  },
+  {
+    "fact": "ApiKeyVisualTransformation 长度大于 8 的 Key 只显示首 4 位和尾 4 位明文，中间全部替换为星号。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ApiKeyVisualTransformation.kt:14"
+  },
+  {
+    "fact": "ApiKeyVisualTransformation 长度小于等于 8 的 Key 直接显示原文，不做任何遮盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ApiKeyVisualTransformation.kt:22"
+  },
+  {
+    "fact": "ApiKeyVisualTransformation 的 OffsetMapping 是恒等映射，光标位置在原文与变换文本之间 1:1 对应。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ApiKeyVisualTransformation.kt:28"
+  },
+  {
+    "fact": "自动保存默认防抖时长为 700 毫秒，由 DEFAULT_MODEL_CONFIG_AUTO_SAVE_DEBOUNCE_MS 定义。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:23"
+  },
+  {
+    "fact": "modelConfigSaveCoordinatorScope 是全局单例作用域，由 SupervisorJob 加 Dispatchers.Main.immediate 构成，单个保存任务失败不牵连其他任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:25"
+  },
+  {
+    "fact": "ModelConfigSaveCoordinator.discardConfig 按 \":$configId\" 后缀匹配，一次清除该配置名下所有已注册的保存动作。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:51"
+  },
+  {
+    "fact": "ModelConfigSaveCoordinator.flushAll 先 join 全部后台刷盘任务，再逐个执行已注册保存动作并收集第一个失败，结束时若有未解决失败则抛出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:63"
+  },
+  {
+    "fact": "ModelConfigSaveCoordinator.flushAllInBackground 用 runCatching 包裹 flushAll 调用，异常被静默吞掉。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:99"
+  },
+  {
+    "fact": "ModelConfigSaveCoordinator.flushInBackground 用 CoroutineStart.LAZY 启动单个保存动作的后台任务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:107"
+  },
+  {
+    "fact": "RegisterModelConfigSaveAction 在 DisposableEffect 中注册保存动作，离开组合时先 flushInBackground(key, showSuccess=false) 刷盘再注销。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:152"
+  },
+  {
+    "fact": "DebouncedModelConfigAutoSaveEffect 的数据流是 snapshotFlow{valueProvider()}.drop(1).debounce().distinctUntilChanged().collectLatest{persist}，跳过初始值、防抖、去重后只保留最后一次写入。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/ModelConfigAutoSaveSupport.kt:176"
+  },
+  {
+    "fact": "API 设置区块的保存键为 \"api:${config.id}\"，经 RegisterModelConfigSaveAction 注册到保存协调器。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:351"
+  },
+  {
+    "fact": "ModelApiSettingsSection.persist 用 modelApiSettingsSaveMutex 加锁后切 Dispatchers.IO，调用 configManager.updateApiSettingsFull 写盘。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:272"
+  },
+  {
+    "fact": "API 设置落盘后调用 EnhancedAIService.refreshAllServices，让运行中的 AI 服务立即使用新配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:297"
+  },
+  {
+    "fact": "ApiAutoSaveState 是 18 字段的数据类，作为 API 设置区块的 UI 状态快照。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:250"
+  },
+  {
+    "fact": "buildAutoSaveState 对本地推理参数做兜底：llama 线程数/上下文输入非数字时取 4/2048，小于 1 时取 1（coerceAtLeast(1)）；GPU 层数小于 0 时取 0（coerceAtLeast(0)）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:313"
+  },
+  {
+    "fact": "flushSettings 在 AppLogger.d 日志中输出 apiKey.take(5)，把 API Key 前 5 位写入日志。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:332"
+  },
+  {
+    "fact": "API Key 输入框聚焦或为空时用 VisualTransformation.None 明文显示，失焦且非空时才用 ApiKeyVisualTransformation 遮盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:761"
+  },
+  {
+    "fact": "API Key 输入框自动去掉用户输入中的空格和换行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:754"
+  },
+  {
+    "fact": "ProviderRegionWarningType 只有 OVERSEAS 和 INTERNATIONAL_PROXY 两种取值，用于地域合规告警横幅。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:86"
+  },
+  {
+    "fact": "地域告警横幅仅在 LocationUtils.isDeviceInMainlandChina 为真时显示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:397"
+  },
+  {
+    "fact": "通用兼容供应商按 genericCompatibleProviderOrder 排序：OPENAI_GENERIC、OPENAI_RESPONSES_GENERIC、GEMINI_GENERIC、ANTHROPIC_GENERIC。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:122"
+  },
+  {
+    "fact": "EndpointCompleter.completeEndpoint 用于在端点输入框下方预览实际请求 URL。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:727"
+  },
+  {
+    "fact": "Codex 供应商使用 CodexAuthSettingsBlock 做 OAuth 登录，端点输入框被禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:612"
+  },
+  {
+    "fact": "MNN 供应商的前向类型经 forwardTypeName 映射为 CPU / OpenCL / Auto / OpenGL / Vulkan 五档。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:1958"
+  },
+  {
+    "fact": "选中 Codex 供应商时 LaunchedEffect 强制 enableDirectImageProcessingInput=true、enableDirectAudio/VideoProcessingInput=false、enableToolCallInput=true。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:242"
+  },
+  {
+    "fact": "Moonshot 端点包含 api.kimi.com/coding/v1 时，模型名自动同步为 kimi-for-coding（切走时恢复默认模型）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:384"
+  },
+  {
+    "fact": "模型名支持逗号分隔多选，模型选择对话框多选后按列表顺序 joinToString(\",\") 拼接。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:1207"
+  },
+  {
+    "fact": "Codex 额度胶囊展示 5 小时与 7 天两个窗口（codex_quota_five_hour / codex_quota_seven_day）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:1335"
+  },
+  {
+    "fact": "Codex 额度进度条用 remainingPercent/100f 绘制。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:1382"
+  },
+  {
+    "fact": "Codex 额度重置倒计时在 LaunchedEffect(codexUsage) 里按 60 秒 tick 刷新 codexUsageNow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelApiSettingsSection.kt:185"
+  },
+  {
+    "fact": "高级设置中 OPENAI_CODEX 供应商隐藏整个 API Key 池 UI。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:340"
+  },
+  {
+    "fact": "API Key 池保存经 configManager.updateApiKeyPoolSettings 落盘，再调 EnhancedAIService.refreshAllServices 刷新服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:104"
+  },
+  {
+    "fact": "保存 Key 池前先调用 keyAvailabilityTester.pauseAndJoin()，停掉正在进行的可用性测试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:117"
+  },
+  {
+    "fact": "Key 池的保存键为 \"api-key-pool:${config.id}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:131"
+  },
+  {
+    "fact": "请求队列的每分钟请求数输入只保留数字字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:313"
+  },
+  {
+    "fact": "请求队列的最大并发数输入只保留数字字符。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:327"
+  },
+  {
+    "fact": "请求队列参数非法输入经 toIntOrNull()?.coerceAtLeast(0) ?: 0 按 0 处理。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:157"
+  },
+  {
+    "fact": "exportKeyPoolToUri 把全部 Key 用换行符拼成明文，经用户选定的文件 URI 导出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:173"
+  },
+  {
+    "fact": "Key 池导出经由 ActivityResultContracts.CreateDocument(\"text/plain\") 让用户选择目标文件。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:227"
+  },
+  {
+    "fact": "Key 池导入用 ACTION_GET_CONTENT 选择 text/* 文件，逐行 trim 并过滤空行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:527"
+  },
+  {
+    "fact": "Key 池导入时新 Key 的默认名称取 Key 末 4 位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:210"
+  },
+  {
+    "fact": "Key 池列表最多直接编辑 20 个 Key，超出后只显示计数不展开编辑行。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:382"
+  },
+  {
+    "fact": "Key 可用性测试调用 keyAvailabilityTester.startOrResume，并发数为 5。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:460"
+  },
+  {
+    "fact": "Key 可用性状态分 AVAILABLE / UNAVAILABLE / UNTESTED 三态，列表项按状态配图标。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:647"
+  },
+  {
+    "fact": "Key 池列表项文本为 \"${keyInfo.name} (...${keyInfo.key.takeLast(4)})\"，即名称加 Key 末 4 位。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:640"
+  },
+  {
+    "fact": "Key 编辑对话框默认名称为 \"API Key ${key.takeLast(4)}\"，Key 为空时保存按钮禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/AdvancedSettingsSection.kt:710"
+  },
+  {
+    "fact": "7 个标准采样参数经 when(definition.id) 映射到 config 的对应字段并带独立 Enabled 开关。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:108"
+  },
+  {
+    "fact": "自定义参数 JSON 用 ignoreUnknownKeys=true 与 isLenient=true 宽容解码为 CustomParameterData。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:141"
+  },
+  {
+    "fact": "自定义参数更新按 ParameterValueType 分支处理不同取值类型，OBJECT 类型走独立分支。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:218"
+  },
+  {
+    "fact": "generationParams / creativityParams / repetitionParams 分别按 ParameterCategory.GENERATION / CREATIVITY / REPETITION 过滤非自定义参数，customParams 取 isCustom。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:381"
+  },
+  {
+    "fact": "参数页首两个 Tab 为 generation（ParameterCategory.GENERATION）与 creativity（ParameterCategory.CREATIVITY）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:496"
+  },
+  {
+    "fact": "后两个 Tab 为 repetition（ParameterCategory.REPETITION）与 custom（以 ParameterCategory.OTHER 占位、isCustom=true）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:508"
+  },
+  {
+    "fact": "resetParameters 是本地 lambda，把全部标准参数恢复默认值并禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:322"
+  },
+  {
+    "fact": "重置后的参数经 configManager.updateParameters 落盘并弹出提示。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:372"
+  },
+  {
+    "fact": "apiName 为 \"temperature\" 的参数下方挂载 TemperatureRecommendationRow。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:615"
+  },
+  {
+    "fact": "推荐值 \"1.3\" 以加粗文本写死在推荐行卡片中。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:1480"
+  },
+  {
+    "fact": "新建自定义参数时 apiName 由名称自动生成：空格转下划线并转小写。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:834"
+  },
+  {
+    "fact": "自定义参数的 apiName / 描述 / min / max 输入框只在编辑模式可见，新建模式隐藏。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:922"
+  },
+  {
+    "fact": "OBJECT 类型自定义参数在输入时实时校验 JSON 合法性。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/sections/ModelParametersSection.kt:895"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表挂载的第一个区块是 ModelApiSettingsSection。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:792"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表第二个区块是 ContextSummarySettingsSection（上下文与摘要）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:802"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表第三个区块是 ThinkingConfigurationsSection（思考配置）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:811"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表第四个区块是 ModelParametersSection（采样参数）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:820"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表第五个区块是 CustomHeadersSettingsSection（自定义请求头）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:828"
+  },
+  {
+    "fact": "ModelConfigScreen 主列表第六个区块是 AdvancedSettingsSection（高级设置）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:837"
+  },
+  {
+    "fact": "页面 ON_STOP（熄屏或切后台）时调用 saveCoordinator.flushAllInBackground(showSuccess=false) 静默刷盘。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:359"
+  },
+  {
+    "fact": "id 为 \"default\" 的配置不显示重命名和删除按钮，不可改名或删除。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:486"
+  },
+  {
+    "fact": "删除配置时先 flushAll 落盘，再 deleteConfig（返回受影响功能），discardConfig 清保存动作，最后逐个刷新受影响功能的 AI 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:509"
+  },
+  {
+    "fact": "连接测试前先 saveCoordinator.flushAll(showSuccess=false)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:573"
+  },
+  {
+    "fact": "ModelConfigConnectionTester.run 接收 context / modelConfigManager / config / onActiveServiceChanged 等参数执行测试。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:580"
+  },
+  {
+    "fact": "连接测试项为 CHAT / TOOL_CALL / IMAGE / AUDIO / VIDEO 五项。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2518"
+  },
+  {
+    "fact": "连接测试结果分 PASSED / UNVERIFIED / FAILED 三态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:679"
+  },
+  {
+    "fact": "测试中点击取消调用 activeConnectionTestService?.cancelStreaming() 并取消 connectionTestJob。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:563"
+  },
+  {
+    "fact": "CHAT_ONBOARDING 模式用 RegisterRouteBackGuard 拦截返回键。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:261"
+  },
+  {
+    "fact": "引导返回处理中先 saveCoordinator.flushAll(showSuccess=false) 刷盘，再做就绪检查。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:269"
+  },
+  {
+    "fact": "引导绑定时 ChatConfigReadiness.evaluate 检查配置就绪度，不就绪则阻止返回。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:296"
+  },
+  {
+    "fact": "就绪检查的问题类型包括 PROVIDER_MISSING、PROVIDER_UNAVAILABLE、ENDPOINT_INVALID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:305"
+  },
+  {
+    "fact": "就绪检查的问题类型还包括 MODEL_MISSING、CODEX_LOGIN_REQUIRED、API_KEY_MISSING、API_KEY_INVALID。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:313"
+  },
+  {
+    "fact": "引导就绪后调用 functionalConfigManager.setConfigForFunction(CHAT, targetConfigId, targetModelIndex) 绑定对话功能配置。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:325"
+  },
+  {
+    "fact": "ThinkingRuleEditor 包含 id、enabled、providerIds、matchField、matchValues、control、parameterLabel 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1040"
+  },
+  {
+    "fact": "ThinkingRuleEditor 还包含 required、enabledActions、disabledActions、options 字段。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1047"
+  },
+  {
+    "fact": "思考控件类型二选一：levels（多档滑块）或 toggle_only（仅开关）。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1069"
+  },
+  {
+    "fact": "思考规则匹配方式共 9 种：modelContains、modelPrefix、modelSuffix、modelRegex、firstSegment、lastSegmentPrefix、lastSegmentContains、lastSegmentRegex、endpointSuffix。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1077"
+  },
+  {
+    "fact": "思考配置保存前用 ThinkingQualityMappingRegistry.validateConfigurations 校验 JSON。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1118"
+  },
+  {
+    "fact": "思考配置 JSON 校验失败时错误信息写入 configurationError 并抛 IllegalArgumentException(validationMessage)。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1124"
+  },
+  {
+    "fact": "思考配置落盘经 configManager.updateThinkingConfigurations。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1130"
+  },
+  {
+    "fact": "匹配条件序列化为 {\"match\": {匹配字段: [值数组]}} 结构。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1723"
+  },
+  {
+    "fact": "思考规则序列化时 id 为空默认 \"custom-thinking-${index + 1}\"。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1714"
+  },
+  {
+    "fact": "思考规则反序列化兼容数组、{rules:[...]} 包裹、单对象三种形态。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1765"
+  },
+  {
+    "fact": "反序列化时 control 的 \"toggle\" 归一为 toggle_only。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1788"
+  },
+  {
+    "fact": "parseThinkingEditorValue 按内容还原类型：true/false/null/整数/长整数/小数/{...}/[...]，否则按字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1885"
+  },
+  {
+    "fact": "parseHeaderEntries 把 JSON 字符串解析为 List<Pair<String,String>>。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:137"
+  },
+  {
+    "fact": "serializeHeaderEntries 把请求头列表序列化为 JSON 字符串。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:152"
+  },
+  {
+    "fact": "自定义请求头预设经 headerPresets = listOf(HeaderPreset(...)) 定义，首个为安卓浏览器 UA。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:97"
+  },
+  {
+    "fact": "移动网关预设写入 X-Forwarded-For: 211.136.1.10 与 Via: CMNET。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:125"
+  },
+  {
+    "fact": "美国 LA 预设写入 Accept-Language: en-US,en;q=0.9 与 X-Forwarded-For: 38.107.226.5。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:132"
+  },
+  {
+    "fact": "请求头预设按 header 名合并进现有列表，同名覆盖。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2056"
+  },
+  {
+    "fact": "自定义请求头保存键为 \"headers:${config.id}\"，走防抖自动保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1948"
+  },
+  {
+    "fact": "persistHeaders 用 saveMutex 加锁后在 IO 线程调 updateCustomHeaders 写盘，再刷新全部 AI 服务。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:1931"
+  },
+  {
+    "fact": "上下文长度与最大上下文长度输入框单位为 K。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2340"
+  },
+  {
+    "fact": "上下文长度/最大上下文长度输入非法（非数字或不大于 0）时显示错误且不保存。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2172"
+  },
+  {
+    "fact": "摘要 token 占比阈值必须在 (0,1) 开区间内，按消息数触发时消息数必须大于 0。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2242"
+  },
+  {
+    "fact": "formatFloatValue 对整数值去掉小数点，否则保留两位小数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelConfigScreen.kt:2528"
+  },
+  {
+    "fact": "角色卡排序选项为 DEFAULT / NAME_ASC / CREATED_DESC。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:1962"
+  },
+  {
+    "fact": "排序选择经 rememberLocal(key=\"ModelPromptsSettingsScreen.CharacterCardTab.sortOption\") 持久化。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:1992"
+  },
+  {
+    "fact": "角色卡导出模式为 TAVERN_JSON / TAVERN_PNG / COLOR_QR 三种。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:1968"
+  },
+  {
+    "fact": "酒馆 PNG 导入经 characterCardManager.createCharacterCardFromTavernPng 解析 PNG 数据。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:284"
+  },
+  {
+    "fact": "酒馆 JSON 导入经 characterCardManager.createCharacterCardFromTavernJson 解析，未知类型文件先试 JSON 再试 PNG。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:324"
+  },
+  {
+    "fact": "彩色二维码导入 handleColorQrImportFromUri 对裁剪出的二维码区和原图分别做多档缩放后解码。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:395"
+  },
+  {
+    "fact": "角色卡头像经 CropImageContract 裁剪后拷入内部存储，命名为 avatar_${card.id}。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:180"
+  },
+  {
+    "fact": "insertTavernTextChunk 把酒馆 JSON 做 Base64 后塞进 PNG 的 tEXt/chara 块实现 PNG 导出。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:3484"
+  },
+  {
+    "fact": "标签导入导出格式标识为 \"operit_prompt_tags\" version 1，导入时按名称小写匹配，已存在更新否则新建。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:3317"
+  },
+  {
+    "fact": "标签导入返回 created / updated / skipped 三个计数。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:3378"
+  },
+  {
+    "fact": "复制角色卡生成新 ID、名称加后缀，并经 cloneBindingsFromCharacterCard 复制绑定关系。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:717"
+  },
+  {
+    "fact": "角色卡改名或删除后弹出前往聊天管理的提示对话框。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:694"
+  },
+  {
+    "fact": "resetDefaultCharacterCard 恢复默认角色卡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:701"
+  },
+  {
+    "fact": "删除当前活跃的群组时，活跃提示词自动回退到默认角色卡。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:775"
+  },
+  {
+    "fact": "角色卡导出文件经 MediaStore RELATIVE_PATH 存入 DIRECTORY_DOWNLOADS/Operit/exports。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:3438"
+  },
+  {
+    "fact": "彩色码图片经 MediaStore RELATIVE_PATH 存入 DIRECTORY_PICTURES/Operit。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/ModelPromptsSettingsScreen.kt:3393"
+  },
+  {
+    "fact": "MNN 模型列表经 downloadManager.fetchModelList() 拉取，失败显示错误信息。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/MnnModelDownloadScreen.kt:66"
+  },
+  {
+    "fact": "MNN 模型搜索按模型名、描述、tags 忽略大小写过滤。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/MnnModelDownloadScreen.kt:53"
+  },
+  {
+    "fact": "MNN 下载源优先级为 sources[\"ModelScope\"]、sources[\"HuggingFace\"]、第一个源。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/MnnModelDownloadScreen.kt:274"
+  },
+  {
+    "fact": "MNN 下载 URL 为空时下载按钮禁用。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/MnnModelDownloadScreen.kt:401"
+  },
+  {
+    "fact": "MNN 模型删除权限：Completed / Failed / Paused 可删，Idle 看 isModelDownloaded，下载中与连接中不可删。",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/settings/screens/MnnModelDownloadScreen.kt:268"
+  }
+]

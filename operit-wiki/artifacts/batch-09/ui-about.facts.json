@@ -1,0 +1,506 @@
+[
+  {
+    "fact": "AboutScreen 是 @Composable 函数，唯一参数为 navigateToUpdateHistory: () -> Unit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:462"
+  },
+  {
+    "fact": "GITHUB_PROJECT_URL 常量为 https://github.com/AAswordman/Operit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:61"
+  },
+  {
+    "fact": "PatchUpdatePhase 枚举定义 7 个补丁更新阶段：SELECTING_MIRROR、DOWNLOADING_META、DOWNLOADING_PATCH、APPLYING_PATCH、VERIFYING_APK、READY_TO_INSTALL、ERROR",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:63"
+  },
+  {
+    "fact": "PatchUpdateDialogState 持有 phase、message、progressPercent、readBytes、totalBytes、speedBytesPerSec、mirrorResults、mirrorCompleted、mirrorTotal、chainScanCompleted、chainScanTotal、selectedMirror、errorMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:73"
+  },
+  {
+    "fact": "FullUpdatePhase 枚举只有 3 个阶段：DOWNLOADING_APK、READY_TO_INSTALL、ERROR",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:89"
+  },
+  {
+    "fact": "FullUpdateDialogState 持有 phase、message、progressPercent、readBytes、totalBytes、speedBytesPerSec、errorMessage",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:95"
+  },
+  {
+    "fact": "HtmlText 通过 AndroidView 嵌入原生 TextView 来渲染 HTML 字符串",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:115"
+  },
+  {
+    "fact": "HtmlText 给 TextView 设置 LinkMovementMethod.getInstance()，使其中的链接可点击",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:119"
+  },
+  {
+    "fact": "HtmlText 在 API N 及以上用 Html.FROM_HTML_MODE_COMPACT，低版本用已弃用的 fromHtml",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:127"
+  },
+  {
+    "fact": "mapPatchStage 把 PatchUpdateInstaller.Stage 逐项映射为 UI 层的 PatchUpdatePhase",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:135"
+  },
+  {
+    "fact": "reducePatchUpdateState 是纯 reducer 函数，把安装器的 ProgressEvent 折叠进对话框状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:146"
+  },
+  {
+    "fact": "StageChanged 事件进入新阶段时把进度、字节数、速度清零",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:160"
+  },
+  {
+    "fact": "MirrorProbeResult 事件把单个镜像探测结果合并进 mirrorResults 并更新完成计数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:181"
+  },
+  {
+    "fact": "DownloadProgress 事件按 readBytes/totalBytes 计算百分比并 coerceIn(0, 100)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:204"
+  },
+  {
+    "fact": "pickBestMirrorKey 选下载速度最快的可用镜像，速度相同时选延迟最低的",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:268"
+  },
+  {
+    "fact": "formatBytes 按 B/KB/MB/GB 分档，KB 以上用 Locale.US 保留 2 位小数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:335"
+  },
+  {
+    "fact": "formatSpeed 在速度小于等于 0 时返回 --/s",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:348"
+  },
+  {
+    "fact": "InfoItem 是图标加标题加自定义内容的通用信息行组件",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:355"
+  },
+  {
+    "fact": "SettingsGroup 是圆角 18.dp、surfaceContainerLow 背景的设置分组容器",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:384"
+  },
+  {
+    "fact": "SettingsRow 左侧为 38.dp 圆角图标块，图标底色为 iconTint 的 0.16 透明度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:417"
+  },
+  {
+    "fact": "SettingsRow 在有 onClick 时尾部显示箭头图标，否则可定制 trailing",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:452"
+  },
+  {
+    "fact": "AboutScreen 通过 UserPreferencesManager.betaPlanEnabled 订阅测试计划开关状态",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:469"
+  },
+  {
+    "fact": "AboutScreen 持有 UpdateManager.getInstance(context) 单例",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:472"
+  },
+  {
+    "fact": "AboutScreen 用 observeForever 监听 UpdateManager.updateStatus 的 LiveData",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:480"
+  },
+  {
+    "fact": "DisposableEffect 的 onDispose 中 removeObserver，防止观察者泄漏",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:482"
+  },
+  {
+    "fact": "appVersion 从 PackageManager.getPackageInfo 读取 versionName，异常时取 R.string.about_version_unknown",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:502"
+  },
+  {
+    "fact": "LaunchedEffect(updateStatus) 在 Available、PatchAvailable、UpToDate、Error 四种终态自动弹出更新对话框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:512"
+  },
+  {
+    "fact": "checkForUpdates 调用 updateManager.checkForUpdates(appVersion)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:522"
+  },
+  {
+    "fact": "downloadFromUrl 用 ACTION_VIEW 浏览器打开下载链接并关闭更新对话框",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:527"
+  },
+  {
+    "fact": "startPatchUpdateWithMirror 在补丁任务进行中直接返回，防止重复启动",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:543"
+  },
+  {
+    "fact": "startPatchUpdateWithMirror 的初始对话框阶段为 DOWNLOADING_META",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:548"
+  },
+  {
+    "fact": "补丁更新开始时调用 ActivityLifecycleManager.forceKeepScreenOn(true) 保持屏幕常亮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:555"
+  },
+  {
+    "fact": "补丁更新调用 PatchUpdateInstaller.downloadAndPreparePatchUpdateWithProgressUsingMirror",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:558"
+  },
+  {
+    "fact": "补丁就绪后切主线程调用 PatchUpdateInstaller.installApk 发起系统安装",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:584"
+  },
+  {
+    "fact": "安装发起后把 patchUpdateStateFlow 置 null 关闭进度弹窗",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:587"
+  },
+  {
+    "fact": "CancellationException 被捕获后直接关闭弹窗不报错",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:589"
+  },
+  {
+    "fact": "补丁失败时 AppLogger.e(\"AboutScreen\", \"patch update failed\") 记录异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:592"
+  },
+  {
+    "fact": "finally 中 forceKeepScreenOn(false) 恢复亮屏策略并把 job 置 null",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:598"
+  },
+  {
+    "fact": "startPatchUpdate（自动测速路径）的初始阶段为 SELECTING_MIRROR",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:611"
+  },
+  {
+    "fact": "startPatchUpdate 调用 downloadAndPreparePatchUpdateWithProgress，由安装器自动探测镜像",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:620"
+  },
+  {
+    "fact": "startFullUpdateInApp 通过 FullUpdateInstaller.downloadAndPrepareUpdate 下载完整 APK",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:679"
+  },
+  {
+    "fact": "handleDownload 在 Available 且 downloadUrl 以 .apk 结尾时弹出完整包更新方式选择",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:716"
+  },
+  {
+    "fact": "handleDownload 在 Available 但无 .apk 链接时用浏览器打开 status.updateUrl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:722"
+  },
+  {
+    "fact": "handleDownload 在 PatchAvailable 时弹出补丁下载源选择",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:733"
+  },
+  {
+    "fact": "测试计划开关的 onCheckedChange 调用 preferences.saveBetaPlanEnabled(enabled)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:943"
+  },
+  {
+    "fact": "检查更新行的副标题按 updateStatus 分别展示新版本号、已是最新、错误信息或检查中",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:891"
+  },
+  {
+    "fact": "Checking 状态时行尾显示 18.dp 的圆形进度条",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:908"
+  },
+  {
+    "fact": "检查更新行点击时：已有结论状态直接弹窗，Checking 忽略，其余触发检查更新",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:926"
+  },
+  {
+    "fact": "项目地址行点击用浏览器打开 GITHUB_PROJECT_URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:957"
+  },
+  {
+    "fact": "GitHub Star 行点击同样打开 GITHUB_PROJECT_URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:969"
+  },
+  {
+    "fact": "更新日志行点击调用 navigateToUpdateHistory() 跳转更新历史页",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:986"
+  },
+  {
+    "fact": "开源许可行点击把 showLicenseDialog 置 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:995"
+  },
+  {
+    "fact": "联系方式行副标题取 R.string.about_contact",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1006"
+  },
+  {
+    "fact": "开发者行用 HtmlText 渲染 R.string.about_developer 的 HTML",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1017"
+  },
+  {
+    "fact": "页脚居中显示 R.string.about_copyright",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1029"
+  },
+  {
+    "fact": "UpdateDialog 按 updateStatus 显示不同图标与标题：发现新版本、检查中、检查完成、检查失败",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1044"
+  },
+  {
+    "fact": "全量更新对话框正文显示 $appVersion -> ${status.newVersion}",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1077"
+  },
+  {
+    "fact": "newVersion 包含 + 时不展示 releaseNotes 更新内容",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1083"
+  },
+  {
+    "fact": "PatchAvailable 时确认按钮文案为 R.string.patch_update（补丁更新）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1127"
+  },
+  {
+    "fact": "PatchUpdateProgressDialog 通过 DialogProperties 禁止返回键和点击外部关闭",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1141"
+  },
+  {
+    "fact": "镜像探测阶段逐行显示每个镜像的可用状态、速度与延迟",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1219"
+  },
+  {
+    "fact": "下载阶段显示已读字节数除以总字节数及实时速度",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1240"
+  },
+  {
+    "fact": "校验阶段显示链式扫描进度 patch_update_chain_progress",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1282"
+  },
+  {
+    "fact": "FullUpdateMethodDialog 提供应用内更新与浏览器下载两种更新方式",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1339"
+  },
+  {
+    "fact": "FullUpdateProgressDialog 与补丁版结构对应，阶段只有 DOWNLOADING_APK、READY_TO_INSTALL、ERROR",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1399"
+  },
+  {
+    "fact": "DownloadSourceDialog 用 GithubReleaseUtil.getMirroredUrls 生成各镜像下载 URL",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1507"
+  },
+  {
+    "fact": "DownloadSourceDialog 在 IO 线程并发探测每个下载源的速度与延迟",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1532"
+  },
+  {
+    "fact": "autoSelect 选速度最快延迟最低的可用源并回调 onDownload",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1537"
+  },
+  {
+    "fact": "下载源列表中只有探测通过（ok）的源可被点击",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1604"
+  },
+  {
+    "fact": "PatchDownloadSourceDialog 同时探测 patch 与 meta 两个 URL 的镜像",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1685"
+  },
+  {
+    "fact": "补丁镜像的速度取 patch 与 meta 两者的最小值，延迟取两者的最大值",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:1698"
+  },
+  {
+    "fact": "补丁源选择后回调 onDownload(mirrorKey) 进入 startPatchUpdateWithMirror",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:815"
+  },
+  {
+    "fact": "关于页顶部圆形 Logo 使用 R.drawable.ic_launcher_simple_foreground",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:867"
+  },
+  {
+    "fact": "版本行显示 R.string.about_version(appVersion)",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:887"
+  },
+  {
+    "fact": "更新方式选择后：浏览器选项进 pendingFullUpdate，应用内选项进 pendingFullUpdateInApp",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/AboutScreen.kt:769"
+  },
+  {
+    "fact": "viewModelFactory 是构造 ViewModelProvider.Factory 的内联辅助函数",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:70"
+  },
+  {
+    "fact": "UpdateScreen 的唯一参数为 onNavigateToThemeSettings",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:77"
+  },
+  {
+    "fact": "UpdateScreen 用 context.applicationContext 创建 UpdateViewModel",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:79"
+  },
+  {
+    "fact": "UpdateScreen 通过 collectAsState 订阅 uiState，按 Loading、Success、Error 三态渲染",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:82"
+  },
+  {
+    "fact": "UpdateList 用 LazyColumn 展示更新历史列表",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:104"
+  },
+  {
+    "fact": "ErrorState 展示错误信息并提供重试按钮重新调用 loadUpdates",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:133"
+  },
+  {
+    "fact": "UpdateCard 渲染单个版本的卡片",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:168"
+  },
+  {
+    "fact": "版本描述超过 5 行或 200 字符时才允许折叠",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:171"
+  },
+  {
+    "fact": "最新版本卡片用 primaryContainer 背景色和 4.dp 阴影",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:183"
+  },
+  {
+    "fact": "最新版本打绿色 0xFF4CAF50 的 update_latest 角标",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:239"
+  },
+  {
+    "fact": "releaseUrl 非空时卡片底部显示查看 Release 与下载按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:297"
+  },
+  {
+    "fact": "下载按钮用浏览器打开 updateInfo.downloadUrl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateScreen.kt:327"
+  },
+  {
+    "fact": "UpdateViewModel 持有 Context，负责从 GitHub 拉取更新历史",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:20"
+  },
+  {
+    "fact": "REPO_OWNER 为 AAswordman，REPO_NAME 为 Operit",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:28"
+  },
+  {
+    "fact": "UpdateViewModel 的 init 块即调用 loadUpdates",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:32"
+  },
+  {
+    "fact": "loadUpdates 先把状态置为 Loading 再发起网络请求",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:39"
+  },
+  {
+    "fact": "loadUpdates 请求 AAswordman/Operit 仓库第 1 页、每页 20 条 releases",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:43"
+  },
+  {
+    "fact": "loadUpdates 过滤掉 draft 草稿和 prerelease 预发布版本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:46"
+  },
+  {
+    "fact": "过滤后的第一条（index == 0）被标记为 isLatest",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:48"
+  },
+  {
+    "fact": "parseReleaseToUpdateInfo 把 GitHubRelease 转换为 UpdateInfo",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:61"
+  },
+  {
+    "fact": "published_at 为空时 requireNotNull 直接抛异常",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:63"
+  },
+  {
+    "fact": "发布时间按 yyyy-MM-dd'T'HH:mm:ss'Z' 解析为 yyyy-MM-dd",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:66"
+  },
+  {
+    "fact": "日期解析失败时回退取 published_at 字符串前 10 个字符",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:71"
+  },
+  {
+    "fact": "版本标题取 release.name，为空时取 R.string.update_version_title",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:75"
+  },
+  {
+    "fact": "downloadUrl 与 releaseUrl 都取 release.html_url",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:78"
+  },
+  {
+    "fact": "UpdateUiState 是 Loading、Success、Error 三态的密封类",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateViewModel.kt:99"
+  },
+  {
+    "fact": "UpdateInfo 包含 version、date、title、description、highlights、allChanges、isLatest、downloadUrl、releaseUrl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/update/screens/UpdateInfo.kt:3"
+  },
+  {
+    "fact": "OpenSourceLibrary 有 name、description、license、website 四个字段",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:27"
+  },
+  {
+    "fact": "getOpenSourceLibraries 硬编码约 70 个三方库的清单",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:34"
+  },
+  {
+    "fact": "开源库清单按名称排序后展示",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:135"
+  },
+  {
+    "fact": "LicenseDialog 用 LazyColumn 逐库展示开源许可",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:139"
+  },
+  {
+    "fact": "每个库条目显示名称、描述与许可证格式文本",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:150"
+  },
+  {
+    "fact": "website 非空的库提供浏览器图标按钮跳转其官网",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/about/screens/OpenSourceLicenses.kt:168"
+  },
+  {
+    "fact": "HelpScreen 的 onBackPressed 参数默认为空实现",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:24"
+  },
+  {
+    "fact": "帮助地址硬编码为 https://operit.app",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:27"
+  },
+  {
+    "fact": "HelpScreen 的 WebView 由 WebViewConfig.createWebView 创建",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:32"
+  },
+  {
+    "fact": "onPageStarted 把 isLoading 置 true",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:37"
+  },
+  {
+    "fact": "onPageFinished 把 isLoading 置 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:42"
+  },
+  {
+    "fact": "onReceivedError 把 isLoading 置 false",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:50"
+  },
+  {
+    "fact": "shouldOverrideUrlLoading 返回 false，页面内链接由 WebView 自行处理",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:54"
+  },
+  {
+    "fact": "DisposableEffect 让 WebView 主动请求焦点，避免滑动被父级拦截",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:65"
+  },
+  {
+    "fact": "LaunchedEffect 在首次组合时加载 helpUrl",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:72"
+  },
+  {
+    "fact": "加载中显示白色半透明遮罩、进度条与 help_loading_message 文案",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/help/screens/HelpScreen.kt:105"
+  },
+  {
+    "fact": "AgreementScreen(onAgreementAccepted: () -> Unit) 是首次启动的用户协议页，唯一参数是接受回调",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:24"
+  },
+  {
+    "fact": "协议接受按钮有 5 秒强制阅读倒计时：LaunchedEffect 中 repeat(5)，每次 delay(1000) 后 remainingSeconds 递减，结束才启用按钮",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:31"
+  },
+  {
+    "fact": "倒计时期间按钮文案为 R.string.agreement_wait(remainingSeconds)，禁用态容器色为 primary 的 50% 透明",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:178"
+  },
+  {
+    "fact": "协议页显示协议版本号：文案模板 R.string.agreement_version 填入 AgreementPreferences.CURRENT_AGREEMENT_VERSION",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:67"
+  },
+  {
+    "fact": "协议正文分三段展示：人话版（agreement_human_readable_title/content）、严肃版（agreement_serious_title/content）、免责声明（agreement_disclaimer）",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:89"
+  },
+  {
+    "fact": "严肃版协议用 AndroidView 嵌入原生 TextView，以 HtmlCompat.fromHtml(FROM_HTML_MODE_COMPACT) 渲染 agreement_serious_content 的 HTML",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:131"
+  },
+  {
+    "fact": "严肃版 TextView 的行高按 bodyMedium 排印换算为像素设置；API 低于 P 时用 setLineSpacing 手动计算回退",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:126"
+  },
+  {
+    "fact": "协议接受按钮全宽 56dp，启用后文案为 R.string.agreement_accept，点击直接调用 onAgreementAccepted",
+    "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/agreement/screens/AgreementScreen.kt:158"
+  }
+]

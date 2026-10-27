@@ -1,0 +1,92 @@
+[
+  {
+    "title": "文件选择器被打开两次且重复注册同一 key",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 1051,
+    "severity": "high",
+    "confidence": "高",
+    "detail": "压缩包导入的“选择”按钮 onClick 内同时执行废弃的 Activity.startActivityForResult(chooser, 1001)（第1051行）与 activityResultRegistry.register(\"zip_picker\", …) 后 launcher.launch(chooser)（第1077-1080行），系统选择器会被打开两次，用户需要选择文件两次才会走完流程。更糟的是每次点击都 register 同一 key，从不 unregister：register 对已存在的 key 会抛 IllegalArgumentException，第二次点击即崩溃。",
+    "evidence": "activity?.startActivityForResult(chooser, 1001)\n...\nval launcher = registry.register(\"zip_picker\", androidx.activity.result.contract.ActivityResultContracts.StartActivityForResult(), activityResultCallback)\nlauncher.launch(chooser)"
+  },
+  {
+    "title": "MCP 列表排序比较器引用外部可变状态，有 TimSort 违约风险",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 279,
+    "severity": "warn",
+    "confidence": "中",
+    "detail": "computedSortedPluginIds 的 sortedWith(compareBy { … }) 在比较器内部实时调用 mcpLocalServer.isServerEnabled(pluginId)，而非对已快照的值排序。排序过程中若启用状态发生变化（例如后台启用了某个插件），同一键对的两次比较可能给出不一致的顺序，使比较器非传递（non-transitive），触发 TimSort 的 \"Comparison method violates its general contract\" 崩溃。",
+    "evidence": "compareBy<String> { pluginId ->\n    val enabled = mcpLocalServer.isServerEnabled(pluginId)\n    val loaded = pluginToolsMap[pluginId]?.isNotEmpty() == true"
+  },
+  {
+    "title": "技能压缩包导入临时文件名未防路径穿越",
+    "file": "screens/SkillConfigScreen.kt",
+    "line": 659,
+    "severity": "warn",
+    "confidence": "中",
+    "detail": "zip 导入仅校验 nameToUse 以 .zip 结尾，随后直接 new File(context.cacheDir, nameToUse)。nameToUse 来自文件选择器的 displayName（攻击者可构造 \"../../evil.zip\"），可向 cacheDir 之外写文件；虽然随后立即删除，但仍构成目录穿越写入原语。",
+    "evidence": "val nameToUse = zipFileName.ifBlank { \"skill.zip\" }\nif (!nameToUse.endsWith(\".zip\", ignoreCase = true)) {\n    ...\n    val tempFile = File(context.cacheDir, nameToUse)"
+  },
+  {
+    "title": "删除技能无二次确认",
+    "file": "screens/SkillConfigScreen.kt",
+    "line": 996,
+    "severity": "warn",
+    "confidence": "高",
+    "detail": "SkillDetailDialog 的 confirmButton 直接就是“删除”按钮（onDelete），点击即调用 skillRepository.deleteSkill 删除整个技能目录。删除是不可逆的破坏性操作，缺少常规的二次确认对话框，容易误触。",
+    "evidence": "TextButton(onClick = onDelete) {\n    Text(text = stringResource(R.string.skillmgr_delete))"
+  },
+  {
+    "title": "远程服务 Bearer Token 以明文输入框呈现",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 811,
+    "severity": "warn",
+    "confidence": "中",
+    "detail": "导入远程服务 Tab（第811行）与 RemoteServerEditDialog（第1945行）的 Bearer Token 字段均为普通 OutlinedTextField，无 PasswordVisualTransformation 遮盖。Token 属于高敏感凭据，截屏/录屏/旁观者可直接读到；是否入库加密另案，此处仅指输入态。",
+    "evidence": "OutlinedTextField(\n    value = bearerTokenInput,\n    onValueChange = { bearerTokenInput = it },\n    label = { Text(stringResource(R.string.mcp_remote_bearer_token)) },"
+  },
+  {
+    "title": "插件详情头部 logo 加载为死代码",
+    "file": "components/dialogs/header/MCPServerDetailsHeader.kt",
+    "line": 77,
+    "severity": "warn",
+    "confidence": "高",
+    "detail": "Header 里的 LaunchedEffect(server.logoUrl) 只做了 imageLoadJob?.cancel()，但 imageLoadJob 从未被赋值（协程从未启动），imageBitmap 也从未被设置。logo 图片永远加载不出来，界面恒显示默认的 Extension 兜底图标；logoUrl 有值时仍无意义。",
+    "evidence": "var imageBitmap by remember { mutableStateOf<android.graphics.Bitmap?>(null) }\nvar imageLoadJob by remember { mutableStateOf<Job?>(null) }\n...\nLaunchedEffect(server.logoUrl) {\n    imageLoadJob?.cancel()"
+  },
+  {
+    "title": "PluginListItem 的 invalidConfigReason 硬编码为 null",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 1240,
+    "severity": "suggestion",
+    "confidence": "高",
+    "detail": "列表项调用处写死了 `val invalidConfigReason: String? = null`，下游“配置无效”徽标/提示分支因此永远走不到，是死代码或尚未实现的占位。建议要么补上校验逻辑，要么删除该分支。",
+    "evidence": "val invalidConfigReason: String? = null\n// isServerLikelyRunning"
+  },
+  {
+    "title": "部署命令获取可能被并发触发两次",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 491,
+    "severity": "suggestion",
+    "confidence": "中",
+    "detail": "MCPDeployConfirmDialog 的 onCustomize 回调（第491行）与 LaunchedEffect(pluginToDeploy)（第528行）都会在 generatedCommands 为空时调用 deployViewModel.getDeployCommands(pluginId)。用户点“自定义命令”时两个路径可能并发/先后触发，重复执行部署命令分析流程。",
+    "evidence": "onCustomize = {\n    showConfirmDialog = false\n    if (deployViewModel.generatedCommands.value.isEmpty()) {\n        deployViewModel.getDeployCommands(pluginId)\n    }"
+  },
+  {
+    "title": "部署日志每次新增都强制滚动到底部，高频输出时抖动",
+    "file": "screens/mcp/components/MCPDeployProgressDialog.kt",
+    "line": 42,
+    "severity": "suggestion",
+    "confidence": "低",
+    "detail": "LaunchedEffect(outputMessages.size) 监听每一次日志追加并 animateScrollToItem 滚动到底部。部署脚本高频刷日志时，用户手动上滑查看历史会被不断拽回底部，体验抖动；建议仅当已在底部附近时才自动跟随。",
+    "evidence": "LaunchedEffect(outputMessages.size) {\n    if (outputMessages.isNotEmpty()) {\n        logListState.animateScrollToItem(outputMessages.lastIndex)"
+  },
+  {
+    "title": "toHeaderMap 重复 key 静默覆盖",
+    "file": "screens/MCPConfigScreen.kt",
+    "line": 1998,
+    "severity": "suggestion",
+    "confidence": "高",
+    "detail": "toHeaderMap() 对 List<EditableHeader> 做循环赋值：val headerEntries = LinkedHashMap<String,String>()，对每个 header 取 key.trim()，空白 key 跳过（continue），其余 headerEntries[key] = header.value，最后 headerEntries.ifEmpty { null }。重复 key 时后写入的值静默覆盖前者，UI 上没有任何\"重复\"提示，用户可能误以为两行都生效。",
+    "evidence": "private fun List<EditableHeader>.toHeaderMap(): Map<String, String>? {\n    val headerEntries = LinkedHashMap<String, String>()\n\n    for (header in this) {\n        val key = header.key.trim()\n        if (key.isBlank()) {\n            continue\n        }\n        headerEntries[key] = header.value\n    }\n\n    return headerEntries.ifEmpty { null }\n}"
+  }
+]

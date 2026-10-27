@@ -1,0 +1,1 @@
+[{"confidence":"high","description":"createRequestBody 的 context 参数写成全限定名 android.content.Context，而 XaiProvider 同位置用的是 import 后的 Context。风格不一致，不影响行为。","evidence":"        context: android.content.Context,","file":"app/src/main/java/com/ai/assistance/operit/api/chat/llmprovider/DoubaoAIProvider.kt","line":48,"severity":"suggestion"}]

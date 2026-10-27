@@ -1,0 +1,446 @@
+[
+ {
+  "fact": "WebSessionBrowserScreen 是浏览器全屏的根可组合函数，参数包含 hostState、bookmarks、globalHistory、userscriptUiState、webViewHost 与数十个事件回调。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:54"
+ },
+ {
+  "fact": "LaunchedEffect 监听 totalHeightPx 与 browserAreaHeightPx，计算 chromeHeightPx = 总高度减浏览器区高度并下限钳制为 0。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:102"
+ },
+ {
+  "fact": "chrome 高度或浏览器区高度变化时通过 onHostStateChange 用 copy 写回 hostState。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:104"
+ },
+ {
+  "fact": "currentTabNumber 取 tabs 中 isActive 的首个序号加 1，无激活标签时为 0。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:122"
+ },
+ {
+  "fact": "isBookmarked 用 remember(browserState.currentUrl, bookmarks) 缓存，对当前 URL 做 normalizeLookupUrl 归一化后比对书签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:127"
+ },
+ {
+  "fact": "dismissSheet 把 sheetRoute 置为 WebSessionBrowserSheetRoute.NONE 关闭底部弹窗。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:134"
+ },
+ {
+  "fact": "WebSessionTopUrlBar 传入的 url 为 browserState.currentUrl，空时回退为 about:blank。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:156"
+ },
+ {
+  "fact": "onSubmitUrl 对 urlDraft 做 normalizeNavigationUrl 归一化后调用 onNavigate，并退出编辑态。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:175"
+ },
+ {
+  "fact": "hostState.externalOpenPrompt 非空时在地址栏下方展示 ExternalOpenPromptBar 外部打开确认条。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:201"
+ },
+ {
+  "fact": "activeDownloadCount 大于 0 时显示 BrowserDownloadSummaryBar 下载汇总条，点击跳转到 DOWNLOADS 弹窗。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:210"
+ },
+ {
+  "fact": "activeSessionId 为 null 时显示无标签页空态（Language 图标 + web_session_no_tabs 文案）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:249"
+ },
+ {
+  "fact": "有激活会话时用 AndroidView 嵌入 FrameLayout，白色背景并调用 webViewHost.attachContainer 挂载 WebView。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:294"
+ },
+ {
+  "fact": "AndroidView 的 update 块在重组时重新调用 webViewHost.attachContainer(container)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:298"
+ },
+ {
+  "fact": "sheetRoute 非 NONE 时全屏铺一层 0.42 透明度的 scrim，点击任意处调用 dismissSheet。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:343"
+ },
+ {
+  "fact": "注释说明不用 ModalBottomSheet：WebSession 跑在 overlay 窗口，dialog 窗口拿不到有效的 activity token。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:351"
+ },
+ {
+  "fact": "底部弹窗 Surface 顶部圆角 18.dp，带 navigationBarsPadding 与 imePadding。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:361"
+ },
+ {
+  "fact": "WebSessionOverlaySheetContent 按 sheetRoute 分发 TABS、MENU、DOWNLOADS、HISTORY、BOOKMARKS、USERSCRIPTS、NONE 七路。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:489"
+ },
+ {
+  "fact": "browserState.pendingDialog 非空时叠加 PendingDialogOverlay 处理网页 alert/confirm/prompt。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:406"
+ },
+ {
+  "fact": "PendingDialogOverlay 按 dialog.type 的小写形式区分 confirm、prompt、alert 三种标题文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:451"
+ },
+ {
+  "fact": "prompt 类型对话框展示 OutlinedTextField 供用户输入，初始值为 promptDraft。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:462"
+ },
+ {
+  "fact": "alert 类型对话框不展示取消按钮，只有确定按钮。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:474"
+ },
+ {
+  "fact": "ExternalOpenPromptBar 展示外部打开的标题与目标链接，提供取消与仅允许一次两个按钮。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:653"
+ },
+ {
+  "fact": "BrowserDownloadSummaryBar 右侧显示总体进度百分比，无进度时显示未知文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:698"
+ },
+ {
+  "fact": "normalizeNavigationUrl 空输入返回 about:blank；http/https/about: 前缀原样保留；无空格含点的裸域名自动补 https://。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:736"
+ },
+ {
+  "fact": "normalizeLookupUrl 对空、about:、blob:、data: 及非 http(s) 返回 null，用于书签比对的归一化。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:765"
+ },
+ {
+  "fact": "normalizeLookupUrl 归一化时去掉 http 默认 80 端口与 https 默认 443 端口，保留非空查询串。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBrowserScreen.kt:777"
+ },
+ {
+  "fact": "WebSessionTopUrlBar 是顶部地址栏组件，参数含 url、pageTitle、isLoading、isEditing、urlDraft、isBookmarked 等。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:49"
+ },
+ {
+  "fact": "编辑态用 BasicTextField 输入 URL，键盘动作为 ImeAction.Go，按 Go 键触发 onSubmitUrl。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:152"
+ },
+ {
+  "fact": "非编辑态整条地址栏可点击，点击后调用 onStartEditing 进入编辑态。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:181"
+ },
+ {
+  "fact": "编辑态右侧箭头按钮点击直接提交 URL。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:164"
+ },
+ {
+  "fact": "地址栏图标按是否 https 切换：https 显示 Lock 锁形图标，否则显示 Language 地球图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:189"
+ },
+ {
+  "fact": "已收藏时显示实心 Star 图标，未收藏显示 StarOutline 描边图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:215"
+ },
+ {
+  "fact": "星标按钮点击先 onStopEditing 再 onToggleBookmark，把当前 URL 与标题加入或移出书签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:215"
+ },
+ {
+  "fact": "加载中时刷新按钮变为 Close 图标并执行停止，空闲时为 Refresh 图标执行刷新。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:255"
+ },
+ {
+  "fact": "最小化按钮用 Remove（一横）图标，点击调用 onMinimize。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:281"
+ },
+ {
+  "fact": "isLoading 为 true 时地址栏下方显示一条 2.dp 高的 primary 色进度条。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTopUrlBar.kt:292"
+ },
+ {
+  "fact": "WebSessionBottomToolbar 是底部工具栏，含前进、后退、新建标签、标签计数、菜单五个操作位。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:35"
+ },
+ {
+  "fact": "后退按钮的 enabled 绑定 canGoBack，前进按钮绑定 canGoForward。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:67"
+ },
+ {
+  "fact": "BrowserToolbarAction 禁用态整体透明度降为 0.42f，点击被禁用。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:131"
+ },
+ {
+  "fact": "新建标签按钮是工具栏中唯一的强调按钮，用 primaryContainer 底色。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:89"
+ },
+ {
+  "fact": "标签计数按钮显示 currentTabNumber.coerceAtLeast(0)，标签数为 0 时也显示 0。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:234"
+ },
+ {
+  "fact": "标签数大于 0 时无障碍文案用 web_session_tabs_with_index 带序号，否则用 web_session_tabs。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBottomToolbar.kt:103"
+ },
+ {
+  "fact": "WebSessionTabSheet 是标签页管理弹窗，LazyColumn 按 sessionId 为 key 列出全部标签。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:55"
+ },
+ {
+  "fact": "当前激活标签在卡片上高亮并标注 web_session_current_tab。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:72"
+ },
+ {
+  "fact": "每行显示标签序号（index+1）、标题与 URL，标题 URL 均单行省略。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:55"
+ },
+ {
+  "fact": "每行右侧关闭按钮调用 onCloseTab(tab.sessionId)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:121"
+ },
+ {
+  "fact": "弹窗底部有新建标签行，点击调用 onNewTab。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:159"
+ },
+ {
+  "fact": "选择标签后先 onSelectTab 再 onDismiss，选中即关闭弹窗。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionTabSheet.kt:57"
+ },
+ {
+  "fact": "WebSessionMenuSheet 是主菜单弹窗，副标题显示当前是桌面版还是移动版模式。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:52"
+ },
+ {
+  "fact": "菜单入口按顺序为历史、书签、下载、用户脚本四张卡片。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:64"
+ },
+ {
+  "fact": "下载卡片副标题展示下载汇总（进行中数量与失败数量）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:75"
+ },
+ {
+  "fact": "userscriptMenuCommands 非空时追加页面脚本菜单区，每条调用 onInvokeUserscriptMenu(commandId)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:86"
+ },
+ {
+  "fact": "桌面/移动模式切换卡片按当前模式显示反向文案与 Smartphone/DesktopWindows 图标。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:97"
+ },
+ {
+  "fact": "关闭当前标签与关闭所有标签两个入口，关闭所有标签标为 danger 红色。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMenuSheet.kt:122"
+ },
+ {
+  "fact": "WebSessionBookmarkSheet 是书签弹窗，LazyColumn 以书签 url 为 key 渲染。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBookmarkSheet.kt:52"
+ },
+ {
+  "fact": "点击书签卡片调用 onOpenBookmark(bookmark.url) 打开链接。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBookmarkSheet.kt:53"
+ },
+ {
+  "fact": "每行右侧删除按钮调用 onRemoveBookmark(bookmark.url)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBookmarkSheet.kt:100"
+ },
+ {
+  "fact": "书签为空时显示 WebSessionEmptyState 空态。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionBookmarkSheet.kt:40"
+ },
+ {
+  "fact": "WebSessionHistorySheet 是历史记录弹窗，分当前会话历史与全局最近历史两节。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:32"
+ },
+ {
+  "fact": "时间格式化用 DateFormat.getDateTimeInstance(SHORT, SHORT)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:40"
+ },
+ {
+  "fact": "当前会话条目按 index 为 key，当前页高亮并标注 web_session_current_page。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:60"
+ },
+ {
+  "fact": "点击会话条目调用 onSelectSessionHistory(item.index) 跳转。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:61"
+ },
+ {
+  "fact": "全局历史非空时右上角出现清除历史文字按钮，调用 onClearHistory。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:143"
+ },
+ {
+  "fact": "全局条目以 url-visitedAt 为 key，展示标题、URL 与访问时间。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionHistorySheet.kt:160"
+ },
+ {
+  "fact": "WebSessionDownloadSheet 是下载管理弹窗，activeCount 统计 queued/connecting/downloading 三态任务。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:47"
+ },
+ {
+  "fact": "IN_PROGRESS 过滤器包含 queued、connecting、downloading、paused、canceled 五种状态。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:53"
+ },
+ {
+  "fact": "COMPLETED 过滤器只保留 completed，FAILED 只保留 failed。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:55"
+ },
+ {
+  "fact": "过滤器行用 BrowserDownloadFilter.entries 生成 FilterChip，点击切换 selectedFilter。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:71"
+ },
+ {
+  "fact": "任务卡片展示文件名、状态文案、进度文本、目标路径，错误信息红色显示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:120"
+ },
+ {
+  "fact": "progress 非空时显示 LinearProgressIndicator 进度条。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:158"
+ },
+ {
+  "fact": "statusLabel 把 queued/connecting/downloading/paused/completed/failed/canceled 映射为本地化文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:228"
+ },
+ {
+  "fact": "statusColor 失败态用 error 色，完成态用 primary 色，其余用 onSurfaceVariant。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:241"
+ },
+ {
+  "fact": "操作按钮按 canPause/canResume/canCancel/canRetry/canOpenFile/canOpenLocation/canDelete 条件展示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:182"
+ },
+ {
+  "fact": "删除分两种：仅删记录调用 onDeleteDownload(id, false)，连文件一起删传 true。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:212"
+ },
+ {
+  "fact": "itemProgressText 格式为 已下载/总量 + 百分比 + 速度（formatBytes 格式化）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:248"
+ },
+ {
+  "fact": "正在下载或连接中的任务卡片高亮显示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionDownloadSheet.kt:131"
+ },
+ {
+  "fact": "WebSessionUserscriptSheet 是用户脚本管理弹窗，installUrl 用 rememberSaveable 跨重组保留。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:64"
+ },
+ {
+  "fact": "supportState.isSupported 为 false 时整页显示不支持空态与原因。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:78"
+ },
+ {
+  "fact": "从 URL 安装区是 OutlinedTextField，默认占位为 https://example.com/script.user.js。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:96"
+ },
+ {
+  "fact": "点击安装按钮调用 onInstallFromUrl(installUrl)，导入本地按钮调用 onImportLocal。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:108"
+ },
+ {
+  "fact": "pendingInstall 非空时展示 PendingInstallCard 安装预览卡。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:123"
+ },
+ {
+  "fact": "页面脚本菜单命令每条渲染为卡片，点击调用 onInvokeMenuCommand(command.commandId)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:144"
+ },
+ {
+  "fact": "已安装脚本列表每条渲染为 InstalledUserscriptCard。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:190"
+ },
+ {
+  "fact": "PendingInstallCard 把 blockedReasons 中 Unknown grants: 开头的条目过滤掉再展示。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:211"
+ },
+ {
+  "fact": "安装预览展示脚本名、版本、来源、grants、connects、requires、resources 与更新地址。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:206"
+ },
+ {
+  "fact": "未知 grants 在预览卡中用 error 色文字警告。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:296"
+ },
+ {
+  "fact": "安装预览底部确认与取消按钮分别调用 onConfirmInstall 与 onCancelInstall。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:323"
+ },
+ {
+  "fact": "InstalledUserscriptCard 的 Switch 切换调用 onSetScriptEnabled(script.id, enabled)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:400"
+ },
+ {
+  "fact": "脚本卡片展开后展示描述、grants、matches/includes、connects、website 等元信息。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:349"
+ },
+ {
+  "fact": "展开态底部有检查更新与删除两个按钮，分别调用 onCheckUpdate 与 onDeleteScript。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:521"
+ },
+ {
+  "fact": "RuntimeStatusLine 把 DISABLED/UNSUPPORTED/NOT_MATCHED/QUEUED/RUNNING/SUCCESS/ERROR 七态映射为本地化状态文案。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:549"
+ },
+ {
+  "fact": "statusColor 中 RUNNING 用 primary 色，SUCCESS 用 secondary 色，ERROR/UNSUPPORTED 用 error 色。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:588"
+ },
+ {
+  "fact": "fallbackStatusFor 规则：未启用为 DISABLED，有阻塞原因为 UNSUPPORTED，其余为 NOT_MATCHED。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionUserscriptSheet.kt:599"
+ },
+ {
+  "fact": "WebSessionSheetScaffold 是所有底部弹窗的统一脚手架：顶部拖拽条、标题、副标题与内容区。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionSheetDecor.kt:29"
+ },
+ {
+  "fact": "WebSessionSectionLabel 是弹窗内分节标题样式：labelMedium、primary 色、SemiBold。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionSheetDecor.kt:76"
+ },
+ {
+  "fact": "WebSessionItemCard 可选点击，高亮态底色为 primaryContainer 0.42 透明度。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionSheetDecor.kt:90"
+ },
+ {
+  "fact": "WebSessionItemCard 统一 14.dp 圆角与 1.dp outlineVariant 描边。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionSheetDecor.kt:90"
+ },
+ {
+  "fact": "WebSessionEmptyState 是统一空态：圆形图标 + 标题 + 可选说明文字。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionSheetDecor.kt:139"
+ },
+ {
+  "fact": "WebSessionFloatingTheme 让浏览器 UI 跟随悬浮窗主题，偏好文件名为 floating_chat_prefs。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionFloatingTheme.kt:22"
+ },
+ {
+  "fact": "主题持久化的两个 key 为 floating_color_scheme_json 与 floating_typography_json。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionFloatingTheme.kt:23"
+ },
+ {
+  "fact": "SharedPreferences 监听到主题 key 变化时重新加载快照。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionFloatingTheme.kt:41"
+ },
+ {
+  "fact": "有存活的 FloatingChatService 时优先用其主题，否则用 SharedPreferences 快照。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionFloatingTheme.kt:51"
+ },
+ {
+  "fact": "loadFloatingThemeSnapshot 用 Gson 把 JSON 反序列化为 SerializableColorScheme/SerializableTypography。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionFloatingTheme.kt:60"
+ },
+ {
+  "fact": "WebSessionMinimizedIndicator 是浏览器最小化后的悬浮球，点击恢复全屏。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:56"
+ },
+ {
+  "fact": "悬浮球支持拖拽：detectDragGestures 把位移取整后回调 onDragBy(dx, dy)。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:69"
+ },
+ {
+  "fact": "有外部打开确认请求（externalOpenPrompt 非空）时悬浮球展开为确认卡片，并直接返回。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:73"
+ },
+ {
+  "fact": "外部打开确认卡片含取消与仅允许一次两个 TextButton。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:132"
+ },
+ {
+  "fact": "悬浮球有三种无限动画：上下浮动 ±2dp（900ms）、摇摆 ±8°（1200ms）、缩放 0.96~1.04（1100ms）。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:143"
+ },
+ {
+  "fact": "点击悬浮球调用 onToggleFullscreen 切换全屏。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:199"
+ },
+ {
+  "fact": "有进行中下载时图标从 Language 切换为 Download。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:238"
+ },
+ {
+  "fact": "下载徽标显示进行中数量（上限 9），有失败下载时显示感叹号并用 error 色。",
+  "ref": "app/src/main/java/com/ai/assistance/operit/ui/features/websession/browser/WebSessionMinimizedIndicator.kt:246"
+ }
+]

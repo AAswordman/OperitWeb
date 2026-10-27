@@ -1,0 +1,11 @@
+{
+  "critic": "独立复核通过（81 条，1 处引用行号修正后复检通过）",
+  "issue": 16,
+  "refs_valid": "80/80 引用行号真实存在且±5行内可见断言依据（程序化全量核验），lint 硬失败 0/警告 0；2026-10-02 用户一键通过全部（不再逐条审核），按用户指令直接批准上线",
+  "source_commit": "dbf71916fae9750cfdc9f9a774f5a0fee56633fb",
+  "source_repo": "operit",
+  "status": "approved",
+  "summary": "工具执行模式：ToolGetter 按 ROOT/ADMIN/DEBUGGER/ACCESSIBILITY/STANDARD 五级分发，Standard→Accessibility→Debugger→Admin→Root 继承链的行为差异与三级降级策略（linux/SAF/内部路径回退 super），PathValidator 路径校验规则（Android 要求 / 开头，Linux 允许 / 或 ~）。",
+  "updated": "2026-10-02",
+  "approved_by_comment_id": 5915590426
+}
