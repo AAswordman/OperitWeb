@@ -1,0 +1,17 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.custom_ai_provider_example",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "自定义供应商示例",
+    "en": "Custom Provider Example"
+  },
+  "description": {
+    "zh": "演示如何通过 ToolPkg.registerAiProvider 注册一个可直接作为 apiProviderType 选择的自定义 AI 供应商。",
+    "en": "Demonstrates how to register a custom AI provider through ToolPkg.registerAiProvider so it can be selected directly as an apiProviderType."
+  },
+  "enabled_by_default": false,
+  "subpackages": []
+}

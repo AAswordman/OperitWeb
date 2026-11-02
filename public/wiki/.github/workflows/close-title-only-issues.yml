@@ -1,0 +1,57 @@
+name: Close title-only issues
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+
+permissions:
+  issues: write
+
+jobs:
+  close-title-only:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close issues without a body or comments
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = context.eventName === "workflow_dispatch"
+              ? await github.paginate(github.rest.issues.listForRepo, {
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  state: "open",
+                  per_page: 100,
+                })
+              : [context.payload.issue];
+
+            for (const issue of issues) {
+              const bodyIsEmpty = issue.body === null || issue.body.trim() === "";
+              const hasNoComments = issue.comments === 0;
+
+              if (issue.pull_request || !bodyIsEmpty || !hasNoComments) {
+                continue;
+              }
+
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                labels: ["invalid"],
+              });
+
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                body: "此 Issue 只有标题，没有正文或复现信息，因此自动关闭。请使用合适的 Issue 模板重新提交完整信息。\n\nThis issue was closed automatically because it contains only a title. Please reopen the report with the appropriate template and complete details.",
+              });
+
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issue.number,
+                state: "closed",
+                state_reason: "not_planned",
+              });
+            }

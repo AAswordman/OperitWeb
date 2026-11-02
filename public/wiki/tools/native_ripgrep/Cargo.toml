@@ -1,0 +1,16 @@
+[package]
+name = "operit_ripgrep"
+version = "0.1.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+globset = "0.4"
+grep-matcher = "0.1"
+grep-regex = "0.1"
+ignore = "0.4"
+jni = "0.21"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

@@ -1,0 +1,28 @@
+{
+  "projectType": "template_try",
+  "title": "Template Try Workspace",
+  "description": "用于验证 ToolPkg 工作区模板导入链路的最小工作区。",
+  "server": {
+    "enabled": false,
+    "port": 8093,
+    "autoStart": false
+  },
+  "preview": {
+    "type": "terminal",
+    "url": "",
+    "showPreviewButton": false,
+    "previewButtonLabel": ""
+  },
+  "commands": [
+    {
+      "id": "show_readme",
+      "label": "查看 README",
+      "command": "cat README.md",
+      "workingDir": ".",
+      "shell": true
+    }
+  ],
+  "export": {
+    "enabled": false
+  }
+}

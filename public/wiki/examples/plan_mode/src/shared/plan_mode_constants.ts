@@ -1,0 +1,17 @@
+export const TOGGLE_ID = "plan_mode";
+export const TOGGLE_ICON = Icons.Assignment;
+export const MENU_HOOK_ID = "plan_mode_menu";
+export const CHAT_VIEW_HOOK_ID = "plan_mode_chat_view";
+export const PROMPT_HOOK_ID = "plan_mode_prompt";
+export const TOOL_PROMPT_HOOK_ID = "plan_mode_tool_prompt";
+export const PROMPT_FINALIZE_HOOK_ID = "plan_mode_prompt_finalize";
+export const PROMPT_ESTIMATE_FINALIZE_HOOK_ID = "plan_mode_prompt_estimate_finalize";
+export const XML_RENDER_HOOK_ID = "plan_mode_plantodo_render";
+export const XML_TAG = "plantodo";
+export const PLANASK_XML_RENDER_HOOK_ID = "plan_mode_planask_render";
+export const PLANASK_XML_TAG = "planask";
+export const SUBPACKAGE_ID = "plan_mode_tools";
+export const GET_PLAN_TOOL_NAME = "get_plan";
+export const COMPLETE_PLAN_TOOL_NAME = "complete_plan";
+export const PLAN_FILE_DIRECTORY_NAME = ".operit";
+export const PLAN_FILE_NAME = "planmode.md";

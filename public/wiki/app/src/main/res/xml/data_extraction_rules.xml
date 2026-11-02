@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+   Sample data extraction rules file; uncomment and customize as necessary.
+   See https://developer.android.com/about/versions/12/backup-restore#xml-changes
+   for details.
+-->
+<data-extraction-rules>
+    <cloud-backup>
+        <!-- EncryptedSharedPreferences depends on a device-local Android Keystore key. -->
+        <exclude domain="sharedpref" path="codex_oauth_credentials.xml" />
+    </cloud-backup>
+    <device-transfer>
+        <!-- EncryptedSharedPreferences depends on a device-local Android Keystore key. -->
+        <exclude domain="sharedpref" path="codex_oauth_credentials.xml" />
+    </device-transfer>
+</data-extraction-rules>

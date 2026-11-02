@@ -1,0 +1,4 @@
+- `.META`: metadata, currently used as a junk drawer
+- `assets`: image and other resource files used by the documentation
+- `doc-src`: the single source of truth for long-term maintained documentation
+- `TODO`: this is for developer collaboration, [a good plan is 80% of successful collaboration](TODO/README.en.md)

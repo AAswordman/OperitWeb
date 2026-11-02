@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.template_try_bundle",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "requires": [],
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "模板接入演示",
+    "en": "Template Integration Demo"
+  },
+  "description": {
+    "zh": "用于演示 ToolPkg 工作流模板与工作区模板在宿主中的注册、展示与导入。",
+    "en": "Demonstrates ToolPkg workflow and workspace template registration, display, and import in the host app."
+  },
+  "logo": "package_logo",
+  "enabled_by_default": false,
+  "subpackages": [],
+  "resources": [
+    {
+      "key": "package_logo",
+      "path": "resources/logo.svg",
+      "mime": "image/svg+xml"
+    },
+    {
+      "key": "demo_workflow_template",
+      "path": "resources/workflow_template.json",
+      "mime": "application/json"
+    },
+    {
+      "key": "demo_workspace_template",
+      "path": "resources/workspaces/quick_start",
+      "mime": "inode/directory"
+    }
+  ],
+  "workflow_templates": [
+    {
+      "id": "quick_chat_workflow",
+      "display_name": {
+        "zh": "快速对话工作流",
+        "en": "Quick Chat Workflow"
+      },
+      "description": {
+        "zh": "手动触发后自动启动聊天并发送一条引导消息。",
+        "en": "Starts a chat and sends a guidance message after a manual trigger."
+      },
+      "resource_key": "demo_workflow_template"
+    }
+  ],
+  "workspace_templates": [
+    {
+      "id": "quick_start_workspace",
+      "display_name": {
+        "zh": "快速开始工作区",
+        "en": "Quick Start Workspace"
+      },
+      "description": {
+        "zh": "带有 .operit/config.json 和说明文档的最小工作区模板。",
+        "en": "A minimal workspace template with .operit/config.json and a starter readme."
+      },
+      "resource_key": "demo_workspace_template",
+      "project_type": "template_try"
+    }
+  ]
+}

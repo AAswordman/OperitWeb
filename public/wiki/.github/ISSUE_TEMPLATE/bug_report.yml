@@ -1,0 +1,143 @@
+name: Bug report / 问题反馈
+description: 报告可复现的错误、崩溃或异常行为
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请完整填写下列信息。只有标题、缺少环境或无法复现的反馈会增加处理时间。
+
+        请勿粘贴 API Key、Token、Cookie、手机号或其他隐私数据。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: 提交前确认 / Before submitting
+      options:
+        - label: 我已经搜索过现有 Issue，确认这不是重复问题。
+          required: true
+        - label: 我已经移除日志、截图和配置中的密钥及隐私信息。
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Operit 版本 / Operit version
+      description: 请填写完整版本和补丁号，不要只写“最新版”。
+      placeholder: 例如 1.12.0+4、Nightly 日期或 commit hash
+    validations:
+      required: true
+
+  - type: dropdown
+    id: distribution
+    attributes:
+      label: 运行形态 / Distribution
+      options:
+        - Release APK
+        - Nightly APK
+        - Debug APK
+        - Clone APK
+        - Web chat
+        - Other / 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 设备与运行环境 / Environment
+      description: Android 请填写设备型号和 Android 版本；Web chat 请填写操作系统、浏览器及版本。
+      placeholder: |
+        设备型号：
+        Android / 操作系统版本：
+        浏览器及版本（如适用）：
+        其他相关环境：
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 问题领域 / Area
+      options:
+        - Chat / 对话与消息
+        - Model or provider / 模型或服务商
+        - Tool calling or workflow / 工具调用或工作流
+        - Plugin, Skill or MCP / 插件、Skill 或 MCP
+        - UI/UX / 界面交互
+        - Local model, audio or voice / 本地模型、音频或语音
+        - Permission, system or device / 权限、系统或设备
+        - Web chat / 网页聊天
+        - Other / 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: main_problem
+    attributes:
+      label: 主要问题描述 / Main problem description
+      description: 请将实际表现、预期表现、差异和影响合并描述；只用文字即可。 / Combine actual behavior, expected behavior, differences, and impact; text-only is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 / Steps to reproduce
+      description: 请按顺序列出从哪个页面或操作开始，到问题出现为止的步骤。
+      placeholder: |
+        1. 打开……
+        2. 点击……
+        3. 输入或执行……
+        4. 出现……
+    validations:
+      required: true
+
+  - type: dropdown
+    id: frequency
+    attributes:
+      label: 复现频率 / Reproducibility
+      options:
+        - Always / 每次发生
+        - Often / 经常发生
+        - Sometimes / 偶尔发生
+        - Once / 只发生过一次
+        - Unknown / 不确定
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_context
+    attributes:
+      label: 相关配置 / Related context
+      description: 模型问题请填写 Provider、模型、接口类型和思考/工具调用设置；工具问题请填写工具名；不相关内容可忽略或说明“不适用”。 / Ignore unrelated details; text-only is fine.
+      placeholder: |
+        Provider / 模型：
+        接口类型或相关开关：
+        工具、工作流、插件或 Skill 名称：
+        其他相关配置：
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或录屏 / Screenshot or recording
+      description: 请至少上传一张能说明问题的截图，或粘贴录屏链接；也可以忽略上传，直接用文字补充。 / Please add a screenshot or recording link; you may skip the upload and provide text only.
+      placeholder: 将截图拖到这里，或粘贴图片/录屏链接
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志或错误信息 / Logs or error output
+      description: 可忽略，或仅粘贴文字、错误文本或说明原因。 / Optional; text-only details are fine. Please redact sensitive data.
+      placeholder: |
+        ```text
+        在这里粘贴日志或错误信息
+        ```
+    validations:
+      required: true

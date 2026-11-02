@@ -1,0 +1,5 @@
+packages:
+  - tools/mcp_bridge
+
+allowBuilds:
+  esbuild: true

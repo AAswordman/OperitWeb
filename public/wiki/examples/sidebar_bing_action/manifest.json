@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.sidebar_bing_action",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "侧边栏 Bing Action 示例",
+    "en": "Sidebar Bing Action Example"
+  },
+  "description": {
+    "zh": "演示 ToolPkg 侧边栏插件项通过 action 函数直接执行逻辑，而不是跳转路由。",
+    "en": "Demonstrates a ToolPkg sidebar plugin entry that runs an action function directly instead of navigating to a route."
+  },
+  "enabled_by_default": false,
+  "subpackages": [],
+  "resources": [],
+  "workflow_templates": [],
+  "workspace_templates": []
+}
