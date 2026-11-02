@@ -1,0 +1,133 @@
+name: Plugin, Skill or MCP report / 插件、Skill 或 MCP 反馈
+description: 报告外部包、工具、Skill 或 MCP 服务的问题
+title: "[Plugin] "
+labels:
+  - plugin
+body:
+  - type: markdown
+    attributes:
+      value: |
+        外部包和工具问题必须带上可识别的来源与版本。请勿粘贴 API Key、Token、Cookie 或其他隐私数据。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: 提交前确认 / Before submitting
+      options:
+        - label: 我已经搜索过现有 Issue，确认这不是重复问题。
+          required: true
+        - label: 我已经移除配置、日志和截图中的密钥及隐私信息。
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Operit 版本 / Operit version
+      description: 请填写完整版本和补丁号。
+      placeholder: 例如 1.12.0+4、Nightly 日期或 commit hash
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 设备与运行环境 / Environment
+      description: Android 请填写设备型号和系统版本；Web chat 请填写操作系统、浏览器及版本。
+      placeholder: |
+        设备型号：
+        Android / 操作系统版本：
+        浏览器及版本（如适用）：
+    validations:
+      required: true
+
+  - type: dropdown
+    id: package_type
+    attributes:
+      label: 类型 / Type
+      options:
+        - Plugin / 插件
+        - Skill
+        - MCP server / MCP 服务
+        - Workflow package / 工作流包
+        - Other / 其他
+    validations:
+      required: true
+
+  - type: input
+    id: package_identity
+    attributes:
+      label: 包或服务名称 / Package or service
+      description: 请填写市场名称、仓库地址或服务标识。
+      placeholder: 名称、GitHub URL 或 MCP endpoint（请移除密钥）
+    validations:
+      required: true
+
+  - type: input
+    id: package_version
+    attributes:
+      label: 来源与版本 / Source and version
+      description: 请填写仓库 commit、发布版本、市场版本或服务端版本。
+      placeholder: 例如 v1.2.3、commit hash、市场版本或 server build
+    validations:
+      required: true
+
+  - type: textarea
+    id: transport_config
+    attributes:
+      label: 连接与相关配置 / Transport and configuration
+      description: MCP 请填写 transport 类型、请求方法和必要的非敏感配置；普通插件或 Skill 请说明“不适用”。不相关内容可忽略或仅文字补充。 / Ignore unrelated details; text-only is fine.
+      placeholder: |
+        Transport / 连接类型：
+        相关开关或非敏感配置：
+        请求头或参数（请脱敏）：
+    validations:
+      required: true
+
+  - type: textarea
+    id: tool_context
+    attributes:
+      label: Provider、模型与工具 / Provider, model and tool
+      description: 请填写相关 Provider、模型、工具名、工具调用模式或工作流节点；不相关时说明“不适用”。不相关内容可忽略或仅文字补充。 / Ignore unrelated details; text-only is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps
+    attributes:
+      label: 复现步骤 / Steps to reproduce
+      description: 从安装、配置或调用开始，按顺序列出触发问题的步骤。
+      placeholder: |
+        1. 安装或配置……
+        2. 调用工具……
+        3. 出现……
+    validations:
+      required: true
+
+  - type: textarea
+    id: main_problem
+    attributes:
+      label: 主要问题描述 / Main problem description
+      description: 请将实际表现、预期表现、差异和影响合并描述；只用文字即可。 / Combine actual behavior, expected behavior, differences, and impact; text-only is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或录屏 / Screenshot or recording
+      description: 请至少上传一张能说明配置、错误或结果的截图，或粘贴录屏链接；也可以忽略上传，直接用文字补充。 / Please add a screenshot or recording link; you may skip the upload and provide text only.
+      placeholder: 将截图拖到这里，或粘贴图片/录屏链接
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志、请求或响应 / Logs, request or response
+      description: 可忽略，或仅粘贴文字、请求/响应或说明原因。 / Optional; text-only details are fine. Please redact sensitive data.
+      placeholder: |
+        ```text
+        在这里粘贴日志、请求或响应
+        ```
+    validations:
+      required: true

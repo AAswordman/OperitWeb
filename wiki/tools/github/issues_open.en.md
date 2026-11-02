@@ -1,0 +1,89 @@
+# GitHub Issues (AAswordman/Operit)
+
+State: `open`
+Count: `42`
+
+- #321 [Add config sync feature](https://github.com/AAswordman/Operit/issues/321) (open)
+  - comments: 1 | updated: 2026-01-11T07:26:48Z
+- #312 [English selected but large parts of UI still in Chinese (agents/artifacts/settings)](https://github.com/AAswordman/Operit/issues/312) (open)
+  - comments: 3 | updated: 2026-01-10T11:28:06Z
+- #320 [1. Asking a question in one conversation, then opening a new conversation and asking another, causes both conversations to freeze. 2. In waifu mode, complete tables are not sent; tables get split row by row. 3. Small-window mode sometimes conflicts with the system small window and maximized mode: replies shown in small-window mode disappear after enlarging, then suddenly pop out after a while. 4. It would be nicer if color selection changes in various places had some visualization. 5. Calling Shizuku is extremely slow; even a tiny task takes a long time](https://github.com/AAswordman/Operit/issues/320) (open)
+  - comments: 0 | updated: 2026-01-09T08:31:56Z
+- #319 [Collapse conversations](https://github.com/AAswordman/Operit/issues/319) (open)
+  - comments: 0 | updated: 2026-01-07T18:13:40Z
+- #318 [Some feature suggestions](https://github.com/AAswordman/Operit/issues/318) (open)
+  - comments: 0 | updated: 2026-01-07T17:57:06Z
+- #317 [[bug] On Android 8, the app cannot read or modify files on the Android device itself](https://github.com/AAswordman/Operit/issues/317) (open)
+  - comments: 0 | updated: 2026-01-06T14:21:18Z
+- #316 [About the app being launched by association](https://github.com/AAswordman/Operit/issues/316) (open)
+  - comments: 0 | updated: 2026-01-05T10:32:40Z
+- #311 [Some suggestions](https://github.com/AAswordman/Operit/issues/311) (open)
+  - comments: 0 | updated: 2026-01-03T03:47:49Z
+- #277 [Failed to call the Zhipu Code model integrated via OneAPI](https://github.com/AAswordman/Operit/issues/277) (open)
+  - comments: 5 | updated: 2026-01-01T07:46:15Z
+- #307 [Voice assistant feature has low usability](https://github.com/AAswordman/Operit/issues/307) (open)
+  - comments: 2 | updated: 2025-12-31T14:58:03Z
+- #306 [[BUG] Because the accessibility assistant app has not requested any permissions, ColorOS cannot lift the permission restriction](https://github.com/AAswordman/Operit/issues/306) (open)
+  - comments: 1 | updated: 2025-12-31T14:13:34Z
+- #300 [Some Chinese-market apps return incorrect page info](https://github.com/AAswordman/Operit/issues/300) (open)
+  - comments: 2 | updated: 2025-12-31T01:56:23Z
+- #295 [Links between memories only support creation and deletion, not editing](https://github.com/AAswordman/Operit/issues/295) (open)
+  - comments: 1 | updated: 2025-12-21T02:08:50Z
+- #273 [Suggest listing on F-Droid](https://github.com/AAswordman/Operit/issues/273) (open)
+  - comments: 3 | updated: 2025-12-19T13:05:17Z
+- #291 [Error importing chat history](https://github.com/AAswordman/Operit/issues/291) (open)
+  - comments: 0 | updated: 2025-12-18T08:22:29Z
+- #287 [[Request] Bind model configuration to conversations](https://github.com/AAswordman/Operit/issues/287) (open)
+  - comments: 1 | updated: 2025-12-17T17:39:36Z
+- #283 [Bug: Accessibility service is enabled but the AI assistant interface service shows as not connected](https://github.com/AAswordman/Operit/issues/283) (open)
+  - comments: 1 | updated: 2025-12-17T17:37:25Z
+- #267 [Feature suggestions: four major enhancements including screen recording operations, drawing features, and TIM adaptation](https://github.com/AAswordman/Operit/issues/267) (open)
+  - comments: 1 | updated: 2025-12-11T03:10:36Z
+- #265 [Feature suggestion — Quiet mode](https://github.com/AAswordman/Operit/issues/265) (open)
+  - comments: 1 | updated: 2025-12-11T02:17:10Z
+- #268 [When editing prompts and other content in full screen, the bottom is not pushed up by the input method](https://github.com/AAswordman/Operit/issues/268) (open)
+  - comments: 0 | updated: 2025-12-10T01:08:33Z
+- #266 [After switching characters, history conversations don't show on the main screen, only in the floating window](https://github.com/AAswordman/Operit/issues/266) (open)
+  - comments: 3 | updated: 2025-12-08T11:40:49Z
+- #264 [Feature suggestion — Variables](https://github.com/AAswordman/Operit/issues/264) (open)
+  - comments: 1 | updated: 2025-12-07T11:38:13Z
+- #250 [Some suggestions and discovered issues](https://github.com/AAswordman/Operit/issues/250) (open)
+  - comments: 6 | updated: 2025-12-07T09:21:04Z
+- #263 [Issues with search engine result extraction](https://github.com/AAswordman/Operit/issues/263) (open)
+  - comments: 0 | updated: 2025-12-07T09:13:08Z
+- #258 [Why can't llama.cpp be reached?](https://github.com/AAswordman/Operit/issues/258) (open)
+  - comments: 1 | updated: 2025-11-22T07:56:22Z
+- #237 [Suggestions](https://github.com/AAswordman/Operit/issues/237) (open)
+  - labels: enhancement | comments: 3 | updated: 2025-11-12T06:07:20Z
+- #248 [Small feature expansion suggestions](https://github.com/AAswordman/Operit/issues/248) (open)
+  - comments: 0 | updated: 2025-11-08T05:35:45Z
+- #216 [Local llm implementation cpu/gpu/npu](https://github.com/AAswordman/Operit/issues/216) (open)
+  - comments: 1 | updated: 2025-10-20T04:43:49Z
+- #214 [Suggestions about the floating window](https://github.com/AAswordman/Operit/issues/214) (open)
+  - comments: 0 | updated: 2025-10-15T00:55:58Z
+- #10 [Ten suggestions](https://github.com/AAswordman/Operit/issues/10) (open)
+  - labels: enhancement, good first issue | comments: 29 | updated: 2025-10-12T17:22:26Z
+- #165 [code_runner code display bug](https://github.com/AAswordman/Operit/issues/165) (open)
+  - comments: 1 | updated: 2025-08-29T17:23:20Z
+- #138 [Suggestions](https://github.com/AAswordman/Operit/issues/138) (open)
+  - comments: 5 | updated: 2025-08-06T14:56:10Z
+- #125 [UI info is always that of the Operit AI app](https://github.com/AAswordman/Operit/issues/125) (open)
+  - comments: 8 | updated: 2025-08-03T17:03:38Z
+- #115 [Small suggestions](https://github.com/AAswordman/Operit/issues/115) (open)
+  - comments: 4 | updated: 2025-07-05T02:40:07Z
+- #35 [Please add image recognition/search functionality to solve the problem of UI Automator not recognizing custom components on canvas.](https://github.com/AAswordman/Operit/issues/35) (open)
+  - comments: 1 | updated: 2025-07-04T16:25:28Z
+- #108 [Suggestions and bugs](https://github.com/AAswordman/Operit/issues/108) (open)
+  - comments: 8 | updated: 2025-07-02T04:58:07Z
+- #107 [A few suggestions](https://github.com/AAswordman/Operit/issues/107) (open)
+  - labels: enhancement | comments: 1 | updated: 2025-06-30T18:05:48Z
+- #101 [[bug] UI debugging tool cannot obtain current screen content](https://github.com/AAswordman/Operit/issues/101) (open)
+  - comments: 1 | updated: 2025-06-28T10:09:36Z
+- #90 [Can a touch coordinate viewing feature be added to the toolbox?](https://github.com/AAswordman/Operit/issues/90) (open)
+  - comments: 1 | updated: 2025-06-22T05:22:40Z
+- #78 [Some suggestions](https://github.com/AAswordman/Operit/issues/78) (open)
+  - comments: 8 | updated: 2025-06-20T15:03:01Z
+- #67 [MIUI 14.0.4 cannot obtain page elements in both debugger and root modes](https://github.com/AAswordman/Operit/issues/67) (open)
+  - labels: bug | comments: 12 | updated: 2025-06-20T11:06:01Z
+- #27 [Screen recognition fails to recognize anything in a certain app](https://github.com/AAswordman/Operit/issues/27) (open)
+  - comments: 1 | updated: 2025-06-07T05:38:57Z

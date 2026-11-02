@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.sidebar_model_sites",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "网站聚合",
+    "en": "Model Sites",
+    "default": "Model Sites"
+  },
+  "description": {
+    "zh": "聚合常见大模型官方网页入口，先在列表页选择站点，再进入内置 WebView 直接打开对应聊天入口。",
+    "en": "Aggregates common official LLM websites. Pick a site from the list, then open its chat entry in the built-in WebView.",
+    "default": "Aggregates official LLM websites and opens them in the built-in WebView."
+  },
+  "enabled_by_default": false,
+  "subpackages": [],
+  "resources": [],
+  "workflow_templates": [],
+  "workspace_templates": []
+}

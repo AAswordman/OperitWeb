@@ -1,0 +1,6 @@
+[submodule "terminal"]
+	path = terminal
+	url = https://github.com/AAswordman/OperitTerminalCore.git
+[submodule "tools/hotbuild/OperitNightlyRelease"]
+	path = tools/hotbuild/OperitNightlyRelease
+	url = git@github.com:AAswordman/OperitNightlyRelease.git

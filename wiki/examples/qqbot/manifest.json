@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.qqbot_bundle",
+  "version": "0.3.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "QQ Bot 工具包",
+    "en": "QQ Bot Bundle"
+  },
+  "description": {
+    "zh": "将腾讯 QQ Bot 的配置、后台 Gateway WebSocket 收消息服务、消息队列读取以及 C2C/群发消息整理成 Operit 工具。",
+    "en": "Expose Tencent QQ Bot configuration, background Gateway WebSocket receive service, queued inbound events, and C2C/group messaging as Operit tools."
+  },
+  "enabled_by_default": true,
+  "subpackages": [
+    {
+      "id": "qqbot",
+      "entry": "dist/packages/qqbot.js"
+    }
+  ],
+  "resources": [
+    {
+      "key": "qqbot_gateway_service_py",
+      "path": "resources/qqbot_gateway_service.py",
+      "mime": "text/x-python"
+    }
+  ]
+}

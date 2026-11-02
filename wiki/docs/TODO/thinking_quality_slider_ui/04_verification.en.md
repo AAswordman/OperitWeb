@@ -1,0 +1,41 @@
+# Verification Record
+
+Verification record:
+
+- `git diff --check`: passed
+- Web typecheck: not run; the local environment has no `node`/`npm`
+- Remote `npm run build:webchat`, Vite build, and Android assets sync: passed
+- Remote Release first build: failed; retried after fixing the Compose Slider API and DeepSeek import
+- Remote Release second build: passed
+- Build commit: `f39af4438`
+- Release APK: `operit-release-fix_provider-logos-token-statistics-main-f39af443.apk`
+- APK SHA-256: `6b33bac6c4f7960e970bee097487d29984b7ba1a7aff5eb458635b8cfc95c2d7`
+- Visual revision Release build: passed, static gradient and drag shimmer versions
+- Revision build commit: `d41f50f90`
+- Revision Release APK: `operit-release-fix_provider-logos-token-statistics-main-d41f50f9.apk`
+- Revision APK SHA-256: `486e85beb7077e5934bca7e52d94d7c7cdc58fc6e2e18a4783c51d7d0b127595`
+- thumb/track ratio and gradient contrast revision: passed
+- Visual revision build commit: `3a76aa699`
+- Visual revision Release APK: `operit-release-fix_provider-logos-token-statistics-main-3a76aa69.apk`
+- Visual revision APK SHA-256: `c3860d34bbef661c4ec84c0ad2d2a4e54160b90c734cd038c7f8c0d8b3fb4ef0`
+- `3a76aa699` visual acceptance: not passed; the Android actual track was still 8dp, and the 12dp thumb was not embedded in the track
+- Current fix: Android/Web unified to a 12dp/px track and 8dp/px thumb, outer ring removed, switched to a single-layer high-contrast gradient
+- Current fix `git diff --check`: passed
+- Current fix Release build: passed
+- Current fix build commit: `8a2ae80ad`
+- Current fix Release APK: `operit-release-fix_provider-logos-token-statistics-main-8a2ae80a.apk`
+- Current fix APK SHA-256: `5761f15c58c0f47671faccb2c072bb53befd0efd19d4a6f7863f828bbd21be4b`
+- `8a2ae80ad` visual acceptance: not passed; `onPrimary` produced a black thumb, and the static gradient wrongly filled the inactive region
+- Reference style fix: 20dp/px transparent outer frame, 16dp/px active track, 12dp/px thumb, right side unfilled
+- Reference style fix Release build: passed
+- Reference style fix build commit: `49b5ba3fc`
+- Reference style fix Release APK: `operit-release-fix_provider-logos-token-statistics-main-49b5ba3f.apk`
+- Reference style fix APK SHA-256: `c206440ce40234e81900999ea0d5e66bf08489df6b461ad7f6bd3b3e6813ac56`
+- Reference style fix visual acceptance: pending confirmation
+- Responsive label alignment fix: Android/Web labels changed to share anchor points with the stop indicator
+- Responsive label alignment `git diff --check`: passed
+- Responsive label alignment Release build: passed
+- Responsive label alignment build commit: `65d4859f2`
+- Responsive label alignment Release APK: `operit-release-fix_provider-logos-token-statistics-main-65d4859f.apk`
+- Responsive label alignment APK SHA-256: `982ff1cb7ef1be1cde19f57ea52f90d3b4dd603522cbed4b40e0fa1c55064b13`
+- Responsive label alignment visual acceptance: pending confirmation

@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.sidebar_sillytavern",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "侧边栏酒馆",
+    "en": "Sidebar SillyTavern",
+    "default": "Sidebar SillyTavern"
+  },
+  "description": {
+    "zh": "一个直接在侧边栏中打开本地 SillyTavern 的 ToolPkg 插件。",
+    "en": "A ToolPkg sidebar plugin that opens local SillyTavern directly in the sidebar.",
+    "default": "A ToolPkg sidebar plugin for opening local SillyTavern directly."
+  },
+  "enabled_by_default": false,
+  "subpackages": [],
+  "resources": [],
+  "workflow_templates": [],
+  "workspace_templates": []
+}

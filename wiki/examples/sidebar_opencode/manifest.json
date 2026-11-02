@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.sidebar_opencode",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "侧边栏 OpenCode",
+    "en": "Sidebar OpenCode",
+    "default": "Sidebar OpenCode"
+  },
+  "description": {
+    "zh": "一个通过本地 OpenCode Web 页面承载的 ToolPkg 侧边栏插件，同时提供给 AI 使用的 OpenCode 全局配置编辑工具。",
+    "en": "A ToolPkg sidebar plugin that embeds local OpenCode Web and also exposes AI-facing tools for editing the OpenCode global config.",
+    "default": "A ToolPkg sidebar plugin for local OpenCode Web with AI-facing config editing tools."
+  },
+  "enabled_by_default": true,
+  "subpackages": [
+    {
+      "id": "opencode_control",
+      "entry": "dist/packages/opencode_control.js",
+      "enabled_by_default": true,
+      "display_name": {
+        "zh": "OpenCode 配置",
+        "en": "OpenCode Config"
+      },
+      "description": {
+        "zh": "负责读取、覆盖写入与合并更新 OpenCode 全局配置文件。",
+        "en": "Reads, overwrites, and merges the OpenCode global config file."
+      }
+    }
+  ],
+  "resources": [],
+  "workflow_templates": [],
+  "workspace_templates": []
+}

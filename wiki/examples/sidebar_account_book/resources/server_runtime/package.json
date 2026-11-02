@@ -1,0 +1,12 @@
+{
+  "name": "sidebar-account-book-runtime",
+  "private": true,
+  "version": "0.1.0",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server.cjs"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

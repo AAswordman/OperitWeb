@@ -1,0 +1,55 @@
+{
+  "id": "template-try-workflow-seed",
+  "name": "模板演示工作流",
+  "description": "用于验证 ToolPkg 工作流模板导入链路。",
+  "nodes": [
+    {
+      "__type": "com.ai.assistance.operit.data.model.TriggerNode",
+      "id": "trigger_manual_template_try",
+      "type": "trigger",
+      "name": "手动触发",
+      "description": "点击后启动模板工作流",
+      "position": {
+        "x": 120.0,
+        "y": 120.0
+      },
+      "triggerType": "manual",
+      "triggerConfig": {}
+    },
+    {
+      "__type": "com.ai.assistance.operit.data.model.ExecuteNode",
+      "id": "execute_send_message_template_try",
+      "type": "execute",
+      "name": "发送引导消息",
+      "description": "向 AI 发送模板演示消息",
+      "position": {
+        "x": 720.0,
+        "y": 120.0
+      },
+      "actionType": "send_message_to_ai",
+      "actionConfig": {
+        "message": {
+          "__type": "com.ai.assistance.operit.data.model.ParameterValue.StaticValue",
+          "value": "这是来自 template_try 的工作流模板导入演示。"
+        }
+      },
+      "jsCode": null
+    }
+  ],
+  "connections": [
+    {
+      "id": "conn_template_try_trigger_to_send",
+      "sourceNodeId": "trigger_manual_template_try",
+      "targetNodeId": "execute_send_message_template_try",
+      "condition": null
+    }
+  ],
+  "createdAt": 0,
+  "updatedAt": 0,
+  "enabled": true,
+  "lastExecutionTime": null,
+  "lastExecutionStatus": null,
+  "totalExecutions": 0,
+  "successfulExecutions": 0,
+  "failedExecutions": 0
+}

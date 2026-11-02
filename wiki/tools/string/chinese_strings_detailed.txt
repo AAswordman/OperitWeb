@@ -1,0 +1,351 @@
+[OVERALL]
+Total strings found: 2130
+Excluded logs: 1877
+Excluded long prompts(>100 chars): 51
+Remaining UI strings: 202
+Files with Chinese strings: 167
+
+[BY MODULE]
+
+[DETAIL]
+================================================================================
+FILE: app\src\main\java\com\ai\assistance\operit\core\tools\climode\CliToolModeSupport.kt
+  remaining=22 total=23 excluded_logs=0 excluded_long=1
+  L46:56 (2 chars) "内置"
+  L47:57 (2 chars) "内部"
+  L48:55 (1 chars) "包"
+  L50:61 (2 chars) "激活"
+  L129:35 (26 chars) "仅搜索隐藏工具目录。先用它发现隐藏工具名和参数形态。"
+  L134:43 (14 chars) "要搜索的工具能力或隐藏工具名"
+  L140:43 (11 chars) "可选，返回的最大结果数"
+  L148:35 (32 chars) "在 search 发现目标工具名和参数形态后，代理执行隐藏工具。"
+  L153:43 (43 chars) "隐藏目标工具名，例如 read_file 或 packageName:toolName"
+  L159:43 (20 chars) "转发给隐藏目标工具的 JSON 参数对象"
+  L190:68 (4 chars) "公开工具"
+  L362:17 (52 chars) "没有隐藏工具匹配“$query”。请尝试更宽泛的能力关键词，然后再用发现到的目标工具名调用 proxy。"
+  L370:28 (18 chars) "“$query”的隐藏工具搜索结果："
+  L381:60 (4 chars) "无描述。"
+  L384:57 (6 chars) "目标工具：`"
+  L389:66 (6 chars) "参数示例：`"
+  L394:60 (3 chars) "参数："
+  L408:13 (72 chars) "工具“$attemptedToolName”在 CLI 工具模式下是隐藏的。请先用 `search` 查找隐藏目标工具，再调用 `proxy`。"
+  L416:13 (18 chars) "该工具仅在 CLI 工具模式下可用。"
+  L427:13 (54 chars) "隐藏目标工具“$targetToolName”不可用。请先用 `search` 发现有效的隐藏工具名和参数。"
+  L438:13 (43 chars) "隐藏目标工具“$targetToolName”是保留目标，不能通过 proxy 调用。"
+  L446:13 (16 chars) "当前角色卡无权访问这个隐藏工具。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\floating\ui\pet\AvatarEmotionManager.kt
+  remaining=21 total=24 excluded_logs=3 excluded_long=0
+  L19:36 (2 chars) "开心"
+  L19:42 (2 chars) "高兴"
+  L19:48 (2 chars) "不错"
+  L19:54 (1 chars) "棒"
+  L19:59 (3 chars) "太好了"
+  L19:86 (1 chars) "赞"
+  L20:36 (2 chars) "生气"
+  L20:42 (2 chars) "愤怒"
+  L20:48 (2 chars) "气死"
+  L20:54 (2 chars) "讨厌"
+  L20:60 (2 chars) "糟糕"
+  L20:71 (1 chars) "怒"
+  L21:34 (2 chars) "难过"
+  L21:40 (2 chars) "伤心"
+  L21:46 (2 chars) "沮丧"
+  L21:52 (2 chars) "忧伤"
+  L21:58 (1 chars) "哭"
+  L22:34 (2 chars) "害羞"
+  L22:40 (1 chars) "羞"
+  L22:45 (2 chars) "脸红"
+  L22:51 (4 chars) "不好意思"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\market\PluginCreationIntent.kt
+  remaining=14 total=14 excluded_logs=0 excluded_long=0
+  L13:28 (42 chars) "请你激活operit editor，并使用沙盒包开发 dev 工具包开发新的沙盒包。"
+  L14:35 (19 chars) "先确定新的沙盒包 id，后续不要改名。"
+  L15:36 (55 chars) "开发目录固定为 手机下载/Operit/dev_package/你确定的id。开发、安装和测试都只在这里完成。"
+  L27:28 (63 chars) "请你激活operit editor，查找沙盒包 ${runtimePackageId} 的位置，在此版本基础上继续开发并测试。"
+  L28:35 (59 chars) "当前沙盒包 id 是 ${runtimePackageId}。包 id 和插件名字都必须沿用，不要改名，也不要新起包。"
+  L29:36 (68 chars) "开发目录固定为 手机下载/Operit/dev_package/${runtimePackageId}。开发、安装和测试都只在这里完成。"
+  L41:28 (64 chars) "请你激活operit editor，查找沙盒包 ${runtimePackageId} 的位置，在此版本基础上做合并开发并测试。"
+  L42:35 (59 chars) "当前沙盒包 id 是 ${runtimePackageId}。包 id 和插件名字都必须沿用，不要改名，也不要新起包。"
+  L43:36 (68 chars) "开发目录固定为 手机下载/Operit/dev_package/${runtimePackageId}。开发、安装和测试都只在这里完成。"
+  L58:20 (23 chars) "先更新 SandboxPackage_DEV。"
+  L61:20 (28 chars) "把 skills 里的 types 覆盖复制到开发目录。"
+  L62:20 (49 chars) "尽量用终端，优先写 ts 和 js，再编译出最终 js。tsconfig 参考 examples。"
+  L63:20 (36 chars) "为了方便二次开发，打包需要把 ts 部分和 tsconfig 打包进去。"
+  L64:20 (3 chars) "需求:"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\toolbox\screens\autoglm\AutoGlmViewModel.kt
+  remaining=11 total=11 excluded_logs=0 excluded_long=0
+  L172:37 (36 chars) "✅ 任务完成: ${finalLines.first().trim()}"
+  L205:44 (11 chars) "yyyy年MM月dd日"
+  L207:44 (3 chars) "星期日"
+  L207:51 (3 chars) "星期一"
+  L207:58 (3 chars) "星期二"
+  L207:65 (3 chars) "星期三"
+  L207:72 (3 chars) "星期四"
+  L207:79 (3 chars) "星期五"
+  L207:86 (3 chars) "星期六"
+  L234:20 (7 chars) "💭 思考过程:"
+  L246:20 (7 chars) "🎯 执行动作:"
+
+FILE: app\src\main\java\com\ai\assistance\operit\core\chat\AIMessageManager.kt
+  remaining=10 total=33 excluded_logs=23 excluded_long=0
+  L206:36 (34 chars) "图片内容已作为多模态输入随本消息附着，勿调用文件读取工具读取该路径。"
+  L793:32 (5 chars) "[结果: "
+  L920:40 (5 chars) "[结果: "
+  L924:40 (5 chars) "[结果: "
+  L1065:61 (7 chars) "【工具包预热】"
+  L1073:21 (28 chars) "本次摘要范围内未检测到包工具调用，因此未进行工具包预热。"
+  L1082:17 (61 chars) "以下根据本次摘要范围内的工具使用频次，自动激活了最高频的工具包，并附上 use_package 的返回结果，供下一轮预热。"
+  L1097:37 (41 chars) "use_package 调用失败: ${throwable.message ?: "
+  L1104:37 (17 chars) "use_package 返回为空。"
+  L1111:36 (55 chars) "${index + 1}. 包 ${stat.packageName}（命中 ${stat.count} 次）"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\token\preferences\UrlConfigManager.kt
+  remaining=9 total=9 excluded_logs=0 excluded_long=0
+  L104:21 (2 chars) "聊天"
+  L105:25 (2 chars) "项目"
+  L106:26 (2 chars) "工件"
+  L107:25 (2 chars) "设置"
+  L108:24 (2 chars) "账户"
+  L109:24 (2 chars) "历史"
+  L110:21 (2 chars) "帮助"
+  L111:24 (2 chars) "探索"
+  L112:23 (2 chars) "创建"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\chat\webview\workspace\process\WorkspaceAttachmentProcessor.kt
+  remaining=9 total=9 excluded_logs=0 excluded_long=0
+  L10:24 (11 chars) "当前对话已附着工作区。"
+  L12:28 (33 chars) "工作区环境：${escapeText(workspaceTag)}"
+  L15:28 (8 chars) "首次加载工作区："
+  L19:28 (8 chars) "工作区文件变化："
+  L24:32 (35 chars) "- 还有 ${changes.omittedCount} 个变化未列出"
+  L32:48 (2 chars) "新增"
+  L33:49 (2 chars) "修改"
+  L34:48 (2 chars) "删除"
+  L35:46 (2 chars) "移动"
+
+FILE: app\src\main\java\com\ai\assistance\operit\api\chat\library\MemoryLibrary.kt
+  remaining=9 total=57 excluded_logs=48 excluded_long=0
+  L634:24 (50 chars) "(?s)问题\\s*[：:]\\s*(.+?)(?:\\n\\s*解决方案\\s*[：:]|\\z)"
+  L654:52 (5 chars) "历史记录:"
+  L906:30 (54 chars) "(出生日期|出生年月日|Birth Date|Date of Birth)[:：\\s]+([\\d-]+)"
+  L907:30 (38 chars) "(出生年份|年龄|Birth year|Age)[:：\\s]+(\\d+)"
+  L908:27 (26 chars) "(性别|Gender)[:：\\s]+([^;]+)"
+  L909:32 (46 chars) "(性格(特点)?|Personality( traits)?)[:：\\s]+([^;]+)"
+  L910:29 (48 chars) "(身份(认同)?|Identity( recognition)?)[:：\\s]+([^;]+)"
+  L911:31 (30 chars) "(职业|Occupation)[:：\\s]+([^;]+)"
+  L912:28 (83 chars) "(AI风格|期待的AI风格|偏好的AI风格|AI Style|Expected AI Style|Preferred AI Style)[:：\\s]+([^;]+)"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\toolbox\screens\logcat\LogModels.kt
+  remaining=8 total=8 excluded_logs=0 excluded_long=0
+  L20:13 (2 chars) "详细"
+  L21:11 (2 chars) "调试"
+  L22:10 (2 chars) "信息"
+  L23:13 (2 chars) "警告"
+  L24:11 (2 chars) "错误"
+  L25:11 (2 chars) "致命"
+  L26:12 (2 chars) "静默"
+  L27:13 (2 chars) "未知"
+
+FILE: app\src\main\java\com\ai\assistance\operit\api\voice\MimoVoiceProvider.kt
+  remaining=8 total=9 excluded_logs=0 excluded_long=1
+  L26:41 (2 chars) "冰糖"
+  L26:54 (2 chars) "冰糖"
+  L27:41 (2 chars) "茉莉"
+  L27:54 (2 chars) "茉莉"
+  L28:41 (2 chars) "苏打"
+  L28:54 (2 chars) "苏打"
+  L29:41 (2 chars) "白桦"
+  L29:54 (2 chars) "白桦"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\skill\viewmodel\SkillMarketViewModel.kt
+  remaining=6 total=6 excluded_logs=0 excluded_long=0
+  L613:61 (21 chars) "GitHub 登录后才能发布 Skill。"
+  L645:82 (10 chars) "Skill 发布失败"
+  L662:61 (21 chars) "GitHub 登录后才能更新 Skill。"
+  L698:44 (13 chars) "Skill 名称不能为空。"
+  L704:21 (37 chars) "检查 Skill 名称是否重名失败：${error.message ?: "
+  L714:41 (39 chars) "Skill 市场里已经有同名插件「$trimmedTitle」，请换一个名称。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\ArtifactProjectNodeTreeDialog.kt
+  remaining=5 total=5 excluded_logs=0 excluded_long=0
+  L94:32 (4 chars) "节点查看"
+  L105:32 (11 chars) "正在加载项目节点..."
+  L167:44 (15 chars) "点击节点选中，再次点击可取消。"
+  L184:55 (2 chars) "确认"
+  L184:65 (2 chars) "关闭"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\utils\IssueBodyParsingUtils.kt
+  remaining=5 total=5 excluded_logs=0 excluded_long=0
+  L13:9 (2 chars) "简介"
+  L14:9 (2 chars) "描述"
+  L15:9 (2 chars) "介绍"
+  L16:9 (2 chars) "说明"
+  L69:25 (64 chars) "^(描述|简介|介绍|说明|description|desc|summary|introduction)\\s*[:：]\\s*"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\mcp\viewmodel\MCPMarketViewModel.kt
+  remaining=5 total=5 excluded_logs=0 excluded_long=0
+  L835:57 (19 chars) "GitHub 登录后才能更新 MCP。"
+  L1061:61 (19 chars) "GitHub 登录后才能发布 MCP。"
+  L1096:44 (11 chars) "MCP 名称不能为空。"
+  L1102:21 (35 chars) "检查 MCP 名称是否重名失败：${error.message ?: "
+  L1112:41 (37 chars) "MCP 市场里已经有同名插件「$trimmedTitle」，请换一个名称。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\core\avatar\common\state\AvatarMoodType.kt
+  remaining=5 total=5 excluded_logs=0 excluded_long=0
+  L22:30 (24 chars) "用户表达侮辱、不公、责备、生气或强烈不满时使用。"
+  L29:30 (27 chars) "用户表达明确表扬、达成目标、收到礼物或明显开心时使用。"
+  L36:30 (24 chars) "用户夸奖、暧昧、戳中可爱点，角色表现害羞时使用。"
+  L43:30 (21 chars) "用户调侃、轻微争执、角色嘴硬又软化时使用。"
+  L50:30 (23 chars) "用户失落、难过、受挫、哭诉或道歉后低落时使用。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\utils\MCPPluginParser.kt
+  remaining=4 total=4 excluded_logs=0 excluded_long=0
+  L43:27 (5 chars) "无描述信息"
+  L55:63 (5 chars) "无描述信息"
+  L66:62 (5 chars) "无描述信息"
+  L100:28 (50 chars) "^(?:[-*+]\s*)?(?:\*\*\s*)?描述\s*[:：]\s*(?:\*\*)?\s*"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\chat\webview\workspace\editor\CanvasCodeEditorView.kt
+  remaining=4 total=4 excluded_logs=0 excluded_long=0
+  L1557:47 (2 chars) "复制"
+  L1559:50 (2 chars) "剪切"
+  L1560:52 (2 chars) "粘贴"
+  L1562:53 (2 chars) "全选"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\market\ArtifactAuthorValidation.kt
+  remaining=3 total=3 excluded_logs=0 excluded_long=0
+  L49:52 (27 chars) "找不到前驱节点 `$nodeId`，无法校验作者数量。"
+  L74:48 (41 chars) "toolpkg 缺少 manifest.hjson 或 manifest.json"
+  L81:48 (21 chars) "无法读取 toolpkg manifest"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\market\ArtifactLocalInstallSupport.kt
+  remaining=3 total=3 excluded_logs=0 excluded_long=0
+  L143:41 (46 chars) "本地已安装同名内置插件 `${node.runtimePackageId}`，不能直接覆盖。"
+  L145:41 (58 chars) "本地已安装同名但不属于当前项目簇的插件 `${node.runtimePackageId}`，请先手动卸载后再安装。"
+  L159:45 (37 chars) "替换已安装插件 `${installedPackageName}` 失败。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\utils\SkillIssueParser.kt
+  remaining=3 total=3 excluded_logs=0 excluded_long=0
+  L37:31 (5 chars) "无描述信息"
+  L47:93 (5 chars) "无描述信息"
+  L57:62 (5 chars) "无描述信息"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\chat\webview\WorkspaceFileSelector.kt
+  remaining=3 total=3 excluded_logs=0 excluded_long=0
+  L614:43 (3 chars) "工具包"
+  L615:41 (7 chars) "Skill 包"
+  L616:39 (5 chars) "MCP 包"
+
+FILE: app\src\main\java\com\ai\assistance\operit\services\core\ChatHistoryDelegate.kt
+  remaining=3 total=48 excluded_logs=45 excluded_long=0
+  L1078:54 (17 chars) "删除消息时当前会话已变化，放弃操作"
+  L1150:50 (21 chars) "批量删除后续消息时当前会话已变化，放弃操作"
+  L1466:50 (19 chars) "截断聊天历史时当前会话已变化，放弃操作"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\converter\GenericJsonConverter.kt
+  remaining=3 total=3 excluded_logs=0 excluded_long=0
+  L203:30 (2 chars) "用户"
+  L204:48 (2 chars) "助手"
+  L205:23 (2 chars) "系统"
+
+FILE: app\src\main\java\com\ai\assistance\operit\util\LocaleUtils.kt
+  remaining=2 total=2 excluded_logs=0 excluded_long=0
+  L42:67 (4 chars) "跟随系统"
+  L43:64 (2 chars) "中文"
+
+FILE: app\src\main\java\com\ai\assistance\operit\util\stream\StreamGroup.kt
+  remaining=2 total=7 excluded_logs=5 excluded_long=0
+  L166:74 (6 chars) "标签必须设置"
+  L169:77 (7 chars) "数据流必须设置"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\chat\components\AttachmentSelector.kt
+  remaining=2 total=2 excluded_logs=0 excluded_long=0
+  L858:50 (1 chars) "包"
+  L859:48 (2 chars) "技能"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\common\composedsl\ToolPkgComposeDslScreen.kt
+  remaining=2 total=2 excluded_logs=0 excluded_long=0
+  L395:38 (8 chars) "无法打开所选文件"
+  L584:79 (13 chars) "复制所选文件到临时目录失败"
+
+FILE: app\src\main\java\com\ai\assistance\operit\services\core\MessageCoordinationDelegate.kt
+  remaining=2 total=47 excluded_logs=45 excluded_long=0
+  L1090:13 (13 chars) "$userName（用户）"
+  L1092:13 (6 chars) "用户（用户）"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\mcp\plugins\MCPBridge.kt
+  remaining=2 total=39 excluded_logs=37 excluded_long=0
+  L537:60 (32 chars) "命令[$cmdId: $cmdType]没有收到响应（独立连接）"
+  L587:56 (26 chars) "命令[$cmdId: $cmdType]没有收到响应"
+
+FILE: app\src\main\java\com\ai\assistance\operit\services\CloudEmbeddingService.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L79:101 (4 chars) "请求失败"
+
+FILE: app\src\main\java\com\ai\assistance\operit\util\TextSegmenter.kt
+  remaining=1 total=5 excluded_logs=4 excluded_long=0
+  L15:38 (9 chars) "搜索记忆 分词预热"
+
+FILE: app\src\main\java\com\ai\assistance\operit\util\WaifuMessageProcessor.kt
+  remaining=1 total=8 excluded_logs=5 excluded_long=2
+  L863:59 (97 chars) ")) {\n                    // 自定义表情：使用绝对路径\n                    val encodedPath = emojiPath.replace("
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\workflow\viewmodel\WorkflowViewModel.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L974:30 (24 chars) ".*(打开|启动).*(对话|聊天|悬浮窗).*"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\dialogs\PackageDetailsDialog.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L192:40 (34 chars) "作者：${resolvedAuthors.joinToString("
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\market\ArtifactMarketModels.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L287:9 (74 chars) "当前包 ID「$runtimePackageId」无法生成稳定的市场项目 ID。请改用包含英文字母或数字的包 ID（可含 -、_、.），再重新发布。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\market\MarketBrowseList.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L291:16 (2 chars) "更早"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\MCPPluginDetailScreen.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L402:17 (53 chars) "版本 ${normalizeDetailVersionBadge(pluginInfo.version)}"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\SkillDetailScreen.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L397:17 (52 chars) "版本 ${normalizeDetailVersionBadge(skillInfo.version)}"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\packages\screens\artifact\viewmodel\ArtifactMarketViewModel.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L362:56 (29 chars) "已更新节点「${payload.displayName}」"
+
+FILE: app\src\main\java\com\ai\assistance\operit\ui\features\chat\webview\workspace\process\WorkspaceChangeTracker.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L248:41 (5 chars) "工作区为空"
+
+FILE: app\src\main\java\com\ai\assistance\operit\services\core\AttachmentDelegate.kt
+  remaining=1 total=2 excluded_logs=1 excluded_long=0
+  L368:16 (15 chars) "包: $packageName"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\converter\ChatFormatDetector.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L142:35 (61 chars) "^##\\s*(User|Assistant|AI|System|Model|用户|助手|系统|模型)[:：]?\\s*$"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\mcp\MCPLocalServer.kt
+  remaining=1 total=53 excluded_logs=52 excluded_long=0
+  L478:55 (31 chars) "MCP服务器 $serverId 的 command 不能为空"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\preferences\WaifuPreferences.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L51:49 (37 chars) "你必须遵守：禁止使用动作表情，禁止描述动作表情，只允许使用纯文本进行对话。"
+
+FILE: app\src\main\java\com\ai\assistance\operit\data\mcp\plugins\MCPStarter.kt
+  remaining=1 total=25 excluded_logs=24 excluded_long=0
+  L753:65 (28 chars) "读取到配置 env 键: $envKeysSummary"
+
+FILE: app\src\main\java\com\ai\assistance\operit\api\chat\enhance\ConversationMarkupManager.kt
+  remaining=1 total=1 excluded_logs=0 excluded_long=0
+  L19:13 (14 chars) "\n[工具结果过长，已截断]"
+

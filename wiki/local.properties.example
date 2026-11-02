@@ -1,0 +1,17 @@
+# This is a template for your local.properties file.
+# To build the project, copy this file to local.properties (which is gitignored)
+# and fill in local SDK or signing values when needed.
+# GitHub OAuth credentials are managed by the Operit authentication service.
+
+# Existing release signer used for V2 on Android 8/8.1.
+# RELEASE_STORE_FILE=C:/secure/operit/release.keystore
+# RELEASE_STORE_PASSWORD=
+# RELEASE_KEY_ALIAS=
+# RELEASE_KEY_PASSWORD=
+
+# New signer and lineage used for V3 on Android 9+.
+# APK_ROTATION_NEW_STORE_FILE=C:/secure/operit/operit-release-2026.p12
+# APK_ROTATION_NEW_STORE_PASSWORD=
+# APK_ROTATION_NEW_KEY_ALIAS=operit-release-2026
+# APK_ROTATION_NEW_KEY_PASSWORD=
+# APK_ROTATION_LINEAGE_FILE=C:/secure/operit/operit-release-2026.lineage

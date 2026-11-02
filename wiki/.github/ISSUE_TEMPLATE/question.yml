@@ -1,0 +1,101 @@
+name: Question / 使用问题
+description: 询问使用方法、配置方式或项目行为
+title: "[Question] "
+labels:
+  - question
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先查看用户指南并搜索现有 Issue。请提供完整上下文，避免只写“怎么用”或“有问题”。
+
+        请勿粘贴 API Key、Token、Cookie、手机号或其他隐私数据。
+
+  - type: checkboxes
+    id: preflight
+    attributes:
+      label: 提交前确认 / Before submitting
+      options:
+        - label: 我已经搜索过现有 Issue 和用户指南。
+          required: true
+        - label: 我已经移除配置、日志和截图中的密钥及隐私信息。
+          required: true
+
+  - type: input
+    id: version
+    attributes:
+      label: Operit 版本 / Operit version
+      description: 请填写完整版本和补丁号。
+      placeholder: 例如 1.12.0+4、Nightly 日期或 commit hash
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: 设备与运行环境 / Environment
+      description: Android 请填写设备型号和系统版本；Web chat 请填写操作系统、浏览器及版本。
+      placeholder: |
+        设备型号：
+        Android / 操作系统版本：
+        浏览器及版本（如适用）：
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: 相关领域 / Area
+      options:
+        - Chat / 对话与消息
+        - Model or provider / 模型或服务商
+        - Tool calling or workflow / 工具调用或工作流
+        - Plugin, Skill or MCP / 插件、Skill 或 MCP
+        - UI/UX / 界面交互
+        - Local model, audio or voice / 本地模型、音频或语音
+        - Permission, system or device / 权限、系统或设备
+        - Web chat / 网页聊天
+        - Other / 其他
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: 目标与上下文 / Goal and context
+      description: 你想完成什么？当前处于什么使用场景？
+    validations:
+      required: true
+
+  - type: textarea
+    id: tried
+    attributes:
+      label: 已尝试操作与结果 / What you tried
+      description: 请列出已经尝试的操作，以及每一步得到的结果。
+    validations:
+      required: true
+
+  - type: textarea
+    id: related_context
+    attributes:
+      label: 相关配置 / Related context
+      description: 请填写 Provider、模型、工具、插件或相关开关；不相关内容可忽略或说明“不适用”。 / Ignore unrelated details; text-only is fine.
+    validations:
+      required: true
+
+  - type: textarea
+    id: question
+    attributes:
+      label: 具体问题 / Question
+      description: 请用一个或几个明确问题说明你需要维护者回答什么。
+    validations:
+      required: true
+
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图或参考图 / Screenshot or reference
+      description: 请至少上传一张能说明当前状态的截图，或粘贴相关参考图链接；也可以忽略图片，直接用文字补充。 / Please add a screenshot or reference link; you may skip the image and provide text only.
+      placeholder: 将截图拖到这里，或粘贴图片链接
+    validations:
+      required: true

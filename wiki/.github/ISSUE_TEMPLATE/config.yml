@@ -1,0 +1,11 @@
+blank_issues_enabled: false
+contact_links:
+  - name: 用户指南 / User guide
+    url: https://aaswordman.github.io/OperitWeb
+    about: 先查看使用文档和常见操作说明
+  - name: QQ 群 / QQ group
+    url: https://qm.qq.com/q/Sa4fKEH7sO
+    about: 加入社区交流和使用讨论
+  - name: Discord
+    url: https://discord.gg/YnV9MWurRF
+    about: 加入 Discord 社区讨论

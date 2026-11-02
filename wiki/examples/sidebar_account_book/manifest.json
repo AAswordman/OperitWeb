@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "toolpkg_id": "com.operit.sidebar_account_book",
+  "version": "0.1.0",
+  "api_version": "1.0.0",
+  "main": "dist/main.js",
+  "display_name": {
+    "zh": "侧边栏记账本",
+    "en": "Sidebar Account Book",
+    "default": "Sidebar Account Book"
+  },
+  "description": {
+    "zh": "一个 ToolPkg 侧边栏记账本示例。宿主侧只保留薄薄的 compose_dsl 外壳，真正界面由本地 React 页面和浏览器式 WebView 承载，后端服务通过终端会话在本地启动。",
+    "en": "A ToolPkg sidebar account-book example. The host keeps only a thin compose_dsl shell, while the real UI runs as a local React page inside a browser-style WebView, backed by a local terminal-launched server.",
+    "default": "A ToolPkg sidebar account-book example with a local React page and WebView shell."
+  },
+  "enabled_by_default": false,
+  "subpackages": [
+    {
+      "id": "account_book_core",
+      "entry": "dist/packages/account_book_core.js",
+      "enabled_by_default": true,
+      "display_name": {
+        "zh": "记账网页后端",
+        "en": "Account Book Web Backend"
+      },
+      "description": {
+        "zh": "负责把前端与后端资源部署到 Linux 运行目录、安装依赖，并通过终端会话启动记账网页后端。",
+        "en": "Deploys frontend and backend resources into the Linux runtime directory, installs dependencies, and launches the account-book web backend through terminal sessions."
+      }
+    }
+  ],
+  "resources": [
+    {
+      "key": "account_book_web_assets",
+      "path": "resources/webapp",
+      "mime": "inode/directory"
+    },
+    {
+      "key": "account_book_web_server_runtime",
+      "path": "resources/server_runtime",
+      "mime": "inode/directory"
+    }
+  ],
+  "workflow_templates": [],
+  "workspace_templates": []
+}

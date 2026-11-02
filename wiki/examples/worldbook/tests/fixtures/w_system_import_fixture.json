@@ -1,0 +1,127 @@
+{
+  "entries": {
+    "0": {
+      "key": [],
+      "keysecondary": [],
+      "comment": "legacy-top-level-entry",
+      "content": "legacy",
+      "constant": true,
+      "order": 10,
+      "scanDepth": null,
+      "caseSensitive": null,
+      "extensions": {
+        "scan_depth": null,
+        "case_sensitive": null,
+        "role": 0
+      }
+    }
+  },
+  "name": "W-我当系统？Ver 1.3",
+  "originalData": {
+    "name": "W-我当系统？Ver 1.3",
+    "entries": [
+      {
+        "id": 1,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "规则约束",
+        "content": "<system_rule>规则约束正文</system_rule>",
+        "constant": true,
+        "enabled": true,
+        "insertion_order": 9999,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 0,
+          "role": 0
+        }
+      },
+      {
+        "id": 2,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "[mvu_update]变量输出格式",
+        "content": "<UpdateVariable><Analysis>ok</Analysis><JSONPatch>[{\"op\":\"delta\",\"path\":\"/心理/羁绊值\",\"value\":1}]</JSONPatch></UpdateVariable>",
+        "constant": true,
+        "enabled": true,
+        "insertion_order": 9998,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 0,
+          "role": 0
+        }
+      },
+      {
+        "id": 3,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "变量列表",
+        "content": "<status_current_variables>\n{{format_message_variable::stat_data}}\n</status_current_variables>",
+        "constant": true,
+        "enabled": true,
+        "insertion_order": 9997,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 0,
+          "role": 0
+        }
+      },
+      {
+        "id": 4,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "宿主发展阶段",
+        "content": "<host_development_staged_performance>\n宿主:\n  associated_variable: 羁绊值 (<%= getvar('stat_data.心理.羁绊值') %>)\n</host_development_staged_performance>",
+        "constant": true,
+        "enabled": true,
+        "insertion_order": 9996,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 0,
+          "role": 0
+        }
+      },
+      {
+        "id": 5,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "[InitVar]初始化",
+        "content": "心理:\n  羁绊值: 0\n系统:\n  积分: 0\n商城:\n  背包: {}\n",
+        "constant": true,
+        "enabled": false,
+        "insertion_order": 100,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 0,
+          "role": 0
+        }
+      },
+      {
+        "id": 6,
+        "keys": [],
+        "secondary_keys": [],
+        "comment": "行动选项",
+        "content": "<options>选项1|选项2</options>",
+        "constant": true,
+        "enabled": true,
+        "insertion_order": 99,
+        "position": "after_char",
+        "use_regex": true,
+        "extensions": {
+          "case_sensitive": null,
+          "depth": 1,
+          "role": 0
+        }
+      }
+    ]
+  }
+}
