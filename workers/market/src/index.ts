@@ -99,6 +99,16 @@ export default {
     const storeEnv = ensureStore(env);
     const interact = createInteractRoutes();
     try {
+      if (controller.cron === '*/5 * * * *') {
+        const scheduled = new Date(controller.scheduledTime ?? Date.now());
+        if (scheduled.getUTCMinutes() === 0 && scheduled.getUTCHours() % 6 === 0) {
+          log.ok = true;
+          return;
+        }
+        await recordCronStep(log, 'incrementalBuild', () => incrementalBuild(storeEnv), env);
+        log.ok = true;
+        return;
+      }
       await recordCronStep(log, 'aggregateV2Analytics', () => interact.aggregateV2Analytics(storeEnv), env);
       await recordCronStep(log, 'fullBuildIfNeeded', () => fullBuildIfNeeded(storeEnv), env);
       await recordCronStep(log, 'incrementalBuild', () => incrementalBuild(storeEnv), env);
@@ -207,6 +217,10 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   if (pathname === '/market/v2/admin/incremental-build' && request.method === 'POST') {
     await requireAdminToken(request, env);
     return incrementalBuild(storeEnv);
+  }
+  if (pathname === '/market/v2/admin/rebuild-list' && request.method === 'POST') {
+    await requireAdminToken(request, env);
+    return build.rebuildList(storeEnv, request);
   }
 
   if (pathname === '/market/v2/admin/v1-rebuild' && request.method === 'POST') {

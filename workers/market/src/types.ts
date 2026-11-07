@@ -165,6 +165,8 @@ export interface MarketMutation {
 export interface NormalizedMarketMutation extends MarketMutation { createdAt: string }
 
 export interface D1Backend {
+  acquireBuildLock(owner: string, now: string, expiredBefore: string): Promise<boolean>;
+  releaseBuildLock(owner: string): Promise<void>;
   getMeta(key: string): Promise<{ value: string; updated_at: string } | undefined>;
   setMeta(key: string, value: string): Promise<void>;
   stats: { reads: number; writes: number };
@@ -220,6 +222,7 @@ export interface D1Backend {
   writeMutationLog(value: Record<string, unknown>): Promise<unknown>;
   upsertDirty(projection: string, scopeKey: string, reason: string, mutationId: string, updatedAt: string): Promise<unknown>;
   deleteDirty(projection: string, scopeKey: string): Promise<unknown>;
+  deleteDirtyIfUnchanged(projection: string, scopeKey: string, mutationId: string, updatedAt: string): Promise<unknown>;
   listDirty(limit: number): Promise<Row[]>;
   listPublicListScopes(): Promise<Array<{ type?: string; categoryId?: string }>>;
   loadListBuildSnapshot(lists: Array<{ type?: string; categoryId?: string }>): Promise<BuildSnapshot>;

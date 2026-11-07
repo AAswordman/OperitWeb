@@ -46,9 +46,19 @@ export function createMarketStore(env: MarketEnv): MarketStore {
     async apply(input: MarketMutation) {
       const mutation = validateMutation(input, objectRegistry, projectionRegistry);
       const before = usageOf(d1, r2, env);
+      const listChanged = mutation.effects.some((effect) => effect.projection === 'list.page');
+      const affectedIds = new Set<string>();
+      if (listChanged) {
+        for (const effect of mutation.effects) {
+          if ((effect.projection === 'entry.shard' || effect.projection === 'entry.versions') && effect.scope.entryId) affectedIds.add(effect.scope.entryId);
+        }
+        for (const object of mutation.objects) if (object.kind === 'Entry') affectedIds.add(object.id);
+      }
+      const listEntries = listChanged ? await Promise.all([...affectedIds].map((id) => d1.getEntry(id))) : [];
       for (const object of mutation.objects) {
         await objectRegistry.apply(object, d1);
       }
+      if (listChanged) listEntries.push(...await Promise.all([...affectedIds].map((id) => d1.getEntry(id))));
       // Mutation event → D1 (not R2)
       await d1.writeMutationLog({
         mutationId: mutation.id, actorId: mutation.actor.authorId, actorRole: mutation.actor.role,
@@ -56,9 +66,29 @@ export function createMarketStore(env: MarketEnv): MarketStore {
       });
       // Dirty markers → D1 (not R2)
       const dirty = [];
-      for (const effect of mutation.effects) {
+      const effects = [...mutation.effects];
+      if (listChanged) {
+        const scopes = new Map<string, { type?: string; categoryId?: string }>();
+        scopes.set('{}', {});
+        for (const entry of listEntries) {
+          if (!entry) continue;
+          const type = String(entry.type || '');
+          const categoryId = String(entry.category_id || '');
+          for (const scope of [type ? { type } : null, categoryId ? { categoryId } : null, type && categoryId ? { type, categoryId } : null]) {
+            if (scope) scopes.set(JSON.stringify(scope), scope);
+          }
+        }
+        for (const list of scopes.values()) for (const sort of ['updated', 'likes', 'downloads']) {
+          effects.push({ projection: 'list.page', scope: { list, sort, page: 1 } });
+        }
+      }
+      const seen = new Set<string>();
+      for (const effect of effects) {
         const scope = projectionRegistry.normalizeScope(effect.projection, effect.scope);
         const scopeKey = projectionRegistry.scopeKeyOf(scope);
+        const key = `${effect.projection}\0${scopeKey}`;
+        if (seen.has(key)) continue;
+        seen.add(key);
         await d1.upsertDirty(effect.projection, scopeKey, mutation.reason, mutation.id, mutation.createdAt);
         dirty.push({ projection: effect.projection, scope, key: scopeKey });
       }
@@ -124,6 +154,8 @@ export function createMarketStore(env: MarketEnv): MarketStore {
       let skippedMissingEntries = 0;
       const touchedEntryIds = new Set<string>();
       const touchedTypes = new Set<string>();
+      const touchedCategories = new Set<string>();
+      const touchedTypeCategories = new Map<string, { type: string; categoryId: string }>();
       const skippedEntryIds = new Set<string>();
 
       for (const row of input.rows) {
@@ -167,6 +199,11 @@ export function createMarketStore(env: MarketEnv): MarketStore {
         likes += likeDelta;
         touchedEntryIds.add(entryId);
         touchedTypes.add(type);
+        const categoryId = String(entry.category_id || '');
+        if (categoryId) {
+          touchedCategories.add(categoryId);
+          touchedTypeCategories.set(`${type}\0${categoryId}`, { type, categoryId });
+        }
       }
 
       await d1.recordAnalyticsAggregateWindow({ id: `v2-${input.windowStart}-${input.windowEnd}`, windowStart: input.windowStart, windowEnd: input.windowEnd, downloads, likes, createdAt: now });
@@ -175,11 +212,11 @@ export function createMarketStore(env: MarketEnv): MarketStore {
       for (const entryId of touchedEntryIds) {
         await d1.upsertDirty('entry.shard', projectionRegistry.scopeKeyOf(projectionRegistry.normalizeScope('entry.shard', { entryId })), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
       }
-      await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: {}, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
-      await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: {}, sort: 'downloads', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
-      for (const type of touchedTypes) {
-        await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'likes', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
-        await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list: { type }, sort: 'downloads', page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+      if (touchedEntryIds.size > 0) {
+        const lists = [{}, ...[...touchedTypes].map((type) => ({ type })), ...[...touchedCategories].map((categoryId) => ({ categoryId })), ...touchedTypeCategories.values()];
+        for (const list of lists) for (const sort of ['updated', 'likes', 'downloads']) {
+          await d1.upsertDirty('list.page', projectionRegistry.scopeKeyOf({ list, sort, page: 1 }), 'analytics.aggregated', `analytics-${input.windowEnd}`, now);
+        }
       }
 
       return {

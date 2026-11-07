@@ -81,6 +81,19 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
   return {
     stats,
 
+    async acquireBuildLock(owner, now, expiredBefore) {
+      stats.writes++;
+      await run(db, `INSERT INTO market_meta (key, value, updated_at) VALUES ('projection_build_lock', ?, ?)
+        ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = excluded.updated_at
+        WHERE market_meta.updated_at < ?`, [owner, now, expiredBefore]);
+      const row = await first(db, "SELECT value FROM market_meta WHERE key = 'projection_build_lock'", []);
+      return row?.value === owner;
+    },
+    async releaseBuildLock(owner) {
+      stats.writes++;
+      await run(db, "DELETE FROM market_meta WHERE key = 'projection_build_lock' AND value = ?", [owner]);
+    },
+
     async createComment(value) {
       stats.writes++;
       return run(db, 'INSERT OR IGNORE INTO market_comments (id, entry_id, parent_id, author_id, body, source, legacy_issue, legacy_comment, status, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)', [
@@ -427,6 +440,11 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
     async deleteDirty(projection, scopeKey) {
       stats.writes++;
       return run(db, 'DELETE FROM market_dirty_projections WHERE projection = ? AND scope_key = ?', [projection, scopeKey]);
+    },
+
+    async deleteDirtyIfUnchanged(projection, scopeKey, mutationId, updatedAt) {
+      stats.writes++;
+      return run(db, 'DELETE FROM market_dirty_projections WHERE projection = ? AND scope_key = ? AND last_mutation_id = ? AND updated_at = ?', [projection, scopeKey, mutationId, updatedAt]);
     },
 
     async listDirty(limit) {

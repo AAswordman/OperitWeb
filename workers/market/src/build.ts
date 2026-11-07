@@ -12,8 +12,9 @@ export function createBuildRoutes(): {
   buildR2: (env: MarketEnv) => Promise<{ ok: true; materialized: number }>;
   rebuildEntry: (env: MarketEnv, entryId: string) => Promise<{ ok: true; materialized: number }>;
   cleanupGeneratedLogos: (env: MarketEnv) => Promise<{ ok: true; scanned: number; cleaned: number; removed: number }>;
+  rebuildList: (env: MarketEnv, request: Request) => Promise<{ ok: true; materialized: number }>;
 } {
-  return { buildR2, rebuildEntry, cleanupGeneratedLogos };
+  return { buildR2, rebuildEntry, cleanupGeneratedLogos, rebuildList };
 }
 
 function requireStore(env: MarketEnv): MarketStore {
@@ -21,9 +22,39 @@ function requireStore(env: MarketEnv): MarketStore {
   return env.store;
 }
 
+async function withBuildLock<T>(store: MarketStore, action: () => Promise<T>): Promise<T> {
+  const owner = crypto.randomUUID();
+  const now = Date.now();
+  if (!await store.d1.acquireBuildLock(owner, new Date(now).toISOString(), new Date(now - 30 * 60_000).toISOString())) {
+    throw new MarketError('build_busy', 'Another projection build is running', 409);
+  }
+  try { return await action(); } finally { await store.d1.releaseBuildLock(owner); }
+}
+
 async function buildR2(env: MarketEnv): Promise<{ ok: true; materialized: number }> {
   const store = requireStore(env);
   return fullBuild(store);
+}
+
+async function rebuildList(env: MarketEnv, request: Request): Promise<{ ok: true; materialized: number }> {
+  let body: unknown;
+  try { body = await request.json(); } catch { throw new MarketError('validation_failed', 'Expected JSON body'); }
+  if (!body || typeof body !== 'object' || Array.isArray(body)) throw new MarketError('validation_failed', 'Expected list and sort');
+  const input = body as Record<string, unknown>;
+  const value = input.list;
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new MarketError('validation_failed', 'list must be an object');
+  const raw = value as Record<string, unknown>;
+  if (Object.keys(raw).some((key) => key !== 'type' && key !== 'categoryId')) throw new MarketError('validation_failed', 'Unsupported list filter');
+  const list: { type?: string; categoryId?: string } = {};
+  for (const key of ['type', 'categoryId'] as const) {
+    if (raw[key] !== undefined) {
+      if (typeof raw[key] !== 'string' || !/^[a-z0-9_][a-z0-9_-]{0,63}$/.test(raw[key])) throw new MarketError('validation_failed', `Invalid ${key}`);
+      list[key] = raw[key];
+    }
+  }
+  if (typeof input.sort !== 'string' || !(SORTS as readonly string[]).includes(input.sort)) throw new MarketError('validation_failed', 'Invalid sort');
+  const store = requireStore(env);
+  return withBuildLock(store, async () => ({ ok: true, materialized: await buildListPagesFromTargetedSnapshot(store, [list], [input.sort as SortKey]) }));
 }
 
 async function cleanupGeneratedLogos(env: MarketEnv): Promise<{ ok: true; scanned: number; cleaned: number; removed: number }> {
@@ -109,13 +140,17 @@ export async function fullBuildIfNeeded(env: MarketEnv): Promise<{ ok: true; mat
 
 export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; materialized: number }> {
   const store = requireStore(env);
+  return withBuildLock(store, () => incrementalBuildLocked(store));
+}
+
+async function incrementalBuildLocked(store: MarketStore): Promise<{ ok: true; materialized: number }> {
   const dirtyRows = await store.listDirty(200);
   if (dirtyRows.length === 0) return { ok: true, materialized: 0 };
 
   const entryIds = new Set<string>();
   const entryShardPlans = new Map<string, ProjectionPlan>();
   const directPlans: Array<{ plan: ProjectionPlan; scopeKey: string }> = [];
-  const listDirty: Array<{ projection: string; scopeKey: string }> = [];
+  const listDirty: Array<{ projection: string; scopeKey: string; mutationId: string; updatedAt: string }> = [];
   for (const row of dirtyRows) {
     const projection = text(row.projection);
     const scopeKey = text(row.scope_key);
@@ -127,7 +162,7 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
       const key = scope.entryId || scope.shard || scopeKey;
       entryShardPlans.set(key, { projection: 'entry.shard', scope: planScope });
     } else if (projection === 'list.page') {
-      listDirty.push({ projection, scopeKey });
+      listDirty.push({ projection, scopeKey, mutationId: text(row.last_mutation_id), updatedAt: text(row.updated_at) });
     } else if (projection === 'comments.page' && scope.entryId) {
       directPlans.push({ plan: { projection: 'comments.page', scope: { entryId: scope.entryId, page: Number(scope.page || 1) } }, scopeKey });
     } else if (projection === 'manifest') {
@@ -173,10 +208,16 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
   if (listDirty.length > 0) {
     const neededScopes = new Set<string>();
     const neededSorts = new Set<string>();
-    for (const { scopeKey } of listDirty) {
+    const selectedRows: typeof listDirty = [];
+    for (const row of listDirty) {
+      const { scopeKey } = row;
       const scope = parseScopeKey(scopeKey);
       let list: { type?: string; categoryId?: string } | undefined;
       try { list = scope.list ? JSON.parse(scope.list) : undefined; } catch { /* ignore */ }
+      const scopeId = list !== undefined ? JSON.stringify(list, Object.keys(list).sort()) : scope.listRaw;
+      if (neededScopes.size > 0 && scopeId && !neededScopes.has(scopeId)) continue;
+      if (neededSorts.size > 0 && scope.sort && !neededSorts.has(scope.sort)) continue;
+      selectedRows.push(row);
       const sort = scope.sort;
       if (sort) neededSorts.add(sort);
       if (list !== undefined) {
@@ -192,8 +233,8 @@ export async function incrementalBuild(env: MarketEnv): Promise<{ ok: true; mate
       ? [...neededSorts].filter((s): s is SortKey => (SORTS as readonly string[]).includes(s))
       : [...SORTS];
     count += await buildListPagesFromTargetedSnapshot(store, scopesToBuild, sortsToBuild);
-    for (const { projection, scopeKey } of listDirty) {
-      await store.deleteDirty(projection as ProjectionPlan['projection'], scopeKey);
+    for (const { projection, scopeKey, mutationId, updatedAt } of selectedRows) {
+      await store.d1.deleteDirtyIfUnchanged(projection, scopeKey, mutationId, updatedAt);
     }
   }
 
@@ -255,6 +296,10 @@ async function buildListPagesFromTargetedSnapshot(
 // -------- Full build --------
 
 async function fullBuild(store: MarketStore): Promise<{ ok: true; materialized: number }> {
+  return withBuildLock(store, () => fullBuildLocked(store));
+}
+
+async function fullBuildLocked(store: MarketStore): Promise<{ ok: true; materialized: number }> {
   const t0 = Date.now();
   const snap = await store.loadBuildSnapshot();
   console.log('[build] loadBuildSnapshot:', Date.now() - t0, 'ms', snapshotSummary(snap));

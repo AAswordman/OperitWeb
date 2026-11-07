@@ -159,6 +159,10 @@ test('incremental build updates entry shard without loading full snapshot', asyn
 
   assert.equal(result.ok, true);
   assert.ok(result.materialized >= 2);
+  // Lists are processed one scope and sort at a time to bound Worker resource usage.
+  for (let i = 0; i < 20 && rows(db, 'SELECT COUNT(*) AS cnt FROM market_dirty_projections')[0].cnt; i++) {
+    await incrementalBuild({ store });
+  }
   assert.equal(rows(db, 'SELECT COUNT(*) AS cnt FROM market_dirty_projections')[0].cnt, 0);
   assert.ok(after.d1Reads - before.d1Reads < 80, `entry incremental should avoid full snapshot, got ${after.d1Reads - before.d1Reads} D1 reads`);
   const shardFiles = await r2.list({ prefix: 'market/v2/entries/' });

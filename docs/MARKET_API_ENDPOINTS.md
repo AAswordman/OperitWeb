@@ -548,6 +548,12 @@ POST https://api.operit.app/market/v2/admin/v1-rebuild # v1 R2 重建
 Authorization: Bearer <admin_token>
 ```
 
+增量投影每五分钟处理一批，也可通过 `POST /market/v2/admin/incremental-build` 手动触发。审核或条目变更会将受影响的全市场、类型、分类和类型加分类列表的各排序标记为待更新；每轮最多构建一个列表范围和排序，队列可能需要多轮处理。
+
+投影构建互斥，已有构建运行时其他请求返回 `409 build_busy`，可稍后重试；异常中断的锁在 30 分钟后可被接管。五分钟任务在六小时任务启动的时刻跳过，原有六小时任务及其按需全量构建策略保持不变。
+
+需要补建某个历史筛选列表时，管理员可使用 `POST /market/v2/admin/rebuild-list`，例如请求体 `{"list":{"type":"package","categoryId":"dev_code"},"sort":"updated"}`。`list` 可只包含 `type`、只包含 `categoryId`，或同时包含两者；`sort` 为 `updated`、`likes` 或 `downloads`。每次只重建该范围和排序的所有页，不执行全量构建。
+
 ### 审核队列
 
 ```http
