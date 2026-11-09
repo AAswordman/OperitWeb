@@ -14,8 +14,8 @@ export interface PublicBetaPlatform {
 }
 
 // Destination for the other-platform beta download entry.
-export const OPERIT_V2_BETA_GROUP_NUMBER = '1121622579';
-export const OPERIT_V2_BETA_GROUP_URL = `mqqapi://card/show_pslcard?src_type=internal&version=1&uin=${OPERIT_V2_BETA_GROUP_NUMBER}&card_type=group&source=qrcode`;
+export const OPERIT_V2_BETA_INVITE_CODE = 'OPERIT';
+export const OPERIT_V2_BETA_GROUP_URL = '/operit-v2-beta-group-2.jpg';
 
 export const OPERIT_V2_TESTFLIGHT_URL = 'https://testflight.apple.com/join/hzq2xRrH';
 export const OPERIT_V2_PUBLIC_BETAS: PublicBetaPlatform[] = [

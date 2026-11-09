@@ -640,7 +640,7 @@ try {
     ['zh', 'dark', 320, 740], ['zh', 'light', 390, 600], ['en', 'dark', 1440, 900],
   ]) {
     await applyPreferences(language, theme);
-    await check(`beta group dialog shows the number and QR code in ${language}/${theme} at ${width}px`, async () => {
+    await check(`beta group dialog shows the invitation code and QR code in ${language}/${theme} at ${width}px`, async () => {
       await page.setViewport({ width, height });
       await open('/v2/download', '.version-platform-downloads button[data-platform="linux"]');
       const hashBefore = await hash();
@@ -648,11 +648,12 @@ try {
         const name = { android: 'Android', windows: 'Windows', linux: 'Linux' }[platform];
         await page.click(`button[data-platform="${platform}"]`);
         await page.waitForSelector('.version-beta-modal .ant-modal-content', { visible: true });
-        await page.waitForSelector('.version-beta-modal .version-beta-qrcode svg path');
+        await page.waitForSelector('.version-beta-modal .version-beta-qrcode img');
+        assert(await page.$eval('.version-beta-qrcode img', image => image.complete && image.naturalWidth > 0));
         await page.waitForFunction(() => document.querySelector('.version-beta-modal')?.contains(document.activeElement));
         assert.equal(await hash(), hashBefore);
         assert.equal(await page.$eval('.version-beta-modal .ant-modal-title', element => element.textContent), language === 'zh' ? `加入 ${name} 公测` : `Join ${name} beta`);
-        assert.match(await page.$eval('.version-beta-number', element => element.textContent), /1121622579/);
+        assert.match(await page.$eval('.version-beta-number', element => element.textContent), /OPERIT/);
         assert.equal(await page.$('.version-beta-modal a[href^="mqqapi:"]'), null);
         assert(await page.$('.version-beta-number .ant-typography-copy'));
         const bounds = await page.$eval('.version-beta-modal .ant-modal-content', element => {

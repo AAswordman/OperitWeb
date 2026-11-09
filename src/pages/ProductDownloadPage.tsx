@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Alert, Button, Modal, QRCode, Typography } from 'antd';
+import { Alert, Button, Modal, Typography } from 'antd';
 import { Link } from 'react-router-dom';
 import { AppleOutlined, DesktopOutlined, AndroidOutlined, ArrowRightOutlined, BookOutlined, DownloadOutlined, GithubOutlined, WindowsOutlined } from '@ant-design/icons';
 import DownloadLatestButton from '../components/DownloadLatestButton';
 import Footer from '../components/Footer';
-import { PRODUCTS, SHARED_PATHS, getExternalDownloadUrl, OPERIT_V2_DOWNLOAD_PLATFORMS, OPERIT_V2_BETA_GROUP_NUMBER, OPERIT_V2_BETA_GROUP_URL } from '../config/products';
+import { PRODUCTS, SHARED_PATHS, getExternalDownloadUrl, OPERIT_V2_DOWNLOAD_PLATFORMS, OPERIT_V2_BETA_INVITE_CODE, OPERIT_V2_BETA_GROUP_URL } from '../config/products';
 import type { DownloadPlatform, Language, ProductGeneration } from '../config/products';
 import './VersionPages.css';
 
@@ -41,13 +41,13 @@ export default function ProductDownloadPage({ generation, language }: { generati
     <Modal className="version-beta-modal" title={zh ? `加入 ${betaPlatform?.name ?? ''} 公测` : `Join ${betaPlatform?.name ?? ''} beta`} open={generation === 'v2' && betaPlatform !== null} onCancel={() => setBetaPlatform(null)} centered width={440} footer={null} destroyOnHidden>
       <div className="version-beta-dialog">
         <p>{zh ? '加入公测群，获取测试版本、安装说明和最新公告。' : 'Join the beta group for test builds, installation instructions and announcements.'}</p>
-        <div className="version-beta-qrcode" role="img" aria-label={zh ? '公测群入口二维码' : 'Beta group entry QR code'}>
-          <QRCode type="svg" value={OPERIT_V2_BETA_GROUP_URL} size={200} color="#111111" bgColor="#ffffff" bordered={false} />
+        <div className="version-beta-qrcode">
+          <img src={OPERIT_V2_BETA_GROUP_URL} alt={zh ? 'Operit 2 公测二群二维码' : 'Operit 2 beta group 2 QR code'} />
         </div>
-        <span className="version-beta-scan-hint">{zh ? '扫描二维码打开群入口，或在 QQ 中搜索以下群号' : 'Scan to open the group entry, or search for this group number in QQ'}</span>
+        <span className="version-beta-scan-hint">{zh ? '使用 QQ 扫描二维码加入公测二群，入群时填写邀请码' : 'Scan with QQ to join beta group 2 and enter the invitation code'}</span>
         <div className="version-beta-number">
-          <span>{zh ? 'QQ群号' : 'QQ group'}</span>
-          <Typography.Text copyable={{ text: OPERIT_V2_BETA_GROUP_NUMBER, tooltips: [zh ? '复制群号' : 'Copy group number', zh ? '已复制' : 'Copied'] }}>{OPERIT_V2_BETA_GROUP_NUMBER}</Typography.Text>
+          <span>{zh ? '入群邀请码' : 'Invitation code'}</span>
+          <Typography.Text copyable={{ text: OPERIT_V2_BETA_INVITE_CODE, tooltips: [zh ? '复制邀请码' : 'Copy invitation code', zh ? '已复制' : 'Copied'] }}>{OPERIT_V2_BETA_INVITE_CODE}</Typography.Text>
         </div>
         <Button block onClick={() => setBetaPlatform(null)}>{zh ? '关闭' : 'Close'}</Button>
       </div>
