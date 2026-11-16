@@ -15,7 +15,7 @@ export interface PublicBetaPlatform {
 
 // Destination for the other-platform beta download entry.
 export const OPERIT_V2_BETA_INVITE_CODE = 'OPERIT';
-export const OPERIT_V2_BETA_GROUP_URL = '/operit-v2-beta-group-2.jpg';
+export const OPERIT_V2_BETA_GROUP_URL = '/operit-v2-beta-group-1.jpg';
 
 export const OPERIT_V2_TESTFLIGHT_URL = 'https://testflight.apple.com/join/hzq2xRrH';
 export const OPERIT_V2_PUBLIC_BETAS: PublicBetaPlatform[] = [

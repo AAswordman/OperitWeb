@@ -501,12 +501,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       const repos = await readRowsByIds('SELECT * FROM repo_plugin_specs WHERE entry_id IN', entryIds);
       const repoVersions = await readRowsByIds('SELECT * FROM repo_plugin_versions WHERE version_id IN', versionIds);
       const artifactProjects = await readRowsByIds('SELECT * FROM artifact_projects WHERE entry_id IN', entryIds);
-      const assets = await readRowsByIds(
-        'SELECT a.* FROM market_assets a JOIN market_versions v ON v.id = a.version_id WHERE v.state_code = ? AND v.entry_id IN',
-        entryIds,
-        '',
-        ['approved'],
-      );
+      const assets = await readRowsByIds('SELECT * FROM market_assets WHERE version_id IN', versionIds);
       const reactions = await readRowsByIds('SELECT * FROM market_reaction_counts WHERE entry_id IN', entryIds);
       const entryStats = await readRowsByIds('SELECT * FROM market_entry_stats WHERE entry_id IN', entryIds);
       const curations = await readRowsByIds(

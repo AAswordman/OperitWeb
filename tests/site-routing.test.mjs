@@ -166,7 +166,7 @@ test('navigation keeps shared routes and documentation boundaries explicit', () 
 
 test('other-platform beta group uses the supplied QR image and invitation code', () => {
   assert.equal(OPERIT_V2_BETA_INVITE_CODE, 'OPERIT');
-  assert.equal(OPERIT_V2_BETA_GROUP_URL, '/operit-v2-beta-group-2.jpg');
+  assert.equal(OPERIT_V2_BETA_GROUP_URL, '/operit-v2-beta-group-1.jpg');
 });
 
 

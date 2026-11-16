@@ -216,7 +216,6 @@ async function incrementalBuildLocked(store: MarketStore): Promise<{ ok: true; m
       try { list = scope.list ? JSON.parse(scope.list) : undefined; } catch { /* ignore */ }
       const scopeId = list !== undefined ? JSON.stringify(list, Object.keys(list).sort()) : scope.listRaw;
       if (neededScopes.size > 0 && scopeId && !neededScopes.has(scopeId)) continue;
-      if (neededSorts.size > 0 && scope.sort && !neededSorts.has(scope.sort)) continue;
       selectedRows.push(row);
       const sort = scope.sort;
       if (sort) neededSorts.add(sort);

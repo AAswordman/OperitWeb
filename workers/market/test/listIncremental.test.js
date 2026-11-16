@@ -67,6 +67,25 @@ test('a list dirtied again during a build stays queued', async () => {
   } finally {r2.destroy();db.destroy();}
 });
 
+test('dirty sorts for the same scope share one list snapshot', async () => {
+  const {db,r2,store}=await fixture();
+  try {
+    for (const sort of ['updated','likes','downloads']) {
+      const key=store.projectionRegistry.scopeKeyOf({list:{type:'package'},sort,page:1});
+      await store.d1.upsertDirty('list.page',key,'test',sort,'2026-11-08T01:00:00.000Z');
+    }
+    const load=store.d1.loadListBuildSnapshot.bind(store.d1);
+    let loads=0;
+    store.d1.loadListBuildSnapshot=async (...args)=>{loads++;return load(...args);};
+    await incrementalBuild({store});
+    assert.equal(loads,1);
+    assert.equal(rows(db,"SELECT COUNT(*) AS n FROM market_dirty_projections WHERE projection='list.page'")[0].n,0);
+    for (const sort of ['updated','likes','downloads']) {
+      assert.equal(JSON.parse(readFileSync(join(r2.dir,`market/v2/lists/type/package/${sort}/page-1.json`),'utf8')).total,1);
+    }
+  } finally {r2.destroy();db.destroy();}
+});
+
 test('five-minute schedule only processes incremental projections', async () => {
   const {db,r2,store}=await fixture();
   try {
