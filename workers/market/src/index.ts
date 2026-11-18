@@ -2,7 +2,7 @@ import { handleAuthGithub, requireAdminToken } from './auth.js';
 import { handleGitHubOAuthCallback, handleGitHubOAuthClaim, handleGitHubOAuthComplete, handleGitHubOAuthStart } from './oauth.js';
 import { createAgentRoutes } from './agent.js';
 import { createBuildRoutes, fullBuildIfNeeded, incrementalBuild } from './build.js';
-import { createEntryRoutes } from './entry.js';
+import { createEntryRoutes, rebuildPublisherSummaries } from './entry.js';
 import { createInteractRoutes } from './interact.js';
 import { MarketError, corsHeaders, fail, jsonResponse, withHeaders } from './shared.js';
 import { createV1Routes } from './old.js';
@@ -221,6 +221,9 @@ async function routeV2(pathname: string, request: Request, env: MarketEnv, ctx: 
   if (pathname === '/market/v2/admin/rebuild-list' && request.method === 'POST') {
     await requireAdminToken(request, env);
     return build.rebuildList(storeEnv, request);
+  }
+  if (pathname === '/market/v2/admin/rebuild-publisher-summaries' && request.method === 'POST') {
+    return rebuildPublisherSummaries(request, storeEnv);
   }
 
   if (pathname === '/market/v2/admin/v1-rebuild' && request.method === 'POST') {

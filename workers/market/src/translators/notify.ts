@@ -64,19 +64,21 @@ export async function notifyCommentCreated(
 export async function notifyReview(
   d1: D1Backend,
   entry: Row,
+  version: Row,
   kind: 'review_approved' | 'review_rejected' | 'review_changes',
   adminId: string,
 ) {
-  const publisherId = String(entry.publisher_id || '');
+  const publisherId = String(version.publisher_id || '');
   if (!publisherId || publisherId === adminId) return;
   const entryTitle = String(entry.title || '');
+  const versionLabel = String(version.version || '');
   const kindLabel = kind === 'review_approved' ? 'approved' : kind === 'review_rejected' ? 'rejected' : 'returned for changes';
   await d1.createNotification(buildNotification({
     recipient: publisherId,
     kind,
     entryId: String(entry.id),
     actorId: adminId,
-    title: `"${entryTitle}" ${kindLabel}`,
-    body: `Your plugin "${entryTitle}" was ${kindLabel} by a reviewer.`,
+    title: `"${entryTitle}" ${versionLabel} ${kindLabel}`,
+    body: `Your submission of version ${versionLabel} for "${entryTitle}" was ${kindLabel} by a reviewer.`,
   }));
 }

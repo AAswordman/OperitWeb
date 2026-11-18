@@ -158,7 +158,8 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
     version: {
       version,
       formatVer: metadata.formatVer ?? 'script',
-      minAppVer: '1.2.0',
+      minAppVer: metadata.minAppVer ?? '1.2.0',
+      ...(metadata.maxAppVer !== undefined ? { maxAppVer: metadata.maxAppVer } : {}),
       ...(metadata.apiVersion !== undefined ? { apiVersion: metadata.apiVersion } : {}),
       projectId,
       runtimePackageId: projectId,
@@ -176,7 +177,7 @@ async function publishScriptArtifact(entryRoutes, env, session, version = '1.0.0
   return entryRoutes.publish(req, env);
 }
 
-async function submitArtifactVersion(entryRoutes, env, session, entryId, { type = 'script', version, projectId, apiVersion, githubId = GITHUB_ID_PUBLISHER, owner = 'pub1', repo = 'OperitForge', formatVer = 'script' }) {
+async function submitArtifactVersion(entryRoutes, env, session, entryId, { type = 'script', version, projectId, apiVersion, minAppVer = '1.2.0', githubId = GITHUB_ID_PUBLISHER, owner = 'pub1', repo = 'OperitForge', formatVer = 'script' }) {
   const releaseTag = `${type}-test-v${version}`;
   const assetName = `${type}-test-${version}.zip`;
   env.mockGitHubGetRelease = async () => ({
@@ -191,7 +192,7 @@ async function submitArtifactVersion(entryRoutes, env, session, entryId, { type 
     version: {
       version,
       formatVer,
-      minAppVer: '1.2.0',
+      minAppVer,
       ...(apiVersion !== undefined ? { apiVersion } : {}),
       projectId,
       runtimePackageId: projectId,
@@ -258,53 +259,82 @@ test('artifact publish uses GitHub canonical asset URL instead of the submitted 
   afterTest(ctx);
 });
 
-test('package versions expose optional ToolPkg API version across market v2 reads', async () => {
+for (const type of ['script', 'package']) {
+  test(`${type} versions expose per-release API contracts across market v2 reads`, async () => {
+    const ctx = await makeEnv();
+    const { env, db, r2, store } = ctx;
+    const { createEntryRoutes } = await import('../dist/entry.js');
+    const { createBuildRoutes } = await import('../dist/build.js');
+    const entryRoutes = createEntryRoutes();
+    const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+    const projectId = `${type}.artifact.api`;
+
+    const first = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', projectId, {
+      type,
+      formatVer: type === 'package' ? 'toolpkg_v2' : 'script',
+      apiVersion: '1.0.0',
+    });
+    assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [first.versionId])[0].api_version, '1.0.0');
+    await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }), env);
+
+    const second = await submitArtifactVersion(entryRoutes, env, pubSession, first.entryId, {
+      type,
+      version: '1.1.0',
+      projectId,
+      formatVer: type === 'package' ? 'toolpkg_v2' : 'script',
+      apiVersion: '2.0.0',
+      minAppVer: '2.0.0',
+    });
+    assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [second.versionId])[0].api_version, '2.0.0');
+    await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: second.versionId }), env);
+
+    const privateDetail = await entryRoutes.myEntryDetail(makeRequest(`http://api/market/v2/my/entries/${first.entryId}/detail`, 'GET', undefined, pubSession), env);
+    assert.equal(privateDetail.item.latestVersion.apiVersion, '2.0.0');
+    assert.equal(privateDetail.item.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0.0');
+
+    const reviewDetail = await entryRoutes.reviewEntryDetail(makeAdminRequest(`http://api/market/v2/admin/review/entries/${first.entryId}`, 'GET'), env);
+    assert.equal(reviewDetail.versions.find((version) => version.version === '1.1.0').apiVersion, '2.0.0');
+
+    await store.materialize({ projection: 'entry.versions', scope: { entryId: first.entryId } });
+    await createBuildRoutes().buildR2(env);
+
+    const entryVersions = r2.readJson(`market/v2/entries/${first.entryId}/versions.json`);
+    assert.equal(entryVersions.items.find((version) => version.version === '1.1.0').apiVersion, '2.0.0');
+    const shardItem = r2.readJson(`market/v2/entries/${entryShardOf(first.entryId)}.json`).entriesById[first.entryId];
+    assert.equal(shardItem.latestVersion.apiVersion, '2.0.0');
+    assert.equal(shardItem.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0.0');
+    const listItem = r2.readJson(`market/v2/lists/type/${type}/updated/page-1.json`).items.find((item) => item.id === first.entryId);
+    assert.equal(listItem.latestVersion.apiVersion, '2.0.0');
+    assert.equal(listItem.versions.find((version) => version.version === '1.1.0').apiVersion, '2.0.0');
+
+    afterTest(ctx);
+  });
+}
+
+test('artifact API validation applies to initial and subsequent publishes without changing legacy requests', async () => {
   const ctx = await makeEnv();
-  const { env, db, r2, store } = ctx;
-  const { createEntryRoutes } = await import('../dist/entry.js');
-  const { createBuildRoutes } = await import('../dist/build.js');
-  const entryRoutes = createEntryRoutes();
-  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
-  const projectId = 'package.toolpkg.api';
-
-  const first = await publishScriptArtifact(entryRoutes, env, pubSession, '1.0.0', projectId, {
-    type: 'package',
-    formatVer: 'toolpkg_v2',
-    apiVersion: '1.0',
-  });
-  assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [first.versionId])[0].api_version, '1.0');
-  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: first.versionId }), env);
-
-  const second = await submitArtifactVersion(entryRoutes, env, pubSession, first.entryId, {
-    type: 'package',
-    version: '1.1.0',
-    projectId,
-    formatVer: 'toolpkg_v2',
-    apiVersion: '1.1',
-  });
-  assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [second.versionId])[0].api_version, '1.1');
-  await entryRoutes.reviewApprove(makeAdminRequest(`http://api/market/v2/entries/${first.entryId}/review/approve`, 'POST', { entryId: first.entryId, versionId: second.versionId }), env);
-
-  const privateDetail = await entryRoutes.myEntryDetail(makeRequest(`http://api/market/v2/my/entries/${first.entryId}/detail`, 'GET', undefined, pubSession), env);
-  assert.equal(privateDetail.item.latestVersion.apiVersion, '1.1');
-  assert.equal(privateDetail.item.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0');
-
-  const reviewDetail = await entryRoutes.reviewEntryDetail(makeAdminRequest(`http://api/market/v2/admin/review/entries/${first.entryId}`, 'GET'), env);
-  assert.equal(reviewDetail.versions.find((version) => version.version === '1.1.0').apiVersion, '1.1');
-
-  await store.materialize({ projection: 'entry.versions', scope: { entryId: first.entryId } });
-  await createBuildRoutes().buildR2(env);
-
-  const entryVersions = r2.readJson(`market/v2/entries/${first.entryId}/versions.json`);
-  assert.equal(entryVersions.items.find((version) => version.version === '1.1.0').apiVersion, '1.1');
-  const shardItem = r2.readJson(`market/v2/entries/${entryShardOf(first.entryId)}.json`).entriesById[first.entryId];
-  assert.equal(shardItem.latestVersion.apiVersion, '1.1');
-  assert.equal(shardItem.versions.find((version) => version.version === '1.0.0').apiVersion, '1.0');
-  const listItem = r2.readJson('market/v2/lists/type/package/updated/page-1.json').items.find((item) => item.id === first.entryId);
-  assert.equal(listItem.latestVersion.apiVersion, '1.1');
-  assert.equal(listItem.versions.find((version) => version.version === '1.1.0').apiVersion, '1.1');
-
-  afterTest(ctx);
+  try {
+    const { env, db } = ctx;
+    const { createEntryRoutes } = await import('../dist/entry.js');
+    const entryRoutes = createEntryRoutes();
+    const session = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+    const legacy = await publishScriptArtifact(entryRoutes, env, session, '1.0.0', 'script.legacy.api');
+    assert.equal(rows(db, 'SELECT api_version FROM market_versions WHERE id = ?', [legacy.versionId])[0].api_version, null);
+    await assert.rejects(
+      publishScriptArtifact(entryRoutes, env, session, '1.0.0', 'script.bad.api', { apiVersion: ['2.0.0'], minAppVer: '2.0.0' }),
+      /apiVersion must be a string/,
+    );
+    await assert.rejects(
+      publishScriptArtifact(entryRoutes, env, session, '1.0.0', 'script.bad.api', { apiVersion: '1.0' }),
+      /apiVersion must use major.minor.patch/,
+    );
+    await assert.rejects(
+      submitArtifactVersion(entryRoutes, env, session, legacy.entryId, { version: '1.1.0', projectId: 'script.legacy.api', apiVersion: '2.0.0' }),
+      /minAppVer >= 2.0.0/,
+    );
+  } finally {
+    afterTest(ctx);
+  }
 });
 
 test('custom GitHub Social preview is persisted and emitted in public projections', async () => {
@@ -886,9 +916,9 @@ test('requesting changes for new version keeps approved entry public', async () 
   afterTest(ctx);
 });
 
-test('changes-requested revision is blocked for twelve hours before new-version submission', async () => {
+test('changes-requested revision is blocked for three hours before new-version submission', async () => {
   const ctx = await makeEnv();
-  const { env, db } = ctx;
+  const { env, db, store } = ctx;
   const { createEntryRoutes } = await import('../dist/entry.js');
   const entryRoutes = createEntryRoutes();
   const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
@@ -909,20 +939,31 @@ test('changes-requested revision is blocked for twelve hours before new-version 
     env,
   );
 
+  const { updated_at: reviewedAt } = rows(db, 'SELECT updated_at FROM market_versions WHERE id = ?', [v2.versionId])[0];
+  const hourMs = 60 * 60 * 1000;
+  const expectedRetryAt = new Date(Date.parse(reviewedAt) + 3 * hourMs).toISOString();
+  const authorId = `gh_${GITHUB_ID_PUBLISHER}`;
+  const summaryPlan = { projection: 'private.publisherShard', scope: { authorId } };
+  const summaryShard = await store.readProjection(summaryPlan);
+  const summary = summaryShard.authors[authorId].entries[0];
+  assert.equal(summary.revisionAvailableAt, expectedRetryAt);
+  summary.revisionAvailableAt = new Date(Date.parse(reviewedAt) + 12 * hourMs).toISOString();
+  await store.r2.writeJson(store.projectionRegistry.keyOf(summaryPlan.projection, summaryPlan.scope), summaryShard);
+
   const mine = await entryRoutes.myEntries(makeRequest('http://api/market/v2/my/entries', 'GET', undefined, pubSession), env);
-  assert.match(mine.entries.entries[0].revisionAvailableAt, /^\d{4}-\d{2}-\d{2}T/);
+  assert.equal(mine.entries.entries[0].revisionAvailableAt, expectedRetryAt);
   await assert.rejects(
     () => submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.2.0'),
     (error) => {
       assert.equal(error.code, 'revision_cooldown');
       assert.equal(error.status, 429);
-      assert.match(error.details.retryAt, /^\d{4}-\d{2}-\d{2}T/);
+      assert.equal(error.details.retryAt, expectedRetryAt);
       assert.ok(error.details.retryAfterSeconds > 0);
       return true;
     },
   );
 
-  const oldReviewTime = new Date(Date.now() - (13 * 60 * 60 * 1000)).toISOString();
+  const oldReviewTime = new Date(Date.now() - 3 * hourMs).toISOString();
   await db.prepare('UPDATE market_versions SET updated_at = ? WHERE id = ?').bind(oldReviewTime, v2.versionId).run();
   const v3 = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.2.0');
   assert.equal(v3.entryId, pub.entryId);
@@ -1551,6 +1592,64 @@ test('full build private shard keeps withdrawn entry state over latest approved 
   afterTest(ctx);
 });
 
+test('reviewing an older version leaves the latest submission selected in author management', async (context) => {
+  const fixture = await makeEnv();
+  context.after(() => afterTest(fixture));
+  const { env, db } = fixture;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createBuildRoutes } = await import('../dist/build.js');
+  const entryRoutes = createEntryRoutes();
+  const pubSession = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+
+  const pub = await publishMcp(entryRoutes, env, pubSession, 'review-older-version');
+  const reviewUrl = `http://api/market/v2/entries/${pub.entryId}/review/`;
+  const approve = (versionId) => entryRoutes.reviewApprove(
+    makeAdminRequest(`${reviewUrl}approve`, 'POST', { entryId: pub.entryId, versionId }), env,
+  );
+  await approve(pub.versionId);
+  const latest = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.1.0');
+  await approve(latest.versionId);
+  await db.prepare('UPDATE market_versions SET updated_at = ?, created_at = ? WHERE id = ?')
+    .bind('2026-07-02T00:00:00.000Z', '2026-07-02T00:00:00.000Z', latest.versionId).run();
+  await db.prepare('UPDATE market_versions SET created_at = ? WHERE id = ?')
+    .bind('2026-07-01T00:00:00.000Z', pub.versionId).run();
+
+  await entryRoutes.reviewRequestChanges(makeAdminRequest(`${reviewUrl}changes`, 'POST', {
+    entryId: pub.entryId,
+    versionId: pub.versionId,
+    scope: 'version',
+    reasonCode: 'repository-content-invalid',
+    reviewDetail: 'Historical release is no longer downloadable.',
+  }), env);
+
+  const assertSummary = async () => {
+    const mine = await entryRoutes.myEntries(makeRequest('http://api/market/v2/my/entries', 'GET', undefined, pubSession), env);
+    const summary = mine.entries.entries.find((entry) => entry.id === pub.entryId);
+    assert.equal(summary.stateCode, 'approved');
+    assert.equal(summary.revisionAvailableAt, undefined);
+    assert.equal(summary.reasonCodes, undefined);
+    assert.equal(summary.reviewDetail, undefined);
+  };
+  await assertSummary();
+  const { default: worker } = await import('../dist/index.js');
+  const refreshUrl = 'http://api/market/v2/admin/rebuild-publisher-summaries';
+  const unsigned = await worker.fetch(makeRequest(refreshUrl, 'POST', { entryId: pub.entryId }), env, {});
+  assert.equal(unsigned.status, 401);
+  const refreshed = await worker.fetch(makeAdminRequest(refreshUrl, 'POST', { entryId: pub.entryId }), env, {});
+  assert.equal(refreshed.status, 200);
+  await assertSummary();
+  await createBuildRoutes().buildR2(env);
+  await assertSummary();
+
+  const detail = await entryRoutes.myEntryDetail(
+    makeRequest(`http://api/market/v2/my/entries/${pub.entryId}/detail`, 'GET', undefined, pubSession), env,
+  );
+  assert.equal(detail.item.latestVersion.id, latest.versionId);
+  assert.equal(detail.item.versions.find((version) => version.id === pub.versionId).stateCode, 'changes_requested');
+  const next = await submitMcpVersion(entryRoutes, env, pubSession, pub.entryId, '1.2.0');
+  assert.equal(next.entryId, pub.entryId);
+});
+
 test('my entries retain rejected state when direct resubmission is blocked', async () => {
   const ctx = await makeEnv();
   const { env } = ctx;
@@ -1603,6 +1702,45 @@ test('review notification is durable before review response returns', async () =
   assert.equal(notifications.items[0].entryId, pub.entryId);
 
   afterTest(ctx);
+});
+
+test('review outcomes notify the contributor who submitted each version', async (context) => {
+  const fixture = await makeEnv();
+  context.after(() => afterTest(fixture));
+  const { env } = fixture;
+  const { createEntryRoutes } = await import('../dist/entry.js');
+  const { createInteractRoutes } = await import('../dist/interact.js');
+  const entryRoutes = createEntryRoutes();
+  const interact = createInteractRoutes();
+  const owner = createSession(GITHUB_ID_PUBLISHER, 'pub1');
+  const contributor = createSession(GITHUB_ID_PUBLISHER2, 'pub2');
+  const pub = await publishMcp(entryRoutes, env, owner, 'review-contributor-notification');
+  const reviewUrl = `http://api/market/v2/entries/${pub.entryId}/review/`;
+  await entryRoutes.reviewApprove(makeAdminRequest(`${reviewUrl}approve`, 'POST', { entryId: pub.entryId, versionId: pub.versionId }), env);
+  const outcomes = [
+    ['1.1.0', 'approve', 'reviewApprove', 'review_approved'],
+    ['1.2.0', 'reject', 'reviewReject', 'review_rejected'],
+    ['1.3.0', 'changes', 'reviewRequestChanges', 'review_changes'],
+  ];
+  for (const [version, action, handler] of outcomes) {
+    const submission = await submitMcpVersion(entryRoutes, env, contributor, pub.entryId, version);
+    await entryRoutes[handler](makeAdminRequest(`${reviewUrl}${action}`, 'POST', {
+      entryId: pub.entryId,
+      versionId: submission.versionId,
+      ...(action !== 'approve' ? { reasonCode: 'repository-content-invalid' } : {}),
+    }), env);
+  }
+  const notificationsUrl = 'http://api/market/v2/notifications';
+  const ownerInbox = await interact.listNotifications(makeRequest(notificationsUrl, 'GET', undefined, owner), env);
+  const contributorInbox = await interact.listNotifications(makeRequest(notificationsUrl, 'GET', undefined, contributor), env);
+  assert.equal(ownerInbox.items.length, 1);
+  assert.match(ownerInbox.items[0].title, /1\.0\.0/);
+  assert.equal(contributorInbox.items.length, outcomes.length);
+  for (const [version, , , kind] of outcomes) {
+    const notice = contributorInbox.items.find((item) => item.kind === kind);
+    assert.equal(notice?.entryId, pub.entryId);
+    assert.ok(notice.title.includes(version));
+  }
 });
 
 test('comment notification creates new comment and reply notifications', async () => {

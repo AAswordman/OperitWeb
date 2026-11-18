@@ -329,7 +329,7 @@ export function createD1Backend(db: D1DatabaseLike): D1Backend {
       return readRowsByIds('SELECT version_id, detail, reviewer_id, created_at, updated_at FROM market_version_review_details WHERE version_id IN', versionIds);
     },
     async listAuthorEntryVersions(authorId, entryId) {
-      const sql = 'SELECT * FROM market_versions WHERE publisher_id = ? AND entry_id = ? ORDER BY updated_at DESC, created_at DESC';
+      const sql = 'SELECT * FROM market_versions WHERE publisher_id = ? AND entry_id = ? ORDER BY created_at DESC, id DESC';
       return readRows(sql, await all(db, sql, [authorId, entryId]));
     },
     async listPublisherEntries(publisherId) {

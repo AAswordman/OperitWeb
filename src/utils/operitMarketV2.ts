@@ -103,6 +103,18 @@ export interface MarketV2MyEntrySummary {
   updatedAt?: string;
 }
 
+/** Returns the declared artifact API contract, including the original unversioned contract. */
+export function marketV2ApiVersion(entry: MarketV2Entry, version = entry.latestVersion): string | undefined {
+  if (entry.type !== 'script' && entry.type !== 'package') return undefined;
+  return version?.apiVersion?.trim() || '1.0.0';
+}
+
+/** Selects only the asset belonging to the requested release. */
+export function marketV2VersionAsset(entry: MarketV2Entry, versionId = entry.latestVersion?.id): MarketV2Asset | undefined {
+  if (!versionId) return undefined;
+  return entry.assets?.find(asset => asset.versionId === versionId && asset.id);
+}
+
 export interface MarketV2Notification {
   id: string;
   kind: string;

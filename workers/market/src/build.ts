@@ -672,17 +672,17 @@ function latestVersionsByAuthorEntry(versions: Row[]): Map<string, Row> {
     if (!authorId || !entryId) continue;
     const key = authorEntryKey(authorId, entryId);
     const current = result.get(key);
-    if (!current || versionSortValue(version).localeCompare(versionSortValue(current)) > 0) result.set(key, version);
+    const createdAt = rowText(version, 'created_at');
+    const currentCreatedAt = current ? rowText(current, 'created_at') : '';
+    if (!current || createdAt > currentCreatedAt || (createdAt === currentCreatedAt && rowText(version, 'id') > rowText(current, 'id'))) {
+      result.set(key, version);
+    }
   }
   return result;
 }
 
 function authorEntryKey(authorId: string, entryId: string): string {
   return `${authorId}\u0000${entryId}`;
-}
-
-function versionSortValue(version: Row): string {
-  return rowText(version, 'updated_at') || rowText(version, 'created_at') || rowText(version, 'id');
 }
 
 export function scopeHash(text: string): string {

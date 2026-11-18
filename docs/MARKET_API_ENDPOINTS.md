@@ -138,7 +138,7 @@ GET /market/v2/entries/{shard}.json
 
 返回 `entriesById` map，用于从作者页、通知等场景按 id 查 entry。
 
-列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。`package` 版本可额外返回 `versions[].apiVersion` / `latestVersion.apiVersion`，表示宿主 ToolPkg API 版本；该字段属于单个版本记录，不属于 Entry 元信息。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
+列表页 `items[]` 和 entry 分片 `entriesById[id]` 必须保持同一 entry 结构。每个 entry 内嵌公开 `approved` 的 `versions[]`，并按 `publishedAt` 降序排列。`latestVersion` 等于 `versions[0]`。Repo 类 entry（`skill` / `mcp`）的 `versions[].installConfig` 保存对应版本的安装配置；`changelog` 只表示版本更新说明。Artifact 类 entry（`script` / `package`）以 `versions[]` 作为唯一版本表；`versions[].runtimePackageId` 是安装和本地冲突判断所需的运行时包 ID。`script` 和 `package` 版本可额外返回 `versions[].apiVersion` / `latestVersion.apiVersion`，表示宿主 API 版本；缺失时由客户端按 `1.0.0` 解释；该字段属于单个版本记录，不属于 Entry 元信息。客户端用 `assets[].versionId` 精确关联 `versions[].id` 获取下载资产，不存在 node/root/parent 概念。`featured` 是客户端本地筛选用标记，不对应 `/lists/all/featured/...` 静态列表。
 
 ### Entry Logo
 
@@ -191,7 +191,9 @@ Repo 类条目必须能公开访问并确认 GitHub repo owner；仓库不可访
 
 Artifact 类提交以 `ghOwner`、`ghRepo`、`ghReleaseTag`、`assetName` 和 `sha256` 定位 Release 资产。Worker 验证 Release author 等于当前市场身份后保存 GitHub 返回的 canonical `browser_download_url`；客户端传入的 `asset.url` 不参与接受判定，也不应作为下载来源。
 
-`package` 发布请求可在 `version.apiVersion` 传入宿主 ToolPkg API 版本；客户端 manifest 字段名为 `api_version`，发布到市场时映射为 `version.apiVersion`。`script`、`skill`、`mcp` 一般不传该字段。
+`script` 和 `package` 发布请求可在 `version.apiVersion` 传入宿主 API 版本；客户端脚本 METADATA 或 ToolPkg manifest 字段名为 `api_version`，发布到市场时映射为 `version.apiVersion`。字段保持可选，旧请求不传时继续接受；客户端将缺失声明解释为 `1.0.0`，数据库不改写历史记录。显式声明必须使用 `major.minor.patch` 字符串；API 2.0.0 及以上要求 `minAppVer >= 2.0.0`，且最小 App 版本不得高于最大版本。Skill 和 MCP 不使用脚本 API 契约。
+
+公开列表、详情和版本历史均展示对应版本的 API 声明。下载以 `assets[].versionId` 关联具体发布版本；不能依赖资产数组顺序。现有静态目录、接口路径和字段结构保持兼容，旧 OP1 客户端忽略新增字段，旧客户端自身不会增加 API 版本拦截。
 
 每次发布会在响应结束后写入调试日志：
 
@@ -300,7 +302,7 @@ Artifact 类（`script` / `package`）请求体：
     "version": "1.1.0",
     "formatVer": "toolpkg_v2",
     "minAppVer": "1.2.0",
-    "apiVersion": "1.0",
+    "apiVersion": "1.0.0",
     "projectId": "...",
     "runtimePackageId": "..."
   }
@@ -396,7 +398,7 @@ GET /market/v2/private/publishers/{shard}.json
 
 `reasonCodes` 只在该作者最新 version 存在审核原因时返回，取值来自 `market_reason_codes.code`；`pending`、`approved`、`withdrawn` 默认不返回该字段。客户端必须用该字段在私有管理页和修订版提交入口展示打回/拒绝原因。
 
-`revisionAvailableAt` 仅在该作者最新 version 为 `changes_requested` 时返回，表示打回后允许提交修改版新版本的时间。当前冷却期为 12 小时，由服务端强制执行；冷却期间提交 `POST /entries/{entryId}/versions` 会得到 HTTP `429`、错误码 `revision_cooldown`，并在 `error.retryAt` / `error.retryAfterSeconds` 返回重试时间。该限制只针对被打回的投稿，不影响已通过版本的普通版本发布。
+`revisionAvailableAt` 仅在该作者最新 version 为 `changes_requested` 时返回，表示打回后允许提交修改版新版本的时间。当前冷却期为 3 小时，由服务端强制执行。冷却期间提交 `POST /entries/{entryId}/versions` 会得到 HTTP `429`、错误码 `revision_cooldown`，并在 `error.retryAt` / `error.retryAfterSeconds` 返回重试时间。该限制只针对被打回的投稿，不影响已通过版本的普通版本发布。
 
 `reviewDetail` 是审核人写入该作者最新 version 的具体说明，最长 4000 字符，仅出现在私有 publisher shard 和管理员审核详情；`reviewDetailUpdatedAt` 是其最后更新时刻。客户端应将说明与原因码一起展示给投稿者，且按 Markdown 渲染前做好常规内容安全处理。
 
@@ -444,12 +446,16 @@ read/unread 由客户端本地维护。
 | --- | --- | --- |
 | `comment_new` | 有人在你的 entry 下发表了新评论 | entry 发布者 |
 | `comment_reply` | 有人回复了你的评论 | 被回复的评论作者 |
-| `review_approved` | 审核台通过了你的 entry | entry 发布者 |
-| `review_rejected` | 审核台拒绝了你的 entry | entry 发布者 |
-| `review_changes` | 审核台要求修改 entry | entry 发布者 |
+| `review_approved` | 审核台通过了一个版本 | 该版本的提交者 |
+| `review_rejected` | 审核台拒绝了一个版本 | 该版本的提交者 |
+| `review_changes` | 审核台要求修改一个版本 | 该版本的提交者 |
 | `entry_curated` | entry 被列入精选 | entry 发布者 |
 
 ## v2 管理接口（走 api.operit.app）
+
+### 刷新发布管理摘要
+
+管理员可用 `POST /market/v2/admin/rebuild-publisher-summaries` 和请求体 `{"entryId":"{entryId}"}` 刷新单个条目在发布管理页的摘要。此接口仅更新对应的私有发布投影。
 
 ### 审核
 

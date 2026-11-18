@@ -19,6 +19,8 @@ import {
   MARKET_V2_PAGE_SIZE,
   fetchMarketV2Json,
   marketV2DownloadUrl,
+  marketV2ApiVersion,
+  marketV2VersionAsset,
   marketV2StaticUrl,
   type MarketSort,
   type MarketV2Entry,
@@ -104,7 +106,7 @@ const likeCountOf = (entry: MarketV2Entry): number => (
   entry.reactions?.find(item => item.reaction === '+1' || item.reaction === 'like')?.total || 0
 );
 
-const firstAssetId = (entry: MarketV2Entry): string => entry.assets?.find(asset => asset.id)?.id || '';
+const firstAssetId = (entry: MarketV2Entry): string => marketV2VersionAsset(entry)?.id || '';
 
 const sourceUrlOf = (entry: MarketV2Entry): string => entry.source?.url || '';
 
@@ -144,6 +146,8 @@ const uiText = {
     state: '阶段',
     version: '版本',
     formatVersion: '格式版本',
+    apiVersion: 'API 版本',
+    versions: '版本历史',
     appVersion: '应用版本',
     projectId: '项目 ID',
     runtimePackage: '运行包',
@@ -175,6 +179,8 @@ const uiText = {
     state: 'Stage',
     version: 'Version',
     formatVersion: 'Format',
+    apiVersion: 'API version',
+    versions: 'Version history',
     appVersion: 'App version',
     projectId: 'Project ID',
     runtimePackage: 'Runtime package',
@@ -375,6 +381,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                             <div className="market-item-tags">
                               {entry.categoryId && <Tag className="market-chip">{categoryName(manifest, entry.categoryId)}</Tag>}
                               {versionOf(entry) && <Tag className="market-chip">v{versionOf(entry)}</Tag>}
+                              {marketV2ApiVersion(entry) && <Tag color={marketV2ApiVersion(entry) === '2.0.0' ? 'blue' : undefined}>API {marketV2ApiVersion(entry)}</Tag>}
                               {entry.artifact?.projectId && <Tag className="market-chip">{entry.artifact.projectId}</Tag>}
                             </div>
                             <div className="market-item-meta">
@@ -456,6 +463,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 <Tag className="market-chip">{typeLabel(selectedEntry.type, language)}</Tag>
                 <Tag color={stateColor(selectedEntry.stateCode)}>{selectedEntry.stateCode || 'approved'}</Tag>
                 {versionOf(selectedEntry) && <Tag className="market-chip">v{versionOf(selectedEntry)}</Tag>}
+                {marketV2ApiVersion(selectedEntry) && <Tag color="blue">API {marketV2ApiVersion(selectedEntry)}</Tag>}
               </div>
 
               <Space wrap>
@@ -482,6 +490,7 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 <Descriptions.Item label={t.publishedAt}>{formatTime(selectedEntry.publishedAt)}</Descriptions.Item>
                 <Descriptions.Item label={t.version}>{selectedEntry.latestVersion?.version || t.notProvided}</Descriptions.Item>
                 <Descriptions.Item label={t.formatVersion}>{selectedEntry.latestVersion?.formatVer || t.notProvided}</Descriptions.Item>
+                {marketV2ApiVersion(selectedEntry) && <Descriptions.Item label={t.apiVersion}>{marketV2ApiVersion(selectedEntry)}</Descriptions.Item>}
                 <Descriptions.Item label={t.appVersion}>
                   {selectedEntry.latestVersion?.minAppVer || selectedEntry.latestVersion?.maxAppVer
                     ? `${selectedEntry.latestVersion?.minAppVer || '*'} - ${selectedEntry.latestVersion?.maxAppVer || '*'}`
@@ -502,6 +511,22 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                 )}
               </Descriptions>
 
+              {(selectedEntry.versions || []).length > 0 && (
+                <Card title={t.versions}>
+                  <Space direction="vertical" style={{ width: '100%' }}>
+                    {selectedEntry.versions?.map(version => {
+                      const asset = marketV2VersionAsset(selectedEntry, version.id);
+                      return <Space key={version.id} wrap>
+                        <Tag>v{version.version}</Tag>
+                        {marketV2ApiVersion(selectedEntry, version) && <Tag>API {marketV2ApiVersion(selectedEntry, version)}</Tag>}
+                        <Text type="secondary">{formatTime(version.publishedAt)}</Text>
+                        {asset && <Button size="small" icon={<DownloadOutlined />} href={marketV2DownloadUrl(asset.id)} target="_blank">{t.download}</Button>}
+                      </Space>;
+                    })}
+                  </Space>
+                </Card>
+              )}
+
               <Card title={t.description}>
                 <div className="market-detail-summary market-detail-section-content">
                   {selectedEntry.description ? <OperitMarkdownPreview content={selectedEntry.description} /> : <Text type="secondary">{t.notProvided}</Text>}
@@ -519,6 +544,12 @@ const OperitMCPMarketPage: React.FC<OperitMCPMarketPageProps> = ({ language }) =
                   {(selectedEntry.assets || []).length > 0 ? selectedEntry.assets?.map(asset => (
                     <Space key={asset.id} wrap>
                       <Tag>{asset.kind || 'asset'}</Tag>
+                      {selectedEntry.versions?.filter(version => version.id === asset.versionId).map(version => (
+                        <React.Fragment key={version.id}>
+                          <Tag>v{version.version}</Tag>
+                          {marketV2ApiVersion(selectedEntry, version) && <Tag>API {marketV2ApiVersion(selectedEntry, version)}</Tag>}
+                        </React.Fragment>
+                      ))}
                       <Text code>{asset.assetName || asset.id}</Text>
                       <Button size="small" icon={<DownloadOutlined />} href={marketV2DownloadUrl(asset.id)} target="_blank">
                         {t.download}

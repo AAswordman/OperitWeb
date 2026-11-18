@@ -1,5 +1,6 @@
 import { assertAuthorActive, requireAdminToken, requireReviewToken, requireSession, rotateReviewAgentKey, upsertAuthorFromGithubOwner, upsertAuthorFromSession, type MarketAuthor, type MarketSession } from './auth.js';
 import { githubApiFetch, githubRepositorySocialPreviewUrl } from './github.js';
+import { validateArtifactApiVersion } from './apiVersion.js';
 import {
   DEFAULT_PROOF_TTL_SECONDS,
   MarketError,
@@ -10,7 +11,7 @@ import {
   normalizeGithubRepoUrl,
   normalizeRefType,
   nowSeconds,
-  REVISION_SUBMISSION_COOLDOWN_MS,
+  revisionSubmissionAvailableAt,
   requireSha256,
   requireString,
   signToken,
@@ -172,7 +173,7 @@ async function handlePublish(request: Request, env: MarketEnv, waitUntil?: Publi
     const detail = optionalString(body.detail);
     const categoryId = optionalString(body.categoryId);
     const allowPublicUpdates = optionalBoolean(body.allowPublicUpdates) ?? true;
-    const versionInput = requireVersionInput(asRecord(body.version));
+    const versionInput = requireVersionInput(asRecord(body.version), type);
     if (isRepoType(type)) {
       const result = await measurePublishPhase(timing, 'publish.repo', () => publishRepoEntry(env, store, publisher, type, title, description, detail, categoryId, allowPublicUpdates, versionInput, body));
       timing.statusCode = 200;
@@ -357,7 +358,7 @@ async function handleNewVersion(request: Request, env: MarketEnv): Promise<JsonO
   const entryPatchInput = parseEntryUpdateInput(asRecord(body.entry));
   const hasEntryPatch = Object.keys(entryPatchInput).length > 0;
   assertVersionEntryPatchPermission(entryPatchInput, originalPublisherId, publisher.id);
-  let versionInput = requireVersionInput(asRecord(body.version));
+  let versionInput = requireVersionInput(asRecord(body.version), text(entry.type));
   await assertVersionGreaterThanExisting(versionInput.version, await store.d1.listVersionsForEntry(entryId));
   const versionId = `${entryId}-v-${versionInput.version.replace(/[^a-z0-9]+/gi, '-').toLowerCase()}`;
   const objects: MarketMutation['objects'] = [];
@@ -402,6 +403,10 @@ async function handleMyEntries(request: Request, env: MarketEnv): Promise<JsonOb
   const filteredEntries = type ? entries.filter((entry) => asRecord(entry).type === type) : entries;
   const entriesWithListingState = await Promise.all(filteredEntries.map(async (entry) => {
     const summary = asRecord(entry);
+    if (summary.stateCode === 'changes_requested') {
+      const revisionAvailableAt = revisionSubmissionAvailableAt({ state_code: summary.stateCode, updated_at: summary.updatedAt });
+      return revisionAvailableAt ? { ...summary, revisionAvailableAt } : entry;
+    }
     const entryId = optionalString(summary.id);
     if (summary.stateCode !== 'approved' || !entryId) return entry;
     const publicShard = asRecord(await store.readProjection({ projection: 'entry.shard', scope: { entryId } }));
@@ -477,7 +482,7 @@ async function handleReviewApprove(request: Request, env: MarketEnv): Promise<Js
     : reviewApproveEntry({ entryId, actorId, versionId: targetVersionId, ...(entryPatch ? { entryPatch } : {}), ...(reviewDetail ? { reviewDetail } : {}) }));
   await store.materializeEntryAssets(entryId);
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
-  await notifyReview(store.d1, entry, 'review_approved', actorId);
+  await notifyReview(store.d1, entry, targetVersion, 'review_approved', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -496,7 +501,6 @@ async function handleMyEntryDetail(request: Request, env: MarketEnv): Promise<Js
   const item = await buildEntryItem(store.d1, entry);
   const versions = await Promise.all(
     ownVersions
-      .sort((a, b) => (text(b.updated_at) || text(b.created_at)).localeCompare(text(a.updated_at) || text(a.created_at)))
       .map(async (version) => {
         const versionPublisherId = text(version.publisher_id);
         const versionPublisher = versionPublisherId ? await store.d1.getAuthor(versionPublisherId) : null;
@@ -590,13 +594,14 @@ async function handleReviewReject(request: Request, env: MarketEnv): Promise<Jso
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
-  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const targetVersion = await resolveReviewVersion(store, entryId, versionId);
+  const targetVersionId = text(targetVersion.id);
   const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewRejectVersion({ entryId, versionId: targetVersionId, actorId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) })
     : reviewRejectEntry({ entryId, actorId, versionId: targetVersionId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) }));
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
-  await notifyReview(store.d1, entry, 'review_rejected', actorId);
+  await notifyReview(store.d1, entry, targetVersion, 'review_rejected', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -611,13 +616,14 @@ async function handleReviewRequestChanges(request: Request, env: MarketEnv): Pro
   const actorId = admin.username;
   const entry = await store.d1.getEntry(entryId);
   if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
-  const targetVersionId = await resolveReviewVersionId(store, entryId, versionId);
+  const targetVersion = await resolveReviewVersion(store, entryId, versionId);
+  const targetVersionId = text(targetVersion.id);
   const reviewVersionOnly = shouldReviewVersionOnly(body, entry, await hasApprovedVersion(store, entryId));
   const applied = await store.apply(reviewVersionOnly
     ? reviewRequestChangesVersion({ entryId, versionId: targetVersionId, actorId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) })
     : reviewRequestChangesEntry({ entryId, actorId, versionId: targetVersionId, reasonCode, ...(reviewDetail ? { reviewDetail } : {}) }));
   await materializePrivatePublisherShards(store, await privatePublisherAuthorIdsForEntry(store, entry), entryId);
-  await notifyReview(store.d1, entry, 'review_changes', actorId);
+  await notifyReview(store.d1, entry, targetVersion, 'review_changes', actorId);
   return { ok: true, entryId, stats: applied.stats as unknown as JsonObject };
 }
 
@@ -782,9 +788,15 @@ async function privatePublisherAuthorIdsForEntry(store: MarketStore, entry: Row)
   return [text(entry.publisher_id), ...versions.map((version) => text(version.publisher_id))];
 }
 
-async function resolveReviewVersionId(store: MarketStore, entryId: string, versionId: string): Promise<string> {
-  const version = await resolveReviewVersion(store, entryId, versionId);
-  return text(version.id);
+export async function rebuildPublisherSummaries(request: Request, env: MarketEnv): Promise<JsonObject> {
+  await requireAdminToken(request, env);
+  const store = requireStore(env);
+  const entryId = requireString((await readBody(request)).entryId, 'entryId');
+  const entry = await store.d1.getEntry(entryId);
+  if (!entry) throw new MarketError('not_found', 'Entry not found', 404);
+  const authorIds = await privatePublisherAuthorIdsForEntry(store, entry);
+  await materializePrivatePublisherShards(store, authorIds, entryId);
+  return { ok: true, entryId };
 }
 
 async function resolveReviewVersion(store: MarketStore, entryId: string, versionId: string): Promise<Row> {
@@ -807,13 +819,10 @@ function assertCanSubmitVersionForEntry(entry: Row, publisherId: string): void {
 
 async function assertRevisionSubmissionCooldown(store: MarketStore, publisherId: string, entryId: string): Promise<void> {
   const latestVersion = (await store.d1.listAuthorEntryVersions(publisherId, entryId))[0];
-  if (!latestVersion || text(latestVersion.state_code) !== 'changes_requested') return;
-  const reviewedAt = Date.parse(text(latestVersion.updated_at) || text(latestVersion.created_at));
-  if (!Number.isFinite(reviewedAt)) return;
-  const availableAt = reviewedAt + REVISION_SUBMISSION_COOLDOWN_MS;
-  const remainingMs = availableAt - Date.now();
+  const retryAt = latestVersion && revisionSubmissionAvailableAt(latestVersion);
+  if (!retryAt) return;
+  const remainingMs = Date.parse(retryAt) - Date.now();
   if (remainingMs <= 0) return;
-  const retryAt = new Date(availableAt).toISOString();
   throw new MarketError(
     'revision_cooldown',
     `This entry was returned for changes. Submit a new version after ${retryAt}.`,
@@ -1062,8 +1071,13 @@ function parseVersion(value: string): { parts: number[]; suffix: string } {
   const parts = core.split('.').map((part) => Number.parseInt(part, 10)).map((part) => Number.isFinite(part) ? part : 0);
   return { parts, suffix };
 }
-function requireVersionInput(input: Record<string, unknown>): VersionInput {
-  return { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}), ...(input.apiVersion !== undefined ? { apiVersion: requireString(input.apiVersion, 'version.apiVersion') } : {}) };
+function requireVersionInput(input: Record<string, unknown>, type: string): VersionInput {
+  if (input.apiVersion !== undefined && typeof input.apiVersion !== 'string') {
+    throw new MarketError('validation_failed', 'version.apiVersion must be a string', 400);
+  }
+  const version = { version: requireString(input.version, 'version.version'), formatVer: requireString(input.formatVer, 'version.formatVer'), minAppVer: requireString(input.minAppVer, 'version.minAppVer'), ...(input.maxAppVer !== undefined ? { maxAppVer: requireString(input.maxAppVer, 'version.maxAppVer') } : {}), ...(input.changelog !== undefined ? { changelog: requireString(input.changelog, 'version.changelog') } : {}), ...(input.runtimePackageId !== undefined ? { runtimePackageId: requireString(input.runtimePackageId, 'version.runtimePackageId') } : {}), ...(input.apiVersion !== undefined ? { apiVersion: requireString(input.apiVersion, 'version.apiVersion') } : {}) };
+  validateArtifactApiVersion(type, version.apiVersion, version.minAppVer, version.maxAppVer);
+  return version;
 }
 async function validateArtifactVersion(env: MarketEnv, session: MarketSession, body: Record<string, unknown>): Promise<{ projectId: string; runtimePackageId: string; asset: { kind: string; url: string; ghOwner: string; ghRepo: string; ghReleaseTag: string; sha256: string; assetName: string } }> {
   const v = asRecord(body.version) as ArtifactVersionBody;

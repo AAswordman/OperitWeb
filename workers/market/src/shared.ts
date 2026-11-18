@@ -5,7 +5,7 @@ export const PROOF_PREFIX = 'op-proof-v1';
 export const DEFAULT_SESSION_TTL_SECONDS = 7 * 24 * 60 * 60;
 export const DEFAULT_PROOF_TTL_SECONDS = 10 * 60;
 /** Minimum time between a changes-requested review and the author's revision submission. */
-export const REVISION_SUBMISSION_COOLDOWN_MS = 12 * 60 * 60 * 1000;
+export const REVISION_SUBMISSION_COOLDOWN_MS = 3 * 60 * 60 * 1000;
 export const ALLOWED_DOWNLOAD_HOSTS = new Set(['github.com', 'objects.githubusercontent.com', 'release-assets.githubusercontent.com', 'raw.githubusercontent.com']);
 export const ARTIFACT_TYPES = new Set(['script', 'package']);
 export const REPO_TYPES = new Set(['skill', 'mcp']);

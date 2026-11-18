@@ -463,7 +463,7 @@ function versionSortValue(version: ReviewVersion): string {
   return version.publishedAt || version.updatedAt || version.createdAt || version.version;
 }
 
-function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', actions?: VersionActionConfig): React.ReactNode {
+function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', type: MarketType, actions?: VersionActionConfig): React.ReactNode {
   const rows = [...versions].sort((a, b) => versionSortValue(b).localeCompare(versionSortValue(a)));
   return (
     <div className="operit-market-review-version-graph">
@@ -478,7 +478,7 @@ function renderVersionList(versions: ReviewVersion[], language: 'zh' | 'en', act
               <Text type="secondary">{version.formatVer}</Text>
               <Text type="secondary">min {version.minAppVer}</Text>
               {version.maxAppVer ? <Text type="secondary">max {version.maxAppVer}</Text> : null}
-              {version.apiVersion ? <Text type="secondary">api {version.apiVersion}</Text> : null}
+              {(type === 'script' || type === 'package') ? <Text type="secondary">API {version.apiVersion || '1.0.0'}</Text> : null}
               {version.runtimePackageId ? <Text type="secondary">runtime {version.runtimePackageId}</Text> : null}
               <Tag color={stateColor(version.stateCode)}>{getReviewStateLabel(version.stateCode, language)}</Tag>
               <Text type="secondary">{formatDateTime(version.publishedAt)}</Text>
@@ -1172,7 +1172,7 @@ const OperitMarketReviewPage: React.FC<OperitMarketReviewPageProps> = ({ languag
               </Card>
 
               <Card size="small" title={t.versions}>
-                {renderVersionList(detail.versions || [], language, detailFallback ? {
+                {renderVersionList(detail.versions || [], language, detailItem.type, detailFallback ? {
                   target: detailFallback,
                   approve: t.approve,
                   changes: t.changes,
